@@ -1,0 +1,31 @@
+{
+  "version": "1.0.0",
+  "description": "HA custom tiles for dashboard",
+  "main": "src/sci-fi.js",
+  "type": "module",
+  "scripts": {
+    "format": "prettier index.html demo/*.html demo/*.js index.js src/*.js src/**/*.js src/**/**/*.js --write",
+    "serve": "es-dev-server --app-index index.html --node-resolve --watch",
+    "copy": "mkdir temp && cp -r ./src/* ./temp",
+    "prepare-prod": "npm run copy && rm ./temp/utils/const.js && mv ./temp/utils/const.js.PROD ./temp/utils/const.js",
+    "clean-up": "rm -rf temp && mv sci-fi.min.js dist",
+    "build": "npm run format && npm run prepare-prod && rollup -c && npm run clean-up"
+  },
+  "keywords": [],
+  "devDependencies": {
+    "@rollup/plugin-json": "6.1.0",
+    "@rollup/plugin-node-resolve": "15.3.0",
+    "@rollup/plugin-replace": "6.0.1",
+    "@rollup/plugin-terser": "0.4.4",
+    "@trivago/prettier-plugin-sort-imports": "4.3.0",
+    "es-dev-server": "1.55.1",
+    "prettier": "3.4.1",
+    "rollup": "2.79.2",
+    "rollup-plugin-minify-html-literals": "1.2.6"
+  },
+  "dependencies": {
+    "@mdi/js": "7.4.47",
+    "lit": "3.2.1",
+    "lodash-es": "4.17.21"
+  }
+}

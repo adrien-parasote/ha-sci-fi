@@ -33,13 +33,13 @@
         flex-direction: column;
       }
       .lovelace-header {
-        height: 56px;
-        color: white;
+        min-height: 56px;
         width: 100%;
+        color: white;
         background-color: #101e24;
-      }
-      .app-header {
-        height: 56px;
+        text-transform: uppercase;
+        align-content: center;
+        padding-left: 10px;
       }
       ul {
         color: white;
@@ -55,13 +55,10 @@
   <body>
     <div class="ha-side-bar"></div>
     <div class="lovelace-panel">
-      <div class="lovelace-header"></div>
-      <div class="app-header"></div>
+      <div class="lovelace-header">DEMO</div>
       <ul>
-        <li><a href="/demo/demo.html">Sci-Fi Hexa tiles editor</a></li>
+        <li><a href="/demo/demo_hexa.html">Sci-Fi Hexa tiles</a></li>
       </ul>
-      <div id="content"></div>
     </div>
-    <script type="module" src="index.js"></script>
   </body>
 </html>

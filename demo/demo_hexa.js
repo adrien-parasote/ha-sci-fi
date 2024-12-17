@@ -1,16 +1,24 @@
+import {config} from '../src/utils/config/config_hexa.js';
 import {hass} from '../src/utils/mock/hass.js';
 
-// Define global elements and shared config
 const element = window.customElements.get('sci-fi-hexa-tiles');
-let config = element.getStubConfig();
-let editor = element.getConfigElement();
 
+// Component
+let component = new element();
+component.hass = hass;
+component.setConfig(config);
+document.querySelector('#content').appendChild(component);
+
+
+// Define global elements and shared config
+let sub_config = element.getStubConfig();
+let editor = element.getConfigElement();
 // Setup elements internal components
 let card = new element();
 card.hass = hass;
-card.setConfig(config);
+card.setConfig(sub_config);
 editor.hass = hass;
-editor.setConfig(config);
+editor.setConfig(sub_config);
 
 // Render
 document.querySelector('.editor').appendChild(editor);

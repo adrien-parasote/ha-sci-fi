@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>TESTS</title>
+    <script type="module" src="/src/sci-fi.js"></script>
+    <style>
+      html {
+        height: 100%;
+        width: 100%;
+        background: rgb(28, 28, 28);
+      }
+      body {
+        margin: 0;
+        height: 100%;
+        display: flex;
+        flex-direction: row;
+      }
+      .ha-side-bar {
+        width: 56px;
+        background-color: #1c1c1c;
+        border-right: 1px solid rgba(225, 225, 225, 0.12);
+      }
+      @media only screen and (min-device-width: 390px) and (max-device-width: 844px) {
+        .ha-side-bar {
+          display: none;
+        }
+      }
+      .lovelace-panel {
+        height: 100%;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      .lovelace-header {
+        height: 56px;
+        color: white;
+        width: 100%;
+        background-color: #101e24;
+      }
+      .app-header {
+        height: 56px;
+      }
+      ul {
+        color: white;
+      }
+      ul li a {
+        color: rgb(102, 156, 210);
+      }
+      ul li a:hover {
+        color: rgb(105, 211, 251);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ha-side-bar"></div>
+    <div class="lovelace-panel">
+      <div class="lovelace-header"></div>
+      <div class="app-header"></div>
+      <ul>
+        <li><a href="/demo/demo.html">Sci-Fi Hexa tiles editor</a></li>
+      </ul>
+      <div id="content"></div>
+    </div>
+    <script type="module" src="index.js"></script>
+  </body>
+</html>

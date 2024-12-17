@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>TESTS</title>
+    <script type="module" src="../src/sci-fi.js"></script>
+    <style>
+      html {
+        height: 100%;
+        width: 100%;
+        background: rgb(28, 28, 28);
+      }
+      body {
+        margin: 0;
+        height: 100%;
+        display: flex;
+        flex-direction: row;
+      }
+      .ha-side-bar {
+        width: 56px;
+        background-color: #1c1c1c;
+        border-right: 1px solid rgba(225, 225, 225, 0.12);
+      }
+      .lovelace-panel {
+        height: 100%;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      .lovelace-header {
+        height: 56px;
+        color: white;
+        width: 100%;
+        background-color: #101e24;
+      }
+      .app-header {
+        height: 56px;
+        text-transform: uppercase;
+        color: rgb(105, 211, 251);
+        margin: 10px;
+        align-content: center;
+      }
+      .demo-content {
+        display: flex;
+        flex-direction: row;
+      }
+      .demo-content .editor {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 10px;
+      }
+      .demo-content .preview {
+        flex: 1;
+        position: relative;
+        height: max-content;
+        background: black;
+        padding: 10px;
+        border-radius: 4px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ha-side-bar"></div>
+    <div class="lovelace-panel">
+      <div class="lovelace-header"></div>
+      <div class="app-header">EDITOR</div>
+      <div class="demo-content">
+        <div class="editor"></div>
+        <div class="preview"></div>
+      </div>
+    </div>
+  </body>
+  <script type="module" src="demo.js"></script>
+</html>

@@ -1,20 +1,14 @@
 import {LitElement, html} from 'lit';
 import {isEqual} from 'lodash-es';
 
+import '../../helpers/card/tiles.js';
 import common_style from '../../helpers/common_style.js';
 import '../../helpers/entities/person.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
 import {
-  BG_HEXA_ACTIVE_BACKGROUND,
-  BG_HEXA_ACTIVE_BORDER,
-  BG_HEXA_HL,
-  BG_HEXA_HR,
-  BG_HEXA_INACTIVE,
   LANDSCAPE_DISPLAY,
   PACKAGE,
   PORTRAIT_DISPLAY,
-  SVG_VIEWBOX_HEIGHT,
-  SVG_VIEWBOX_WIDTH,
 } from './const.js';
 import {SciFiHexaTilesEditor} from './editor.js';
 import style from './style.js';
@@ -265,7 +259,7 @@ export class SciFiHexaTiles extends LitElement {
           c == this._display.cols - this._display.gap ||
           idx >= this._entities.length
         ) {
-          cols.push(this.__getInactiveTile());
+          cols.push(html`<sci-fi-hexa-tile></sci-fi-hexa-tile>`);
         } else {
           if (addWeatherTile && idx == 0) {
             // If weather tilee is activated, push it first
@@ -294,76 +288,48 @@ export class SciFiHexaTiles extends LitElement {
       : this._display.min_rows;
   }
 
-  __getInactiveTile() {
-    return html` <div class="hexa item">
-      <svg viewBox="0 0 ${SVG_VIEWBOX_WIDTH} ${SVG_VIEWBOX_HEIGHT}">
-        <path class="background" d="${BG_HEXA_INACTIVE}" />
-      </svg>
-    </div>`;
-  }
-
   __getWeatherTile() {
-    return html` <a href="${this._config.weather.link}">
-      <div class="hexa item item-${this._weather.day ? 'on' : 'off'}">
-        <div class="item-content">
-          <div class="item-icon">
-            ${getWeatherIcon(this._weather.state, this._weather.day)}
-          </div>
-          <div class="item-name" style="margin-top: 0;">
-            ${this._weather.name}
-          </div>
-        </div>
-        <svg viewBox="0 0 ${SVG_VIEWBOX_WIDTH} ${SVG_VIEWBOX_HEIGHT}">
-          <path class="background" d="${BG_HEXA_INACTIVE}" />
-          <path class="border" d="${BG_HEXA_ACTIVE_BORDER}" />
-          <path class="background" d="${BG_HEXA_ACTIVE_BACKGROUND}" />
-        </svg>
-      </div>
-    </a>`;
+    const state = this._weather.day ? 'on' : 'off';
+    return html`
+      <sci-fi-hexa-tile
+        id="weather-tile"
+        active
+        link=${this._config.weather.link}
+        state=${state}
+        title=${this._weather.name}
+        class="state-${state}"
+      >
+        ${getWeatherIcon(this._weather.state, this._weather.day)}
+      </sci-fi-hexa-tile>
+    `;
   }
 
   __getActiveTile(entity) {
-    return html` <a href="${entity.link}">
-      <div class="hexa item item-${entity.state}">
-        <div class="item-content">
-          <div class="item-icon">${getIcon(entity.icon)}</div>
-          <div class="item-name">${entity.title}</div>
-        </div>
-        <svg viewBox="0 0 ${SVG_VIEWBOX_WIDTH} ${SVG_VIEWBOX_HEIGHT}">
-          <path class="background" d="${BG_HEXA_INACTIVE}" />
-          <path class="border" d="${BG_HEXA_ACTIVE_BORDER}" />
-          <path class="background" d="${BG_HEXA_ACTIVE_BACKGROUND}" />
-        </svg>
-      </div>
-    </a>`;
+    return html`
+      <sci-fi-hexa-tile
+        active
+        link=${entity.link}
+        state=${entity.state}
+        title=${entity.title}
+        class="state-${entity.state}"
+      >
+        ${getIcon(entity.icon)}
+      </sci-fi-hexa-tile>
+    `;
   }
 
   __renderColumns(cols, odd = true) {
     return html`
-      ${odd ? '' : this.__getRightTile()}
+      ${odd
+        ? ''
+        : html`<sci-fi-half-hexa-tile right></sci-fi-half-hexa-tile>`}
       ${cols.map((entity) => {
         return entity;
       })}
-      ${!odd ? '' : this.__getLeftTile()}
+      ${!odd
+        ? ''
+        : html`<sci-fi-half-hexa-tile></sci-fi-half-hexa-tile>`}
     `;
-  }
-
-  __getLeftTile() {
-    const width = SVG_VIEWBOX_WIDTH / 2;
-    return html` <div class="hexa half">
-      <svg viewBox="0 0 ${width} ${SVG_VIEWBOX_HEIGHT}">
-        <path class="background" d="${BG_HEXA_HL}" />
-      </svg>
-    </div>`;
-  }
-
-  __getRightTile() {
-    const width = SVG_VIEWBOX_WIDTH / 2;
-    return html` <div class="hexa half">
-      <svg viewBox="0 0 ${width} ${SVG_VIEWBOX_HEIGHT}">
-        <path class="background" d="${BG_HEXA_HR}" />
-      </svg>
-    </div>`;
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

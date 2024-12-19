@@ -1,4 +1,5 @@
 import './cards/hexa_tiles/card.js';
+import './cards/lights/card.js';
 import {PACKAGE_NAME, VERSION} from './utils/const.js';
 
 console.info(

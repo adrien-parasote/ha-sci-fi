@@ -126,6 +126,7 @@ export class ClimateStoveEntity extends Entity {
 export class VacuumEntity extends Entity {
   constructor(entity_id) {
     const states = ['cleaning', 'docked', 'returning', 'error', 'idle'];
+    const selected_state = states[Math.floor(Math.random() * states.length)];
     const battery_state_values = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
     const battery_state = Math.floor(
       Math.random() * battery_state_values.length
@@ -135,15 +136,11 @@ export class VacuumEntity extends Entity {
       battery_level: battery_state,
       battery_icon: 'mdi:battery-charging-' + battery_state,
       fan_speed: 'Medium',
-      status: 'Charging',
+      status: selected_state,
       friendly_name: 'Cleaner',
       supported_features: 14204,
     };
-    super(
-      entity_id,
-      states[Math.floor(Math.random() * states.length)],
-      attributes
-    );
+    super(entity_id, selected_state, attributes);
   }
 }
 

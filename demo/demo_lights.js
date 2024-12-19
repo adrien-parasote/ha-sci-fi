@@ -1,7 +1,7 @@
-import {config} from '../src/utils/config/config_hexa.js';
+import {config} from '../src/utils/config/config_lights.js';
 import {hass} from '../src/utils/mock/hass.js';
 
-const element = window.customElements.get('sci-fi-hexa-tiles');
+const element = window.customElements.get('sci-fi-lights');
 
 // Component
 let component = new element();

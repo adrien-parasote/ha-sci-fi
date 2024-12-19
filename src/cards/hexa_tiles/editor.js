@@ -1,13 +1,13 @@
 import {LitElement, html} from 'lit';
 
 import common_style from '../../helpers/common_style.js';
+import editor_common_style from '../../helpers/editor_common_style.js';
 import '../../helpers/form/form.js';
 import {getIcon} from '../../helpers/icons/icons.js';
-import style from './editor_style.js';
 
 export class SciFiHexaTilesEditor extends LitElement {
   static get styles() {
-    return [common_style, style];
+    return [common_style, editor_common_style];
   }
 
   static get properties() {

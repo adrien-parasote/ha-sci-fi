@@ -2,9 +2,9 @@ import {css} from 'lit';
 
 export default css`
   :host {
+    --tile-width: 155px;
+    --tile-height: calc(var(--tile-width) * 1.1547);
     --icon-size: 50px;
-    --hexa-width: 155px;
-    --hexa-height: calc(var(--hexa-width) * 1.1547);
     background-color: black;
   }
   /******** COMMON *********/
@@ -16,22 +16,9 @@ export default css`
   .container .hexa-row {
     display: flex;
     flex-direction: row;
-    height: var(--hexa-height);
+    height: var(--tile-height);
     justify-content: center;
-    margin-bottom: calc(var(--hexa-height) * -0.2);
-  }
-  .container .hexa-row .hexa {
-    width: var(--hexa-width);
-  }
-  .container .hexa-row .half {
-    width: calc(var(--hexa-width) / 2);
-  }
-  .container .hexa-row .hexa svg .background {
-    fill: var(--primary-bg-color);
-    stroke-width: 4px;
-    stroke: var(--secondary-bg-color);
-    stroke-opacity: 0.8;
-    stroke-linejoin: round;
+    margin-bottom: calc(var(--tile-height) * -0.2);
   }
   /******** HEADER *********/
   .container .header {
@@ -59,57 +46,25 @@ export default css`
     font-weight: bold;
     text-shadow: 0px 0px 5px var(--primary-light-color);
   }
-  /******** ACTIVE TILES *********/
-  .container .hexa-row .hexa svg .border {
-    fill: var(--primary-bg-color);
-    stroke: var(--secondary-light-alpha-color);
-    stroke-width: 5px;
-    stroke-linejoin: round;
+  /******** TILES *********/
+  .container .hexa-row sci-fi-hexa-tile,
+  .container .hexa-row sci-fi-half-hexa-tile {
+    --hexa-width: var(--tile-width);
+    --hexa-height: var(--tile-height);
   }
-  .container .hexa-row .item {
-    position: relative;
+  #weather-tile {
+    --margin-top-item-name: 0;
   }
-  .container .hexa-row .item:hover {
-    cursor: pointer;
-  }
-  .container .hexa-row .item .item-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-  }
-  .container .hexa-row .item .item-content .item-name {
-    margin-top: 10px;
-  }
-  .container .hexa-row .item .item-content .item-icon svg {
+  .container .hexa-row sci-fi-hexa-tile svg {
     width: var(--icon-size);
   }
-  .container .hexa-row .item-on svg .border {
-    stroke: var(--primary-light-color);
-  }
-  .container .hexa-row .item-on .item-content {
-    color: var(--primary-light-color);
-    text-shadow: 0px 0px 5px var(--secondary-light-color);
-  }
-  .container .hexa-row .item-on .item-content .item-icon svg {
+  .container .hexa-row sci-fi-hexa-tile[active] svg {
     fill: var(--primary-light-color);
   }
-  .container .hexa-row .item-off .item-content {
-    color: var(--secondary-light-alpha-color);
-    text-shadow: none;
-  }
-  .container .hexa-row .item-off .item-content .item-icon svg {
+  .container .hexa-row sci-fi-hexa-tile[active].state-off svg {
     fill: var(--secondary-light-alpha-color);
   }
-  .container .hexa-row .item-error svg .border {
-    stroke: var(--primary-error-color);
-  }
-  .container .hexa-row .item-error .item-content {
-    color: var(--primary-error-color);
-    text-shadow: 0px 0px 5px var(--primary-error-alpha-color);
-  }
-  .container .hexa-row .item-error .item-content .item-icon svg {
+  .container .hexa-row sci-fi-hexa-tile[active].state-error svg {
     fill: var(--primary-error-color);
   }
 `;

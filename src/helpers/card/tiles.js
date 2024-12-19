@@ -159,7 +159,7 @@ export class SciFiHexaHalfTile extends LitElement {
     const path = this.right ? BG_HEXA_HR : BG_HEXA_HL;
     return html`
       <div class="hexa half">
-        <svg viewBox="0 0 ${SVG_VIEWBOX_WIDTH/2} ${SVG_VIEWBOX_HEIGHT}">
+        <svg viewBox="0 0 ${SVG_VIEWBOX_WIDTH / 2} ${SVG_VIEWBOX_HEIGHT}">
           <path class="background" d="${path}" />
         </svg>
       </div>

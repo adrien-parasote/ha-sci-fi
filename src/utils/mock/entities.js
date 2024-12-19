@@ -1,17 +1,23 @@
-let now = new Date();
+import {NOW, generateid} from './utils';
 
-function generateid() {
-  let result = ' ';
-  const characters =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const charactersLength = characters.length;
-  for (let i = 0; i < 26; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
+function nameToId(kind, name) {
+  return [kind, name.toLowerCase().replaceAll(' ', '_')].join('.');
 }
 
 class Entity {
+  static kind = '';
+  constructor(entity_id, device_id, icon, platform, name) {
+    this.entity_id = entity_id;
+    this.device_id = device_id;
+    this.labels = [];
+    this.platform = '';
+    this.icon = icon;
+    this.platform = platform;
+    this.name = name;
+  }
+}
+
+class EntityState {
   constructor(entity_id, state, attributes = {}) {
     this.entity_id = entity_id;
     this.state = state;
@@ -21,20 +27,36 @@ class Entity {
       parent_id: null,
       user_id: null,
     };
-    this.last_changed = now.toISOString();
-    this.last_updated = now.toISOString();
+    this.last_changed = NOW.toISOString();
+    this.last_updated = NOW.toISOString();
+  }
+
+  __getPlateform() {
+    return this.entity_id.split('.')[0];
+  }
+
+  getEntity(device_id) {
+    return new Entity(
+      this.entity_id,
+      device_id,
+      this.attributes.icon,
+      this.__getPlateform(),
+      this.attributes.friendly_name
+    );
   }
 }
 
-export class PersonEntity extends Entity {
-  constructor(entity_id) {
+export class PersonEntity extends EntityState {
+  static kind = 'person';
+
+  constructor(friendly_name) {
     const states = ['unknown', 'home'];
     const attributes = {
       editable: true,
-      id: entity_id.split('.')[0],
+      id: PersonEntity.kind,
       device_trackers: [],
       user_id: generateid(),
-      friendly_name: entity_id.split('.')[1],
+      friendly_name: friendly_name,
       editable: true,
       latitude: 48.8575,
       longitude: 2.3514,
@@ -42,15 +64,17 @@ export class PersonEntity extends Entity {
       entity_picture: '/demo/people.png',
     };
     super(
-      entity_id,
+      nameToId(PersonEntity.kind, friendly_name),
       states[Math.floor(Math.random() * states.length)],
       attributes
     );
   }
 }
 
-export class LightEntity extends Entity {
-  constructor(entity_id, friendly_name) {
+export class LightEntity extends EntityState {
+  static kind = 'light';
+
+  constructor(friendly_name) {
     const states = ['on', 'off'];
     const attributes = {
       color_mode: null,
@@ -60,15 +84,17 @@ export class LightEntity extends Entity {
       icon: 'mdi:lightbulb-group',
     };
     super(
-      entity_id,
+      nameToId(LightEntity.kind, friendly_name),
       states[Math.floor(Math.random() * states.length)],
       attributes
     );
   }
 }
 
-export class ClimateEntity extends Entity {
-  constructor(entity_id, friendly_name) {
+export class ClimateEntity extends EntityState {
+  static kind = 'climate';
+
+  constructor(friendly_name) {
     const states = ['on', 'off', 'auto'];
     const attributes = {
       hvac_modes: states,
@@ -93,15 +119,17 @@ export class ClimateEntity extends Entity {
       supported_features: 401,
     };
     super(
-      entity_id,
+      nameToId(ClimateEntity.kind, friendly_name),
       states[Math.floor(Math.random() * states.length)],
       attributes
     );
   }
 }
 
-export class ClimateStoveEntity extends Entity {
-  constructor(entity_id) {
+export class ClimateStoveEntity extends EntityState {
+  static kind = 'climate';
+
+  constructor(friendly_name) {
     const states = ['off', 'heat', 'cool'];
     const attributes = {
       hvac_modes: states,
@@ -112,19 +140,21 @@ export class ClimateStoveEntity extends Entity {
       current_temperature: 22,
       temperature: 19,
       preset_mode: 'none',
-      friendly_name: 'Stove',
+      friendly_name: friendly_name,
       supported_features: 401,
     };
     super(
-      entity_id,
+      nameToId(ClimateEntity.kind, friendly_name),
       states[Math.floor(Math.random() * states.length)],
       attributes
     );
   }
 }
 
-export class VacuumEntity extends Entity {
-  constructor(entity_id) {
+export class VacuumEntity extends EntityState {
+  static kind = 'vacuum';
+
+  constructor(friendly_name) {
     const states = ['cleaning', 'docked', 'returning', 'error', 'idle'];
     const selected_state = states[Math.floor(Math.random() * states.length)];
     const battery_state_values = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
@@ -137,15 +167,21 @@ export class VacuumEntity extends Entity {
       battery_icon: 'mdi:battery-charging-' + battery_state,
       fan_speed: 'Medium',
       status: selected_state,
-      friendly_name: 'Cleaner',
+      friendly_name: friendly_name,
       supported_features: 14204,
     };
-    super(entity_id, selected_state, attributes);
+    super(
+      nameToId(VacuumEntity.kind, friendly_name),
+      selected_state,
+      attributes
+    );
   }
 }
 
-export class WeatherEntity extends Entity {
-  constructor(entity_id) {
+export class WeatherEntity extends EntityState {
+  static kind = 'weather';
+
+  constructor(friendly_name) {
     const states = [
       'clear-night',
       'cloudy',
@@ -175,19 +211,21 @@ export class WeatherEntity extends Entity {
       visibility_unit: 'km',
       precipitation_unit: 'mm',
       attribution: 'Data provided by Météo-France',
-      friendly_name: 'A long City Name',
+      friendly_name: friendly_name,
       supported_features: 3,
     };
     super(
-      entity_id,
+      nameToId(WeatherEntity.kind, friendly_name),
       states[Math.floor(Math.random() * states.length)],
       attributes
     );
   }
 }
 
-export class SunEntity extends Entity {
-  constructor(entity_id) {
+export class SunEntity extends EntityState {
+  static kind = 'sun';
+
+  constructor(friendly_name) {
     const states = ['above_horizon', 'below_horizon'];
     const attributes = {
       next_dawn: '2024-12-15T07:10:37.828926+00:00',
@@ -199,10 +237,10 @@ export class SunEntity extends Entity {
       elevation: 5.23,
       azimuth: 227.09,
       rising: false,
-      friendly_name: 'Sun',
+      friendly_name: friendly_name,
     };
     super(
-      entity_id,
+      nameToId(SunEntity.kind, friendly_name),
       states[Math.floor(Math.random() * states.length)],
       attributes
     );

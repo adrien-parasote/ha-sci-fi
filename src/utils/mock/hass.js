@@ -1,74 +1,103 @@
-/****** DEV HASS *******/
+import {Device} from './devices.js';
 import {
-  ClimateEntity,
   ClimateStoveEntity,
-  LightEntity,
   PersonEntity,
   SunEntity,
   VacuumEntity,
   WeatherEntity,
 } from './entities.js';
+import {Area, Floor} from './floors.js';
+import {HOUSE} from './house.js';
 
 class Hass {
+  // Private
+  _counters = {};
+
   constructor() {
+    this.__build();
+    // Add services & connected user
     this.callService = function (service, action, data) {
       console.log(service, action, data);
     };
-    this.states = this._mockStates();
     this.user = this._mockConnectedUser('person.punk1');
   }
 
-  _mockPersons() {
-    return Object.fromEntries(
-      ['person.root', 'person.punk1', 'person.punk2'].map((person) => {
-        return [person, new PersonEntity(person)];
-      })
-    );
-  }
+  __build() {
+    // Define elements
+    this.states = {};
+    this.devices = {};
+    this.entities = {};
+    this.floors = {};
+    this.areas = {};
+    // Build them
+    HOUSE.map((floor) => {
+      floor.areas.map((area) => {
+        // Create area entities counter
+        this._counters[area.name] = {};
+        // Create area linked devices
+        area.devices.map((deviceCls) => {
+          // Create device friendly name
+          const device_king = deviceCls.kind;
+          // Define friendly name
+          let counter = this._counters[area.name][device_king]
+            ? this._counters[area.name][device_king]
+            : 0;
 
-  _mockClimates() {
-    let climates = Object.fromEntries(
-      Array.from({length: 5}, (v, i) => {
-        return ['climate.room_' + i, 'Radiator Room ' + i];
-      }).map((climate) => {
-        return [climate[0], new ClimateEntity(climate[0], climate[1])];
-      })
-    );
-    climates['climate.stove'] = new ClimateStoveEntity('climate.stove');
-    return climates;
-  }
+          let friendly_name = '';
+          switch (deviceCls) {
+            case ClimateStoveEntity:
+              friendly_name = 'Stove';
+              break;
+            case VacuumEntity:
+              friendly_name = 'Cleaner';
+              break;
+            default:
+              friendly_name = [
+                device_king.charAt(0).toUpperCase() + device_king.slice(1),
+                area.name.toLowerCase(),
+                counter,
+              ].join(' ');
+              this._counters[area.name][device_king] = counter + 1;
+          }
+          // Create device
+          const device = new Device(area.id, friendly_name);
+          // Create entity state and get linked entity
+          const entity_state = new deviceCls(friendly_name);
+          const entity = entity_state.getEntity(device.id);
+          // Add elements
+          this.devices[device.id] = device;
+          this.entities[entity_state.entity_id] = entity;
+          this.states[entity_state.entity_id] = entity_state;
+        });
+        // Add Area
+        this.areas[area.id] = new Area(area.id, floor.id, area.icon, area.name);
+      });
+      // Add Floor
+      this.floors[floor.id] = new Floor(
+        floor.id,
+        floor.icon,
+        floor.level,
+        floor.name
+      );
+    });
 
-  _mockLights() {
-    return Object.fromEntries(
-      Array.from({length: 5}, (v, i) => {
-        return ['light.room_' + i, 'Room ' + i];
-      }).map((light) => {
-        return [light[0], new LightEntity(light[0], light[1])];
-      })
-    );
-  }
+    // Build person entities
+    ['root', 'punk1', 'punk2'].map((friendly_name) => {
+      // Create entity
+      const entity_state = new PersonEntity(friendly_name);
+      const entity = entity_state.getEntity(null);
+      // Add elements
+      this.entities[entity_state.entity_id] = entity;
+      this.states[entity_state.entity_id] = entity_state;
+    });
 
-  _mockVacuum() {
-    return {'vacuum.cleaner': new VacuumEntity('vacuum.cleaner')};
-  }
-
-  _mockWeather() {
-    return {'weather.a_city': new WeatherEntity('weather.a_city')};
-  }
-
-  _mockSun() {
-    return {'sun.sun': new SunEntity('sun.sun')};
-  }
-
-  _mockStates() {
-    return Object.assign(
-      {},
-      this._mockPersons(),
-      this._mockLights(),
-      this._mockClimates(),
-      this._mockVacuum(),
-      this._mockWeather(),
-      this._mockSun()
+    // Build sun & weather entities
+    [new WeatherEntity('A long-long city name'), new SunEntity('Sun')].map(
+      (entity_state) => {
+        const entity = entity_state.getEntity(null);
+        this.entities[entity_state.entity_id] = entity;
+        this.states[entity_state.entity_id] = entity_state;
+      }
     );
   }
 

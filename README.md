@@ -25,5 +25,5 @@ Available customization:
 - Link : a link to follow when 
 
 **Improve/Known issues**
-- Deal with tiles full screen (col + 2 row +3) + landascape
+- Responsive tiles (not only for smartphone)
 - When press key enter in chips component (editor mode) => save card action apply

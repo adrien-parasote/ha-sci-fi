@@ -5,7 +5,7 @@ export const config = {
   weather: {
     activate: true,
     sun_entity: 'sun.sun',
-    weather_entity: 'weather.a_city',
+    weather_entity: 'weather.a_long-long_city_name',
   },
   tiles: [
     {

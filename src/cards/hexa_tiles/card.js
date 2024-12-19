@@ -5,11 +5,7 @@ import '../../helpers/card/tiles.js';
 import common_style from '../../helpers/common_style.js';
 import '../../helpers/entities/person.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
-import {
-  LANDSCAPE_DISPLAY,
-  PACKAGE,
-  PORTRAIT_DISPLAY,
-} from './const.js';
+import {LANDSCAPE_DISPLAY, PACKAGE, PORTRAIT_DISPLAY} from './const.js';
 import {SciFiHexaTilesEditor} from './editor.js';
 import style from './style.js';
 
@@ -320,15 +316,11 @@ export class SciFiHexaTiles extends LitElement {
 
   __renderColumns(cols, odd = true) {
     return html`
-      ${odd
-        ? ''
-        : html`<sci-fi-half-hexa-tile right></sci-fi-half-hexa-tile>`}
+      ${odd ? '' : html`<sci-fi-half-hexa-tile right></sci-fi-half-hexa-tile>`}
       ${cols.map((entity) => {
         return entity;
       })}
-      ${!odd
-        ? ''
-        : html`<sci-fi-half-hexa-tile></sci-fi-half-hexa-tile>`}
+      ${!odd ? '' : html`<sci-fi-half-hexa-tile></sci-fi-half-hexa-tile>`}
     `;
   }
 

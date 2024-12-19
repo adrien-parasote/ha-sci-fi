@@ -15,6 +15,8 @@ export class SciFiLights extends LitElement {
   static get properties() {
     return {
       _config: {type: Object},
+      _floors: {type: Object},
+      _rooms: {type: Object},
     };
   }
 
@@ -42,8 +44,12 @@ export class SciFiLights extends LitElement {
 
   render() {
     if (!this._hass || !this._config) return html``;
-    const matrix = this.__getEntitiesMatrix();
-    return html` <div class="container">TODO</div> `;
+    return html`
+      <div class="container">
+        <div>Header</div>
+        <div></div>
+      </div>
+    `;
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

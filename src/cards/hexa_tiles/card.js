@@ -287,30 +287,34 @@ export class SciFiHexaTiles extends LitElement {
   __getWeatherTile() {
     const state = this._weather.day ? 'on' : 'off';
     return html`
-      <sci-fi-hexa-tile
-        id="weather-tile"
-        active
-        link=${this._config.weather.link}
-        state=${state}
-        title=${this._weather.name}
-        class="state-${state}"
-      >
-        ${getWeatherIcon(this._weather.state, this._weather.day)}
-      </sci-fi-hexa-tile>
+      <a href="${this._config.weather.link}">
+        <sci-fi-hexa-tile
+          id="weather-tile"
+          active
+          state=${state}
+          class="state-${state}"
+        >
+          <div class="item-icon">
+            ${getWeatherIcon(this._weather.state, this._weather.day)}
+          </div>
+          <div class="item-name">${this._weather.name}</div>
+        </sci-fi-hexa-tile>
+      </a>
     `;
   }
 
   __getActiveTile(entity) {
     return html`
-      <sci-fi-hexa-tile
-        active
-        link=${entity.link}
-        state=${entity.state}
-        title=${entity.title}
-        class="state-${entity.state}"
-      >
-        ${getIcon(entity.icon)}
-      </sci-fi-hexa-tile>
+      <a href="${entity.link}">
+        <sci-fi-hexa-tile
+          active
+          state=${entity.state}
+          class="state-${entity.state}"
+        >
+          <div class="item-icon">${getIcon(entity.icon)}</div>
+          <div class="item-name">${entity.title}</div>
+        </sci-fi-hexa-tile>
+      </a>
     `;
   }
 

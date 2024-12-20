@@ -52,8 +52,11 @@ export default css`
     --hexa-width: var(--tile-width);
     --hexa-height: var(--tile-height);
   }
-  #weather-tile {
-    --margin-top-item-name: 0;
+  sci-fi-hexa-tile .item-name {
+    margin-top: 10px;
+  }
+  #weather-tile .item-name {
+    margin-top: 0;
   }
   .container .hexa-row sci-fi-hexa-tile svg {
     width: var(--icon-size);

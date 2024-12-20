@@ -17,7 +17,7 @@ export const config = {
       name: 'Ligths',
       state_on: ['on'],
       state_error: null,
-      link: '#',
+      link: '/',
     },
     {
       standalone: false,
@@ -28,7 +28,7 @@ export const config = {
       name: 'Radiators',
       state_on: ['on', 'auto'],
       state_error: null,
-      link: '#',
+      link: '/',
     },
     {
       standalone: true,
@@ -38,7 +38,7 @@ export const config = {
       name: 'Stove',
       state_on: ['heat', 'cool'],
       state_error: null,
-      link: '#',
+      link: '/',
     },
     {
       standalone: true,
@@ -48,7 +48,7 @@ export const config = {
       name: 'Vacuum',
       state_on: ['cleaning', 'returning'],
       state_error: 'error',
-      link: '#',
+      link: '/',
     },
   ],
 };

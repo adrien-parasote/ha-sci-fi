@@ -47,9 +47,6 @@ export class SciFiHexaTile extends LitElement {
           transform: translate(-50%, -50%);
           text-align: center;
         }
-        .item .item-content .item-name {
-          margin-top: var(--margin-top-item-name, 10px);
-        }
         .item-on svg .border {
           stroke: var(--primary-light-color);
         }
@@ -75,18 +72,14 @@ export class SciFiHexaTile extends LitElement {
   static get properties() {
     return {
       active: {type: Boolean},
-      link: {type: String},
       state: {type: String},
-      title: {type: String},
     };
   }
 
   constructor() {
     super();
     this.active = this.active ? this.active : false;
-    this.link = this.link ? this.link : '#';
     this.state = this.state ? this.state : 'off';
-    this.title = this.title ? this.title : '';
   }
 
   render() {
@@ -103,19 +96,16 @@ export class SciFiHexaTile extends LitElement {
   }
 
   __getActiveTile() {
-    return html` <a href="${this.link}">
-      <div class="hexa item item-${this.state}">
-        <div class="item-content">
-          <div class="item-icon"><slot></slot></div>
-          <div class="item-name">${this.title}</div>
-        </div>
-        <svg viewBox="0 0 ${SVG_VIEWBOX_WIDTH} ${SVG_VIEWBOX_HEIGHT}">
-          <path class="background" d="${BG_HEXA_INACTIVE}" />
-          <path class="border" d="${BG_HEXA_ACTIVE_BORDER}" />
-          <path class="background" d="${BG_HEXA_ACTIVE_BACKGROUND}" />
-        </svg>
+    return html` <div class="hexa item item-${this.state}">
+      <div class="item-content">
+        <slot></slot>
       </div>
-    </a>`;
+      <svg viewBox="0 0 ${SVG_VIEWBOX_WIDTH} ${SVG_VIEWBOX_HEIGHT}">
+        <path class="background" d="${BG_HEXA_INACTIVE}" />
+        <path class="border" d="${BG_HEXA_ACTIVE_BORDER}" />
+        <path class="background" d="${BG_HEXA_ACTIVE_BACKGROUND}" />
+      </svg>
+    </div>`;
   }
 }
 

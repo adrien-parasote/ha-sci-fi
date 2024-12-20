@@ -62,13 +62,13 @@ export const HOUSE = [
         id: 'corridor_ground',
         icon: 'mdi:door-sliding',
         name: 'Corridor',
-        devices: [LightEntity, LightEntity, ClimateEntity],
+        devices: [LightEntity, LightEntity],
       },
       {
         id: 'kitchen',
         icon: 'mdi:fridge-outline',
         name: 'Kitchen',
-        devices: [LightEntity],
+        devices: [LightEntity, ClimateEntity],
       },
       {
         id: 'dining_room',

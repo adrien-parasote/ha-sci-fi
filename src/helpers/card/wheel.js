@@ -41,8 +41,8 @@ export class SciFiWheel extends LitElement {
           display: none;
         }
         .slider .slider-item .svg-container {
-          width: var(--icon-size-normal);
-          height: var(--icon-size-normal);
+          width: var(--icon-size, var(--icon-size-normal));
+          height: var(--icon-size, var(--icon-size-normal));
           fill: var(--secondary-light-color);
           margin-bottom: 5px;
         }
@@ -53,12 +53,14 @@ export class SciFiWheel extends LitElement {
     ];
   }
   _selectedId; // private
+  _items;
 
   static get properties() {
     return {
       items: {type: Array},
       selectedId: {type: String, attribute: 'selected-id'},
       state: {type: String},
+      showName: {type: Boolean, attribute: 'show-name'},
     };
   }
 
@@ -67,6 +69,14 @@ export class SciFiWheel extends LitElement {
     this.items = this.items ? this.items : [];
     this.selectedId = this.selectedId ? this.selectedId : null;
     this.state = this.state ? this.state : 'off';
+    this.showName = this.showName ? this.showName : false;
+  }
+
+  set items(items) {
+    this._items = [];
+    items.map((el) => {
+      if (!el.inactive) this._items.push(el);
+    });
   }
 
   render() {
@@ -92,7 +102,7 @@ export class SciFiWheel extends LitElement {
   }
 
   __buildSliderContent() {
-    return this.items.map((el) => {
+    return this._items.map((el) => {
       return html`
         <div
           class="slider-item ${el.id == this.selectedId
@@ -100,22 +110,24 @@ export class SciFiWheel extends LitElement {
             : 'hide'} ${this.state}"
         >
           ${getIcon(el.icon)}
-          <div>${el.name}</div>
+          ${this.showName ? html`<div>${el.name}</div>` : ''}
         </div>
       `;
     });
   }
 
   __findNext(direction) {
-    let item_id = this.items.findIndex((e) => e.id === this.selectedId);
+    let item_id = this._items.findIndex(
+      (e) => e.id === this.selectedId && e.inactive === false
+    );
     if (direction) {
       if (direction == 'up') {
-        item_id = item_id + 1 >= this.items.length ? 0 : item_id + 1;
+        item_id = item_id + 1 >= this._items.length ? 0 : item_id + 1;
       } else {
-        item_id = item_id - 1 < 0 ? this.items.length - 1 : item_id - 1;
+        item_id = item_id - 1 < 0 ? this._items.length - 1 : item_id - 1;
       }
     }
-    return this.items[item_id];
+    return this._items[item_id];
   }
 
   __click(e, direction) {

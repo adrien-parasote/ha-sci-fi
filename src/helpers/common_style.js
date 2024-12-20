@@ -28,9 +28,24 @@ export default css`
 
     --border-width: 1px;
     --border-radius: 5px;
+    --corner-size: 10px;
 
     font-family: 'Titillium Web', sans-serif;
     color: var(--primary-color);
     display: flex;
+  }
+  .card-corner {
+    border-width: var(--border-width);
+    border-style: solid;
+    border-color: var(--primary-light-color);
+    padding: 10px;
+    mask:
+      conic-gradient(#000 0 0) content-box,
+      conic-gradient(
+          at var(--corner-size) var(--corner-size),
+          #0000 75%,
+          #000 0
+        )
+        0 0 / calc(100% - var(--corner-size)) calc(100% - var(--corner-size));
   }
 `;

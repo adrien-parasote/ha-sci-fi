@@ -93,7 +93,7 @@ export const HOUSE = [
   {
     id: 'floor_1',
     icon: 'mdi:home-floor-1',
-    level: 0,
+    level: 1,
     name: 'Floor 1',
     areas: [
       {

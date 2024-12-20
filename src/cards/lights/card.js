@@ -19,7 +19,7 @@ export class SciFiLights extends LitElement {
       _config: {type: Object},
       _floors: {type: Object},
       _areas: {type: Object},
-      _selected_floor: {type: String},
+      _selected_floor_id: {type: String},
     };
   }
 
@@ -49,7 +49,7 @@ export class SciFiLights extends LitElement {
       this.hass = this._hass;
     }
     // Setup attribute
-    this._selected_floor = this._config.floors.first_to_render;
+    this._selected_floor_id = this._config.floors.first_to_render;
     // Extract floors & areas
     const data = this.__getAreasFloors();
     if (!this._areas || !isEqual(data[0], this._areas)) {
@@ -73,46 +73,70 @@ export class SciFiLights extends LitElement {
     let floors = {};
     let areas = {};
     Object.values(this._hass.areas).map((area) => {
-      if (
-        !this._config.floors.to_exclude.includes(area.floor_id) &&
-        !this._config.areas.to_exclude.includes(area.area_id)
-      ) {
-        if (!areas[area.floor_id]) areas[area.floor_id] = [];
-        if (!floors[area.floor_id]) {
-          floors[area.floor_id] = {
-            id: area.floor_id,
-            icon: this._hass.floors[area.floor_id].icon,
-            level: this._hass.floors[area.floor_id].level,
-            name: this._hass.floors[area.floor_id].name,
-          };
-        }
-        let room = {};
-        room[area.area_id] = {
-          name: area.name,
-          icon: area.icon,
-          id: area.area_id,
+      if (!areas[area.floor_id]) areas[area.floor_id] = [];
+      if (!floors[area.floor_id]) {
+        floors[area.floor_id] = {
+          id: area.floor_id,
+          icon: this._hass.floors[area.floor_id].icon,
+          level: this._hass.floors[area.floor_id].level,
+          name: this._hass.floors[area.floor_id].name,
+          inactive: this._config.floors.to_exclude.includes(area.floor_id),
         };
-        areas[area.floor_id].push(room);
       }
+      let room = {
+        name: area.name,
+        icon: area.icon,
+        id: area.area_id,
+        inactive: this._config.areas.to_exclude.includes(area.area_id),
+      };
+      areas[area.floor_id].push(room);
     });
     return [areas, floors];
   }
 
   render() {
     if (!this._hass || !this._config) return html``;
+
+    const floor_state = 'off';
+
     return html`
       <div class="container">
-        <div>Header</div>
-        <div>
+        <div class="header ${floor_state}">
           <sci-fi-wheel
             .items="${Object.values(this._floors)}"
-            selected-id="${this._selected_floor}"
-            state="on"
+            selected-id="${this._selected_floor_id}"
+            state="${floor_state}"
             @wheel-change=${this.__changeFocusFloor}
             @wheel-click=${this.__clickOnFloor}
           >
           </sci-fi-wheel>
+          <div class="separator">
+            <div class="circle"></div>
+            <div class="path"></div>
+            <div class="circle"></div>
+          </div>
+          <div class="card-corner floor-info">${this._displayFloorInfo()}</div>
         </div>
+        <div class="content"></div>
+      </div>
+    `;
+  }
+
+  _displayFloorInfo() {
+    const floor = this._floors[this._selected_floor_id];
+    const areas = this._areas[this._selected_floor_id];
+    const inactive = areas.filter((el) => {
+      return el.inactive;
+    }).length;
+    return html`
+      <div class="title">${floor.name} (level : ${floor.level})</div>
+      <div class="rooms">Rooms : ${areas.length} (${inactive} excluded)</div>
+      <div class="devices">
+        Lights (xx excluded):
+        <ul>
+          <li>On : todo</li>
+          <li>Off : todo</li>
+        </ul>
       </div>
     `;
   }
@@ -120,7 +144,7 @@ export class SciFiLights extends LitElement {
   __changeFocusFloor(e) {
     e.preventDefault();
     e.stopPropagation();
-    this._selected_floor = e.detail.id;
+    this._selected_floor_id = e.detail.id;
   }
 
   __clickOnFloor(e) {

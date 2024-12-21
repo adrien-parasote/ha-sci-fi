@@ -2,8 +2,12 @@ import {css} from 'lit';
 
 export default css`
   :host {
+    --wheel-hexa-width: 100px;
+    --area-hexa-width: 60px;
+
     background-color: black;
     height: 100%;
+    padding: 10px;
   }
   /******** COMMON *********/
   .container {
@@ -11,43 +15,50 @@ export default css`
     flex-direction: column;
     flex: 1;
   }
-  /******** DISPLAY HEADER *********/
-  .header {
-    display: flex;
-    flex-direction: row;
-    margin: 10px 10px 0 10px;
-    align-items: center;
+  sci-fi-wheel {
+    --hexa-width: var(--wheel-hexa-width);
   }
-  .header .separator {
-    margin: 0 5px;
+  .h-separator {
+    margin: 0 3px;
     display: flex;
     flex-direction: row;
     align-items: center;
   }
-  .header .path {
-    content: '';
-    border: var(--border-width) solid var(--secondary-bg-color);
-    width: 25px;
+  .h-separator.hide {
+    display: none;
   }
-  .header .circle {
-    width: 5px;
-    height: 5px;
+  .circle {
+    width: 6px;
+    height: 6px;
     border: var(--border-width) solid var(--secondary-bg-color);
     background: var(--primary-light-color);
     border-radius: 50%;
   }
-  .header .card-corner {
+  .circle.off {
+    background-color: var(--secondary-light-alpha-color);
+  }
+  .h-path {
+    content: '';
+    border: var(--border-width) solid var(--secondary-bg-color);
+    width: 25px;
+  }
+  .h-path.off {
+    border-color: var(--secondary-light-alpha-color);
+  }
+  .card-corner {
     width: 100%;
     height: fit-content;
     display: flex;
     flex-direction: column;
   }
-  .header.off .circle {
-    background-color: var(--secondary-light-alpha-color);
-  }
-  .header.off .path,
-  .header.off .card-corner {
+  .card-corner.off {
     border-color: var(--secondary-light-alpha-color);
+  }
+  /******** DISPLAY HEADER *********/
+  .header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   }
   .header sci-fi-wheel {
     --icon-size: var(--icon-size-title);
@@ -63,10 +74,10 @@ export default css`
     font-weight: bold;
     text-align: center;
   }
-  .header.off .floor-info {
+  .header .floor-info.off {
     color: var(--secondary-light-color);
   }
-  .header.off .floor-info .title {
+  .header .floor-info.off .title {
     border-bottom-color: var(--secondary-light-alpha-color);
   }
   .header .floor-info .rooms,
@@ -80,9 +91,42 @@ export default css`
   }
   /******** DISPLAY CONTENT *********/
   .content {
-    align-items: center;
-    justify-content: center;
-    height: 100%;
     display: flex;
+    flex-direction: row;
+  }
+  .content .left {
+    display: flex;
+    flex-direction: column;
+    margin-left: calc(var(--wheel-hexa-width) / 2);
+    border-left: calc(var(--border-width) * 2) solid var(--secondary-bg-color);
+    padding-left: 10px;
+    position: relative;
+    margin-top: 5px;
+  }
+  .content .left .left-circle {
+    position: absolute;
+    top: -6px;
+    left: -5px;
+  }
+  .content .left .row {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: calc(var(--area-hexa-width) * -0.38);
+  }
+  .content .left .row sci-fi-hexa-tile {
+    --hexa-width: var(--area-hexa-width);
+  }
+  .content .left .row sci-fi-hexa-tile .item-icon svg {
+    width: var(--icon-size-title);
+  }
+  .content .left .row sci-fi-hexa-tile[active] .item-icon svg {
+    fill: var(--primary-light-color);
+  }
+  .content .left .row sci-fi-hexa-tile[active].off .item-icon svg {
+    fill: var(--secondary-light-alpha-color);
+  }
+  .content .right {
+    height: 100%;
+    flex: 1;
   }
 `;

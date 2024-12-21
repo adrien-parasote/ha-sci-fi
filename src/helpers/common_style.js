@@ -26,6 +26,9 @@ export default css`
     --icon-size-small: 20px;
     --icon-size-xsmall: 15px;
 
+    --tile-width: 155px;
+    --tile-height: calc(var(--tile-width) * 1.1547);
+
     --border-width: 1px;
     --border-radius: 5px;
     --corner-size: 10px;

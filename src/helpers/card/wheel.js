@@ -11,7 +11,7 @@ export class SciFiWheel extends LitElement {
       css`
         :host {
           position: relative;
-          --width: 100px;
+          --width: var(--hexa-width, 100px);
         }
         .container sci-fi-hexa-tile {
           --hexa-width: var(--width);

@@ -5,5 +5,6 @@ export const config = {
   },
   areas: {
     to_exclude: ['kitchen'],
+    first_to_render: 'parental_bedroom',
   },
 };

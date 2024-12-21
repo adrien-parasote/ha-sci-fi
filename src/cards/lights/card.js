@@ -3,6 +3,7 @@ import {isEqual} from 'lodash-es';
 
 import '../../helpers/card/wheel.js';
 import common_style from '../../helpers/common_style.js';
+import {getIcon} from '../../helpers/icons/icons.js';
 import {PACKAGE} from './const.js';
 import {SciFiLightsEditor} from './editor.js';
 import style from './style.js';
@@ -20,6 +21,7 @@ export class SciFiLights extends LitElement {
       _floors: {type: Object},
       _areas: {type: Object},
       _selected_floor_id: {type: String},
+      _selected_area_id: {type: String},
     };
   }
 
@@ -41,6 +43,10 @@ export class SciFiLights extends LitElement {
 
     if (!this._config.areas)
       throw new Error('You need to specify an "areas" config entry');
+    if (!this._config.areas.first_to_render)
+      throw new Error(
+        'You need to specify the first area you want to display in the screen'
+      );
     if (!this._config.areas.to_exclude) this._config.areas.to_exclude = []; // TODO check if working
 
     // call set hass() to immediately adjust to a changed entity
@@ -48,8 +54,6 @@ export class SciFiLights extends LitElement {
     if (this._hass) {
       this.hass = this._hass;
     }
-    // Setup attribute
-    this._selected_floor_id = this._config.floors.first_to_render;
     // Extract floors & areas
     const data = this.__getAreasFloors();
     if (!this._areas || !isEqual(data[0], this._areas)) {
@@ -58,6 +62,9 @@ export class SciFiLights extends LitElement {
     if (!this._floors || !isEqual(data[1], this._floors)) {
       this._floors = data[1];
     }
+    // Setup attribute
+    this._selected_floor_id = this._config.floors.first_to_render;
+    this._selected_area_id = this._config.areas.first_to_render;
   }
 
   getCardSize() {
@@ -110,19 +117,30 @@ export class SciFiLights extends LitElement {
             @wheel-click=${this.__clickOnFloor}
           >
           </sci-fi-wheel>
-          <div class="separator">
-            <div class="circle"></div>
-            <div class="path"></div>
-            <div class="circle"></div>
+          <div class="h-separator">
+            <div class="circle ${floor_state}"></div>
+            <div class="h-path ${floor_state}"></div>
+            <div class="circle ${floor_state}"></div>
           </div>
-          <div class="card-corner floor-info">${this._displayFloorInfo()}</div>
+          <div class="card-corner floor-info ${floor_state}">
+            ${this.__displayFloorInfo()}
+          </div>
         </div>
-        <div class="content"></div>
+        <div class="content">
+          <div class="left">
+            <div class="circle off left-circle"></div>
+            <!-- todo gestion area state -->
+            ${this.__displayAreas()}
+          </div>
+          <div class="card-corner right off">
+            <!-- todo gestion area state -->
+          </div>
+        </div>
       </div>
     `;
   }
 
-  _displayFloorInfo() {
+  __displayFloorInfo() {
     const floor = this._floors[this._selected_floor_id];
     const areas = this._areas[this._selected_floor_id];
     const inactive = areas.filter((el) => {
@@ -141,10 +159,40 @@ export class SciFiLights extends LitElement {
     `;
   }
 
+  __displayAreas() {
+    return this._areas[this._selected_floor_id].map((area, id) => {
+      const area_state = 'off'; // TODO
+      const separator_visible =
+        this._selected_area_id == area.id ? 'show' : 'hide';
+      return html` <div
+        class="row"
+        style="margin-left: calc(var(--wheel-hexa-width) / 2 * ${id %
+        2} - 20px * ${id % 2});"
+      >
+        <sci-fi-hexa-tile active state="${area_state}" class="${area_state}">
+          <div class="item-icon">${getIcon(area.icon)}</div>
+        </sci-fi-hexa-tile>
+        <div class="h-separator ${separator_visible}">
+          <div class="circle ${area_state}"></div>
+          <div
+            class="h-path ${area_state} ${id % 2 ? '' : 'full'}"
+            style="width: calc((var(--wheel-hexa-width) / 2 - 10px) * ${id % 2
+              ? 0
+              : 1} + 15px);"
+          ></div>
+          <div class="circle ${area_state}"></div>
+        </div>
+      </div>`;
+    });
+  }
+
   __changeFocusFloor(e) {
     e.preventDefault();
     e.stopPropagation();
+    // Update selected floor
     this._selected_floor_id = e.detail.id;
+    // Select first area to render
+    this._selected_area_id = this._areas[this._selected_floor_id][0].id;
   }
 
   __clickOnFloor(e) {

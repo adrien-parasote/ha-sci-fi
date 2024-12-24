@@ -38,8 +38,7 @@ export default css`
     background-color: var(--secondary-light-alpha-color);
   }
   .h-path {
-    content: '';
-    border: var(--border-width) solid var(--secondary-bg-color);
+    border: var(--border-width) solid var(--primary-light-color);
     width: 25px;
   }
   .h-path.off {
@@ -81,15 +80,12 @@ export default css`
     border-bottom-color: var(--secondary-light-alpha-color);
   }
   .header .floor-info .rooms,
-  .header .floor-info .devices {
-    margin-left: 10px;
-    font-size: var(--font-size-small);
-  }
-  ul {
+  .header .floor-info ul {
     margin: 0;
+    font-size: var(--font-size-small);
     list-style-type: disclosure-closed;
   }
-  /******** DISPLAY CONTENT *********/
+  /******** DISPLAY MENU *********/
   .content {
     display: flex;
     flex-direction: row;
@@ -98,13 +94,13 @@ export default css`
     display: flex;
     flex-direction: column;
     margin-left: calc(var(--wheel-hexa-width) / 2);
-    border-left: calc(var(--border-width) * 2) solid var(--secondary-bg-color);
+    border-left: calc(var(--border-width) * 2) solid var(--primary-light-color);
     padding-left: 10px;
     position: relative;
     margin-top: 5px;
   }
-  .content .left.on {
-    border-left-color: var(--primary-light-color);
+  .content .left.off {
+    border-left-color: var(--secondary-light-alpha-color);
   }
   .content .left .left-circle {
     position: absolute;
@@ -131,5 +127,75 @@ export default css`
   .content .right {
     height: 100%;
     flex: 1;
+  }
+  /******** DISPLAY AREA CONTENT *********/
+  .content .area-info {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    color: var(--primary-light-color);
+    height: 100%;
+  }
+  .content .area-info .title {
+    font-size: var(--font-size-normal);
+    border-bottom: var(--border-width) solid var(--primary-light-color);
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
+  }
+  .content .area-info .title .power {
+    float: right;
+  }
+  .content .area-info .title .power svg {
+    width: var(--icon-size-small);
+    height: var(--icon-size-small);
+    fill: var(--primary-light-color);
+  }
+  .content .area-info .title .power svg:hover {
+    cursor: pointer;
+  }
+  .content .area-info.off .title .power svg {
+    fill: var(--secondary-light-color);
+  }
+  .content .area-info.off {
+    color: var(--secondary-light-color);
+  }
+  .content .area-info.off .title {
+    border-bottom-color: var(--secondary-light-alpha-color);
+  }
+  .content .area-info .lights {
+    align-self: center;
+    display: grid;
+    grid-template-columns: var(--area-hexa-width) var(--area-hexa-width);
+    gap: 10px;
+    padding: 0 10px;
+  }
+  .content .area-info .lights .light {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    font-size: var(--font-size-small);
+    padding: 5px;
+    border-radius: var(--border-radius);
+    border: var(--border-width) solid var(--primary-light-color);
+    color: var(--primary-light-color);
+  }
+  .content .area-info .lights .light:hover {
+    cursor: pointer;
+  }
+  .content .area-info .lights .light.off {
+    border-color: var(--secondary-light-alpha-color);
+    color: var(--secondary-light-color);
+  }
+  .content .area-info .lights .light svg {
+    width: var(--icon-size-normal);
+    height: var(--icon-size-normal);
+    fill: var(--primary-light-color);
+  }
+  .content .area-info .lights .light.off svg {
+    fill: var(--secondary-light-color);
   }
 `;

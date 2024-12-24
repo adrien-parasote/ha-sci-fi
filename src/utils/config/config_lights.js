@@ -7,4 +7,5 @@ export const config = {
     to_exclude: ['kitchen'],
     first_to_render: 'parental_bedroom',
   },
+  entities: {},
 };

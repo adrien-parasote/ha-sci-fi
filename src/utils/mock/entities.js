@@ -81,7 +81,7 @@ export class LightEntity extends EntityState {
       supported_color_modes: ['onoff'],
       friendly_name: friendly_name,
       supported_features: 0,
-      icon: 'mdi:lightbulb-group',
+      icon: 'mdi:lightbulb-on-outline',
     };
     super(
       nameToId(LightEntity.kind, friendly_name),

@@ -103,6 +103,9 @@ export default css`
     position: relative;
     margin-top: 5px;
   }
+  .content .left.on {
+    border-left-color: var(--primary-light-color);
+  }
   .content .left .left-circle {
     position: absolute;
     top: -6px;

@@ -54,8 +54,10 @@ export class SciFiLights extends LitElement {
     if (this._hass) {
       this.hass = this._hass;
     }
+    // Extract entities to watch
+    const map_area_entities = this.__getEntitiesPerAreas();
     // Extract floors & areas
-    const data = this.__getAreasFloors();
+    const data = this.__getAreasFloors(map_area_entities);
     if (!this._areas || !isEqual(data[0], this._areas)) {
       this._areas = data[0];
     }
@@ -76,7 +78,7 @@ export class SciFiLights extends LitElement {
     if (!this._config) return; // Can't assume setConfig is called before hass is set
   }
 
-  __getAreasFloors() {
+  __getAreasFloors(map_area_entities) {
     let floors = {};
     let areas = {};
     Object.values(this._hass.areas).map((area) => {
@@ -87,6 +89,7 @@ export class SciFiLights extends LitElement {
           icon: this._hass.floors[area.floor_id].icon,
           level: this._hass.floors[area.floor_id].level,
           name: this._hass.floors[area.floor_id].name,
+          state: "off",
           inactive: this._config.floors.to_exclude.includes(area.floor_id),
         };
       }
@@ -94,18 +97,42 @@ export class SciFiLights extends LitElement {
         name: area.name,
         icon: area.icon,
         id: area.area_id,
+        lights: map_area_entities[area.area_id],
+        state: map_area_entities[area.area_id].map(entity_id => this._hass.states[entity_id].state).includes("on")? "on" : "off",
         inactive: this._config.areas.to_exclude.includes(area.area_id),
       };
       areas[area.floor_id].push(room);
+    
+      if(room.state == "on") floors[area.floor_id].state = "on";
     });
     return [areas, floors];
+  }
+
+  __getEntitiesPerAreas() {
+    const map_devices_entities = Object.keys(this._hass.entities)
+      .filter((key) => key.startsWith('light.'))
+      .reduce((cur, key) => {
+        const d = {};
+        d[this._hass.entities[key].device_id] =
+          this._hass.entities[key].entity_id;
+        return Object.assign({}, cur, d);
+      }, {});
+    let devices = {};
+    Object.keys(this._hass.devices)
+      .filter((key) => Object.keys(map_devices_entities).includes(key))
+      .map((key) => {
+        const area_id = this._hass.devices[key].area_id;
+        if (!devices[area_id]) devices[area_id] = [];
+        devices[area_id].push(map_devices_entities[key]);
+      });
+
+    return devices;
   }
 
   render() {
     if (!this._hass || !this._config) return html``;
 
-    const floor_state = 'off';
-
+    const floor_state = this._floors[this._selected_floor_id].state;
     return html`
       <div class="container">
         <div class="header ${floor_state}">
@@ -127,8 +154,8 @@ export class SciFiLights extends LitElement {
           </div>
         </div>
         <div class="content">
-          <div class="left">
-            <div class="circle off left-circle"></div>
+          <div class="left ${floor_state}">
+            <div class="circle ${floor_state} left-circle"></div>
             <!-- todo gestion area state -->
             ${this.__displayAreas()}
           </div>
@@ -161,7 +188,7 @@ export class SciFiLights extends LitElement {
 
   __displayAreas() {
     return this._areas[this._selected_floor_id].map((area, id) => {
-      const area_state = 'off'; // TODO
+      const area_state = area.state;
       const separator_visible =
         this._selected_area_id == area.id ? 'show' : 'hide';
       return html` <div

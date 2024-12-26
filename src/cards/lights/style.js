@@ -144,6 +144,12 @@ export default css`
     font-weight: bold;
     text-align: center;
     width: 100%;
+    min-height: 23px;
+  }
+  .content .area-info .no-light {
+    width: 100%;
+    text-align: center;
+    font-size: var(--font-size-normal);
   }
   .content .area-info .title .power {
     float: right;

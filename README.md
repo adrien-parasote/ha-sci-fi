@@ -4,7 +4,7 @@ HA sci-fi cards for personal dashboard
 ## Available components
 ### Sci-Fi Hexa-Tiles card
 
-**/!\ currently only design for Smartphone and tu be used with  HA single panel /!\\**
+**/!\ currently only design for Smartphone and tu be used with HA single panel /!\\**
 
 **Content:**
 - Show current connected person

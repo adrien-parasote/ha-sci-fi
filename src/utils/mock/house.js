@@ -74,7 +74,7 @@ export const HOUSE = [
         id: 'dining_room',
         icon: 'mdi:table-chair',
         name: 'Dining room',
-        devices: [LightEntity, LightEntity, ClimateEntity],
+        devices: [ClimateEntity],
       },
       {
         id: 'living_room',

@@ -3,12 +3,15 @@ import {isEqual} from 'lodash-es';
 
 import '../../helpers/card/wheel.js';
 import common_style from '../../helpers/common_style.js';
+import {
+  ENTITY_KIND_LIGHT,
+  STATE_LIGHT_ON,
+} from '../../helpers/entities/const.js';
+import {House} from '../../helpers/entities/house.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 import {PACKAGE} from './const.js';
 import {SciFiLightsEditor} from './editor.js';
 import style from './style.js';
-import { House } from '../../helpers/entities/house.js';
-import { ENTITY_KIND_LIGHT, STATE_LIGHT_ON } from '../../helpers/entities/const.js';
 
 export class SciFiLights extends LitElement {
   static get styles() {
@@ -82,8 +85,7 @@ export class SciFiLights extends LitElement {
 
     // Build house
     const house = new House(hass);
-    if (!this._house || !isEqual(house, this._house))
-      this._house = house;
+    if (!this._house || !isEqual(house, this._house)) this._house = house;
   }
 
   render() {
@@ -91,19 +93,12 @@ export class SciFiLights extends LitElement {
     return html`
       <div class="container">
         <div class="floors">${this.__displayHouseFloors()}</div>
-        <div class="floor-content">
-          ${this.__displayFloorInfo()}
-        </div>
+        <div class="floor-content">${this.__displayFloorInfo()}</div>
         <div class="areas">
-          ${this.__displayAreas()}
-          ${this.__displayAreaInfo()}
+          ${this.__displayAreas()} ${this.__displayAreaInfo()}
         </div>
       </div>
     `;
-
-
-
-
 
     const floor_state = this._floors[this._selected_floor_id].state;
     const active_area = this.__getCurrentArea();
@@ -140,36 +135,49 @@ export class SciFiLights extends LitElement {
     `;
   }
 
-  __displayHouseFloors(){
+  __displayHouseFloors() {
     return this._house.floors.map((floor) => {
       return floor.render(ENTITY_KIND_LIGHT, this._active_floor_id == floor.id);
-    })
+    });
   }
 
   __displayFloorInfo() {
     const floor = this._house.getFloor(this._active_floor_id);
     const active_floor = floor.isActive(ENTITY_KIND_LIGHT);
     const entities = floor.getEntitiesByKind(ENTITY_KIND_LIGHT);
-    const entity_on_count = entities.filter((entity) => entity.state == STATE_LIGHT_ON).length
-    return html`
-    <div class="info ${active_floor ? 'on' : 'off'}">
-      <div class="title">${floor.name} (level : ${floor.level}) ${this.__displayPowerBtn(active_floor)}</div>
+    const entity_on_count = entities.filter(
+      (entity) => entity.state == STATE_LIGHT_ON
+    ).length;
+    return html` <div class="info ${active_floor ? 'on' : 'off'}">
+      <div class="title">
+        ${floor.name} (level : ${floor.level})
+        ${this.__displayPowerBtn(active_floor)}
+      </div>
       <div class="floor-lights">
-        <div class="on">${getIcon(this._config.default_icons.on)} x${entity_on_count}</div>
-        <div class="off">${getIcon(this._config.default_icons.off)} x${entities.length - entity_on_count}</div>
+        <div class="on">
+          ${getIcon(this._config.default_icons.on)} x${entity_on_count}
+        </div>
+        <div class="off">
+          ${getIcon(this._config.default_icons.off)}
+          x${entities.length - entity_on_count}
+        </div>
       </div>
     </div>`;
   }
 
   __displayAreas() {
     return html`<div class="area-list">
-        ${this._house.getFloor(this._active_floor_id).getAreas().map((area, idx) => {
+      ${this._house
+        .getFloor(this._active_floor_id)
+        .getAreas()
+        .map((area, idx) => {
           const area_state = area.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off';
-          const separator_visible = this._active_area_id == area.id ? 'show' : 'hide';
-          return html`
-          <div
+          const separator_visible =
+            this._active_area_id == area.id ? 'show' : 'hide';
+          return html` <div
             class="row"
-            style="margin-left: calc(var(--default-hexa-width) / 2 * ${idx %2});"
+            style="margin-left: calc(var(--default-hexa-width) / 2 * ${idx %
+            2});"
           >
             ${area.render(ENTITY_KIND_LIGHT)}
             <div class="h-separator ${separator_visible}">
@@ -180,37 +188,36 @@ export class SciFiLights extends LitElement {
               ></div>
               <div class="circle ${area_state}"></div>
             </div>
-          </div>`
+          </div>`;
         })}
-      </div>`;
+    </div>`;
   }
 
-  __displayAreaInfo(){
-    const area = this._house.getArea(this._active_floor_id, this._active_area_id);
+  __displayAreaInfo() {
+    const area = this._house.getArea(
+      this._active_floor_id,
+      this._active_area_id
+    );
     const active = area.isActive(ENTITY_KIND_LIGHT);
     return html`
       <div class="card-corner area-content ${active ? 'on' : 'off'}">
-        <div class="title">
-          ${area.name} ${this.__displayPowerBtn(active)}
-        </div>
+        <div class="title">${area.name} ${this.__displayPowerBtn(active)}</div>
         ${this.__displayAreaLights(area, active)}
       </div>
     `;
   }
 
-  __displayPowerBtn(active){
-    if(!active) return;
+  __displayPowerBtn(active) {
+    if (!active) return;
     return html`<div class="power">${getIcon('mdi:power-standby')}</div>`;
   }
-  
+
   __displayAreaLights(area, active) {
-    if (!active)return html`<div class="no-light">No light to display</div>`;
+    if (!active) return html`<div class="no-light">No light to display</div>`;
     return html` <div class="lights">
       ${area.getEntities(ENTITY_KIND_LIGHT).map((light) => {
         return html`
-          <div
-            class="light ${light.state}"
-          >
+          <div class="light ${light.state}">
             ${this.__getLightIcon(light)}
             <div>${light.friendly_name}</div>
           </div>

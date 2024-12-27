@@ -1,9 +1,8 @@
 import {html} from 'lit';
 
-import {STATE_LIGHT_OFF, STATE_LIGHT_ON, ENTITY_KIND_LIGHT} from './const.js'
+import {ENTITY_KIND_LIGHT, STATE_LIGHT_OFF, STATE_LIGHT_ON} from './const.js';
 
 export class LightEntity {
-
   static kind = ENTITY_KIND_LIGHT;
 
   constructor(entity_id, state, icon, friendly_name) {
@@ -13,11 +12,11 @@ export class LightEntity {
     this.friendly_name = friendly_name ? friendly_name : '';
   }
 
-  get active(){
+  get active() {
     return this.state == STATE_LIGHT_ON;
   }
 
-  get kind(){
+  get kind() {
     return LightEntity.kind;
   }
 }

@@ -16,7 +16,7 @@ export const HOUSE = [
         id: 'cellar',
         icon: 'mdi:storage-tank-outline',
         name: 'Cellar',
-        devices: [LightEntity],
+        devices: [],
       },
       {
         id: 'storage',

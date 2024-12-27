@@ -82,7 +82,7 @@ export class SciFiWheel extends LitElement {
   render() {
     return html`
       <div class="container">
-        <sci-fi-hexa-tile active state=${this.state}>
+        <sci-fi-hexa-tile active-tile state=${this.state}>
           <sci-fi-button
             class="up"
             icon="mdi:menu-up-outline"

@@ -71,19 +71,19 @@ export class SciFiHexaTile extends LitElement {
 
   static get properties() {
     return {
-      active: {type: Boolean},
+      activeTile: {type: Boolean, attribute: 'active-tile'},
       state: {type: String},
     };
   }
 
   constructor() {
     super();
-    this.active = this.active ? this.active : false;
+    this.activeTile = this.activeTile ? this.activeTile : false;
     this.state = this.state ? this.state : 'off';
   }
 
   render() {
-    if (!this.active) return this.__getInactiveTile();
+    if (!this.activeTile) return this.__getInactiveTile();
     return this.__getActiveTile();
   }
 

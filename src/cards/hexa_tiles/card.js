@@ -290,7 +290,7 @@ export class SciFiHexaTiles extends LitElement {
       <a href="${this._config.weather.link}">
         <sci-fi-hexa-tile
           id="weather-tile"
-          active
+          active-tile
           state=${state}
           class="state-${state}"
         >
@@ -307,7 +307,7 @@ export class SciFiHexaTiles extends LitElement {
     return html`
       <a href="${entity.link}">
         <sci-fi-hexa-tile
-          active
+          active-tile
           state=${entity.state}
           class="state-${entity.state}"
         >

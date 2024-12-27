@@ -61,13 +61,13 @@ export default css`
   .container .hexa-row sci-fi-hexa-tile svg {
     width: var(--icon-size);
   }
-  .container .hexa-row sci-fi-hexa-tile[active] svg {
+  .container .hexa-row sci-fi-hexa-tile[active-tile] svg {
     fill: var(--primary-light-color);
   }
-  .container .hexa-row sci-fi-hexa-tile[active].state-off svg {
+  .container .hexa-row sci-fi-hexa-tile[active-tile].state-off svg {
     fill: var(--secondary-light-alpha-color);
   }
-  .container .hexa-row sci-fi-hexa-tile[active].state-error svg {
+  .container .hexa-row sci-fi-hexa-tile[active-tile].state-error svg {
     fill: var(--primary-error-color);
   }
 `;

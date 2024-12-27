@@ -7,6 +7,8 @@ import {getIcon} from '../../helpers/icons/icons.js';
 import {PACKAGE} from './const.js';
 import {SciFiLightsEditor} from './editor.js';
 import style from './style.js';
+import { House } from '../../helpers/entities/house.js';
+import { ENTITY_KIND_LIGHT, STATE_LIGHT_ON } from '../../helpers/entities/const.js';
 
 export class SciFiLights extends LitElement {
   static get styles() {
@@ -18,11 +20,9 @@ export class SciFiLights extends LitElement {
   static get properties() {
     return {
       _config: {type: Object},
-      _floors: {type: Object}, // Floors object to display
-      _areas: {type: Object}, // Areas object to display
-      _selected_floor_id: {type: String}, // selected floor pointer
-      _selected_area_id: {type: String}, // selected area pointer
-      _current_states: {type: Array}, // Force render pointer
+      _house: {type: Object},
+      _active_floor_id: {type: String}, // selected floor pointer
+      _active_area_id: {type: String}, // selected area pointer
     };
   }
 
@@ -61,8 +61,8 @@ export class SciFiLights extends LitElement {
     this._config = this.__validateConfig(JSON.parse(JSON.stringify(config)));
 
     // Setup first time attribute
-    this._selected_floor_id = this._config.floors.first_to_render;
-    this._selected_area_id = this._config.areas.first_to_render;
+    this._active_floor_id = this._config.floors.first_to_render;
+    this._active_area_id = this._config.areas.first_to_render;
 
     // call set hass() to immediately adjust to a changed entity
     // while editing the entity in the card editor
@@ -80,101 +80,31 @@ export class SciFiLights extends LitElement {
 
     if (!this._config) return; // Can't assume setConfig is called before hass is set
 
-    // Extract entities to watch
-    const map_area_entities = this.__getEntitiesPerAreas(hass);
-    // Extract floors & areas
-    const data = this.__getAreasFloors(map_area_entities, hass);
-    if (!this._areas || !isEqual(data.areas, this._areas))
-      this._areas = data['areas'];
-    if (!this._floors || !isEqual(data.floors, this._floors))
-      this._floors = data['floors'];
-
-    // Update card on state update
-    const current_states = this.__getLightState(
-      map_area_entities[this._selected_area_id],
-      hass
-    );
-    if (!this._current_states || !isEqual(current_states, this._current_states))
-      this._current_states = current_states;
-  }
-
-  __getLightState(lights, hass) {
-    let states = [];
-    if (lights)
-      lights.map((light) => {
-        states.push(hass.states[light].state);
-      });
-    return states;
-  }
-
-  __getAreasFloors(map_area_entities, hass) {
-    let floors = {};
-    let areas = {};
-    Object.values(hass.areas).map((area) => {
-      if (!areas[area.floor_id]) areas[area.floor_id] = [];
-      if (!floors[area.floor_id]) {
-        floors[area.floor_id] = {
-          id: area.floor_id,
-          icon: hass.floors[area.floor_id].icon,
-          level: hass.floors[area.floor_id].level,
-          name: hass.floors[area.floor_id].name,
-          state: 'off',
-          inactive: this._config.floors.to_exclude.includes(area.floor_id),
-        };
-      }
-      // Case of area doesn't have lights
-      let area_state = 'off';
-      if (map_area_entities[area.area_id]) {
-        area_state = map_area_entities[area.area_id]
-          .map((entity_id) => this._hass.states[entity_id].state)
-          .includes('on')
-          ? 'on'
-          : 'off';
-      }
-      let room = {
-        name: area.name,
-        icon: area.icon,
-        id: area.area_id,
-        lights: map_area_entities[area.area_id]
-          ? map_area_entities[area.area_id]
-          : [],
-        state: area_state,
-        inactive: this._config.areas.to_exclude.includes(area.area_id),
-      };
-      areas[area.floor_id].push(room);
-
-      if (room.state == 'on') floors[area.floor_id].state = 'on';
-    });
-    return {areas: areas, floors: floors};
-  }
-
-  __getEntitiesPerAreas(hass) {
-    const map_devices_entities = Object.keys(hass.entities)
-      .filter((key) => key.startsWith('light.'))
-      .reduce((cur, key) => {
-        const d = {};
-        d[hass.entities[key].device_id] = hass.entities[key].entity_id;
-        return Object.assign({}, cur, d);
-      }, {});
-    let devices = {};
-    Object.keys(hass.devices)
-      .filter((key) => Object.keys(map_devices_entities).includes(key))
-      .map((key) => {
-        const area_id = hass.devices[key].area_id;
-        if (!devices[area_id]) devices[area_id] = [];
-        devices[area_id].push(map_devices_entities[key]);
-      });
-    return devices;
-  }
-
-  __getCurrentArea() {
-    return this._areas[this._selected_floor_id].filter(
-      (el) => el.id == this._selected_area_id
-    )[0];
+    // Build house
+    const house = new House(hass);
+    if (!this._house || !isEqual(house, this._house))
+      this._house = house;
   }
 
   render() {
     if (!this._hass || !this._config) return html``;
+    return html`
+      <div class="container">
+        <div class="floors">${this.__displayHouseFloors()}</div>
+        <div class="floor-content">
+          ${this.__displayFloorInfo()}
+        </div>
+        <div class="areas">
+          ${this.__displayAreas()}
+          ${this.__displayAreaInfo()}
+        </div>
+      </div>
+    `;
+
+
+
+
+
     const floor_state = this._floors[this._selected_floor_id].state;
     const active_area = this.__getCurrentArea();
     return html`
@@ -210,84 +140,79 @@ export class SciFiLights extends LitElement {
     `;
   }
 
+  __displayHouseFloors(){
+    return this._house.floors.map((floor) => {
+      return floor.render(ENTITY_KIND_LIGHT, this._active_floor_id == floor.id);
+    })
+  }
+
   __displayFloorInfo() {
-    const floor = this._floors[this._selected_floor_id];
-    const areas = this._areas[this._selected_floor_id];
-    const floor_lights = this.__getFloorLights();
-    const inactive = areas.filter((el) => {
-      return el.inactive;
-    }).length;
+    const floor = this._house.getFloor(this._active_floor_id);
+    const active_floor = floor.isActive(ENTITY_KIND_LIGHT);
+    const entities = floor.getEntitiesByKind(ENTITY_KIND_LIGHT);
+    const entity_on_count = entities.filter((entity) => entity.state == STATE_LIGHT_ON).length
     return html`
-      <div class="title">${floor.name} (level : ${floor.level})</div>
-      <div class="rooms">Rooms : ${areas.length} (${inactive} excluded)</div>
-      <ul class="devices">
-        <li>Light on : ${floor_lights.on.length}</li>
-        <li>Light off : ${floor_lights.off.length}</li>
-      </ul>
-    `;
+    <div class="info ${active_floor ? 'on' : 'off'}">
+      <div class="title">${floor.name} (level : ${floor.level}) ${this.__displayPowerBtn(active_floor)}</div>
+      <div class="floor-lights">
+        <div class="on">${getIcon(this._config.default_icons.on)} x${entity_on_count}</div>
+        <div class="off">${getIcon(this._config.default_icons.off)} x${entities.length - entity_on_count}</div>
+      </div>
+    </div>`;
   }
 
   __displayAreas() {
-    return this._areas[this._selected_floor_id].map((area, id) => {
-      const area_state = area.state;
-      const separator_visible =
-        this._selected_area_id == area.id ? 'show' : 'hide';
-      return html` <div
-        class="row"
-        style="margin-left: calc(var(--wheel-hexa-width) / 2 * ${id %
-        2} - 20px * ${id % 2});"
-      >
-        <sci-fi-hexa-tile
-          active
-          state="${area_state}"
-          class="${area_state}"
-          @click="${(e) => this.__changeFocusArea(e, area)}"
-        >
-          <div class="item-icon">${getIcon(area.icon)}</div>
-        </sci-fi-hexa-tile>
-        <div class="h-separator ${separator_visible}">
-          <div class="circle ${area_state}"></div>
+    return html`<div class="area-list">
+        ${this._house.getFloor(this._active_floor_id).getAreas().map((area, idx) => {
+          const area_state = area.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off';
+          const separator_visible = this._active_area_id == area.id ? 'show' : 'hide';
+          return html`
           <div
-            class="h-path ${area_state} ${id % 2 ? '' : 'full'}"
-            style="width: ${id % 2 ? '15px' : '45px'};"
-          ></div>
-          <div class="circle ${area_state}"></div>
-        </div>
+            class="row"
+            style="margin-left: calc(var(--default-hexa-width) / 2 * ${idx %2});"
+          >
+            ${area.render(ENTITY_KIND_LIGHT)}
+            <div class="h-separator ${separator_visible}">
+              <div class="circle ${area_state}"></div>
+              <div
+                class="h-path ${area_state} ${idx % 2 ? '' : 'full'}"
+                style="width: ${idx % 2 ? '15px' : '45px'};"
+              ></div>
+              <div class="circle ${area_state}"></div>
+            </div>
+          </div>`
+        })}
       </div>`;
-    });
   }
 
-  __displayAreaInfo(active_area) {
+  __displayAreaInfo(){
+    const area = this._house.getArea(this._active_floor_id, this._active_area_id);
+    const active = area.isActive(ENTITY_KIND_LIGHT);
     return html`
-      <div class="title">
-        ${active_area.name} ${this.__displayAreaPower(active_area)}
-      </div>
-      ${this.__displayAreaLights(active_area)}
-    `;
-  }
-
-  __displayAreaPower(active_area) {
-    if (active_area.lights.length == 0) return;
-    return html`
-      <div class="power" @click="${(e) => this.__clickOnArea(e, active_area)}">
-        ${getIcon('mdi:power-standby')}
+      <div class="card-corner area-content ${active ? 'on' : 'off'}">
+        <div class="title">
+          ${area.name} ${this.__displayPowerBtn(active)}
+        </div>
+        ${this.__displayAreaLights(area, active)}
       </div>
     `;
   }
 
-  __displayAreaLights(active_area) {
-    if (active_area.lights.length == 0)
-      return html`<div class="no-light">No light to display</div>`;
+  __displayPowerBtn(active){
+    if(!active) return;
+    return html`<div class="power">${getIcon('mdi:power-standby')}</div>`;
+  }
+  
+  __displayAreaLights(area, active) {
+    if (!active)return html`<div class="no-light">No light to display</div>`;
     return html` <div class="lights">
-      ${active_area.lights.map((light) => {
-        const entity = this._hass.states[light];
+      ${area.getEntities(ENTITY_KIND_LIGHT).map((light) => {
         return html`
           <div
-            class="light ${entity.state}"
-            @click="${(e) => this.__clickOnLigth(e, entity.entity_id)}"
+            class="light ${light.state}"
           >
-            ${this.__getLightIcon(entity)}
-            <div>${entity.attributes.friendly_name}</div>
+            ${this.__getLightIcon(light)}
+            <div>${light.friendly_name}</div>
           </div>
         `;
       })}
@@ -303,6 +228,7 @@ export class SciFiLights extends LitElement {
     );
   }
 
+  /*
   __changeFocusFloor(e) {
     e.preventDefault();
     e.stopPropagation();

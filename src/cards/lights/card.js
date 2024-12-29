@@ -51,7 +51,7 @@ export class SciFiLights extends LitElement {
     if (!config.default_icons.off)
       config.default_icons.off = 'mdi:lightbulb-outline';
 
-    if (!config.custom_entities) config.custom_entities = {};    
+    if (!config.custom_entities) config.custom_entities = {};
 
     return config;
   }
@@ -100,7 +100,7 @@ export class SciFiLights extends LitElement {
 
   __displayHouseFloors() {
     return this._house.floors.map((floor) => {
-      if(!floor.hasEntityKind(ENTITY_KIND_LIGHT)) return;
+      if (!floor.hasEntityKind(ENTITY_KIND_LIGHT)) return;
       return html` <sci-fi-hexa-tile
         active-tile
         state="${floor.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}"
@@ -115,10 +115,11 @@ export class SciFiLights extends LitElement {
   __displayFloorInfo() {
     const floor = this._house.getFloor(this._active_floor_id);
     const entities = floor.getEntitiesByKind(ENTITY_KIND_LIGHT);
-    return html` <div class="info ${floor.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}">
+    return html` <div
+      class="info ${floor.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}"
+    >
       <div class="title">
-        ${floor.name} (level : ${floor.level})
-        ${this.__displayPowerBtn(floor)}
+        ${floor.name} (level : ${floor.level}) ${this.__displayPowerBtn(floor)}
       </div>
       <div class="floor-lights">
         ${this.__displayOnLights(
@@ -190,9 +191,7 @@ export class SciFiLights extends LitElement {
     const active = area.isActive(ENTITY_KIND_LIGHT);
     return html`
       <div class="card-corner area-content ${active ? 'on' : 'off'}">
-        <div class="title">
-          ${area.name} ${this.__displayPowerBtn(area)}
-        </div>
+        <div class="title">${area.name} ${this.__displayPowerBtn(area)}</div>
         ${this.__displayAreaLights(area)}
       </div>
     `;
@@ -217,7 +216,9 @@ export class SciFiLights extends LitElement {
             @click="${(e) => this.__onLightClick(e, light)}"
           >
             ${this.__getLightIcon(light, custom)}
-            <div>${custom && custom.name ? custom.name : light.friendly_name}</div>
+            <div>
+              ${custom && custom.name ? custom.name : light.friendly_name}
+            </div>
           </div>
         `;
       })}
@@ -226,10 +227,16 @@ export class SciFiLights extends LitElement {
 
   __getLightIcon(entity, custom) {
     let icon = null;
-    if(entity.state == 'on'){
-      icon = custom && custom.icon_on ? custom.icon_on : this._config.default_icons.on
-    }else{
-      icon = custom && custom.icon_off ? custom.icon_off : this._config.default_icons.off
+    if (entity.state == 'on') {
+      icon =
+        custom && custom.icon_on
+          ? custom.icon_on
+          : this._config.default_icons.on;
+    } else {
+      icon =
+        custom && custom.icon_off
+          ? custom.icon_off
+          : this._config.default_icons.off;
     }
     return getIcon(icon);
   }
@@ -240,7 +247,7 @@ export class SciFiLights extends LitElement {
     // Update selected floor
     this._active_floor_id = floor.id;
     // Select first area to render
-    this._active_area_id = floor.getFirstArea().id;
+    this._active_area_id = floor.getFirstArea(ENTITY_KIND_LIGHT).id;
   }
 
   __onAreaSelect(e, area) {

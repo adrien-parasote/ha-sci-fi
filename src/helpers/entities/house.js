@@ -13,6 +13,14 @@ export class House {
     return Object.keys(hass.devices).reduce((floors, device_id) => {
       // Create Area
       const area_id = hass.devices[device_id].area_id;
+      if (!area_id) return floors; // Case with device without assigned area
+
+      // Check if device can be associated to an entity
+      const entities_ids = this.__getDeviceEntitiesIds(device_id, hass);
+      if (entities_ids.lenght == 0) return floors;
+      const entities = this.__getEntities(entities_ids, hass);
+      if (entities.lenght == 0) return floors;
+
       const area = new Area(area_id, hass);
       const floor_id = area.floor_id;
 
@@ -23,33 +31,36 @@ export class House {
       // check if area already exist
       if (!floors[floor_id].hasArea(area_id)) floors[floor_id].addArea(area);
 
-      // Add entity to floor area
-      const entity = this.__getEntity(device_id, hass);
-      floors[floor_id].addEntityToArea(area_id, entity);
+      // Add entities to floor area
+      floors[floor_id].addEntitiesToArea(area_id, entities);
 
       return floors;
     }, {});
   }
 
-  __getEntity(device_id, hass) {
-    const entity = this.__getDeviceEntityState(device_id, hass);
-    const entity_kind = entity.entity_id.split('.')[0];
-    if (Object.keys(SCI_FI_ENTITIES).includes(entity_kind))
-      return new SCI_FI_ENTITIES[entity_kind](
-        entity.entity_id,
-        entity.state,
-        entity.attributes.icon,
-        entity.attributes.friendly_name
-      );
-    return null;
+  __getEntities(entities_ids, hass) {
+    let entities = [];
+    entities_ids.map((entity_id) => {
+      const entity_kind = entity_id.split('.')[0];
+      if (Object.keys(SCI_FI_ENTITIES).includes(entity_kind)) {
+        const entity = hass.states[entity_id];
+        entities.push(
+          new SCI_FI_ENTITIES[entity_kind](
+            entity.entity_id,
+            entity.state,
+            entity.attributes.icon,
+            entity.attributes.friendly_name
+          )
+        );
+      }
+    });
+    return entities;
   }
 
-  __getDeviceEntityState(device_id, hass) {
-    return hass.states[
-      Object.values(hass.entities).find(
-        (entity) => entity.device_id == device_id
-      ).entity_id
-    ];
+  __getDeviceEntitiesIds(device_id, hass) {
+    return Object.values(hass.entities)
+      .filter((entity) => entity.device_id == device_id)
+      .reduce((acc, value) => acc.concat([value.entity_id]), []);
   }
 
   get floors() {
@@ -86,8 +97,10 @@ class Floor {
     if (area) this.areas[area.id] = area;
   }
 
-  addEntityToArea(area_id, entity) {
-    this.areas[area_id].addEntity(entity);
+  addEntitiesToArea(area_id, entities) {
+    entities.map((entity) => {
+      this.areas[area_id].addEntity(entity);
+    });
   }
 
   hasArea(area_id) {
@@ -114,11 +127,12 @@ class Floor {
       .flat();
   }
 
-  hasEntityKind(entity_kind){
+  hasEntityKind(entity_kind) {
     return Object.values(this.areas)
       .map((area) => {
         return area.hasEntityKind(entity_kind);
-      }).reduce((acc, value) => acc || value, false);
+      })
+      .reduce((acc, value) => acc || value, false);
   }
 
   getAreas() {
@@ -130,8 +144,8 @@ class Floor {
     return this.areas[area_id];
   }
 
-  getFirstArea() {
-    return this.getAreas()[0];
+  getFirstArea(entity_kind) {
+    return this.getAreas().filter((area) => area.hasEntityKind(entity_kind))[0];
   }
 }
 
@@ -152,7 +166,6 @@ class Area {
   hasEntityKind(entity_kind) {
     return this.getEntitiesByKind(entity_kind).length > 0;
   }
-
 
   addEntity(entity) {
     if (!entity) return;

@@ -5,6 +5,8 @@ export default css`
     --default-hexa-width: 60px;
     --selected-hexa-width: 80px;
 
+    --light-on-color: rgb(255, 193, 7);
+
     background-color: black;
     height: 100%;
   }
@@ -53,8 +55,8 @@ export default css`
     float: right;
   }
   .title .power svg {
-    width: var(--icon-size-small);
-    height: var(--icon-size-small);
+    width: var(--icon-size-xsmall);
+    height: var(--icon-size-xsmall);
   }
   .title .power svg:hover {
     cursor: pointer;
@@ -115,12 +117,13 @@ export default css`
     column-gap: 10px;
   }
   .floor-content .info .floor-lights > div {
-    display: flex;
-    flex-direction: row;
-    align-items: end;
+    border-radius: 50%;
+    height: 10px;
+    width: 10px;
+    background-color: var(--light-on-color);
   }
-  .floor-content .info .floor-lights > div svg {
-    width: var(--icon-size-small);
+  .floor-content .info .floor-lights > div.off {
+    background-color: var(--primary-light-alpha-color);
   }
   .floor-content .areas {
     display: flex;
@@ -193,5 +196,6 @@ export default css`
   .area-content .lights .light svg {
     width: var(--icon-size-normal);
     height: var(--icon-size-normal);
+    fill: var(--light-on-color);
   }
 `;

@@ -1,6 +1,3 @@
-import {html} from 'lit';
-
-import {getIcon} from '../icons/icons';
 import {ENTITY_KIND_LIGHT} from './const';
 import {LightEntity} from './light';
 
@@ -112,7 +109,7 @@ class Floor {
   getEntitiesByKind(entity_kind) {
     return Object.values(this.areas)
       .map((area) => {
-        return area.getEntities(entity_kind);
+        return area.getEntitiesByKind(entity_kind);
       })
       .flat();
   }
@@ -126,16 +123,8 @@ class Floor {
     return this.areas[area_id];
   }
 
-  render(entity_kind, selected = false) {
-    return html`
-      <sci-fi-hexa-tile
-        active-tile
-        state="${this.isActive(entity_kind) ? 'on' : 'off'}"
-        class="${selected ? 'selected' : ''}"
-      >
-        <div class="item-icon">${getIcon(this.icon)}</div>
-      </sci-fi-hexa-tile>
-    `;
+  getFirstArea() {
+    return this.getAreas()[0];
   }
 }
 
@@ -148,7 +137,7 @@ class Area {
     this.entities = {};
   }
 
-  getEntities(entity_kind) {
+  getEntitiesByKind(entity_kind) {
     if (!this.entities[entity_kind]) return [];
     return this.entities[entity_kind];
   }
@@ -165,14 +154,5 @@ class Area {
       (acc, entity) => acc || entity.active,
       false
     );
-  }
-
-  render(entity_kind) {
-    const area_state = this.isActive(entity_kind) ? 'on' : 'off';
-    return html`
-      <sci-fi-hexa-tile active-tile state="${area_state}" class="${area_state}">
-        <div class="item-icon">${getIcon(this.icon)}</div>
-      </sci-fi-hexa-tile>
-    `;
   }
 }

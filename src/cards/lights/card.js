@@ -1,4 +1,5 @@
 import {LitElement, html} from 'lit';
+import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 import {isEqual} from 'lodash-es';
 
 import '../../helpers/card/wheel.js';
@@ -99,45 +100,18 @@ export class SciFiLights extends LitElement {
         </div>
       </div>
     `;
-
-    const floor_state = this._floors[this._selected_floor_id].state;
-    const active_area = this.__getCurrentArea();
-    return html`
-      <div class="container">
-        <div class="header ${floor_state}">
-          <sci-fi-wheel
-            .items="${Object.values(this._floors)}"
-            selected-id="${this._selected_floor_id}"
-            state="${floor_state}"
-            @wheel-change=${this.__changeFocusFloor}
-            @wheel-click=${this.__clickOnFloor}
-          >
-          </sci-fi-wheel>
-          <div class="h-separator">
-            <div class="circle ${floor_state}"></div>
-            <div class="h-path ${floor_state}"></div>
-            <div class="circle ${floor_state}"></div>
-          </div>
-          <div class="card-corner floor-info ${floor_state}">
-            ${this.__displayFloorInfo()}
-          </div>
-        </div>
-        <div class="content">
-          <div class="left ${floor_state}">
-            <div class="circle ${floor_state} left-circle"></div>
-            ${this.__displayAreas()}
-          </div>
-          <div class="card-corner area-info right ${active_area.state}">
-            ${this.__displayAreaInfo(active_area)}
-          </div>
-        </div>
-      </div>
-    `;
   }
 
   __displayHouseFloors() {
     return this._house.floors.map((floor) => {
-      return floor.render(ENTITY_KIND_LIGHT, this._active_floor_id == floor.id);
+      return html` <sci-fi-hexa-tile
+        active-tile
+        state="${floor.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}"
+        class="${this._active_floor_id == floor.id ? 'selected' : ''}"
+        @click="${(e) => this.__onFloorSelect(e, floor)}"
+      >
+        <div class="item-icon">${getIcon(floor.icon)}</div>
+      </sci-fi-hexa-tile>`;
     });
   }
 
@@ -145,24 +119,28 @@ export class SciFiLights extends LitElement {
     const floor = this._house.getFloor(this._active_floor_id);
     const active_floor = floor.isActive(ENTITY_KIND_LIGHT);
     const entities = floor.getEntitiesByKind(ENTITY_KIND_LIGHT);
-    const entity_on_count = entities.filter(
-      (entity) => entity.state == STATE_LIGHT_ON
-    ).length;
     return html` <div class="info ${active_floor ? 'on' : 'off'}">
       <div class="title">
         ${floor.name} (level : ${floor.level})
-        ${this.__displayPowerBtn(active_floor)}
+        ${this.__displayPowerBtn(active_floor, floor)}
       </div>
       <div class="floor-lights">
-        <div class="on">
-          ${getIcon(this._config.default_icons.on)} x${entity_on_count}
-        </div>
-        <div class="off">
-          ${getIcon(this._config.default_icons.off)}
-          x${entities.length - entity_on_count}
-        </div>
+        ${this.__displayOnLight(
+          entities.length,
+          entities.filter((entity) => entity.state == STATE_LIGHT_ON).length
+        )}
       </div>
     </div>`;
+  }
+
+  __displayOnLight(total, total_on) {
+    let on = total_on;
+    let res = [];
+    for (let i = 0; i < total; i++) {
+      res.push(on > 0 ? '<div class="on"></div>' : '<div class="off"></div>');
+      on--;
+    }
+    return html`${unsafeHTML(res.join(''))}`;
   }
 
   __displayAreas() {
@@ -179,7 +157,7 @@ export class SciFiLights extends LitElement {
             style="margin-left: calc(var(--default-hexa-width) / 2 * ${idx %
             2});"
           >
-            ${area.render(ENTITY_KIND_LIGHT)}
+            ${this.__displayArea(area)}
             <div class="h-separator ${separator_visible}">
               <div class="circle ${area_state}"></div>
               <div
@@ -193,6 +171,20 @@ export class SciFiLights extends LitElement {
     </div>`;
   }
 
+  __displayArea(area) {
+    const area_state = area.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off';
+    return html`
+      <sci-fi-hexa-tile
+        active-tile
+        state="${area_state}"
+        class="${area_state}"
+        @click="${(e) => this.__onAreaSelect(e, area)}"
+      >
+        <div class="item-icon">${getIcon(area.icon)}</div>
+      </sci-fi-hexa-tile>
+    `;
+  }
+
   __displayAreaInfo() {
     const area = this._house.getArea(
       this._active_floor_id,
@@ -201,23 +193,33 @@ export class SciFiLights extends LitElement {
     const active = area.isActive(ENTITY_KIND_LIGHT);
     return html`
       <div class="card-corner area-content ${active ? 'on' : 'off'}">
-        <div class="title">${area.name} ${this.__displayPowerBtn(active)}</div>
+        <div class="title">
+          ${area.name} ${this.__displayPowerBtn(active, area)}
+        </div>
         ${this.__displayAreaLights(area, active)}
       </div>
     `;
   }
 
-  __displayPowerBtn(active) {
+  __displayPowerBtn(active, element) {
     if (!active) return;
-    return html`<div class="power">${getIcon('mdi:power-standby')}</div>`;
+    return html`<div
+      class="power"
+      @click="${(e) => this.__onPowerBtnClick(e, element)}"
+    >
+      ${getIcon('mdi:power-standby')}
+    </div>`;
   }
 
   __displayAreaLights(area, active) {
     if (!active) return html`<div class="no-light">No light to display</div>`;
     return html` <div class="lights">
-      ${area.getEntities(ENTITY_KIND_LIGHT).map((light) => {
+      ${area.getEntitiesByKind(ENTITY_KIND_LIGHT).map((light) => {
         return html`
-          <div class="light ${light.state}">
+          <div
+            class="light ${light.state}"
+            @click="${(e) => this.__onLightClick(e, light)}"
+          >
             ${this.__getLightIcon(light)}
             <div>${light.friendly_name}</div>
           </div>
@@ -235,74 +237,47 @@ export class SciFiLights extends LitElement {
     );
   }
 
-  /*
-  __changeFocusFloor(e) {
+  __onFloorSelect(e, floor) {
     e.preventDefault();
     e.stopPropagation();
     // Update selected floor
-    this._selected_floor_id = e.detail.id;
+    this._active_floor_id = floor.id;
     // Select first area to render
-    this._selected_area_id = this._areas[this._selected_floor_id][0].id;
+    this._active_area_id = floor.getFirstArea().id;
   }
 
-  __changeFocusArea(e, area) {
+  __onAreaSelect(e, area) {
     e.preventDefault();
     e.stopPropagation();
-    this._selected_area_id = area.id;
-  }
-  __getFloorLights() {
-    let on = [];
-    let off = [];
-    this._areas[this._selected_floor_id].map((area) => {
-      area.lights.map((entity_id) => {
-        const entity = this._hass.states[entity_id];
-        if (entity.state == 'on') {
-          on.push(entity.entity_id);
-        } else {
-          off.push(entity.entity_id);
-        }
-      });
-    });
-    return {on: on, off: off};
+    this._active_area_id = area.id;
   }
 
-  __clickOnFloor(e) {
+  __onPowerBtnClick(e, element) {
+    // Turn on or off
+    const active = element.isActive(ENTITY_KIND_LIGHT);
+    // Entities selection
+    const entity_ids = element
+      .getEntitiesByKind(ENTITY_KIND_LIGHT)
+      .filter((entity) => (active ? entity.active : !entity.active))
+      .reduce((acc, value) => acc.concat([value.entity_id]), []);
     e.preventDefault();
     e.stopPropagation();
-    this.__callService(
-      this._areas[this._selected_floor_id]
-        .map((area) => {
-          return area.lights;
-        })
-        .flat(),
-      this._floors[this._selected_floor_id].state == 'on'
-        ? 'turn_off'
-        : 'turn_on'
-    );
-  }
-
-  __clickOnArea(e, area) {
-    e.preventDefault();
-    e.stopPropagation();
-    this.__callService(
-      area.lights,
-      area.state == 'on' ? 'turn_off' : 'turn_on'
-    );
-  }
-
-  __clickOnLigth(e, entity_id) {
-    e.preventDefault();
-    e.stopPropagation();
-    this.__callService(
-      [entity_id],
-      this._hass.states[entity_id].state == 'on' ? 'turn_off' : 'turn_on'
-    );
+    this.__callService(entity_ids, active ? 'turn_off' : 'turn_on');
   }
 
   __callService(entities, action) {
     this._hass.callService('light', action, {
       entity_id: entities,
     });
+  }
+
+  __onLightClick(e, light) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.__callService(
+      [light.entity_id],
+      light.active ? 'turn_off' : 'turn_on'
+    );
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

@@ -17,10 +17,7 @@ export const config = {
 /*
 TODO : readme
 TODO : editor
-TODO : revoir hexa_tiles with helpers entities
 TODO : 
-- area content
-- action on click
 - Gestion entity exclusion
 - Gestion entity custom name
 - Gestion entity light custom icon on/off

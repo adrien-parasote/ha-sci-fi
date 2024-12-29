@@ -1,5 +1,5 @@
 {
-  "version": "1.1.9",
+  "version": "1.1.10",
   "description": "HA custom tiles for dashboard",
   "main": "src/sci-fi.js",
   "type": "module",

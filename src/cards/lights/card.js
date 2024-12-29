@@ -50,6 +50,9 @@ export class SciFiLights extends LitElement {
       config.default_icons.on = 'mdi:lightbulb-on-outline';
     if (!config.default_icons.off)
       config.default_icons.off = 'mdi:lightbulb-outline';
+
+    if (!config.custom_entities) config.custom_entities = {};    
+
     return config;
   }
 
@@ -118,7 +121,7 @@ export class SciFiLights extends LitElement {
         ${this.__displayPowerBtn(floor)}
       </div>
       <div class="floor-lights">
-        ${this.__displayOnLight(
+        ${this.__displayOnLights(
           entities.length,
           entities.filter((entity) => entity.state == STATE_LIGHT_ON).length
         )}
@@ -126,7 +129,7 @@ export class SciFiLights extends LitElement {
     </div>`;
   }
 
-  __displayOnLight(total, total_on) {
+  __displayOnLights(total, total_on) {
     let on = total_on;
     let res = [];
     for (let i = 0; i < total; i++) {
@@ -207,26 +210,28 @@ export class SciFiLights extends LitElement {
   __displayAreaLights(area) {
     return html` <div class="lights">
       ${area.getEntitiesByKind(ENTITY_KIND_LIGHT).map((light) => {
+        const custom = this._config.custom_entities[light.entity_id];
         return html`
           <div
             class="light ${light.state}"
             @click="${(e) => this.__onLightClick(e, light)}"
           >
-            ${this.__getLightIcon(light)}
-            <div>${light.friendly_name}</div>
+            ${this.__getLightIcon(light, custom)}
+            <div>${custom && custom.name ? custom.name : light.friendly_name}</div>
           </div>
         `;
       })}
     </div>`;
   }
 
-  __getLightIcon(entity) {
-    // TODO Deal with custom entity icon
-    return getIcon(
-      entity.state == 'on'
-        ? this._config.default_icons.on
-        : this._config.default_icons.off
-    );
+  __getLightIcon(entity, custom) {
+    let icon = null;
+    if(entity.state == 'on'){
+      icon = custom && custom.icon_on ? custom.icon_on : this._config.default_icons.on
+    }else{
+      icon = custom && custom.icon_off ? custom.icon_off : this._config.default_icons.off
+    }
+    return getIcon(icon);
   }
 
   __onFloorSelect(e, floor) {
@@ -282,11 +287,9 @@ export class SciFiLights extends LitElement {
         on: 'mdi:lightbulb-on-outline',
         off: 'mdi:lightbulb-outline',
       },
-      first_floors_to_render: '',
-      areas: {
-        to_exclude: [],
-      },
-      entities: {},
+      first_floor_to_render: '',
+      first_area_to_render: '',
+      custom_entities: {},
     };
   }
 }

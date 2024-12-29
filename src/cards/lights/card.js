@@ -35,22 +35,15 @@ export class SciFiLights extends LitElement {
   }
 
   __validateConfig(config) {
-    if (!config.floors)
-      throw new Error('You need to specify a "floors" config entry');
-    if (!config.floors.first_to_render)
+    if (!config.first_floor_to_render)
       throw new Error(
         'You need to specify the first floor you want to display in the screen'
       );
-    if (!config.floors.to_exclude) config.floors.to_exclude = []; // TODO check if working
 
-    if (!config.areas)
-      throw new Error('You need to specify an "areas" config entry');
-    if (!config.areas.first_to_render)
+    if (!config.first_area_to_render)
       throw new Error(
         'You need to specify the first area you want to display in the screen'
       );
-    if (!config.areas.to_exclude) config.areas.to_exclude = []; // TODO check if working
-
     if (!config.default_icons)
       throw new Error('You need to define default light icon (on / off)');
     if (!config.default_icons.on)
@@ -65,8 +58,8 @@ export class SciFiLights extends LitElement {
     this._config = this.__validateConfig(JSON.parse(JSON.stringify(config)));
 
     // Setup first time attribute
-    this._active_floor_id = this._config.floors.first_to_render;
-    this._active_area_id = this._config.areas.first_to_render;
+    this._active_floor_id = this._config.first_floor_to_render;
+    this._active_area_id = this._config.first_area_to_render;
 
     // call set hass() to immediately adjust to a changed entity
     // while editing the entity in the card editor
@@ -104,6 +97,7 @@ export class SciFiLights extends LitElement {
 
   __displayHouseFloors() {
     return this._house.floors.map((floor) => {
+      if(!floor.hasEntityKind(ENTITY_KIND_LIGHT)) return;
       return html` <sci-fi-hexa-tile
         active-tile
         state="${floor.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}"
@@ -117,12 +111,11 @@ export class SciFiLights extends LitElement {
 
   __displayFloorInfo() {
     const floor = this._house.getFloor(this._active_floor_id);
-    const active_floor = floor.isActive(ENTITY_KIND_LIGHT);
     const entities = floor.getEntitiesByKind(ENTITY_KIND_LIGHT);
-    return html` <div class="info ${active_floor ? 'on' : 'off'}">
+    return html` <div class="info ${floor.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}">
       <div class="title">
         ${floor.name} (level : ${floor.level})
-        ${this.__displayPowerBtn(active_floor, floor)}
+        ${this.__displayPowerBtn(floor)}
       </div>
       <div class="floor-lights">
         ${this.__displayOnLight(
@@ -148,6 +141,7 @@ export class SciFiLights extends LitElement {
       ${this._house
         .getFloor(this._active_floor_id)
         .getAreas()
+        .filter((area) => area.hasEntityKind(ENTITY_KIND_LIGHT))
         .map((area, idx) => {
           const area_state = area.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off';
           const separator_visible =
@@ -194,15 +188,14 @@ export class SciFiLights extends LitElement {
     return html`
       <div class="card-corner area-content ${active ? 'on' : 'off'}">
         <div class="title">
-          ${area.name} ${this.__displayPowerBtn(active, area)}
+          ${area.name} ${this.__displayPowerBtn(area)}
         </div>
-        ${this.__displayAreaLights(area, active)}
+        ${this.__displayAreaLights(area)}
       </div>
     `;
   }
 
-  __displayPowerBtn(active, element) {
-    if (!active) return;
+  __displayPowerBtn(element) {
     return html`<div
       class="power"
       @click="${(e) => this.__onPowerBtnClick(e, element)}"
@@ -211,8 +204,7 @@ export class SciFiLights extends LitElement {
     </div>`;
   }
 
-  __displayAreaLights(area, active) {
-    if (!active) return html`<div class="no-light">No light to display</div>`;
+  __displayAreaLights(area) {
     return html` <div class="lights">
       ${area.getEntitiesByKind(ENTITY_KIND_LIGHT).map((light) => {
         return html`
@@ -290,10 +282,7 @@ export class SciFiLights extends LitElement {
         on: 'mdi:lightbulb-on-outline',
         off: 'mdi:lightbulb-outline',
       },
-      floors: {
-        to_exclude: [],
-        first_to_render: '',
-      },
+      first_floors_to_render: '',
       areas: {
         to_exclude: [],
       },

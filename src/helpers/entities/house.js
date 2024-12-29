@@ -114,6 +114,13 @@ class Floor {
       .flat();
   }
 
+  hasEntityKind(entity_kind){
+    return Object.values(this.areas)
+      .map((area) => {
+        return area.hasEntityKind(entity_kind);
+      }).reduce((acc, value) => acc || value, false);
+  }
+
   getAreas() {
     return Object.values(this.areas);
   }
@@ -141,6 +148,11 @@ class Area {
     if (!this.entities[entity_kind]) return [];
     return this.entities[entity_kind];
   }
+
+  hasEntityKind(entity_kind) {
+    return this.getEntitiesByKind(entity_kind).length > 0;
+  }
+
 
   addEntity(entity) {
     if (!entity) return;

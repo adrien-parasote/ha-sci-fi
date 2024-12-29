@@ -176,6 +176,7 @@ export default css`
     gap: 5px;
     padding: 10px 0;
     justify-content: center;
+    width: 100%;
   }
   .area-content .lights .light {
     display: flex;

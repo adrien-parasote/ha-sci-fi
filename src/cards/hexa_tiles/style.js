@@ -8,11 +8,6 @@ export default css`
     height: 100%;
   }
   /******** COMMON *********/
-  .container {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-  }
   .container .hexa-row {
     display: flex;
     flex-direction: row;

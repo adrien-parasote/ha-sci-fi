@@ -17,7 +17,7 @@ export const config = {
       name: 'Ligths',
       state_on: ['on'],
       state_error: null,
-      link: '/',
+      link: '/demo/demo_lights.html',
     },
     {
       standalone: false,

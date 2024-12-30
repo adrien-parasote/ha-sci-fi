@@ -48,7 +48,8 @@ export class SciFiHexaTilesEditor extends LitElement {
     return html`
       <div class="card card-corner">
         <div class="container">
-          ${this.__renderHeader()} ${this.__renderWeather()}
+          ${this.__renderHeader()} 
+          ${this.__renderWeather()}
           ${this.__renderTiles()}
         </div>
       </div>

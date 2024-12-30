@@ -28,10 +28,10 @@ export class SciFiLightsEditor extends LitElement {
   render() {
     if (!this._hass || !this._config) return html``;
     return html`
-      <div class="card">
-        <span class="corner-border-top"></span>
-        <div class="container">TODO</div>
-        <span class="corner-border-bottom"></span>
+      <div class="card card-corner">
+      <div class="container">
+        coucou
+      </div>
       </div>
     `;
   }

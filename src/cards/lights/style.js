@@ -20,7 +20,7 @@ export default css`
     fill: var(--primary-light-color);
   }
   .off {
-    color: var(--secondary-light-color);
+    color: var(--secondary-light-color) !important;
   }
   .off svg {
     fill: var(--secondary-light-color) !important;
@@ -166,7 +166,7 @@ export default css`
     width: 100%;
     min-height: 23px;
   }
-  .area-content .title.off .title {
+  .area-content.off .title {
     border-bottom-color: var(--secondary-light-alpha-color);
   }
   .area-content .lights {

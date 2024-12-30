@@ -52,4 +52,7 @@ export default css`
         )
         0 0 / calc(100% - var(--corner-size)) calc(100% - var(--corner-size));
   }
+  .card-corner.off {
+    border-color: var(--secondary-light-color);
+  }
 `;

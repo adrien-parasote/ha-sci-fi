@@ -35,17 +35,10 @@ export class SciFiLights extends LitElement {
   }
 
   __validateConfig(config) {
-    if (!config.first_floor_to_render)
-      throw new Error(
-        'You need to specify the first floor you want to display in the screen'
-      );
-
-    if (!config.first_area_to_render)
-      throw new Error(
-        'You need to specify the first area you want to display in the screen'
-      );
     if (!config.default_icons)
-      throw new Error('You need to define default light icon (on / off)');
+      throw new Error(
+        'You need to define default light icon (on / off) section'
+      );
     if (!config.default_icons.on)
       config.default_icons.on = 'mdi:lightbulb-on-outline';
     if (!config.default_icons.off)
@@ -60,9 +53,8 @@ export class SciFiLights extends LitElement {
     if (!config) return;
     this._config = this.__validateConfig(JSON.parse(JSON.stringify(config)));
 
-    // Setup first time attribute
     this._active_floor_id = this._config.first_floor_to_render;
-    this._active_area_id = this._config.first_area_to_render;
+    this._active_area_id = this._config._active_area_id;
 
     // call set hass() to immediately adjust to a changed entity
     // while editing the entity in the card editor
@@ -87,6 +79,15 @@ export class SciFiLights extends LitElement {
 
   render() {
     if (!this._hass || !this._config) return html``;
+    // Setup first time attribute
+    if (!this._active_floor_id)
+      this._active_floor_id = this._house.getDefaultFloor(ENTITY_KIND_LIGHT).id;
+    if (!this._active_area_id)
+      this._active_area_id = this._house.getDefaultArea(
+        this._active_floor_id,
+        ENTITY_KIND_LIGHT
+      ).id;
+
     return html`
       <div class="container">
         <div class="floors">${this.__displayHouseFloors()}</div>
@@ -288,14 +289,15 @@ export class SciFiLights extends LitElement {
   static getConfigElement() {
     return document.createElement(PACKAGE + '-editor');
   }
+
   static getStubConfig() {
     return {
       default_icons: {
         on: 'mdi:lightbulb-on-outline',
         off: 'mdi:lightbulb-outline',
       },
-      first_floor_to_render: '',
-      first_area_to_render: '',
+      first_floor_to_render: null,
+      first_area_to_render: null,
       custom_entities: {},
     };
   }

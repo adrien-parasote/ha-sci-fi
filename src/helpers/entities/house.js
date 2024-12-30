@@ -67,6 +67,16 @@ export class House {
     return Object.values(this._components);
   }
 
+  getDefaultFloor(entity_kind) {
+    return this.floors.filter((floor) =>
+      this.isfloorActive(floor.id, entity_kind)
+    )[0];
+  }
+
+  getDefaultArea(floor_id, entity_kind) {
+    return this.getFloor(floor_id).getFirstArea(entity_kind);
+  }
+
   isfloorActive(floor_id, entity_kind) {
     if (!this._components[floor_id]) return false;
     return this._components[floor_id].isActive(entity_kind);
@@ -147,6 +157,16 @@ class Floor {
   getFirstArea(entity_kind) {
     return this.getAreas().filter((area) => area.hasEntityKind(entity_kind))[0];
   }
+
+  renderAsEntity() {
+    return {
+      entity_id: this.id,
+      attributes: {
+        icon: this.icon,
+        friendly_name: this.name,
+      },
+    };
+  }
 }
 
 class Area {
@@ -179,5 +199,15 @@ class Area {
       (acc, entity) => acc || entity.active,
       false
     );
+  }
+
+  renderAsEntity() {
+    return {
+      entity_id: this.id,
+      attributes: {
+        icon: this.icon,
+        friendly_name: this.name,
+      },
+    };
   }
 }

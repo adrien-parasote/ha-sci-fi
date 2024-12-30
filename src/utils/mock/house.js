@@ -16,7 +16,7 @@ export const HOUSE = [
         id: 'cellar',
         icon: 'mdi:storage-tank-outline',
         name: 'Cellar',
-        devices: [ClimateEntity],
+        devices: [LightEntity],
       },
       {
         id: 'storage',
@@ -36,7 +36,7 @@ export const HOUSE = [
         id: 'terrace',
         icon: 'mdi:balcony',
         name: 'Terrace',
-        devices: [LightEntity, LightEntity],
+        devices: [LightEntity],
       },
     ],
   },

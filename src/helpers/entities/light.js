@@ -19,4 +19,15 @@ export class LightEntity {
   get kind() {
     return LightEntity.kind;
   }
+
+  renderAsEntity() {
+    return {
+      entity_id: this.entity_id,
+      attributes: {
+        icon: this.icon,
+        friendly_name: this.friendly_name,
+      },
+      state: this.state,
+    };
+  }
 }

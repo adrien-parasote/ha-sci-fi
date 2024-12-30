@@ -3,13 +3,12 @@ import {hass} from '../src/utils/mock/hass.js';
 
 const element = window.customElements.get('sci-fi-lights');
 
-export function demoRender(element, config){
+export function demoRender(element, config) {
   // Component
   let component = new element();
   component.hass = hass;
   component.setConfig(config);
   document.querySelector('#content').appendChild(component);
-
   // Define global elements and shared config
   let sub_config = element.getStubConfig();
   let editor = element.getConfigElement();
@@ -27,6 +26,7 @@ export function demoRender(element, config){
   // Bind editod update on config
   window.addEventListener('config-changed', (e) => {
     document.querySelector('.editor > *').setConfig(e.detail.config);
+    console.log(e);
     try {
       document.querySelector('.preview > *').setConfig(e.detail.config);
     } catch (error) {

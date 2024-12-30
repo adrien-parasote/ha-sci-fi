@@ -20,8 +20,3 @@ export const config = {
     },
   },
 };
-
-/*
-TODO : readme
-TODO : editor
-*/

@@ -14,23 +14,23 @@ export function demoRender(element, config) {
   let editor = element.getConfigElement();
   // Setup elements internal components
   let card = new element();
-  card.hass = hass;
-  card.setConfig(sub_config);
-  editor.hass = hass;
-  editor.setConfig(sub_config);
 
   // Render
   document.querySelector('.editor').appendChild(editor);
   document.querySelector('.preview').appendChild(card);
-
   // Bind editod update on config
   window.addEventListener('config-changed', (e) => {
+    console.log(e.detail.config);
     document.querySelector('.editor > *').setConfig(e.detail.config);
-    console.log(e);
     try {
       document.querySelector('.preview > *').setConfig(e.detail.config);
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
   });
+  // Setup compoonent
+  card.hass = hass;
+  editor.hass = hass;
+  card.setConfig(sub_config);
+  editor.setConfig(sub_config);
 }

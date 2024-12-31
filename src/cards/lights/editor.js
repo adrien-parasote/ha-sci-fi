@@ -34,6 +34,7 @@ export class SciFiLightsEditor extends LitElement {
 
   set hass(hass) {
     this._hass = hass;
+    if (!this._config) return;
     // Setup only once for editor
     if (!this._house) {
       this._house = new House(hass);
@@ -45,18 +46,17 @@ export class SciFiLightsEditor extends LitElement {
         .flat()
         .map((entity) => entity.renderAsEntity());
     }
+
+    if (this._house && !this._config.first_floor_to_render) {
+      this.__setupDefault();
+    }
   }
 
   setConfig(config) {
     this._config = config;
-  }
-
-  __getFloors(hass) {
-    return;
-  }
-
-  __getAreas(hass) {
-    return;
+    if (this._hass) {
+      this.hass = this._hass;
+    }
   }
 
   render() {
@@ -70,6 +70,25 @@ export class SciFiLightsEditor extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  __setupDefault() {
+    const first_floor_to_render =
+      this._house.getDefaultFloor(ENTITY_KIND_LIGHT).id;
+    const first_area_to_render = this._house.getDefaultArea(
+      first_floor_to_render,
+      ENTITY_KIND_LIGHT
+    ).id;
+    let newConfig = this.__getNewConfig();
+    newConfig.first_floor_to_render = first_floor_to_render;
+    newConfig.first_area_to_render = first_area_to_render;
+    this.dispatchEvent(
+      new CustomEvent('config-changed', {
+        detail: {config: newConfig},
+        bubbles: true,
+        composed: true,
+      })
+    );
   }
 
   __renderSectionDefaultIcon() {
@@ -97,15 +116,6 @@ export class SciFiLightsEditor extends LitElement {
   }
 
   __renderSectionFloorAreaSelection() {
-    // Setup default
-    if (!this._config.first_floor_to_render)
-      this._config.first_floor_to_render =
-        this._house.getDefaultFloor(ENTITY_KIND_LIGHT).id;
-    if (!this._config.first_area_to_render)
-      this._config.first_area_to_render = this._house.getDefaultArea(
-        this._config.first_floor_to_render,
-        ENTITY_KIND_LIGHT
-      ).id;
     // Get Floors
     const floors = this._floors.map((floor) => floor.renderAsEntity());
     // Get Areas
@@ -163,7 +173,6 @@ export class SciFiLightsEditor extends LitElement {
   }
 
   __renderCustomEntity(entity_id, entity_info) {
-    //${entity_id}, ${entity_info}`
     return html`
       <sci-fi-dropdown-entity-input
         label="Entity id*"

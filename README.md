@@ -8,7 +8,7 @@ HA sci-fi cards for personal dashboard
 
 **Screenshot**
 
-!(screenshot/hexa.jpeg)
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/hexa.jpeg" width="300">
 
 **Content:**
 - Show current connected person
@@ -39,7 +39,7 @@ Available customization:
 
 **Screenshot**
 
-!(screenshot/lights.jpeg)
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/lights.jpeg" width="300">
 
 **Content:**
 - Display house's floors with lights entities (floors' icon are from HA floor )

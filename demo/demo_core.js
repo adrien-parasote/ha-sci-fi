@@ -1,7 +1,4 @@
-import {config} from '../src/utils/config/config_lights.js';
 import {hass} from '../src/utils/mock/hass.js';
-
-const element = window.customElements.get('sci-fi-lights');
 
 export function demoRender(element, config) {
   // Component
@@ -20,7 +17,6 @@ export function demoRender(element, config) {
   document.querySelector('.preview').appendChild(card);
   // Bind editod update on config
   window.addEventListener('config-changed', (e) => {
-    console.log(e.detail.config);
     document.querySelector('.editor > *').setConfig(e.detail.config);
     try {
       document.querySelector('.preview > *').setConfig(e.detail.config);

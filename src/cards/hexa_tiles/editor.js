@@ -1,22 +1,10 @@
-import {LitElement, html} from 'lit';
+import {html} from 'lit';
 
-import common_style from '../../helpers/common_style.js';
-import editor_common_style from '../../helpers/editor_common_style.js';
+import {SciFiBaseEditor} from '../../helpers/card/base_editor.js';
 import '../../helpers/form/form.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 
-export class SciFiHexaTilesEditor extends LitElement {
-  static get styles() {
-    return [common_style, editor_common_style];
-  }
-
-  static get properties() {
-    return {
-      _config: {type: Object},
-    };
-  }
-
-  _hass; // private
+export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   _entity_kind; // list from hass
   _empty_config; // basic config to add for new element
 
@@ -297,21 +285,5 @@ export class SciFiHexaTilesEditor extends LitElement {
       newConfig[elemmentId][e.detail.kind] = e.detail.value;
     }
     this.__dispatchChange(e, newConfig);
-  }
-
-  __getNewConfig() {
-    return JSON.parse(JSON.stringify(this._config));
-  }
-
-  __dispatchChange(e, newConfig) {
-    e.preventDefault();
-    e.stopPropagation();
-    this.dispatchEvent(
-      new CustomEvent('config-changed', {
-        detail: {config: newConfig},
-        bubbles: true,
-        composed: true,
-      })
-    );
   }
 }

@@ -6,6 +6,7 @@ export const config = {
     activate: true,
     sun_entity: 'sun.sun',
     weather_entity: 'weather.a_long-long_city_name',
+    link: '/demo/demo_weather.html',
   },
   tiles: [
     {

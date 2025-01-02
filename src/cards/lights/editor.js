@@ -103,7 +103,7 @@ export class SciFiLightsEditor extends LitElement {
         <span>${getIcon('mdi:home-lightbulb-outline')}</span>Lights appearance
       </h1>
       <sci-fi-dropdown-icon-input
-        label="Active icon*"
+        label="Active icon (required)"
         element-id="default_icons"
         kind="on"
         icon=${this._config.default_icons.on}
@@ -111,7 +111,7 @@ export class SciFiLightsEditor extends LitElement {
         @input-update=${this.__update}
       ></sci-fi-dropdown-icon-input>
       <sci-fi-dropdown-icon-input
-        label="Inactive icon*"
+        label="Inactive icon (required)"
         element-id="default_icons"
         kind="off"
         icon=${this._config.default_icons.off}
@@ -194,7 +194,7 @@ export class SciFiLightsEditor extends LitElement {
           >
           <div>
             <sci-fi-dropdown-entity-input
-              label="Entity id*"
+              label="Entity id (required)"
               element-id="${entity_id}"
               kind="custom_entities"
               value="${entity_id}"

@@ -52,9 +52,8 @@ export class SciFiLights extends LitElement {
   setConfig(config) {
     if (!config) return;
     this._config = this.__validateConfig(JSON.parse(JSON.stringify(config)));
-
     this._active_floor_id = this._config.first_floor_to_render;
-    this._active_area_id = this._config._active_area_id;
+    this._active_area_id = this._config.first_area_to_render;
 
     // call set hass() to immediately adjust to a changed entity
     // while editing the entity in the card editor

@@ -1,5 +1,4 @@
 import {LitElement, css, html} from 'lit';
-import object from 'lodash-es/object.js';
 
 import common_style from '../../helpers/common_style.js';
 import editor_common_style from '../../helpers/editor_common_style.js';
@@ -7,36 +6,22 @@ import {ENTITY_KIND_LIGHT} from '../../helpers/entities/const.js';
 import {House} from '../../helpers/entities/house.js';
 import '../../helpers/form/form.js';
 import {getIcon} from '../../helpers/icons/icons.js';
+import editor_style from './style_editor.js';
 
 export class SciFiLightsEditor extends LitElement {
   static get styles() {
-    return [
-      common_style,
-      editor_common_style,
-      css`
-        sci-fi-accordion-card > div {
-          flex: 1;
-          flex-direction: row;
-          display: flex;
-          column-gap: 10px;
-        }
-        sci-fi-accordion-card div:first-child {
-          margin-bottom: 10px;
-        }
-        sci-fi-accordion-card > div * {
-          flex: 1;
-        }
-      `,
-    ];
+    return [common_style, editor_common_style, editor_style];
   }
 
   static get properties() {
     return {
       _config: {type: Object},
+      _custom_entity_id: {type: String},
     };
   }
 
   _hass; // private
+  _edit = false;
 
   set hass(hass) {
     this._hass = hass;
@@ -69,11 +54,12 @@ export class SciFiLightsEditor extends LitElement {
     if (!this._hass || !this._config) return html``;
     return html`
       <div class="card card-corner">
-        <div class="container">
+        <div class="container ${!this._edit}">
           ${this.__renderSectionDefaultIcon()}
           ${this.__renderSectionFloorAreaSelection()}
           ${this.__renderSectionCustomEntities()}
         </div>
+        <div class="editor ${this._edit}">${this.__renderEntityCustom()}</div>
       </div>
     `;
   }
@@ -103,7 +89,7 @@ export class SciFiLightsEditor extends LitElement {
         <span>${getIcon('mdi:home-lightbulb-outline')}</span>Lights appearance
       </h1>
       <sci-fi-dropdown-icon-input
-        label="Active icon*"
+        label="Active icon (required)"
         element-id="default_icons"
         kind="on"
         icon=${this._config.default_icons.on}
@@ -111,7 +97,7 @@ export class SciFiLightsEditor extends LitElement {
         @input-update=${this.__update}
       ></sci-fi-dropdown-icon-input>
       <sci-fi-dropdown-icon-input
-        label="Inactive icon*"
+        label="Inactive icon (required)"
         element-id="default_icons"
         kind="off"
         icon=${this._config.default_icons.off}
@@ -165,15 +151,9 @@ export class SciFiLightsEditor extends LitElement {
         <span>${getIcon('mdi:selection-ellipse-arrow-inside')}</span>Light
         entities customization
       </h1>
-      ${Object.entries(this._config.custom_entities).map(
-        ([entity_id, entity_info]) => {
-          return this.__renderCustomEntity(
-            entity_id,
-            entity_info,
-            Object.keys(this._config.custom_entities).length > 1
-          );
-        }
-      )}
+      ${Object.keys(this._config.custom_entities).map((entity_id) => {
+        return this.__renderCustomEntity(entity_id);
+      })}
       <sci-fi-button
         has-border
         icon="mdi:plus"
@@ -182,53 +162,65 @@ export class SciFiLightsEditor extends LitElement {
     </section>`;
   }
 
-  __renderCustomEntity(entity_id, entity_info, deletable) {
+  __renderCustomEntity(entity_id) {
     return html`
-    <sci-fi-accordion-card
-            element-id=${entity_id}
-            title="${entity_id}"
-            icon="mdi:lightbulb-outline"
-            ?deletable=${deletable}
-            @accordion-delete=${this.__update}
-            open
-          >
-          <div>
-            <sci-fi-dropdown-entity-input
-              label="Entity id*"
-              element-id="${entity_id}"
-              kind="custom_entities"
-              value="${entity_id}"
-              items="${JSON.stringify(this._lights_entities)}"
-              @input-update=${this.__update}
-            ></sci-fi-dropdown-entity-input>
-            <sci-fi-input
-              label="Custom name"
-              value=${entity_info.name}
-              element-id="${entity_id}"
-              kind="name"
-              @input-update=${this.__update}
-            ></sci-fi-input>
-          </div>
-          <div>
-            <sci-fi-dropdown-icon-input
-              label="Custom active icon"
-              element-id="${entity_id}"
-              kind="icon_on"
-              icon=${entity_info.icon_on}
-              value=${entity_info.icon_on}
-              @input-update=${this.__update}
-            ></sci-fi-dropdown-icon-input>
-            <sci-fi-dropdown-icon-input
-              label="Custom inactive icon"
-              element-id="${entity_id}"
-              kind="icon_off"
-              icon=${entity_info.icon_off}
-              value=${entity_info.icon_off}
-              @input-update=${this.__update}
-            ></sci-fi-dropdown-icon-input>
-          </div>
-        </div>
-      </sci-fi-accordion-card>
+      <div class="entity-row">
+        <sci-fi-dropdown-entity-input
+          label="Entity id (required)"
+          element-id="${entity_id}"
+          kind="custom_entities"
+          value="${entity_id}"
+          items="${JSON.stringify(this._lights_entities)}"
+          @input-update=${this.__update}
+        ></sci-fi-dropdown-entity-input>
+        <sci-fi-button
+          icon="mdi:delete-outline"
+          @button-click="${(e) => this.__deleteCustomEntity(e, entity_id)}"
+        >
+        </sci-fi-button>
+        <sci-fi-button
+          icon="mdi:pencil-outline"
+          @button-click="${(e) => this.__editCustomEntity(entity_id)}"
+        >
+        </sci-fi-button>
+      </div>
+    `;
+  }
+
+  __renderEntityCustom() {
+    if (!this._custom_entity_id) return html``;
+    const entity_info = this._config.custom_entities[this._custom_entity_id];
+    return html`
+      <div class="head">
+        <sci-fi-button
+          icon="mdi:chevron-left"
+          @button-click=${this.__endCustomEntity}
+        ></sci-fi-button>
+        <span>Edit ${this._custom_entity_id}</span>
+      </div>
+      <sci-fi-input
+        label="Custom name"
+        value=${entity_info.name}
+        element-id="${this._custom_entity_id}"
+        kind="name"
+        @input-update=${this.__update}
+      ></sci-fi-input>
+      <sci-fi-dropdown-icon-input
+        label="Custom active icon"
+        element-id="${this._custom_entity_id}"
+        kind="icon_on"
+        icon=${entity_info.icon_on}
+        value=${entity_info.icon_on}
+        @input-update=${this.__update}
+      ></sci-fi-dropdown-icon-input>
+      <sci-fi-dropdown-icon-input
+        label="Custom inactive icon"
+        element-id="${this._custom_entity_id}"
+        kind="icon_off"
+        icon=${entity_info.icon_off}
+        value=${entity_info.icon_off}
+        @input-update=${this.__update}
+      ></sci-fi-dropdown-icon-input>
     `;
   }
 
@@ -243,36 +235,48 @@ export class SciFiLightsEditor extends LitElement {
     this.__dispatchChange(e, newConfig);
   }
 
+  __deleteCustomEntity(e, entity_id) {
+    let newConfig = this.__getNewConfig();
+    delete newConfig.custom_entities[entity_id];
+    this.__dispatchChange(e, newConfig);
+  }
+
+  __editCustomEntity(entity_id) {
+    this._custom_entity_id = entity_id;
+    this._edit = !this._edit;
+  }
+
+  __endCustomEntity() {
+    this._edit = !this._edit;
+    this._custom_entity_id = null;
+  }
+
   __update(e) {
     let newConfig = this.__getNewConfig();
-    if (e.type == 'accordion-delete') {
-      delete newConfig.custom_entities[e.detail.id];
-    } else {
-      switch (e.detail.id) {
-        case 'default_icons':
-          newConfig[e.detail.id][e.detail.kind] = e.detail.value;
-          break;
-        case 'first_floor_to_render':
-          newConfig[e.detail.id] = e.detail.value;
-          newConfig.first_area_to_render = null;
-          break;
-        case 'first_area_to_render':
-          newConfig[e.detail.id] = e.detail.value;
-          break;
-        default:
-          // Custom entity
-          if (e.detail.kind == 'custom_entities') {
-            // Create new entity
-            newConfig.custom_entities[e.detail.value] =
-              newConfig.custom_entities[e.detail.id];
-            // Delete the old one
-            delete newConfig.custom_entities[e.detail.id];
-          } else {
-            newConfig.custom_entities[e.detail.id][e.detail.kind] =
-              e.detail.value;
-          }
-          break;
-      }
+    switch (e.detail.id) {
+      case 'default_icons':
+        newConfig[e.detail.id][e.detail.kind] = e.detail.value;
+        break;
+      case 'first_floor_to_render':
+        newConfig[e.detail.id] = e.detail.value;
+        newConfig.first_area_to_render = null;
+        break;
+      case 'first_area_to_render':
+        newConfig[e.detail.id] = e.detail.value;
+        break;
+      default:
+        // Custom entity
+        if (e.detail.kind == 'custom_entities') {
+          // Create new entity
+          newConfig.custom_entities[e.detail.value] =
+            newConfig.custom_entities[e.detail.id];
+          // Delete the old one
+          delete newConfig.custom_entities[e.detail.id];
+        } else {
+          newConfig.custom_entities[e.detail.id][e.detail.kind] =
+            e.detail.value;
+        }
+        break;
     }
     this.__dispatchChange(e, newConfig);
   }

@@ -8,7 +8,7 @@ HA sci-fi cards for personal dashboard
 
 **Screenshot**
 
-!(screenshot/hexa.jpeg)
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/hexa.jpeg" width="300">
 
 **Content:**
 - Show current connected person
@@ -33,13 +33,13 @@ Available customization:
 - When press key enter in chips component (editor mode) => save card action apply
 
 
-### 1. Sci-Fi Lights card
+### 2. Sci-Fi Lights card
 
 **/!\ currently only design for Smartphone and to be used with HA single panel /!\\**
 
 **Screenshot**
 
-!(screenshot/lights.jpeg)
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/lights.jpeg" width="300">
 
 **Content:**
 - Display house's floors with lights entities (floors' icon are from HA floor )
@@ -62,5 +62,6 @@ Available customization:
     - Custom name : a custom name attached to the entity on the card
     - Custom active/inactive icon : icon rendered when light state is on/off
 
-**Improve/Known issues**
-- When lot of entities are customize, editor cannot be rendered (suspect too huge dom)
+## How to install ?
+
+TODO

@@ -88,7 +88,7 @@ export class SciFiHexaTilesEditor extends LitElement {
   __renderWeatherEntities() {
     return html`
       <sci-fi-dropdown-entity-input
-        label="Sun entity*"
+        label="Sun entity (required)"
         element-id="weather"
         kind="sun_entity"
         value="${this._config.weather.sun_entity}"
@@ -96,7 +96,7 @@ export class SciFiHexaTilesEditor extends LitElement {
         @input-update=${this.__update}
       ></sci-fi-dropdown-entity-input>
       <sci-fi-dropdown-entity-input
-        label="Weather entity*"
+        label="Weather entity (required)"
         element-id="weather"
         kind="weather_entity"
         value="${this._config.weather.weather_entity}"
@@ -143,7 +143,8 @@ export class SciFiHexaTilesEditor extends LitElement {
   __renderEntity(id, entity) {
     return html` <section>
       <h1>
-        <span>${getIcon('mdi:selection-ellipse-arrow-inside')}</span>Entity*
+        <span>${getIcon('mdi:selection-ellipse-arrow-inside')}</span>Entity
+        (required)
       </h1>
       <sci-fi-toggle
         label="Standalone entity?"
@@ -160,7 +161,7 @@ export class SciFiHexaTilesEditor extends LitElement {
   __renderStandAlone(id, entity) {
     return html`
       <sci-fi-dropdown-entity-input
-        label="Entity*"
+        label="Entity (required)"
         element-id="${id}"
         kind="entity"
         value="${entity.entity}"
@@ -173,7 +174,7 @@ export class SciFiHexaTilesEditor extends LitElement {
   __renderKind(id, entity) {
     return html`
       <sci-fi-dropdown-input
-        label="Entity kind*"
+        label="Entity kind (required)"
         value=${entity.entity_kind}
         element-id="${id}"
         kind="entity_kind"
@@ -204,7 +205,7 @@ export class SciFiHexaTilesEditor extends LitElement {
         @input-update=${this.__update}
       ></sci-fi-input>
       <sci-fi-dropdown-icon-input
-        label="Active icon*"
+        label="Active icon (required)"
         element-id="${id}"
         kind="active_icon"
         icon=${entity.active_icon}
@@ -212,7 +213,7 @@ export class SciFiHexaTilesEditor extends LitElement {
         @input-update=${this.__update}
       ></sci-fi-dropdown-icon-input>
       <sci-fi-dropdown-icon-input
-        label="Inactive icon*"
+        label="Inactive icon (required)"
         element-id="${id}"
         kind="inactive_icon"
         icon=${entity.inactive_icon}
@@ -227,7 +228,7 @@ export class SciFiHexaTilesEditor extends LitElement {
       <section>
         <h1><span>${getIcon('mdi:cog-outline')}</span>Technical</h1>
         <sci-fi-chips-input
-          label="State on*"
+          label="State on (required)"
           element-id="${id}"
           kind="state_on"
           values="${JSON.stringify(entity.state_on)}"

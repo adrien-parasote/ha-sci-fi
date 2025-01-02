@@ -14,11 +14,17 @@ export class SciFiLightsEditor extends LitElement {
       common_style,
       editor_common_style,
       css`
-        .customization {
+        sci-fi-accordion-card > div {
+          flex: 1;
+          flex-direction: row;
           display: flex;
-          flex-direction: column;
-          margin-left: 15px;
-          row-gap: 10px;
+          column-gap: 10px;
+        }
+        sci-fi-accordion-card div:first-child {
+          margin-bottom: 10px;
+        }
+        sci-fi-accordion-card > div * {
+          flex: 1;
         }
       `,
     ];
@@ -161,7 +167,11 @@ export class SciFiLightsEditor extends LitElement {
       </h1>
       ${Object.entries(this._config.custom_entities).map(
         ([entity_id, entity_info]) => {
-          return this.__renderCustomEntity(entity_id, entity_info);
+          return this.__renderCustomEntity(
+            entity_id,
+            entity_info,
+            Object.keys(this._config.custom_entities).length > 1
+          );
         }
       )}
       <sci-fi-button
@@ -172,41 +182,53 @@ export class SciFiLightsEditor extends LitElement {
     </section>`;
   }
 
-  __renderCustomEntity(entity_id, entity_info) {
+  __renderCustomEntity(entity_id, entity_info, deletable) {
     return html`
-      <sci-fi-dropdown-entity-input
-        label="Entity id*"
-        element-id="${entity_id}"
-        kind="custom_entities"
-        value="${entity_id}"
-        items="${JSON.stringify(this._lights_entities)}"
-        @input-update=${this.__update}
-      ></sci-fi-dropdown-entity-input>
-      <div class="customization">
-        <sci-fi-input
-          label="Custom name"
-          value=${entity_info.name}
-          element-id="${entity_id}"
-          kind="name"
-          @input-update=${this.__update}
-        ></sci-fi-input>
-        <sci-fi-dropdown-icon-input
-          label="Custom active icon"
-          element-id="${entity_id}"
-          kind="icon_on"
-          icon=${entity_info.icon_on}
-          value=${entity_info.icon_on}
-          @input-update=${this.__update}
-        ></sci-fi-dropdown-icon-input>
-        <sci-fi-dropdown-icon-input
-          label="Custom inactive icon"
-          element-id="${entity_id}"
-          kind="icon_off"
-          icon=${entity_info.icon_off}
-          value=${entity_info.icon_off}
-          @input-update=${this.__update}
-        ></sci-fi-dropdown-icon-input>
-      </div>
+    <sci-fi-accordion-card
+            element-id=${entity_id}
+            title="${entity_id}"
+            icon="mdi:lightbulb-outline"
+            ?deletable=${deletable}
+            @accordion-delete=${this.__update}
+            open
+          >
+          <div>
+            <sci-fi-dropdown-entity-input
+              label="Entity id*"
+              element-id="${entity_id}"
+              kind="custom_entities"
+              value="${entity_id}"
+              items="${JSON.stringify(this._lights_entities)}"
+              @input-update=${this.__update}
+            ></sci-fi-dropdown-entity-input>
+            <sci-fi-input
+              label="Custom name"
+              value=${entity_info.name}
+              element-id="${entity_id}"
+              kind="name"
+              @input-update=${this.__update}
+            ></sci-fi-input>
+          </div>
+          <div>
+            <sci-fi-dropdown-icon-input
+              label="Custom active icon"
+              element-id="${entity_id}"
+              kind="icon_on"
+              icon=${entity_info.icon_on}
+              value=${entity_info.icon_on}
+              @input-update=${this.__update}
+            ></sci-fi-dropdown-icon-input>
+            <sci-fi-dropdown-icon-input
+              label="Custom inactive icon"
+              element-id="${entity_id}"
+              kind="icon_off"
+              icon=${entity_info.icon_off}
+              value=${entity_info.icon_off}
+              @input-update=${this.__update}
+            ></sci-fi-dropdown-icon-input>
+          </div>
+        </div>
+      </sci-fi-accordion-card>
     `;
   }
 
@@ -223,30 +245,34 @@ export class SciFiLightsEditor extends LitElement {
 
   __update(e) {
     let newConfig = this.__getNewConfig();
-    switch (e.detail.id) {
-      case 'default_icons':
-        newConfig[e.detail.id][e.detail.kind] = e.detail.value;
-        break;
-      case 'first_floor_to_render':
-        newConfig[e.detail.id] = e.detail.value;
-        newConfig.first_area_to_render = null;
-        break;
-      case 'first_area_to_render':
-        newConfig[e.detail.id] = e.detail.value;
-        break;
-      default:
-        // Custom entity
-        if (e.detail.kind == 'custom_entities') {
-          // Create new entity
-          newConfig.custom_entities[e.detail.value] =
-            newConfig.custom_entities[e.detail.id];
-          // Delete the old one
-          delete newConfig.custom_entities[e.detail.id];
-        } else {
-          newConfig.custom_entities[e.detail.id][e.detail.kind] =
-            e.detail.value;
-        }
-        break;
+    if (e.type == 'accordion-delete') {
+      delete newConfig.custom_entities[e.detail.id];
+    } else {
+      switch (e.detail.id) {
+        case 'default_icons':
+          newConfig[e.detail.id][e.detail.kind] = e.detail.value;
+          break;
+        case 'first_floor_to_render':
+          newConfig[e.detail.id] = e.detail.value;
+          newConfig.first_area_to_render = null;
+          break;
+        case 'first_area_to_render':
+          newConfig[e.detail.id] = e.detail.value;
+          break;
+        default:
+          // Custom entity
+          if (e.detail.kind == 'custom_entities') {
+            // Create new entity
+            newConfig.custom_entities[e.detail.value] =
+              newConfig.custom_entities[e.detail.id];
+            // Delete the old one
+            delete newConfig.custom_entities[e.detail.id];
+          } else {
+            newConfig.custom_entities[e.detail.id][e.detail.kind] =
+              e.detail.value;
+          }
+          break;
+      }
     }
     this.__dispatchChange(e, newConfig);
   }

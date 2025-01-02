@@ -62,9 +62,6 @@ Available customization:
     - Custom name : a custom name attached to the entity on the card
     - Custom active/inactive icon : icon rendered when light state is on/off
 
-**Improve/Known issues**
-- When lot of entities are customize, editor cannot be rendered (suspect too huge dom)
-
 ## How to install ?
 
 TODO

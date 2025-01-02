@@ -143,7 +143,8 @@ export class SciFiHexaTilesEditor extends LitElement {
   __renderEntity(id, entity) {
     return html` <section>
       <h1>
-        <span>${getIcon('mdi:selection-ellipse-arrow-inside')}</span>Entity (required)
+        <span>${getIcon('mdi:selection-ellipse-arrow-inside')}</span>Entity
+        (required)
       </h1>
       <sci-fi-toggle
         label="Standalone entity?"

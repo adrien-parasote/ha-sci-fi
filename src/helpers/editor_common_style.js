@@ -14,43 +14,6 @@ export default css`
     width: 100%;
     height: fit-content;
   }
-
-  .corner-border-top:before,
-  .corner-border-top:after,
-  .corner-border-bottom:before,
-  .corner-border-bottom:after {
-    border-style: solid;
-    border-width: 0;
-    border-color: var(--secondary-light-color);
-    content: '';
-    height: 10px;
-    position: absolute;
-    width: 10px;
-  }
-  .corner-border-top::before {
-    border-left-width: var(--border-width);
-    border-top-width: var(--border-width);
-    left: 0;
-    top: -1px;
-  }
-  .corner-border-top::after {
-    border-right-width: var(--border-width);
-    border-top-width: var(--border-width);
-    right: 0;
-    top: -1px;
-  }
-  .corner-border-bottom::before {
-    border-bottom-width: var(--border-width);
-    border-left-width: var(--border-width);
-    bottom: -1px;
-    left: 0;
-  }
-  .corner-border-bottom::after {
-    border-bottom-width: var(--border-width);
-    border-right-width: var(--border-width);
-    bottom: -1px;
-    right: 0;
-  }
   /*********CONTENT*********/
   .container {
     display: flex;

@@ -1,10 +1,14 @@
-# ha-sci-fi
+# 🛸 ha-sci-fi 🛸
 HA sci-fi cards for personal dashboard
 
 ## Available components
-### Sci-Fi Hexa-Tiles card
+### 1. Sci-Fi Hexa-Tiles card
 
-**/!\ currently only design for Smartphone and tu be used with  HA single panel /!\\**
+**/!\ currently only design for Smartphone and to be used with HA single panel /!\\**
+
+**Screenshot**
+
+!(screenshot/hexa.jpeg)
 
 **Content:**
 - Show current connected person
@@ -25,5 +29,38 @@ Available customization:
 - Link : a link to follow when 
 
 **Improve/Known issues**
-- Deal with tiles full screen (col + 2 row +3) + landascape
+- Responsive tiles (not only for smartphone)
 - When press key enter in chips component (editor mode) => save card action apply
+
+
+### 1. Sci-Fi Lights card
+
+**/!\ currently only design for Smartphone and to be used with HA single panel /!\\**
+
+**Screenshot**
+
+!(screenshot/lights.jpeg)
+
+**Content:**
+- Display house's floors with lights entities (floors' icon are from HA floor )
+- Display per floor :
+    - Global information 
+        - name
+        - level
+        - number of lights on/off
+    - Global turn on/off light button
+    - Attached area with lights entities (areas' icon are from HA area definition)
+- Display per area :
+    - Area name
+    - Global turn on/off light button
+    - Light entities button
+
+Available customization:
+- Default on/off light icon (used to represente each entity card if not overwirted)
+- First floor and associated area to display (if not setup, first floor and associated area in alphabetical order)
+- Light entity :
+    - Custom name : a custom name attached to the entity on the card
+    - Custom active/inactive icon : icon rendered when light state is on/off
+
+**Improve/Known issues**
+- When lot of entities are customize, editor cannot be rendered (suspect too huge dom)

@@ -1,13 +1,13 @@
 import {LitElement, html} from 'lit';
 
 import common_style from '../../helpers/common_style.js';
+import editor_common_style from '../../helpers/editor_common_style.js';
 import '../../helpers/form/form.js';
 import {getIcon} from '../../helpers/icons/icons.js';
-import style from './editor_style.js';
 
 export class SciFiHexaTilesEditor extends LitElement {
   static get styles() {
-    return [common_style, style];
+    return [common_style, editor_common_style];
   }
 
   static get properties() {
@@ -46,13 +46,11 @@ export class SciFiHexaTilesEditor extends LitElement {
   render() {
     if (!this._hass || !this._config) return html``;
     return html`
-      <div class="card">
-        <span class="corner-border-top"></span>
+      <div class="card card-corner">
         <div class="container">
           ${this.__renderHeader()} ${this.__renderWeather()}
           ${this.__renderTiles()}
         </div>
-        <span class="corner-border-bottom"></span>
       </div>
     `;
   }
@@ -274,7 +272,6 @@ export class SciFiHexaTilesEditor extends LitElement {
     let newConfig = this.__getNewConfig();
     const elemmentId = e.detail.id;
     if (e.type == 'accordion-delete') {
-      console.log(e.detail);
       newConfig.tiles.splice(elemmentId, 1);
     } else if (!['header', 'weather'].includes(elemmentId)) {
       switch (e.detail.type) {

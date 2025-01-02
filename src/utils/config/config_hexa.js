@@ -5,7 +5,7 @@ export const config = {
   weather: {
     activate: true,
     sun_entity: 'sun.sun',
-    weather_entity: 'weather.a_city',
+    weather_entity: 'weather.a_long-long_city_name',
   },
   tiles: [
     {
@@ -17,7 +17,7 @@ export const config = {
       name: 'Ligths',
       state_on: ['on'],
       state_error: null,
-      link: '/demo/demo.html',
+      link: '/demo/demo_lights.html',
     },
     {
       standalone: false,
@@ -28,7 +28,7 @@ export const config = {
       name: 'Radiators',
       state_on: ['on', 'auto'],
       state_error: null,
-      link: '/demo/demo.html',
+      link: '/',
     },
     {
       standalone: true,
@@ -38,7 +38,7 @@ export const config = {
       name: 'Stove',
       state_on: ['heat', 'cool'],
       state_error: null,
-      link: '/demo/demo.html',
+      link: '/',
     },
     {
       standalone: true,
@@ -48,7 +48,7 @@ export const config = {
       name: 'Vacuum',
       state_on: ['cleaning', 'returning'],
       state_error: 'error',
-      link: '/demo/demo.html',
+      link: '/',
     },
   ],
 };

@@ -28,17 +28,20 @@
         flex-direction: column;
       }
       .lovelace-header {
-        height: 56px;
-        color: white;
+        min-height: 56px;
         width: 100%;
         background-color: #101e24;
-      }
-      .app-header {
-        height: 56px;
         text-transform: uppercase;
-        color: rgb(105, 211, 251);
-        margin: 10px;
         align-content: center;
+        padding-left: 10px;
+      }
+      .lovelace-header a {
+        text-decoration: none;
+        color: white;
+      }
+      #content {
+        margin-bottom: 70px;
+        height: 100vh;
       }
       .demo-content {
         display: flex;
@@ -66,15 +69,20 @@
     </style>
   </head>
   <body>
-    <div class="ha-side-bar"></div>
+    <!--<div class="ha-side-bar"></div>-->
     <div class="lovelace-panel">
-      <div class="lovelace-header"></div>
-      <div class="app-header">EDITOR</div>
+      <div class="lovelace-header"><a href="/">LIGHTS</a></div>
+      <div id="content"></div>
       <div class="demo-content">
         <div class="editor"></div>
         <div class="preview"></div>
       </div>
     </div>
   </body>
-  <script type="module" src="demo.js"></script>
+  <script type="module">
+    import {config} from '../src/utils/config/config_lights.js';
+    import {demoRender} from './demo_core.js';
+
+    demoRender(window.customElements.get('sci-fi-lights'), config);
+  </script>
 </html>

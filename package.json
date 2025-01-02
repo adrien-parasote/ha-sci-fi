@@ -1,10 +1,10 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.15",
   "description": "HA custom tiles for dashboard",
   "main": "src/sci-fi.js",
   "type": "module",
   "scripts": {
-    "format": "prettier index.html demo/*.html demo/*.js index.js src/*.js src/**/*.js src/**/**/*.js --write",
+    "format": "prettier index.html demo/*.html demo/*.js src/*.js src/**/*.js src/**/**/*.js --write",
     "serve": "es-dev-server --app-index index.html --node-resolve --watch",
     "copy": "mkdir temp && cp -r ./src/* ./temp",
     "prepare-prod": "npm run copy && rm ./temp/utils/const.js && mv ./temp/utils/const.js.PROD ./temp/utils/const.js",

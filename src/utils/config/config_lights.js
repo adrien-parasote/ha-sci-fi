@@ -3,8 +3,8 @@ export const config = {
     on: 'mdi:lightbulb-on-outline',
     off: 'mdi:lightbulb-outline',
   },
-  first_floor_to_render: 'ground_floor',
-  first_area_to_render: 'parental_bedroom',
+  first_floor_to_render: 'floor_1',
+  first_area_to_render: 'toilette',
   custom_entities: {
     'light.light_parental_bedroom_0': {
       name: 'custom name 0',

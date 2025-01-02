@@ -33,7 +33,7 @@ Available customization:
 - When press key enter in chips component (editor mode) => save card action apply
 
 
-### 1. Sci-Fi Lights card
+### 2. Sci-Fi Lights card
 
 **/!\ currently only design for Smartphone and to be used with HA single panel /!\\**
 
@@ -64,3 +64,7 @@ Available customization:
 
 **Improve/Known issues**
 - When lot of entities are customize, editor cannot be rendered (suspect too huge dom)
+
+## How to install ?
+
+TODO

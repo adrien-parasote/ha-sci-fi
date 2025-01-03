@@ -257,31 +257,17 @@ export class SciFiLights extends LitElement {
   }
 
   __onPowerBtnClick(e, element) {
-    // Turn on or off
-    const active = element.isActive(ENTITY_KIND_LIGHT);
-    // Entities selection
-    const entity_ids = element
-      .getEntitiesByKind(ENTITY_KIND_LIGHT)
-      .filter((entity) => (active ? entity.active : !entity.active))
-      .reduce((acc, value) => acc.concat([value.entity_id]), []);
     e.preventDefault();
     e.stopPropagation();
-    this.__callService(entity_ids, active ? 'turn_off' : 'turn_on');
-  }
-
-  __callService(entities, action) {
-    this._hass.callService('light', action, {
-      entity_id: entities,
-    });
+    element.callService(this._hass, ENTITY_KIND_LIGHT);
   }
 
   __onLightClick(e, light) {
     e.preventDefault();
     e.stopPropagation();
-    this.__callService(
-      [light.entity_id],
-      light.active ? 'turn_off' : 'turn_on'
-    );
+    this._hass.callService('light', light.active ? 'turn_off' : 'turn_on', {
+      entity_id: [light.entity_id],
+    });
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

@@ -1,6 +1,8 @@
 import {LitElement, html} from 'lit';
+import {isEqual} from 'lodash-es';
 
 import common_style from '../../helpers/common_style.js';
+import {SunEntity, WeatherEntity} from '../../helpers/entities/weather.js';
 import {PACKAGE} from './const.js';
 import {SciFiWeatherEditor} from './editor.js';
 import style from './style.js';
@@ -15,9 +17,14 @@ export class SciFiWeather extends LitElement {
   static get properties() {
     return {
       _config: {type: Object},
+      _sun: {type: Object},
+      _weather: {type: Object},
     };
   }
   __validateConfig(config) {
+    if (!config.sun_entity) throw new Error('You need to define a sun entity');
+    if (!config.weather_entity)
+      throw new Error('You need to define a weather entity');
     return config;
   }
 
@@ -28,6 +35,12 @@ export class SciFiWeather extends LitElement {
     if (this._hass) {
       this.hass = this._hass;
     }
+
+    /*
+    promise.then(
+      result => alert(result), // shows "done!" after 1 second
+      error => alert(error) // doesn't run
+    );*/
   }
 
   getCardSize() {
@@ -37,11 +50,39 @@ export class SciFiWeather extends LitElement {
   set hass(hass) {
     this._hass = hass;
     if (!this._config) return; // Can't assume setConfig is called before hass is set
+
+    const sun = new SunEntity(hass, this._config.sun_entity);
+    if (!this._sun || !isEqual(sun, this._sun)) this._sun = sun;
+
+    const weather = new WeatherEntity(hass, this._config.weather_entity);
+    if (!this._weather || !isEqual(weather, this._weather)) {
+      this._weather = weather;
+      // Get new forcast in case of global weather change
+      this._weather.getForecasts(hass);
+    }
   }
 
   render() {
     if (!this._hass || !this._config) return html``;
-    return html`WEATHER`;
+    return html`
+      <div class="container">
+        <div class="header">${this.__renderHeader()}</div>
+        <div class="hours_forcast">${this.__renderHoursForcast()}</div>
+        <div class="days_forcast">${this.__renderDaysForcast()}</div>
+      </div>
+    `;
+  }
+
+  __renderHeader() {
+    return html`header`;
+  }
+
+  __renderHoursForcast() {
+    return html`Hours forcast`;
+  }
+
+  __renderDaysForcast() {
+    return html`Days forcast`;
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/
@@ -49,7 +90,10 @@ export class SciFiWeather extends LitElement {
     return document.createElement(PACKAGE + '-editor');
   }
   static getStubConfig() {
-    return {};
+    return {
+      sun_entity: 'sun.sun',
+      weather_entity: null,
+    };
   }
 }
 

@@ -1,4 +1,4 @@
-import {NOW, generateid} from './utils';
+import {NOW, WEATHER_STATES, generateid} from './utils';
 
 function nameToId(kind, name) {
   return [kind, name.toLowerCase().replaceAll(' ', '_')].join('.');
@@ -182,23 +182,7 @@ export class WeatherEntity extends EntityState {
   static kind = 'weather';
 
   constructor(friendly_name) {
-    const states = [
-      'clear-night',
-      'cloudy',
-      'exceptional',
-      'fog',
-      'hail',
-      'lightning',
-      'lightning-rainy',
-      'partlycloudy',
-      'pouring',
-      'rainy',
-      'snowy',
-      'snowy-rainy',
-      'sunny',
-      'windy',
-      'windy-variant',
-    ];
+    const states = WEATHER_STATES;
     const attributes = {
       temperature: 14.2,
       temperature_unit: '°C',

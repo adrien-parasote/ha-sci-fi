@@ -9,3 +9,20 @@ export function generateid() {
   }
   return result;
 }
+export const WEATHER_STATES = [
+  'clear-night',
+  'cloudy',
+  'exceptional',
+  'fog',
+  'hail',
+  'lightning',
+  'lightning-rainy',
+  'partlycloudy',
+  'pouring',
+  'rainy',
+  'snowy',
+  'snowy-rainy',
+  'sunny',
+  'windy',
+  'windy-variant',
+];

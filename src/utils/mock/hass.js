@@ -8,6 +8,7 @@ import {
 } from './entities.js';
 import {Area, Floor} from './floors.js';
 import {HOUSE} from './house.js';
+import {buildForecast} from './weather_forecast.js';
 
 class Hass {
   // Private
@@ -16,10 +17,23 @@ class Hass {
   constructor() {
     this.__build();
     // Add services & connected user
-    this.callService = function (service, action, data) {
-      console.log(service, action, data);
-    };
+    this.callService = this.__callService;
     this.user = this._mockConnectedUser('person.punk1');
+  }
+
+  __callService(service, action, data) {
+    if (service == 'weather' && action == 'get_forecasts') {
+      let res = {};
+      res[data.target.entity_id] = {
+        forecast:
+          data.data.type == 'daily'
+            ? buildForecast(false)
+            : buildForecast(true),
+      };
+      return res;
+    } else {
+      console.log(service, action, data);
+    }
   }
 
   __build() {

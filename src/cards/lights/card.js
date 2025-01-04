@@ -265,9 +265,7 @@ export class SciFiLights extends LitElement {
   __onLightClick(e, light) {
     e.preventDefault();
     e.stopPropagation();
-    this._hass.callService('light', light.active ? 'turn_off' : 'turn_on', {
-      entity_id: [light.entity_id],
-    });
+    light.callService(this._hass);
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

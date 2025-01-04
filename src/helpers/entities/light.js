@@ -30,4 +30,10 @@ export class LightEntity {
       state: this.state,
     };
   }
+
+  callService(hass) {
+    hass.callService('light', this.active ? 'turn_off' : 'turn_on', {
+      entity_id: [this.entity_id],
+    });
+  }
 }

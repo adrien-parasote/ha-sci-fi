@@ -62,6 +62,21 @@ Available customization:
     - Custom name : a custom name attached to the entity on the card
     - Custom active/inactive icon : icon rendered when light state is on/off
 
+
+
+### 3. Sci-Fi Weather card
+
+**/!\ currently only design for Smartphone and to be used with HA single panel /!\\**
+Credits go to [basmilius](https://github.com/basmilius) for the awesome [weather icons](https://github.com/basmilius/weather-icons).
+
+**Screenshot**
+
+TODO
+
+**Content:**
+
+TODO
+
 ## How to install ?
 
 TODO

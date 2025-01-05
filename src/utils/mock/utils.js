@@ -9,6 +9,26 @@ export function generateid() {
   }
   return result;
 }
+
+function pad(nb) {
+  return (nb > 9 ? '' : '0') + nb;
+}
+
+export function getStrDatetime(date, full = false) {
+  const firstPart = [
+    date.getFullYear(),
+    pad(date.getMonth() + 1),
+    pad(date.getDate()),
+  ].join('-');
+  const hh = date.getHours();
+  const secondPart = [
+    pad(hh),
+    full ? pad(date.getMinutes()) : '00',
+    full ? pad(date.getSeconds()) : '00',
+  ].join(':');
+
+  return [firstPart, 'T', secondPart, '+01:00'].join('');
+}
 export const WEATHER_STATES = [
   'clear',
   'clear-night',

@@ -1,4 +1,4 @@
-import {NOW, WEATHER_STATES, generateid} from './utils';
+import {NOW, WEATHER_STATES, generateid, getStrDatetime} from './utils';
 
 function nameToId(kind, name) {
   return [kind, name.toLowerCase().replaceAll(' ', '_')].join('.');
@@ -210,14 +210,29 @@ export class SunEntity extends EntityState {
   static kind = 'sun';
 
   constructor(friendly_name) {
+    let next_rising = new Date(NOW);
+    let next_setting = new Date(NOW);
+
+    if (next_rising.getHours() > 9) {
+      next_rising.setDate(next_rising.getDate() + 1);
+    }
+    next_rising.setHours(8);
+    next_rising.setMinutes(50);
+
+    if (next_setting.getHours() > 21) {
+      next_setting.setDate(next_setting.getDate() + 1);
+    }
+    next_setting.setHours(20);
+    next_setting.setMinutes(50);
+
     const states = ['above_horizon', 'below_horizon'];
     const attributes = {
       next_dawn: '2024-12-15T07:10:37.828926+00:00',
       next_dusk: '2024-12-14T16:52:07.416565+00:00',
       next_midnight: '2024-12-15T00:01:32+00:00',
       next_noon: '2024-12-15T12:01:18+00:00',
-      next_rising: '2024-12-15T07:47:03.007119+00:00',
-      next_setting: '2024-12-14T16:15:44.366871+00:00',
+      next_rising: getStrDatetime(next_rising, true),
+      next_setting: getStrDatetime(next_setting, true),
       elevation: 5.23,
       azimuth: 227.09,
       rising: false,

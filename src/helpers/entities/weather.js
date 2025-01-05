@@ -11,8 +11,12 @@ export class SunEntity {
     this.next_dusk = hass.states[sun_entity_id].attributes.next_dusk;
     this.next_midnight = hass.states[sun_entity_id].attributes.next_midnight;
     this.next_noon = hass.states[sun_entity_id].attributes.next_noon;
-    this.next_rising = hass.states[sun_entity_id].attributes.next_rising;
-    this.next_setting = hass.states[sun_entity_id].attributes.next_setting;
+    this.next_rising = new Date(
+      hass.states[sun_entity_id].attributes.next_rising
+    ); // prochain levé
+    this.next_setting = new Date(
+      hass.states[sun_entity_id].attributes.next_setting
+    ); // prochain couché
     this.elevation = hass.states[sun_entity_id].attributes.elevation;
     this.azimuth = hass.states[sun_entity_id].attributes.azimuth;
     this.rising = hass.states[sun_entity_id].attributes.rising;
@@ -20,6 +24,29 @@ export class SunEntity {
 
   isDay() {
     return this.state == 'above_horizon';
+  }
+
+  renderSunrise() {
+    return html`
+      <div class="hourly-weather">
+        <div class="hour">
+          ${this.next_rising.getHours()}:${this.next_rising.getMinutes()}
+        </div>
+        <div class="state">${getWeatherIcon('sunrise')}</div>
+        <div class="temp">Lever</div>
+      </div>
+    `;
+  }
+  renderSunset() {
+    return html`
+      <div class="hourly-weather">
+        <div class="hour">
+          ${this.next_setting.getHours()}:${this.next_setting.getMinutes()}
+        </div>
+        <div class="state">${getWeatherIcon('sunset')}</div>
+        <div class="temp">Coucher</div>
+      </div>
+    `;
   }
 }
 
@@ -59,13 +86,17 @@ export class WeatherEntity {
         target: {entity_id: this.entity_id},
         data: {type: 'daily'},
       })
-      [this.entity_id].forecast.map((value) => new DailyForecast(value));
+      [this.entity_id].forecast.map(
+        (value) => new DailyForecast(value, this.temperature_unit)
+      );
     this.hourly_forecast = hass
       .callService('weather', 'get_forecasts', {
         target: {entity_id: this.entity_id},
         data: {type: 'hourly'},
       })
-      [this.entity_id].forecast.map((value) => new HourlyForecast(value));
+      [this.entity_id].forecast.map(
+        (value) => new HourlyForecast(value, this.temperature_unit)
+      );
   }
 
   renderTemperature() {
@@ -78,25 +109,27 @@ export class WeatherEntity {
 }
 
 class DailyForecast {
-  constructor(data) {
+  constructor(data, temperature_unit) {
     this.condition = data.condition;
-    this.datetime = data.datetime;
+    this.datetime = new Date(data.datetime);
     this.temperature = data.temperature;
     this.templow = data.templow;
     this.precipitation = data.precipitation;
     this.humidity = data.humidity;
+    this.temperature_unit = temperature_unit;
   }
 }
 
 class HourlyForecast {
-  constructor(data) {
+  constructor(data, temperature_unit) {
     this.condition = data.condition;
-    this.datetime = data.datetime;
+    this.datetime = new Date(data.datetime);
     this.humidity = data.humidity;
     this.precipitation = data.precipitation;
     this.temperature = data.temperature;
     this.wind_bearing = data.wind_bearing;
     this.wind_speed = data.wind_speed;
+    this.temperature_unit = temperature_unit;
   }
 
   getWeatherIcon(day = true) {
@@ -106,14 +139,10 @@ class HourlyForecast {
   render(day = true) {
     return html`
       <div class="hourly-weather">
-        <div class="hour">${this.hour} h</div>
+        <div class="hour">${this.datetime.getHours()} h</div>
         <div class="state">${this.getWeatherIcon(day)}</div>
-        <div class="temp">${this.temperature}</div>
+        <div class="temp">${this.temperature}${this.temperature_unit}</div>
       </div>
     `;
-  }
-
-  get hour() {
-    return new Date(this.datetime).getHours();
   }
 }

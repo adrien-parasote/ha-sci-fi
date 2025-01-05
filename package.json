@@ -1,6 +1,6 @@
 {
-  "version": "1.2.4",
-  "description": "HA custom tiles for dashboard",
+  "version": "1.2.5",
+  "description": "Sci-fi cards for HA dashboard",
   "main": "src/sci-fi.js",
   "type": "module",
   "scripts": {

@@ -69,7 +69,6 @@ export class SciFiWeather extends LitElement {
       this._weather = weather;
       // Get new forcast in case of global weather change
       this._weather.getForecasts(hass);
-      console.log(this._weather.hourly_forecast);
     }
   }
 
@@ -99,32 +98,6 @@ export class SciFiWeather extends LitElement {
     `;
   }
 
-  /*
-  __renderHeader() {
-    const state = this._sun.isDay() ? 'on' : 'off'
-    return html`
-      <sci-fi-hexa-tile active-tile state=${state}>
-        <div class="planet-svg-container">${EARTH}</div>
-      </sci-fi-hexa-tile>
-      <div class="h-separator">
-        <div class="circle ${state}"></div>
-        <div class="h-path ${state}"></div>
-        <div class="circle ${state}"></div>
-      </div>
-      <div class="card-corner ${state} ">
-        <div class="weather-icon">
-          ${this._weather.getWeatherIcon(this._sun.isDay())}
-        </div>
-        <div class="weather-clock">
-          <div class="state">${this._weather.state}, ${this._weather.renderTemperature()}</div>
-          <div class="hour">${this.__getHour()}</div>
-          <div class="date">${this.__getDate()}</div>
-        </div>
-      </div>
-    `;
-  }
-  */
-
   __getHour() {
     const options = {
       minimumIntegerDigits: 2,
@@ -152,19 +125,25 @@ export class SciFiWeather extends LitElement {
   }
 
   __renderHoursForcast() {
-    console.log(
-      this._weather.hourly_forecast.slice(
-        0,
-        this._config.weather_hourly_forecast_limit
-      )
-    );
-    return html`
+    return html` <div class="content">
       ${this._weather.hourly_forecast
         .slice(0, this._config.weather_hourly_forecast_limit)
         .map((hourly_forecast) => {
-          return html`${hourly_forecast.render(this._sun.isDay())}`;
+          let display = [];
+          if (this.__pushSun(hourly_forecast.datetime, this._sun.next_rising))
+            display.push(this._sun.renderSunrise());
+          if (this.__pushSun(hourly_forecast.datetime, this._sun.next_setting))
+            display.push(this._sun.renderSunset());
+          display.push(hourly_forecast.render(this._sun.isDay()));
+          return html`${display}`;
         })}
-    `;
+    </div>`;
+  }
+
+  __pushSun(hour, sun) {
+    let nextHour = new Date(hour);
+    nextHour.setTime(nextHour.getTime() + 60 * 60 * 1000);
+    return sun >= hour && sun < nextHour;
   }
 
   __renderDaysForcast() {

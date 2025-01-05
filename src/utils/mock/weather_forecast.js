@@ -1,17 +1,4 @@
-import {NOW, WEATHER_STATES} from './utils';
-
-function getStrDatetime(date) {
-  const mm = date.getMonth() + 1;
-  const dd = date.getDate();
-  const firstPart = [
-    date.getFullYear(),
-    (mm > 9 ? '' : '0') + mm,
-    (dd > 9 ? '' : '0') + dd,
-  ].join('-');
-  const hh = date.getHours();
-  const secondPart = [(hh > 9 ? '' : '0') + hh, '00', '00'].join(':');
-  return [firstPart, 'T', secondPart, '+01:00'].join('');
-}
+import {NOW, WEATHER_STATES, getStrDatetime} from './utils';
 
 function addHours(date, h) {
   let d = new Date(date);
@@ -32,7 +19,7 @@ function hourForecast(date) {
     condition:
       WEATHER_STATES[Math.floor(Math.random() * WEATHER_STATES.length)],
     wind_bearing: getRandomInt(70, 90),
-    temperature: getRandomFloat(0, 4),
+    temperature: getRandomFloat(-10, 40),
     wind_speed: getRandomFloat(0, 100),
     precipitation: getRandomFloat(0, 5),
     humidity: getRandomInt(70, 90),

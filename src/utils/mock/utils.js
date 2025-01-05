@@ -10,6 +10,7 @@ export function generateid() {
   return result;
 }
 export const WEATHER_STATES = [
+  'clear',
   'clear-night',
   'cloudy',
   'exceptional',

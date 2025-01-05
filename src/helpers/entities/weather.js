@@ -1,3 +1,6 @@
+import {getWeatherIcon} from '../icons/icons.js';
+import {WEATHER_STATE_FR} from './const.js';
+
 export class SunEntity {
   constructor(hass, sun_entity_id) {
     this.entity_id = sun_entity_id;
@@ -11,6 +14,10 @@ export class SunEntity {
     this.elevation = hass.states[sun_entity_id].attributes.elevation;
     this.azimuth = hass.states[sun_entity_id].attributes.azimuth;
     this.rising = hass.states[sun_entity_id].attributes.rising;
+  }
+
+  isDay() {
+    return this.state == 'above_horizon';
   }
 }
 
@@ -40,6 +47,10 @@ export class WeatherEntity {
     this.daily_forecast = [];
   }
 
+  getWeatherIcon(day = true) {
+    return getWeatherIcon(this.state, day);
+  }
+
   getForecasts(hass) {
     this.daily_forecast = hass
       .callService('weather', 'get_forecasts', {
@@ -53,8 +64,14 @@ export class WeatherEntity {
         data: {type: 'hourly'},
       })
       [this.entity_id].forecast.map((value) => new HourlyForecast(value));
+  }
 
-    console.log(this.hourly_forecast);
+  renderTemperature() {
+    return [this.temperature, this.temperature_unit].join('');
+  }
+
+  get weather() {
+    return WEATHER_STATE_FR[this.state];
   }
 }
 

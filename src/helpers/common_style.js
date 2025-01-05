@@ -16,6 +16,7 @@ export default css`
     --primary-bg-alpha-color: rgba(39, 40, 43, 0.3);
     --secondary-bg-color: rgb(55, 61, 69);
 
+    --font-size-large: 50px;
     --font-size-title: 16px;
     --font-size-normal: 14px;
     --font-size-small: 12px;
@@ -38,6 +39,7 @@ export default css`
     color: var(--primary-color);
     display: flex;
   }
+  /********* CARD ************/
   .card-corner {
     border-width: var(--border-width);
     border-style: solid;
@@ -54,5 +56,29 @@ export default css`
   }
   .card-corner.off {
     border-color: var(--secondary-light-color);
+  }
+  /********* SEPARATOR ************/
+  .h-separator {
+    margin: 0 3px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  .circle {
+    width: 6px;
+    height: 6px;
+    border: var(--border-width) solid var(--secondary-bg-color);
+    background: var(--primary-light-color);
+    border-radius: 50%;
+  }
+  .circle.off {
+    background-color: var(--secondary-light-alpha-color);
+  }
+  .h-path {
+    border: var(--border-width) solid var(--primary-light-color);
+    width: 25px;
+  }
+  .h-path.off {
+    border-color: var(--secondary-light-alpha-color);
   }
 `;

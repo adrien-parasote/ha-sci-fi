@@ -1,9 +1,10 @@
 import {LitElement, html} from 'lit';
 import {isEqual} from 'lodash-es';
 
+import '../../helpers/card/tiles.js';
 import common_style from '../../helpers/common_style.js';
 import {SunEntity, WeatherEntity} from '../../helpers/entities/weather.js';
-import {PACKAGE} from './const.js';
+import {DAYS_OF_WEEK, EARTH, PACKAGE} from './const.js';
 import {SciFiWeatherEditor} from './editor.js';
 import style from './style.js';
 
@@ -19,8 +20,20 @@ export class SciFiWeather extends LitElement {
       _config: {type: Object},
       _sun: {type: Object},
       _weather: {type: Object},
+      _date: {type: Object},
     };
   }
+
+  constructor() {
+    super();
+    // Clock
+    this._date = new Date();
+    // Auto update date
+    setInterval(() => {
+      this._date = new Date();
+    }, 1000);
+  }
+
   __validateConfig(config) {
     if (!config.sun_entity) throw new Error('You need to define a sun entity');
     if (!config.weather_entity)
@@ -35,12 +48,6 @@ export class SciFiWeather extends LitElement {
     if (this._hass) {
       this.hass = this._hass;
     }
-
-    /*
-    promise.then(
-      result => alert(result), // shows "done!" after 1 second
-      error => alert(error) // doesn't run
-    );*/
   }
 
   getCardSize() {
@@ -74,7 +81,70 @@ export class SciFiWeather extends LitElement {
   }
 
   __renderHeader() {
-    return html`header`;
+    return html`
+      <div class="weather-icon">
+        ${this._weather.getWeatherIcon(this._sun.isDay())}
+      </div>
+      <div class="weather-clock">
+        <div class="state">
+          ${this._weather.weather}, ${this._weather.renderTemperature()}
+        </div>
+        <div class="hour">${this.__getHour()}</div>
+        <div class="date">${this.__getDate()}</div>
+      </div>
+    `;
+  }
+
+  /*
+  __renderHeader() {
+    const state = this._sun.isDay() ? 'on' : 'off'
+    return html`
+      <sci-fi-hexa-tile active-tile state=${state}>
+        <div class="planet-svg-container">${EARTH}</div>
+      </sci-fi-hexa-tile>
+      <div class="h-separator">
+        <div class="circle ${state}"></div>
+        <div class="h-path ${state}"></div>
+        <div class="circle ${state}"></div>
+      </div>
+      <div class="card-corner ${state} ">
+        <div class="weather-icon">
+          ${this._weather.getWeatherIcon(this._sun.isDay())}
+        </div>
+        <div class="weather-clock">
+          <div class="state">${this._weather.state}, ${this._weather.renderTemperature()}</div>
+          <div class="hour">${this.__getHour()}</div>
+          <div class="date">${this.__getDate()}</div>
+        </div>
+      </div>
+    `;
+  }
+  */
+
+  __getHour() {
+    const options = {
+      minimumIntegerDigits: 2,
+      useGrouping: false,
+    };
+    return [
+      this._date.getHours().toLocaleString('fr-FR', options),
+      this._date.getMinutes().toLocaleString('fr-FR', options),
+    ].join(':');
+  }
+
+  __getDate() {
+    const options = {
+      minimumIntegerDigits: 2,
+      useGrouping: false,
+    };
+    return [
+      [DAYS_OF_WEEK[this._date.getDay()], ','].join(''),
+      [
+        this._date.getDate().toLocaleString('fr-FR', options),
+        (this._date.getMonth() + 1).toLocaleString('fr-FR', options),
+        this._date.getFullYear().toLocaleString('fr-FR', options),
+      ].join('.'),
+    ].join(' ');
   }
 
   __renderHoursForcast() {

@@ -1,14 +1,19 @@
-import {ENTITY_KIND_LIGHT} from './const';
+import {
+  ENTITY_KIND_LIGHT,
+  HASS_LIGHT_SERVICE,
+  HASS_LIGHT_SERVICE_ACTION_TURN_OFF,
+  HASS_LIGHT_SERVICE_ACTION_TURN_ON,
+} from './const';
 import {LightEntity} from './light';
 
 const SCI_FI_ENTITIES = {};
 SCI_FI_ENTITIES[ENTITY_KIND_LIGHT] = LightEntity;
 const SERVICES = [];
 SERVICES[ENTITY_KIND_LIGHT] = {
-  service: 'light',
+  service: HASS_LIGHT_SERVICE,
   actions: {
-    true: 'turn_on',
-    false: 'turn_off',
+    true: HASS_LIGHT_SERVICE_ACTION_TURN_ON,
+    false: HASS_LIGHT_SERVICE_ACTION_TURN_OFF,
   },
 };
 

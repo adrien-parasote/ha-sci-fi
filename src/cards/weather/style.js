@@ -4,6 +4,14 @@ export default css`
   :host {
     --default-hexa-size: 100px;
     --main-weather-icon-size: 150px;
+    --hourly-weather-icon-size: 150px;
+
+    /*
+    --icon-size-large: 50px;
+    --icon-size-title: 36px;
+
+*/
+    font-size: var(--font-size-small);
     /*
     --planet-size: 100px;
     */
@@ -36,7 +44,6 @@ export default css`
   }
   .header .weather-clock .state {
     text-align: end;
-    font-size: var(--font-size-small);
   }
   .header .weather-clock .state::first-letter {
     text-transform: capitalize;
@@ -44,9 +51,6 @@ export default css`
   .header .weather-clock .hour {
     font-size: var(--font-size-large);
     text-align: center;
-  }
-  .header .weather-clock .date {
-    font-size: var(--font-size-small);
   }
   /******** PLANET *********/
   /*
@@ -80,4 +84,20 @@ export default css`
     stroke-width: 0;
   }
   */
+
+  /******** HOURLY FORECAST *********/
+  .hours-forcast {
+    display: flex;
+    flex-direction: row;
+    column-gap: 5px;
+  }
+  .hours-forcast .hourly-weather svg {
+    width: var(--icon-size-large);
+    height: var(--icon-size-title);
+  }
+  .hours-forcast .hourly-weather .hour,
+  .hours-forcast .hourly-weather .temp {
+    text-align: center;
+    font-weight: bold;
+  }
 `;

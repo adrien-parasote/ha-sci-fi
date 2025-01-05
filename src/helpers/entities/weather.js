@@ -1,3 +1,5 @@
+import {html} from 'lit';
+
 import {getWeatherIcon} from '../icons/icons.js';
 import {WEATHER_STATE_FR} from './const.js';
 
@@ -95,5 +97,23 @@ class HourlyForecast {
     this.temperature = data.temperature;
     this.wind_bearing = data.wind_bearing;
     this.wind_speed = data.wind_speed;
+  }
+
+  getWeatherIcon(day = true) {
+    return getWeatherIcon(this.condition, day);
+  }
+
+  render(day = true) {
+    return html`
+      <div class="hourly-weather">
+        <div class="hour">${this.hour} h</div>
+        <div class="state">${this.getWeatherIcon(day)}</div>
+        <div class="temp">${this.temperature}</div>
+      </div>
+    `;
+  }
+
+  get hour() {
+    return new Date(this.datetime).getHours();
   }
 }

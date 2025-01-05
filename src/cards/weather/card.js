@@ -4,7 +4,7 @@ import {isEqual} from 'lodash-es';
 import '../../helpers/card/tiles.js';
 import common_style from '../../helpers/common_style.js';
 import {SunEntity, WeatherEntity} from '../../helpers/entities/weather.js';
-import {DAYS_OF_WEEK, EARTH, PACKAGE} from './const.js';
+import {DAYS_OF_WEEK, PACKAGE} from './const.js';
 import {SciFiWeatherEditor} from './editor.js';
 import style from './style.js';
 
@@ -38,6 +38,9 @@ export class SciFiWeather extends LitElement {
     if (!config.sun_entity) throw new Error('You need to define a sun entity');
     if (!config.weather_entity)
       throw new Error('You need to define a weather entity');
+    if (!config.weather_hourly_forecast_limit)
+      config.weather_hourly_forecast_limit = 24;
+
     return config;
   }
 
@@ -66,6 +69,7 @@ export class SciFiWeather extends LitElement {
       this._weather = weather;
       // Get new forcast in case of global weather change
       this._weather.getForecasts(hass);
+      console.log(this._weather.hourly_forecast);
     }
   }
 
@@ -74,8 +78,8 @@ export class SciFiWeather extends LitElement {
     return html`
       <div class="container">
         <div class="header">${this.__renderHeader()}</div>
-        <div class="hours_forcast">${this.__renderHoursForcast()}</div>
-        <div class="days_forcast">${this.__renderDaysForcast()}</div>
+        <div class="hours-forcast">${this.__renderHoursForcast()}</div>
+        <div class="days-forcast">${this.__renderDaysForcast()}</div>
       </div>
     `;
   }
@@ -148,7 +152,19 @@ export class SciFiWeather extends LitElement {
   }
 
   __renderHoursForcast() {
-    return html`Hours forcast`;
+    console.log(
+      this._weather.hourly_forecast.slice(
+        0,
+        this._config.weather_hourly_forecast_limit
+      )
+    );
+    return html`
+      ${this._weather.hourly_forecast
+        .slice(0, this._config.weather_hourly_forecast_limit)
+        .map((hourly_forecast) => {
+          return html`${hourly_forecast.render(this._sun.isDay())}`;
+        })}
+    `;
   }
 
   __renderDaysForcast() {
@@ -163,6 +179,7 @@ export class SciFiWeather extends LitElement {
     return {
       sun_entity: 'sun.sun',
       weather_entity: null,
+      weather_hourly_forecast_limit: 24,
     };
   }
 }

@@ -8,8 +8,9 @@ function getStrDatetime(date) {
     (mm > 9 ? '' : '0') + mm,
     (dd > 9 ? '' : '0') + dd,
   ].join('-');
-  const secondPart = [date.getHours(), '00', '00'].join(':');
-  return [firstPart, 'T', secondPart, '+00:00'].join('');
+  const hh = date.getHours();
+  const secondPart = [(hh > 9 ? '' : '0') + hh, '00', '00'].join(':');
+  return [firstPart, 'T', secondPart, '+01:00'].join('');
 }
 
 function addHours(date, h) {
@@ -49,10 +50,11 @@ function dayForecast(date) {
     humidity: getRandomInt(70, 90),
   };
 }
+
 export function buildForecast(hourly = true) {
   let forcast = [];
   let date = new Date(NOW);
-  date.setHours(0);
+  if (!hourly) date.setHours(0);
   date.setMinutes(0);
   date.setSeconds(0);
   date.setMilliseconds(0);

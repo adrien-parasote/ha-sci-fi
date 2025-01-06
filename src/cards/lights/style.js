@@ -25,9 +25,6 @@ export default css`
   .off svg {
     fill: var(--secondary-light-color) !important;
   }
-  .h-separator.hide {
-    display: none;
-  }
   .title .power {
     float: right;
   }

@@ -64,6 +64,9 @@ export default css`
     flex-direction: row;
     align-items: center;
   }
+  .h-separator.hide {
+    display: none;
+  }
   .circle {
     width: 6px;
     height: 6px;

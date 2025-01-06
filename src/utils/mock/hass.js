@@ -8,7 +8,9 @@ import {
 } from './entities.js';
 import {Area, Floor} from './floors.js';
 import {HOUSE} from './house.js';
-import {buildForecast} from './weather_forecast.js';
+import {buildForecast, getWeatherSensors} from './weather_forecast.js';
+
+const CITY_NAME = 'A long-long city name';
 
 class Hass {
   // Private
@@ -106,13 +108,16 @@ class Hass {
     });
 
     // Build sun & weather entities
-    [new WeatherEntity('A long-long city name'), new SunEntity('Sun')].map(
-      (entity_state) => {
-        const entity = entity_state.getEntity(null);
-        this.entities[entity_state.entity_id] = entity;
-        this.states[entity_state.entity_id] = entity_state;
-      }
-    );
+    [new WeatherEntity(CITY_NAME), new SunEntity('Sun')].map((entity_state) => {
+      const entity = entity_state.getEntity(null);
+      this.entities[entity_state.entity_id] = entity;
+      this.states[entity_state.entity_id] = entity_state;
+    });
+
+    // Build weather sensors
+    Object.entries(getWeatherSensors(CITY_NAME)).map(([id, sensor]) => {
+      this.states[id] = sensor;
+    });
   }
 
   _mockConnectedUser(id) {

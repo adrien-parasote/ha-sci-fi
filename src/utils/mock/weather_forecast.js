@@ -1,4 +1,5 @@
-import {NOW, WEATHER_STATES, getStrDatetime} from './utils';
+import {EXTRA_SENSORS} from '../../helpers/entities/const';
+import {NOW, WEATHER_STATES, getStrDatetime, nameToId} from './utils';
 
 function addHours(date, h) {
   let d = new Date(date);
@@ -51,4 +52,61 @@ export function buildForecast(hourly = true) {
     forcast.push(hourly ? hourForecast(date) : dayForecast(date));
   }
   return forcast;
+}
+
+class SensorState {
+  constructor(state, attributes) {
+    this.state = state;
+    this.attributes = attributes;
+  }
+}
+
+export function getWeatherSensors(city) {
+  const city_id = nameToId('sensor', city);
+  const attrs = {
+    cloud_cover: {
+      state: 30,
+      attrs: {
+        unit_of_measurement: '%',
+      },
+    },
+    daily_precipitation: {
+      state: 6.5,
+      attrs: {
+        unit_of_measurement: 'mm',
+      },
+    },
+    freeze_chance: {
+      state: 0,
+      attrs: {
+        unit_of_measurement: '%',
+      },
+    },
+    humidity: {
+      state: 60,
+      attrs: {
+        unit_of_measurement: '%',
+      },
+    },
+    rain_chance: {
+      state: 30,
+      attrs: {
+        unit_of_measurement: '%',
+      },
+    },
+    snow_chance: {
+      state: 0,
+      attrs: {
+        unit_of_measurement: '%',
+      },
+    },
+  };
+  let res = {};
+  Object.keys(EXTRA_SENSORS).map((sensor_name) => {
+    res[[city_id, sensor_name].join('_')] = new SensorState(
+      attrs[sensor_name].state,
+      attrs[sensor_name].attrs
+    );
+  });
+  return res;
 }

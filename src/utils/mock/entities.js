@@ -1,8 +1,10 @@
-import {NOW, WEATHER_STATES, generateid, getStrDatetime} from './utils';
-
-function nameToId(kind, name) {
-  return [kind, name.toLowerCase().replaceAll(' ', '_')].join('.');
-}
+import {
+  NOW,
+  WEATHER_STATES,
+  generateid,
+  getStrDatetime,
+  nameToId,
+} from './utils';
 
 class Entity {
   static kind = '';

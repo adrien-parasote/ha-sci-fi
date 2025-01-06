@@ -9,7 +9,9 @@ export function generateid() {
   }
   return result;
 }
-
+export function nameToId(kind, name) {
+  return [kind, name.toLowerCase().replaceAll(' ', '_')].join('.');
+}
 function pad(nb) {
   return (nb > 9 ? '' : '0') + nb;
 }

@@ -1,7 +1,7 @@
 import {html} from 'lit';
 
 import {getWeatherIcon} from '../icons/icons.js';
-import {WEATHER_STATE_FR} from './const.js';
+import {EXTRA_SENSORS, WEATHER_STATE_FR, WEEK_DAYS} from './const.js';
 
 export class SunEntity {
   constructor(hass, sun_entity_id) {
@@ -28,23 +28,23 @@ export class SunEntity {
 
   renderSunrise() {
     return html`
-      <div class="hourly-weather">
-        <div class="hour">
+      <div class="sun">
+        <div class="label">
           ${this.next_rising.getHours()}:${this.next_rising.getMinutes()}
         </div>
         <div class="state">${getWeatherIcon('sunrise')}</div>
-        <div class="temp">Lever</div>
+        <div class="label">Lever</div>
       </div>
     `;
   }
   renderSunset() {
     return html`
-      <div class="hourly-weather">
-        <div class="hour">
+      <div class="sun">
+        <div class="label">
           ${this.next_setting.getHours()}:${this.next_setting.getMinutes()}
         </div>
         <div class="state">${getWeatherIcon('sunset')}</div>
-        <div class="temp">Coucher</div>
+        <div class="label">Coucher</div>
       </div>
     `;
   }
@@ -71,13 +71,29 @@ export class WeatherEntity {
       hass.states[weather_entity_id].attributes.precipitation_unit;
     this.friendly_name =
       hass.states[weather_entity_id].attributes.friendly_name;
+    // Extract additionnal sensors
+    this.sensors = this.__buildExtraSensors(hass);
     // Setup later
     this.hourly_forecast = [];
     this.daily_forecast = [];
   }
 
+  __buildExtraSensors(hass) {
+    const city = ['sensor', this.entity_id.split('.')[1]].join('.');
+    let sensors = {};
+    Object.keys(EXTRA_SENSORS).map((sensorkey) => {
+      const entity = hass.states[[city, sensorkey].join('_')];
+      sensors[sensorkey] = new ExtraSensor(
+        sensorkey,
+        entity.state,
+        entity.attributes.unit_of_measurement
+      );
+    });
+    return sensors;
+  }
+
   getWeatherIcon(day = true) {
-    return getWeatherIcon(this.state, day);
+    return getWeatherIcon([this.state, day ? 'day' : 'night'].join('-'));
   }
 
   getForecasts(hass) {
@@ -99,12 +115,46 @@ export class WeatherEntity {
       );
   }
 
-  renderTemperature() {
+  get temperatureUnit() {
     return [this.temperature, this.temperature_unit].join('');
   }
 
-  get weather() {
+  get weatherName() {
     return WEATHER_STATE_FR[this.state];
+  }
+
+  get daily_precipitation() {
+    return this.__getSensor('daily_precipitation');
+  }
+
+  get freeze_chance() {
+    return this.__getSensor('freeze_chance');
+  }
+
+  get rain_chance() {
+    return this.__getSensor('rain_chance');
+  }
+
+  get snow_chance() {
+    return this.__getSensor('snow_chance');
+  }
+
+  __getSensor(name) {
+    return this.sensors[name];
+  }
+}
+
+class ExtraSensor {
+  constructor(key, state, unit_of_measurement) {
+    this.key = key;
+    this.state = state;
+    this.unit_of_measurement = unit_of_measurement;
+    this.icon = EXTRA_SENSORS[key].icon;
+    this.name = EXTRA_SENSORS[key].name;
+  }
+
+  get value() {
+    return [this.state, this.unit_of_measurement].join(' ');
   }
 }
 
@@ -117,6 +167,27 @@ class DailyForecast {
     this.precipitation = data.precipitation;
     this.humidity = data.humidity;
     this.temperature_unit = temperature_unit;
+  }
+
+  getWeatherIcon(day = true) {
+    return getWeatherIcon([this.condition, day ? 'day' : 'night'].join('-'));
+  }
+
+  render(day = true) {
+    return html`
+      <div class="weather">
+        <div class="label">${this.__getDay()}</div>
+        <div class="state">${this.getWeatherIcon(day)}</div>
+        <div class="temp">${this.templow}${this.temperature_unit}</div>
+        <div class="temp hight">
+          ${this.temperature}${this.temperature_unit}
+        </div>
+      </div>
+    `;
+  }
+
+  __getDay() {
+    return WEEK_DAYS[this.datetime.getDay()].short;
   }
 }
 
@@ -133,7 +204,7 @@ class HourlyForecast {
   }
 
   getWeatherIcon(day = true) {
-    return getWeatherIcon(this.condition, day);
+    return getWeatherIcon([this.condition, day ? 'day' : 'night'].join('-'));
   }
 
   render(day = true) {

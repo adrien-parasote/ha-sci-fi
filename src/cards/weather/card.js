@@ -3,8 +3,10 @@ import {isEqual} from 'lodash-es';
 
 import '../../helpers/card/tiles.js';
 import common_style from '../../helpers/common_style.js';
+import {WEEK_DAYS} from '../../helpers/entities/const.js';
 import {SunEntity, WeatherEntity} from '../../helpers/entities/weather.js';
-import {DAYS_OF_WEEK, PACKAGE} from './const.js';
+import {getWeatherIcon} from '../../helpers/icons/icons.js';
+import {PACKAGE} from './const.js';
 import {SciFiWeatherEditor} from './editor.js';
 import style from './style.js';
 
@@ -21,6 +23,7 @@ export class SciFiWeather extends LitElement {
       _sun: {type: Object},
       _weather: {type: Object},
       _date: {type: Object},
+      _activeDay: {type: Number},
     };
   }
 
@@ -39,13 +42,20 @@ export class SciFiWeather extends LitElement {
     if (!config.weather_entity)
       throw new Error('You need to define a weather entity');
     if (!config.weather_hourly_forecast_limit)
-      config.weather_hourly_forecast_limit = 24;
+      config.weather_hourly_forecast_limit = 24; // max 72
+    if (config.weather_hourly_forecast_limit > 72)
+      throw new Error('Hourly forecast is limite to 72h max');
+    if (!config.weather_daily_forecast_limit)
+      config.weather_daily_forecast_limit = 15; // max 15
+    if (config.weather_daily_forecast_limit > 15)
+      throw new Error('Daily forecast is limite to 15 days max');
 
     return config;
   }
 
   setConfig(config) {
     this._config = this.__validateConfig(JSON.parse(JSON.stringify(config)));
+    this._activeDay = 0;
     // call set hass() to immediately adjust to a changed entity
     // while editing the entity in the card editor
     if (this._hass) {
@@ -54,7 +64,14 @@ export class SciFiWeather extends LitElement {
   }
 
   getCardSize() {
-    return 1;
+    return 4;
+  }
+
+  getLayoutOptions() {
+    return {
+      grid_rows: 4,
+      grid_columns: 4,
+    };
   }
 
   set hass(hass) {
@@ -74,11 +91,22 @@ export class SciFiWeather extends LitElement {
 
   render() {
     if (!this._hass || !this._config) return html``;
+    /*
+     TODO gestion des alertes (vert jaune orange rouge) 
+     TODO rajouter couleur alert dans hexa tiles
+
+  Vent violent: Jaune => windsock
+  Inondation: Vert => tide-high (fill)
+  Orages: Vert => thunderstorms-rain
+  Pluie-inondation: Vert => raindrops
+  Neige-verglas: Vert => snowflake
+  Grand-froid: Vert => thermometer-colder
+  Vagues-submersion: Vert => tide-high (fill)
+*/
     return html`
       <div class="container">
         <div class="header">${this.__renderHeader()}</div>
-        <div class="hours-forcast">${this.__renderHoursForcast()}</div>
-        <div class="days-forcast">${this.__renderDaysForcast()}</div>
+        <div class="days-forecast">${this.__renderDays()}</div>
       </div>
     `;
   }
@@ -88,16 +116,25 @@ export class SciFiWeather extends LitElement {
       <div class="weather-icon">
         ${this._weather.getWeatherIcon(this._sun.isDay())}
       </div>
-      <div class="weather-clock">
-        <div class="state">
-          ${this._weather.weather}, ${this._weather.renderTemperature()}
+      <div class="weather-today">
+        <div class="weather-clock">
+          <div class="state">
+            ${this._weather.weatherName}, ${this._weather.temperatureUnit}
+          </div>
+          <div class="hour">${this.__getHour()}</div>
+          <div class="date">${this.__getDate()}</div>
         </div>
-        <div class="hour">${this.__getHour()}</div>
-        <div class="date">${this.__getDate()}</div>
+        <div class="h-separator">
+          <div class="circle"></div>
+          <div class="h-path"></div>
+          <div class="circle"></div>
+        </div>
+        <div class="card-corner today-summary">
+          ${this.__renderTodaySummary()}
+        </div>
       </div>
     `;
   }
-
   __getHour() {
     const options = {
       minimumIntegerDigits: 2,
@@ -115,7 +152,7 @@ export class SciFiWeather extends LitElement {
       useGrouping: false,
     };
     return [
-      [DAYS_OF_WEEK[this._date.getDay()], ','].join(''),
+      [WEEK_DAYS[this._date.getDay()].short, ','].join(''),
       [
         this._date.getDate().toLocaleString('fr-FR', options),
         (this._date.getMonth() + 1).toLocaleString('fr-FR', options),
@@ -124,30 +161,33 @@ export class SciFiWeather extends LitElement {
     ].join(' ');
   }
 
-  __renderHoursForcast() {
+  __renderDays() {
     return html` <div class="content">
-      ${this._weather.hourly_forecast
-        .slice(0, this._config.weather_hourly_forecast_limit)
-        .map((hourly_forecast) => {
-          let display = [];
-          if (this.__pushSun(hourly_forecast.datetime, this._sun.next_rising))
-            display.push(this._sun.renderSunrise());
-          if (this.__pushSun(hourly_forecast.datetime, this._sun.next_setting))
-            display.push(this._sun.renderSunset());
-          display.push(hourly_forecast.render(this._sun.isDay()));
-          return html`${display}`;
+      ${this._weather.daily_forecast
+        .slice(0, this._config.weather_daily_forecast_limit)
+        .map((daily_forecast) => {
+          return html`${daily_forecast.render(true)}`;
         })}
     </div>`;
   }
 
-  __pushSun(hour, sun) {
-    let nextHour = new Date(hour);
-    nextHour.setTime(nextHour.getTime() + 60 * 60 * 1000);
-    return sun >= hour && sun < nextHour;
+  __renderTodaySummary() {
+    const sensors = [
+      this._weather.daily_precipitation,
+      this._weather.rain_chance,
+      this._weather.freeze_chance,
+      this._weather.snow_chance,
+    ].map((sensor) => {
+      return this.__renderTodaySensor(sensor.name, sensor.icon, sensor.value);
+    });
+    return html`${sensors}`;
   }
 
-  __renderDaysForcast() {
-    return html`Days forcast`;
+  __renderTodaySensor(name, icon, value) {
+    return html`<div class="sensor">
+      <div class="state">${getWeatherIcon(icon)}</div>
+      <div class="label">${value}</div>
+    </div>`;
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/
@@ -159,6 +199,7 @@ export class SciFiWeather extends LitElement {
       sun_entity: 'sun.sun',
       weather_entity: null,
       weather_hourly_forecast_limit: 24,
+      weather_daily_forecast_limit: 10,
     };
   }
 }

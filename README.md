@@ -67,6 +67,7 @@ Available customization:
 ### 3. Sci-Fi Weather card
 
 **/!\ currently only design for Smartphone and to be used with HA single panel /!\\**
+**/!\ Weather entity is base on [MétéoFrance integration](https://www.home-assistant.io/integrations/meteo_france/) /!\\**
 Credits go to [basmilius](https://github.com/basmilius) for the awesome [weather icons](https://github.com/basmilius/weather-icons).
 
 **Screenshot**

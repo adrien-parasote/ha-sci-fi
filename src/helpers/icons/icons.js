@@ -45,7 +45,7 @@ export function getWeatherIcon(weather) {
     console.info('Weather : ' + weather + ' cannot be found');
     icon = 'na';
   }
-  return html` <div class="svg-container">
+  return html`<div class="svg-container">
     ${unsafeHTML(WEATHER_ICON_SET[icon])}
   </div>`;
 }

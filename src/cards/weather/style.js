@@ -100,6 +100,79 @@ export default css`
     color: var(--primary-light-color);
     text-shadow: 0px 0px 5px var(--secondary-light-color);
   }
+  .chart-container .chart-header .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  .chart-container .chart-header .dropdown .dropdow-button {
+    border-radius: var(--border-radius);
+    border: var(--border-width) solid var(--primary-bg-color);
+    background-color: var(--primary-bg-alpha-color);
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    padding: 0;
+    align-items: center;
+  }
+
+  .chart-container .chart-header .dropdown .dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    border: var(--border-width) solid var(--primary-bg-color);
+    background-color: var(--primary-bg-color);
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+  }
+  .chart-container .chart-header .dropdown .dropdown-content.show {
+    display: block;
+  }
+  .chart-container .chart-header .dropdown .dropdown-content .dropdown-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-items: center;
+    padding: 5px;
+    min-width: 120px;
+    color: var(--primary-light-alpha-color);
+    border-top: var(--border-width) solid var(--secondary-bg-color);
+    border-bottom: var(--border-width) solid var(--secondary-bg-color);
+    cursor: pointer;
+  }
+  .chart-container
+    .chart-header
+    .dropdown
+    .dropdown-content
+    .dropdown-item:hover {
+    background-color: var(--secondary-bg-color);
+  }
+  .chart-container
+    .chart-header
+    .dropdown
+    .dropdown-content
+    .dropdown-item:first-child,
+  .chart-container
+    .chart-header
+    .dropdown
+    .dropdown-content
+    .dropdown-item:last-child {
+    border: none;
+  }
+  .chart-container .chart-header .dropdown .dropdown-content .dropdown-item svg,
+  .chart-container .chart-header .dropdown .dropdow-button svg {
+    width: var(--icon-size-title);
+    height: var(--icon-size-title);
+  }
+  .chart-container
+    .chart-header
+    .dropdown
+    .dropdow-button
+    .svg-container:last-of-type
+    svg {
+    fill: var(--secondary-light-alpha-color);
+    width: var(--icon-size-normal);
+    height: var(--icon-size-normal);
+  }
   /******** DAILY FORECAST *********/
   .days-forecast {
     display: grid;

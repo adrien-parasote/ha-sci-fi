@@ -6,8 +6,14 @@ import '../../helpers/card/tiles.js';
 import common_style from '../../helpers/common_style.js';
 import {WEEK_DAYS} from '../../helpers/entities/const.js';
 import {SunEntity, WeatherEntity} from '../../helpers/entities/weather.js';
-import {getWeatherIcon} from '../../helpers/icons/icons.js';
-import {PACKAGE} from './const.js';
+import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
+import {
+  CHART_BG_COLOR,
+  CHART_BORDER_COLOR,
+  MAP_STATES_TO_STRING,
+  PACKAGE,
+  SENSORS_MAP,
+} from './const.js';
 import {SciFiWeatherEditor} from './editor.js';
 import style from './style.js';
 
@@ -18,6 +24,7 @@ export class SciFiWeather extends LitElement {
 
   _hass; // private
   _chart;
+  _chartDataKind = 'temperature';
 
   static get properties() {
     return {
@@ -26,7 +33,6 @@ export class SciFiWeather extends LitElement {
       _weather: {type: Object},
       _date: {type: Object},
       _activeDay: {type: Number},
-      _chartDataKind: {type: String},
     };
   }
 
@@ -59,7 +65,6 @@ export class SciFiWeather extends LitElement {
   setConfig(config) {
     this._config = this.__validateConfig(JSON.parse(JSON.stringify(config)));
     this._activeDay = 0;
-    this._chartDataKind = 'temperature';
     // call set hass() to immediately adjust to a changed entity
     // while editing the entity in the card editor
     if (this._hass) {
@@ -131,6 +136,7 @@ export class SciFiWeather extends LitElement {
       </div>
     `;
   }
+
   __getHour() {
     const options = {
       minimumIntegerDigits: 2,
@@ -170,38 +176,41 @@ export class SciFiWeather extends LitElement {
   __renderChart() {
     return html`
       <div class="chart-header">
-        ${this.__getChartTitle()}
-        <div>SELECT</div>
+        ${this.__getChartTitle()} ${this.__getDropdownMenu()}
       </div>
       <canvas id="chart"></canvas>
     `;
   }
 
+  __getDropdownMenu() {
+    return html` <div class="dropdown">
+      <button @click=${this.__toggleDropdown} class="dropdow-button">
+        ${getWeatherIcon(SENSORS_MAP[this._chartDataKind].dropdown.icon)}
+        ${getIcon('mdi:chevron-down')}
+      </button>
+      <div class="dropdown-content">
+        ${Object.keys(SENSORS_MAP).map((key) => {
+          return html` <div
+            @click=${(e) => this.__selectChartDataKind(e, key)}
+            class="dropdown-item"
+          >
+            ${getWeatherIcon(SENSORS_MAP[key].dropdown.icon)}
+            <div class="dropdown-item-label">
+              ${SENSORS_MAP[key].dropdown.label}
+            </div>
+          </div>`;
+        })}
+      </div>
+    </div>`;
+  }
+
   __getChartTitle() {
-    let label = null;
-    let icon = null;
-    switch (this._chartDataKind) {
-      case 'temperature':
-        label = 'Temperatures prévisionnelles';
-        icon = 'thermometer';
-        break;
-      case 'precipitation':
-        label = 'Précipitations prévisionnelles';
-        icon = 'raindrops';
-        break;
-      case 'wind_speed':
-        label = 'Vitesses du vent prévisionnelles';
-        icon = 'windsock';
-        break;
-      default:
-        label = '';
-        icon = '';
-        break;
-    }
     return html`
       <div class="title">
-        ${getWeatherIcon(icon)}
-        <div class="label">${label}</div>
+        ${getWeatherIcon(SENSORS_MAP[this._chartDataKind].chartTitle.icon)}
+        <div class="label">
+          ${SENSORS_MAP[this._chartDataKind].chartTitle.label}
+        </div>
       </div>
     `;
   }
@@ -232,10 +241,14 @@ export class SciFiWeather extends LitElement {
     if (ctx) {
       ctx = ctx.getContext('2d');
       this._chart = new Chart(ctx, {
-        type: this.__getChartType(),
         data: this.__getChartDatasets(),
         options: {
           plugins: {
+            title: {
+              display: true,
+              text: '',
+              padding: 20,
+            },
             legend: {
               display: false,
             },
@@ -244,75 +257,90 @@ export class SciFiWeather extends LitElement {
             },
           },
         },
+        plugins: [this.__getChartPlugings()],
       });
     }
   }
 
+  __getChartPlugings() {
+    return {
+      id: 'weatherIcon',
+      afterDatasetsDraw(chart, args, plugins) {
+        const {
+          ctx,
+          data,
+          chartArea: {top, left, right},
+        } = chart;
+        ctx.save();
+
+        data.datasets[0].weather.map((condition, idx) => {
+          const xPos = chart.getDatasetMeta(0).data[idx].x;
+          ctx.fillStyle = 'red';
+          ctx.textAlign = 'center';
+          ctx.fillText(MAP_STATES_TO_STRING[condition], xPos, top - 20);
+        });
+      },
+    };
+  }
+
   __getChartType() {
-    return this._chartDataKind == 'precipitation' ? 'bar' : 'line';
+    return SENSORS_MAP[this._chartDataKind].chartDataKind;
   }
 
   __getChartDatasets() {
     let datasets = [
       {
         data: [],
+        weather: [],
         fill: this.__getChartDataFill(),
         backgroundColor: this.__getChartBackgroundColor(),
         borderColor: this.__getChartBorderColor(),
         tension: 0.1,
+        type: this.__getChartType(),
       },
     ];
+    if (datasets[0].type == 'bar') {
+      datasets[0].borderWidth = 2;
+      datasets[0].borderRadius = 5;
+    }
     this._weather.hourly_forecast
       .slice(0, this._config.weather_hourly_forecast_limit)
       .map((hourly) => {
         datasets[0].data.push({
           x: hourly.hours,
-          y: hourly.getKind(this._chartDataKind),
+          y: hourly.getKindValue(this._chartDataKind),
         });
+        datasets[0].weather.push(hourly.condition);
       });
     return {datasets};
   }
 
   __getChartDataFill() {
-    return this._chartDataKind != 'wind_speed';
+    return SENSORS_MAP[this._chartDataKind].chartDatafill;
   }
 
   __getChartBackgroundColor() {
-    let color = null;
-    switch (this._chartDataKind) {
-      case 'temperature':
-        color = 'red';
-        break;
-      case 'precipitation':
-        color = 'blue';
-        break;
-      case 'wind_speed':
-        color = 'grey';
-        break;
-      default:
-        color = '';
-        break;
-    }
-    return color;
+    return CHART_BG_COLOR;
   }
 
   __getChartBorderColor() {
-    let color = null;
-    switch (this._chartDataKind) {
-      case 'temperature':
-        color = 'red';
-        break;
-      case 'precipitation':
-        color = 'blue';
-        break;
-      case 'wind_speed':
-        color = 'grey';
-        break;
-      default:
-        color = '';
-        break;
-    }
-    return color;
+    return CHART_BORDER_COLOR;
+  }
+
+  __toggleDropdown(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.shadowRoot.querySelector('.dropdown-content').classList.toggle('show');
+  }
+
+  __selectChartDataKind(e, key) {
+    this._chartDataKind = key;
+    this._chart.data = this.__getChartDatasets();
+    this._chart.options.scales =
+      SENSORS_MAP[this._chartDataKind].chartOptionsScales;
+    this._chart.update();
+    this.__toggleDropdown(e);
+    this.requestUpdate();
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

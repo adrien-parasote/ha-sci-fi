@@ -207,7 +207,7 @@ class HourlyForecast {
     this.temperature_unit = temperature_unit;
   }
 
-  getKind(kind) {
+  getKindValue(kind) {
     let res = null;
     switch (kind) {
       case 'temperature':

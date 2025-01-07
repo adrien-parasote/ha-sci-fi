@@ -139,6 +139,10 @@ export class WeatherEntity {
     return this.__getSensor('snow_chance');
   }
 
+  get cloud_cover() {
+    return this.__getSensor('cloud_cover');
+  }
+
   __getSensor(name) {
     return this.sensors[name];
   }
@@ -203,17 +207,15 @@ class HourlyForecast {
     this.temperature_unit = temperature_unit;
   }
 
-  getWeatherIcon(day = true) {
-    return getWeatherIcon([this.condition, day ? 'day' : 'night'].join('-'));
+  get day_hours() {
+    return [this.__getDay(), this.hours].join(' ');
   }
 
-  render(day = true) {
-    return html`
-      <div class="hourly-weather">
-        <div class="hour">${this.datetime.getHours()} h</div>
-        <div class="state">${this.getWeatherIcon(day)}</div>
-        <div class="temp">${this.temperature}${this.temperature_unit}</div>
-      </div>
-    `;
+  get hours() {
+    return [this.datetime.getHours(), 'h'].join(' ');
+  }
+
+  __getDay() {
+    return WEEK_DAYS[this.datetime.getDay()].short;
   }
 }

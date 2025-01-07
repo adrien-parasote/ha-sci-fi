@@ -1,5 +1,5 @@
 {
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "Sci-fi cards for HA dashboard",
   "main": "src/sci-fi.js",
   "type": "module",
@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@mdi/js": "7.4.47",
+    "chart.js": "4.4.7",
     "lit": "3.2.1",
     "lodash-es": "4.17.21"
   }

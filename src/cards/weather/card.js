@@ -1,3 +1,4 @@
+import Chart from 'chart.js/auto';
 import {LitElement, html} from 'lit';
 import {isEqual} from 'lodash-es';
 
@@ -107,6 +108,17 @@ export class SciFiWeather extends LitElement {
       <div class="container">
         <div class="header">${this.__renderHeader()}</div>
         <div class="days-forecast">${this.__renderDays()}</div>
+        <div class="card-corner on">
+          <div class="today-summary">${this.__renderTodaySummary()}</div>
+          <div class="chart-container">
+            <div class="content">
+              <canvas id="chart_temp_prec"></canvas>
+            </div>
+            <div class="content">
+              <canvas id="chart_wind"></canvas>
+            </div>
+          </div>
+        </div>
       </div>
     `;
   }
@@ -116,22 +128,12 @@ export class SciFiWeather extends LitElement {
       <div class="weather-icon">
         ${this._weather.getWeatherIcon(this._sun.isDay())}
       </div>
-      <div class="weather-today">
-        <div class="weather-clock">
-          <div class="state">
-            ${this._weather.weatherName}, ${this._weather.temperatureUnit}
-          </div>
-          <div class="hour">${this.__getHour()}</div>
-          <div class="date">${this.__getDate()}</div>
+      <div class="weather-clock">
+        <div class="state">
+          ${this._weather.weatherName}, ${this._weather.temperatureUnit}
         </div>
-        <div class="h-separator">
-          <div class="circle"></div>
-          <div class="h-path"></div>
-          <div class="circle"></div>
-        </div>
-        <div class="card-corner today-summary">
-          ${this.__renderTodaySummary()}
-        </div>
+        <div class="hour">${this.__getHour()}</div>
+        <div class="date">${this.__getDate()}</div>
       </div>
     `;
   }
@@ -173,6 +175,7 @@ export class SciFiWeather extends LitElement {
 
   __renderTodaySummary() {
     const sensors = [
+      this._weather.cloud_cover,
       this._weather.daily_precipitation,
       this._weather.rain_chance,
       this._weather.freeze_chance,
@@ -185,9 +188,78 @@ export class SciFiWeather extends LitElement {
 
   __renderTodaySensor(name, icon, value) {
     return html`<div class="sensor">
+      <div class="label">${name}</div>
       <div class="state">${getWeatherIcon(icon)}</div>
       <div class="label">${value}</div>
     </div>`;
+  }
+
+  firstUpdated(changedProperties) {
+    const data = this.__getGraphData();
+    this.__buildGraph('chart_temp_prec', 'line', data.temp_prec);
+    this.__buildGraph('chart_wind', 'line', data.wind);
+  }
+
+  __buildGraph(id, type, data) {
+    let ctx = this.shadowRoot.querySelector('#' + id);
+    if (ctx) {
+      ctx = ctx.getContext('2d');
+      new Chart(ctx, {
+        type: type,
+        data: data,
+      });
+    }
+  }
+
+  __getGraphData() {
+    let data = {
+      temp_prec: {
+        labels: null,
+        datasets: [
+          {
+            label: 'Temperature',
+            data: [],
+            fill: false,
+            borderColor: 'red',
+            tension: 0.1,
+          },
+          {
+            label: 'Precipitation',
+            data: [],
+            borderColor: 'red',
+            backgroundColor: 'blue',
+            tension: 0.1,
+            type: 'bar',
+          },
+        ],
+      },
+      wind: {
+        labels: null,
+        datasets: [
+          {
+            label: 'Vent',
+            data: [],
+            fill: false,
+            borderColor: 'green',
+            tension: 0.1,
+          },
+        ],
+      },
+    };
+    let labels = [];
+    this._weather.hourly_forecast
+      .slice(0, this._config.weather_hourly_forecast_limit)
+      .map((hourly) => {
+        labels.push(hourly.hours);
+        data.temp_prec.datasets[0].data.push(hourly.temperature);
+        data.temp_prec.datasets[1].data.push(hourly.precipitation);
+        data.wind.datasets[0].data.push(hourly.wind_speed);
+      });
+    // Setup labels for all
+    Object.keys(data).map((k) => {
+      data[k].labels = labels;
+    });
+    return data;
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

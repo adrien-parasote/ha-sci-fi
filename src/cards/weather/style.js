@@ -5,13 +5,19 @@ export default css`
     --default-hexa-width: 60px;
     --main-weather-icon-size: 150px;
     --daily-weather-icon-size: var(--icon-size-title);
-    --hourly-weather-icon-size: var(--icon-size-title);
-    font-size: var(--font-size-small);
+    --sensor-weather-icon-size: var(--icon-size-small);
+    font-size: var(--font-size-xsmall);
   }
   .container {
     display: flex;
     flex-direction: column;
     width: 100%;
+  }
+  .card-corner {
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+    margin: 20px;
   }
   /******** HEADER *********/
   .header {
@@ -24,52 +30,43 @@ export default css`
     width: var(--main-weather-icon-size);
     height: var(--main-weather-icon-size);
   }
-  .header .weather-today {
-    display: flex;
-    flex-direction: row;
-  }
-  .header .weather-today .h-separator {
-    margin: 0 10px;
-  }
-  .header .weather-today .weather-clock {
+  .header .weather-clock {
     display: flex;
     flex-direction: column;
     align-self: center;
     color: var(--secondary-light-alpha-color);
   }
-  .header .weather-today .weather-clock .state {
+  .header .weather-clock .state {
     text-align: end;
   }
-  .header .weather-today .weather-clock .state::first-letter {
+  .header .weather-clock .state::first-letter {
     text-transform: capitalize;
   }
-  .header .weather-today .weather-clock .hour {
+  .header .weather-clock .hour {
     font-size: var(--font-size-large);
     text-align: center;
     color: var(--primary-light-color);
     text-shadow: 0px 0px 5px var(--secondary-light-color);
   }
   /******** TODAY SUMMARY *********/
-  .header .weather-today .card-corner {
-    padding: 0;
-  }
-  .header .weather-today .today-summary {
-    display: grid;
-    grid-template-columns: 80px 80px;
+  .today-summary {
+    display: flex;
+    flex-direction: row;
     column-gap: 10px;
     align-self: center;
   }
-  .header .weather-today .today-summary .sensor {
+  .today-summary .sensor {
     display: flex;
     flex-direction: column;
     align-items: center;
     flex: 1;
+    min-width: 55px;
   }
-  .header .weather-today .today-summary .sensor .state svg {
-    width: var(--daily-weather-icon-size);
-    height: var(--daily-weather-icon-size);
+  .today-summary .sensor .state svg {
+    width: var(--sensor-weather-icon-size);
+    height: var(--sensor-weather-icon-size);
   }
-  .header .weather-today .today-summary div .label {
+  .today-summary div .label {
     color: var(--secondary-light-alpha-color);
     text-align: center;
     color: var(--primary-light-color);
@@ -81,7 +78,6 @@ export default css`
     border-bottom: var(--border-width) solid var(--primary-bg-color);
     border-top: var(--border-width) solid var(--primary-bg-color);
     padding: 20px 10px;
-    margin-bottom: 20px;
     background-color: var(--primary-bg-alpha-color);
     color: var(--secondary-light-color);
     font-weight: bold;
@@ -122,5 +118,16 @@ export default css`
   .days-forecast .content .weather .temp.hight {
     color: var(--primary-error-color);
     text-shadow: 0px 0px 5px var(--primary-error-alpha-color);
+  }
+  /******** DAILY FORECAST *********/
+  .chart-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+    height: 200px;
+  }
+  .chart-container .content {
+    flex: 1;
   }
 `;

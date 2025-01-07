@@ -17,6 +17,7 @@ export class SciFiWeather extends LitElement {
   }
 
   _hass; // private
+  _chart;
 
   static get properties() {
     return {
@@ -25,6 +26,7 @@ export class SciFiWeather extends LitElement {
       _weather: {type: Object},
       _date: {type: Object},
       _activeDay: {type: Number},
+      _chartDataKind: {type: String},
     };
   }
 
@@ -57,6 +59,7 @@ export class SciFiWeather extends LitElement {
   setConfig(config) {
     this._config = this.__validateConfig(JSON.parse(JSON.stringify(config)));
     this._activeDay = 0;
+    this._chartDataKind = 'temperature';
     // call set hass() to immediately adjust to a changed entity
     // while editing the entity in the card editor
     if (this._hass) {
@@ -108,17 +111,7 @@ export class SciFiWeather extends LitElement {
       <div class="container">
         <div class="header">${this.__renderHeader()}</div>
         <div class="days-forecast">${this.__renderDays()}</div>
-        <div class="card-corner on">
-          <div class="today-summary">${this.__renderTodaySummary()}</div>
-          <div class="chart-container">
-            <div class="content">
-              <canvas id="chart_temp_prec"></canvas>
-            </div>
-            <div class="content">
-              <canvas id="chart_wind"></canvas>
-            </div>
-          </div>
-        </div>
+        <div class="summary">${this.__renderSummary()}</div>
       </div>
     `;
   }
@@ -173,6 +166,52 @@ export class SciFiWeather extends LitElement {
     </div>`;
   }
 
+  __renderSummary() {
+    return html`
+      <div class="card-corner today-summary">
+        ${this.__renderTodaySummary()}
+      </div>
+      <div class="card-corner">
+        <div class="chart-container">
+          <div class="header">
+            ${this.__getChartTitle()}
+            <div>SELECT</div>
+          </div>
+          <canvas id="chart"></canvas>
+        </div>
+      </div>
+    `;
+  }
+
+  __getChartTitle() {
+    let label = null;
+    let icon = null;
+    switch (this._chartDataKind) {
+      case 'temperature':
+        label = 'Temperatures prévisionnelles';
+        icon = 'thermometer';
+        break;
+      case 'precipitation':
+        label = 'Précipitations prévisionnelles';
+        icon = 'raindrops';
+        break;
+      case 'wind_speed':
+        label = 'Vitesses du vent prévisionnelles';
+        icon = 'windsock';
+        break;
+      default:
+        label = '';
+        icon = '';
+        break;
+    }
+    return html`
+      <div class="title">
+        ${getWeatherIcon(icon)}
+        <div class="label">${label}</div>
+      </div>
+    `;
+  }
+
   __renderTodaySummary() {
     const sensors = [
       this._weather.cloud_cover,
@@ -195,71 +234,91 @@ export class SciFiWeather extends LitElement {
   }
 
   firstUpdated(changedProperties) {
-    const data = this.__getGraphData();
-    this.__buildGraph('chart_temp_prec', 'line', data.temp_prec);
-    this.__buildGraph('chart_wind', 'line', data.wind);
-  }
-
-  __buildGraph(id, type, data) {
-    let ctx = this.shadowRoot.querySelector('#' + id);
+    let ctx = this.shadowRoot.querySelector('#chart');
     if (ctx) {
       ctx = ctx.getContext('2d');
-      new Chart(ctx, {
-        type: type,
-        data: data,
+      this._chart = new Chart(ctx, {
+        type: this.__getChartType(),
+        data: this.__getChartDatasets(),
+        options: {
+          plugins: {
+            legend: {
+              display: false,
+            },
+            tooltip: {
+              enabled: false,
+            },
+          },
+        },
       });
     }
   }
 
-  __getGraphData() {
-    let data = {
-      temp_prec: {
-        labels: null,
-        datasets: [
-          {
-            label: 'Temperature',
-            data: [],
-            fill: false,
-            borderColor: 'red',
-            tension: 0.1,
-          },
-          {
-            label: 'Precipitation',
-            data: [],
-            borderColor: 'red',
-            backgroundColor: 'blue',
-            tension: 0.1,
-            type: 'bar',
-          },
-        ],
+  __getChartType() {
+    return this._chartDataKind == 'precipitation' ? 'bar' : 'line';
+  }
+
+  __getChartDatasets() {
+    let datasets = [
+      {
+        data: [],
+        fill: this.__getChartDataFill(),
+        backgroundColor: this.__getChartBackgroundColor(),
+        borderColor: this.__getChartBorderColor(),
+        tension: 0.1,
       },
-      wind: {
-        labels: null,
-        datasets: [
-          {
-            label: 'Vent',
-            data: [],
-            fill: false,
-            borderColor: 'green',
-            tension: 0.1,
-          },
-        ],
-      },
-    };
-    let labels = [];
+    ];
     this._weather.hourly_forecast
       .slice(0, this._config.weather_hourly_forecast_limit)
       .map((hourly) => {
-        labels.push(hourly.hours);
-        data.temp_prec.datasets[0].data.push(hourly.temperature);
-        data.temp_prec.datasets[1].data.push(hourly.precipitation);
-        data.wind.datasets[0].data.push(hourly.wind_speed);
+        datasets[0].data.push({
+          x: hourly.hours,
+          y: hourly.getKind(this._chartDataKind),
+        });
       });
-    // Setup labels for all
-    Object.keys(data).map((k) => {
-      data[k].labels = labels;
-    });
-    return data;
+    return {datasets};
+  }
+
+  __getChartDataFill() {
+    return this._chartDataKind != 'wind_speed';
+  }
+
+  __getChartBackgroundColor() {
+    let color = null;
+    switch (this._chartDataKind) {
+      case 'temperature':
+        color = 'red';
+        break;
+      case 'precipitation':
+        color = 'blue';
+        break;
+      case 'wind_speed':
+        color = 'grey';
+        break;
+      default:
+        color = '';
+        break;
+    }
+    return color;
+  }
+
+  __getChartBorderColor() {
+    let color = null;
+    switch (this._chartDataKind) {
+      case 'temperature':
+        color = 'red';
+        break;
+      case 'precipitation':
+        color = 'blue';
+        break;
+      case 'wind_speed':
+        color = 'grey';
+        break;
+      default:
+        color = '';
+        break;
+    }
+    return color;
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

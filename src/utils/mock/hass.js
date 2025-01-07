@@ -74,6 +74,7 @@ class Hass {
                 counter,
               ].join(' ');
               this._counters[area.name][device_king] = counter + 1;
+              break;
           }
           // Create device
           const device = new Device(area.id, friendly_name);

@@ -4,20 +4,12 @@ export default css`
   :host {
     --default-hexa-width: 60px;
     --main-weather-icon-size: 150px;
-    --daily-weather-icon-size: var(--icon-size-title);
-    --sensor-weather-icon-size: var(--icon-size-small);
     font-size: var(--font-size-xsmall);
   }
   .container {
     display: flex;
     flex-direction: column;
     width: 100%;
-  }
-  .card-corner {
-    display: flex;
-    flex-direction: column;
-    row-gap: 10px;
-    margin: 20px;
   }
   /******** HEADER *********/
   .header {
@@ -48,30 +40,7 @@ export default css`
     color: var(--primary-light-color);
     text-shadow: 0px 0px 5px var(--secondary-light-color);
   }
-  /******** TODAY SUMMARY *********/
-  .today-summary {
-    display: flex;
-    flex-direction: row;
-    column-gap: 10px;
-    align-self: center;
-  }
-  .today-summary .sensor {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 1;
-    min-width: 55px;
-  }
-  .today-summary .sensor .state svg {
-    width: var(--sensor-weather-icon-size);
-    height: var(--sensor-weather-icon-size);
-  }
-  .today-summary div .label {
-    color: var(--secondary-light-alpha-color);
-    text-align: center;
-    color: var(--primary-light-color);
-    text-shadow: 0px 0px 5px var(--secondary-light-color);
-  }
+
   /******** DAILY FORECAST *********/
   .days-forecast {
     display: grid;
@@ -101,8 +70,8 @@ export default css`
     justify-self: center;
   }
   .days-forecast .content .weather .state svg {
-    width: var(--daily-weather-icon-size);
-    height: var(--daily-weather-icon-size);
+    width: var(--icon-size-title);
+    height: var(--icon-size-title);
   }
   .days-forecast .content .weather .label,
   .days-forecast .content .weather .temp {
@@ -119,15 +88,70 @@ export default css`
     color: var(--primary-error-color);
     text-shadow: 0px 0px 5px var(--primary-error-alpha-color);
   }
-  /******** DAILY FORECAST *********/
+  /******** TODAY SUMMARY *********/
+  .summary {
+    display: flex;
+    flex-direction: row;
+    column-gap: 20px;
+    margin: 20px;
+  }
+  .summary .card-corner {
+    height: 100%;
+    padding: 0;
+    justify-content: center;
+  }
+  .summary .card-corner:last-of-type {
+    flex: 1;
+  }
+  .today-summary {
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+  }
+  .today-summary .sensor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 55px;
+    padding: 10px;
+  }
+  .today-summary .sensor .state svg {
+    width: var(--icon-size-small);
+    height: var(--icon-size-small);
+  }
+  .today-summary div .label {
+    color: var(--secondary-light-alpha-color);
+    text-align: center;
+  }
+  .today-summary div .label:last-of-type {
+    color: var(--primary-light-color);
+    text-shadow: 0px 0px 5px var(--secondary-light-color);
+  }
+  /******** CHART *********/
   .chart-container {
     flex: 1;
     display: flex;
     flex-direction: column;
     row-gap: 10px;
-    height: 200px;
+    padding: 10px;
   }
-  .chart-container .content {
+  .chart-container .header {
+    display: flex;
+    flex-direction: row;
+  }
+  .chart-container .header .title {
+    display: flex;
     flex: 1;
+    flex-direction: row;
+  }
+  .chart-container .header .title svg {
+    width: var(--icon-size-large);
+    height: var(--icon-size-large);
+  }
+  .chart-container .header .title .label {
+    align-self: center;
+    font-size: var(--font-size-normal);
+    color: var(--primary-light-color);
+    text-shadow: 0px 0px 5px var(--secondary-light-color);
   }
 `;

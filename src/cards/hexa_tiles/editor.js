@@ -273,6 +273,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         default:
           // Update
           newConfig.tiles[elemmentId][e.detail.kind] = e.detail.value;
+          break;
       }
       newConfig.tiles[elemmentId].state_on = Array.from(
         new Set(newConfig.tiles[elemmentId].state_on.sort())

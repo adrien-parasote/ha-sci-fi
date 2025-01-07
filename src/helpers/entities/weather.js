@@ -207,6 +207,25 @@ class HourlyForecast {
     this.temperature_unit = temperature_unit;
   }
 
+  getKind(kind) {
+    let res = null;
+    switch (kind) {
+      case 'temperature':
+        res = this.temperature;
+        break;
+      case 'precipitation':
+        res = this.precipitation;
+        break;
+      case 'wind_speed':
+        res = this.wind_speed;
+        break;
+      default:
+        res = 0;
+        break;
+    }
+    return res;
+  }
+
   get day_hours() {
     return [this.__getDay(), this.hours].join(' ');
   }

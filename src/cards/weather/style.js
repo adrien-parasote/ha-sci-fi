@@ -5,6 +5,7 @@ export default css`
     --default-hexa-width: 60px;
     --main-weather-icon-size: 150px;
     font-size: var(--font-size-xsmall);
+    height: 100%;
   }
   .container {
     display: flex;
@@ -17,6 +18,8 @@ export default css`
     flex-direction: row;
     justify-content: center;
     column-gap: 20px;
+    border-top: var(--border-width) solid var(--primary-bg-color);
+    background-color: var(--primary-bg-alpha-color);
   }
   .header .weather-icon svg {
     width: var(--main-weather-icon-size);
@@ -40,7 +43,63 @@ export default css`
     color: var(--primary-light-color);
     text-shadow: 0px 0px 5px var(--secondary-light-color);
   }
-
+  /******** TODAY SUMMARY *********/
+  .today-summary {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    flex-direction: row;
+    border-bottom: var(--border-width) solid var(--primary-bg-color);
+    background-color: var(--primary-bg-alpha-color);
+    padding-bottom: 25px;
+  }
+  .today-summary .sensor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 55px;
+    padding: 10px;
+  }
+  .today-summary .sensor .state svg {
+    width: var(--icon-size-small);
+    height: var(--icon-size-small);
+  }
+  .today-summary div .label {
+    color: var(--secondary-light-alpha-color);
+    text-align: center;
+  }
+  .today-summary div .label:last-of-type {
+    color: var(--primary-light-color);
+    text-shadow: 0px 0px 5px var(--secondary-light-color);
+  }
+  /******** CHART *********/
+  .chart-container {
+    margin: 10px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+    justify-content: center;
+  }
+  .chart-container .chart-header {
+    display: flex;
+    flex-direction: row;
+  }
+  .chart-container .chart-header .title {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+  }
+  .chart-container .chart-header .title svg {
+    width: var(--icon-size-large);
+    height: var(--icon-size-large);
+  }
+  .chart-container .chart-header .title .label {
+    align-self: center;
+    font-size: var(--font-size-normal);
+    color: var(--primary-light-color);
+    text-shadow: 0px 0px 5px var(--secondary-light-color);
+  }
   /******** DAILY FORECAST *********/
   .days-forecast {
     display: grid;
@@ -87,71 +146,5 @@ export default css`
   .days-forecast .content .weather .temp.hight {
     color: var(--primary-error-color);
     text-shadow: 0px 0px 5px var(--primary-error-alpha-color);
-  }
-  /******** TODAY SUMMARY *********/
-  .summary {
-    display: flex;
-    flex-direction: row;
-    column-gap: 20px;
-    margin: 20px;
-  }
-  .summary .card-corner {
-    height: 100%;
-    padding: 0;
-    justify-content: center;
-  }
-  .summary .card-corner:last-of-type {
-    flex: 1;
-  }
-  .today-summary {
-    display: flex;
-    flex-direction: column;
-    align-self: center;
-  }
-  .today-summary .sensor {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 55px;
-    padding: 10px;
-  }
-  .today-summary .sensor .state svg {
-    width: var(--icon-size-small);
-    height: var(--icon-size-small);
-  }
-  .today-summary div .label {
-    color: var(--secondary-light-alpha-color);
-    text-align: center;
-  }
-  .today-summary div .label:last-of-type {
-    color: var(--primary-light-color);
-    text-shadow: 0px 0px 5px var(--secondary-light-color);
-  }
-  /******** CHART *********/
-  .chart-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    row-gap: 10px;
-    padding: 10px;
-  }
-  .chart-container .header {
-    display: flex;
-    flex-direction: row;
-  }
-  .chart-container .header .title {
-    display: flex;
-    flex: 1;
-    flex-direction: row;
-  }
-  .chart-container .header .title svg {
-    width: var(--icon-size-large);
-    height: var(--icon-size-large);
-  }
-  .chart-container .header .title .label {
-    align-self: center;
-    font-size: var(--font-size-normal);
-    color: var(--primary-light-color);
-    text-shadow: 0px 0px 5px var(--secondary-light-color);
   }
 `;

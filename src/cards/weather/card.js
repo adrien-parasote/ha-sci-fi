@@ -110,8 +110,9 @@ export class SciFiWeather extends LitElement {
     return html`
       <div class="container">
         <div class="header">${this.__renderHeader()}</div>
+        <div class="today-summary">${this.__renderTodaySummary()}</div>
+        <div class="chart-container">${this.__renderChart()}</div>
         <div class="days-forecast">${this.__renderDays()}</div>
-        <div class="summary">${this.__renderSummary()}</div>
       </div>
     `;
   }
@@ -166,20 +167,13 @@ export class SciFiWeather extends LitElement {
     </div>`;
   }
 
-  __renderSummary() {
+  __renderChart() {
     return html`
-      <div class="card-corner today-summary">
-        ${this.__renderTodaySummary()}
+      <div class="chart-header">
+        ${this.__getChartTitle()}
+        <div>SELECT</div>
       </div>
-      <div class="card-corner">
-        <div class="chart-container">
-          <div class="header">
-            ${this.__getChartTitle()}
-            <div>SELECT</div>
-          </div>
-          <canvas id="chart"></canvas>
-        </div>
-      </div>
+      <canvas id="chart"></canvas>
     `;
   }
 

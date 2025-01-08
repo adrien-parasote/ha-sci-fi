@@ -76,7 +76,17 @@ TODO
 
 **Content:**
 
-TODO
+TODO gestion des alertes (vert jaune orange rouge) 
+TODO rajouter couleur alert dans hexa tiles
+
+  Vent violent: Jaune => windsock
+  Inondation: Vert => tide-high (fill)
+  Orages: Vert => thunderstorms-rain
+  Pluie-inondation: Vert => raindrops
+  Neige-verglas: Vert => snowflake
+  Grand-froid: Vert => thermometer-colder
+  Vagues-submersion: Vert => tide-high (fill)
+
 
 ## How to install ?
 

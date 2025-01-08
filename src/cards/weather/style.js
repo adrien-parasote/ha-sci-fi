@@ -14,6 +14,7 @@ export default css`
   }
   /******** HEADER *********/
   .header {
+    padding-top: 10px;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -75,11 +76,11 @@ export default css`
   /******** CHART *********/
   .chart-container {
     margin: 10px;
-    flex: 1;
     display: flex;
     flex-direction: column;
     row-gap: 10px;
     justify-content: center;
+    margin: 50px 0;
   }
   .chart-container .chart-header {
     display: flex;
@@ -103,6 +104,7 @@ export default css`
   .chart-container .chart-header .dropdown {
     position: relative;
     display: inline-block;
+    margin-right: 10px;
   }
   .chart-container .chart-header .dropdown .dropdow-button {
     border-radius: var(--border-radius);

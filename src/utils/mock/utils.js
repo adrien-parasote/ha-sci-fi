@@ -1,4 +1,5 @@
 export const NOW = new Date();
+
 export function generateid() {
   let result = '';
   const characters =
@@ -9,10 +10,12 @@ export function generateid() {
   }
   return result;
 }
+
 export function nameToId(kind, name) {
   return [kind, name.toLowerCase().replaceAll(' ', '_')].join('.');
 }
-function pad(nb) {
+
+export function pad(nb) {
   return (nb > 9 ? '' : '0') + nb;
 }
 
@@ -31,6 +34,7 @@ export function getStrDatetime(date, full = false) {
 
   return [firstPart, 'T', secondPart, '+01:00'].join('');
 }
+
 export const WEATHER_STATES = [
   'clear',
   'clear-night',

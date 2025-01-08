@@ -7,10 +7,10 @@ import common_style from '../../helpers/common_style.js';
 import {WEEK_DAYS} from '../../helpers/entities/const.js';
 import {SunEntity, WeatherEntity} from '../../helpers/entities/weather.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
+import WEATHER_ICON_SET from '../../helpers/icons/weather_iconset.js';
 import {
   CHART_BG_COLOR,
   CHART_BORDER_COLOR,
-  MAP_STATES_TO_STRING,
   PACKAGE,
   SENSORS_MAP,
 } from './const.js';
@@ -100,18 +100,6 @@ export class SciFiWeather extends LitElement {
 
   render() {
     if (!this._hass || !this._config) return html``;
-    /*
-     TODO gestion des alertes (vert jaune orange rouge) 
-     TODO rajouter couleur alert dans hexa tiles
-
-  Vent violent: Jaune => windsock
-  Inondation: Vert => tide-high (fill)
-  Orages: Vert => thunderstorms-rain
-  Pluie-inondation: Vert => raindrops
-  Neige-verglas: Vert => snowflake
-  Grand-froid: Vert => thermometer-colder
-  Vagues-submersion: Vert => tide-high (fill)
-*/
     return html`
       <div class="container">
         <div class="header">${this.__renderHeader()}</div>
@@ -272,12 +260,19 @@ export class SciFiWeather extends LitElement {
           chartArea: {top, left, right},
         } = chart;
         ctx.save();
-
-        data.datasets[0].weather.map((condition, idx) => {
-          const xPos = chart.getDatasetMeta(0).data[idx].x;
-          ctx.fillStyle = 'red';
-          ctx.textAlign = 'center';
-          ctx.fillText(MAP_STATES_TO_STRING[condition], xPos, top - 20);
+        data.datasets[0].weather.map((iconName, idx) => {
+          if (idx % 2 === 0) {
+            const xPos = chart.getDatasetMeta(0).data[idx].x;
+            const icon = WEATHER_ICON_SET[iconName]
+              ? WEATHER_ICON_SET[iconName]
+              : WEATHER_ICON_SET['na'];
+            var image = new Image();
+            image.onload = function () {
+              ctx.drawImage(image, xPos - 10, top - 25, 20, 20);
+            };
+            image.src =
+              'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(icon);
+          }
         });
       },
     };
@@ -310,7 +305,7 @@ export class SciFiWeather extends LitElement {
           x: hourly.hours,
           y: hourly.getKindValue(this._chartDataKind),
         });
-        datasets[0].weather.push(hourly.condition);
+        datasets[0].weather.push(hourly.getIconName(this._sun));
       });
     return {datasets};
   }

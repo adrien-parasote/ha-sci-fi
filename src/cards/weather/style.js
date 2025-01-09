@@ -31,7 +31,7 @@ export default css`
     display: flex;
     flex-direction: column;
     align-self: center;
-    color: var(--secondary-light-alpha-color);
+    color: var(--secondary-light-color);
   }
   .header .weather-clock .state {
     text-align: end;
@@ -44,6 +44,7 @@ export default css`
     text-align: center;
     color: var(--primary-light-color);
     text-shadow: 0px 0px 5px var(--secondary-light-color);
+    line-height: normal;
   }
   /******** TODAY SUMMARY *********/
   .today-summary {
@@ -63,11 +64,11 @@ export default css`
     padding: 10px;
   }
   .today-summary .sensor .state svg {
-    width: var(--icon-size-small);
-    height: var(--icon-size-small);
+    width: var(--icon-size-normal);
+    height: var(--icon-size-normal);
   }
   .today-summary div .label {
-    color: var(--secondary-light-alpha-color);
+    color: var(--secondary-light-color);
     text-align: center;
   }
   .today-summary div .label:last-of-type {
@@ -79,9 +80,7 @@ export default css`
     margin: 10px;
     display: flex;
     flex-direction: column;
-    row-gap: 10px;
     justify-content: center;
-    margin: 50px 0;
   }
   .chart-container .chart-header {
     display: flex;
@@ -93,12 +92,12 @@ export default css`
     flex-direction: row;
   }
   .chart-container .chart-header .title svg {
-    width: var(--icon-size-large);
-    height: var(--icon-size-large);
+    width: var(--icon-size-title);
+    height: var(--icon-size-title);
   }
   .chart-container .chart-header .title .label {
     align-self: center;
-    font-size: var(--font-size-normal);
+    font-size: var(--font-size-small);
     color: var(--primary-light-color);
     text-shadow: 0px 0px 5px var(--secondary-light-color);
   }
@@ -106,6 +105,7 @@ export default css`
     position: relative;
     display: inline-block;
     margin-right: 10px;
+    align-content: center;
   }
   .chart-container .chart-header .dropdown .dropdow-button {
     border-radius: var(--border-radius);

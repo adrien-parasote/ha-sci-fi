@@ -238,6 +238,7 @@ export class SciFiWeather extends LitElement {
         ${getWeatherIcon(SENSORS_MAP[this._chartDataKind].chartTitle.icon)}
         <div class="label">
           ${SENSORS_MAP[this._chartDataKind].chartTitle.label}
+          (${this._weather.getUnit(this._chartDataKind)})
         </div>
       </div>
     `;
@@ -265,29 +266,31 @@ export class SciFiWeather extends LitElement {
   }
 
   __drawChart() {
-    let ctx = this.shadowRoot
-      .querySelector('.chart-container')
-      .appendChild(document.createElement('canvas'));
-    ctx = ctx.getContext('2d');
-    this._chart = new Chart(ctx, {
-      data: this.__getChartDatasets(),
-      options: {
-        plugins: {
-          title: {
-            display: true,
-            text: '',
-            padding: 20,
-          },
-          legend: {
-            display: false,
-          },
-          tooltip: {
-            enabled: false,
+    if (!this._chart) {
+      let ctx = this.shadowRoot
+        .querySelector('.chart-container')
+        .appendChild(document.createElement('canvas'));
+      ctx = ctx.getContext('2d');
+      this._chart = new Chart(ctx, {
+        data: this.__getChartDatasets(),
+        options: {
+          plugins: {
+            title: {
+              display: true,
+              text: '',
+              padding: 15,
+            },
+            legend: {
+              display: false,
+            },
+            tooltip: {
+              enabled: false,
+            },
           },
         },
-      },
-      plugins: [this.__getChartPlugings()],
-    });
+        plugins: [this.__getChartPlugings()],
+      });
+    }
   }
 
   __getChartPlugings() {

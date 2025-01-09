@@ -9,7 +9,7 @@ export const SENSORS_MAP = {
       icon: 'thermometer-glass',
     },
     chartTitle: {
-      label: 'Temperatures prévisionnelles',
+      label: 'Températures prévisionnelles',
       icon: 'thermometer',
     },
     chartDataKind: 'line',

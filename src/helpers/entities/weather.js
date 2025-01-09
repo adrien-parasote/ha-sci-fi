@@ -53,6 +53,10 @@ export class WeatherEntity {
     this.sensors = this.__buildExtraSensors(hass);
   }
 
+  getUnit(kind) {
+    return this[[kind, 'unit'].join('_')];
+  }
+
   __buildExtraSensors(hass) {
     const city = ['sensor', this.entity_id.split('.')[1]].join('.');
     let sensors = {};

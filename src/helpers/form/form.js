@@ -7,6 +7,7 @@ import {
   SciFiDropdownInput,
   SciFiDropdownMultiEntitiesInput,
   SciFiInput,
+  SciFiSlider,
 } from './input.js';
 
 // Define elements
@@ -20,6 +21,7 @@ const elements = {
   'sci-fi-dropdown-entity-input': SciFiDropdownEntityInput,
   'sci-fi-dropdown-multi-entities-input': SciFiDropdownMultiEntitiesInput,
   'sci-fi-dropdown-icon-input': SciFiDropdownIconInput,
+  'sci-fi-slider': SciFiSlider,
 };
 Object.entries(elements).forEach(([key, value]) => {
   window.customElements.get(key) || window.customElements.define(key, value);

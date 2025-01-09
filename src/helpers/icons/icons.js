@@ -39,14 +39,13 @@ export function getIcon(name) {
   `;
 }
 
-export function getWeatherIcon(weather, day = true) {
+export function getWeatherIcon(weather) {
   let icon = weather;
-  const period = day ? 'day' : 'night';
-  if (!WEATHER_ICON_SET[weather]) {
+  if (!WEATHER_ICON_SET[icon]) {
     console.info('Weather : ' + weather + ' cannot be found');
-    icon = 'sunny';
+    icon = 'na';
   }
-  return html` <div class="svg-container">
-    ${unsafeHTML(WEATHER_ICON_SET[icon][period])}
+  return html`<div class="svg-container">
+    ${unsafeHTML(WEATHER_ICON_SET[icon])}
   </div>`;
 }

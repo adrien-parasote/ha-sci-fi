@@ -1,5 +1,6 @@
-import {LitElement, css, html} from 'lit';
+import {html} from 'lit';
 
+import {SciFiBaseEditor} from '../../helpers/card/base_editor.js';
 import common_style from '../../helpers/common_style.js';
 import editor_common_style from '../../helpers/editor_common_style.js';
 import {ENTITY_KIND_LIGHT} from '../../helpers/entities/const.js';
@@ -8,7 +9,7 @@ import '../../helpers/form/form.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 import editor_style from './style_editor.js';
 
-export class SciFiLightsEditor extends LitElement {
+export class SciFiLightsEditor extends SciFiBaseEditor {
   static get styles() {
     return [common_style, editor_common_style, editor_style];
   }
@@ -20,7 +21,6 @@ export class SciFiLightsEditor extends LitElement {
     };
   }
 
-  _hass; // private
   _edit = false;
 
   set hass(hass) {
@@ -279,21 +279,5 @@ export class SciFiLightsEditor extends LitElement {
         break;
     }
     this.__dispatchChange(e, newConfig);
-  }
-
-  __getNewConfig() {
-    return JSON.parse(JSON.stringify(this._config));
-  }
-
-  __dispatchChange(e, newConfig) {
-    e.preventDefault();
-    e.stopPropagation();
-    this.dispatchEvent(
-      new CustomEvent('config-changed', {
-        detail: {config: newConfig},
-        bubbles: true,
-        composed: true,
-      })
-    );
   }
 }

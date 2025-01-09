@@ -2,7 +2,7 @@ import {LitElement, html} from 'lit';
 import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 import {isEqual} from 'lodash-es';
 
-import '../../helpers/card/wheel.js';
+import '../../helpers/card/tiles.js';
 import common_style from '../../helpers/common_style.js';
 import {
   ENTITY_KIND_LIGHT,
@@ -63,7 +63,14 @@ export class SciFiLights extends LitElement {
   }
 
   getCardSize() {
-    return 1;
+    return 4;
+  }
+
+  getLayoutOptions() {
+    return {
+      grid_rows: 4,
+      grid_columns: 4,
+    };
   }
 
   set hass(hass) {
@@ -148,15 +155,17 @@ export class SciFiLights extends LitElement {
         .filter((area) => area.hasEntityKind(ENTITY_KIND_LIGHT))
         .map((area, idx) => {
           const area_state = area.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off';
-          const separator_visible =
-            this._active_area_id == area.id ? 'show' : 'hide';
           return html` <div
             class="row"
             style="margin-left: calc(var(--default-hexa-width) / 2 * ${idx %
             2});"
           >
             ${this.__displayArea(area)}
-            <div class="h-separator ${separator_visible}">
+            <div
+              class="h-separator ${this._active_area_id == area.id
+                ? 'show'
+                : 'hide'}"
+            >
               <div class="circle ${area_state}"></div>
               <div
                 class="h-path ${area_state} ${idx % 2 ? '' : 'full'}"
@@ -257,31 +266,15 @@ export class SciFiLights extends LitElement {
   }
 
   __onPowerBtnClick(e, element) {
-    // Turn on or off
-    const active = element.isActive(ENTITY_KIND_LIGHT);
-    // Entities selection
-    const entity_ids = element
-      .getEntitiesByKind(ENTITY_KIND_LIGHT)
-      .filter((entity) => (active ? entity.active : !entity.active))
-      .reduce((acc, value) => acc.concat([value.entity_id]), []);
     e.preventDefault();
     e.stopPropagation();
-    this.__callService(entity_ids, active ? 'turn_off' : 'turn_on');
-  }
-
-  __callService(entities, action) {
-    this._hass.callService('light', action, {
-      entity_id: entities,
-    });
+    element.callService(this._hass, ENTITY_KIND_LIGHT);
   }
 
   __onLightClick(e, light) {
     e.preventDefault();
     e.stopPropagation();
-    this.__callService(
-      [light.entity_id],
-      light.active ? 'turn_off' : 'turn_on'
-    );
+    light.callService(this._hass);
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

@@ -1,8 +1,21 @@
-import {ENTITY_KIND_LIGHT} from './const';
+import {
+  ENTITY_KIND_LIGHT,
+  HASS_LIGHT_SERVICE,
+  HASS_LIGHT_SERVICE_ACTION_TURN_OFF,
+  HASS_LIGHT_SERVICE_ACTION_TURN_ON,
+} from './const';
 import {LightEntity} from './light';
 
 const SCI_FI_ENTITIES = {};
 SCI_FI_ENTITIES[ENTITY_KIND_LIGHT] = LightEntity;
+const SERVICES = [];
+SERVICES[ENTITY_KIND_LIGHT] = {
+  service: HASS_LIGHT_SERVICE,
+  actions: {
+    true: HASS_LIGHT_SERVICE_ACTION_TURN_ON,
+    false: HASS_LIGHT_SERVICE_ACTION_TURN_OFF,
+  },
+};
 
 export class House {
   constructor(hass) {
@@ -44,14 +57,15 @@ export class House {
       const entity_kind = entity_id.split('.')[0];
       if (Object.keys(SCI_FI_ENTITIES).includes(entity_kind)) {
         const entity = hass.states[entity_id];
-        entities.push(
-          new SCI_FI_ENTITIES[entity_kind](
-            entity.entity_id,
-            entity.state,
-            entity.attributes.icon,
-            entity.attributes.friendly_name
-          )
-        );
+        if (entity)
+          entities.push(
+            new SCI_FI_ENTITIES[entity_kind](
+              entity.entity_id,
+              entity.state,
+              entity.attributes.icon,
+              entity.attributes.friendly_name
+            )
+          );
       }
     });
     return entities;
@@ -167,6 +181,20 @@ class Floor {
       },
     };
   }
+
+  callService(hass, entity_kind) {
+    const active = this.isActive(entity_kind);
+    const entity_ids = this.getEntitiesByKind(entity_kind)
+      .filter((entity) => (active ? entity.active : !entity.active))
+      .reduce((acc, value) => acc.concat([value.entity_id]), []);
+    hass.callService(
+      SERVICES[entity_kind].service,
+      SERVICES[entity_kind].actions[!active],
+      {
+        entity_id: entity_ids,
+      }
+    );
+  }
 }
 
 class Area {
@@ -209,5 +237,19 @@ class Area {
         friendly_name: this.name,
       },
     };
+  }
+
+  callService(hass, entity_kind) {
+    const active = this.isActive(entity_kind);
+    const entity_ids = this.getEntitiesByKind(entity_kind)
+      .filter((entity) => (active ? entity.active : !entity.active))
+      .reduce((acc, value) => acc.concat([value.entity_id]), []);
+    hass.callService(
+      SERVICES[entity_kind].service,
+      SERVICES[entity_kind].actions[!active],
+      {
+        entity_id: entity_ids,
+      }
+    );
   }
 }

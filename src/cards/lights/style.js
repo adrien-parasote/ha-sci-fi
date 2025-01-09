@@ -9,6 +9,7 @@ export default css`
 
     background-color: black;
     height: 100%;
+    width: 100%;
   }
   .container {
     display: flex;
@@ -24,32 +25,6 @@ export default css`
   }
   .off svg {
     fill: var(--secondary-light-color) !important;
-  }
-  .h-separator {
-    margin: 0 3px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }
-  .h-separator.hide {
-    display: none;
-  }
-  .circle {
-    width: 6px;
-    height: 6px;
-    border: var(--border-width) solid var(--secondary-bg-color);
-    background: var(--primary-light-color);
-    border-radius: 50%;
-  }
-  .circle.off {
-    background-color: var(--secondary-light-alpha-color);
-  }
-  .h-path {
-    border: var(--border-width) solid var(--primary-light-color);
-    width: 25px;
-  }
-  .h-path.off {
-    border-color: var(--secondary-light-alpha-color);
   }
   .title .power {
     float: right;

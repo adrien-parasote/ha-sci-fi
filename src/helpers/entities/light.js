@@ -1,6 +1,11 @@
-import {html} from 'lit';
-
-import {ENTITY_KIND_LIGHT, STATE_LIGHT_OFF, STATE_LIGHT_ON} from './const.js';
+import {
+  ENTITY_KIND_LIGHT,
+  HASS_LIGHT_SERVICE,
+  HASS_LIGHT_SERVICE_ACTION_TURN_OFF,
+  HASS_LIGHT_SERVICE_ACTION_TURN_ON,
+  STATE_LIGHT_OFF,
+  STATE_LIGHT_ON,
+} from './const';
 
 export class LightEntity {
   static kind = ENTITY_KIND_LIGHT;
@@ -29,5 +34,17 @@ export class LightEntity {
       },
       state: this.state,
     };
+  }
+
+  callService(hass) {
+    hass.callService(
+      HASS_LIGHT_SERVICE,
+      this.active
+        ? HASS_LIGHT_SERVICE_ACTION_TURN_OFF
+        : HASS_LIGHT_SERVICE_ACTION_TURN_ON,
+      {
+        entity_id: [this.entity_id],
+      }
+    );
   }
 }

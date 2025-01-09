@@ -295,7 +295,11 @@ export class SciFiHexaTiles extends LitElement {
           class="state-${state}"
         >
           <div class="item-icon">
-            ${getWeatherIcon(this._weather.state, this._weather.day)}
+            ${getWeatherIcon(
+              [this._weather.state, this._weather.day ? 'day' : 'night'].join(
+                '-'
+              )
+            )}
           </div>
           <div class="item-name">${this._weather.name}</div>
         </sci-fi-hexa-tile>

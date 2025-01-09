@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>TESTS</title>
+    <style>
+      html {
+        height: 100%;
+        width: 100%;
+        background: rgb(28, 28, 28);
+      }
+      body {
+        margin: 0;
+        height: 100%;
+        display: flex;
+        flex-direction: row;
+      }
+      .ha-side-bar {
+        width: 56px;
+        background-color: #1c1c1c;
+        border-right: 1px solid rgba(225, 225, 225, 0.12);
+      }
+      .lovelace-panel {
+        height: 100%;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      .lovelace-header {
+        min-height: 56px;
+        width: 100%;
+        background-color: #101e24;
+        text-transform: uppercase;
+        align-content: center;
+        padding-left: 10px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        column-gap: 10px;
+      }
+      .lovelace-header a {
+        text-decoration: none;
+        color: white;
+      }
+      .lovelace-header div {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        column-gap: 10px;
+      }
+      .lovelace-header label {
+        font-size: small;
+        color: white;
+      }
+      .lovelace-header input {
+        margin-right: 20px;
+      }
+      #content {
+        height: 100vh;
+        align-self: center;
+      }
+      #phone {
+        border: 1px solid black;
+        display: flex;
+        width: 390px;
+        height: 100%;
+        overflow-x: auto;
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <!--<div class="ha-side-bar"></div>-->
+    <div class="lovelace-panel">
+      <div class="lovelace-header">
+        <div>
+          <a href="/tests/tests.html">Tests</a>
+          <button id="connectHA" onclick="connect()">Connect</button>
+          <button
+            id="refreshStates"
+            onclick="window.hass.dev.setupEntitiesSubscription()"
+            disabled=""
+          >
+            Refresh states
+          </button>
+        </div>
+        <label for="editor">Editor mode</label>
+        <input type="checkbox" id="editor" onchange="editorMode(this)" />
+      </div>
+      <div id="content">
+        <div id="phone"></div>
+      </div>
+    </div>
+    <script type="module" src="../src/sci-fi.js"></script>
+    <script type="module" src="/tests/components.js"></script>
+    <script type="module" src="/tests/hass.js"></script>
+  </body>
+</html>

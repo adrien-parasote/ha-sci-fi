@@ -1,13 +1,13 @@
 {
-  "version": "1.2.11",
+  "version": "1.3.0",
   "description": "Sci-fi cards for HA dashboard",
   "main": "src/sci-fi.js",
   "type": "module",
   "scripts": {
-    "format": "prettier index.html demo/*.html demo/*.js src/*.js src/**/*.js src/**/**/*.js --write",
+    "format": "prettier tests/*.html tests/**/*.js src/*.js src/**/*.js src/**/**/*.js --write",
     "serve": "es-dev-server --app-index index.html --node-resolve --watch",
     "copy": "mkdir temp && cp -r ./src/* ./temp",
-    "prepare-prod": "npm run copy && rm ./temp/utils/const.js && mv ./temp/utils/const.js.PROD ./temp/utils/const.js",
+    "prepare-prod": "npm run copy && rm ./temp/build/const.js && mv ./temp/build/const.js.PROD ./temp/build/const.js",
     "clean-up": "rm -rf temp && mv sci-fi.min.js dist",
     "build": "npm run format && npm run prepare-prod && rollup -c && npm run clean-up"
   },
@@ -26,6 +26,7 @@
   "dependencies": {
     "@mdi/js": "7.4.47",
     "chart.js": "4.4.7",
+    "home-assistant-js-websocket": "9.4.0",
     "lit": "3.2.1",
     "lodash-es": "4.17.21"
   }

@@ -6,6 +6,7 @@ export default css`
     --main-weather-icon-size: 150px;
     font-size: var(--font-size-xsmall);
     height: 100%;
+    width: 100%;
   }
   .container {
     display: flex;

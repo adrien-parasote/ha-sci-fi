@@ -1,8 +1,8 @@
 import {html} from 'lit';
 
-import {pad} from '../../utils/mock/utils.js';
 import {getWeatherIcon} from '../icons/icons.js';
 import {EXTRA_SENSORS, WEATHER_STATE_FR, WEEK_DAYS} from './const.js';
+import {pad} from './utils.js';
 
 export class SunEntity {
   constructor(hass, sun_entity_id) {
@@ -25,29 +25,6 @@ export class SunEntity {
 
   isDay() {
     return this.state == 'above_horizon';
-  }
-
-  renderSunrise() {
-    return html`
-      <div class="sun">
-        <div class="label">
-          ${this.next_rising.getHours()}:${this.next_rising.getMinutes()}
-        </div>
-        <div class="state">${getWeatherIcon('sunrise')}</div>
-        <div class="label">Lever</div>
-      </div>
-    `;
-  }
-  renderSunset() {
-    return html`
-      <div class="sun">
-        <div class="label">
-          ${this.next_setting.getHours()}:${this.next_setting.getMinutes()}
-        </div>
-        <div class="state">${getWeatherIcon('sunset')}</div>
-        <div class="label">Coucher</div>
-      </div>
-    `;
   }
 }
 
@@ -74,9 +51,6 @@ export class WeatherEntity {
       hass.states[weather_entity_id].attributes.friendly_name;
     // Extract additionnal sensors
     this.sensors = this.__buildExtraSensors(hass);
-    // Setup later
-    this.hourly_forecast = [];
-    this.daily_forecast = [];
   }
 
   __buildExtraSensors(hass) {
@@ -95,25 +69,6 @@ export class WeatherEntity {
 
   getWeatherIcon(day = true) {
     return getWeatherIcon([this.state, day ? 'day' : 'night'].join('-'));
-  }
-
-  getForecasts(hass) {
-    this.daily_forecast = hass
-      .callService('weather', 'get_forecasts', {
-        target: {entity_id: this.entity_id},
-        data: {type: 'daily'},
-      })
-      [this.entity_id].forecast.map(
-        (value) => new DailyForecast(value, this.temperature_unit)
-      );
-    this.hourly_forecast = hass
-      .callService('weather', 'get_forecasts', {
-        target: {entity_id: this.entity_id},
-        data: {type: 'hourly'},
-      })
-      [this.entity_id].forecast.map(
-        (value) => new HourlyForecast(value, this.temperature_unit)
-      );
   }
 
   get temperatureUnit() {
@@ -163,7 +118,7 @@ class ExtraSensor {
   }
 }
 
-class DailyForecast {
+export class DailyForecast {
   constructor(data, temperature_unit) {
     this.condition = data.condition;
     this.datetime = new Date(data.datetime);
@@ -196,7 +151,7 @@ class DailyForecast {
   }
 }
 
-class HourlyForecast {
+export class HourlyForecast {
   constructor(data, temperature_unit) {
     this.condition = data.condition;
     this.datetime = new Date(data.datetime);
@@ -232,10 +187,6 @@ class HourlyForecast {
     if (this.datetime >= sun.next_rising && this.datetime <= sun.next_setting)
       state = 'day';
     return [this.condition, state].join('-');
-  }
-
-  get day_hours() {
-    return [this.__getDay(), this.hours].join(' ');
   }
 
   get hours() {

@@ -1,7 +1,7 @@
+import {PACKAGE_NAME, VERSION} from './build/const.js';
 import './cards/hexa_tiles/card.js';
 import './cards/lights/card.js';
 import './cards/weather/card.js';
-import {PACKAGE_NAME, VERSION} from './utils/const.js';
 
 console.info(
   `%c🛸 ${PACKAGE_NAME.toUpperCase()} 🛸 - v${VERSION}`,

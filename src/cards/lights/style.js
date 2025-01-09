@@ -9,6 +9,7 @@ export default css`
 
     background-color: black;
     height: 100%;
+    width: 100%;
   }
   .container {
     display: flex;

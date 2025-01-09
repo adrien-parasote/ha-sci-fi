@@ -57,14 +57,15 @@ export class House {
       const entity_kind = entity_id.split('.')[0];
       if (Object.keys(SCI_FI_ENTITIES).includes(entity_kind)) {
         const entity = hass.states[entity_id];
-        entities.push(
-          new SCI_FI_ENTITIES[entity_kind](
-            entity.entity_id,
-            entity.state,
-            entity.attributes.icon,
-            entity.attributes.friendly_name
-          )
-        );
+        if (entity)
+          entities.push(
+            new SCI_FI_ENTITIES[entity_kind](
+              entity.entity_id,
+              entity.state,
+              entity.attributes.icon,
+              entity.attributes.friendly_name
+            )
+          );
       }
     });
     return entities;

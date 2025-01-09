@@ -1,12 +1,12 @@
-export const config = {
+export default {
   header: {
     message: 'Welcome',
   },
   weather: {
     activate: true,
     sun_entity: 'sun.sun',
-    weather_entity: 'weather.a_long-long_city_name',
-    link: '/demo/demo_weather.html',
+    weather_entity: 'weather.la_chapelle_sur_erdre',
+    link: '?component=weather',
   },
   tiles: [
     {
@@ -18,38 +18,27 @@ export const config = {
       name: 'Ligths',
       state_on: ['on'],
       state_error: null,
-      link: '/demo/demo_lights.html',
-    },
-    {
-      standalone: false,
-      entity_kind: 'climate',
-      entity_to_exclude: ['climate.stove'],
-      active_icon: 'mdi:radiator',
-      inactive_icon: 'mdi:radiator-disabled',
-      name: 'Radiators',
-      state_on: ['on', 'auto'],
-      state_error: null,
-      link: '/',
+      link: '?component=lights',
     },
     {
       standalone: true,
-      entity: 'climate.stove',
+      entity: 'climate.clou',
       active_icon: 'sci:stove-heat',
       inactive_icon: 'sci:stove-off',
       name: 'Stove',
       state_on: ['heat', 'cool'],
       state_error: null,
-      link: '/',
+      link: '#',
     },
     {
       standalone: true,
-      entity: 'vacuum.cleaner',
+      entity: 'vacuum.dobby',
       active_icon: 'mdi:robot-vacuum',
       inactive_icon: 'sci:vacuum-sleep',
-      name: 'Vacuum',
+      name: 'Dobby',
       state_on: ['cleaning', 'returning'],
       state_error: 'error',
-      link: '/',
+      link: '#',
     },
   ],
 };

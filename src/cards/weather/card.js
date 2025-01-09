@@ -1,11 +1,15 @@
 import Chart from 'chart.js/auto';
 import {LitElement, html} from 'lit';
-import {isEqual} from 'lodash-es';
 
 import '../../helpers/card/tiles.js';
 import common_style from '../../helpers/common_style.js';
 import {WEEK_DAYS} from '../../helpers/entities/const.js';
-import {SunEntity, WeatherEntity} from '../../helpers/entities/weather.js';
+import {
+  DailyForecast,
+  HourlyForecast,
+  SunEntity,
+  WeatherEntity,
+} from '../../helpers/entities/weather.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
 import WEATHER_ICON_SET from '../../helpers/icons/weather_iconset.js';
 import {
@@ -25,21 +29,25 @@ export class SciFiWeather extends LitElement {
   _hass; // private
   _chart;
   _chartDataKind = 'temperature';
+  _daily_subscribed;
+  _hourly_subscribed;
 
   static get properties() {
     return {
       _config: {type: Object},
       _sun: {type: Object},
       _weather: {type: Object},
+      _weather_daily_forecast: {type: Array},
+      _weather_hourly_forecast: {type: Array},
       _date: {type: Object},
-      _activeDay: {type: Number},
     };
   }
 
   constructor() {
     super();
-    // Clock
+    // Default
     this._date = new Date();
+    this._loaded = false;
     // Auto update date
     setInterval(() => {
       this._date = new Date();
@@ -64,7 +72,6 @@ export class SciFiWeather extends LitElement {
 
   setConfig(config) {
     this._config = this.__validateConfig(JSON.parse(JSON.stringify(config)));
-    this._activeDay = 0;
     // call set hass() to immediately adjust to a changed entity
     // while editing the entity in the card editor
     if (this._hass) {
@@ -87,15 +94,48 @@ export class SciFiWeather extends LitElement {
     this._hass = hass;
     if (!this._config) return; // Can't assume setConfig is called before hass is set
 
-    const sun = new SunEntity(hass, this._config.sun_entity);
-    if (!this._sun || !isEqual(sun, this._sun)) this._sun = sun;
+    // Get Weather and sun entity once (no need to track change)
+    if (!this._sun) this._sun = new SunEntity(hass, this._config.sun_entity);
+    if (!this._weather)
+      this._weather = new WeatherEntity(hass, this._config.weather_entity);
 
-    const weather = new WeatherEntity(hass, this._config.weather_entity);
-    if (!this._weather || !isEqual(weather, this._weather)) {
-      this._weather = weather;
-      // Get new forcast in case of global weather change
-      this._weather.getForecasts(hass);
-    }
+    // Get forecast once (no need to track change)
+    if (!this._weather_daily_forecast) this.__getDaysForecasts(hass);
+    if (!this._weather_hourly_forecast) this.__getHoursForecasts(hass);
+  }
+
+  __getDaysForecasts(hass) {
+    const unsub = hass.connection.subscribeMessage(
+      (event) => {
+        this._weather_daily_forecast = event.forecast.map((value) => {
+          return new DailyForecast(value, this.temperature_unit);
+        });
+        unsub.then((unsub) => unsub());
+      },
+      {
+        type: 'weather/subscribe_forecast',
+        forecast_type: 'daily',
+        entity_id: this._config.weather_entity,
+      }
+    );
+  }
+
+  __getHoursForecasts(hass) {
+    const unsub = hass.connection.subscribeMessage(
+      (event) => {
+        this._weather_hourly_forecast = event.forecast.map((value) => {
+          return new HourlyForecast(value, this.temperature_unit);
+        });
+        unsub.then((unsub) => unsub());
+        // draw chart
+        this.__drawChart();
+      },
+      {
+        type: 'weather/subscribe_forecast',
+        forecast_type: 'hourly',
+        entity_id: this._config.weather_entity,
+      }
+    );
   }
 
   render() {
@@ -152,8 +192,9 @@ export class SciFiWeather extends LitElement {
   }
 
   __renderDays() {
+    if (!this._weather_daily_forecast) return html``;
     return html` <div class="content">
-      ${this._weather.daily_forecast
+      ${this._weather_daily_forecast
         .slice(0, this._config.weather_daily_forecast_limit)
         .map((daily_forecast) => {
           return html`${daily_forecast.render(true)}`;
@@ -166,7 +207,6 @@ export class SciFiWeather extends LitElement {
       <div class="chart-header">
         ${this.__getChartTitle()} ${this.__getDropdownMenu()}
       </div>
-      <canvas id="chart"></canvas>
     `;
   }
 
@@ -224,30 +264,30 @@ export class SciFiWeather extends LitElement {
     </div>`;
   }
 
-  firstUpdated(changedProperties) {
-    let ctx = this.shadowRoot.querySelector('#chart');
-    if (ctx) {
-      ctx = ctx.getContext('2d');
-      this._chart = new Chart(ctx, {
-        data: this.__getChartDatasets(),
-        options: {
-          plugins: {
-            title: {
-              display: true,
-              text: '',
-              padding: 20,
-            },
-            legend: {
-              display: false,
-            },
-            tooltip: {
-              enabled: false,
-            },
+  __drawChart() {
+    let ctx = this.shadowRoot
+      .querySelector('.chart-container')
+      .appendChild(document.createElement('canvas'));
+    ctx = ctx.getContext('2d');
+    this._chart = new Chart(ctx, {
+      data: this.__getChartDatasets(),
+      options: {
+        plugins: {
+          title: {
+            display: true,
+            text: '',
+            padding: 20,
+          },
+          legend: {
+            display: false,
+          },
+          tooltip: {
+            enabled: false,
           },
         },
-        plugins: [this.__getChartPlugings()],
-      });
-    }
+      },
+      plugins: [this.__getChartPlugings()],
+    });
   }
 
   __getChartPlugings() {
@@ -298,7 +338,7 @@ export class SciFiWeather extends LitElement {
       datasets[0].borderWidth = 2;
       datasets[0].borderRadius = 5;
     }
-    this._weather.hourly_forecast
+    this._weather_hourly_forecast
       .slice(0, this._config.weather_hourly_forecast_limit)
       .map((hourly) => {
         datasets[0].data.push({

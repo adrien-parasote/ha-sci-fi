@@ -9,6 +9,8 @@ HA sci-fi cards for personal dashboard
 **Screenshot**
 
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/hexa.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/hexa_edit_1.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/hexa_edit_2.jpeg" width="300">
 
 **Content:**
 - Show current connected person
@@ -20,7 +22,7 @@ HA sci-fi cards for personal dashboard
         - Standalone entity (ex: light.*<my_light>*)
         - Kind (ex: light) : entities provide by HA (in that case all light.* entities)
 
-Available customization:
+**Available customization:**
 - Entity to exclude (in case of *"kind"* mode selected)
 - Icons : active & inactive
 - Tiles name
@@ -35,11 +37,15 @@ Available customization:
 
 ### 2. Sci-Fi Lights card
 
+Allow to deal with lights entities, grouping them per floors/areas.
+
 **/!\ currently only design for Smartphone and to be used with HA single panel /!\\**
 
 **Screenshot**
 
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/lights.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/lights_edit_1.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/lights_edit_2.jpeg" width="300">
 
 **Content:**
 - Display house's floors with lights entities (floors' icon are from HA floor )
@@ -55,38 +61,53 @@ Available customization:
     - Global turn on/off light button
     - Light entities button
 
-Available customization:
+**Available customization:**
 - Default on/off light icon (used to represente each entity card if not overwirted)
 - First floor and associated area to display (if not setup, first floor and associated area in alphabetical order)
 - Light entity :
     - Custom name : a custom name attached to the entity on the card
     - Custom active/inactive icon : icon rendered when light state is on/off
 
-
-
 ### 3. Sci-Fi Weather card
 
+Display current weather base on *weather entity* (Design for [MétéoFrance](https://www.home-assistant.io/integrations/meteo_france/) integration entity)
+
 **/!\ currently only design for Smartphone and to be used with HA single panel /!\\**
-**/!\ Weather entity is base on [MétéoFrance integration](https://www.home-assistant.io/integrations/meteo_france/) /!\\**
+
+**/!\ Card render is base on [MétéoFrance integration](https://www.home-assistant.io/integrations/meteo_france/) /!\\**
+
 Credits go to [basmilius](https://github.com/basmilius) for the awesome [weather icons](https://github.com/basmilius/weather-icons).
 
 **Screenshot**
 
-TODO
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/weather.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/weather_edit.jpeg" width="300">
 
 **Content:**
+- Card is composed of 
+    - A header:
+        - weather state
+        - temperature
+        - hour/date
+    - An optionnal alert section (if alert sensor if configured)
+    - A daily weather summary:
+        - cloud coverage
+        - precipitation volume
+        - rain luck
+        - freeze luck
+        - snow luck
+    - A chart area, displaying next hourly:
+        - temperatures
+        - precipitations
+        - wind speed
+    - A next day weather part
 
-TODO gestion des alertes (vert jaune orange rouge) 
-TODO rajouter couleur alert dans hexa tiles
-
-  Vent violent: Jaune => windsock
-  Inondation: Vert => tide-high (fill)
-  Orages: Vert => thunderstorms-rain
-  Pluie-inondation: Vert => raindrops
-  Neige-verglas: Vert => snowflake
-  Grand-froid: Vert => thermometer-colder
-  Vagues-submersion: Vert => tide-high (fill)
-
+**Available customization:**
+- Sun & Weather entity selection
+- Number of next days/hours to display on the card
+- Alert part : 
+    - Alert sensor entity
+    - Green, yellow, amber & red states value return by the sensor
 
 ## How to install ?
 

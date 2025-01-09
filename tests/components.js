@@ -73,4 +73,5 @@ window.editorMode = function(checkbox){
 
 window.addEventListener('config-changed', (e) => {
   content.setConfig(e.detail.config);
+  console.log(e.detail.config)
 });

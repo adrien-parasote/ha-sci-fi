@@ -1,5 +1,6 @@
 import Chart from 'chart.js/auto';
 import {LitElement, html} from 'lit';
+import {isEqual} from 'lodash-es';
 
 import '../../helpers/card/tiles.js';
 import common_style from '../../helpers/common_style.js';
@@ -40,6 +41,7 @@ export class SciFiWeather extends LitElement {
       _weather_daily_forecast: {type: Array},
       _weather_hourly_forecast: {type: Array},
       _date: {type: Object},
+      _alert: {type: Object},
     };
   }
 
@@ -51,7 +53,7 @@ export class SciFiWeather extends LitElement {
     // Auto update date
     setInterval(() => {
       this._date = new Date();
-    }, 1000);
+    }, 10000);
   }
 
   __validateConfig(config) {
@@ -102,6 +104,13 @@ export class SciFiWeather extends LitElement {
     // Get forecast once (no need to track change)
     if (!this._weather_daily_forecast) this.__getDaysForecasts(hass);
     if (!this._weather_hourly_forecast) this.__getHoursForecasts(hass);
+
+    if (this._config.alert) {
+      const alert = hass.states[this._config.alert.entity_id];
+      if (alert) {
+        if (!this._alert && !isEqual(alert, this.alert)) this._alert = alert;
+      }
+    }
   }
 
   __getDaysForecasts(hass) {
@@ -143,6 +152,7 @@ export class SciFiWeather extends LitElement {
     return html`
       <div class="container">
         <div class="header">${this.__renderHeader()}</div>
+        <div class="alerts">${this.__renderAlerts()}</div>
         <div class="today-summary">${this.__renderTodaySummary()}</div>
         <div class="chart-container">${this.__renderChart()}</div>
         <div class="days-forecast">${this.__renderDays()}</div>
@@ -163,6 +173,28 @@ export class SciFiWeather extends LitElement {
         <div class="date">${this.__getDate()}</div>
       </div>
     `;
+  }
+
+  __renderAlerts() {
+    if (!this._alert || this._alert.state == this._config.alert.state_green)
+      return html``;
+    let alert_states = {};
+    alert_states[this._config.alert.state_yellow] = 'yellow';
+    alert_states[this._config.alert.state_orange] = 'orange';
+    alert_states[this._config.alert.state_red] = 'red';
+
+    return html` ${Object.keys(this._alert.attributes)
+      .filter((x) =>
+        Object.keys(alert_states).includes(this._alert.attributes[x])
+      )
+      .map((key) => {
+        return html`<div
+          class="alert ${alert_states[this._alert.attributes[key]]}"
+        >
+          ${getIcon('mdi:alert')}
+          <div>${key}</div>
+        </div>`;
+      })}`;
   }
 
   __getHour() {
@@ -391,6 +423,7 @@ export class SciFiWeather extends LitElement {
       weather_entity: null,
       weather_hourly_forecast_limit: 24,
       weather_daily_forecast_limit: 10,
+      alert: {},
     };
   }
 }

@@ -4,6 +4,9 @@ export default css`
   :host {
     --default-hexa-width: 60px;
     --main-weather-icon-size: 150px;
+    --yellow: rgb(255, 255, 102);
+    --orange: orange;
+    --red: red;
     font-size: var(--font-size-small);
     height: 100%;
     width: 100%;
@@ -46,6 +49,43 @@ export default css`
     text-shadow: 0px 0px 5px var(--secondary-light-color);
     line-height: normal;
   }
+  /******** ALERTS *********/
+  .alerts {
+    display: flex;
+    flex-direction: row;
+    column-gap: 10px;
+    background-color: var(--primary-bg-alpha-color);
+    width: 100%;
+    justify-content: center;
+  }
+  .alerts .alert {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+  .alerts .alert svg {
+    width: var(--icon-size-normal);
+    height: var(--icon-size-normal);
+  }
+  .alerts .alert.yellow {
+    color: var(--yellow);
+  }
+  .alerts .alert.orange {
+    color: var(--orange);
+  }
+  .alerts .alert.red {
+    color: var(--red);
+  }
+  .alerts .alert.yellow svg {
+    fill: var(--yellow);
+  }
+  .alerts .alert.orange svg {
+    fill: var(--orange);
+  }
+  .alerts .alert.red svg {
+    fill: var(--red);
+  }
+
   /******** TODAY SUMMARY *********/
   .today-summary {
     display: flex;

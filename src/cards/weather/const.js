@@ -17,7 +17,7 @@ export const SENSORS_MAP = {
     chartOptionsScales: {
       y: {
         suggestedMin: null,
-        suggestedMax: null,
+        suggestedMax: 30,
       },
     },
   },
@@ -52,8 +52,8 @@ export const SENSORS_MAP = {
     chartDatafill: false,
     chartOptionsScales: {
       y: {
-        suggestedMin: null,
-        suggestedMax: null,
+        suggestedMin: 0,
+        suggestedMax: 90,
       },
     },
   },

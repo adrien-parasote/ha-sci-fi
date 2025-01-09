@@ -4,7 +4,7 @@ export default css`
   :host {
     --default-hexa-width: 60px;
     --main-weather-icon-size: 150px;
-    font-size: var(--font-size-xsmall);
+    font-size: var(--font-size-small);
     height: 100%;
     width: 100%;
   }
@@ -97,7 +97,6 @@ export default css`
   }
   .chart-container .chart-header .title .label {
     align-self: center;
-    font-size: var(--font-size-small);
     color: var(--primary-light-color);
     text-shadow: 0px 0px 5px var(--secondary-light-color);
   }

@@ -118,7 +118,7 @@ Credits go to [basmilius](https://github.com/basmilius) for the awesome [weather
 - Number of next days/hours to display on the card
 - Alert part : 
     - Alert sensor entity
-    - Green, yellow, amber & red states value return by the sensor
+    - Green, yellow, amber & red states values return by the sensor
 
 ### Screenshots
 

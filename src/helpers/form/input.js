@@ -225,7 +225,7 @@ export class SciFiChipsInput extends SciFiInput {
             type="text"
             placeholder="Name"
             ?disabled=${this.disabled}
-            @keypress="${this.__keyPressed}"
+            @focusout="${this.__focusOut}"
           />
           <label for="name">${this.label}</label>
         </div>
@@ -233,12 +233,10 @@ export class SciFiChipsInput extends SciFiInput {
     `;
   }
 
-  __keyPressed(e) {
-    if (e.key === 'Enter' && e.srcElement.value) {
-      if (!this.values.includes(e.srcElement.value)) {
-        this.__dispatchEvent(e, e.srcElement.value, 'add');
-        e.srcElement.value = '';
-      }
+  __focusOut(e) {
+    if (e.srcElement.value && !this.values.includes(e.srcElement.value)) {
+      this.__dispatchEvent(e, e.srcElement.value, 'add');
+      e.srcElement.value = '';
     }
   }
 

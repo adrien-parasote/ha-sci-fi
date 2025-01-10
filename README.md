@@ -33,7 +33,6 @@ HA sci-fi cards for personal dashboard
 
 ### Improve/Known issues
 - Responsive tiles (not only for smartphone)
-- When press key enter in chips component (editor mode) => save card action apply
 
 ### Screenshots
 

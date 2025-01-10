@@ -496,7 +496,7 @@ export class SciFiDropdownIconInput extends SciFiDropdownInput {
       });
       this.requestUpdate();
     } else if (!e.srcElement.value) {
-      this.__filter_items = JSON.parse(JSON.stringify(this._items));
+      this.__filter_items = [];
       this.requestUpdate();
     }
   }

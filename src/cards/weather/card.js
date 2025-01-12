@@ -57,18 +57,17 @@ export class SciFiWeather extends LitElement {
   }
 
   __validateConfig(config) {
-    if (!config.sun_entity) throw new Error('You need to define a sun entity');
+    if (!config.sun_entity) config.sun_entity = 'sun.sun';
     if (!config.weather_entity)
       throw new Error('You need to define a weather entity');
     if (!config.weather_hourly_forecast_limit)
       config.weather_hourly_forecast_limit = 24; // max 72
     if (config.weather_hourly_forecast_limit > 72)
-      throw new Error('Hourly forecast is limite to 72h max');
+      throw new Error('Hourly forecast is limited to 72h max');
     if (!config.weather_daily_forecast_limit)
       config.weather_daily_forecast_limit = 15; // max 15
     if (config.weather_daily_forecast_limit > 15)
-      throw new Error('Daily forecast is limite to 15 days max');
-
+      throw new Error('Daily forecast is limited to 15 days max');
     return config;
   }
 

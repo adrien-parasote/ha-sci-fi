@@ -49,9 +49,9 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         <h1>Header</h1>
         <sci-fi-input
           label="Message"
-          value=${this._config.header.message}
-          element-id="header"
-          kind="message"
+          value=${this._config.header_message}
+          element-id="header_message"
+          kind=""
           @input-update=${this.__update}
         ></sci-fi-input>
       </section>
@@ -173,8 +173,8 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
       <sci-fi-dropdown-multi-entities-input
         label="Entities to exclude (optionnal)"
         element-id="${id}"
-        kind="entity_to_exclude"
-        values="${JSON.stringify(entity.entity_to_exclude)}"
+        kind="entities_to_exclude"
+        values="${JSON.stringify(entity.entities_to_exclude)}"
         items="${JSON.stringify(this._entity_kind[entity.entity_kind])}"
         ?disabled=${!entity.entity_kind}
         @input-update=${this.__update}
@@ -260,9 +260,10 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   __update(e) {
     let newConfig = this.__getNewConfig();
     const elemmentId = e.detail.id;
+    console.log(e);
     if (e.type == 'accordion-delete') {
       newConfig.tiles.splice(elemmentId, 1);
-    } else if (!['header', 'weather'].includes(elemmentId)) {
+    } else if (!['header_message', 'weather'].includes(elemmentId)) {
       switch (e.detail.type) {
         case 'add':
           newConfig.tiles[elemmentId][e.detail.kind].push(e.detail.value);
@@ -272,18 +273,30 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
           break;
         default:
           // Update
-          newConfig.tiles[elemmentId][e.detail.kind] = e.detail.value;
+          if (e.detail.kind == 'entities_to_exclude') {
+            if (!newConfig.tiles[elemmentId][e.detail.kind])
+              newConfig.tiles[elemmentId][e.detail.kind] = [];
+            newConfig.tiles[elemmentId][e.detail.kind].push(e.detail.value);
+          } else {
+            newConfig.tiles[elemmentId][e.detail.kind] = e.detail.value;
+          }
           break;
       }
       newConfig.tiles[elemmentId].state_on = Array.from(
         new Set(newConfig.tiles[elemmentId].state_on.sort())
       );
-      newConfig.tiles[elemmentId].entity_to_exclude = Array.from(
-        new Set(newConfig.tiles[elemmentId].entity_to_exclude.sort())
+      newConfig.tiles[elemmentId].entities_to_exclude = Array.from(
+        new Set(newConfig.tiles[elemmentId].entities_to_exclude)
       );
     } else {
-      // Update data
-      newConfig[elemmentId][e.detail.kind] = e.detail.value;
+      if (elemmentId == 'header_message') {
+        newConfig[elemmentId] = e.detail.value;
+      } else {
+        // Update data
+        newConfig[elemmentId][e.detail.kind] = e.detail.value;
+        if (e.detail.kind == 'activate' && !newConfig[elemmentId]['sun_entity'])
+          newConfig[elemmentId]['sun_entity'] = 'sun.sun';
+      }
     }
     this.__dispatchChange(e, newConfig);
   }

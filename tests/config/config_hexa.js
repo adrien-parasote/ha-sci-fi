@@ -12,7 +12,7 @@ export default {
     {
       standalone: false,
       entity_kind: 'light',
-      entity_to_exclude: [],
+      entities_to_exclude: [],
       active_icon: 'mdi:lightbulb-on-outline',
       inactive_icon: 'mdi:lightbulb-outline',
       name: 'Ligths',

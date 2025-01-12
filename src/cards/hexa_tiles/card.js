@@ -53,8 +53,8 @@ export class SciFiHexaTiles extends LitElement {
 
   __validateConfig(config) {
     // Default value
-    if (!config.header) {
-      config['header'] = {message: 'Welcome'};
+    if (!config.header_message) {
+      config['header_message'] = '';
     }
 
     //validate Weather
@@ -75,19 +75,17 @@ export class SciFiHexaTiles extends LitElement {
     }
 
     // Validate tiles
-    if (!config.tiles) {
-      throw new Error('You need to define a tiles list entry');
-    }
+    if (!config.tiles) config.tiles = [];
     config.tiles.map((tile) => {
       if (!tile.standalone) {
         if (!tile.entity_kind)
           throw new Error('You need to define an entity kind (ex: light)');
-        if (!tile.entity_to_exclude) tile.entity_to_exclude = [];
+        if (!tile.entities_to_exclude) tile.entities_to_exclude = [];
       } else {
         if (!tile.entity)
           throw new Error('You need to define an entity (ex: sensor.light)');
         tile.entity_kind = null;
-        tile.entity_to_exclude = [];
+        tile.entities_to_exclude = [];
       }
       if (!tile.state_on || tile.state_on.length < 1)
         throw new Error(
@@ -103,8 +101,8 @@ export class SciFiHexaTiles extends LitElement {
 
       // Sort & filter states & entity to exclude
       tile.state_on = Array.from(new Set(tile.state_on.sort()));
-      tile.entity_to_exclude = Array.from(
-        new Set(tile.entity_to_exclude.sort())
+      tile.entities_to_exclude = Array.from(
+        new Set(tile.entities_to_exclude.sort())
       );
     });
     return config;
@@ -170,7 +168,7 @@ export class SciFiHexaTiles extends LitElement {
   __extractEntity() {
     return this._config.tiles.map((c) => {
       const states = !c.standalone
-        ? this.__extractHassKindState(c.entity_kind, c.entity_to_exclude)
+        ? this.__extractHassKindState(c.entity_kind, c.entities_to_exclude)
         : [this._hass.states[c.entity].state];
 
       const state = this.__getEntityGlobalState(
@@ -227,7 +225,7 @@ export class SciFiHexaTiles extends LitElement {
             picture="${this._user.attributes.entity_picture}"
           ></sci-fi-person>
           <div class="info">
-            <div class="message">${this._config.header.message}</div>
+            <div class="message">${this._config.header_message}</div>
             <div class="name">${this._user.attributes.friendly_name}</div>
           </div>
         </div>
@@ -338,9 +336,7 @@ export class SciFiHexaTiles extends LitElement {
   }
   static getStubConfig() {
     return {
-      header: {
-        message: 'Welcome',
-      },
+      header_message: 'Welcome',
       weather: {
         activate: false,
         sun_entity: 'sun.sun',
@@ -350,7 +346,7 @@ export class SciFiHexaTiles extends LitElement {
       tiles: [
         {
           entity_kind: 'light',
-          entity_to_exclude: [],
+          entities_to_exclude: [],
           active_icon: 'mdi:lightbulb-on-outline',
           inactive_icon: 'mdi:lightbulb-outline',
           name: 'Lights',

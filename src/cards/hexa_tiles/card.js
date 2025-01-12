@@ -80,12 +80,12 @@ export class SciFiHexaTiles extends LitElement {
       if (!tile.standalone) {
         if (!tile.entity_kind)
           throw new Error('You need to define an entity kind (ex: light)');
-        if (!tile.entity_to_exclude) tile.entity_to_exclude = [];
+        if (!tile.entities_to_exclude) tile.entities_to_exclude = [];
       } else {
         if (!tile.entity)
           throw new Error('You need to define an entity (ex: sensor.light)');
         tile.entity_kind = null;
-        tile.entity_to_exclude = [];
+        tile.entities_to_exclude = [];
       }
       if (!tile.state_on || tile.state_on.length < 1)
         throw new Error(
@@ -101,8 +101,8 @@ export class SciFiHexaTiles extends LitElement {
 
       // Sort & filter states & entity to exclude
       tile.state_on = Array.from(new Set(tile.state_on.sort()));
-      tile.entity_to_exclude = Array.from(
-        new Set(tile.entity_to_exclude.sort())
+      tile.entities_to_exclude = Array.from(
+        new Set(tile.entities_to_exclude.sort())
       );
     });
     return config;
@@ -168,7 +168,7 @@ export class SciFiHexaTiles extends LitElement {
   __extractEntity() {
     return this._config.tiles.map((c) => {
       const states = !c.standalone
-        ? this.__extractHassKindState(c.entity_kind, c.entity_to_exclude)
+        ? this.__extractHassKindState(c.entity_kind, c.entities_to_exclude)
         : [this._hass.states[c.entity].state];
 
       const state = this.__getEntityGlobalState(
@@ -346,7 +346,7 @@ export class SciFiHexaTiles extends LitElement {
       tiles: [
         {
           entity_kind: 'light',
-          entity_to_exclude: [],
+          entities_to_exclude: [],
           active_icon: 'mdi:lightbulb-on-outline',
           inactive_icon: 'mdi:lightbulb-outline',
           name: 'Lights',

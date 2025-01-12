@@ -173,8 +173,8 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
       <sci-fi-dropdown-multi-entities-input
         label="Entities to exclude (optionnal)"
         element-id="${id}"
-        kind="entity_to_exclude"
-        values="${JSON.stringify(entity.entity_to_exclude)}"
+        kind="entities_to_exclude"
+        values="${JSON.stringify(entity.entities_to_exclude)}"
         items="${JSON.stringify(this._entity_kind[entity.entity_kind])}"
         ?disabled=${!entity.entity_kind}
         @input-update=${this.__update}
@@ -273,7 +273,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
           break;
         default:
           // Update
-          if (e.detail.kind == 'entity_to_exclude') {
+          if (e.detail.kind == 'entities_to_exclude') {
             if (!newConfig.tiles[elemmentId][e.detail.kind])
               newConfig.tiles[elemmentId][e.detail.kind] = [];
             newConfig.tiles[elemmentId][e.detail.kind].push(e.detail.value);
@@ -285,8 +285,8 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
       newConfig.tiles[elemmentId].state_on = Array.from(
         new Set(newConfig.tiles[elemmentId].state_on.sort())
       );
-      newConfig.tiles[elemmentId].entity_to_exclude = Array.from(
-        new Set(newConfig.tiles[elemmentId].entity_to_exclude)
+      newConfig.tiles[elemmentId].entities_to_exclude = Array.from(
+        new Set(newConfig.tiles[elemmentId].entities_to_exclude)
       );
     } else {
       if (elemmentId == 'header_message') {

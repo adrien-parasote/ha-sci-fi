@@ -51,20 +51,20 @@ Coming soon
 ## Sci-Fi Hexa-Tiles card <a name="hexa_tiles"></a>
 
 > [!CAUTION]
-> Currently only design for Smartphone and to be used with HA single panel. **Improve/Known issues** > tiles are not yes responsive :'(
+> Currently only design for Smartphone and to be used with HA single panel. **Improve/Known issues** > tiles are not yet responsive :'(
 
 ### Description:
 
-Main package card, allowing you to have a single vision of entities you want to know, then on tile's click go to your dedicated page.<br>
+Main package card, allowing you to have a single entities' vision you want to know. Then on tile's click, you're redirected to your dedicated page (example: can be a dashboard subview).<br>
 Two modes are available: 
 
-1. Standalone: display only 1 entity state
-2. Kind (ex: light): parse you HA entities to give you a global state (ex: on - if at least one light is on - else off)
+1. Kind (ex: light): parse you HA entities to give you a global state (ex: on - if at least one light is on - else off)
+2. Standalone: display only 1 entity state
 
 ### Card features:
 
 - Show current connected person with a custom welcome message
-- Weather (optional) tile: special weather tile based on 
+- Weather (optional) tile: special weather tile based on following entities:
     - `sun.sun` 
     - `weather.<my_city>`
 - Custom tiles rendering status (standalone or kind)
@@ -72,7 +72,7 @@ Two modes are available:
 ### Configuration
 
 > [!TIP]
-> This card can be configure through a UI that allow use to use HA interface for the configuration.
+> This card can be configure through the UI that allow use to use HA interface for the configuration.
 
 #### Minimal configuration
 
@@ -93,7 +93,7 @@ weather:
 tiles:
   - standalone: false
     entity_kind: light
-    entity_to_exclude: 
+    entities_to_exclude: 
         - light.excluded_light_1  # replace with your light entity
         - light.excluded_light_2  # replace with your light entity
     active_icon: mdi:lightbulb-on-outline
@@ -119,11 +119,12 @@ tiles:
 
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
-| type | string | **Required** | `custom:sci-fi-hexa-tiles`| |
+| type | string | **Required** | Card definition | `custom:sci-fi-hexa-tiles`|
 | header_message | string| **Optionnal** | A message to display on top of the card | `''` |
 | `weather` | Object | **Optional** | Section describing weather tile |  | 
 | `tiles` | Object | **Optional** | list of custom tiles |  | 
 
+**Example**
 ```yaml
 type: custom:sci-fi-hexa-tiles
 header_message: Hey, welcome back Bro !
@@ -143,7 +144,6 @@ tiles:
 | sun_entity | String | **Required** (if weather.activate = true) | HA `sun entity`  | `sun.sun` |
 | weather_entity | String | **Required** (if weather.activate = true) | Your provider weather entity id  |  |
 | link | String | **Optional** | Link you want to follow when tile is tapped  | `''` |
-| `tiles` | Object | **Optional** | list of custom tiles |  | 
 
 **Example**
 ```yaml
@@ -159,41 +159,36 @@ weather:
 
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
-| standalone | Boolean | **Required** | Define tile state rendering. <br> If `true`, tile's state will be based on entity state. <br> If `false`, tile's state will be displayed by parsing your HA entities `kind` | `false` |
-
-```yaml
-tiles:
-  - ... # see tile configuration bellow
-  - ... # see tile configuration bellow
-  - ... # see tile configuration bellow
-```
+| standalone | Boolean | **Required** | Define tile state rendering. <br> If `true`, tile's state will be based on entity state. <br> If `false`, tile's state will be displayed by parsing your HA entities  selected kind | `false` |
 
 ***Tiles[standalone=false] config***
 
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
-| entity_kind | String | **Required** | Entities' kind you want to track. Example : `light`, `input_button`, `person`, `sensor`... | |
-| entity_to_exclude | List[String] | **Optional** | Entities's id list to exclude from tracking. Example: `light.excluded_light_1`, `light.excluded_light_2`  | |
-| active_icon | String | **Required** | MDI/SCI icon to render when state is active. Example: `mdi:lightbulb-on-outline` | |
-| inactive_icon | String | **Required** | MDI/SCI icon to render when state is active. Example: `mdi:lightbulb` | |
+| entity_kind | String | **Required** | Entities' kind you want to track. Example : `light`, `person`, `sensor`... | |
+| entities_to_exclude | List[String] | **Optional** | Entities's id list to exclude from tracking. Example: `light.excluded_light_1`, `light.excluded_light_2`  | |
+| active_icon | String | **Required** | `mdi`/ `sci` icon to render when state is active. Example: `mdi:lightbulb-on-outline` | |
+| inactive_icon | String | **Required** | `mdi`/ `sci` icon to render when state is active. Example: `mdi:lightbulb` | |
 | name | String | **Optional** | Tile's name to display | |
-| state_on | List[String] | **Required** | List of active states values to match. Notice: all other states are consider as inactive | |
+| state_on | List[String] | **Required** | Active states value list to match. *Notice: all other states are consider as inactive* | |
 | state_error | String | **Optional** | Error state value to match | |
 | link | String | **Optional** | Link you want to follow when tile is tapped  | `''` |
 
+**Example**
 ```yaml
-- standalone: false
-entity_kind: light
-entity_to_exclude: 
-    - light.excluded_light_1  # replace with your light entity
-    - light.excluded_light_2  # replace with your light entity
-active_icon: mdi:lightbulb-on-outline
-inactive_icon: mdi:lightbulb
-name: Lights
-state_on:
-    - "on"
-state_error: ""
-link: lights # replace with your light page link
+tiles:
+  - standalone: false
+  entity_kind: light
+  entities_to_exclude: 
+      - light.excluded_light_1  # replace with your light entity
+      - light.excluded_light_2  # replace with your light entity
+  active_icon: mdi:lightbulb-on-outline
+  inactive_icon: mdi:lightbulb
+  name: Lights
+  state_on:
+      - "on"
+  state_error: ""
+  link: lights # replace with your light page link
 ```
 
 ***Tiles[standalone=true] config***
@@ -201,25 +196,26 @@ link: lights # replace with your light page link
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
 | entity | String | **Require** | Your standalone entity id  |  |
-| active_icon | String | **Required** | MDI/SCI icon to render when state is active. Example: `mdi:lightbulb-on-outline` | |
-| inactive_icon | String | **Required** | MDI/SCI icon to render when state is active. Example: `mdi:lightbulb` | |
+| active_icon | String | **Required** | `mdi`/ `sci` icon to render when state is active. Example: `mdi:lightbulb-on-outline` | |
+| inactive_icon | String | **Required** | `mdi`/ `sci` icon to render when state is active. Example: `mdi:lightbulb` | |
 | name | String | **Optional** | Tile's name to display | |
 | state_on | List[String] | **Required** | List of active states values to match. Notice: all other states are consider as inactive | |
 | state_error | String | **Optional** | Error state value to match | |
 | link | String | **Optional** | Link you want to follow when tile is tapped  | `''` |
 
-
+**Example**
 ```yaml
-- standalone: true
-active_icon: mdi:robot-vacuum
-inactive_icon: sci:vacuum-sleep
-name: Dobby
-state_on: # replace with your custom states
-    - cleaning
-    - returning
-state_error: error
-link: Vacuum_home # replace with your vaccum page link
-entity: vacuum.dobby
+tiles:
+  - standalone: true
+  active_icon: mdi:robot-vacuum
+  inactive_icon: sci:vacuum-sleep
+  name: Dobby
+  state_on: # replace with your custom states
+      - cleaning
+      - returning
+  state_error: error
+  link: Vacuum_home # replace with your vaccum page link
+  entity: vacuum.dobby
 ```
 
 ### Screenshots
@@ -256,12 +252,12 @@ Allow to deal with lights entities, grouping them per floors/areas.
     - Light entities button
 
 > [!TIP]
-> Floors & Areas icons are the one you define in HA `Areas, labels & zones`
+> Floors & Areas icons are the one you define in `Areas, labels & zones` in your HA configuration
 
 ### Configuration
 
 > [!TIP]
-> This card can be configure through a UI that allow use to use HA interface for the configuration.
+> This card can be configure through the UI that allow use to use HA interface for the configuration.
 
 #### Minimal configuration
 
@@ -293,11 +289,12 @@ custom_entities:
 
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
-| type | string | **Required** | `custom:sci-fi-lights`| |
-| `default_icons` | Object | **Optional** | Define default icon represening lights' state for the card |  | 
+| type | string | **Required** | Card definition | `custom:sci-fi-lights` |
+| `default_icons` | Object | **Optional** | Define default icon representing lights' state for the card |  | 
 | first_floor_to_render | String | **Optional** | Floor you want to see when card is first rendered |  | 
-| first_area_to_render | Object | **Optional** | Area from `first_floor_to_render` you want to see when card is first rendered |  | 
+| first_area_to_render | Object | **Optional** | Area from `first_floor_to_render` floor you want to see when card is first rendered |  | 
 
+**Example**
 ```yaml
 type: custom:sci-fi-lights
 first_floor_to_render: floor_1 # replace with your prefered floor ID
@@ -317,7 +314,7 @@ custom_entities:
 | on | string | **Optionnal** | State on card icon | `mdi:lightbulb-on-outline`|
 | off | string | **Optionnal** | State off card icon | `mdi:lightbulb-outline`|
 
-
+**Example**
 ```yaml
 default_icons:
   on: mdi:lightbulb-on-outline
@@ -336,8 +333,9 @@ Each `custom_entities` entries must be a light entity ID. Then for each, options
 | icon_on | string | **Optionnal** | Custom MID/SCI icon to display for entity state on | `config.default_icons.on`|
 | icon_off | string | **Optionnal** | Custom MID/SCI icon to display for entity state off  | `config.default_icons.off`|
 
+**Example**
 ```yaml
-light.light_id_1:
+light.light_id_1: # The light entity ID you want to customize
   name: "Christmas tree"
   icon_on: mdi:pine-tree
   icon_off: mdi:pine-tree-variant-outline
@@ -358,39 +356,110 @@ light.light_id_1:
 
 ## Sci-Fi Weather card <a name="weather_card"></a>
 
-Display current weather base on *weather entity* (Design for [MétéoFrance](https://www.home-assistant.io/integrations/meteo_france/) integration entity)
+> [!CAUTION]
+> Card is based on [MétéoFrance integration](https://www.home-assistant.io/integrations/meteo_france/)
 
-**/!\ currently only design for Smartphone and to be used with HA single panel /!\\**
+> [!NOTE]
+> Credits go to [basmilius](https://github.com/basmilius) for the awesome [weather icons](https://github.com/basmilius/weather-icons).
 
-**/!\ Card render is base on [MétéoFrance integration](https://www.home-assistant.io/integrations/meteo_france/) /!\\**
+### Description:
 
-Credits go to [basmilius](https://github.com/basmilius) for the awesome [weather icons](https://github.com/basmilius/weather-icons).
+Weather package card, display weather, alerts & forecast based on `Météo-France` entity & sensors.
 
-### Content:
-- Card is composed of 
-    - A header:
-        - weather state
-        - temperature
-        - hour/date
-    - An optionnal alert section (if alert sensor if configured)
-    - A daily weather summary:
-        - cloud coverage
-        - precipitation volume
-        - rain luck
-        - freeze luck
-        - snow luck
-    - A chart area, displaying next hourly:
-        - temperatures
-        - precipitations
-        - wind speed
-    - A next day weather part
+### Card features:
 
-### Available customization:
-- Sun & Weather entity selection
-- Number of next days/hours to display on the card
-- Alert part : 
-    - Alert sensor entity
-    - Green, yellow, amber & red states values return by the sensor
+Card is composed of:
+- A header, displaying current:
+    - weather state
+    - temperature
+    - hour/date
+- An optionnal alert section (if alert sensor if configured)
+- A daily weather summary:
+    - cloud coverage
+    - precipitation volume
+    - rain luck
+    - freeze luck
+    - snow luck
+- A chart area, displaying next hourly:
+    - temperatures
+    - precipitations
+    - wind speed
+- A next day weather part
+
+### Configuration
+
+> [!TIP]
+> This card can be configure through the UI that allow use to use HA interface for the configuration.
+
+#### Minimal configuration
+
+```yaml
+type: custom:sci-fi-weather
+weather_entity: weather_home  # replace with your weather providers's entity id
+```
+
+#### Full configuration
+
+```yaml
+type: custom:sci-fi-weather
+sun_entity: sun.sun
+weather_entity: weather_home # replace with your weather providers's entity id
+weather_hourly_forecast_limit: 24
+weather_daily_forecast_limit: 15
+alert:
+  state_green: green # replace with your alert green state
+  state_yellow: yellow # replace with your alert yellow state
+  state_orange: orange # replace with your alert orange state
+  state_red: red # replace with your alert red state
+  entity_id: sensor.weather_alert # replace with your weather alert providers's entity id
+```
+
+#### Options
+
+| Name | Type | Requirement | Description | Default   |
+| - | - | - | - | - |
+| type | string | **Required** | Card definition | `custom:sci-fi-weather`| 
+| sun_entity | String | **Required**| HA `sun` entity  | `sun.sun` |
+| weather_entity | String | **Required** | Your provider weather entity id  |  |
+| weather_hourly_forecast_limit | Integer | **Optionnal** | Forecasted weather hours between 0 and 72   | 24 |
+| weather_daily_forecast_limit | Integer | **Optionnal** | Forecasted weather days between 0 and 15   | 15 |
+| `alert` | Object | **Optional** | Alert sensor config |  | 
+
+**Example**
+```yaml
+type: custom:sci-fi-weather
+sun_entity: sun.sun
+weather_entity: weather_home # replace with your weather providers's entity id
+weather_hourly_forecast_limit: 24
+weather_daily_forecast_limit: 15
+alert:
+   ... # see alert configuration bellow
+```
+
+<br>
+
+***`alert` config***
+
+| Name | Type | Requirement | Description | Default   |
+| - | - | - | - | - |
+| entity_id | string | **Required** | Weather alert sensor ID | |
+| state_green | string | **Required** | Green state alert | |
+| state_yellow | string | **Required** | Yellow state alert | |
+| state_orange | string | **Required** | Orange state alert | |
+| state_red | string | **Required** | Red state alert | |
+
+
+**Example**
+```yaml
+alert:
+  state_green: green # replace with your alert green state
+  state_yellow: yellow # replace with your alert yellow state
+  state_orange: orange # replace with your alert orange state
+  state_red: red # replace with your alert red state
+  entity_id: sensor.weather_alert # replace with your weather alert providers's entity id
+```
+
+<br>
 
 ### Screenshots
 

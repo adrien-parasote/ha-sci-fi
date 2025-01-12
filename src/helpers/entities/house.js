@@ -85,11 +85,9 @@ export class House {
     let first = this.floors.filter((floor) =>
       this.isfloorActive(floor.id, entity_kind)
     )[0];
-    if(first) return first;
+    if (first) return first;
     // Case of no active light
-    return this.floors.filter((floor) =>
-      floor.hasEntityKind(entity_kind)
-    )[0];
+    return this.floors.filter((floor) => floor.hasEntityKind(entity_kind))[0];
   }
 
   getDefaultArea(floor_id, entity_kind) {

@@ -35,17 +35,12 @@ export class SciFiLights extends LitElement {
   }
 
   __validateConfig(config) {
-    if (!config.default_icons)
-      throw new Error(
-        'You need to define default light icon (on / off) section'
-      );
+    if (!config.default_icons) config.default_icons = {};
     if (!config.default_icons.on)
       config.default_icons.on = 'mdi:lightbulb-on-outline';
     if (!config.default_icons.off)
       config.default_icons.off = 'mdi:lightbulb-outline';
-
     if (!config.custom_entities) config.custom_entities = {};
-
     return config;
   }
 

@@ -65,8 +65,8 @@ Two modes are available:
 
 - Show current connected person with a custom welcome message
 - Weather (optional) tile: special weather tile based on 
-    - sun.sun 
-    - *weather.<my_city>*
+    - `sun.sun` 
+    - `weather.<my_city>`
 - Custom tiles rendering status (standalone or kind)
 
 ### Configuration
@@ -174,8 +174,8 @@ tiles:
 | - | - | - | - | - |
 | entity_kind | String | **Required** | Entities' kind you want to track. Example : `light`, `input_button`, `person`, `sensor`... | |
 | entity_to_exclude | List[String] | **Optional** | Entities's id list to exclude from tracking. Example: `light.excluded_light_1`, `light.excluded_light_2`  | |
-| active_icon | String | **Required** | MDI/SCI to render when state is active. Example: `mdi:lightbulb-on-outline` | |
-| inactive_icon | String | **Required** | MDI/SCI to render when state is active. Example: `mdi:lightbulb` | |
+| active_icon | String | **Required** | MDI/SCI icon to render when state is active. Example: `mdi:lightbulb-on-outline` | |
+| inactive_icon | String | **Required** | MDI/SCI icon to render when state is active. Example: `mdi:lightbulb` | |
 | name | String | **Optional** | Tile's name to display | |
 | state_on | List[String] | **Required** | List of active states values to match. Notice: all other states are consider as inactive | |
 | state_error | String | **Optional** | Error state value to match | |
@@ -201,8 +201,8 @@ link: lights # replace with your light page link
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
 | entity | String | **Require** | Your standalone entity id  |  |
-| active_icon | String | **Required** | MDI/SCI to render when state is active. Example: `mdi:lightbulb-on-outline` | |
-| inactive_icon | String | **Required** | MDI/SCI to render when state is active. Example: `mdi:lightbulb` | |
+| active_icon | String | **Required** | MDI/SCI icon to render when state is active. Example: `mdi:lightbulb-on-outline` | |
+| inactive_icon | String | **Required** | MDI/SCI icon to render when state is active. Example: `mdi:lightbulb` | |
 | name | String | **Optional** | Tile's name to display | |
 | state_on | List[String] | **Required** | List of active states values to match. Notice: all other states are consider as inactive | |
 | state_error | String | **Optional** | Error state value to match | |
@@ -235,30 +235,115 @@ entity: vacuum.dobby
 
 ## Sci-Fi Lights card <a name="lights_card"></a>
 
+### Description:
+
+Lights package card, allowing you to dynamically manage your home lights by auto-discovering HA `light` entities.
+
+### Card features:
+
 Allow to deal with lights entities, grouping them per floors/areas.
-
-**/!\ currently only design for Smartphone and to be used with HA single panel /!\\**
-
-### Content:
-- Display house's floors with lights entities (floors' icon are from HA floor )
-- Display per floor :
+- Display house's floors linked with lights entities
+- Display per floor:
     - Global information 
         - name
         - level
         - number of lights on/off
     - Global turn on/off light button
     - Attached area with lights entities (areas' icon are from HA area definition)
-- Display per area :
+- Display per area:
     - Area name
     - Global turn on/off light button
     - Light entities button
 
-### Available customization:
-- Default on/off light icon (used to represente each entity card if not overwrote)
-- First floor and associated area to display (if not setup, first floor and associated area in alphabetical order)
-- Light entity :
-    - Custom name : a custom name attached to the entity on the card
-    - Custom active/inactive icon : icon rendered when light state is on/off
+> [!TIP]
+> Floors & Areas icons are the one you define in HA `Areas, labels & zones`
+
+### Configuration
+
+> [!TIP]
+> This card can be configure through a UI that allow use to use HA interface for the configuration.
+
+#### Minimal configuration
+
+```yaml
+type: custom:sci-fi-lights
+```
+
+#### Full configuration
+
+```yaml
+type: custom:sci-fi-lights
+default_icons:
+  on: mdi:lightbulb-on-outline
+  off: mdi:lightbulb-outline
+first_floor_to_render: floor_1 # replace with your prefered floor ID
+first_area_to_render: area_1_floor_1 # replace with your prefered area ID from floor ID
+custom_entities:
+  light.light_id_1:
+    name: "Christmas tree"
+    icon_on: mdi:pine-tree
+    icon_off: mdi:pine-tree-variant-outline
+  light.light_id_2:
+    name: "Desk lamp"
+    icon_on: mdi:desk-lamp-on
+    icon_off: mdi:desk-lamp
+```
+
+#### Options
+
+| Name | Type | Requirement | Description | Default   |
+| - | - | - | - | - |
+| type | string | **Required** | `custom:sci-fi-lights`| |
+| `default_icons` | Object | **Optional** | Define default icon represening lights' state for the card |  | 
+| first_floor_to_render | String | **Optional** | Floor you want to see when card is first rendered |  | 
+| first_area_to_render | Object | **Optional** | Area from `first_floor_to_render` you want to see when card is first rendered |  | 
+
+```yaml
+type: custom:sci-fi-lights
+first_floor_to_render: floor_1 # replace with your prefered floor ID
+first_area_to_render: area_1_floor_1 # replace with your prefered area ID from floor ID
+default_icons:
+    - ... # see default_icons configuration bellow
+custom_entities:
+    - ... # see custom_entities configuration bellow
+```
+
+<br>
+
+***`default_icons` config***
+
+| Name | Type | Requirement | Description | Default   |
+| - | - | - | - | - |
+| on | string | **Optionnal** | State on card icon | `mdi:lightbulb-on-outline`|
+| off | string | **Optionnal** | State off card icon | `mdi:lightbulb-outline`|
+
+
+```yaml
+default_icons:
+  on: mdi:lightbulb-on-outline
+  off: mdi:lightbulb-outline
+```
+
+<br>
+
+***`custom_entities` config***
+
+Each `custom_entities` entries must be a light entity ID. Then for each, options are:
+
+| Name | Type | Requirement | Description | Default   |
+| - | - | - | - | - |
+| name | string | **Optionnal** | Custom name to display | `light.entity_id`|
+| icon_on | string | **Optionnal** | Custom MID/SCI icon to display for entity state on | `config.default_icons.on`|
+| icon_off | string | **Optionnal** | Custom MID/SCI icon to display for entity state off  | `config.default_icons.off`|
+
+```yaml
+light.light_id_1:
+  name: "Christmas tree"
+  icon_on: mdi:pine-tree
+  icon_off: mdi:pine-tree-variant-outline
+```
+
+<br>
 
 ### Screenshots
 

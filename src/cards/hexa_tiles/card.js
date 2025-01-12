@@ -53,8 +53,8 @@ export class SciFiHexaTiles extends LitElement {
 
   __validateConfig(config) {
     // Default value
-    if (!config.header) {
-      config['header'] = {message: 'Welcome'};
+    if (!config.header_message) {
+      config['header_message'] = '';
     }
 
     //validate Weather
@@ -75,9 +75,7 @@ export class SciFiHexaTiles extends LitElement {
     }
 
     // Validate tiles
-    if (!config.tiles) {
-      throw new Error('You need to define a tiles list entry');
-    }
+    if (!config.tiles) config.tiles = [];
     config.tiles.map((tile) => {
       if (!tile.standalone) {
         if (!tile.entity_kind)
@@ -227,7 +225,7 @@ export class SciFiHexaTiles extends LitElement {
             picture="${this._user.attributes.entity_picture}"
           ></sci-fi-person>
           <div class="info">
-            <div class="message">${this._config.header.message}</div>
+            <div class="message">${this._config.header_message}</div>
             <div class="name">${this._user.attributes.friendly_name}</div>
           </div>
         </div>
@@ -338,9 +336,7 @@ export class SciFiHexaTiles extends LitElement {
   }
   static getStubConfig() {
     return {
-      header: {
-        message: 'Welcome',
-      },
+      header_message: 'Welcome',
       weather: {
         activate: false,
         sun_entity: 'sun.sun',

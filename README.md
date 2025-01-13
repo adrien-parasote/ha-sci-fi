@@ -6,15 +6,16 @@
 HA sci-fi is a group of cards to display simple and minimalist interface in HA dashboard.
 The aim is to have your phone as a single entry point an use it as a remote house controler.
 
-# Table of contents
+# 📚 Table of contents
 
 1. [How to install ?](#how_to_install)
 2. [Available components](#available_components)
     1. [Sci-Fi Hexa-Tiles card](#hexa_tiles)
-    2. [Sci-Fi Lights card](#lights_card)
-    3. [Sci-Fi Weather card](#weather_card)
+    3. [Sci-Fi icon](#icon)
+    4. [Sci-Fi Lights card](#lights_card)
+    5. [Sci-Fi Weather card](#weather_card)
 
-# How to install ?<a name="how_to_install"></a>
+# 🛠️ How to install ?<a name="how_to_install"></a>
 
 <details>
 
@@ -46,9 +47,10 @@ Coming soon
 
 </details>
 
+<br>
 
-# Available components <a name="available_components"></a>
-## Sci-Fi Hexa-Tiles card <a name="hexa_tiles"></a>
+# 🧩 Available components <a name="available_components"></a>
+## ⬡ Sci-Fi Hexa-Tiles card <a name="hexa_tiles"></a>
 
 > [!CAUTION]
 > Currently only design for Smartphone and to be used with HA single panel. **Improve/Known issues** > tiles are not yet responsive :'(
@@ -73,6 +75,10 @@ Two modes are available:
 
 > [!TIP]
 > This card can be configure through the UI that allow use to use HA interface for the configuration.
+
+<details>
+
+<summary>YAML</summary>
 
 #### Minimal configuration
 
@@ -218,6 +224,8 @@ tiles:
   entity: vacuum.dobby
 ```
 
+</details>
+
 ### Screenshots
 
 <details>
@@ -229,7 +237,20 @@ tiles:
 
 </details>
 
-## Sci-Fi Lights card <a name="lights_card"></a>
+
+## 🖼️ Sci-Fi icons <a name="icon"></a>
+
+To complete HA icon set, sci-fi package onboard the following icons : 
+
+| Name | HA string | Preview  |
+| - | - | - |
+| Sleeping vaccum | sci:vacuum-sleep | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/sleeping_vacuum.svg" alt="Sleeping vaccum"  height="48"/> |
+| Stove | sci:stove | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove.svg" alt="Stove"  height="48"/> |
+| Stove heat | sci:sci:stove-heat | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_heat.svg" alt="Stove heat"  height="48"/> |
+| Stove cool | sci:sci:stove-cool | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_cool.svg" alt="Stove cool"  height="48"/> |
+
+
+## 💡 Sci-Fi Lights card <a name="lights_card"></a>
 
 ### Description:
 
@@ -258,6 +279,11 @@ Allow to deal with lights entities, grouping them per floors/areas.
 
 > [!TIP]
 > This card can be configure through the UI that allow use to use HA interface for the configuration.
+
+
+<details>
+
+<summary>YAML</summary>
 
 #### Minimal configuration
 
@@ -341,7 +367,7 @@ light.light_id_1: # The light entity ID you want to customize
   icon_off: mdi:pine-tree-variant-outline
 ```
 
-<br>
+</details>
 
 ### Screenshots
 
@@ -354,7 +380,7 @@ light.light_id_1: # The light entity ID you want to customize
 
 </details>
 
-## Sci-Fi Weather card <a name="weather_card"></a>
+## 🌦️ Sci-Fi Weather card <a name="weather_card"></a>
 
 > [!CAUTION]
 > Card is based on [MétéoFrance integration](https://www.home-assistant.io/integrations/meteo_france/)
@@ -390,6 +416,10 @@ Card is composed of:
 
 > [!TIP]
 > This card can be configure through the UI that allow use to use HA interface for the configuration.
+
+
+<details>
+<summary>YAML</summary>
 
 #### Minimal configuration
 
@@ -459,7 +489,7 @@ alert:
   entity_id: sensor.weather_alert # replace with your weather alert providers's entity id
 ```
 
-<br>
+</details>
 
 ### Screenshots
 

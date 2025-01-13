@@ -1,5 +1,6 @@
 # 🛸 HA SCI-FI 🛸
 
+[![HACS: Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs) 
 [![Last commit](https://img.shields.io/github/last-commit/adrien-parasote/ha-sci-fi)](#) 
 [![Current version](https://img.shields.io/github/v/release/adrien-parasote/ha-sci-fi)](https://github.com/adrien-parasote/ha-sci-fi/releases/latest)
 
@@ -43,7 +44,17 @@ If it's not working, just try to clear your browser cache.`
 
 <summary>With HACS (Recommended)</summary>
 
-Coming soon
+<br>
+
+1. Install HACS if you don't have it already
+2. Open HACS in Home Assistant
+3. Open top right menu by clicking on the 3 dots
+4. Go to `Custom repositories`
+5. Add the following repository adresse: `https://github.com/adrien-parasote/ha-sci-fi`, select `Dashboard` for type then click on `add` button.
+4. Repository will be displayed in you HACS `Available for download` section
+5. Open HACS package page, then click on `Download` button.
+6. Let the last version selected and click on `Download` button.
+5. Finally, tap `Reload` to end the process and start enjoying the package.
 
 </details>
 
@@ -244,10 +255,10 @@ To complete HA icon set, sci-fi package onboard the following icons :
 
 | Name | HA string | Preview  |
 | - | - | - |
-| Sleeping vaccum | sci:vacuum-sleep | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/sleeping_vacuum.svg" alt="Sleeping vaccum"  height="48"/> |
-| Stove | sci:stove | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove.svg" alt="Stove"  height="48"/> |
-| Stove heat | sci:sci:stove-heat | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_heat.svg" alt="Stove heat"  height="48"/> |
-| Stove cool | sci:sci:stove-cool | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_cool.svg" alt="Stove cool"  height="48"/> |
+| Sleeping vaccum | sci:vacuum-sleep | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/sleeping_vacuum.svg" alt="Sleeping vaccum"  height="25"/> |
+| Stove | sci:stove | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove.svg" alt="Stove"  height="25"/> |
+| Stove heat | sci:sci:stove-heat | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_heat.svg" alt="Stove heat"  height="25"/> |
+| Stove cool | sci:sci:stove-cool | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_cool.svg" alt="Stove cool"  height="25"/> |
 
 
 ## 💡 Sci-Fi Lights card <a name="lights_card"></a>

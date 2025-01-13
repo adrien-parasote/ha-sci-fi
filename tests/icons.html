@@ -19,7 +19,7 @@
       }
       h3 {
         color: rgb(105, 211, 251);
-        text-shadow:0px 0px 5px rgb(102, 156, 210) ;
+        text-shadow: 0px 0px 5px rgb(102, 156, 210);
       }
       #icons {
         display: flex;
@@ -35,7 +35,7 @@
         border-radius: 5px;
         min-width: 90px;
       }
-      #icons .icon svg{
+      #icons .icon svg {
         fill: rgb(102, 156, 210);
         height: 50px;
         width: 50px;
@@ -45,37 +45,37 @@
   <body>
     <h3>🛸 Sci-fi icons 🛸</h3>
     <div id="icons"></div>
-    </div>
     <script type="module">
-      import {getIcon} from '../src/helpers/icons/icons.js'
-      import SCIFI_ICONSET from '../src/helpers/icons/iconset.js'
-      
-      const icons = document.querySelector("#icons")
+      import {getIcon} from '../src/helpers/icons/icons.js';
+      import SCIFI_ICONSET from '../src/helpers/icons/iconset.js';
 
-      Object.keys(SCIFI_ICONSET).map((key)=> {
+      const icons = document.querySelector('#icons');
+
+      Object.keys(SCIFI_ICONSET).map((key) => {
         const icon_container = document.createElement('div');
         icon_container.classList.add('icon');
 
         const icon_title = document.createElement('div');
         icon_title.classList.add('title');
-        icon_title.textContent=key;
+        icon_title.textContent = key;
 
-        const iconSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        const iconSvg = document.createElementNS(
+          'http://www.w3.org/2000/svg',
+          'svg'
+        );
         iconSvg.setAttribute('viewBox', '0 0 24 24');
 
-        const iconPath = document.createElementNS('http://www.w3.org/2000/svg','path');
-        iconPath.setAttribute(
-          'd',
-          SCIFI_ICONSET[key].path
+        const iconPath = document.createElementNS(
+          'http://www.w3.org/2000/svg',
+          'path'
         );
+        iconPath.setAttribute('d', SCIFI_ICONSET[key].path);
         iconSvg.appendChild(iconPath);
 
         icon_container.appendChild(iconSvg);
         icon_container.appendChild(icon_title);
         icons.appendChild(icon_container);
-      })
-
-
+      });
     </script>
   </body>
 </html>

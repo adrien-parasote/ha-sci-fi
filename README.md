@@ -46,6 +46,7 @@ Coming soon
 
 </details>
 
+<br>
 
 # Available components <a name="available_components"></a>
 ## Sci-Fi Hexa-Tiles card <a name="hexa_tiles"></a>
@@ -73,6 +74,10 @@ Two modes are available:
 
 > [!TIP]
 > This card can be configure through the UI that allow use to use HA interface for the configuration.
+
+<details>
+
+<summary>YAML</summary>
 
 #### Minimal configuration
 
@@ -218,6 +223,8 @@ tiles:
   entity: vacuum.dobby
 ```
 
+</details>
+
 ### Screenshots
 
 <details>
@@ -258,6 +265,11 @@ Allow to deal with lights entities, grouping them per floors/areas.
 
 > [!TIP]
 > This card can be configure through the UI that allow use to use HA interface for the configuration.
+
+
+<details>
+
+<summary>YAML</summary>
 
 #### Minimal configuration
 
@@ -341,7 +353,7 @@ light.light_id_1: # The light entity ID you want to customize
   icon_off: mdi:pine-tree-variant-outline
 ```
 
-<br>
+</details>
 
 ### Screenshots
 
@@ -390,6 +402,10 @@ Card is composed of:
 
 > [!TIP]
 > This card can be configure through the UI that allow use to use HA interface for the configuration.
+
+
+<details>
+<summary>YAML</summary>
 
 #### Minimal configuration
 
@@ -459,7 +475,7 @@ alert:
   entity_id: sensor.weather_alert # replace with your weather alert providers's entity id
 ```
 
-<br>
+</details>
 
 ### Screenshots
 

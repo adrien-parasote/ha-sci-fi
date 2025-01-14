@@ -49,7 +49,6 @@ export class SciFiWeather extends LitElement {
     super();
     // Default
     this._date = new Date();
-    this._loaded = false;
     // Auto update date
     setInterval(() => {
       this._date = new Date();

@@ -1,13 +1,16 @@
+import {ClimatetEntity} from './climate.js';
 import {
+  ENTITY_KIND_CLIMATE,
   ENTITY_KIND_LIGHT,
   HASS_LIGHT_SERVICE,
   HASS_LIGHT_SERVICE_ACTION_TURN_OFF,
   HASS_LIGHT_SERVICE_ACTION_TURN_ON,
 } from './const';
-import {LightEntity} from './light';
+import {LightEntity} from './light.js';
 
 const SCI_FI_ENTITIES = {};
 SCI_FI_ENTITIES[ENTITY_KIND_LIGHT] = LightEntity;
+SCI_FI_ENTITIES[ENTITY_KIND_CLIMATE] = ClimatetEntity;
 const SERVICES = [];
 SERVICES[ENTITY_KIND_LIGHT] = {
   service: HASS_LIGHT_SERVICE,
@@ -31,7 +34,7 @@ export class House {
       // Check if device can be associated to an entity
       const entities_ids = this.__getDeviceEntitiesIds(device_id, hass);
       if (entities_ids.lenght == 0) return floors;
-      const entities = this.__getEntities(entities_ids, hass);
+      const entities = this.__getEntities(entities_ids, hass, device_id);
       if (entities.lenght == 0) return floors;
 
       const area = new Area(area_id, hass);
@@ -51,7 +54,7 @@ export class House {
     }, {});
   }
 
-  __getEntities(entities_ids, hass) {
+  __getEntities(entities_ids, hass, device_id) {
     let entities = [];
     entities_ids.map((entity_id) => {
       const entity_kind = entity_id.split('.')[0];
@@ -59,12 +62,7 @@ export class House {
         const entity = hass.states[entity_id];
         if (entity)
           entities.push(
-            new SCI_FI_ENTITIES[entity_kind](
-              entity.entity_id,
-              entity.state,
-              entity.attributes.icon,
-              entity.attributes.friendly_name
-            )
+            new SCI_FI_ENTITIES[entity_kind](entity, hass.devices[device_id])
           );
       }
     });

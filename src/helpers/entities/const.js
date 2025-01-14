@@ -83,3 +83,5 @@ export const WEEK_DAYS = [
     short: 'Sam.',
   },
 ];
+
+export const ENTITY_KIND_CLIMATE = 'climate';

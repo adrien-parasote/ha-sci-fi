@@ -2,9 +2,7 @@ import {LitElement, html} from 'lit';
 
 import '../../helpers/card/tiles.js';
 import common_style from '../../helpers/common_style.js';
-import {
-  PACKAGE,
-} from './const.js';
+import {PACKAGE} from './const.js';
 import {SciFiClimateEditor} from './editor.js';
 import style from './style.js';
 
@@ -52,11 +50,7 @@ export class SciFiClimate extends LitElement {
 
   render() {
     if (!this._hass || !this._config) return html``;
-    return html`
-      <div class="container">
-        CLIMATE CONTENT HERE
-      </div>
-    `;
+    return html` <div class="container">CLIMATE CONTENT HERE</div> `;
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

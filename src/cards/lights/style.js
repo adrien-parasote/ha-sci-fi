@@ -2,9 +2,6 @@ import {css} from 'lit';
 
 export default css`
   :host {
-    --default-hexa-width: 60px;
-    --selected-hexa-width: 80px;
-
     --light-on-color: rgb(255, 193, 7);
 
     background-color: black;

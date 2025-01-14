@@ -35,11 +35,10 @@ export class SciFiLights extends LitElement {
   }
 
   __validateConfig(config) {
-    if (!config.default_icons) config.default_icons = {};
-    if (!config.default_icons.on)
-      config.default_icons.on = 'mdi:lightbulb-on-outline';
-    if (!config.default_icons.off)
-      config.default_icons.off = 'mdi:lightbulb-outline';
+    if (!config.default_icon_on)
+      config.default_icon_on = 'mdi:lightbulb-on-outline';
+    if (!config.default_icon_off)
+      config.default_icon_off = 'mdi:lightbulb-outline';
     if (!config.custom_entities) config.custom_entities = {};
     return config;
   }
@@ -235,12 +234,12 @@ export class SciFiLights extends LitElement {
       icon =
         custom && custom.icon_on
           ? custom.icon_on
-          : this._config.default_icons.on;
+          : this._config.default_icon_on;
     } else {
       icon =
         custom && custom.icon_off
           ? custom.icon_off
-          : this._config.default_icons.off;
+          : this._config.default_icon_off;
     }
     return getIcon(icon);
   }
@@ -279,10 +278,8 @@ export class SciFiLights extends LitElement {
 
   static getStubConfig() {
     return {
-      default_icons: {
-        on: 'mdi:lightbulb-on-outline',
-        off: 'mdi:lightbulb-outline',
-      },
+      default_icon_on: 'mdi:lightbulb-on-outline',
+      default_icon_off: 'mdi:lightbulb-outline',
       first_floor_to_render: null,
       first_area_to_render: null,
       custom_entities: {},

@@ -91,17 +91,17 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
       <sci-fi-dropdown-icon-input
         label="Active icon (required)"
         element-id="default_icons"
-        kind="on"
-        icon=${this._config.default_icons.on}
-        value=${this._config.default_icons.on}
+        kind="default_icon_on"
+        icon=${this._config.default_icon_on}
+        value=${this._config.default_icon_on}
         @input-update=${this.__update}
       ></sci-fi-dropdown-icon-input>
       <sci-fi-dropdown-icon-input
         label="Inactive icon (required)"
         element-id="default_icons"
-        kind="off"
-        icon=${this._config.default_icons.off}
-        value=${this._config.default_icons.off}
+        kind="default_icon_off"
+        icon=${this._config.default_icon_off}
+        value=${this._config.default_icon_off}
         @input-update=${this.__update}
       ></sci-fi-dropdown-icon-input>
     </section>`;
@@ -254,15 +254,15 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
   __update(e) {
     let newConfig = this.__getNewConfig();
     switch (e.detail.id) {
-      case 'default_icons':
-        newConfig[e.detail.id][e.detail.kind] = e.detail.value;
-        break;
       case 'first_floor_to_render':
         newConfig[e.detail.id] = e.detail.value;
         newConfig.first_area_to_render = null;
         break;
       case 'first_area_to_render':
         newConfig[e.detail.id] = e.detail.value;
+        break;
+      case 'default_icons':
+        newConfig[e.detail.kind] = e.detail.value;
         break;
       default:
         // Custom entity

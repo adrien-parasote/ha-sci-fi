@@ -1,8 +1,6 @@
 export default {
-  default_icons: {
-    on: 'mdi:lightbulb-on-outline',
-    off: 'mdi:lightbulb-outline',
-  },
+  default_icon_on: 'mdi:lightbulb-on-outline',
+  default_icon_off: 'mdi:lightbulb-outline',
   first_floor_to_render: 'rdc',
   first_area_to_render: 'chambre',
   custom_entities: {

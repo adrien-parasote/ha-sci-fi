@@ -306,9 +306,8 @@ type: custom:sci-fi-lights
 
 ```yaml
 type: custom:sci-fi-lights
-default_icons:
-  on: mdi:lightbulb-on-outline
-  off: mdi:lightbulb-outline
+default_icon_on: mdi:lightbulb-on-outline
+default_icon_off: mdi:lightbulb-outline
 first_floor_to_render: floor_1 # replace with your prefered floor ID
 first_area_to_render: area_1_floor_1 # replace with your prefered area ID from floor ID
 custom_entities:
@@ -327,35 +326,20 @@ custom_entities:
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
 | type | string | **Required** | Card definition | `custom:sci-fi-lights` |
-| `default_icons` | Object | **Optional** | Define default icon representing lights' state for the card |  | 
+| default_icon_on | string | **Optionnal** | State on card icon | `mdi:lightbulb-on-outline`|
+| default_icon_off | string | **Optionnal** | State off card icon | `mdi:lightbulb-outline`|
 | first_floor_to_render | String | **Optional** | Floor you want to see when card is first rendered |  | 
 | first_area_to_render | Object | **Optional** | Area from `first_floor_to_render` floor you want to see when card is first rendered |  | 
 
 **Example**
 ```yaml
 type: custom:sci-fi-lights
+default_icon_on: mdi:lightbulb-on-outline
+default_icon_off: mdi:lightbulb-outline
 first_floor_to_render: floor_1 # replace with your prefered floor ID
 first_area_to_render: area_1_floor_1 # replace with your prefered area ID from floor ID
-default_icons:
-    - ... # see default_icons configuration bellow
 custom_entities:
     - ... # see custom_entities configuration bellow
-```
-
-<br>
-
-***`default_icons` config***
-
-| Name | Type | Requirement | Description | Default   |
-| - | - | - | - | - |
-| on | string | **Optionnal** | State on card icon | `mdi:lightbulb-on-outline`|
-| off | string | **Optionnal** | State off card icon | `mdi:lightbulb-outline`|
-
-**Example**
-```yaml
-default_icons:
-  on: mdi:lightbulb-on-outline
-  off: mdi:lightbulb-outline
 ```
 
 <br>

@@ -4,6 +4,8 @@
   "main": "src/sci-fi.js",
   "type": "module",
   "scripts": {
+    "serve": "es-dev-server --app-index /tests/index.html --node-resolve --watch",
+
     "format": "prettier tests/*.html tests/**/*.js src/*.js src/**/*.js src/**/**/*.js --write",
     "patch": "npm --no-git-tag-version version patch",
     "copy": "mkdir temp && cp -r ./src/* ./temp",

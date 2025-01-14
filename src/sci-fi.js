@@ -1,4 +1,5 @@
 import {PACKAGE_NAME, VERSION} from './build/const.js';
+import './cards/climate/card.js';
 import './cards/hexa_tiles/card.js';
 import './cards/lights/card.js';
 import './cards/weather/card.js';

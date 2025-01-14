@@ -28,8 +28,8 @@ export default css`
     --icon-size-small: 20px;
     --icon-size-xsmall: 15px;
 
-    --tile-width: 155px;
-    --tile-height: calc(var(--tile-width) * 1.1547);
+    --default-hexa-width: 60px;
+    --selected-hexa-width: 80px;
 
     --border-width: 1px;
     --border-radius: 5px;

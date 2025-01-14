@@ -2,6 +2,8 @@ import {css} from 'lit';
 
 export default css`
   :host {
+    --tile-width: 155px;
+    --tile-height: calc(var(--tile-width) * 1.1547);
     --icon-size: 50px;
 
     background-color: black;

@@ -2,8 +2,13 @@ export const STATE_HOME = 'home';
 
 export const STATE_LIGHT_ON = 'on';
 export const STATE_LIGHT_OFF = 'off';
+export const STATE_RADIATOR_HEAT = 'heat';
+export const STATE_RADIATOR_OFF = 'off';
+export const STATE_RADIATOR_AUTO = 'auto';
 
 export const ENTITY_KIND_LIGHT = 'light';
+export const ENTITY_KIND_RADIATOR = 'climate';
+
 export const HASS_LIGHT_SERVICE = 'light';
 export const HASS_LIGHT_SERVICE_ACTION_TURN_ON = 'turn_on';
 export const HASS_LIGHT_SERVICE_ACTION_TURN_OFF = 'turn_off';
@@ -83,5 +88,3 @@ export const WEEK_DAYS = [
     short: 'Sam.',
   },
 ];
-
-export const ENTITY_KIND_CLIMATE = 'climate';

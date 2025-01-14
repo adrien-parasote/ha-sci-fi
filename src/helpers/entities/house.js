@@ -1,16 +1,16 @@
-import {ClimatetEntity} from './climate.js';
 import {
-  ENTITY_KIND_CLIMATE,
   ENTITY_KIND_LIGHT,
+  ENTITY_KIND_RADIATOR,
   HASS_LIGHT_SERVICE,
   HASS_LIGHT_SERVICE_ACTION_TURN_OFF,
   HASS_LIGHT_SERVICE_ACTION_TURN_ON,
 } from './const';
 import {LightEntity} from './light.js';
+import {RadiatorEntity} from './radiator.js';
 
 const SCI_FI_ENTITIES = {};
 SCI_FI_ENTITIES[ENTITY_KIND_LIGHT] = LightEntity;
-SCI_FI_ENTITIES[ENTITY_KIND_CLIMATE] = ClimatetEntity;
+SCI_FI_ENTITIES[ENTITY_KIND_RADIATOR] = RadiatorEntity;
 const SERVICES = [];
 SERVICES[ENTITY_KIND_LIGHT] = {
   service: HASS_LIGHT_SERVICE,
@@ -22,7 +22,7 @@ SERVICES[ENTITY_KIND_LIGHT] = {
 
 export class House {
   constructor(hass) {
-    this._components = this.__build(hass);
+    this._floors = this.__build(hass);
   }
 
   __build(hass) {
@@ -76,7 +76,7 @@ export class House {
   }
 
   get floors() {
-    return Object.values(this._components);
+    return Object.values(this._floors);
   }
 
   getDefaultFloor(entity_kind) {
@@ -93,19 +93,46 @@ export class House {
   }
 
   isfloorActive(floor_id, entity_kind) {
-    if (!this._components[floor_id]) return false;
-    return this._components[floor_id].isActive(entity_kind);
+    if (!this._floors[floor_id]) return false;
+    return this._floors[floor_id].isActive(entity_kind);
   }
 
   getFloor(floor_id) {
-    if (!this._components[floor_id]) return null;
-    return this._components[floor_id];
+    if (!this._floors[floor_id]) return null;
+    return this._floors[floor_id];
   }
 
   getArea(floor_id, area_id) {
     const floor = this.getFloor(floor_id);
     if (!floor) return null;
     return floor.getArea(area_id);
+  }
+
+  get temperature() {
+    let temp = [];
+    let res = {floors: []};
+    Object.values(this._floors)
+      .filter((floor) => floor.hasEntityKind(ENTITY_KIND_RADIATOR))
+      .forEach((floor) => {
+        res.floors.push(floor);
+        temp.push(floor.temperature);
+      });
+    res['global'] =
+      temp.length > 0
+        ? Math.round(
+            (temp.reduce((sum, currentValue) => sum + currentValue, 0) /
+              temp.length) *
+              10,
+            1
+          ) / 10
+        : null;
+    return res;
+  }
+
+  get radiators() {
+    return Object.values(this._floors)
+      .filter((floor) => floor.hasEntityKind(ENTITY_KIND_RADIATOR))
+      .reduce((cur, floor) => cur.concat(floor.radiators), []);
   }
 }
 
@@ -183,7 +210,27 @@ class Floor {
     };
   }
 
+  get radiators() {
+    return this.getEntitiesByKind(ENTITY_KIND_RADIATOR);
+  }
+
+  get temperature() {
+    let temp = [];
+    this.radiators.forEach((radiator) => {
+      temp.push(radiator.current_temperature);
+    });
+    return temp.length > 0
+      ? Math.round(
+          (temp.reduce((sum, currentValue) => sum + currentValue, 0) /
+            temp.length) *
+            10,
+          1
+        ) / 10
+      : null;
+  }
+
   callService(hass, entity_kind) {
+    // TODO : change - only used for light
     const active = this.isActive(entity_kind);
     const entity_ids = this.getEntitiesByKind(entity_kind)
       .filter((entity) => (active ? entity.active : !entity.active))

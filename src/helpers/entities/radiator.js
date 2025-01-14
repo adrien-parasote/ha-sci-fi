@@ -1,14 +1,18 @@
-import {ENTITY_KIND_CLIMATE} from './const';
+import {
+  ENTITY_KIND_RADIATOR,
+  STATE_RADIATOR_AUTO,
+  STATE_RADIATOR_HEAT,
+} from './const';
 
-export class ClimatetEntity {
-  static kind = ENTITY_KIND_CLIMATE;
+export class RadiatorEntity {
+  static kind = ENTITY_KIND_RADIATOR;
 
   constructor(entity, device) {
     this.entity_id = entity.entity_id ? entity.entity_id : null;
     this.state = entity.state ? entity.state : STATE_LIGHT_OFF;
 
-    this.hvac_mode = entity.attributes.hvac_mode
-      ? entity.attributes.hvac_mode
+    this.hvac_modes = entity.attributes.hvac_modes
+      ? entity.attributes.hvac_modes
       : null;
     this.max_temp = entity.attributes.max_temp
       ? entity.attributes.max_temp
@@ -23,9 +27,6 @@ export class ClimatetEntity {
     this.current_temperature = entity.attributes.current_temperature
       ? entity.attributes.current_temperature
       : null;
-    this.temperature_unit = entity.attributes.temperature_unit
-      ? entity.attributes.temperature_unit
-      : 'C°';
     this.temperature = entity.attributes.temperature
       ? entity.attributes.temperature
       : null;
@@ -39,7 +40,11 @@ export class ClimatetEntity {
   }
 
   get kind() {
-    return ClimatetEntity.kind;
+    return RadiatorEntity.kind;
+  }
+
+  get active() {
+    return [STATE_RADIATOR_AUTO, STATE_RADIATOR_HEAT].includes(this.state);
   }
 
   renderAsEntity() {

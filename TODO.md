@@ -3,7 +3,7 @@
 ## Release plan
 
 - [x] `Rocket Transported To Launchpad` - initial version
-- [ ] `Liftoff` - adding climate card 🌡️
+- [ ] `Liftoff` - adding radiator card 🌡️
 - [ ] `Vehicle Goes Supersonic` - adding stove card 🪵🔥
 - [ ] `Payload Separation` - adding media card 🍿
 - [ ] `Orbital Checkouts` - adding technical screen board card 🛠️

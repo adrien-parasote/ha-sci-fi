@@ -40,5 +40,16 @@ export default {
       state_error: 'error',
       link: '#',
     },
+    {
+      standalone: false,
+      entity_kind: 'climate',
+      entities_to_exclude: ['climate.clou'],
+      active_icon: 'sci:radiator-heat',
+      inactive_icon: 'sci:radiator-waiting',
+      name: 'Radiator',
+      state_on: ['auto', 'heat'],
+      state_error: null,
+      link: '?component=radiator',
+    },
   ],
 };

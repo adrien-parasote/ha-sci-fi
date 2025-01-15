@@ -1,6 +1,8 @@
 export default {
   unit: '°C',
   entities_to_exclude: ['climate.clou'],
-  default_icon_on: 'mdi:lightbulb-on-outline',
-  default_icon_off: 'mdi:lightbulb-outline',
+  icon_auto: 'sci:radiator-auto',
+  icon_off: 'sci:radiator-off',
+  icon_heat: 'sci:radiator-heat',
+  icon_frost_protection: 'sci:radiator-frost-protection',
 };

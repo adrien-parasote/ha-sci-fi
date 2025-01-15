@@ -130,7 +130,14 @@ export class SciFiRadiator extends LitElement {
 
   __renderRadiatorButton(radiator) {
     console.log(radiator);
-    return html``;
+    const state = radiator.active ? 'on' : 'off';
+    return html`
+      <sci-fi-hexa-tile active-tile state="${state}">
+        <div class="item-icon ${active}">
+          ${getIcon('mdi:home-thermometer-outline')}
+        </div>
+        <div class="temp-text">${houseTemp.global}${this._config.unit}</div>
+      </sci-fi-hexa-tile>    `;
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

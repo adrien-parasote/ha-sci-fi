@@ -378,7 +378,7 @@ export class SciFiWeather extends LitElement {
           x: hourly.hours,
           y: hourly.getKindValue(this._chartDataKind),
         });
-        datasets[0].weather.push(hourly.getIconName(this._sun));
+        datasets[0].weather.push(hourly.getIconName());
       });
     return {datasets};
   }

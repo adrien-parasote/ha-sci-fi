@@ -1,7 +1,13 @@
 import {html} from 'lit';
 
 import {getWeatherIcon} from '../icons/icons.js';
-import {EXTRA_SENSORS, WEATHER_STATE_FR, WEEK_DAYS} from './const.js';
+import {
+  EXTRA_SENSORS,
+  WEATHER_RISING_HOUR,
+  WEATHER_SETTING_HOUR,
+  WEATHER_STATE_FR,
+  WEEK_DAYS,
+} from './const.js';
 import {pad} from './utils.js';
 
 export class SunEntity {
@@ -186,11 +192,24 @@ export class HourlyForecast {
     return res;
   }
 
-  getIconName(sun) {
-    let state = 'night';
-    if (this.datetime >= sun.next_rising && this.datetime <= sun.next_setting)
-      state = 'day';
+  getIconName() {
+    const rising = this.__getSunDate(WEATHER_RISING_HOUR);
+    const setting = this.__getSunDate(WEATHER_SETTING_HOUR);
+    const state =
+      this.datetime.getHours() >= rising.getHours() &&
+      this.datetime.getHours() <= setting.getHours()
+        ? 'day'
+        : 'night';
     return [this.condition, state].join('-');
+  }
+
+  __getSunDate(hour) {
+    const date = new Date();
+    date.setHours(hour);
+    date.setMinutes(0);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
+    return date;
   }
 
   get hours() {

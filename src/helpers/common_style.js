@@ -8,6 +8,7 @@ export default css`
     --primary-light-alpha-color: rgba(105, 211, 251, 0.5);
     --secondary-light-color: rgb(102, 156, 210);
     --secondary-light-alpha-color: rgba(102, 156, 210, 0.5);
+    --secondary-light-light-alpha-color: rgba(102, 156, 210, 0.2);
 
     --primary-error-color: rgb(250 146 29);
     --primary-error-alpha-color: rgba(250, 146, 29, 0.9);

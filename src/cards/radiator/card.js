@@ -20,20 +20,21 @@ export class SciFiRadiator extends LitElement {
     return {
       _config: {type: Object},
       _house: {type: Object},
+      _focused_radiator_id: {type: Number},
     };
   }
 
   __validateConfig(config) {
     if (!config.unit) config.unit = '°C';
-    if (!config.default_icon_on)
-      config.default_icon_on = 'mdi:lightbulb-on-outline';
-    if (!config.default_icon_off)
-      config.default_icon_off = 'mdi:lightbulb-outline';
+    if (!config.icon_auto) config.icon_auto = 'sci:radiator-auto';
+    if (!config.icon_off) config.icon_off = 'sci:radiator-off';
+    if (!config.icon_heat) config.icon_heat = 'sci:radiator-heat';
     if (!config.entities_to_exclude) config.entities_to_exclude = [];
     return config;
   }
 
   setConfig(config) {
+    this._focused_radiator_id = 0;
     this._config = this.__validateConfig(JSON.parse(JSON.stringify(config)));
     // call set hass() to immediately adjust to a changed entity
     // while editing the entity in the card editor
@@ -83,7 +84,7 @@ export class SciFiRadiator extends LitElement {
           <div class="item-icon ${active}">
             ${getIcon('mdi:home-thermometer-outline')}
           </div>
-          <div class="temp-text">${houseTemp.global}${this._config.unit}</div>
+          <div class="text">${houseTemp.global}${this._config.unit}</div>
         </sci-fi-hexa-tile>
         <div class="h-separator">
           <div class="circle ${active}"></div>
@@ -121,23 +122,39 @@ export class SciFiRadiator extends LitElement {
     );
     return html`
       <div class="radiators">
-        ${radiators.map((radiator) => {
-          return this.__renderRadiatorButton(radiator);
-        })}
+        <div class="content">
+          ${radiators.map((radiator, idx) => {
+            return this.__renderRadiatorButton(radiator, idx);
+          })}
+        </div>
       </div>
     `;
   }
 
-  __renderRadiatorButton(radiator) {
-    console.log(radiator);
+  __renderRadiatorButton(radiator, idx) {
+    const icons = {
+      heat: this._config.icon_heat,
+      off: this._config.icon_off,
+      auto: this._config.icon_auto,
+    };
     const state = radiator.active ? 'on' : 'off';
     return html`
-      <sci-fi-hexa-tile active-tile state="${state}">
-        <div class="item-icon ${active}">
-          ${getIcon('mdi:home-thermometer-outline')}
-        </div>
-        <div class="temp-text">${houseTemp.global}${this._config.unit}</div>
-      </sci-fi-hexa-tile>    `;
+      <div
+        class="radiator-state ${state} ${this._focused_radiator_id == idx
+          ? 'focus'
+          : ''}"
+        @click="${(e) => this.__selectedItem(e, idx)}"
+      >
+        <div class="item-icon ${state}">${getIcon(icons[radiator.state])}</div>
+        <div>${radiator.friendly_name}</div>
+      </div>
+    `;
+  }
+
+  __selectedItem(e, idx) {
+    e.preventDefault();
+    e.stopPropagation();
+    this._focused_radiator_id = idx;
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/
@@ -148,6 +165,9 @@ export class SciFiRadiator extends LitElement {
     return {
       unit: '°C',
       entities_to_exclude: [],
+      icon_auto: 'sci:radiator-auto',
+      icon_off: 'sci:radiator-off',
+      icon_heat: 'sci:radiator-heat',
     };
   }
 }

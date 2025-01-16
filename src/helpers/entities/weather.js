@@ -1,23 +1,19 @@
 import {html} from 'lit';
 
 import {getWeatherIcon} from '../icons/icons.js';
-import {
-  EXTRA_SENSORS,
-  WEATHER_RISING_HOUR,
-  WEATHER_SETTING_HOUR,
-  WEATHER_STATE_FR,
-  WEEK_DAYS,
-} from './const.js';
+import {EXTRA_SENSORS, WEATHER_STATE_FR, WEEK_DAYS} from './const.js';
 import {pad} from './utils.js';
 
 export class SunEntity {
   constructor(hass, sun_entity_id) {
     this.entity_id = sun_entity_id;
     this.state = hass.states[sun_entity_id].state;
-    this.next_dawn = hass.states[sun_entity_id].attributes.next_dawn;
-    this.next_dusk = hass.states[sun_entity_id].attributes.next_dusk;
-    this.next_midnight = hass.states[sun_entity_id].attributes.next_midnight;
-    this.next_noon = hass.states[sun_entity_id].attributes.next_noon;
+    this.next_dawn = new Date(hass.states[sun_entity_id].attributes.next_dawn);
+    this.next_dusk = new Date(hass.states[sun_entity_id].attributes.next_dusk);
+    this.next_midnight = new Date(
+      hass.states[sun_entity_id].attributes.next_midnight
+    );
+    this.next_noon = new Date(hass.states[sun_entity_id].attributes.next_noon);
     this.next_rising = new Date(
       hass.states[sun_entity_id].attributes.next_rising
     );
@@ -30,7 +26,24 @@ export class SunEntity {
   }
 
   isDay() {
-    return this.state == 'above_horizon';
+    return ['sunny-day', 'sunset', 'sunrise'].includes(this.dayPhaseIcon());
+  }
+
+  dayPhaseIcon() {
+    const date = new Date();
+    if (date >= this.next_noon) {
+      // Afternoon
+      if (date < this.next_setting) return 'sunny-day';
+      else if (date >= this.next_setting && date < this.next_dusk)
+        return 'sunset';
+      else return 'moonrise';
+    } else {
+      // Morning
+      if (date < this.next_dawn) return 'moonset';
+      else if (date >= this.next_dawn && date < this.next_rising)
+        return 'sunrise';
+      else return 'sunny-day';
+    }
   }
 }
 
@@ -192,14 +205,45 @@ export class HourlyForecast {
     return res;
   }
 
-  getIconName() {
-    const rising = this.__getSunDate(WEATHER_RISING_HOUR);
-    const setting = this.__getSunDate(WEATHER_SETTING_HOUR);
-    const state =
-      this.datetime.getHours() >= rising.getHours() &&
-      this.datetime.getHours() <= setting.getHours()
-        ? 'day'
-        : 'night';
+  __isSameDay(dt1, dt2) {
+    return (
+      dt1.getFullYear() == dt2.getFullYear() &&
+      dt1.getMonth() == dt2.getMonth() &&
+      dt1.getDate() == dt2.getDate()
+    );
+  }
+
+  getIconName(sun) {
+    let state = 'day';
+    const today = new Date();
+    // Forecast if for today
+    if (this.__isSameDay(today, this.datetime)) {
+      if (this.__isSameDay(sun.next_noon, this.datetime)) {
+        // Before noon & dawn
+        if (this.__isSameDay(sun.next_dawn, this.datetime)) state = 'night';
+      } else {
+        // After noon & dusk
+        if (!this.__isSameDay(sun.next_dusk, this.datetime)) state = 'night';
+      }
+    } else {
+      // Forecast if for tomorrow
+      // First reset dusk & dawn as of today
+      const dusk = new Date(sun.next_dusk);
+      dusk.setDate(today.getDate());
+      dusk.setMonth(today.getMonth());
+      dusk.setFullYear(today.getFullYear());
+      const dawn = new Date(sun.next_dawn);
+      dawn.setDate(today.getDate());
+      dawn.setMonth(today.getMonth());
+      dawn.setFullYear(today.getFullYear());
+      // Reset forecast hour
+      const hour = new Date(this.datetime);
+      hour.setDate(today.getDate());
+      hour.setMonth(today.getMonth());
+      hour.setFullYear(today.getFullYear());
+
+      if (hour < dawn || hour > dusk) state = 'night';
+    }
     return [this.condition, state].join('-');
   }
 

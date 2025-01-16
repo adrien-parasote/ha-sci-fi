@@ -59,7 +59,9 @@ export class SciFiWeather extends LitElement {
     if (!config.weather_entity)
       throw new Error('You need to define a weather entity');
     if (!config.weather_hourly_forecast_limit)
-      config.weather_hourly_forecast_limit = 24; // max 72
+      config.weather_hourly_forecast_limit = 24; // max 24
+    if (config.weather_hourly_forecast_limit > 24)
+      config.weather_hourly_forecast_limit = 24; // max 24
     if (config.weather_hourly_forecast_limit > 72)
       throw new Error('Hourly forecast is limited to 72h max');
     if (!config.weather_daily_forecast_limit)
@@ -377,7 +379,7 @@ export class SciFiWeather extends LitElement {
           x: hourly.hours,
           y: hourly.getKindValue(this._chartDataKind),
         });
-        datasets[0].weather.push(hourly.getIconName());
+        datasets[0].weather.push(hourly.getIconName(this._sun));
       });
     return {datasets};
   }

@@ -88,6 +88,3 @@ export const WEEK_DAYS = [
     short: 'Sam.',
   },
 ];
-
-export const WEATHER_RISING_HOUR = 8;
-export const WEATHER_SETTING_HOUR = 18;

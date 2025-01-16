@@ -66,7 +66,7 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
         kind="weather_hourly_forecast_limit"
         value="${this._config.weather_hourly_forecast_limit}"
         min="1"
-        max="72"
+        max="24"
         @input-update=${this.__update}
       ></sci-fi-slider>
     </section>`;

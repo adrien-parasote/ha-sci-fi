@@ -451,7 +451,7 @@ alert:
 | - | - | - | - | - |
 | type | string | **Required** | Card definition | `custom:sci-fi-weather`| 
 | weather_entity | String | **Required** | Your provider weather entity id  |  |
-| weather_hourly_forecast_limit | Integer | **Optionnal** | Forecasted weather hours between 0 and 72   | 24 |
+| weather_hourly_forecast_limit | Integer | **Optionnal** | Forecasted weather hours between 0 and 24  | 24 |
 | weather_daily_forecast_limit | Integer | **Optionnal** | Forecasted weather days between 0 and 15   | 15 |
 | `alert` | Object | **Optional** | Alert sensor config |  | 
 

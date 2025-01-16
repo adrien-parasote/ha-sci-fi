@@ -100,7 +100,7 @@ export class SciFiLights extends LitElement {
   }
 
   __displayHouseFloors() {
-    return this._house.floors.map((floor) => {
+    return this._house.getFloorsOrderedByLevel().map((floor) => {
       if (!floor.hasEntityKind(ENTITY_KIND_LIGHT)) return;
       return html` <sci-fi-hexa-tile
         active-tile

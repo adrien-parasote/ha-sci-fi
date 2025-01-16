@@ -82,10 +82,8 @@ Two modes are available:
     - `weather.<my_city>`
 - Custom tiles rendering status (standalone or kind)
 
-
 > [!CAUTION]
-> You need to have default Home Assistant `sun.sun` service activated
-
+> You need to have default Home Assistant `sun` service activated.
 
 ### Configuration
 
@@ -391,7 +389,10 @@ light.light_id_1: # The light entity ID you want to customize
 
 ### Description:
 
-Weather package card, display weather, alerts & forecast based on `Météo-France` entity & sensors.
+Weather package card, display weather, alerts & forecast based on `Météo-France` & `sun.sun` entity & sensors.
+
+> [!CAUTION]
+> You need to have default Home Assistant `sun` service activated.
 
 ### Card features:
 
@@ -433,7 +434,6 @@ weather_entity: weather_home  # replace with your weather providers's entity id
 
 ```yaml
 type: custom:sci-fi-weather
-sun_entity: sun.sun
 weather_entity: weather_home # replace with your weather providers's entity id
 weather_hourly_forecast_limit: 24
 weather_daily_forecast_limit: 15
@@ -450,7 +450,6 @@ alert:
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
 | type | string | **Required** | Card definition | `custom:sci-fi-weather`| 
-| sun_entity | String | **Required**| HA `sun` entity  | `sun.sun` |
 | weather_entity | String | **Required** | Your provider weather entity id  |  |
 | weather_hourly_forecast_limit | Integer | **Optionnal** | Forecasted weather hours between 0 and 72   | 24 |
 | weather_daily_forecast_limit | Integer | **Optionnal** | Forecasted weather days between 0 and 15   | 15 |
@@ -459,7 +458,6 @@ alert:
 **Example**
 ```yaml
 type: custom:sci-fi-weather
-sun_entity: sun.sun
 weather_entity: weather_home # replace with your weather providers's entity id
 weather_hourly_forecast_limit: 24
 weather_daily_forecast_limit: 15

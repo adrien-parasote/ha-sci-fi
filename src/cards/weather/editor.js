@@ -5,13 +5,11 @@ import '../../helpers/form/form.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 
 export class SciFiWeatherEditor extends SciFiBaseEditor {
-  _sun_entity;
   _weather_entities;
 
   set hass(hass) {
     this._hass = hass;
     // Setup entities for display
-    if (!this._sun_entity_id) this._sun_entity = [hass.states['sun.sun']];
     if (!this._weather_entities_id)
       this._weather_entities = Object.keys(hass.states)
         .filter((x) => x.split('.')[0] == 'weather')
@@ -35,16 +33,7 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
   __renderSectionEntities() {
     return html`
       <section>
-        <h1><span>${getIcon('mdi:theme-light-dark')}</span>Weather entities</h1>
-        <sci-fi-dropdown-entity-input
-          label="Sun entity (required)"
-          icon="mdi:white-balance-sunny"
-          element-id="sun_entity"
-          kind="sun_entity"
-          value="${this._config.sun_entity}"
-          items="${JSON.stringify(this._sun_entity)}"
-          @input-update=${this.__update}
-        ></sci-fi-dropdown-entity-input>
+        <h1><span>${getIcon('mdi:theme-light-dark')}</span>Weather entity</h1>
         <sci-fi-dropdown-entity-input
           label="City weather entity (required)"
           icon="mdi:city"

@@ -56,7 +56,6 @@ export class SciFiWeather extends LitElement {
   }
 
   __validateConfig(config) {
-    if (!config.sun_entity) config.sun_entity = 'sun.sun';
     if (!config.weather_entity)
       throw new Error('You need to define a weather entity');
     if (!config.weather_hourly_forecast_limit)
@@ -95,7 +94,7 @@ export class SciFiWeather extends LitElement {
     if (!this._config) return; // Can't assume setConfig is called before hass is set
 
     // Get Weather and sun entity once (no need to track change)
-    if (!this._sun) this._sun = new SunEntity(hass, this._config.sun_entity);
+    if (!this._sun) this._sun = new SunEntity(hass, 'sun.sun');
     if (!this._weather)
       this._weather = new WeatherEntity(hass, this._config.weather_entity);
 
@@ -417,7 +416,6 @@ export class SciFiWeather extends LitElement {
   }
   static getStubConfig() {
     return {
-      sun_entity: 'sun.sun',
       weather_entity: null,
       weather_hourly_forecast_limit: 24,
       weather_daily_forecast_limit: 10,

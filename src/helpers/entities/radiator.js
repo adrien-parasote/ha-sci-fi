@@ -37,6 +37,10 @@ export class RadiatorEntity {
 
     this.manufacturer = device.manufacturer ? device.manufacturer : null;
     this.model = device.model ? device.model : null;
+
+    // Floor & area links
+    this.floor_id = null;
+    this.area_id = null;
   }
 
   get kind() {

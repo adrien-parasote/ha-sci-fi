@@ -23,6 +23,17 @@ SERVICES[ENTITY_KIND_LIGHT] = {
 export class House {
   constructor(hass) {
     this._floors = this.__build(hass);
+
+    let home = hass.states['zone.home'];
+    if (!home) home = {};
+    this.latitude = home.attributes.latitude ? home.attributes.latitude : null;
+    this.longitude = home.attributes.longitude
+      ? home.attributes.longitude
+      : null;
+    this.icon = home.attributes.icon ? home.attributes.icon : null;
+    this.name = home.attributes.friendly_name
+      ? home.attributes.friendly_name
+      : null;
   }
 
   __build(hass) {
@@ -48,7 +59,7 @@ export class House {
       if (!floors[floor_id].hasArea(area_id)) floors[floor_id].addArea(area);
 
       // Add entities to floor area
-      floors[floor_id].addEntitiesToArea(area_id, entities);
+      floors[floor_id].addEntities(area_id, entities);
 
       return floors;
     }, {});
@@ -84,7 +95,7 @@ export class House {
       this.isfloorActive(floor.id, entity_kind)
     )[0];
     if (first) return first;
-    // Case of no active light
+    // Case of no active kind
     return this.floors.filter((floor) => floor.hasEntityKind(entity_kind))[0];
   }
 
@@ -108,31 +119,37 @@ export class House {
     return floor.getArea(area_id);
   }
 
-  get temperature() {
+  getTemperature(entities_to_exclude = []) {
     let temp = [];
-    let res = {floors: []};
     Object.values(this._floors)
       .filter((floor) => floor.hasEntityKind(ENTITY_KIND_RADIATOR))
       .forEach((floor) => {
-        res.floors.push(floor);
-        temp.push(floor.temperature);
+        temp.push(floor.getTemperature(entities_to_exclude));
       });
-    res['global'] =
-      temp.length > 0
-        ? Math.round(
-            (temp.reduce((sum, currentValue) => sum + currentValue, 0) /
-              temp.length) *
-              10,
-            1
-          ) / 10
-        : null;
-    return res;
+    return temp.length > 0
+      ? Math.round(
+          (temp.reduce((sum, currentValue) => sum + currentValue, 0) /
+            temp.length) *
+            10,
+          1
+        ) / 10
+      : null;
   }
 
-  get radiators() {
-    return Object.values(this._floors)
-      .filter((floor) => floor.hasEntityKind(ENTITY_KIND_RADIATOR))
-      .reduce((cur, floor) => cur.concat(floor.radiators), []);
+  getFloorAreaEntitiesByKind(floor_id, area_id, entity_kind) {
+    return this.getFloor(floor_id)
+      .getArea(area_id)
+      .getEntitiesByKind(entity_kind);
+  }
+
+  getFloorsOrderedByLevel(asc = true) {
+    if (asc)
+      return this.floors.sort((a, b) =>
+        a.level > b.leve ? 1 : b.level > a.level ? -1 : 0
+      );
+    return this.floors.sort((a, b) =>
+      a.level < b.leve ? 1 : b.level < a.level ? -1 : 0
+    );
   }
 }
 
@@ -149,10 +166,8 @@ class Floor {
     if (area) this.areas[area.id] = area;
   }
 
-  addEntitiesToArea(area_id, entities) {
-    entities.map((entity) => {
-      this.areas[area_id].addEntity(entity);
-    });
+  addEntities(area_id, entities) {
+    this.areas[area_id].addEntities(entities);
   }
 
   hasArea(area_id) {
@@ -214,11 +229,13 @@ class Floor {
     return this.getEntitiesByKind(ENTITY_KIND_RADIATOR);
   }
 
-  get temperature() {
+  getTemperature(entities_to_exclude = []) {
     let temp = [];
-    this.radiators.forEach((radiator) => {
-      temp.push(radiator.current_temperature);
-    });
+    this.radiators
+      .filter((radiator) => !entities_to_exclude.includes(radiator.entity_id))
+      .forEach((radiator) => {
+        temp.push(radiator.current_temperature);
+      });
     return temp.length > 0
       ? Math.round(
           (temp.reduce((sum, currentValue) => sum + currentValue, 0) /
@@ -263,9 +280,17 @@ class Area {
     return this.getEntitiesByKind(entity_kind).length > 0;
   }
 
+  addEntities(entities) {
+    entities.map((entity) => {
+      this.addEntity(entity);
+    });
+  }
+
   addEntity(entity) {
     if (!entity) return;
     if (!this.entities[entity.kind]) this.entities[entity.kind] = [];
+    entity.floor_id = this.floor_id;
+    entity.area_id = this.id;
     this.entities[entity.kind].push(entity);
   }
 
@@ -285,6 +310,23 @@ class Area {
         friendly_name: this.name,
       },
     };
+  }
+
+  getTemperature(entities_to_exclude = []) {
+    let temp = [];
+    this.getEntitiesByKind(ENTITY_KIND_RADIATOR)
+      .filter((radiator) => !entities_to_exclude.includes(radiator.entity_id))
+      .forEach((radiator) => {
+        temp.push(radiator.current_temperature);
+      });
+    return temp.length > 0
+      ? Math.round(
+          (temp.reduce((sum, currentValue) => sum + currentValue, 0) /
+            temp.length) *
+            10,
+          1
+        ) / 10
+      : null;
   }
 
   callService(hass, entity_kind) {

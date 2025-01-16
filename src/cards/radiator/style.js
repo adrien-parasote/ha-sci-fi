@@ -6,128 +6,158 @@ export default css`
     height: 100%;
     width: 100%;
     background-color: black;
+    --mr: calc(-1 * var(--default-hexa-width) / 2);
+    --mt: calc(9 * var(--default-hexa-width) / 10);
   }
   .container {
     display: flex;
     flex-direction: column;
     width: 100%;
   }
-  sci-fi-hexa-tile {
-    --hexa-width: var(--default-hexa-width);
-  }
-  sci-fi-hexa-tile .item-icon svg {
-    margin-top: 5px;
-    fill: var(--primary-light-color);
-    width: var(--icon-size-normal);
-    height: var(--icon-size-normal);
-  }
-  sci-fi-hexa-tile .item-icon.off svg {
-    fill: var(--secondary-light-color);
-  }
-  sci-fi-hexa-tile .text {
-    font-size: var(--font-size-xsmall);
-    display: ruby-text;
-  }
-  /*********** GLOBAL *************/
-  .global {
-    padding: 10px;
+  /*********** HOUSE *************/
+  .house {
     display: flex;
-    flex-direction: row;
-    background-color: var(--primary-bg-alpha-color);
-    border-bottom: var(--border-width) solid var(--primary-bg-color);
-    align-items: center;
-  }
-  .global .card-corner {
+    flex-direction: column;
+    margin: 10px;
+    position: relative;
     flex: 1;
-    padding: 5px;
-    text-align: center;
   }
-  .global .card-corner > div {
-    display: inline-block;
-    margin: 5px;
+  .house .weather {
+    position: absolute;
+    top: 0;
+    right: 0;
   }
-  .global .card-corner .floor-temperature {
-    display: flex;
-    flex-direction: row;
-    column-gap: 5px;
-    border: var(--border-width) solid var(--primary-bg-color);
-    border-radius: var(--border-radius);
-    width: fit-content;
+  .house .weather svg {
+    width: var(--icon-size-xlarge);
+    height: var(--icon-size-xlarge);
   }
-  .global .card-corner .floor-temperature .item-icon {
-    background-color: var(--primary-bg-color);
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-    padding: 2px 2px 0 2px;
+  .house .roof {
+    height: 100px;
+    aspect-ratio: 2;
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+    background: var(--primary-bg-alpha-color);
   }
-  .global .card-corner .floor-temperature .item-icon svg {
-    fill: var(--secondary-light-color);
-    width: var(--icon-size-small);
-    height: var(--icon-size-small);
-  }
-  .global .card-corner .floor-temperature .floor-name {
-    align-content: center;
-    font-size: var(--font-size-xsmall);
-    color: var(--secondary-light-color);
-  }
-  .global .card-corner .floor-temperature .floor-temp {
-    align-content: center;
-    margin-right: 5px;
-    color: var(--primary-light-color);
-    text-shadow: 0px 0px 5px var(--primary-light-color);
-  }
-
-  /*********** RADIATORS *************/
-  .radiators {
-    display: grid;
-    border-bottom: var(--border-width) solid var(--primary-bg-color);
-    border-top: var(--border-width) solid var(--primary-bg-color);
-    padding: 20px 10px;
-    background-color: var(--primary-bg-alpha-color);
-    color: var(--secondary-light-color);
-    font-weight: bold;
-  }
-  .radiators .content {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: 5px;
-    -webkit-overflow-scrolling: touch;
-    &::-webkit-scrollbar {
-      display: none;
-    }
-  }
-  .radiators .radiator-state {
+  .house .roof .info {
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
-    border: var(--border-width) solid var(--secondary-light-alpha-color);
-    border-radius: var(--border-radius);
-    padding: 5px;
-    min-width: 50px;
-    font-size: var(--font-size-xsmall);
     justify-content: center;
-    cursor: pointer;
   }
-  .radiators .radiator-state.focus {
-    background-color: var(--secondary-light-light-alpha-color);
+  .house .roof .info .svg-container {
+    margin-top: 10px;
   }
-  .radiators .radiator-state.on {
-    color: var(--primary-light-color);
-    text-shadow: 0px 0px 5px var(--primary-light-color);
-    border: var(--border-width) solid var(--primary-light-alpha-color);
-  }
-  .radiators .radiator-state .item-icon svg {
+  .house .roof .info svg {
     fill: var(--primary-light-color);
     width: var(--icon-size-normal);
     height: var(--icon-size-normal);
   }
-  .radiators .radiator-state .item-icon.off svg {
+  .house .roof .info .text {
+    color: var(--primary-light-color);
+    text-shadow: 0px 0px 5px var(--primary-light-color);
+  }
+  /*********** HOUSE FLOORS *************/
+  .house .floors {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border-top: calc(2 * var(--border-width)) solid var(--primary-light-color);
+
+    border-bottom: calc(2 * var(--border-width)) solid
+      var(--primary-light-color);
+  }
+  .house .floors .floor {
+    display: flex;
+    flex-direction: row;
+    padding: 10px 0;
+  }
+  .house .floors .floor:not(:first-child) {
+    border-top: var(--border-width) dashed var(--secondary-bg-color);
+  }
+  .house .floors .floor:first-child {
+    padding-top: 5px;
+  }
+  .house .floors .floor:last-child {
+    padding-bottom: 5px;
+  }
+  .house .floors .floor .info {
+    font-size: var(--font-size-xsmall);
+    display: flex;
+    align-items: center;
+  }
+  .house .floors .floor .info sci-fi-hexa-tile {
+    --hexa-width: var(--medium-hexa-width);
+    align-items: baseline;
+  }
+  .house .floors .floor .info sci-fi-hexa-tile .item-icon svg {
+    fill: var(--primary-light-color);
+    width: var(--icon-size-normal);
+    height: var(--icon-size-normal);
+  }
+  .house .floors .floor .info sci-fi-hexa-tile .info-temp {
+    color: var(--secondary-light-color);
+  }
+  .house .floors .floor .info sci-fi-hexa-tile.off .item-icon svg {
     fill: var(--secondary-light-color);
   }
-  /*********** RADIATOR INFO *************/
-  .radiator-content {
+  .house .floors .floor .info sci-fi-hexa-tile.on .info-temp {
+    color: var(--primary-light-color);
+    text-shadow: 0px 0px 5px var(--primary-light-color);
+  }
+  /*********** HOUSE FLOOR AREAS *************/
+  .house .floors .floor .areas {
+    display: flex;
+    flex-direction: row;
     flex: 1;
+    font-size: var(--font-size-xsmall);
+    justify-content: center;
+  }
+  .house .floors .floor .areas.card-corner {
+    padding: 0 10px;
+  }
+  .house .floors .floor .areas sci-fi-hexa-tile {
+    --hexa-width: var(--default-hexa-width);
+    align-items: baseline;
+  }
+  .house .floors .floor .areas sci-fi-hexa-tile:not(:first-child) {
+    margin-left: var(--mr);
+  }
+  .house .floors .floor .areas sci-fi-hexa-tile.odd {
+    margin-top: var(--mt);
+  }
+  .house .floors .floor .areas sci-fi-hexa-tile .item-icon svg {
+    fill: var(--primary-light-color);
+    width: var(--icon-size-normal);
+    height: var(--icon-size-normal);
+  }
+  .house .floors .floor .areas sci-fi-hexa-tile .area-temp {
+    color: var(--secondary-light-color);
+  }
+  .house .floors .floor .areas sci-fi-hexa-tile.off .item-icon svg {
+    fill: var(--secondary-light-color);
+  }
+  .house .floors .floor .areas sci-fi-hexa-tile.on .area-temp {
+    color: var(--primary-light-color);
+    text-shadow: 0px 0px 5px var(--primary-light-color);
+  }
+  /*********** RADIATOR *************/
+  .area-radiators {
+    display: flex;
+    flex-direction: column;
+    border-top: var(--border-width) solid var(--primary-bg-color);
+    background-color: var(--primary-bg-alpha-color);
+  }
+  .area-radiators .label {
+    color: var(--primary-light-color);
+    text-shadow: 0px 0px 5px var(--primary-light-color);
+  }
+  .area-radiators .radiators {
+    display: flex;
+    flex-direction: row;
+    column-gap: 10px;
+  }
+  .area-radiators .radiators .radiator {
+    display: flex;
+    flex-direction: column;
   }
 `;

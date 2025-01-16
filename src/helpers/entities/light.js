@@ -17,6 +17,10 @@ export class LightEntity {
     this.friendly_name = entity.attributes.friendly_name
       ? entity.attributes.friendly_name
       : '';
+
+    // Floor & area links
+    this.floor_id = null;
+    this.area_id = null;
   }
 
   get active() {

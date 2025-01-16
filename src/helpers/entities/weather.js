@@ -2,7 +2,7 @@ import {html} from 'lit';
 
 import {getWeatherIcon} from '../icons/icons.js';
 import {EXTRA_SENSORS, WEATHER_STATE_FR, WEEK_DAYS} from './const.js';
-import {pad} from './utils.js';
+import {isSameDay, pad} from './utils.js';
 
 export class SunEntity {
   constructor(hass, sun_entity_id) {
@@ -31,19 +31,30 @@ export class SunEntity {
 
   dayPhaseIcon() {
     const date = new Date();
-    if (date >= this.next_noon) {
+    let state = null;
+    if (
+      !isSameDay(date, this.next_noon) ||
+      (isSameDay(date, this.next_noon) && date >= this.next_noon)
+    ) {
       // Afternoon
-      if (date < this.next_setting) return 'sunny-day';
-      else if (date >= this.next_setting && date < this.next_dusk)
-        return 'sunset';
-      else return 'moonrise';
+      if (!isSameDay(date, this.next_dusk)) {
+        state = 'moonrise';
+      } else if (!isSameDay(date, this.next_setting)) {
+        state = 'sunset';
+      } else {
+        state = 'sunny-day';
+      }
     } else {
       // Morning
-      if (date < this.next_dawn) return 'moonset';
-      else if (date >= this.next_dawn && date < this.next_rising)
-        return 'sunrise';
-      else return 'sunny-day';
+      if (!isSameDay(date, this.next_rising)) {
+        state = 'sunset';
+      } else if (!isSameDay(date, this.next_dawn)) {
+        state = 'sunrise';
+      } else {
+        state = 'moonset';
+      }
     }
+    return state;
   }
 }
 
@@ -205,25 +216,17 @@ export class HourlyForecast {
     return res;
   }
 
-  __isSameDay(dt1, dt2) {
-    return (
-      dt1.getFullYear() == dt2.getFullYear() &&
-      dt1.getMonth() == dt2.getMonth() &&
-      dt1.getDate() == dt2.getDate()
-    );
-  }
-
   getIconName(sun) {
     let state = 'day';
     const today = new Date();
     // Forecast if for today
-    if (this.__isSameDay(today, this.datetime)) {
-      if (this.__isSameDay(sun.next_noon, this.datetime)) {
+    if (isSameDay(today, this.datetime)) {
+      if (isSameDay(sun.next_noon, this.datetime)) {
         // Before noon & dawn
-        if (this.__isSameDay(sun.next_dawn, this.datetime)) state = 'night';
+        if (isSameDay(sun.next_dawn, this.datetime)) state = 'night';
       } else {
         // After noon & dusk
-        if (!this.__isSameDay(sun.next_dusk, this.datetime)) state = 'night';
+        if (!isSameDay(sun.next_dusk, this.datetime)) state = 'night';
       }
     } else {
       // Forecast if for tomorrow

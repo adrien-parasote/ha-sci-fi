@@ -23,6 +23,7 @@ export default css`
     --font-size-small: 12px;
     --font-size-xsmall: 10px;
 
+    --icon-size-xlarge: 60px;
     --icon-size-large: 50px;
     --icon-size-title: 36px;
     --icon-size-normal: 25px;
@@ -30,6 +31,7 @@ export default css`
     --icon-size-xsmall: 15px;
 
     --default-hexa-width: 60px;
+    --medium-hexa-width: 70px;
     --selected-hexa-width: 80px;
 
     --border-width: 1px;

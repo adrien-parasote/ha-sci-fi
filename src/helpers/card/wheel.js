@@ -4,7 +4,7 @@ import common_style from '../common_style.js';
 import {getIcon} from '../icons/icons.js';
 import './tiles.js';
 
-export class SciFiWheel extends LitElement {
+class SciFiWheel extends LitElement {
   static get styles() {
     return [
       common_style,

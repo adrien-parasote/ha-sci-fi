@@ -13,7 +13,7 @@ const BG_HEXA_ACTIVE_BACKGROUND =
 const BG_HEXA_HR = 'M 2 2 L 65.979 41.989 L 65.979 121.978 L 2 161.958 L 2 2 Z';
 const BG_HEXA_HL = 'M 66.021 161.958 L 2 121.978 L 2 41.989 L 66.021 2 Z';
 
-export class SciFiHexaTile extends LitElement {
+class SciFiHexaTile extends LitElement {
   static get styles() {
     return [
       common_style,

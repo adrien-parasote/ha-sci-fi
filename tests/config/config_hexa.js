@@ -4,7 +4,6 @@ export default {
   },
   weather: {
     activate: true,
-    sun_entity: 'sun.sun',
     weather_entity: 'weather.la_chapelle_sur_erdre',
     link: '?component=weather',
   },

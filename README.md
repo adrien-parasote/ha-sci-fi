@@ -82,6 +82,11 @@ Two modes are available:
     - `weather.<my_city>`
 - Custom tiles rendering status (standalone or kind)
 
+
+> [!CAUTION]
+> You need to have default Home Assistant `sun.sun` service activated
+
+
 ### Configuration
 
 > [!TIP]
@@ -104,7 +109,6 @@ type: custom:sci-fi-hexa-tiles
 header_message: Hey, welcome back Bro !
 weather:
   activate: true
-  sun_entity: sun.sun
   weather_entity: weather.home  # replace with your weather providers's entity id
   link: weather_home  # replace with your weather page link
 tiles:
@@ -158,7 +162,6 @@ tiles:
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
 | activate | Boolean | **Optional** | Flag to activate or not weather special tiles | `false` |
-| sun_entity | String | **Required** (if weather.activate = true) | HA `sun entity`  | `sun.sun` |
 | weather_entity | String | **Required** (if weather.activate = true) | Your provider weather entity id  |  |
 | link | String | **Optional** | Link you want to follow when tile is tapped  | `''` |
 
@@ -166,7 +169,6 @@ tiles:
 ```yaml
 weather:
   activate: true
-  sun_entity: sun.sun
   weather_entity: weather.home  # replace with your weather providers's entity id
   link: weather_home  # replace with your weather page link
 ```

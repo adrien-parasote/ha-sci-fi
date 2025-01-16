@@ -76,14 +76,6 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   __renderWeatherEntities() {
     return html`
       <sci-fi-dropdown-entity-input
-        label="Sun entity (required)"
-        element-id="weather"
-        kind="sun_entity"
-        value="${this._config.weather.sun_entity}"
-        items="${JSON.stringify(this._entity_kind['sun'].flat())}"
-        @input-update=${this.__update}
-      ></sci-fi-dropdown-entity-input>
-      <sci-fi-dropdown-entity-input
         label="Weather entity (required)"
         element-id="weather"
         kind="weather_entity"
@@ -294,8 +286,6 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
       } else {
         // Update data
         newConfig[elemmentId][e.detail.kind] = e.detail.value;
-        if (e.detail.kind == 'activate' && !newConfig[elemmentId]['sun_entity'])
-          newConfig[elemmentId]['sun_entity'] = 'sun.sun';
       }
     }
     this.__dispatchChange(e, newConfig);

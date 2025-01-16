@@ -61,14 +61,11 @@ export class SciFiHexaTiles extends LitElement {
     if (!config.weather) {
       config['weather'] = {
         activate: false,
-        sun_entity: null,
         weather_entity: null,
         link: null,
       };
     } else {
       if (config.weather.activate) {
-        if (!config.weather.sun_entity)
-          throw new Error('You need to define a sun entity');
         if (!config.weather.weather_entity)
           throw new Error('You need to define a weather entity');
       }
@@ -145,7 +142,7 @@ export class SciFiHexaTiles extends LitElement {
   }
 
   _getWeather() {
-    const sun_entity = this._hass.states[this._config.weather.sun_entity];
+    const sun_entity = this._hass.states['sun.sun'];
     const weather_entity =
       this._hass.states[this._config.weather.weather_entity];
     return {
@@ -339,7 +336,6 @@ export class SciFiHexaTiles extends LitElement {
       header_message: 'Welcome',
       weather: {
         activate: false,
-        sun_entity: 'sun.sun',
         weather_entity: null,
         link: null,
       },

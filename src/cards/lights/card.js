@@ -9,7 +9,8 @@ import {
   STATE_LIGHT_ON,
 } from '../../helpers/entities/const.js';
 import {House} from '../../helpers/entities/house.js';
-import {getIcon} from '../../helpers/icons/icons.js';
+import {SunEntity} from '../../helpers/entities/weather.js';
+import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
 import {PACKAGE} from './const.js';
 import {SciFiLightsEditor} from './editor.js';
 import style from './style.js';
@@ -20,6 +21,7 @@ export class SciFiLights extends LitElement {
   }
 
   _hass; // private
+  _sun;
 
   static get properties() {
     return {
@@ -35,6 +37,7 @@ export class SciFiLights extends LitElement {
   }
 
   __validateConfig(config) {
+    if (!config.header) config.header = '';
     if (!config.default_icon_on)
       config.default_icon_on = 'mdi:lightbulb-on-outline';
     if (!config.default_icon_off)
@@ -72,6 +75,9 @@ export class SciFiLights extends LitElement {
 
     if (!this._config) return; // Can't assume setConfig is called before hass is set
 
+    if (!this._sun && hass.states['sun.sun'])
+      this._sun = new SunEntity(hass, 'sun.sun');
+
     // Build house
     const house = new House(hass);
     if (!this._house || !isEqual(house, this._house)) this._house = house;
@@ -90,11 +96,24 @@ export class SciFiLights extends LitElement {
 
     return html`
       <div class="container">
+        <div class="header">${this.__displayHeader()}</div>
         <div class="floors">${this.__displayHouseFloors()}</div>
         <div class="floor-content">${this.__displayFloorInfo()}</div>
         <div class="areas">
           ${this.__displayAreas()} ${this.__displayAreaInfo()}
         </div>
+      </div>
+    `;
+  }
+
+  __displayHeader() {
+    return html`
+      <div class="info">
+        ${getIcon('mdi:lightbulb-on-outline')}
+        <div class="text">${this._config.header}</div>
+      </div>
+      <div class="weather">
+        ${this._sun ? getWeatherIcon(this._sun.dayPhaseIcon()) : ''}
       </div>
     `;
   }
@@ -281,6 +300,7 @@ export class SciFiLights extends LitElement {
 
   static getStubConfig() {
     return {
+      header: 'Lights',
       default_icon_on: 'mdi:lightbulb-on-outline',
       default_icon_off: 'mdi:lightbulb-outline',
       first_floor_to_render: null,

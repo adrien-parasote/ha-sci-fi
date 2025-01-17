@@ -13,6 +13,35 @@ export default css`
     flex-direction: column;
     flex: 1;
   }
+  /*********** HEADER *************/
+  .header {
+    display: flex;
+    flex-direction: row;
+    border-bottom: var(--border-width) solid var(--primary-bg-color);
+    background-color: var(--primary-bg-alpha-color);
+    padding: 5px 10px 0 10px;
+  }
+  .header .info {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    column-gap: 5px;
+    align-items: center;
+  }
+  .header .info svg {
+    fill: var(--primary-light-color);
+    width: var(--icon-size-normal);
+    height: var(--icon-size-normal);
+  }
+  .header .info .text {
+    font-size: var(--font-size-small);
+    color: var(--primary-light-color);
+    text-shadow: 0px 0px 5px var(--primary-light-color);
+  }
+  .header .weather svg {
+    width: var(--icon-size-title);
+    height: var(--icon-size-title);
+  }
   /******** COMMON *********/
   svg {
     fill: var(--primary-light-color);

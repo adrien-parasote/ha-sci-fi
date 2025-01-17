@@ -55,12 +55,27 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
     return html`
       <div class="card card-corner">
         <div class="container ${!this._edit}">
-          ${this.__renderSectionDefaultIcon()}
+          ${this.__renderHeader()} ${this.__renderSectionDefaultIcon()}
           ${this.__renderSectionFloorAreaSelection()}
           ${this.__renderSectionCustomEntities()}
         </div>
         <div class="editor ${this._edit}">${this.__renderEntityCustom()}</div>
       </div>
+    `;
+  }
+
+  __renderHeader() {
+    return html`
+      <section>
+        <h1>Header</h1>
+        <sci-fi-input
+          label="Header card message"
+          value=${this._config.header}
+          element-id="header"
+          kind="header"
+          @input-update=${this.__update}
+        ></sci-fi-input>
+      </section>
     `;
   }
 
@@ -254,6 +269,9 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
   __update(e) {
     let newConfig = this.__getNewConfig();
     switch (e.detail.id) {
+      case 'header':
+        newConfig[e.detail.id] = e.detail.value;
+        break;
       case 'first_floor_to_render':
         newConfig[e.detail.id] = e.detail.value;
         newConfig.first_area_to_render = null;

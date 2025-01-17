@@ -290,6 +290,9 @@ Allow to deal with lights entities, grouping them per floors/areas.
 > [!TIP]
 > Floors & Areas icons are the one you define in `Areas, labels & zones` in your HA configuration
 
+> [!NOTE]
+> If Home Assistant `Sun` entity is available, day phase will be displayed on top of the card (dawn, dusk, day, rising, seting)
+
 ### Configuration
 
 > [!TIP]
@@ -310,6 +313,7 @@ type: custom:sci-fi-lights
 
 ```yaml
 type: custom:sci-fi-lights
+header: "Custom lights card header"
 default_icon_on: mdi:lightbulb-on-outline
 default_icon_off: mdi:lightbulb-outline
 first_floor_to_render: floor_1 # replace with your prefered floor ID
@@ -330,6 +334,7 @@ custom_entities:
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
 | type | string | **Required** | Card definition | `custom:sci-fi-lights` |
+| header | string | **Optionnal** | Card header message | |
 | default_icon_on | string | **Optionnal** | State on card icon | `mdi:lightbulb-on-outline`|
 | default_icon_off | string | **Optionnal** | State off card icon | `mdi:lightbulb-outline`|
 | first_floor_to_render | String | **Optional** | Floor you want to see when card is first rendered |  | 
@@ -338,6 +343,7 @@ custom_entities:
 **Example**
 ```yaml
 type: custom:sci-fi-lights
+header: "Custom lights card header"
 default_icon_on: mdi:lightbulb-on-outline
 default_icon_off: mdi:lightbulb-outline
 first_floor_to_render: floor_1 # replace with your prefered floor ID

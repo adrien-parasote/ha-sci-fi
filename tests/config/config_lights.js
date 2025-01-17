@@ -1,4 +1,5 @@
 export default {
+  header: 'Lights',
   default_icon_on: 'mdi:lightbulb-on-outline',
   default_icon_off: 'mdi:lightbulb-outline',
   first_floor_to_render: 'rdc',

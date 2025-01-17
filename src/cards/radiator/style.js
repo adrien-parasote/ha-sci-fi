@@ -6,151 +6,184 @@ export default css`
     height: 100%;
     width: 100%;
     background-color: black;
+    /*
     --mr: calc(-1 * var(--default-hexa-width) / 2);
     --mt: calc(9 * var(--default-hexa-width) / 10);
+    */
   }
   .container {
     display: flex;
     flex-direction: column;
     width: 100%;
   }
-  /*********** HOUSE *************/
-  .house {
+  /*********** HEADER *************/
+  .header {
     display: flex;
-    flex-direction: column;
-    margin: 10px;
-    position: relative;
+    flex-direction: row;
+    border-bottom: var(--border-width) solid var(--primary-bg-color);
+    background-color: var(--primary-bg-alpha-color);
+    padding: 5px 10px 0 10px;
+  }
+  .header .info {
     flex: 1;
-  }
-  .house .weather {
-    position: absolute;
-    top: 0;
-    right: 0;
-  }
-  .house .weather svg {
-    width: var(--icon-size-xlarge);
-    height: var(--icon-size-xlarge);
-  }
-  .house .roof {
-    height: 100px;
-    aspect-ratio: 2;
-    clip-path: polygon(50% 0, 100% 100%, 0 100%);
-    background: var(--primary-bg-color);
-  }
-  .house .roof .info {
-    height: 100%;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    column-gap: 5px;
     align-items: center;
-    justify-content: center;
   }
-  .house .roof .info .svg-container {
-    margin-top: 10px;
-  }
-  .house .roof .info svg {
+  .header .info svg {
     fill: var(--primary-light-color);
     width: var(--icon-size-normal);
     height: var(--icon-size-normal);
   }
-  .house .roof .info .text {
+  .header .info .text {
     color: var(--primary-light-color);
     text-shadow: 0px 0px 5px var(--primary-light-color);
   }
-  /*********** HOUSE FLOORS *************/
-  .house .floors {
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    border-top: calc(2 * var(--border-width)) solid var(--primary-light-color);
-
-    border-bottom: calc(2 * var(--border-width)) solid
-      var(--primary-light-color);
+  .header .weather svg {
+    width: var(--icon-size-title);
+    height: var(--icon-size-title);
   }
-  .house .floors .floor {
+  /*********** FLOORS *************/
+  .floors {
     display: flex;
     flex-direction: row;
-    padding: 10px 0;
-  }
-  .house .floors .floor:not(:first-child) {
-    border-top: var(--border-width) dashed var(--secondary-bg-color);
-  }
-  .house .floors .floor:first-child {
-    padding-top: 5px;
-  }
-  .house .floors .floor:last-child {
-    padding-bottom: 5px;
-  }
-  .house .floors .floor .info {
-    font-size: var(--font-size-xsmall);
-    display: flex;
-    align-items: center;
-  }
-  .house .floors .floor .info sci-fi-hexa-tile {
-    --hexa-width: var(--medium-hexa-width);
-    align-items: baseline;
-  }
-  .house .floors .floor .info sci-fi-hexa-tile .item-icon svg {
-    fill: var(--primary-light-color);
-    width: var(--icon-size-normal);
-    height: var(--icon-size-normal);
-  }
-  .house .floors .floor .info sci-fi-hexa-tile .info-temp {
-    color: var(--secondary-light-color);
-  }
-  .house .floors .floor .info sci-fi-hexa-tile.off .item-icon svg {
-    fill: var(--secondary-light-color);
-  }
-  .house .floors .floor .info sci-fi-hexa-tile.on .info-temp {
-    color: var(--primary-light-color);
-    text-shadow: 0px 0px 5px var(--primary-light-color);
-  }
-  /*********** HOUSE FLOOR AREAS *************/
-  .house .floors .floor .areas {
-    display: flex;
-    flex-direction: row;
-    flex: 1;
-    font-size: var(--font-size-xsmall);
+    column-gap: 5px;
     justify-content: center;
+    align-items: center;
+    margin: 10px 0;
   }
-  .house .floors .floor .areas.card-corner {
-    padding: 0 10px;
-  }
-  .house .floors .floor .areas sci-fi-hexa-tile {
+  .floors sci-fi-hexa-tile {
     --hexa-width: var(--default-hexa-width);
-    align-items: baseline;
   }
-  .house .floors .floor .areas sci-fi-hexa-tile:not(:first-child) {
-    margin-left: var(--mr);
+  .floors sci-fi-hexa-tile.selected {
+    --hexa-width: var(--selected-hexa-width);
   }
-  .house .floors .floor .areas sci-fi-hexa-tile.odd {
-    margin-top: var(--mt);
-  }
-  .house .floors .floor .areas sci-fi-hexa-tile .item-icon svg {
+  .floors sci-fi-hexa-tile .item-icon svg {
     fill: var(--primary-light-color);
     width: var(--icon-size-normal);
-    height: var(--icon-size-normal);
   }
-  .house .floors .floor .areas sci-fi-hexa-tile .area-temp {
-    color: var(--secondary-light-color);
-  }
-  .house .floors .floor .areas sci-fi-hexa-tile.off .item-icon svg {
+  .floors sci-fi-hexa-tile .item-icon.off svg {
     fill: var(--secondary-light-color);
   }
-  .house .floors .floor .areas sci-fi-hexa-tile.on .area-temp {
+  .floors sci-fi-hexa-tile.selected .item-icon svg {
+    width: var(--icon-size-title);
+  }
+  /*********** FLOOR CONTENT *************/
+  .floor-content {
+    display: flex;
+    flex-direction: column;
+    border-bottom: var(--border-width) solid var(--primary-bg-color);
+    border-top: var(--border-width) solid var(--primary-bg-color);
+    padding: 10px 0;
+    background-color: var(--primary-bg-alpha-color);
     color: var(--primary-light-color);
+  }
+  .floor-content .title {
+    font-size: var(--font-size-normal);
+    border-bottom: var(--border-width) solid var(--primary-light-color);
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    text-align: center;
+    margin: auto;
+    min-width: 250px;
+  }
+  .floor-content .title.off {
+    border-bottom-color: var(--secondary-light-alpha-color);
+    color: var(--secondary-light-color);
+  }
+  .floor-content .temperature {
+    display: flex;
+    flex-direction: row;
+    row-gap: 5px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 5px;
     text-shadow: 0px 0px 5px var(--primary-light-color);
+  }
+  .floor-content .temperature svg {
+    fill: var(--primary-light-color);
+    width: var(--icon-size-small);
+    height: var(--icon-size-small);
+  }
+  .floor-content .temperature.off {
+    color: var(--secondary-light-color);
+  }
+
+  .floor-content .temperature.off svg {
+    fill: var(--secondary-light-color);
+  }
+  /*********** AREAS *************/
+  .areas {
+    display: flex;
+    flex-direction: row;
+    align-self: center;
+    margin: 10px 0;
+    flex: 1;
+  }
+  .areas sci-fi-hexa-tile {
+    --hexa-width: var(--default-hexa-width);
+    height: fit-content;
+  }
+  .areas sci-fi-hexa-tile.selected {
+    --hexa-width: var(--medium-hexa-width);
+  }
+  .areas sci-fi-hexa-tile .item-icon svg {
+    fill: var(--primary-light-color);
+    width: var(--icon-size-small);
+  }
+  .areas sci-fi-hexa-tile.selected .item-icon svg {
+    width: var(--icon-size-normal);
+  }
+  .areas sci-fi-hexa-tile.selected .item-icon.off svg {
+    fill: var(--secondary-light-color);
   }
   /*********** RADIATOR *************/
   .area-radiators {
     display: flex;
     flex-direction: column;
+    color: var(--primary-light-color);
+  }
+  .area-radiators .title {
+    font-size: var(--font-size-normal);
+    border-bottom: var(--border-width) solid var(--primary-bg-color);
     border-top: var(--border-width) solid var(--primary-bg-color);
     background-color: var(--primary-bg-alpha-color);
+    padding: 10px 0;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-align: center;
+    position: relative;
   }
-  .area-radiators .label {
-    color: var(--primary-light-color);
+  .area-radiators .title.off {
+    border-bottom-color: var(--secondary-light-alpha-color);
+    color: var(--secondary-light-color);
+  }
+
+  .area-radiators .temperature {
+    display: flex;
+    flex-direction: row;
+    row-gap: 5px;
+    align-items: center;
     text-shadow: 0px 0px 5px var(--primary-light-color);
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: var(--font-size-xsmall);
   }
+  .area-radiators .temperature svg {
+    fill: var(--primary-light-color);
+    width: var(--icon-size-xsmall);
+    height: var(--icon-size-xsmall);
+  }
+  .area-radiators .temperature.off {
+    color: var(--secondary-light-color);
+  }
+  .area-radiators .temperature.off svg {
+    fill: var(--secondary-light-color);
+  }
+
   .area-radiators .radiators {
     display: flex;
     flex-direction: row;

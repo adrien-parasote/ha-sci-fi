@@ -83,114 +83,133 @@ export class SciFiRadiator extends LitElement {
 
     return html`
       <div class="container">
-        ${this.__renderHouse()} ${this.__renderAreaRadiators()}
+        <div class="header">${this.__displayHeader()}</div>
+        <div class="floors">${this.__displayFloors()}</div>
+        <div class="floor-content">${this.__displayFloorInfo()}</div>
+        <div class="areas">${this.__displayAreas()}</div>
+        <div class="area-radiators">${this.__displayAreaRadiators()}</div>
       </div>
     `;
   }
 
-  __renderHouse() {
+  __displayHeader() {
     return html`
-      <div class="house">
-        <div class="weather">
-          ${this._sun ? getWeatherIcon(this._sun.dayPhaseIcon()) : ''}
+      <div class="info">
+        ${getIcon('mdi:home-thermometer-outline')}
+        <div class="text">
+          ${this._house.getTemperature(this._config.entities_to_exclude)}${this
+            ._config.unit}
         </div>
-        <div class="roof">
-          <div class="info">
-            ${getIcon('mdi:home-thermometer-outline')}
-            <div class="text">
-              ${this._house.getTemperature(
-                this._config.entities_to_exclude
-              )}${this._config.unit}
-            </div>
-          </div>
-        </div>
-        <div class="floors">
-          ${this._house
-            .getFloorsOrderedByLevel(false)
-            .filter((floor) => floor.hasEntityKind(ENTITY_KIND_RADIATOR))
-            .map((floor) => {
-              return this.__renderFloor(floor);
-            })}
-        </div>
+      </div>
+      <div class="weather">
+        ${this._sun ? getWeatherIcon(this._sun.dayPhaseIcon()) : ''}
       </div>
     `;
   }
 
-  __renderFloor(floor) {
-    const active = floor.id == this._active_floor_id ? 'on' : 'off';
+  __displayFloors() {
+    return this._house
+      .getFloorsOrderedByLevel()
+      .filter((floor) => floor.hasEntityKind(ENTITY_KIND_RADIATOR))
+      .map((floor) => {
+        const active = floor.getTemperature(this._config.entities_to_exclude)
+          ? 'on'
+          : 'off';
+        return html` <sci-fi-hexa-tile
+          active-tile
+          state="${this._active_floor_id == floor.id ? 'on' : 'off'}"
+          class="${this._active_floor_id == floor.id ? 'selected' : ''}"
+          @click="${(e) => this.__onFloorSelect(e, floor)}"
+        >
+          <div class="item-icon ${active}">${getIcon(floor.icon)}</div>
+        </sci-fi-hexa-tile>`;
+      });
+  }
+
+  __displayFloorInfo() {
+    const floor = this._house.getFloor(this._active_floor_id);
+    const temperature = floor.getTemperature(this._config.entities_to_exclude);
+    const icon = temperature ? 'mdi:thermometer' : 'mdi:thermometer-off';
+    const label = temperature ? temperature + this._config.unit : 'Off';
     return html`
-      <div class="floor">
-        <div class="info">
-          <sci-fi-hexa-tile active-tile state="${active}" class="${active}">
-            <div class="item-icon">${getIcon(floor.icon)}</div>
-            <div class="floor-temp">
-              ${floor.getTemperature(this._config.entities_to_exclude)}${this
-                ._config.unit}
-            </div>
+      <div class="title ${!temperature ? 'off' : 'on'}">
+        ${floor.name} (level : ${floor.level})
+      </div>
+      <div class="temperature ${!temperature ? 'off' : 'on'}">
+        ${getIcon(icon)}
+        <div>${label}</div>
+      </div>
+    `;
+  }
+
+  __onFloorSelect(e, floor) {
+    e.preventDefault();
+    e.stopPropagation();
+    // Update selected floor
+    this._active_floor_id = floor.id;
+    // Select first area to render
+    this._active_area_id = floor.getFirstArea(ENTITY_KIND_RADIATOR).id;
+  }
+
+  __displayAreas() {
+    const floor = this._house.getFloor(this._active_floor_id);
+    return floor
+      .getAreas()
+      .filter((area) => area.hasEntityKind(ENTITY_KIND_RADIATOR))
+      .map((area, idx) => {
+        const state = area.getTemperature(this._config.entities_to_exclude)
+          ? 'on'
+          : 'off';
+        return html`
+          <sci-fi-hexa-tile
+            active-tile
+            state="${state}"
+            class="${this._active_area_id == area.id ? 'selected' : ''}"
+            @click="${(e) => this.__selectedArea(e, area)}"
+          >
+            <div class="item-icon ${state}">${getIcon(area.icon)}</div>
           </sci-fi-hexa-tile>
-        </div>
-        <div class="h-separator">
-          <div class="circle ${active}"></div>
-          <div class="h-path ${active}"></div>
-          <div class="circle ${active}"></div>
-        </div>
-        <div class="areas card-corner ${active}">
-          ${floor
-            .getAreas()
-            .filter((area) => area.hasEntityKind(ENTITY_KIND_RADIATOR))
-            .map((area, idx) => {
-              return this.__displayArea(area, idx);
-            })}
-        </div>
-      </div>
-    `;
+        `;
+      });
   }
 
-  __displayArea(area, idx) {
-    const active = area.id == this._active_area_id ? 'on' : 'off';
-    return html`
-      <sci-fi-hexa-tile
-        active-tile
-        state="${active}"
-        class="${active} ${idx % 2 == 0 ? '' : 'odd'}"
-        @click="${(e) => this.__selectedItem(e, area)}"
-      >
-        <div class="item-icon">${getIcon(area.icon)}</div>
-        <div class="area-temp">
-          ${area.getTemperature(this._config.entities_to_exclude)}${this._config
-            .unit}
-        </div>
-      </sci-fi-hexa-tile>
-    `;
-  }
-
-  __selectedItem(e, area) {
+  __selectedArea(e, area) {
     e.preventDefault();
     e.stopPropagation();
     this._active_area_id = area.id;
-    this._active_floor_id = area.floor_id;
   }
 
-  __renderAreaRadiators() {
-    const floor = this._house.getFloor(this._active_floor_id);
-    const area = floor.getArea(this._active_area_id);
-    const radiators = area
-      .getEntitiesByKind(ENTITY_KIND_RADIATOR)
-      .filter(
-        (radiator) =>
-          !this._config.entities_to_exclude.includes(radiator.entity_id)
-      );
-    return html`<div class="area-radiators">
-      <div class="label">${floor.name} - ${area.name}</div>
-      <div class="radiators">
-        ${radiators.map((radiator) => {
-          return this.__renderRadiator(radiator);
-        })}
+  __displayAreaRadiators() {
+    const area = this._house.getArea(
+      this._active_floor_id,
+      this._active_area_id
+    );
+    const temperature = area.getTemperature(this._config.entities_to_exclude);
+    const icon = temperature ? 'mdi:thermometer' : 'mdi:thermometer-off';
+    const label = temperature ? temperature + this._config.unit : 'Off';
+    return html`
+      <div class="title ${temperature ? 'on' : 'off'}">
+        ${area.name}
+        <div class="temperature ${!temperature ? 'off' : 'on'}">
+          ${getIcon(icon)}
+          <div>${label}</div>
+        </div>
       </div>
-    </div>`;
+      <div class="radiators">
+        ${area
+          .getEntitiesByKind(ENTITY_KIND_RADIATOR)
+          .filter(
+            (radiator) =>
+              !this._config.entities_to_exclude.includes(radiator.entity_id)
+          )
+          .map((radiator) => {
+            return this.__displayRadiator(radiator);
+          })}
+      </div>
+    `;
   }
 
-  __renderRadiator(radiator) {
+  __displayRadiator(radiator) {
     return html`
       <div class="radiator">
         <div>${radiator.friendly_name}</div>

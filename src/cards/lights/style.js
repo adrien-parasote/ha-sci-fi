@@ -37,7 +37,7 @@ export default css`
   .floors {
     display: flex;
     flex-direction: row;
-    column-gap: 10px;
+    column-gap: 5px;
     justify-content: center;
     align-items: center;
     margin-top: 20px;

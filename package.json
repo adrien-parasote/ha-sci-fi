@@ -1,18 +1,16 @@
 {
-  "version": "0.3.5",
+  "version": "0.3.7",
   "description": "Sci-fi cards for HA dashboard",
   "main": "src/sci-fi.js",
   "type": "module",
   "scripts": {
     "serve": "es-dev-server --app-index /tests/index.html --node-resolve --watch",
-
     "format": "prettier tests/*.html tests/**/*.js src/*.js src/**/*.js src/**/**/*.js --write",
     "patch": "npm --no-git-tag-version version patch",
     "copy": "mkdir temp && cp -r ./src/* ./temp",
     "prepare": "npm run copy && rm ./temp/build/const.js && mv ./temp/build/const.js.PROD ./temp/build/const.js",
     "clean-up": "rm -rf temp && mv sci-fi.min.js dist",
     "build-test": "npm run format && npm run prepare && npm run patch && rollup -c && npm run clean-up",
-
     "update-local": "npm --allow-same-version=true --no-git-tag-version version $npm_config_ver",
     "build-release": "npm run format && npm run prepare && rollup -c && npm run clean-up",
     "git-tag": "git tag -a $npm_config_ver -m $npm_config_m && git push origin --tags",

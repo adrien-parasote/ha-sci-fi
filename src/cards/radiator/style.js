@@ -35,7 +35,7 @@ export default css`
     height: 100px;
     aspect-ratio: 2;
     clip-path: polygon(50% 0, 100% 100%, 0 100%);
-    background: var(--primary-bg-alpha-color);
+    background: var(--primary-bg-color);
   }
   .house .roof .info {
     height: 100%;

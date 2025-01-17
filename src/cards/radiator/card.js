@@ -112,7 +112,6 @@ export class SciFiRadiator extends LitElement {
               return this.__renderFloor(floor);
             })}
         </div>
-        <div class="bottom"></div>
       </div>
     `;
   }

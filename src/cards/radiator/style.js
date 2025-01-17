@@ -199,6 +199,10 @@ export default css`
     flex-direction: row;
     font-size: var(--font-size-large);
     text-shadow: 0px 0px 5px var(--primary-light-color);
+    justify-content: center;
+  }
+  .area-content .radiators .radiator .temperature-label .radical {
+    align-self: center;
   }
   .area-content .radiators .radiator .temperature-label .decimal {
     display: flex;

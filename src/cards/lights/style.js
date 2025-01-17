@@ -69,7 +69,7 @@ export default css`
     column-gap: 5px;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 10px;
   }
   .floors sci-fi-hexa-tile {
     --hexa-width: var(--default-hexa-width);
@@ -90,7 +90,7 @@ export default css`
     border-bottom: var(--border-width) solid var(--primary-bg-color);
     border-top: var(--border-width) solid var(--primary-bg-color);
     padding: 10px 0;
-    margin: 20px 0 40px 0;
+    margin: 10px 0 20px 0;
     background-color: var(--primary-bg-alpha-color);
   }
   .floor-content .info {

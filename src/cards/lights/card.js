@@ -195,12 +195,11 @@ export class SciFiLights extends LitElement {
   }
 
   __displayArea(area) {
-    const area_state = area.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off';
     return html`
       <sci-fi-hexa-tile
         active-tile
-        state="${area_state}"
-        class="${area_state}"
+        state="${this._active_area_id == area.id ? 'on' : 'off'}"
+        class="${area.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}"
         @click="${(e) => this.__onAreaSelect(e, area)}"
       >
         <div class="item-icon">${getIcon(area.icon)}</div>

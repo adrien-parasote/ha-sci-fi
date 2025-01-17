@@ -26,9 +26,11 @@ export default css`
     --icon-size-xlarge: 60px;
     --icon-size-large: 50px;
     --icon-size-title: 36px;
+    --icon-size-subtitle: 30px;
     --icon-size-normal: 25px;
     --icon-size-small: 20px;
     --icon-size-xsmall: 15px;
+    --icon-size-xxsmall: 10px;
 
     --default-hexa-width: 60px;
     --medium-hexa-width: 70px;

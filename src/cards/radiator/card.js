@@ -86,8 +86,9 @@ export class SciFiRadiator extends LitElement {
         <div class="header">${this.__displayHeader()}</div>
         <div class="floors">${this.__displayFloors()}</div>
         <div class="floor-content">${this.__displayFloorInfo()}</div>
-        <div class="areas">${this.__displayAreas()}</div>
-        <div class="area-radiators">${this.__displayAreaRadiators()}</div>
+        <div class="areas">
+          ${this.__displayAreas()} ${this.__displayAreaInfo()}
+        </div>
       </div>
     `;
   }
@@ -137,7 +138,7 @@ export class SciFiRadiator extends LitElement {
       </div>
       <div class="temperature ${!temperature ? 'off' : 'on'}">
         ${getIcon(icon)}
-        <div>${label}</div>
+        <div>${temperature}${this._config.unit}</div>
       </div>
     `;
   }
@@ -152,49 +153,71 @@ export class SciFiRadiator extends LitElement {
   }
 
   __displayAreas() {
-    const floor = this._house.getFloor(this._active_floor_id);
-    return floor
-      .getAreas()
-      .filter((area) => area.hasEntityKind(ENTITY_KIND_RADIATOR))
-      .map((area, idx) => {
-        const state = area.getTemperature(this._config.entities_to_exclude)
-          ? 'on'
-          : 'off';
-        return html`
-          <sci-fi-hexa-tile
-            active-tile
-            state="${state}"
-            class="${this._active_area_id == area.id ? 'selected' : ''}"
-            @click="${(e) => this.__selectedArea(e, area)}"
+    return html`<div class="area-list">
+      ${this._house
+        .getFloor(this._active_floor_id)
+        .getAreas()
+        .filter((area) => area.hasEntityKind(ENTITY_KIND_RADIATOR))
+        .map((area, idx) => {
+          const area_state = area.isActive(ENTITY_KIND_RADIATOR) ? 'on' : 'off';
+          return html` <div
+            class="row"
+            style="margin-left: calc(var(--default-hexa-width) / 2 * ${idx %
+            2});"
           >
-            <div class="item-icon ${state}">${getIcon(area.icon)}</div>
-          </sci-fi-hexa-tile>
-        `;
-      });
+            ${this.__displayArea(area)}
+            <div
+              class="h-separator ${this._active_area_id == area.id
+                ? 'show'
+                : 'hide'}"
+            >
+              <div class="circle ${area_state}"></div>
+              <div
+                class="h-path ${area_state} ${idx % 2 ? '' : 'full'}"
+                style="width: ${idx % 2 ? '15px' : '45px'};"
+              ></div>
+              <div class="circle ${area_state}"></div>
+            </div>
+          </div>`;
+        })}
+    </div>`;
   }
 
-  __selectedArea(e, area) {
+  __displayArea(area) {
+    return html`
+      <sci-fi-hexa-tile
+        active-tile
+        state="${this._active_area_id == area.id ? 'on' : 'off'}"
+        class="${area.isActive(ENTITY_KIND_RADIATOR) ? 'on' : 'off'}"
+        @click="${(e) => this.__onAreaSelect(e, area)}"
+      >
+        <div class="item-icon">${getIcon(area.icon)}</div>
+      </sci-fi-hexa-tile>
+    `;
+  }
+
+  __onAreaSelect(e, area) {
     e.preventDefault();
     e.stopPropagation();
     this._active_area_id = area.id;
   }
 
-  __displayAreaRadiators() {
+  __displayAreaInfo() {
     const area = this._house.getArea(
       this._active_floor_id,
       this._active_area_id
     );
-    const temperature = area.getTemperature(this._config.entities_to_exclude);
-    const icon = temperature ? 'mdi:thermometer' : 'mdi:thermometer-off';
-    const label = temperature ? temperature + this._config.unit : 'Off';
+    const active = area.isActive(ENTITY_KIND_RADIATOR);
     return html`
-      <div class="title ${temperature ? 'on' : 'off'}">
-        ${area.name}
-        <div class="temperature ${!temperature ? 'off' : 'on'}">
-          ${getIcon(icon)}
-          <div>${label}</div>
-        </div>
+      <div class="card-corner area-content ${active ? 'on' : 'off'}">
+        <div class="title">${area.name}</div>
+        ${this.__displayAreaRadiators(area)}
       </div>
+    `;
+  }
+
+  __displayAreaRadiators(area) {
+    return html`
       <div class="radiators">
         ${area
           .getEntitiesByKind(ENTITY_KIND_RADIATOR)
@@ -211,16 +234,29 @@ export class SciFiRadiator extends LitElement {
 
   __displayRadiator(radiator) {
     return html`
-      <div class="radiator">
-        <div>${radiator.friendly_name}</div>
-        <div>${radiator.icon}</div>
-        <div>${radiator.state}</div>
-        <div>${JSON.stringify(radiator.hvac_modes)}</div>
-        <div>${radiator.preset_mode}</div>
-        <div>${JSON.stringify(radiator.preset_modes)}</div>
-        <div>${radiator.current_temperature}</div>
-        <div>${radiator.max_temp}</div>
-        <div>${radiator.min_temp}</div>
+      <div class="radiator ${radiator.active ? 'on' : 'off'}">
+        <div class="description">
+          ${getIcon(radiator.getIcon())}
+          <div class="name">${radiator.friendly_name}</div>
+          ${getIcon(radiator.getModeIcon())}
+        </div>
+        <div class="temp">
+          ${this.__getTemperatureLabel(radiator.current_temperature)}
+        </div>
+        <div class="temp">${radiator.temperature}${this._config.unit}</div>
+      </div>
+    `;
+  }
+
+  __getTemperatureLabel(temperature) {
+    if (!temperature) return;
+    return html`
+      <div class="temperature-label">
+        <div class="radical">${temperature.toFixed(1).split('.')[0]}</div>
+        <div class="decimal">
+          <div>${this._config.unit}</div>
+          <div>.${temperature.toFixed(1).split('.')[1]}</div>
+        </div>
       </div>
     `;
   }

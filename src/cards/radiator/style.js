@@ -6,10 +6,6 @@ export default css`
     height: 100%;
     width: 100%;
     background-color: black;
-    /*
-    --mr: calc(-1 * var(--default-hexa-width) / 2);
-    --mt: calc(9 * var(--default-hexa-width) / 10);
-    */
   }
   .container {
     display: flex;
@@ -75,9 +71,10 @@ export default css`
     flex-direction: column;
     border-bottom: var(--border-width) solid var(--primary-bg-color);
     border-top: var(--border-width) solid var(--primary-bg-color);
-    padding: 10px 0;
+    padding: 10px 0 5px 0;
     background-color: var(--primary-bg-alpha-color);
     color: var(--primary-light-color);
+    margin-bottom: 20px;
   }
   .floor-content .title {
     font-size: var(--font-size-normal);
@@ -114,83 +111,103 @@ export default css`
   .floor-content .temperature.off svg {
     fill: var(--secondary-light-color);
   }
-  /*********** AREAS *************/
+  /******** AREA LIST *********/
   .areas {
     display: flex;
     flex-direction: row;
-    align-self: center;
-    margin: 10px 0;
-    flex: 1;
+    padding: 0 10px;
   }
-  .areas sci-fi-hexa-tile {
+  .areas .area-list .row {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: calc(var(--default-hexa-width) * -0.38);
+  }
+  .areas .area-list .row sci-fi-hexa-tile {
     --hexa-width: var(--default-hexa-width);
-    height: fit-content;
   }
-  .areas sci-fi-hexa-tile.selected {
-    --hexa-width: var(--medium-hexa-width);
-  }
-  .areas sci-fi-hexa-tile .item-icon svg {
+  .areas .area-list .row sci-fi-hexa-tile .item-icon svg {
+    width: var(--icon-size-title);
     fill: var(--primary-light-color);
-    width: var(--icon-size-small);
   }
-  .areas sci-fi-hexa-tile.selected .item-icon svg {
-    width: var(--icon-size-normal);
-  }
-  .areas sci-fi-hexa-tile.selected .item-icon.off svg {
+  .areas .area-list .row sci-fi-hexa-tile.off .item-icon svg {
     fill: var(--secondary-light-color);
   }
-  /*********** RADIATOR *************/
-  .area-radiators {
+  /******** AREA CONTENT *********/
+  .areas .area-content {
     display: flex;
+    flex: 1;
+    align-items: start;
     flex-direction: column;
     color: var(--primary-light-color);
+    height: 100%;
   }
-  .area-radiators .title {
+  .area-content .title {
     font-size: var(--font-size-normal);
-    border-bottom: var(--border-width) solid var(--primary-bg-color);
-    border-top: var(--border-width) solid var(--primary-bg-color);
-    background-color: var(--primary-bg-alpha-color);
-    padding: 10px 0;
-    margin-bottom: 10px;
+    border-bottom: var(--border-width) solid var(--primary-light-color);
+    padding-bottom: 5px;
+    margin-bottom: 15px;
     font-weight: bold;
     text-align: center;
-    position: relative;
+    width: 100%;
   }
-  .area-radiators .title.off {
+  .area-content.off .title {
     border-bottom-color: var(--secondary-light-alpha-color);
     color: var(--secondary-light-color);
   }
-
-  .area-radiators .temperature {
-    display: flex;
-    flex-direction: row;
-    row-gap: 5px;
-    align-items: center;
-    text-shadow: 0px 0px 5px var(--primary-light-color);
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: var(--font-size-xsmall);
-  }
-  .area-radiators .temperature svg {
-    fill: var(--primary-light-color);
-    width: var(--icon-size-xsmall);
-    height: var(--icon-size-xsmall);
-  }
-  .area-radiators .temperature.off {
-    color: var(--secondary-light-color);
-  }
-  .area-radiators .temperature.off svg {
-    fill: var(--secondary-light-color);
-  }
-
-  .area-radiators .radiators {
-    display: flex;
-    flex-direction: row;
-    column-gap: 10px;
-  }
-  .area-radiators .radiators .radiator {
+  /*********** RADIATORS *************/
+  .area-content .radiators {
+    align-self: center;
     display: flex;
     flex-direction: column;
+    row-gap: 5px;
+    justify-content: center;
+  }
+  .area-content .radiators .radiator {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    font-size: var(--font-size-small);
+    padding: 10px;
+    border-radius: var(--border-radius);
+    border: var(--border-width) solid var(--primary-light-color);
+    width: 125px;
+  }
+  .area-content .radiators .radiator.off {
+    border-color: var(--secondary-light-alpha-color);
+    color: var(--primary-secondary-color);
+  }
+  .area-content .radiators .radiator .description {
+    display: flex;
+    flex-direction: row;
+    column-gap: 5px;
+  }
+  .area-content .radiators .radiator .description svg {
+    width: var(--icon-size-subtitle);
+    fill: var(--primary-light-color);
+  }
+  .area-content .radiators .radiator.off .description svg {
+    fill: var(--secondary-light-color);
+  }
+  .area-content .radiators .radiator .description .name {
+    flex: 1;
+    text-align: center;
+    align-content: center;
+    font-weight: bold;
+  }
+  .area-content .radiators .radiator .temperature-label {
+    display: flex;
+    flex-direction: row;
+    font-size: var(--font-size-large);
+    text-shadow: 0px 0px 5px var(--primary-light-color);
+  }
+  .area-content .radiators .radiator .temperature-label .decimal {
+    display: flex;
+    flex-direction: column;
+    font-size: var(--icon-size-xsmall);
+    justify-content: center;
+  }
+  .area-content .radiators .radiator .temp {
+    text-align: center;
+    justify-items: center;
   }
 `;

@@ -1,7 +1,11 @@
 import {
   ENTITY_KIND_RADIATOR,
+  STATE_MODE_COMFORT,
+  STATE_MODE_ECO,
+  STATE_MODE_FROST_PROTECTION,
   STATE_RADIATOR_AUTO,
   STATE_RADIATOR_HEAT,
+  STATE_RADIATOR_OFF,
 } from './const';
 
 export class RadiatorEntity {
@@ -68,5 +72,21 @@ export class RadiatorEntity {
       },
       state: this.state,
     };
+  }
+
+  getIcon() {
+    let icons = {};
+    icons[STATE_RADIATOR_AUTO] = 'sci:radiator-auto';
+    icons[STATE_RADIATOR_HEAT] = 'sci:radiator-heat';
+    icons[STATE_RADIATOR_OFF] = 'sci:radiator-off';
+    return icons[this.state];
+  }
+
+  getModeIcon() {
+    let icons = {};
+    icons[STATE_MODE_FROST_PROTECTION] = 'mdi:snowflake';
+    icons[STATE_MODE_ECO] = 'mdi:leaf';
+    icons[STATE_MODE_COMFORT] = 'mdi:sun-thermometer-outline';
+    return icons[this.preset_mode];
   }
 }

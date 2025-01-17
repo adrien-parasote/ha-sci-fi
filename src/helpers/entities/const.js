@@ -5,6 +5,9 @@ export const STATE_LIGHT_OFF = 'off';
 export const STATE_RADIATOR_HEAT = 'heat';
 export const STATE_RADIATOR_OFF = 'off';
 export const STATE_RADIATOR_AUTO = 'auto';
+export const STATE_MODE_FROST_PROTECTION = 'frost_protection';
+export const STATE_MODE_ECO = 'eco';
+export const STATE_MODE_COMFORT = 'comfort';
 
 export const ENTITY_KIND_LIGHT = 'light';
 export const ENTITY_KIND_RADIATOR = 'climate';

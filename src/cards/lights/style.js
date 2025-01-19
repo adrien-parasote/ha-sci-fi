@@ -84,10 +84,6 @@ export default css`
   .floors sci-fi-hexa-tile.selected .item-icon svg {
     width: var(--icon-size-large);
   }
-  .floors sci-fi-hexa-tile.selected .item-icon svg {
-    width: var(--icon-size-large);
-  }
-
   /******** FLOOR CONTENT *********/
   .floor-content {
     display: flex;

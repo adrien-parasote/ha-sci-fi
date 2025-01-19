@@ -1,16 +1,16 @@
+import {ClimateEntity} from './climate.js';
 import {
+  ENTITY_KIND_CLIMATE,
   ENTITY_KIND_LIGHT,
-  ENTITY_KIND_RADIATOR,
   HASS_LIGHT_SERVICE,
   HASS_LIGHT_SERVICE_ACTION_TURN_OFF,
   HASS_LIGHT_SERVICE_ACTION_TURN_ON,
 } from './const';
 import {LightEntity} from './light.js';
-import {RadiatorEntity} from './radiator.js';
 
 const SCI_FI_ENTITIES = {};
 SCI_FI_ENTITIES[ENTITY_KIND_LIGHT] = LightEntity;
-SCI_FI_ENTITIES[ENTITY_KIND_RADIATOR] = RadiatorEntity;
+SCI_FI_ENTITIES[ENTITY_KIND_CLIMATE] = ClimateEntity;
 const SERVICES = [];
 SERVICES[ENTITY_KIND_LIGHT] = {
   service: HASS_LIGHT_SERVICE,
@@ -122,7 +122,7 @@ export class House {
   getTemperature(entities_to_exclude = []) {
     let temp = [];
     Object.values(this._floors)
-      .filter((floor) => floor.hasEntityKind(ENTITY_KIND_RADIATOR))
+      .filter((floor) => floor.hasEntityKind(ENTITY_KIND_CLIMATE))
       .forEach((floor) => {
         temp.push(floor.getTemperature(entities_to_exclude));
       });
@@ -225,16 +225,16 @@ class Floor {
     };
   }
 
-  get radiators() {
-    return this.getEntitiesByKind(ENTITY_KIND_RADIATOR);
+  get climates() {
+    return this.getEntitiesByKind(ENTITY_KIND_CLIMATE);
   }
 
   getTemperature(entities_to_exclude = []) {
     let temp = [];
-    this.radiators
-      .filter((radiator) => !entities_to_exclude.includes(radiator.entity_id))
-      .forEach((radiator) => {
-        temp.push(radiator.current_temperature);
+    this.climates
+      .filter((climate) => !entities_to_exclude.includes(climate.entity_id))
+      .forEach((climate) => {
+        temp.push(climate.current_temperature);
       });
     return temp.length > 0
       ? Math.round(
@@ -314,10 +314,10 @@ class Area {
 
   getTemperature(entities_to_exclude = []) {
     let temp = [];
-    this.getEntitiesByKind(ENTITY_KIND_RADIATOR)
-      .filter((radiator) => !entities_to_exclude.includes(radiator.entity_id))
-      .forEach((radiator) => {
-        temp.push(radiator.current_temperature);
+    this.getEntitiesByKind(ENTITY_KIND_CLIMATE)
+      .filter((climate) => !entities_to_exclude.includes(climate.entity_id))
+      .forEach((climate) => {
+        temp.push(climate.current_temperature);
       });
     return temp.length > 0
       ? Math.round(

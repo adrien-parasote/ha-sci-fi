@@ -1,15 +1,11 @@
 import {
-  ENTITY_KIND_RADIATOR,
-  STATE_MODE_COMFORT,
-  STATE_MODE_ECO,
-  STATE_MODE_FROST_PROTECTION,
-  STATE_RADIATOR_AUTO,
-  STATE_RADIATOR_HEAT,
-  STATE_RADIATOR_OFF,
+  ENTITY_KIND_CLIMATE,
+  STATE_CLIMATE_AUTO,
+  STATE_CLIMATE_HEAT,
 } from './const';
 
-export class RadiatorEntity {
-  static kind = ENTITY_KIND_RADIATOR;
+export class ClimateEntity {
+  static kind = ENTITY_KIND_CLIMATE;
 
   constructor(entity, device) {
     this.entity_id = entity.entity_id ? entity.entity_id : null;
@@ -48,11 +44,11 @@ export class RadiatorEntity {
   }
 
   get kind() {
-    return RadiatorEntity.kind;
+    return ClimateEntity.kind;
   }
 
   get active() {
-    return [STATE_RADIATOR_AUTO, STATE_RADIATOR_HEAT].includes(this.state);
+    return [STATE_CLIMATE_AUTO, STATE_CLIMATE_HEAT].includes(this.state);
   }
 
   renderAsEntity() {
@@ -72,21 +68,5 @@ export class RadiatorEntity {
       },
       state: this.state,
     };
-  }
-
-  getIcon() {
-    let icons = {};
-    icons[STATE_RADIATOR_AUTO] = 'sci:radiator-auto';
-    icons[STATE_RADIATOR_HEAT] = 'sci:radiator-heat';
-    icons[STATE_RADIATOR_OFF] = 'sci:radiator-off';
-    return icons[this.state];
-  }
-
-  getModeIcon() {
-    let icons = {};
-    icons[STATE_MODE_FROST_PROTECTION] = 'mdi:snowflake';
-    icons[STATE_MODE_ECO] = 'mdi:leaf';
-    icons[STATE_MODE_COMFORT] = 'mdi:sun-thermometer-outline';
-    return icons[this.preset_mode];
   }
 }

@@ -56,14 +56,14 @@ export default css`
     --hexa-width: var(--selected-hexa-width);
   }
   .floors sci-fi-hexa-tile .item-icon svg {
+    width: var(--icon-size-title);
     fill: var(--primary-light-color);
-    width: var(--icon-size-normal);
   }
   .floors sci-fi-hexa-tile .item-icon.off svg {
-    fill: var(--secondary-light-color);
+    fill: var(--secondary-bg-color);
   }
   .floors sci-fi-hexa-tile.selected .item-icon svg {
-    width: var(--icon-size-title);
+    width: var(--icon-size-large);
   }
   /*********** FLOOR CONTENT *************/
   .floor-content {
@@ -129,8 +129,8 @@ export default css`
     width: var(--icon-size-title);
     fill: var(--primary-light-color);
   }
-  .areas .area-list .row sci-fi-hexa-tile.off .item-icon svg {
-    fill: var(--secondary-light-color);
+  .areas .area-list .row sci-fi-hexa-tile .item-icon.off svg {
+    fill: var(--secondary-bg-color);
   }
   /******** AREA CONTENT *********/
   .areas .area-content {
@@ -154,64 +154,11 @@ export default css`
     border-bottom-color: var(--secondary-light-alpha-color);
     color: var(--secondary-light-color);
   }
-  /*********** RADIATORS *************/
-  .area-content .radiators {
+  .area-content .climates {
     align-self: center;
     display: flex;
     flex-direction: column;
     row-gap: 5px;
     justify-content: center;
-  }
-  .area-content .radiators .radiator {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    font-size: var(--font-size-small);
-    padding: 10px;
-    border-radius: var(--border-radius);
-    border: var(--border-width) solid var(--primary-light-color);
-    width: 125px;
-  }
-  .area-content .radiators .radiator.off {
-    border-color: var(--secondary-light-alpha-color);
-    color: var(--primary-secondary-color);
-  }
-  .area-content .radiators .radiator .description {
-    display: flex;
-    flex-direction: row;
-    column-gap: 5px;
-  }
-  .area-content .radiators .radiator .description svg {
-    width: var(--icon-size-subtitle);
-    fill: var(--primary-light-color);
-  }
-  .area-content .radiators .radiator.off .description svg {
-    fill: var(--secondary-light-color);
-  }
-  .area-content .radiators .radiator .description .name {
-    flex: 1;
-    text-align: center;
-    align-content: center;
-    font-weight: bold;
-  }
-  .area-content .radiators .radiator .temperature-label {
-    display: flex;
-    flex-direction: row;
-    font-size: var(--font-size-large);
-    text-shadow: 0px 0px 5px var(--primary-light-color);
-    justify-content: center;
-  }
-  .area-content .radiators .radiator .temperature-label .radical {
-    align-self: center;
-  }
-  .area-content .radiators .radiator .temperature-label .decimal {
-    display: flex;
-    flex-direction: column;
-    font-size: var(--icon-size-xsmall);
-    justify-content: center;
-  }
-  .area-content .radiators .radiator .temp {
-    text-align: center;
-    justify-items: center;
   }
 `;

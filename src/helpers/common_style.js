@@ -22,6 +22,7 @@ export default css`
     --font-size-normal: 14px;
     --font-size-small: 12px;
     --font-size-xsmall: 10px;
+    --font-size-xxsmall: 7px;
 
     --icon-size-xlarge: 60px;
     --icon-size-large: 50px;

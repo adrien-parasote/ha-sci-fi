@@ -2,15 +2,12 @@ export const STATE_HOME = 'home';
 
 export const STATE_LIGHT_ON = 'on';
 export const STATE_LIGHT_OFF = 'off';
-export const STATE_RADIATOR_HEAT = 'heat';
-export const STATE_RADIATOR_OFF = 'off';
-export const STATE_RADIATOR_AUTO = 'auto';
-export const STATE_MODE_FROST_PROTECTION = 'frost_protection';
-export const STATE_MODE_ECO = 'eco';
-export const STATE_MODE_COMFORT = 'comfort';
+export const STATE_CLIMATE_HEAT = 'heat';
+export const STATE_CLIMATE_OFF = 'off';
+export const STATE_CLIMATE_AUTO = 'auto';
 
 export const ENTITY_KIND_LIGHT = 'light';
-export const ENTITY_KIND_RADIATOR = 'climate';
+export const ENTITY_KIND_CLIMATE = 'climate';
 
 export const HASS_LIGHT_SERVICE = 'light';
 export const HASS_LIGHT_SERVICE_ACTION_TURN_ON = 'turn_on';

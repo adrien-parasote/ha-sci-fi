@@ -129,7 +129,13 @@ export class SciFiLights extends LitElement {
           class="${this._active_floor_id == floor.id ? 'selected' : ''}"
           @click="${(e) => this.__onFloorSelect(e, floor)}"
         >
-          <div class="item-icon ${floor.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}">${getIcon(floor.icon)}</div>
+          <div
+            class="item-icon ${floor.isActive(ENTITY_KIND_LIGHT)
+              ? 'on'
+              : 'off'}"
+          >
+            ${getIcon(floor.icon)}
+          </div>
         </sci-fi-hexa-tile>`;
       });
   }
@@ -201,7 +207,11 @@ export class SciFiLights extends LitElement {
         class="${area.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}"
         @click="${(e) => this.__onAreaSelect(e, area)}"
       >
-        <div class="item-icon ${area.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}">${getIcon(area.icon)}</div>
+        <div
+          class="item-icon ${area.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}"
+        >
+          ${getIcon(area.icon)}
+        </div>
       </sci-fi-hexa-tile>
     `;
   }

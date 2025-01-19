@@ -3,7 +3,7 @@ import {html} from 'lit';
 import {SciFiBaseEditor} from '../../helpers/card/base_editor.js';
 import '../../helpers/form/form.js';
 
-export class SciFiRadiatorEditor extends SciFiBaseEditor {
+export class SciFiClimatesEditor extends SciFiBaseEditor {
   set hass(hass) {
     this._hass = hass;
   }
@@ -12,7 +12,7 @@ export class SciFiRadiatorEditor extends SciFiBaseEditor {
     if (!this._hass || !this._config) return html``;
     return html`
       <div class="card card-corner">
-        <div class="container">RADIATOR EDITOR CONTENT HERE</div>
+        <div class="container">CLIMATES EDITOR CONTENT HERE</div>
       </div>
     `;
   }

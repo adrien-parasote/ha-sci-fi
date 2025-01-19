@@ -1,17 +1,18 @@
 import {LitElement, html} from 'lit';
 import {isEqual} from 'lodash-es';
 
+import '../../helpers/card/radiator.js';
 import '../../helpers/card/tiles.js';
 import common_style from '../../helpers/common_style.js';
-import {ENTITY_KIND_RADIATOR} from '../../helpers/entities/const.js';
+import {ENTITY_KIND_CLIMATE} from '../../helpers/entities/const.js';
 import {House} from '../../helpers/entities/house.js';
 import {SunEntity} from '../../helpers/entities/weather.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
 import {PACKAGE} from './const.js';
-import {SciFiRadiatorEditor} from './editor.js';
+import {SciFiClimatesEditor} from './editor.js';
 import style from './style.js';
 
-export class SciFiRadiator extends LitElement {
+export class SciFiClimates extends LitElement {
   static get styles() {
     return [common_style, style];
   }
@@ -30,10 +31,31 @@ export class SciFiRadiator extends LitElement {
 
   __validateConfig(config) {
     if (!config.unit) config.unit = '°C';
-    if (!config.icon_auto) config.icon_auto = 'sci:radiator-auto';
-    if (!config.icon_off) config.icon_off = 'sci:radiator-off';
-    if (!config.icon_heat) config.icon_heat = 'sci:radiator-heat';
     if (!config.entities_to_exclude) config.entities_to_exclude = [];
+
+    if (!config.state_icons) config.state_icons = {};
+    if (!config.state_icons.auto) config.state_icons.auto = 'sci:radiator-auto';
+    if (!config.state_icons.off) config.state_icons.off = 'sci:radiator-off';
+    if (!config.state_icons.heat) config.state_icons.heat = 'sci:radiator-heat';
+
+    if (!config.mode_icons) config.mode_icons = {};
+    if (!config.mode_icons.frost_protection)
+      config.mode_icons.frost_protection = 'mdi:snowflake';
+    if (!config.mode_icons.eco) config.mode_icons.eco = 'mdi:leaf';
+    if (!config.mode_icons.comfort)
+      config.mode_icons.comfort = 'mdi:sun-thermometer-outline';
+
+    if (!config.mode_colors) config.mode_colors = {};
+    if (!config.mode_colors.frost_protection)
+      config.mode_colors.frost_protection = '#acd5f3';
+    if (!config.mode_colors.eco) config.mode_colors.eco = '#4fe38b';
+    if (!config.mode_colors.comfort) config.mode_colors.comfort = '#ffff8f';
+
+    if (!config.state_colors) config.state_colors = {};
+    if (!config.state_colors.auto) config.state_colors.auto = '#69d4fb';
+    if (!config.state_colors.off) config.state_colors.off = '#6c757d';
+    if (!config.state_colors.heat) config.state_colors.heat = '#ff7f50';
+
     return config;
   }
 
@@ -74,11 +96,11 @@ export class SciFiRadiator extends LitElement {
     // Setup first time attribute
     if (!this._active_floor_id)
       this._active_floor_id =
-        this._house.getDefaultFloor(ENTITY_KIND_RADIATOR).id;
+        this._house.getDefaultFloor(ENTITY_KIND_CLIMATE).id;
     if (!this._active_area_id)
       this._active_area_id = this._house.getDefaultArea(
         this._active_floor_id,
-        ENTITY_KIND_RADIATOR
+        ENTITY_KIND_CLIMATE
       ).id;
 
     return html`
@@ -111,7 +133,7 @@ export class SciFiRadiator extends LitElement {
   __displayFloors() {
     return this._house
       .getFloorsOrderedByLevel()
-      .filter((floor) => floor.hasEntityKind(ENTITY_KIND_RADIATOR))
+      .filter((floor) => floor.hasEntityKind(ENTITY_KIND_CLIMATE))
       .map((floor) => {
         const active = floor.getTemperature(this._config.entities_to_exclude)
           ? 'on'
@@ -149,7 +171,7 @@ export class SciFiRadiator extends LitElement {
     // Update selected floor
     this._active_floor_id = floor.id;
     // Select first area to render
-    this._active_area_id = floor.getFirstArea(ENTITY_KIND_RADIATOR).id;
+    this._active_area_id = floor.getFirstArea(ENTITY_KIND_CLIMATE).id;
   }
 
   __displayAreas() {
@@ -157,9 +179,9 @@ export class SciFiRadiator extends LitElement {
       ${this._house
         .getFloor(this._active_floor_id)
         .getAreas()
-        .filter((area) => area.hasEntityKind(ENTITY_KIND_RADIATOR))
+        .filter((area) => area.hasEntityKind(ENTITY_KIND_CLIMATE))
         .map((area, idx) => {
-          const area_state = area.isActive(ENTITY_KIND_RADIATOR) ? 'on' : 'off';
+          const area_state = area.isActive(ENTITY_KIND_CLIMATE) ? 'on' : 'off';
           return html` <div
             class="row"
             style="margin-left: calc(var(--default-hexa-width) / 2 * ${idx %
@@ -188,7 +210,7 @@ export class SciFiRadiator extends LitElement {
       <sci-fi-hexa-tile
         active-tile
         state="${this._active_area_id == area.id ? 'on' : 'off'}"
-        class="${area.isActive(ENTITY_KIND_RADIATOR) ? 'on' : 'off'}"
+        class="${area.isActive(ENTITY_KIND_CLIMATE) ? 'on' : 'off'}"
         @click="${(e) => this.__onAreaSelect(e, area)}"
       >
         <div class="item-icon">${getIcon(area.icon)}</div>
@@ -207,56 +229,47 @@ export class SciFiRadiator extends LitElement {
       this._active_floor_id,
       this._active_area_id
     );
-    const active = area.isActive(ENTITY_KIND_RADIATOR);
+    const active = area.isActive(ENTITY_KIND_CLIMATE);
     return html`
       <div class="card-corner area-content ${active ? 'on' : 'off'}">
         <div class="title">${area.name}</div>
-        ${this.__displayAreaRadiators(area)}
+        ${this.__displayAreaClimates(area)}
       </div>
     `;
   }
 
-  __displayAreaRadiators(area) {
+  __displayAreaClimates(area) {
     return html`
-      <div class="radiators">
+      <div class="climates">
         ${area
-          .getEntitiesByKind(ENTITY_KIND_RADIATOR)
+          .getEntitiesByKind(ENTITY_KIND_CLIMATE)
           .filter(
-            (radiator) =>
-              !this._config.entities_to_exclude.includes(radiator.entity_id)
+            (climate) =>
+              !this._config.entities_to_exclude.includes(climate.entity_id)
           )
-          .map((radiator) => {
-            return this.__displayRadiator(radiator);
+          .map((climate) => {
+            return html`<sci-fi-radiator
+              name="${climate.friendly_name}"
+              mode="${climate.preset_mode}"
+              mode-icon="${this._config.mode_icons[
+                climate.preset_mode.toLowerCase()
+              ]}"
+              target-temperature="${climate.temperature}"
+              current-temperature="${climate.current_temperature}"
+              state-icon="${this._config.state_icons[
+                climate.state.toLowerCase()
+              ]}"
+              unit="${this._config.unit}"
+              style="
+              --radiator-mode-color:${this._config.mode_colors[
+                climate.preset_mode.toLowerCase()
+              ]};
+              --radiator-state-color:${this._config.state_colors[
+                climate.state.toLowerCase()
+              ]};
+              "
+            ></sci-fi-radiator>`;
           })}
-      </div>
-    `;
-  }
-
-  __displayRadiator(radiator) {
-    return html`
-      <div class="radiator ${radiator.active ? 'on' : 'off'}">
-        <div class="description">
-          ${getIcon(radiator.getIcon())}
-          <div class="name">${radiator.friendly_name}</div>
-          ${getIcon(radiator.getModeIcon())}
-        </div>
-        <div class="temp">
-          ${this.__getTemperatureLabel(radiator.current_temperature)}
-        </div>
-        <div class="temp">${radiator.temperature}${this._config.unit}</div>
-      </div>
-    `;
-  }
-
-  __getTemperatureLabel(temperature) {
-    if (!temperature) return;
-    return html`
-      <div class="temperature-label">
-        <div class="radical">${temperature.toFixed(1).split('.')[0]}</div>
-        <div class="decimal">
-          <div>${this._config.unit}</div>
-          <div>.${temperature.toFixed(1).split('.')[1]}</div>
-        </div>
       </div>
     `;
   }
@@ -265,26 +278,44 @@ export class SciFiRadiator extends LitElement {
   static getConfigElement() {
     return document.createElement(PACKAGE + '-editor');
   }
+
   static getStubConfig() {
     return {
       unit: '°C',
       entities_to_exclude: [],
-      icon_auto: 'sci:radiator-auto',
-      icon_off: 'sci:radiator-off',
-      icon_heat: 'sci:radiator-heat',
+      state_icons: {
+        auto: 'sci:radiator-auto',
+        off: 'sci:radiator-off',
+        heat: 'sci:radiator-heat',
+      },
+      state_colors: {
+        auto: '#69d4fb',
+        off: '#6c757d',
+        heat: '#ff7f50',
+      },
+      mode_icons: {
+        frost_protection: 'mdi:snowflake',
+        eco: 'mdi:leaf',
+        comfort: 'mdi:sun-thermometer-outline',
+      },
+      mode_colors: {
+        frost_protection: '#acd5f3',
+        eco: '#4fe38b',
+        comfort: '#ffff8f',
+      },
     };
   }
 }
 
 window.customElements.get(PACKAGE) ||
-  window.customElements.define(PACKAGE, SciFiRadiator);
+  window.customElements.define(PACKAGE, SciFiClimates);
 
 window.customElements.get(PACKAGE + '-editor') ||
-  window.customElements.define(PACKAGE + '-editor', SciFiRadiatorEditor);
+  window.customElements.define(PACKAGE + '-editor', SciFiClimatesEditor);
 
 window.customCards = window.customCards || [];
 window.customCards.push({
   type: PACKAGE,
-  name: 'Sci-fi Radiator card',
-  description: 'Render sci-fi Radiator card.',
+  name: 'Sci-fi Climates card',
+  description: 'Render sci-fi Climates card.',
 });

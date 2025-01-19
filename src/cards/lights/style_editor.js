@@ -25,6 +25,7 @@ export default css`
     flex-direction: column;
     row-gap: 10px;
     flex: 1;
+    min-height: 300px;
   }
   .editor .head {
     display: flex;

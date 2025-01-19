@@ -43,24 +43,21 @@ export default css`
     height: var(--icon-size-title);
   }
   /******** COMMON *********/
-  svg {
-    fill: var(--primary-light-color);
-  }
-  .off {
-    color: var(--secondary-light-color) !important;
-  }
-  .off svg {
-    fill: var(--secondary-light-color) !important;
-  }
   .title .power {
     float: right;
+    color: var(--primary-light-color);
   }
   .title .power svg {
     width: var(--icon-size-xsmall);
     height: var(--icon-size-xsmall);
-  }
-  .title .power svg:hover {
+    fill: var(--primary-light-color);
     cursor: pointer;
+  }
+  .title .power.off {
+    color: var(--secondary-light-color);
+  }
+  .title .power.off svg {
+    fill: var(--secondary-light-color);
   }
   /******** FLOORS *********/
   .floors {
@@ -76,6 +73,10 @@ export default css`
   }
   .floors sci-fi-hexa-tile .item-icon svg {
     width: var(--icon-size-title);
+    fill: var(--primary-light-color);
+  }
+  .floors sci-fi-hexa-tile .item-icon.off svg {
+    fill: var(--secondary-bg-color);
   }
   .floors sci-fi-hexa-tile.selected {
     --hexa-width: var(--selected-hexa-width);
@@ -83,6 +84,10 @@ export default css`
   .floors sci-fi-hexa-tile.selected .item-icon svg {
     width: var(--icon-size-large);
   }
+  .floors sci-fi-hexa-tile.selected .item-icon svg {
+    width: var(--icon-size-large);
+  }
+
   /******** FLOOR CONTENT *********/
   .floor-content {
     display: flex;
@@ -147,6 +152,10 @@ export default css`
   }
   .areas .area-list .row sci-fi-hexa-tile .item-icon svg {
     width: var(--icon-size-title);
+    fill: var(--primary-light-color);
+  }
+  .areas .area-list .row sci-fi-hexa-tile .item-icon.off svg {
+    fill: var(--secondary-bg-color);
   }
   /******** AREA CONTENT *********/
   .areas .area-content {
@@ -199,5 +208,8 @@ export default css`
     width: var(--icon-size-normal);
     height: var(--icon-size-normal);
     fill: var(--light-on-color);
+  }
+  .area-content .lights .light.off svg {
+    fill: var(--secondary-light-alpha-color);
   }
 `;

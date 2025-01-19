@@ -18,11 +18,15 @@ class SciFiHexaTile extends LitElement {
     return [
       common_style,
       css`
+        :host {
+          --border: var(--hexa-border, var(--secondary-light-alpha-color)); 
+          --background: var(--hexa-background, var(--primary-bg-color));           
+        }
         .hexa {
           width: var(--hexa-width);
         }
         .hexa svg .background {
-          fill: var(--primary-bg-color);
+          fill: var(--background);
           stroke-width: 4px;
           stroke: var(--secondary-bg-color);
           stroke-opacity: 0.8;
@@ -30,7 +34,7 @@ class SciFiHexaTile extends LitElement {
         }
         .hexa svg .border {
           fill: var(--primary-bg-color);
-          stroke: var(--secondary-light-alpha-color);
+          stroke: var(--border);
           stroke-width: 5px;
           stroke-linejoin: round;
         }

@@ -123,14 +123,13 @@ export class SciFiLights extends LitElement {
       .getFloorsOrderedByLevel()
       .filter((floor) => floor.hasEntityKind(ENTITY_KIND_LIGHT))
       .map((floor) => {
-        const state = floor.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off';
         return html` <sci-fi-hexa-tile
           active-tile
-          state="${state}"
+          state="${this._active_floor_id == floor.id ? 'on' : 'off'}"
           class="${this._active_floor_id == floor.id ? 'selected' : ''}"
           @click="${(e) => this.__onFloorSelect(e, floor)}"
         >
-          <div class="item-icon ${state}">${getIcon(floor.icon)}</div>
+          <div class="item-icon ${floor.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}">${getIcon(floor.icon)}</div>
         </sci-fi-hexa-tile>`;
       });
   }
@@ -198,11 +197,11 @@ export class SciFiLights extends LitElement {
     return html`
       <sci-fi-hexa-tile
         active-tile
-        state="${this._active_area_id == area.id ? 'on' : 'off'}"
+        state="${area.id == this._active_area_id ? 'on' : 'off'}"
         class="${area.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}"
         @click="${(e) => this.__onAreaSelect(e, area)}"
       >
-        <div class="item-icon">${getIcon(area.icon)}</div>
+        <div class="item-icon ${area.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}">${getIcon(area.icon)}</div>
       </sci-fi-hexa-tile>
     `;
   }

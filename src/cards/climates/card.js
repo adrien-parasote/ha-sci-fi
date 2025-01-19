@@ -248,6 +248,10 @@ export class SciFiClimates extends LitElement {
               !this._config.entities_to_exclude.includes(climate.entity_id)
           )
           .map((climate) => {
+            const mode_color =
+              this._config.mode_colors[climate.preset_mode.toLowerCase()];
+            const climate_color =
+              this._config.state_colors[climate.state.toLowerCase()];
             return html`<sci-fi-radiator
               name="${climate.friendly_name}"
               mode="${climate.preset_mode}"
@@ -260,14 +264,7 @@ export class SciFiClimates extends LitElement {
                 climate.state.toLowerCase()
               ]}"
               unit="${this._config.unit}"
-              style="
-              --radiator-mode-color:${this._config.mode_colors[
-                climate.preset_mode.toLowerCase()
-              ]};
-              --radiator-state-color:${this._config.state_colors[
-                climate.state.toLowerCase()
-              ]};
-              "
+              style="--radiator-mode-color:${mode_color}${';'}--radiator-state-color:${climate_color};"
             ></sci-fi-radiator>`;
           })}
       </div>

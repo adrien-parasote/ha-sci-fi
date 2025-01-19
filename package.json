@@ -1,5 +1,5 @@
 {
-  "version": "0.3.9",
+  "version": "0.3.12",
   "description": "Sci-fi cards for HA dashboard",
   "main": "src/sci-fi.js",
   "type": "module",

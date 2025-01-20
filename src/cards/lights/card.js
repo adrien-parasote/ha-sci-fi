@@ -160,7 +160,7 @@ export class SciFiLights extends LitElement {
       class="info ${floor.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}"
     >
       <div class="title">
-        ${floor.name} (level : ${floor.level}) ${this.__displayPowerBtn(floor)}
+        ${floor.name} ${this.__displayPowerBtn(floor)}
       </div>
       <div class="floor-lights">
         ${this.__displayOnLights(

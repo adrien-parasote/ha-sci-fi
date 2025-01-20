@@ -23,7 +23,7 @@ class SciFiRadiator extends LitElement {
           --border-color: darkgray;
           --background-color: lightgrey;
 
-          --mode-color: var(--radiator-mode-color, #4fe38b);
+          --mode-color: var(--radiator-mode-color, #6c757d);
           --state-color: var(--radiator-state-color, #6c757d);
         }
         .title {

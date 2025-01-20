@@ -46,7 +46,7 @@ export default {
       name: 'Radiator',
       state_on: ['auto', 'heat'],
       state_error: null,
-      link: '?component=radiator',
+      link: '?component=climate',
     },
   ],
 };

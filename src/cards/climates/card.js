@@ -171,9 +171,7 @@ export class SciFiClimates extends LitElement {
     const icon = temperature ? 'mdi:thermometer' : 'mdi:thermometer-off';
     const label = temperature ? temperature + this._config.unit : 'Off';
     return html`
-      <div class="title ${!temperature ? 'off' : 'on'}">
-        ${floor.name} - 
-      </div>
+      <div class="title ${!temperature ? 'off' : 'on'}">${floor.name} -</div>
       <div class="temperature ${!temperature ? 'off' : 'on'}">
         ${getIcon(icon)}
         <div>${temperature}${this._config.unit}</div>

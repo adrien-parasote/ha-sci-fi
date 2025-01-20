@@ -82,16 +82,16 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
     const data =
       kind == 'state'
         ? ['auto', 'off', 'heat']
-        : ['frost_protection', 'eco', 'comfort'];
-    return html` <section>
-      <h1>
-        <span>${getIcon(icon)}</span>${this.__capitalizeFirstLetter(kind)}
-        appearance (optionnal)
-      </h1>
-      ${data.map((d) => {
-        return this.__renderStateModeRow(kind, d);
-      })}
-    </section>`;
+        : ['none', 'frost_protection', 'eco', 'comfort', "comfort-1", "comfort-2", "auto", "boost"];
+    return html` 
+        <sci-fi-accordion-card
+          title="${kind} (optionnal)"
+          icon="${icon}"
+        >
+          ${data.map((d) => {
+            return this.__renderStateModeRow(kind, d);
+          })}
+        </sci-fi-accordion-card>`;
   }
 
   __renderStateModeRow(kind, state) {

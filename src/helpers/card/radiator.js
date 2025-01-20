@@ -9,7 +9,7 @@ class SciFiRadiator extends LitElement {
       common_style,
       css`
         :host {
-          width: 130px;
+          width: 200px;
           height: 130px;
           padding: 10px;
           display: flex;
@@ -177,27 +177,27 @@ class SciFiRadiator extends LitElement {
 
   render() {
     return html`
-      <div class="title">${this.name}</div>
-      <div class="content">
-        <div class="left">
-          <div class="mode">
-            ${getIcon(this.modeIcon)}
-            <div class="target-temp">
-              ${this.targetTemperature}<span class="unit">${this.unit}</span>
-            </div>
+    <div class="title">${this.name}</div>
+    <div class="content">
+      <div class="left">
+        <div class="mode">
+          ${getIcon(this.modeIcon)}
+          <div class="target-temp">
+            ${this.targetTemperature}<span class="unit">${this.unit}</span>
           </div>
-          <div class="v-pipe"></div>
-          <div class="corner"></div>
         </div>
-        <div class="right">
-          <div class="top">${this.__getTemperatureLabel()}</div>
-          <div class="bottom">
-            <div class="h-pipe" style="flex: 2;"></div>
-            <div class="state">${getIcon(this.stateIcon)}</div>
-            <div class="h-pipe"></div>
-          </div>
+        <div class="v-pipe"></div>
+        <div class="corner"></div>
+      </div>
+      <div class="right">
+        <div class="top">${this.__getTemperatureLabel()}</div>
+        <div class="bottom">
+          <div class="h-pipe" style="flex: 2;"></div>
+          <div class="state">${getIcon(this.stateIcon)}</div>
+          <div class="h-pipe"></div>
         </div>
       </div>
+    </div>
     `;
   }
 

@@ -1,15 +1,13 @@
-import {html, css} from 'lit';
+import {css, html} from 'lit';
 
 import {SciFiBaseEditor} from '../../helpers/card/base_editor.js';
-import '../../helpers/form/form.js';
-import { getIcon } from '../../helpers/icons/icons.js';
 import common_style from '../../helpers/common_style.js';
 import editor_common_style from '../../helpers/editor_common_style.js';
+import '../../helpers/form/form.js';
+import {getIcon} from '../../helpers/icons/icons.js';
 import editor_style from './style_editor.js';
 
 export class SciFiClimatesEditor extends SciFiBaseEditor {
-
-  
   static get styles() {
     return [common_style, editor_common_style, editor_style];
   }
@@ -28,10 +26,13 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
     this._hass = hass;
     // initialized entity kind list
     if (hass.states) {
-      if(!this._climates || this._climates.length == 0) this._climates = Object.keys(hass.states).filter((key) => key.startsWith('climate.')).map((key) => {
-        return hass.states[key];
-      });
-    }else{
+      if (!this._climates || this._climates.length == 0)
+        this._climates = Object.keys(hass.states)
+          .filter((key) => key.startsWith('climate.'))
+          .map((key) => {
+            return hass.states[key];
+          });
+    } else {
       this._climates = [];
     }
   }
@@ -41,13 +42,10 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
     return html`
       <div class="card card-corner">
         <div class="container ${!this._edit}">
-          ${this.__renderConfig()}
-          ${this.__renderStatesModeAppearance("state")}
-          ${this.__renderStatesModeAppearance("mode")}
+          ${this.__renderConfig()} ${this.__renderStatesModeAppearance('state')}
+          ${this.__renderStatesModeAppearance('mode')}
         </div>
-        <div class="editor ${this._edit}">
-          ${this.__renderCustomization()}
-        </div>
+        <div class="editor ${this._edit}">${this.__renderCustomization()}</div>
       </div>
     `;
   }
@@ -80,64 +78,84 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
   }
 
   __renderStatesModeAppearance(kind) {
-      const icon = kind == "state" ? 'mdi:state-machine' : 'mdi:auto-mode';
-      const data = kind == "state" ?  ['auto', 'off', 'heat'] : ['frost_protection', 'eco', 'comfort'] ;
-      return html` 
-      <section>
-        <h1>
-          <span>${getIcon(icon)}</span>${this.__capitalizeFirstLetter(kind)} appearance (optionnal)
-        </h1>
-        ${data.map((d) => {
-          return this.__renderStateModeRow(kind, d);
-        })}
-      </section>`;
+    const icon = kind == 'state' ? 'mdi:state-machine' : 'mdi:auto-mode';
+    const data =
+      kind == 'state'
+        ? ['auto', 'off', 'heat']
+        : ['frost_protection', 'eco', 'comfort'];
+    return html` <section>
+      <h1>
+        <span>${getIcon(icon)}</span>${this.__capitalizeFirstLetter(kind)}
+        appearance (optionnal)
+      </h1>
+      ${data.map((d) => {
+        return this.__renderStateModeRow(kind, d);
+      })}
+    </section>`;
   }
 
-  __renderStateModeRow(kind, state){
-    const icon = kind == "state" ? this._config.state_icons[state] : this._config.mode_icons[state];
-    const color = kind == "state" ? this._config.state_colors[state] : this._config.mode_colors[state];
+  __renderStateModeRow(kind, state) {
+    const icon =
+      kind == 'state'
+        ? this._config.state_icons[state]
+        : this._config.mode_icons[state];
+    const color =
+      kind == 'state'
+        ? this._config.state_colors[state]
+        : this._config.mode_colors[state];
     return html`
-    <div class="state-mode-row">
-      <sci-fi-input
-        label="Icon ${state.replace ('_', ' ')} (optionnal)"
-        value=${icon}
-        icon=${icon}
-        disabled
-        style="--input-icon-color:${color};"
-      ></sci-fi-input>
-      <sci-fi-button
-        icon="mdi:pencil-outline"
-        @button-click="${(e) => this.__editStateMode(kind, state)}"
-      ></sci-fi-button>
-    </div>
+      <div class="state-mode-row">
+        <sci-fi-input
+          label="Icon ${state.replace('_', ' ')} (optionnal)"
+          value=${icon}
+          icon=${icon}
+          disabled
+          style="--input-icon-color:${color};"
+        ></sci-fi-input>
+        <sci-fi-button
+          icon="mdi:pencil-outline"
+          @button-click="${(e) => this.__editStateMode(kind, state)}"
+        ></sci-fi-button>
+      </div>
     `;
   }
 
-  __editStateMode(kind, state){
+  __editStateMode(kind, state) {
     this._custom_info = {
       kind: kind,
-      state: state
+      state: state,
     };
     this._edit = !this._edit;
   }
 
-  __renderCustomization(){
+  __renderCustomization() {
     if (!this._custom_info) return html``;
     const state = this._custom_info.state;
-    const icon = this._custom_info.kind == "state" ? this._config.state_icons[state] : this._config.mode_icons[state];
-    const color = this._custom_info.kind == "state" ? this._config.state_colors[state] : this._config.mode_colors[state];
-        
+    const icon =
+      this._custom_info.kind == 'state'
+        ? this._config.state_icons[state]
+        : this._config.mode_icons[state];
+    const color =
+      this._custom_info.kind == 'state'
+        ? this._config.state_colors[state]
+        : this._config.mode_colors[state];
+
     return html`
       <div class="head">
         <sci-fi-button
           icon="mdi:chevron-left"
           @button-click=${this.__endCustomization}
         ></sci-fi-button>
-        <span>Edit ${this.__capitalizeFirstLetter(this._custom_info.kind)} ${state.replace ('_', ' ')}</span>
+        <span
+          >Edit ${this.__capitalizeFirstLetter(this._custom_info.kind)}
+          ${state.replace('_', ' ')}</span
+        >
       </div>
       <sci-fi-dropdown-icon-input
-        label="${this._custom_info.state.replace ('_', ' ')} icon (optionnal)"
-        element-id="${this._custom_info.kind == "state" ? "state_icons": "mode_icons"}"
+        label="${this._custom_info.state.replace('_', ' ')} icon (optionnal)"
+        element-id="${this._custom_info.kind == 'state'
+          ? 'state_icons'
+          : 'mode_icons'}"
         kind="${this._custom_info.state}"
         icon=${icon}
         value=${icon}
@@ -146,8 +164,10 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
       ></sci-fi-dropdown-icon-input>
 
       <sci-fi-color-picker
-        label="${this._custom_info.state.replace ('_', ' ')} color (optionnal)"
-        element-id="${this._custom_info.kind == "state" ? "state_colors": "mode_colors"}"
+        label="${this._custom_info.state.replace('_', ' ')} color (optionnal)"
+        element-id="${this._custom_info.kind == 'state'
+          ? 'state_colors'
+          : 'mode_colors'}"
         kind="${this._custom_info.state}"
         icon="mdi:format-color-fill"
         value=${color}
@@ -171,12 +191,12 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
         break;
       default:
         // Update
-        if(e.detail.kind == 'entities_to_exclude'){
+        if (e.detail.kind == 'entities_to_exclude') {
           newConfig[e.detail.kind].push(e.detail.value);
-        }else{
-          if(e.detail.id == e.detail.kind) {
+        } else {
+          if (e.detail.id == e.detail.kind) {
             newConfig[e.detail.id] = e.detail.value;
-          }else{
+          } else {
             newConfig[e.detail.id][e.detail.kind] = e.detail.value;
           }
         }
@@ -207,8 +227,4 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
     comfort: '#ffff8f',
   },
   */
-
-
-
-
 }

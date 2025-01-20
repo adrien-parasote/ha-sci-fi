@@ -19,8 +19,6 @@ export default css`
     align-self: center;
   }
 
-
-
   .editor {
     display: flex;
     flex-direction: column;

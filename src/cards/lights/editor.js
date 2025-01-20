@@ -10,7 +10,6 @@ import {getIcon} from '../../helpers/icons/icons.js';
 import editor_style from './style_editor.js';
 
 export class SciFiLightsEditor extends SciFiBaseEditor {
-  
   static get styles() {
     return [common_style, editor_common_style, editor_style];
   }

@@ -12,15 +12,16 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
     this._hass = hass;
     // initialized entity kind list
     if (hass.states) {
-      if(!this._entity_kind || this._entity_kind.length == 0) this._entity_kind = Object.keys(hass.states).reduce((cur, key) => {
-        const k = key.split('.')[0];
-        if (cur[k]) {
-          cur[k].push(hass.states[key]);
-        } else {
-          cur[k] = [hass.states[key]];
-        }
-        return cur;
-      }, {});
+      if (!this._entity_kind || this._entity_kind.length == 0)
+        this._entity_kind = Object.keys(hass.states).reduce((cur, key) => {
+          const k = key.split('.')[0];
+          if (cur[k]) {
+            cur[k].push(hass.states[key]);
+          } else {
+            cur[k] = [hass.states[key]];
+          }
+          return cur;
+        }, {});
     } else {
       this._entity_kind = [];
     }

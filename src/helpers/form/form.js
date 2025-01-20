@@ -2,13 +2,13 @@ import {SciFiAccordionCard} from './accordion.js';
 import {SciFiButton, SciFiToggleSwitch} from './button.js';
 import {
   SciFiChipsInput,
+  SciFiColorPicker,
   SciFiDropdownEntityInput,
   SciFiDropdownIconInput,
   SciFiDropdownInput,
   SciFiDropdownMultiEntitiesInput,
   SciFiInput,
   SciFiSlider,
-  SciFiColorPicker,
 } from './input.js';
 
 // Define elements

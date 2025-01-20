@@ -46,11 +46,12 @@ export class SciFiClimates extends LitElement {
     if (!config.mode_icons.eco) config.mode_icons.eco = 'mdi:leaf';
     if (!config.mode_icons.comfort)
       config.mode_icons.comfort = 'mdi:sun-thermometer-outline';
-    if (!config.mode_icons["comfort-1"])
-      config.mode_icons["comfort-1"] = 'mdi:sun-thermometer-outline';
-    if (!config.mode_icons["comfort-2"])
-      config.mode_icons["comfort-2"] = 'mdi:sun-thermometer-outline';
-    if (!config.mode_icons.auto) config.mode_icons.auto = 'mdi:thermostat-box-auto';
+    if (!config.mode_icons['comfort-1'])
+      config.mode_icons['comfort-1'] = 'mdi:sun-thermometer-outline';
+    if (!config.mode_icons['comfort-2'])
+      config.mode_icons['comfort-2'] = 'mdi:sun-thermometer-outline';
+    if (!config.mode_icons.auto)
+      config.mode_icons.auto = 'mdi:thermostat-box-auto';
     if (!config.mode_icons.boost) config.mode_icons.boost = 'mdi:fire';
 
     if (!config.mode_colors) config.mode_colors = {};
@@ -59,8 +60,10 @@ export class SciFiClimates extends LitElement {
       config.mode_colors.frost_protection = '#acd5f3';
     if (!config.mode_colors.eco) config.mode_colors.eco = '#4fe38b';
     if (!config.mode_colors.comfort) config.mode_colors.comfort = '#fdda0d';
-    if (!config.mode_colors["comfort-1"]) config.mode_colors["comfort-1"] = '#ffea00';
-    if (!config.mode_colors["comfort-2"]) config.mode_colors["comfort-2"] = '#ffff8f';
+    if (!config.mode_colors['comfort-1'])
+      config.mode_colors['comfort-1'] = '#ffea00';
+    if (!config.mode_colors['comfort-2'])
+      config.mode_colors['comfort-2'] = '#ffff8f';
     if (!config.mode_colors.auto) config.mode_colors.auto = '#69d4fb';
     if (!config.mode_colors.boost) config.mode_colors.boost = '#ff7f50';
 
@@ -313,25 +316,25 @@ export class SciFiClimates extends LitElement {
         heat: '#ff7f50',
       },
       mode_icons: {
-        none: 'mdi:circle-off-outline', 
+        none: 'mdi:circle-off-outline',
         frost_protection: 'mdi:snowflake',
         eco: 'mdi:leaf',
         comfort: 'mdi:sun-thermometer-outline',
-        "comfort-1": 'mdi:sun-thermometer-outline', 
-        "comfort-2": 'mdi:sun-thermometer-outline',
+        'comfort-1': 'mdi:sun-thermometer-outline',
+        'comfort-2': 'mdi:sun-thermometer-outline',
         auto: 'mdi:thermostat-box-auto',
         boost: 'mdi:fire',
       },
       mode_colors: {
-        none: '#6c757d', 
+        none: '#6c757d',
         frost_protection: '#acd5f3',
         eco: '#4fe38b',
         comfort: '#fdda0d',
-        "comfort-1": '#ffea00', 
-        "comfort-2": '#ffff8f',
+        'comfort-1': '#ffea00',
+        'comfort-2': '#ffff8f',
         auto: '#69d4fb',
         boost: '#ff7f50',
-      }
+      },
     };
   }
 }

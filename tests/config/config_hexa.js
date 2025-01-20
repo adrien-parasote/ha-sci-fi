@@ -43,7 +43,7 @@ export default {
       entities_to_exclude: ['climate.clou'],
       active_icon: 'sci:radiator-heat',
       inactive_icon: 'sci:radiator-waiting',
-      name: 'Radiator',
+      name: 'Radiators',
       state_on: ['auto', 'heat'],
       state_error: null,
       link: '?component=climate',

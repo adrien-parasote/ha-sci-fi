@@ -8,6 +8,7 @@ import {
   SciFiDropdownMultiEntitiesInput,
   SciFiInput,
   SciFiSlider,
+  SciFiColorPicker,
 } from './input.js';
 
 // Define elements
@@ -22,6 +23,7 @@ const elements = {
   'sci-fi-dropdown-multi-entities-input': SciFiDropdownMultiEntitiesInput,
   'sci-fi-dropdown-icon-input': SciFiDropdownIconInput,
   'sci-fi-slider': SciFiSlider,
+  'sci-fi-color-picker': SciFiColorPicker,
 };
 Object.entries(elements).forEach(([key, value]) => {
   window.customElements.get(key) || window.customElements.define(key, value);

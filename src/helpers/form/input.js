@@ -9,6 +9,7 @@ export class SciFiInput extends LitElement {
       common_style,
       css`
         :host {
+          --icon-color: var(--input-icon-color, white);
           color: var(--secondary-light-color);
         }
         input::placeholder {
@@ -31,7 +32,7 @@ export class SciFiInput extends LitElement {
         .icon .svg-container {
           width: var(--icon-size-normal);
           height: var(--icon-size-normal);
-          fill: white;
+          fill: var(--icon-color);
           margin-right: 10px;
         }
         .input-group {
@@ -123,7 +124,7 @@ export class SciFiInput extends LitElement {
             @focusout=${this.__focusOut}
           />
           <label for="name">${this.label}</label>
-          ${this.value
+          ${this.value && !this.disabled
             ? html`<span class="remove" @click="${this.__cleanInput}"
                 >${getIcon('mdi:close')}</span
               >`
@@ -717,6 +718,45 @@ export class SciFiSlider extends SciFiInput {
           <label for="name">${this.label}</label>
         </div>
         <div class="value">${this.value}</div>
+      </div>
+    `;
+  }
+
+  _changeValue(e) {
+    this.__dispatchEvent(e, e.target.value);
+  }
+}
+
+export class SciFiColorPicker extends SciFiInput {
+  static get styles() {
+    return super.styles.concat([
+      css`
+      .container {
+          border-radius: 5px;
+      }
+      .container:focus-within {
+        border: none;
+      }
+      .input-group label {
+          transform: translateY(-106%) scale(0.75);
+          color: var(--primary-light-color);
+        }
+      `,
+    ]);
+  }
+
+  render() {
+    return html`
+      <div class="container">
+        <div class="icon">${this.icon ? getIcon(this.icon) : ''}</div>
+        <div class="input-group">
+        <label for="name">${this.label}</label>
+          <input
+            type="color"
+            value="${this.value}"
+            @input=${this._changeValue}
+          />
+        </div>
       </div>
     `;
   }

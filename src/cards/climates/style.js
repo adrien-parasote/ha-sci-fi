@@ -68,35 +68,27 @@ export default css`
   /*********** FLOOR CONTENT *************/
   .floor-content {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     border-bottom: var(--border-width) solid var(--primary-bg-color);
     border-top: var(--border-width) solid var(--primary-bg-color);
-    padding: 10px 0 5px 0;
+    padding: 10px;
+    justify-content: center;
     background-color: var(--primary-bg-alpha-color);
     color: var(--primary-light-color);
     margin-bottom: 20px;
   }
   .floor-content .title {
     font-size: var(--font-size-normal);
-    border-bottom: var(--border-width) solid var(--primary-light-color);
-    padding-bottom: 5px;
-    margin-bottom: 5px;
     font-weight: bold;
-    text-align: center;
-    margin: auto;
-    min-width: 250px;
+    align-content: center;
   }
   .floor-content .title.off {
-    border-bottom-color: var(--secondary-light-alpha-color);
     color: var(--secondary-light-color);
   }
   .floor-content .temperature {
     display: flex;
     flex-direction: row;
-    row-gap: 5px;
     align-items: center;
-    justify-content: center;
-    margin-top: 5px;
     text-shadow: 0px 0px 5px var(--primary-light-color);
   }
   .floor-content .temperature svg {

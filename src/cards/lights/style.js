@@ -28,13 +28,19 @@ export default css`
     column-gap: 5px;
     align-items: center;
   }
-  .header .info svg {
+  .header .info .power {
+    cursor: pointer;
+  }
+  .header .info .power svg {
     fill: var(--primary-light-color);
     width: var(--icon-size-normal);
     height: var(--icon-size-normal);
   }
+  .header .info .power.off svg {
+    fill: var(--secondary-light-color);
+  }
   .header .info .text {
-    font-size: var(--font-size-small);
+    font-size: var(--font-size-normal);
     color: var(--primary-light-color);
     text-shadow: 0px 0px 5px var(--primary-light-color);
   }

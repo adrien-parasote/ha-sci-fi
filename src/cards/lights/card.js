@@ -109,13 +109,26 @@ export class SciFiLights extends LitElement {
   __displayHeader() {
     return html`
       <div class="info">
-        ${getIcon('mdi:lightbulb-on-outline')}
+        <div
+          class="power ${this._house.isActive(ENTITY_KIND_LIGHT)
+            ? 'on'
+            : 'off'}"
+          @click="${this.__turnOnOffHouse}"
+        >
+          ${getIcon('mdi:power-standby')}
+        </div>
         <div class="text">${this._config.header}</div>
       </div>
       <div class="weather">
         ${this._sun ? getWeatherIcon(this._sun.dayPhaseIcon()) : ''}
       </div>
     `;
+  }
+
+  __turnOnOffHouse(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this._house.turnOnOffLight(this._hass);
   }
 
   __displayHouseFloors() {

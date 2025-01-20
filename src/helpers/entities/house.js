@@ -103,6 +103,14 @@ export class House {
     return this.getFloor(floor_id).getFirstArea(entity_kind);
   }
 
+  isActive(entity_kind) {
+    return Object.values(this._floors)
+      .map((floor) => {
+        return floor.isActive(entity_kind);
+      })
+      .reduce((acc, value) => acc || value, false);
+  }
+
   isfloorActive(floor_id, entity_kind) {
     if (!this._floors[floor_id]) return false;
     return this._floors[floor_id].isActive(entity_kind);
@@ -136,6 +144,15 @@ export class House {
       : null;
   }
 
+  getEntitiesByKind(entity_kind, entities_to_exclude = []) {
+    let temp = [];
+    return Object.values(this._floors)
+      .map((floor) => {
+        return floor.getEntitiesByKind(entity_kind, entities_to_exclude);
+      })
+      .flat();
+  }
+
   getFloorAreaEntitiesByKind(floor_id, area_id, entity_kind) {
     return this.getFloor(floor_id)
       .getArea(area_id)
@@ -149,6 +166,20 @@ export class House {
       );
     return this.floors.sort((a, b) =>
       a.level < b.leve ? 1 : b.level < a.level ? -1 : 0
+    );
+  }
+
+  turnOnOffLight(hass) {
+    const active = this.isActive(ENTITY_KIND_LIGHT);
+    const entity_ids = this.getEntitiesByKind(ENTITY_KIND_LIGHT)
+      .filter((light) => light.active == active)
+      .reduce((acc, value) => acc.concat([value.entity_id]), []);
+    hass.callService(
+      SERVICES[ENTITY_KIND_LIGHT].service,
+      SERVICES[ENTITY_KIND_LIGHT].actions[!active],
+      {
+        entity_id: entity_ids,
+      }
     );
   }
 }
@@ -186,10 +217,10 @@ class Floor {
     return Object.keys(this.areas).length;
   }
 
-  getEntitiesByKind(entity_kind) {
+  getEntitiesByKind(entity_kind, entities_to_exclude = []) {
     return Object.values(this.areas)
       .map((area) => {
-        return area.getEntitiesByKind(entity_kind);
+        return area.getEntitiesByKind(entity_kind, entities_to_exclude);
       })
       .flat();
   }
@@ -248,13 +279,18 @@ class Floor {
 
   callService(hass, entity_kind) {
     // TODO : change - only used for light
-    const active = this.isActive(entity_kind);
-    const entity_ids = this.getEntitiesByKind(entity_kind)
+    if (entity_kind == ENTITY_KIND_LIGHT) {
+      this.__turnOnOffLight(hass);
+    }
+  }
+  __turnOnOffLight(hass) {
+    const active = this.isActive(ENTITY_KIND_LIGHT);
+    const entity_ids = this.getEntitiesByKind(ENTITY_KIND_LIGHT)
       .filter((entity) => (active ? entity.active : !entity.active))
       .reduce((acc, value) => acc.concat([value.entity_id]), []);
     hass.callService(
-      SERVICES[entity_kind].service,
-      SERVICES[entity_kind].actions[!active],
+      SERVICES[ENTITY_KIND_LIGHT].service,
+      SERVICES[ENTITY_KIND_LIGHT].actions[!active],
       {
         entity_id: entity_ids,
       }
@@ -271,9 +307,11 @@ class Area {
     this.entities = {};
   }
 
-  getEntitiesByKind(entity_kind) {
+  getEntitiesByKind(entity_kind, entities_to_exclude = []) {
     if (!this.entities[entity_kind]) return [];
-    return this.entities[entity_kind];
+    return this.entities[entity_kind].filter(
+      (entity) => !entities_to_exclude.includes(entity.entity_id)
+    );
   }
 
   hasEntityKind(entity_kind) {
@@ -330,13 +368,20 @@ class Area {
   }
 
   callService(hass, entity_kind) {
-    const active = this.isActive(entity_kind);
-    const entity_ids = this.getEntitiesByKind(entity_kind)
+    // TODO : change - only used for light
+    if (entity_kind == ENTITY_KIND_LIGHT) {
+      this.__turnOnOffLight(hass);
+    }
+  }
+
+  __turnOnOffLight(hass) {
+    const active = this.isActive(ENTITY_KIND_LIGHT);
+    const entity_ids = this.getEntitiesByKind(ENTITY_KIND_LIGHT)
       .filter((entity) => (active ? entity.active : !entity.active))
       .reduce((acc, value) => acc.concat([value.entity_id]), []);
     hass.callService(
-      SERVICES[entity_kind].service,
-      SERVICES[entity_kind].actions[!active],
+      SERVICES[ENTITY_KIND_LIGHT].service,
+      SERVICES[ENTITY_KIND_LIGHT].actions[!active],
       {
         entity_id: entity_ids,
       }

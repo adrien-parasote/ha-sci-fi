@@ -45,6 +45,10 @@ export default css`
     color: var(--primary-color);
     display: flex;
   }
+  .svg-container {
+    display: flex;
+    justify-content: center;
+  }
   /********* CARD ************/
   .card-corner {
     border-width: var(--border-width);

@@ -274,21 +274,12 @@ export class SciFiClimates extends LitElement {
             ]
               ? this._config.state_colors[climate.state.toLowerCase()]
               : '#6c757d';
-            const mode_icon = this._config.mode_icons[
-              climate.preset_mode.toLowerCase()
-            ]
-              ? this._config.mode_icons[climate.preset_mode.toLowerCase()]
-              : 'mdi:circle-off-outline';
             return html`<sci-fi-radiator
-              name="${climate.friendly_name}"
-              mode="${climate.preset_mode}"
-              mode-icon="${mode_icon}"
-              target-temperature="${climate.temperature}"
-              current-temperature="${climate.current_temperature}"
-              state-icon="${this._config.state_icons[
-                climate.state.toLowerCase()
-              ]}"
+              climate="${JSON.stringify(climate.renderAsEntity())}"
               unit="${this._config.unit}"
+              state-icons="${JSON.stringify(this._config.state_icons)}"
+              mode-icons="${JSON.stringify(this._config.mode_icons)}"
+              mode-colors="${JSON.stringify(this._config.mode_colors)}"
               style="--radiator-mode-color:${mode_color}${';'}--radiator-state-color:${climate_color};"
             ></sci-fi-radiator>`;
           })}

@@ -150,40 +150,35 @@ class SciFiRadiator extends LitElement {
 
   static get properties() {
     return {
-      name: {type: String},
-      mode: {type: String},
-      modeIcon: {type: String, attribute: 'mode-icon'},
-      targetTemperature: {type: Number, attribute: 'target-temperature'},
-      currentTemperature: {type: Number, attribute: 'current-temperature'},
-      stateIcon: {type: String, attribute: 'state-icon'},
+      climate: {type: Object},
       unit: {type: String},
+      stateIcons: {type: Object, attribute: 'state-icons'},
+      modeIcons: {type: Object, attribute: 'mode-icons'},
+      modeColors: {type: Object, attribute: 'mode-colors'},
+      _openModes: {type: Boolean},
     };
   }
 
   constructor() {
     super();
-    this.name = this.name ? this.name : null;
-    this.mode = this.mode ? this.mode : null;
-    this.modeIcon = this.modeIcon ? this.modeIcon : null;
-    this.targetTemperature = this.targetTemperature
-      ? this.targetTemperature
-      : 0;
-    this.currentTemperature = this.currentTemperature
-      ? this.currentTemperature
-      : 0;
-    this.stateIcon = this.stateIcon ? this.stateIcon : null;
+    this.climate = this.climate ? this.climate : {};
     this.unit = this.unit ? this.unit : '°C';
+    this.stateIcons = this.stateIcons ? this.stateIcons : {};
+    this.modeIcons = this.modeIcons ? this.modeIcons : {};
+    this.modeColors = this.modeColors ? this.modeColors : {};
+    this._openModes = false;
   }
 
   render() {
+    if(!this.climate)return html``;
     return html`
-      <div class="title">${this.name}</div>
+      <div class="title">${this.climate.attributes.friendly_name}</div>
       <div class="content">
         <div class="left">
           <div class="mode">
-            ${getIcon(this.modeIcon)}
+          ${getIcon(this.modeIcons[this.climate.attributes.preset_mode])}
             <div class="target-temp">
-              ${this.targetTemperature}<span class="unit">${this.unit}</span>
+              ${this.climate.attributes.temperature}<span class="unit">${this.unit}</span>
             </div>
           </div>
           <div class="v-pipe"></div>
@@ -193,7 +188,7 @@ class SciFiRadiator extends LitElement {
           <div class="top">${this.__getTemperatureLabel()}</div>
           <div class="bottom">
             <div class="h-pipe" style="flex: 2;"></div>
-            <div class="state">${getIcon(this.stateIcon)}</div>
+            <div class="state">${getIcon(this.stateIcons[this.climate.state])}</div>
             <div class="h-pipe"></div>
           </div>
         </div>
@@ -205,11 +200,11 @@ class SciFiRadiator extends LitElement {
     return html`
       <div class="temperature-label">
         <div class="radical">
-          ${this.currentTemperature.toFixed(1).split('.')[0]}
+          ${this.climate.attributes.current_temperature.toFixed(1).split('.')[0]}
         </div>
         <div class="decimal">
           <div>${this.unit}</div>
-          <div>.${this.currentTemperature.toFixed(1).split('.')[1]}</div>
+          <div>.${this.climate.attributes.current_temperature.toFixed(1).split('.')[1]}</div>
         </div>
       </div>
     `;

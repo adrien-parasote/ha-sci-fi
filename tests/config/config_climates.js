@@ -1,6 +1,6 @@
 export default {
   unit: '°C',
-  entities_to_exclude: [],
+  entities_to_exclude: ['climate.clou'],
   state_icons: {
     auto: 'sci:radiator-auto',
     off: 'sci:radiator-off',

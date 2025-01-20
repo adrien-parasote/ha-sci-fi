@@ -7,7 +7,6 @@ export default css`
   .editor.false {
     display: none;
   }
-
   .entity-row {
     display: flex;
     flex-direction: row;
@@ -19,7 +18,6 @@ export default css`
   .entity-row sci-fi-button {
     align-self: center;
   }
-
   .editor {
     display: flex;
     flex-direction: column;

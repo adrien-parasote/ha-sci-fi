@@ -53,6 +53,9 @@ export class SciFiClimates extends LitElement {
     if (!config.mode_icons.auto)
       config.mode_icons.auto = 'mdi:thermostat-box-auto';
     if (!config.mode_icons.boost) config.mode_icons.boost = 'mdi:fire';
+    if (!config.mode_icons.external)
+      config.mode_icons.external = 'mdi:open-in-new';
+    if (!config.mode_icons.prog) config.mode_icons.prog = 'mdi:cogs';
 
     if (!config.mode_colors) config.mode_colors = {};
     if (!config.mode_colors.none) config.mode_colors.none = '#6c757d';
@@ -66,6 +69,8 @@ export class SciFiClimates extends LitElement {
       config.mode_colors['comfort-2'] = '#ffff8f';
     if (!config.mode_colors.auto) config.mode_colors.auto = '#69d4fb';
     if (!config.mode_colors.boost) config.mode_colors.boost = '#ff7f50';
+    if (!config.mode_colors.external) config.mode_colors.external = '#6c757d';
+    if (!config.mode_colors.prog) config.mode_colors.prog = '#6c757d';
 
     if (!config.state_colors) config.state_colors = {};
     if (!config.state_colors.auto) config.state_colors.auto = '#69d4fb';
@@ -118,7 +123,6 @@ export class SciFiClimates extends LitElement {
         this._active_floor_id,
         ENTITY_KIND_CLIMATE
       ).id;
-
     return html`
       <div class="container">
         <div class="header">${this.__displayHeader()}</div>
@@ -194,27 +198,8 @@ export class SciFiClimates extends LitElement {
         .getFloor(this._active_floor_id)
         .getAreas()
         .filter((area) => area.hasEntityKind(ENTITY_KIND_CLIMATE))
-        .map((area, idx) => {
-          const area_state = area.isActive(ENTITY_KIND_CLIMATE) ? 'on' : 'off';
-          return html` <div
-            class="row"
-            style="margin-left: calc(var(--default-hexa-width) / 2 * ${idx %
-            2});"
-          >
-            ${this.__displayArea(area)}
-            <div
-              class="h-separator ${this._active_area_id == area.id
-                ? 'show'
-                : 'hide'}"
-            >
-              <div class="circle ${area_state}"></div>
-              <div
-                class="h-path ${area_state} ${idx % 2 ? '' : 'full'}"
-                style="width: ${idx % 2 ? '15px' : '45px'};"
-              ></div>
-              <div class="circle ${area_state}"></div>
-            </div>
-          </div>`;
+        .map((area) => {
+          return html` <div class="col">${this.__displayArea(area)}</div>`;
         })}
     </div>`;
   }
@@ -224,7 +209,10 @@ export class SciFiClimates extends LitElement {
       <sci-fi-hexa-tile
         active-tile
         state="${this._active_area_id == area.id ? 'on' : 'off'}"
-        class="${area.isActive(ENTITY_KIND_CLIMATE) ? 'on' : 'off'}"
+        class="${area.isActive(ENTITY_KIND_CLIMATE) ? 'on' : 'off'} ${this
+          ._active_area_id == area.id
+          ? 'selected'
+          : ''}"
         @click="${(e) => this.__onAreaSelect(e, area)}"
       >
         <div class="item-icon">${getIcon(area.icon)}</div>
@@ -245,44 +233,42 @@ export class SciFiClimates extends LitElement {
     );
     const active = area.isActive(ENTITY_KIND_CLIMATE);
     return html`
-      <div class="card-corner area-content ${active ? 'on' : 'off'}">
-        <div class="title">${area.name}</div>
-        ${this.__displayAreaClimates(area)}
+      <div class="area-content ${active ? 'on' : 'off'}">
+        <div class="climates">
+          <div class="title">${area.name}</div>
+          <div class="content">${this.__displayAreaClimates(area)}</div>
+        </div>
       </div>
     `;
   }
 
   __displayAreaClimates(area) {
-    return html`
-      <div class="climates">
-        ${area
-          .getEntitiesByKind(ENTITY_KIND_CLIMATE)
-          .filter(
-            (climate) =>
-              !this._config.entities_to_exclude.includes(climate.entity_id)
-          )
-          .map((climate) => {
-            const mode_color = this._config.mode_colors[
-              climate.preset_mode.toLowerCase()
-            ]
-              ? this._config.mode_colors[climate.preset_mode.toLowerCase()]
-              : '#6c757d';
-            const climate_color = this._config.state_colors[
-              climate.state.toLowerCase()
-            ]
-              ? this._config.state_colors[climate.state.toLowerCase()]
-              : '#6c757d';
-            return html`<sci-fi-radiator
-              climate="${JSON.stringify(climate.renderAsEntity())}"
-              unit="${this._config.unit}"
-              state-icons="${JSON.stringify(this._config.state_icons)}"
-              mode-icons="${JSON.stringify(this._config.mode_icons)}"
-              mode-colors="${JSON.stringify(this._config.mode_colors)}"
-              style="--radiator-mode-color:${mode_color}${';'}--radiator-state-color:${climate_color};"
-            ></sci-fi-radiator>`;
-          })}
-      </div>
-    `;
+    const styles = {
+      state: {
+        icons: this._config.state_icons,
+        colors: this._config.state_colors,
+      },
+      mode: {
+        icons: this._config.mode_icons,
+        colors: this._config.mode_colors,
+      },
+    };
+    this._config;
+    return area
+      .getEntitiesByKind(ENTITY_KIND_CLIMATE)
+      .filter(
+        (climate) =>
+          !this._config.entities_to_exclude.includes(climate.entity_id)
+      )
+      .map((climate) => {
+        return html` <div class="climate">
+          <sci-fi-radiator
+            climate-entity="${JSON.stringify(climate.renderAsEntity())}"
+            unit="${this._config.unit}"
+            styles="${JSON.stringify(styles)}"
+          ></sci-fi-radiator>
+        </div>`;
+      });
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/
@@ -305,23 +291,19 @@ export class SciFiClimates extends LitElement {
         heat: '#ff7f50',
       },
       mode_icons: {
-        none: 'mdi:circle-off-outline',
         frost_protection: 'mdi:snowflake',
         eco: 'mdi:leaf',
         comfort: 'mdi:sun-thermometer-outline',
         'comfort-1': 'mdi:sun-thermometer-outline',
         'comfort-2': 'mdi:sun-thermometer-outline',
-        auto: 'mdi:thermostat-box-auto',
         boost: 'mdi:fire',
       },
       mode_colors: {
-        none: '#6c757d',
         frost_protection: '#acd5f3',
         eco: '#4fe38b',
         comfort: '#fdda0d',
         'comfort-1': '#ffea00',
         'comfort-2': '#ffff8f',
-        auto: '#69d4fb',
         boost: '#ff7f50',
       },
     };

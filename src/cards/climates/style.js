@@ -75,7 +75,6 @@ export default css`
     justify-content: center;
     background-color: var(--primary-bg-alpha-color);
     color: var(--primary-light-color);
-    margin-bottom: 20px;
   }
   .floor-content .title {
     font-size: var(--font-size-normal);
@@ -106,22 +105,32 @@ export default css`
   /******** AREA LIST *********/
   .areas {
     display: flex;
-    flex-direction: row;
-    padding: 0 10px;
+    flex-direction: column;
+    flex: 1;
   }
-  .areas .area-list .row {
+  .areas .area-list {
     display: flex;
     flex-direction: row;
-    margin-bottom: calc(var(--default-hexa-width) * -0.38);
+    justify-content: center;
+    column-gap: 5px;
+    align-items: center;
+    margin: 10px 0;
   }
-  .areas .area-list .row sci-fi-hexa-tile {
+  .areas .area-list .col {
+    display: flex;
+    flex-direction: column;
+  }
+  .areas .area-list .col sci-fi-hexa-tile {
     --hexa-width: var(--default-hexa-width);
   }
-  .areas .area-list .row sci-fi-hexa-tile .item-icon svg {
+  .areas .area-list .col sci-fi-hexa-tile.selected {
+    --hexa-width: var(--medium-hexa-width);
+  }
+  .areas .area-list .col sci-fi-hexa-tile .item-icon svg {
     width: var(--icon-size-title);
     fill: var(--primary-light-color);
   }
-  .areas .area-list .row sci-fi-hexa-tile .item-icon.off svg {
+  .areas .area-list .col sci-fi-hexa-tile .item-icon.off svg {
     fill: var(--secondary-bg-color);
   }
   /******** AREA CONTENT *********/
@@ -130,27 +139,40 @@ export default css`
     flex: 1;
     align-items: start;
     flex-direction: column;
-    color: var(--primary-light-color);
-    height: 100%;
   }
-  .area-content .title {
+  .area-content .climates .title {
     font-size: var(--font-size-normal);
-    border-bottom: var(--border-width) solid var(--primary-light-color);
-    padding-bottom: 5px;
+    color: var(--primary-light-color);
     margin-bottom: 15px;
     font-weight: bold;
     text-align: center;
     width: 100%;
   }
-  .area-content.off .title {
+  .area-content.off .climates .title {
     border-bottom-color: var(--secondary-light-alpha-color);
     color: var(--secondary-light-color);
   }
   .area-content .climates {
-    align-self: center;
+    display: grid;
+    border-bottom: var(--border-width) solid var(--primary-bg-color);
+    border-top: var(--border-width) solid var(--primary-bg-color);
+    padding: 10px;
+    background-color: var(--primary-bg-alpha-color);
+    font-weight: bold;
+  }
+  .area-content .climates .content {
     display: flex;
-    flex-direction: column;
-    row-gap: 5px;
-    justify-content: center;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 10px;
+    -webkit-overflow-scrolling: touch;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  .area-content .climates .content .climate {
+    min-width: 368px;
+    max-width: 368px;
+    height: 300px;
   }
 `;

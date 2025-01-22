@@ -350,11 +350,29 @@ class SciFiRadiator extends LitElement {
               ? 'selected'
               : ''}"
             style="--mode-color:${this.styles.mode.colors[preset_mode]}"
+            @click="${(e) => this.__selectMode(e, preset_mode)}"
           >
             ${getIcon(this.styles.mode.icons[preset_mode])}
           </div>
         `;
       });
+  }
+
+  __selectMode(e, preset_mode) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (preset_mode != this.climateEntity.attributes.preset_mode) {
+      this.dispatchEvent(
+        new CustomEvent('change-mode', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            id: this.climateEntity.entity_id,
+            mode: preset_mode,
+          },
+        })
+      );
+    }
   }
 }
 

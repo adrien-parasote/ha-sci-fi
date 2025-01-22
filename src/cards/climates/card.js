@@ -266,9 +266,19 @@ export class SciFiClimates extends LitElement {
             climate-entity="${JSON.stringify(climate.renderAsEntity())}"
             unit="${this._config.unit}"
             styles="${JSON.stringify(styles)}"
+            @change-mode="${this._changeMode}"
           ></sci-fi-radiator>
         </div>`;
       });
+  }
+
+  _changeMode(e) {
+    const climate = this._house
+      .getEntitiesByKind(ENTITY_KIND_CLIMATE)
+      .filter((climate) => climate.entity_id == e.detail.id)[0];
+
+    console.log(climate);
+    console.log(e.detail.mode);
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

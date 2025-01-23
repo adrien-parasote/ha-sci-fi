@@ -13,6 +13,10 @@ export const HASS_LIGHT_SERVICE = 'light';
 export const HASS_LIGHT_SERVICE_ACTION_TURN_ON = 'turn_on';
 export const HASS_LIGHT_SERVICE_ACTION_TURN_OFF = 'turn_off';
 
+export const HASS_CLIMATE_SERVICE = 'climate';
+export const HASS_CLIMATE_SERVICE_SET_PRESET_MODE = 'set_preset_mode';
+export const HASS_CLIMATE_SERVICE_SET_HVAC_MODE = 'set_hvac_mode';
+
 export const WEATHER_STATE_FR = {
   clear: 'Ciel dégagé',
   'clear-night': 'Nuit claire',

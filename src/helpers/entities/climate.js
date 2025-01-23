@@ -1,5 +1,8 @@
 import {
   ENTITY_KIND_CLIMATE,
+  HASS_CLIMATE_SERVICE,
+  HASS_CLIMATE_SERVICE_SET_HVAC_MODE,
+  HASS_CLIMATE_SERVICE_SET_PRESET_MODE,
   STATE_CLIMATE_AUTO,
   STATE_CLIMATE_HEAT,
 } from './const';
@@ -65,8 +68,31 @@ export class ClimateEntity {
         temperature: this.temperature,
         friendly_name: this.friendly_name,
         icon: this.icon,
+        hvac_modes: this.hvac_modes,
       },
       state: this.state,
     };
+  }
+
+  setPresetMode(hass, preset_mode) {
+    return hass.callService(
+      HASS_CLIMATE_SERVICE,
+      HASS_CLIMATE_SERVICE_SET_PRESET_MODE,
+      {
+        entity_id: [this.entity_id],
+        preset_mode: preset_mode,
+      }
+    );
+  }
+
+  setHvacMode(hass, hvac_mode) {
+    return hass.callService(
+      HASS_CLIMATE_SERVICE,
+      HASS_CLIMATE_SERVICE_SET_HVAC_MODE,
+      {
+        entity_id: [this.entity_id],
+        hvac_mode: hvac_mode,
+      }
+    );
   }
 }

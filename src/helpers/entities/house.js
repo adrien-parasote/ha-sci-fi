@@ -175,7 +175,7 @@ export class House {
       .filter((floor) => floor.hasEntityKind(ENTITY_KIND_LIGHT))
       .reduce((acc, value) => acc.concat([value.id]), []);
 
-    hass.callService(
+    return hass.callService(
       SERVICES[ENTITY_KIND_LIGHT].service,
       SERVICES[ENTITY_KIND_LIGHT].actions[!active],
       {
@@ -281,13 +281,13 @@ class Floor {
   callService(hass, entity_kind) {
     // TODO : change - only used for light
     if (entity_kind == ENTITY_KIND_LIGHT) {
-      this.__turnOnOffLight(hass);
+      return this.__turnOnOffLight(hass);
     }
   }
 
   __turnOnOffLight(hass) {
     const active = this.isActive(ENTITY_KIND_LIGHT);
-    hass.callService(
+    return hass.callService(
       SERVICES[ENTITY_KIND_LIGHT].service,
       SERVICES[ENTITY_KIND_LIGHT].actions[!active],
       {
@@ -369,15 +369,13 @@ class Area {
   callService(hass, entity_kind) {
     // TODO : change - only used for light
     if (entity_kind == ENTITY_KIND_LIGHT) {
-      this.__turnOnOffLight(hass);
+      return this.__turnOnOffLight(hass);
     }
   }
 
-
-
   __turnOnOffLight(hass) {
     const active = this.isActive(ENTITY_KIND_LIGHT);
-    hass.callService(
+    return hass.callService(
       SERVICES[ENTITY_KIND_LIGHT].service,
       SERVICES[ENTITY_KIND_LIGHT].actions[!active],
       {

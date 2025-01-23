@@ -273,19 +273,25 @@ export class SciFiClimates extends LitElement {
           climate-entity="${JSON.stringify(climate.renderAsEntity())}"
           unit="${this._config.unit}"
           styles="${JSON.stringify(styles)}"
-          @change-mode="${this._changeMode}"
+          @change-preset-mode="${this._changePresetMode}"
+          @change-hvac-mode="${this._changeHvacMode}"
         ></sci-fi-radiator>
       </div>`;
     });
   }
 
-  _changeMode(e) {
+  _changeHvacMode(e) {
     const climate = this._house
       .getEntitiesByKind(ENTITY_KIND_CLIMATE)
       .filter((climate) => climate.entity_id == e.detail.id)[0];
+    climate.setHvacMode(this._hass, e.detail.mode); // TODO TOAST
+  }
 
-    console.log(climate);
-    console.log(e.detail.mode);
+  _changePresetMode(e) {
+    const climate = this._house
+      .getEntitiesByKind(ENTITY_KIND_CLIMATE)
+      .filter((climate) => climate.entity_id == e.detail.id)[0];
+    climate.setPresetMode(this._hass, e.detail.mode); // TODO TOAST
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

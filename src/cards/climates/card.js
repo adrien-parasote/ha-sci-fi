@@ -232,17 +232,30 @@ export class SciFiClimates extends LitElement {
       this._active_area_id
     );
     const active = area.isActive(ENTITY_KIND_CLIMATE);
+    const climates = area
+    .getEntitiesByKind(ENTITY_KIND_CLIMATE)
+    .filter(
+      (climate) =>
+        !this._config.entities_to_exclude.includes(climate.entity_id)
+    )
     return html`
       <div class="area-content ${active ? 'on' : 'off'}">
         <div class="climates">
           <div class="title">${area.name}</div>
-          <div class="content">${this.__displayAreaClimates(area)}</div>
+          <div class="slider">
+            <div class="number">${this.__displaySliderBubbles(climates)}</div>
+            <div class="slides">${this.__displayAreaClimates(climates)}</div>
+          </div>
         </div>
       </div>
     `;
   }
-
-  __displayAreaClimates(area) {
+  __displaySliderBubbles(climates){
+    return climates.map((climate) => {
+        return html`<div></div>`;
+    })
+  }
+  __displayAreaClimates(climates) {
     const styles = {
       state: {
         icons: this._config.state_icons,
@@ -253,16 +266,10 @@ export class SciFiClimates extends LitElement {
         colors: this._config.mode_colors,
       },
     };
-    this._config;
-    return area
-      .getEntitiesByKind(ENTITY_KIND_CLIMATE)
-      .filter(
-        (climate) =>
-          !this._config.entities_to_exclude.includes(climate.entity_id)
-      )
-      .map((climate) => {
+    return climates.map((climate) => {
         return html` <div class="climate">
           <sci-fi-radiator
+            id="${climate.entity_id}"
             climate-entity="${JSON.stringify(climate.renderAsEntity())}"
             unit="${this._config.unit}"
             styles="${JSON.stringify(styles)}"

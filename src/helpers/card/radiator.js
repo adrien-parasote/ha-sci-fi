@@ -27,7 +27,7 @@ class SciFiRadiator extends LitElement {
           flex-direction: column;
           border: var(--border-width) solid var(--secondary-bg-color);
           border-radius: var(--border-radius);
-          padding: 20px;
+          padding: 10px;
           row-gap: 10px;
         }
         .hexagon-container {
@@ -39,8 +39,8 @@ class SciFiRadiator extends LitElement {
           justify-content: center;
         }
         .hexagon-container svg {
-          width: 200px;
-          height: 200px;
+          width: 180px;
+          height: 180px;
         }
         .hexagon-container svg .border {
           fill: var(--secondary-bg-color);

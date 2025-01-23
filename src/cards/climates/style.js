@@ -140,10 +140,19 @@ export default css`
     align-items: start;
     flex-direction: column;
   }
+  .area-content .climates {
+    display: flex;
+    flex-direction:column;
+    row-gap: 10px;
+    border-bottom: var(--border-width) solid var(--primary-bg-color);
+    border-top: var(--border-width) solid var(--primary-bg-color);
+    padding: 10px;
+    background-color: var(--primary-bg-alpha-color);
+    font-weight: bold;
+  }
   .area-content .climates .title {
     font-size: var(--font-size-normal);
     color: var(--primary-light-color);
-    margin-bottom: 15px;
     font-weight: bold;
     text-align: center;
     width: 100%;
@@ -152,27 +161,55 @@ export default css`
     border-bottom-color: var(--secondary-light-alpha-color);
     color: var(--secondary-light-color);
   }
-  .area-content .climates {
-    display: grid;
-    border-bottom: var(--border-width) solid var(--primary-bg-color);
-    border-top: var(--border-width) solid var(--primary-bg-color);
-    padding: 10px;
-    background-color: var(--primary-bg-alpha-color);
-    font-weight: bold;
-  }
-  .area-content .climates .content {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: 10px;
-    -webkit-overflow-scrolling: touch;
-    &::-webkit-scrollbar {
-      display: none;
-    }
-  }
-  .area-content .climates .content .climate {
+
+  .area-content .climates .slider {
     min-width: 368px;
     max-width: 368px;
     height: 300px;
+    overflow: hidden;
+}
+
+.area-content .climates .slider .slides {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+.area-content .climates .slider .slides > * {
+  margin: 0 10px;
+}
+.area-content .climates .slider .slides::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.area-content .climates .slider .slides::-webkit-scrollbar-thumb {
+  background: black;
+  border-radius: 10px;
+}
+.area-content .climates .slider .slides::-webkit-scrollbar-track {
+  background: transparent;
+}
+.area-content .climates .slider .number {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  column-gap: 10px;
+  margin-bottom: 10px;
+}
+.area-content .climates .slider .number > div {
+  content:"";
+  width: 10px;
+  height: 10px;
+  background-color: var(--primary-light-alpha-color);
+  text-decoration: none;
+  border-radius: 50%;
+}
+/* Don't need button navigation */
+@supports (scroll-snap-type) {
+  .area-content .climates .slider .number > a {
+    display: none;
   }
+}
+
 `;

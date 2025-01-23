@@ -142,7 +142,7 @@ export default css`
   }
   .area-content .climates {
     display: flex;
-    flex-direction:column;
+    flex-direction: column;
     row-gap: 10px;
     border-bottom: var(--border-width) solid var(--primary-bg-color);
     border-top: var(--border-width) solid var(--primary-bg-color);
@@ -167,49 +167,48 @@ export default css`
     max-width: 368px;
     height: 300px;
     overflow: hidden;
-}
-
-.area-content .climates .slider .slides {
-  display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-}
-.area-content .climates .slider .slides > * {
-  margin: 0 10px;
-}
-.area-content .climates .slider .slides::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-.area-content .climates .slider .slides::-webkit-scrollbar-thumb {
-  background: black;
-  border-radius: 10px;
-}
-.area-content .climates .slider .slides::-webkit-scrollbar-track {
-  background: transparent;
-}
-.area-content .climates .slider .number {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  column-gap: 10px;
-  margin-bottom: 10px;
-}
-.area-content .climates .slider .number > div {
-  content:"";
-  width: 10px;
-  height: 10px;
-  background-color: var(--primary-light-alpha-color);
-  text-decoration: none;
-  border-radius: 50%;
-}
-/* Don't need button navigation */
-@supports (scroll-snap-type) {
-  .area-content .climates .slider .number > a {
-    display: none;
   }
-}
 
+  .area-content .climates .slider .slides {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+  .area-content .climates .slider .slides > * {
+    margin: 0 10px;
+  }
+  .area-content .climates .slider .slides::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  .area-content .climates .slider .slides::-webkit-scrollbar-thumb {
+    background: black;
+    border-radius: 10px;
+  }
+  .area-content .climates .slider .slides::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .area-content .climates .slider .number {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    column-gap: 10px;
+    margin-bottom: 10px;
+  }
+  .area-content .climates .slider .number > div {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background-color: var(--primary-light-alpha-color);
+    text-decoration: none;
+    border-radius: 50%;
+  }
+  /* Don't need button navigation */
+  @supports (scroll-snap-type) {
+    .area-content .climates .slider .number > a {
+      display: none;
+    }
+  }
 `;

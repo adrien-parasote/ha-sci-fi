@@ -29,6 +29,8 @@ class SciFiRadiator extends LitElement {
           border-radius: var(--border-radius);
           padding: 10px;
           row-gap: 10px;
+          height: 240px;
+          width: 332px;
         }
         .hexagon-container {
           position: relative;
@@ -141,31 +143,6 @@ class SciFiRadiator extends LitElement {
 
   render() {
     if (!this.climateEntity) return html``;
-    const toto = {
-      entity_id: 'climate.radiateur_salle_a_manger',
-      attributes: {
-        max_temp: 35,
-        min_temp: 7,
-        preset_mode: 'comfort',
-        preset_modes: [
-          'none',
-          'frost_protection',
-          'eco',
-          'comfort',
-          'comfort-1',
-          'comfort-2',
-          'auto',
-          'boost',
-          'external',
-          'prog',
-        ],
-        current_temperature: 19.2,
-        temperature: 19,
-        friendly_name: 'Salle à manger',
-        icon: 'mdi:radiator',
-      },
-      state: 'auto',
-    };
     return html`
       <div class="hexagon-container">
         ${this.__displayHexagonContent()} ${this.__displayPointer()}

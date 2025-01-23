@@ -305,6 +305,7 @@ export class SciFiWeather extends LitElement {
       this._chart = new Chart(ctx, {
         data: this.__getChartDatasets(),
         options: {
+          scales: SENSORS_MAP[this._chartDataKind].chartOptionsScales,
           plugins: {
             title: {
               display: true,

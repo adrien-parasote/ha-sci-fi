@@ -171,14 +171,15 @@ export class House {
 
   turnOnOffLight(hass) {
     const active = this.isActive(ENTITY_KIND_LIGHT);
-    const entity_ids = this.getEntitiesByKind(ENTITY_KIND_LIGHT)
-      .filter((light) => light.active == active)
-      .reduce((acc, value) => acc.concat([value.entity_id]), []);
+    const floor_ids = this.floors
+      .filter((floor) => floor.hasEntityKind(ENTITY_KIND_LIGHT))
+      .reduce((acc, value) => acc.concat([value.id]), []);
+
     hass.callService(
       SERVICES[ENTITY_KIND_LIGHT].service,
       SERVICES[ENTITY_KIND_LIGHT].actions[!active],
       {
-        entity_id: entity_ids,
+        floor_id: floor_ids,
       }
     );
   }
@@ -283,16 +284,14 @@ class Floor {
       this.__turnOnOffLight(hass);
     }
   }
+
   __turnOnOffLight(hass) {
     const active = this.isActive(ENTITY_KIND_LIGHT);
-    const entity_ids = this.getEntitiesByKind(ENTITY_KIND_LIGHT)
-      .filter((entity) => (active ? entity.active : !entity.active))
-      .reduce((acc, value) => acc.concat([value.entity_id]), []);
     hass.callService(
       SERVICES[ENTITY_KIND_LIGHT].service,
       SERVICES[ENTITY_KIND_LIGHT].actions[!active],
       {
-        entity_id: entity_ids,
+        floor_id: [this.id],
       }
     );
   }
@@ -374,16 +373,15 @@ class Area {
     }
   }
 
+
+
   __turnOnOffLight(hass) {
     const active = this.isActive(ENTITY_KIND_LIGHT);
-    const entity_ids = this.getEntitiesByKind(ENTITY_KIND_LIGHT)
-      .filter((entity) => (active ? entity.active : !entity.active))
-      .reduce((acc, value) => acc.concat([value.entity_id]), []);
     hass.callService(
       SERVICES[ENTITY_KIND_LIGHT].service,
       SERVICES[ENTITY_KIND_LIGHT].actions[!active],
       {
-        entity_id: entity_ids,
+        area_id: [this.id],
       }
     );
   }

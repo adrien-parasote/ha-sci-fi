@@ -5,7 +5,7 @@ import {
   HASS_LIGHT_SERVICE_ACTION_TURN_ON,
   STATE_LIGHT_OFF,
   STATE_LIGHT_ON,
-} from './const';
+} from './light_const';
 
 export class LightEntity {
   static kind = ENTITY_KIND_LIGHT;

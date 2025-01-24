@@ -5,11 +5,11 @@ import {isEqual} from 'lodash-es';
 import '../../helpers/card/tiles.js';
 import '../../helpers/card/toast.js';
 import common_style from '../../helpers/common_style.js';
+import {House} from '../../helpers/entities/house.js';
 import {
   ENTITY_KIND_LIGHT,
   STATE_LIGHT_ON,
-} from '../../helpers/entities/const.js';
-import {House} from '../../helpers/entities/house.js';
+} from '../../helpers/entities/light_const.js';
 import {SunEntity} from '../../helpers/entities/weather.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
 import {PACKAGE} from './const.js';

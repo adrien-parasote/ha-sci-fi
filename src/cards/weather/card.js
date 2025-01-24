@@ -4,13 +4,13 @@ import {isEqual} from 'lodash-es';
 
 import '../../helpers/card/tiles.js';
 import common_style from '../../helpers/common_style.js';
-import {WEEK_DAYS} from '../../helpers/entities/const.js';
 import {
   DailyForecast,
   HourlyForecast,
   SunEntity,
   WeatherEntity,
 } from '../../helpers/entities/weather.js';
+import {WEEK_DAYS} from '../../helpers/entities/weather_const.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
 import WEATHER_ICON_SET from '../../helpers/icons/weather_iconset.js';
 import {

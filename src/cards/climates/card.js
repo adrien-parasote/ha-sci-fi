@@ -1,10 +1,11 @@
 import {LitElement, html} from 'lit';
 import {isEqual} from 'lodash-es';
 
-import '../../helpers/card/radiator.js';
 import '../../helpers/card/tiles.js';
+import '../../helpers/card/toast.js';
 import common_style from '../../helpers/common_style.js';
-import {ENTITY_KIND_CLIMATE} from '../../helpers/entities/const.js';
+import '../../helpers/entities/climate.js';
+import {ENTITY_KIND_CLIMATE} from '../../helpers/entities/climate_const.js';
 import {House} from '../../helpers/entities/house.js';
 import {SunEntity} from '../../helpers/entities/weather.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
@@ -132,6 +133,7 @@ export class SciFiClimates extends LitElement {
           ${this.__displayAreas()} ${this.__displayAreaInfo()}
         </div>
       </div>
+      <sci-fi-toast></sci-fi-toast>
     `;
   }
 
@@ -284,14 +286,25 @@ export class SciFiClimates extends LitElement {
     const climate = this._house
       .getEntitiesByKind(ENTITY_KIND_CLIMATE)
       .filter((climate) => climate.entity_id == e.detail.id)[0];
-    climate.setHvacMode(this._hass, e.detail.mode); // TODO TOAST
+    climate.setHvacMode(this._hass, e.detail.mode).then(
+      () => this.__toast(false),
+      (e) => this.__toast(true, e)
+    );
   }
 
   _changePresetMode(e) {
     const climate = this._house
       .getEntitiesByKind(ENTITY_KIND_CLIMATE)
       .filter((climate) => climate.entity_id == e.detail.id)[0];
-    climate.setPresetMode(this._hass, e.detail.mode); // TODO TOAST
+    climate.setPresetMode(this._hass, e.detail.mode).then(
+      () => this.__toast(false),
+      (e) => this.__toast(true, e)
+    );
+  }
+
+  __toast(error, e) {
+    const msg = error ? e.message : 'done';
+    this.shadowRoot.querySelector('sci-fi-toast').addMessage(msg, error);
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

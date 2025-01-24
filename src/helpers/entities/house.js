@@ -1,12 +1,12 @@
 import {ClimateEntity} from './climate.js';
+import {ENTITY_KIND_CLIMATE} from './climate_const.js';
+import {LightEntity} from './light.js';
 import {
-  ENTITY_KIND_CLIMATE,
   ENTITY_KIND_LIGHT,
   HASS_LIGHT_SERVICE,
   HASS_LIGHT_SERVICE_ACTION_TURN_OFF,
   HASS_LIGHT_SERVICE_ACTION_TURN_ON,
-} from './const';
-import {LightEntity} from './light.js';
+} from './light_const.js';
 
 const SCI_FI_ENTITIES = {};
 SCI_FI_ENTITIES[ENTITY_KIND_LIGHT] = LightEntity;

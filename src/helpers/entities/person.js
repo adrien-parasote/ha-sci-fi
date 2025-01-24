@@ -2,7 +2,8 @@ import {LitElement, css, html} from 'lit';
 
 import common_style from '../common_style.js';
 import {getIcon} from '../icons/icons.js';
-import {STATE_HOME} from './const.js';
+
+const STATE_HOME = 'home';
 
 export class SciFiPerson extends LitElement {
   static get styles() {

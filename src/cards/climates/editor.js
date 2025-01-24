@@ -3,6 +3,17 @@ import {css, html} from 'lit';
 import {SciFiBaseEditor} from '../../helpers/card/base_editor.js';
 import common_style from '../../helpers/common_style.js';
 import editor_common_style from '../../helpers/editor_common_style.js';
+import {
+  HASS_CLIMATE_PRESET_MODE_BOOST,
+  HASS_CLIMATE_PRESET_MODE_COMFORT,
+  HASS_CLIMATE_PRESET_MODE_COMFORT_1,
+  HASS_CLIMATE_PRESET_MODE_COMFORT_2,
+  HASS_CLIMATE_PRESET_MODE_ECO,
+  HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION,
+  STATE_CLIMATE_AUTO,
+  STATE_CLIMATE_HEAT,
+  STATE_CLIMATE_OFF,
+} from '../../helpers/entities/climate_const.js';
 import '../../helpers/form/form.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 import editor_style from './style_editor.js';
@@ -42,7 +53,8 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
     return html`
       <div class="card card-corner">
         <div class="container ${!this._edit}">
-          ${this.__renderConfig()} ${this.__renderStatesModeAppearance('state')}
+          ${this.__renderAppearance()} ${this.__renderConfig()}
+          ${this.__renderStatesModeAppearance('state')}
           ${this.__renderStatesModeAppearance('mode')}
         </div>
         <div class="editor ${this._edit}">${this.__renderCustomization()}</div>
@@ -50,11 +62,54 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
     `;
   }
 
+  __renderAppearance() {
+    return html` <sci-fi-accordion-card
+      title="Header (optionnal)"
+      icon="mdi:page-layout-header"
+      open
+      class="header"
+    >
+      <sci-fi-input
+        label="Winter period message (optionnal)"
+        value=${this._config.header.message_winter_state}
+        element-id="header"
+        kind="message_winter_state"
+        @input-update=${this.__update}
+      ></sci-fi-input>
+      <sci-fi-dropdown-icon-input
+        label="Winter period icon (optionnal)"
+        element-id="header"
+        kind="icon_winter_state"
+        icon=${this._config.header.icon_winter_state}
+        value=${this._config.header.icon_winter_state}
+        @input-update=${this.__update}
+      ></sci-fi-dropdown-icon-input>
+
+      <sci-fi-input
+        label="Summer period message (optionnal)"
+        value=${this._config.header.message_summer_state}
+        element-id="header"
+        kind="message_summer_state"
+        @input-update=${this.__update}
+      ></sci-fi-input>
+      <sci-fi-dropdown-icon-input
+        label="Summer period icon (optionnal)"
+        element-id="header"
+        kind="icon_summer_state"
+        icon=${this._config.header.icon_summer_state}
+        value=${this._config.header.icon_summer_state}
+        @input-update=${this.__update}
+      ></sci-fi-dropdown-icon-input>
+    </sci-fi-accordion-card>`;
+  }
+
   __renderConfig() {
-    return html` <section>
-      <h1>
-        <span>${getIcon('mdi:tune-vertical-variant')}</span>Settings (optionnal)
-      </h1>
+    return html` <sci-fi-accordion-card
+      title="Settings (optionnal)"
+      icon="mdi:tune-vertical-variant"
+      open
+      class="settings"
+    >
       <sci-fi-input
         label="Unit (optionnal)"
         value=${this._config.unit}
@@ -70,7 +125,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
         items="${JSON.stringify(this._climates)}"
         @input-update=${this.__update}
       ></sci-fi-dropdown-multi-entities-input>
-    </section>`;
+    </sci-fi-accordion-card>`;
   }
 
   __capitalizeFirstLetter(val) {
@@ -81,14 +136,14 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
     const icon = kind == 'state' ? 'mdi:state-machine' : 'mdi:auto-mode';
     const data =
       kind == 'state'
-        ? ['auto', 'off', 'heat']
+        ? [STATE_CLIMATE_HEAT, STATE_CLIMATE_OFF, STATE_CLIMATE_AUTO]
         : [
-            'frost_protection',
-            'eco',
-            'comfort',
-            'comfort-1',
-            'comfort-2',
-            'boost',
+            HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION,
+            HASS_CLIMATE_PRESET_MODE_ECO,
+            HASS_CLIMATE_PRESET_MODE_COMFORT,
+            HASS_CLIMATE_PRESET_MODE_COMFORT_1,
+            HASS_CLIMATE_PRESET_MODE_COMFORT_2,
+            HASS_CLIMATE_PRESET_MODE_BOOST,
           ];
     return html` <sci-fi-accordion-card
       title="${kind} (optionnal)"

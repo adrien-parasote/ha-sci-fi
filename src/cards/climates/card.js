@@ -34,6 +34,16 @@ export class SciFiClimates extends LitElement {
     if (!config.unit) config.unit = '°C';
     if (!config.entities_to_exclude) config.entities_to_exclude = [];
 
+    if (!config.header) config.header = {};
+    if (!config.header.icon_winter_state)
+      config.header.icon_winter_state = 'mdi:thermometer-chevron-up';
+    if (!config.header.message_winter_state)
+      config.header.message_winter_state = 'Winter is coming';
+    if (!config.header.icon_summer_state)
+      config.header.icon_summer_state = 'mdi:thermometer-chevron-down';
+    if (!config.header.message_summer_state)
+      config.header.message_summer_state = 'Summer time';
+
     if (!config.state_icons) config.state_icons = {};
     if (!config.state_icons.auto) config.state_icons.auto = 'sci:radiator-auto';
     if (!config.state_icons.off) config.state_icons.off = 'sci:radiator-off';
@@ -117,12 +127,15 @@ export class SciFiClimates extends LitElement {
 
     // Setup first time attribute
     if (!this._active_floor_id)
-      this._active_floor_id =
-        this._house.getDefaultFloor(ENTITY_KIND_CLIMATE).id;
+      this._active_floor_id = this._house.getDefaultFloor(
+        ENTITY_KIND_CLIMATE,
+        this._config.entities_to_exclude
+      ).id;
     if (!this._active_area_id)
       this._active_area_id = this._house.getDefaultArea(
         this._active_floor_id,
-        ENTITY_KIND_CLIMATE
+        ENTITY_KIND_CLIMATE,
+        this._config.entities_to_exclude
       ).id;
     return html`
       <div class="container">
@@ -138,12 +151,29 @@ export class SciFiClimates extends LitElement {
   }
 
   __displayHeader() {
+    const active = this._house.isActive(
+      ENTITY_KIND_CLIMATE,
+      this._config.entities_to_exclude
+    );
+    const icon = active
+      ? this._config.header.icon_summer_state
+      : this._config.header.icon_winter_state;
     return html`
       <div class="info">
         ${getIcon('mdi:home-thermometer-outline')}
         <div class="text">
           ${this._house.getTemperature(this._config.entities_to_exclude)}${this
             ._config.unit}
+        </div>
+      </div>
+      <div class="actions">
+        <div class="action" @click="${this.__globalOnOffClimates}">
+          ${getIcon(icon)}
+          <div>
+            ${active
+              ? this._config.header.message_summer_state
+              : this._config.header.message_winter_state}
+          </div>
         </div>
       </div>
       <div class="weather">
@@ -155,7 +185,12 @@ export class SciFiClimates extends LitElement {
   __displayFloors() {
     return this._house
       .getFloorsOrderedByLevel()
-      .filter((floor) => floor.hasEntityKind(ENTITY_KIND_CLIMATE))
+      .filter((floor) =>
+        floor.hasEntityKind(
+          ENTITY_KIND_CLIMATE,
+          this._config.entities_to_exclude
+        )
+      )
       .map((floor) => {
         const active = floor.getTemperature(this._config.entities_to_exclude)
           ? 'on'
@@ -191,7 +226,10 @@ export class SciFiClimates extends LitElement {
     // Update selected floor
     this._active_floor_id = floor.id;
     // Select first area to render
-    this._active_area_id = floor.getFirstArea(ENTITY_KIND_CLIMATE).id;
+    this._active_area_id = floor.getFirstArea(
+      ENTITY_KIND_CLIMATE,
+      this._config.entities_to_exclude
+    ).id;
   }
 
   __displayAreas() {
@@ -199,7 +237,12 @@ export class SciFiClimates extends LitElement {
       ${this._house
         .getFloor(this._active_floor_id)
         .getAreas()
-        .filter((area) => area.hasEntityKind(ENTITY_KIND_CLIMATE))
+        .filter((area) =>
+          area.hasEntityKind(
+            ENTITY_KIND_CLIMATE,
+            this._config.entities_to_exclude
+          )
+        )
         .map((area) => {
           return html` <div class="col">${this.__displayArea(area)}</div>`;
         })}
@@ -211,10 +254,12 @@ export class SciFiClimates extends LitElement {
       <sci-fi-hexa-tile
         active-tile
         state="${this._active_area_id == area.id ? 'on' : 'off'}"
-        class="${area.isActive(ENTITY_KIND_CLIMATE) ? 'on' : 'off'} ${this
-          ._active_area_id == area.id
-          ? 'selected'
-          : ''}"
+        class="${area.isActive(
+          ENTITY_KIND_CLIMATE,
+          this._config.entities_to_exclude
+        )
+          ? 'on'
+          : 'off'} ${this._active_area_id == area.id ? 'selected' : ''}"
         @click="${(e) => this.__onAreaSelect(e, area)}"
       >
         <div class="item-icon">${getIcon(area.icon)}</div>
@@ -233,13 +278,14 @@ export class SciFiClimates extends LitElement {
       this._active_floor_id,
       this._active_area_id
     );
-    const active = area.isActive(ENTITY_KIND_CLIMATE);
-    const climates = area
-      .getEntitiesByKind(ENTITY_KIND_CLIMATE)
-      .filter(
-        (climate) =>
-          !this._config.entities_to_exclude.includes(climate.entity_id)
-      );
+    const active = area.isActive(
+      ENTITY_KIND_CLIMATE,
+      this._config.entities_to_exclude
+    );
+    const climates = area.getEntitiesByKind(
+      ENTITY_KIND_CLIMATE,
+      this._config.entities_to_exclude
+    );
     return html`
       <div class="area-content ${active ? 'on' : 'off'}">
         <div class="climates">
@@ -252,11 +298,13 @@ export class SciFiClimates extends LitElement {
       </div>
     `;
   }
+
   __displaySliderBubbles(climates) {
     return climates.map(() => {
       return html`<div></div>`;
     });
   }
+
   __displayAreaClimates(climates) {
     const styles = {
       state: {
@@ -284,7 +332,7 @@ export class SciFiClimates extends LitElement {
 
   _changeHvacMode(e) {
     const climate = this._house
-      .getEntitiesByKind(ENTITY_KIND_CLIMATE)
+      .getEntitiesByKind(ENTITY_KIND_CLIMATE, this._config.entities_to_exclude)
       .filter((climate) => climate.entity_id == e.detail.id)[0];
     climate.setHvacMode(this._hass, e.detail.mode).then(
       () => this.__toast(false),
@@ -294,12 +342,21 @@ export class SciFiClimates extends LitElement {
 
   _changePresetMode(e) {
     const climate = this._house
-      .getEntitiesByKind(ENTITY_KIND_CLIMATE)
+      .getEntitiesByKind(ENTITY_KIND_CLIMATE, this._config.entities_to_exclude)
       .filter((climate) => climate.entity_id == e.detail.id)[0];
     climate.setPresetMode(this._hass, e.detail.mode).then(
       () => this.__toast(false),
       (e) => this.__toast(true, e)
     );
+  }
+
+  __globalOnOffClimates(e) {
+    this._house
+      .turnOnOffClimate(this._hass, this._config.entities_to_exclude)
+      .then(
+        () => this.__toast(false),
+        (e) => this.__toast(true, e)
+      );
   }
 
   __toast(error, e) {
@@ -316,6 +373,12 @@ export class SciFiClimates extends LitElement {
     return {
       unit: '°C',
       entities_to_exclude: [],
+      header: {
+        icon_winter_state: 'mdi:thermometer-chevron-up',
+        message_winter_state: 'Winter is coming',
+        icon_summer_state: 'mdi:thermometer-chevron-down',
+        message_summer_state: 'Summer time',
+      },
       state_icons: {
         auto: 'sci:radiator-auto',
         off: 'sci:radiator-off',

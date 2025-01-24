@@ -20,8 +20,8 @@ export default css`
     background-color: var(--primary-bg-alpha-color);
     padding: 5px 10px 0 10px;
   }
-  .header .info {
-    flex: 1;
+  .header .info,
+  .header .actions {
     display: flex;
     flex-direction: row;
     column-gap: 5px;
@@ -35,6 +35,31 @@ export default css`
   .header .info .text {
     color: var(--primary-light-color);
     text-shadow: 0px 0px 5px var(--primary-light-color);
+  }
+  .header .actions {
+    justify-content: center;
+    flex: 1;
+  }
+  .header .actions .action {
+    display: flex;
+    flex-direction: row;
+    column-gap: 5px;
+    align-items: center;
+    border: var(--border-width) solid var(--secondary-bg-color);
+    padding: 5px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    background: var(--secondary-light-light-alpha-color);
+    color: var(--primary-light-color);
+  }
+  .header .actions svg {
+    fill: var(--primary-light-color);
+    width: var(--icon-size-xsmall);
+    height: var(--icon-size-xsmall);
+  }
+  .header .weather {
+    display: flex;
+    align-items: center;
   }
   .header .weather svg {
     width: var(--icon-size-title);

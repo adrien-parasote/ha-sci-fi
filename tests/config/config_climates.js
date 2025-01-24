@@ -1,6 +1,12 @@
 export default {
   unit: '°C',
   entities_to_exclude: ['climate.clou'],
+  header: {
+    icon_winter_state: 'mdi:thermometer-chevron-up',
+    message_winter_state: 'Winter is coming',
+    icon_summer_state: 'mdi:thermometer-chevron-down',
+    message_summer_state: 'Summer time',
+  },
   state_icons: {
     auto: 'sci:radiator-auto',
     off: 'sci:radiator-off',

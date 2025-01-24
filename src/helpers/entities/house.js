@@ -1,5 +1,11 @@
 import {ClimateEntity} from './climate.js';
-import {ENTITY_KIND_CLIMATE} from './climate_const.js';
+import {
+  ENTITY_KIND_CLIMATE,
+  HASS_CLIMATE_PRESET_MODE_ECO,
+  HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION,
+  HASS_CLIMATE_SERVICE,
+  HASS_CLIMATE_SERVICE_SET_PRESET_MODE,
+} from './climate_const.js';
 import {LightEntity} from './light.js';
 import {
   ENTITY_KIND_LIGHT,
@@ -67,7 +73,7 @@ export class House {
 
   __getEntities(entities_ids, hass, device_id) {
     let entities = [];
-    entities_ids.map((entity_id) => {
+    entities_ids.forEach((entity_id) => {
       const entity_kind = entity_id.split('.')[0];
       if (Object.keys(SCI_FI_ENTITIES).includes(entity_kind)) {
         const entity = hass.states[entity_id];
@@ -90,30 +96,33 @@ export class House {
     return Object.values(this._floors);
   }
 
-  getDefaultFloor(entity_kind) {
+  getDefaultFloor(entity_kind, entities_to_exclude = []) {
     let first = this.floors.filter((floor) =>
-      this.isfloorActive(floor.id, entity_kind)
+      this.isfloorActive(floor.id, entity_kind, entities_to_exclude)
     )[0];
     if (first) return first;
     // Case of no active kind
-    return this.floors.filter((floor) => floor.hasEntityKind(entity_kind))[0];
+    return this.floors.filter((floor) =>
+      floor.hasEntityKind(entity_kind, entities_to_exclude)
+    )[0];
   }
 
-  getDefaultArea(floor_id, entity_kind) {
-    return this.getFloor(floor_id).getFirstArea(entity_kind);
+  getDefaultArea(floor_id, entity_kind, entities_to_exclude = []) {
+    return this.getFloor(floor_id).getFirstArea(
+      entity_kind,
+      entities_to_exclude
+    );
   }
 
-  isActive(entity_kind) {
+  isActive(entity_kind, entities_to_exclude = []) {
     return Object.values(this._floors)
-      .map((floor) => {
-        return floor.isActive(entity_kind);
-      })
+      .map((floor) => floor.isActive(entity_kind, entities_to_exclude))
       .reduce((acc, value) => acc || value, false);
   }
 
-  isfloorActive(floor_id, entity_kind) {
+  isfloorActive(floor_id, entity_kind, entities_to_exclude = []) {
     if (!this._floors[floor_id]) return false;
-    return this._floors[floor_id].isActive(entity_kind);
+    return this._floors[floor_id].isActive(entity_kind, entities_to_exclude);
   }
 
   getFloor(floor_id) {
@@ -130,7 +139,9 @@ export class House {
   getTemperature(entities_to_exclude = []) {
     let temp = [];
     Object.values(this._floors)
-      .filter((floor) => floor.hasEntityKind(ENTITY_KIND_CLIMATE))
+      .filter((floor) =>
+        floor.hasEntityKind(ENTITY_KIND_CLIMATE, (entities_to_exclude = []))
+      )
       .forEach((floor) => {
         temp.push(floor.getTemperature(entities_to_exclude));
       });
@@ -147,9 +158,7 @@ export class House {
   getEntitiesByKind(entity_kind, entities_to_exclude = []) {
     let temp = [];
     return Object.values(this._floors)
-      .map((floor) => {
-        return floor.getEntitiesByKind(entity_kind, entities_to_exclude);
-      })
+      .map((floor) => floor.getEntitiesByKind(entity_kind, entities_to_exclude))
       .flat();
   }
 
@@ -183,6 +192,24 @@ export class House {
       }
     );
   }
+
+  turnOnOffClimate(hass, entities_to_exclude = []) {
+    const mode = this.isActive(ENTITY_KIND_CLIMATE, entities_to_exclude)
+      ? HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION
+      : HASS_CLIMATE_PRESET_MODE_ECO;
+    const entity_ids = this.getEntitiesByKind(
+      ENTITY_KIND_CLIMATE,
+      entities_to_exclude
+    ).map((climate) => climate.entity_id);
+    return hass.callService(
+      HASS_CLIMATE_SERVICE,
+      HASS_CLIMATE_SERVICE_SET_PRESET_MODE,
+      {
+        entity_id: entity_ids,
+        preset_mode: mode,
+      }
+    );
+  }
 }
 
 class Floor {
@@ -206,11 +233,9 @@ class Floor {
     return Object.keys(this.areas).includes(area_id);
   }
 
-  isActive(entity_kind) {
+  isActive(entity_kind, entities_to_exclude = []) {
     return Object.values(this.areas)
-      .map((area) => {
-        return area.isActive(entity_kind);
-      })
+      .map((area) => area.isActive(entity_kind, entities_to_exclude))
       .reduce((acc, value) => acc || value, false);
   }
 
@@ -220,17 +245,13 @@ class Floor {
 
   getEntitiesByKind(entity_kind, entities_to_exclude = []) {
     return Object.values(this.areas)
-      .map((area) => {
-        return area.getEntitiesByKind(entity_kind, entities_to_exclude);
-      })
+      .map((area) => area.getEntitiesByKind(entity_kind, entities_to_exclude))
       .flat();
   }
 
-  hasEntityKind(entity_kind) {
+  hasEntityKind(entity_kind, entities_to_exclude = []) {
     return Object.values(this.areas)
-      .map((area) => {
-        return area.hasEntityKind(entity_kind);
-      })
+      .map((area) => area.hasEntityKind(entity_kind, entities_to_exclude))
       .reduce((acc, value) => acc || value, false);
   }
 
@@ -243,8 +264,10 @@ class Floor {
     return this.areas[area_id];
   }
 
-  getFirstArea(entity_kind) {
-    return this.getAreas().filter((area) => area.hasEntityKind(entity_kind))[0];
+  getFirstArea(entity_kind, entities_to_exclude = []) {
+    return this.getAreas().filter((area) =>
+      area.hasEntityKind(entity_kind, entities_to_exclude)
+    )[0];
   }
 
   renderAsEntity() {
@@ -344,14 +367,12 @@ class Area {
     );
   }
 
-  hasEntityKind(entity_kind) {
-    return this.getEntitiesByKind(entity_kind).length > 0;
+  hasEntityKind(entity_kind, entities_to_exclude = []) {
+    return this.getEntitiesByKind(entity_kind, entities_to_exclude).length > 0;
   }
 
   addEntities(entities) {
-    entities.map((entity) => {
-      this.addEntity(entity);
-    });
+    entities.map((entity) => this.addEntity(entity));
   }
 
   addEntity(entity) {
@@ -362,12 +383,11 @@ class Area {
     this.entities[entity.kind].push(entity);
   }
 
-  isActive(entity_kind) {
+  isActive(entity_kind, entities_to_exclude = []) {
     if (!this.entities[entity_kind]) return false;
-    return this.entities[entity_kind].reduce(
-      (acc, entity) => acc || entity.active,
-      false
-    );
+    return this.entities[entity_kind]
+      .filter((entity) => !entities_to_exclude.includes(entity.entity_id))
+      .reduce((acc, entity) => acc || entity.active, false);
   }
 
   renderAsEntity() {

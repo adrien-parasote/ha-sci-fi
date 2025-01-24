@@ -1,6 +1,10 @@
 import {css} from 'lit';
 
 export default css`
+  .header > *,
+  .settings > * {
+    margin-bottom: 10px;
+  }
   .container.false {
     display: none;
   }

@@ -3,6 +3,7 @@ import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 import {isEqual} from 'lodash-es';
 
 import '../../helpers/card/tiles.js';
+import '../../helpers/card/toast.js';
 import common_style from '../../helpers/common_style.js';
 import {
   ENTITY_KIND_LIGHT,
@@ -30,10 +31,6 @@ export class SciFiLights extends LitElement {
       _active_floor_id: {type: String}, // selected floor pointer
       _active_area_id: {type: String}, // selected area pointer
     };
-  }
-
-  constructor() {
-    super();
   }
 
   __validateConfig(config) {
@@ -103,6 +100,7 @@ export class SciFiLights extends LitElement {
           ${this.__displayAreas()} ${this.__displayAreaInfo()}
         </div>
       </div>
+      <sci-fi-toast></sci-fi-toast>
     `;
   }
 
@@ -128,7 +126,10 @@ export class SciFiLights extends LitElement {
   __turnOnOffHouse(e) {
     e.preventDefault();
     e.stopPropagation();
-    this._house.turnOnOffLight(this._hass);
+    this._house.turnOnOffLight(this._hass).then(
+      () => this.__toast(false),
+      (e) => this.__toast(true, e)
+    );
   }
 
   __displayHouseFloors() {
@@ -303,13 +304,24 @@ export class SciFiLights extends LitElement {
   __onPowerBtnClick(e, element) {
     e.preventDefault();
     e.stopPropagation();
-    element.callService(this._hass, ENTITY_KIND_LIGHT);
+    element.callService(this._hass, ENTITY_KIND_LIGHT).then(
+      () => this.__toast(false),
+      (e) => this.__toast(true, e)
+    );
   }
 
   __onLightClick(e, light) {
     e.preventDefault();
     e.stopPropagation();
-    light.callService(this._hass);
+    light.callService(this._hass).then(
+      () => this.__toast(false),
+      (e) => this.__toast(true, e)
+    );
+  }
+
+  __toast(error, e) {
+    const msg = error ? e.message : 'done';
+    this.shadowRoot.querySelector('sci-fi-toast').addMessage(msg, error);
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

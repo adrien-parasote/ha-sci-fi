@@ -43,7 +43,7 @@ export class LightEntity {
   }
 
   callService(hass) {
-    hass.callService(
+    return hass.callService(
       HASS_LIGHT_SERVICE,
       this.active
         ? HASS_LIGHT_SERVICE_ACTION_TURN_OFF

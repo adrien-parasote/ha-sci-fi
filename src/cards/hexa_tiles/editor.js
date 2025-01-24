@@ -98,20 +98,21 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
     return html`
       <section>
         <h1>Tiles</h1>
-        ${this._config.tiles.map((entity, id) => {
-          return html`<sci-fi-accordion-card
-            element-id=${id}
-            title="Tile ${id + 1}"
-            icon="mdi:hexagon-slice-6"
-            ?deletable=${this._config.tiles.length > 1}
-            @accordion-delete=${this.__update}
-            ?open=${id == 0}
-          >
-            ${this.__renderEntity(id, entity)}
-            ${this.__renderAppearance(id, entity)}
-            ${this.__renderTechnical(id, entity)}
-          </sci-fi-accordion-card>`;
-        })}
+        ${this._config.tiles.map(
+          (entity, id) =>
+            html`<sci-fi-accordion-card
+              element-id=${id}
+              title="Tile ${id + 1}"
+              icon="mdi:hexagon-slice-6"
+              ?deletable=${this._config.tiles.length > 1}
+              @accordion-delete=${this.__update}
+              ?open=${id == 0}
+            >
+              ${this.__renderEntity(id, entity)}
+              ${this.__renderAppearance(id, entity)}
+              ${this.__renderTechnical(id, entity)}
+            </sci-fi-accordion-card>`
+        )}
         <sci-fi-button
           has-border
           icon="mdi:plus"

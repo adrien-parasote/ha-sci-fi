@@ -73,10 +73,7 @@ class SciFiWheel extends LitElement {
   }
 
   set items(items) {
-    this._items = [];
-    items.map((el) => {
-      if (!el.inactive) this._items.push(el);
-    });
+    this._items = items.filter((el) => !el.inactive);
   }
 
   render() {
@@ -102,8 +99,8 @@ class SciFiWheel extends LitElement {
   }
 
   __buildSliderContent() {
-    return this._items.map((el) => {
-      return html`
+    return this._items.map(
+      (el) => html`
         <div
           class="slider-item ${el.id == this.selectedId
             ? 'show'
@@ -112,8 +109,8 @@ class SciFiWheel extends LitElement {
           ${getIcon(el.icon)}
           ${this.showName ? html`<div>${el.name}</div>` : ''}
         </div>
-      `;
-    });
+      `
+    );
   }
 
   __findNext(direction) {

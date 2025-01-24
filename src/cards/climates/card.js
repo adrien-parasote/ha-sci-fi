@@ -243,9 +243,9 @@ export class SciFiClimates extends LitElement {
             this._config.entities_to_exclude
           )
         )
-        .map((area) => {
-          return html` <div class="col">${this.__displayArea(area)}</div>`;
-        })}
+        .map(
+          (area) => html` <div class="col">${this.__displayArea(area)}</div>`
+        )}
     </div>`;
   }
 
@@ -300,9 +300,7 @@ export class SciFiClimates extends LitElement {
   }
 
   __displaySliderBubbles(climates) {
-    return climates.map(() => {
-      return html`<div></div>`;
-    });
+    return climates.map(() => html`<div></div>`);
   }
 
   __displayAreaClimates(climates) {
@@ -316,18 +314,19 @@ export class SciFiClimates extends LitElement {
         colors: this._config.mode_colors,
       },
     };
-    return climates.map((climate) => {
-      return html` <div class="climate">
-        <sci-fi-radiator
-          id="${climate.entity_id}"
-          climate-entity="${JSON.stringify(climate.renderAsEntity())}"
-          unit="${this._config.unit}"
-          styles="${JSON.stringify(styles)}"
-          @change-preset-mode="${this._changePresetMode}"
-          @change-hvac-mode="${this._changeHvacMode}"
-        ></sci-fi-radiator>
-      </div>`;
-    });
+    return climates.map(
+      (climate) =>
+        html`<div class="climate">
+          <sci-fi-radiator
+            id="${climate.entity_id}"
+            climate-entity="${JSON.stringify(climate.renderAsEntity())}"
+            unit="${this._config.unit}"
+            styles="${JSON.stringify(styles)}"
+            @change-preset-mode="${this._changePresetMode}"
+            @change-hvac-mode="${this._changeHvacMode}"
+          ></sci-fi-radiator>
+        </div>`
+    );
   }
 
   _changeHvacMode(e) {

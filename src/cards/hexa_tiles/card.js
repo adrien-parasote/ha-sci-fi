@@ -200,11 +200,7 @@ export class SciFiHexaTiles extends LitElement {
     if (state_error && states.includes(state_error)) {
       return 'error';
     } else {
-      return state_on
-        .map((s) => {
-          return states.includes(s);
-        })
-        .includes(true)
+      return state_on.map((s) => states.includes(s)).includes(true)
         ? 'on'
         : 'off';
     }
@@ -226,11 +222,12 @@ export class SciFiHexaTiles extends LitElement {
             <div class="name">${this._user.attributes.friendly_name}</div>
           </div>
         </div>
-        ${matrix.map((cols, i) => {
-          return html` <div class="hexa-row">
-            ${this.__renderColumns(cols, i & 1)}
-          </div>`;
-        })}
+        ${matrix.map(
+          (cols, i) =>
+            html` <div class="hexa-row">
+              ${this.__renderColumns(cols, i & 1)}
+            </div>`
+        )}
       </div>
     `;
   }
@@ -320,9 +317,7 @@ export class SciFiHexaTiles extends LitElement {
   __renderColumns(cols, odd = true) {
     return html`
       ${odd ? '' : html`<sci-fi-half-hexa-tile right></sci-fi-half-hexa-tile>`}
-      ${cols.map((entity) => {
-        return entity;
-      })}
+      ${cols.map((entity) => entity)}
       ${!odd ? '' : html`<sci-fi-half-hexa-tile></sci-fi-half-hexa-tile>`}
     `;
   }

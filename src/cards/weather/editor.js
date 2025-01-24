@@ -13,9 +13,7 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
     if (!this._weather_entities_id)
       this._weather_entities = Object.keys(hass.states)
         .filter((x) => x.split('.')[0] == 'weather')
-        .map((key) => {
-          return hass.states[key];
-        });
+        .map((key) => hass.states[key]);
   }
 
   render() {

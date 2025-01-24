@@ -383,16 +383,16 @@ class SciFiRadiator extends LitElement {
       <div class="hvac-options hide">
         ${this.climateEntity.attributes.hvac_modes
           .filter((m) => !this.excludeHvac.includes(m))
-          .map((hvac_mode) => {
-            return html`
+          .map(
+            (hvac_mode) => html`
               <div
                 style="--option-color:${this.styles.state.colors[hvac_mode]}"
                 @click="${(e) => this.__selectHvacMode(e, hvac_mode)}"
               >
                 ${getIcon(this.styles.state.icons[hvac_mode])} ${hvac_mode}
               </div>
-            `;
-          })}
+            `
+          )}
       </div>
     `;
   }
@@ -418,8 +418,8 @@ class SciFiRadiator extends LitElement {
               m != this.climateEntity.attributes.preset_mode
             );
           })
-          .map((preset_mode) => {
-            return html`
+          .map(
+            (preset_mode) => html`
               <div
                 style="--option-color:${this.styles.mode.colors[preset_mode]}"
                 @click="${(e) => this.__selectPresetMode(e, preset_mode)}"
@@ -427,8 +427,8 @@ class SciFiRadiator extends LitElement {
                 ${getIcon(this.styles.mode.icons[preset_mode])}
                 ${preset_mode.replace('_', ' ')}
               </div>
-            `;
-          })}
+            `
+          )}
       </div>
     `;
   }

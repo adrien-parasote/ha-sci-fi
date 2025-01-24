@@ -136,22 +136,23 @@ export class SciFiLights extends LitElement {
     return this._house
       .getFloorsOrderedByLevel()
       .filter((floor) => floor.hasEntityKind(ENTITY_KIND_LIGHT))
-      .map((floor) => {
-        return html` <sci-fi-hexa-tile
-          active-tile
-          state="${this._active_floor_id == floor.id ? 'on' : 'off'}"
-          class="${this._active_floor_id == floor.id ? 'selected' : ''}"
-          @click="${(e) => this.__onFloorSelect(e, floor)}"
-        >
-          <div
-            class="item-icon ${floor.isActive(ENTITY_KIND_LIGHT)
-              ? 'on'
-              : 'off'}"
+      .map(
+        (floor) =>
+          html` <sci-fi-hexa-tile
+            active-tile
+            state="${this._active_floor_id == floor.id ? 'on' : 'off'}"
+            class="${this._active_floor_id == floor.id ? 'selected' : ''}"
+            @click="${(e) => this.__onFloorSelect(e, floor)}"
           >
-            ${getIcon(floor.icon)}
-          </div>
-        </sci-fi-hexa-tile>`;
-      });
+            <div
+              class="item-icon ${floor.isActive(ENTITY_KIND_LIGHT)
+                ? 'on'
+                : 'off'}"
+            >
+              ${getIcon(floor.icon)}
+            </div>
+          </sci-fi-hexa-tile>`
+      );
   }
 
   __displayFloorInfo() {

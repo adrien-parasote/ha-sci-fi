@@ -242,14 +242,15 @@ export class SciFiChipsInput extends SciFiInput {
   }
 
   __renderChips() {
-    return this.values.map((v, id) => {
-      return html`<li>
-        <span>${v}</span
-        ><span class="delete" @click="${(e) => this.__removeChip(e, id)}"
-          >X</span
-        >
-      </li>`;
-    });
+    return this.values.map(
+      (v, id) =>
+        html`<li>
+          <span>${v}</span
+          ><span class="delete" @click="${(e) => this.__removeChip(e, id)}"
+            >X</span
+          >
+        </li>`
+    );
   }
 
   __removeChip(e, id) {

@@ -166,9 +166,9 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
         <span>${getIcon('mdi:selection-ellipse-arrow-inside')}</span>Light
         entities customization
       </h1>
-      ${Object.keys(this._config.custom_entities).map((entity_id) => {
-        return this.__renderCustomEntity(entity_id);
-      })}
+      ${Object.keys(this._config.custom_entities).map((entity_id) =>
+        this.__renderCustomEntity(entity_id)
+      )}
       <sci-fi-button
         has-border
         icon="mdi:plus"

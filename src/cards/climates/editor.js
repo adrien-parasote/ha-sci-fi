@@ -40,9 +40,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
       if (!this._climates || this._climates.length == 0)
         this._climates = Object.keys(hass.states)
           .filter((key) => key.startsWith('climate.'))
-          .map((key) => {
-            return hass.states[key];
-          });
+          .map((key) => hass.states[key]);
     } else {
       this._climates = [];
     }
@@ -149,9 +147,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
       title="${kind} (optionnal)"
       icon="${icon}"
     >
-      ${data.map((d) => {
-        return this.__renderStateModeRow(kind, d);
-      })}
+      ${data.map((d) => this.__renderStateModeRow(kind, d))}
     </sci-fi-accordion-card>`;
   }
 

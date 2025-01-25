@@ -4,7 +4,7 @@
 
 ## 🆕 What's New
 
-Adding 🌡️ climate card 🌡️ 
+Liftoff : adding 🌡️ climate card 🌡️ 
 
 ## 🆙  What's Changed
 

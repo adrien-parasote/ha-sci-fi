@@ -180,15 +180,14 @@ export class House {
 
   turnOnOffLight(hass) {
     const active = this.isActive(ENTITY_KIND_LIGHT);
-    const floor_ids = this.floors
-      .filter((floor) => floor.hasEntityKind(ENTITY_KIND_LIGHT))
-      .reduce((acc, value) => acc.concat([value.id]), []);
-
+    const entities_id = this.getEntitiesByKind(ENTITY_KIND_LIGHT)
+      .filter((entity) => entity.active == active)
+      .map((entity) => entity.entity_id);
     return hass.callService(
       SERVICES[ENTITY_KIND_LIGHT].service,
       SERVICES[ENTITY_KIND_LIGHT].actions[!active],
       {
-        floor_id: floor_ids,
+        entity_id: entities_id,
       }
     );
   }
@@ -310,32 +309,15 @@ class Floor {
 
   __turnOnOffLight(hass, entities_to_exclude) {
     const active = this.isActive(ENTITY_KIND_LIGHT);
-    let data = {
-      floor_id: [this.id],
-    };
-    if (entities_to_exclude.length == 0) {
-      const areas_to_exclude = this.getAreas()
-        .filter((area) => area.getEntities(entities_to_exclude).length > 0)
-        .map((area) => area.id);
-      if (areas_to_exclude.length > 0) {
-        data = {
-          area_id: this.getAreas()
-            .filter((area) => !areas_to_exclude.includes(area.id))
-            .map((area) => area.id),
-          entity_id: areas_to_exclude
-            .map((area_id) =>
-              this.getArea(area_id)
-                .getEntitiesByKind(ENTITY_KIND_LIGHT, entities_to_exclude)
-                .map((entity) => entity.entity_id)
-            )
-            .flat(),
-        };
-      }
-    }
+    const entities_id = this.getEntitiesByKind(ENTITY_KIND_LIGHT)
+      .filter((entity) => entity.active == active)
+      .map((entity) => entity.entity_id);
     return hass.callService(
       SERVICES[ENTITY_KIND_LIGHT].service,
       SERVICES[ENTITY_KIND_LIGHT].actions[!active],
-      data
+      {
+        entity_id: entities_id,
+      }
     );
   }
 }
@@ -420,27 +402,21 @@ class Area {
   callService(hass, entity_kind, entities_to_exclude = []) {
     // TODO : change - only used for light
     if (entity_kind == ENTITY_KIND_LIGHT) {
-      return this.__turnOnOffLight(hass, entities_to_exclude);
+      return this.__turnOnOffLight(hass);
     }
   }
 
-  __turnOnOffLight(hass, entities_to_exclude) {
+  __turnOnOffLight(hass) {
     const active = this.isActive(ENTITY_KIND_LIGHT);
-    let data = {
-      area_id: [this.id],
-    };
-    if (entities_to_exclude.length == 0) {
-      const entities = this.getEntities(entities_to_exclude);
-      if (entities.length > 0) {
-        data = {
-          entity_id: entities.map((entity) => entity.entity_id),
-        };
-      }
-    }
+    const entities_id = this.getEntitiesByKind(ENTITY_KIND_LIGHT)
+      .filter((entity) => entity.active == active)
+      .map((entity) => entity.entity_id);
     return hass.callService(
       SERVICES[ENTITY_KIND_LIGHT].service,
       SERVICES[ENTITY_KIND_LIGHT].actions[!active],
-      data
+      {
+        entity_id: entities_id,
+      }
     );
   }
 }

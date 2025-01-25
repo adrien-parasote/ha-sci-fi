@@ -1,10 +1,26 @@
 # Changelog
 
+# [v0.5.0] In progress...
+
+## 🆕 What's New
+
+**Vehicle Goes Supersonic**: adding stove card 🪵🔥
+
+## 🆙  What's Changed
+
+🌦️ Weather card
+- Feature request [Weather tile - Forecast improvement](https://github.com/adrien-parasote/ha-sci-fi/issues/14): `weather_hourly_forecast_limit` config parameter is not needed anymore.
+
+## 🐛 Fixes
+- [Climates card - CSS issue on big screen](https://github.com/adrien-parasote/ha-sci-fi/issues/16)
+
+<br>
+
 # [v0.4.0](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.4.0) - 2025-01-25
 
 ## 🆕 What's New
 
-Liftoff : adding 🌡️ climate card 🌡️ 
+**Liftoff** : adding 🌡️ climate card 🌡️ 
 
 ## 🆙  What's Changed
 
@@ -53,10 +69,11 @@ default_icon_off: mdi:lightbulb-outline
 
 - [Weather card chart rendering icon](https://github.com/adrien-parasote/ha-sci-fi/issues/11)
 
+<br>
 
 ## [v0.3.5](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.3.5) - 2024-01-13
 
-Rocket Transported To Launchpad : first package deployment under HACS
+**Rocket Transported To Launchpad** : first package deployment under HACS
 
 ### Added or Changed
 

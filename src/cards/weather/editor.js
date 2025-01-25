@@ -57,16 +57,6 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
         max="15"
         @input-update=${this.__update}
       ></sci-fi-slider>
-      <sci-fi-slider
-        label="Hourly forecast number(required)"
-        icon="mdi:counter"
-        element-id="weather_hourly_forecast_limit"
-        kind="weather_hourly_forecast_limit"
-        value="${this._config.weather_hourly_forecast_limit}"
-        min="1"
-        max="24"
-        @input-update=${this.__update}
-      ></sci-fi-slider>
     </section>`;
   }
 

@@ -240,6 +240,10 @@ export default css`
     border: var(--border-width) solid var(--secondary-light-alpha-color);
     border-radius: var(--border-radius);
     padding: 10px 15px;
+    cursor: pointer;
+  }
+  .days-forecast .content .weather.selected {
+    background-color: var(--secondary-light-light-alpha-color);
   }
   .days-forecast .content .weather .state .svg-container {
     justify-self: center;

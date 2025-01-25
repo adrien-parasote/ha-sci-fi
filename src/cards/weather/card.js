@@ -32,6 +32,7 @@ export class SciFiWeather extends LitElement {
   _chartDataKind = 'temperature';
   _daily_subscribed;
   _hourly_subscribed;
+  _day_selected = 0;
 
   static get properties() {
     return {
@@ -58,14 +59,8 @@ export class SciFiWeather extends LitElement {
   __validateConfig(config) {
     if (!config.weather_entity)
       throw new Error('You need to define a weather entity');
-    if (!config.weather_hourly_forecast_limit)
-      config.weather_hourly_forecast_limit = 24; // max 24
-    if (config.weather_hourly_forecast_limit > 24)
-      config.weather_hourly_forecast_limit = 24; // max 24
-    if (config.weather_hourly_forecast_limit > 72)
-      throw new Error('Hourly forecast is limited to 72h max');
     if (!config.weather_daily_forecast_limit)
-      config.weather_daily_forecast_limit = 15; // max 15
+      config.weather_daily_forecast_limit = 10; // max 15
     if (config.weather_daily_forecast_limit > 15)
       throw new Error('Daily forecast is limited to 15 days max');
     return config;
@@ -226,8 +221,24 @@ export class SciFiWeather extends LitElement {
     return html` <div class="content">
       ${this._weather_daily_forecast
         .slice(0, this._config.weather_daily_forecast_limit)
-        .map((daily_forecast) => html`${daily_forecast.render(true)}`)}
+        .map((daily_forecast, idx) => {
+          return html` <div
+            class="weather ${this._day_selected == idx ? 'selected' : ''}"
+            @click="${(e) => this.__selectDay(idx)}"
+          >
+            ${daily_forecast.render(true)}
+          </div>`;
+        })}
     </div>`;
+  }
+
+  __selectDay(idx) {
+    if (idx != this._day_selected) {
+      this._day_selected = idx;
+      this._chart.data = this.__getChartDatasets();
+      this._chart.update();
+      this.requestUpdate();
+    }
   }
 
   __renderChart() {
@@ -356,7 +367,7 @@ export class SciFiWeather extends LitElement {
   }
 
   __getChartDatasets() {
-    let datasets = [
+    const datasets = [
       {
         data: [],
         weather: [],
@@ -371,8 +382,9 @@ export class SciFiWeather extends LitElement {
       datasets[0].borderWidth = 2;
       datasets[0].borderRadius = 5;
     }
+    const forecastDate = this._weather_daily_forecast[this._day_selected].date;
     this._weather_hourly_forecast
-      .slice(0, this._config.weather_hourly_forecast_limit)
+      .filter((hour) => hour.isPartOfDay(forecastDate))
       .map((hourly) => {
         datasets[0].data.push({
           x: hourly.hours,
@@ -418,7 +430,6 @@ export class SciFiWeather extends LitElement {
   static getStubConfig() {
     return {
       weather_entity: null,
-      weather_hourly_forecast_limit: 24,
       weather_daily_forecast_limit: 10,
       alert: {},
     };

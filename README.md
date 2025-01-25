@@ -403,7 +403,7 @@ Card is composed of:
     - temperatures
     - precipitations
     - wind speed
-- A next day weather part
+- A next day weather part used to select chart data day to display
 
 ### Configuration
 
@@ -426,8 +426,7 @@ weather_entity: weather_home  # replace with your weather providers's entity id
 ```yaml
 type: custom:sci-fi-weather
 weather_entity: weather_home # replace with your weather providers's entity id
-weather_hourly_forecast_limit: 24
-weather_daily_forecast_limit: 15
+weather_daily_forecast_limit: 10
 alert:
   state_green: green # replace with your alert green state
   state_yellow: yellow # replace with your alert yellow state
@@ -442,16 +441,14 @@ alert:
 | - | - | - | - | - |
 | type | string | **Required** | Card definition | `custom:sci-fi-weather`| 
 | weather_entity | String | **Required** | Your provider weather entity id  |  |
-| weather_hourly_forecast_limit | Integer | **Optionnal** | Forecasted weather hours between 0 and 24  | 24 |
-| weather_daily_forecast_limit | Integer | **Optionnal** | Forecasted weather days between 0 and 15   | 15 |
+| weather_daily_forecast_limit | Integer | **Optionnal** | Forecasted weather days between 0 and 15   | 10 |
 | `alert` | Object | **Optional** | Alert sensor config |  | 
 
 **Example**
 ```yaml
 type: custom:sci-fi-weather
 weather_entity: weather_home # replace with your weather providers's entity id
-weather_hourly_forecast_limit: 24
-weather_daily_forecast_limit: 15
+weather_daily_forecast_limit: 10
 alert:
    ... # see alert configuration bellow
 ```

@@ -14,7 +14,7 @@
     "update-local": "npm --allow-same-version=true --no-git-tag-version version $npm_config_ver",
     "build-release": "npm run format && npm run prepare-env && rollup -c && npm run clean-up",
     "git-tag": "git tag $npm_config_ver && git push origin --tags",
-    "git-commit": "git commit -a -m 'Prepare release' && git push --all",
+    "git-commit": "git add --all && git commit -m 'Prepare release' && git push --all",
     "prepare-release": "npm run update-local && npm run build-release && npm run git-commit"
   },
   "keywords": [],

@@ -16,11 +16,14 @@ class SciFiToast extends LitElement {
         #toast {
           position: fixed;
           right: 5px;
+          bottom: 5px;
           z-index: 999999;
           min-width: 300px;
           max-width: 300px;
           display: flex;
-          justify-content: end;
+          flex-direction: column;
+          row-gap: 10px;
+          align-items: end;
         }
         #toast .toast {
           display: flex;
@@ -66,9 +69,6 @@ class SciFiToast extends LitElement {
         #toast .toast.error .toast_icon svg {
           fill: var(--red);
         }
-        .toast + .toast {
-          margin-top: 10px;
-        }
         #toast .toast .toast_icon,
         #toast .toast .toast_close {
           padding: 0 10px;
@@ -110,7 +110,7 @@ class SciFiToast extends LitElement {
     // Build message
     const delay = (duration / 1000).toFixed(2);
     toast.classList.add('toast', error ? 'error' : 'success');
-    //toast.style.animation = `slideInLeft ease .3s, fadeOut linear 1s ${delay}s forwards`;
+    toast.style.animation = `slideInLeft ease .3s, fadeOut linear 1s ${delay}s forwards`;
     render(
       html`
         <div class="toast_icon">

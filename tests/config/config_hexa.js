@@ -1,10 +1,7 @@
 export default {
-  header: {
-    message: 'Welcome',
-  },
+  header_message: 'Welcome',
   weather: {
     activate: true,
-    sun_entity: 'sun.sun',
     weather_entity: 'weather.la_chapelle_sur_erdre',
     link: '?component=weather',
   },
@@ -39,6 +36,17 @@ export default {
       state_on: ['cleaning', 'returning'],
       state_error: 'error',
       link: '#',
+    },
+    {
+      standalone: false,
+      entity_kind: 'climate',
+      entities_to_exclude: ['climate.clou'],
+      active_icon: 'sci:radiator-heat',
+      inactive_icon: 'sci:radiator-waiting',
+      name: 'Radiators',
+      state_on: ['auto', 'heat'],
+      state_error: null,
+      link: '?component=climate',
     },
   ],
 };

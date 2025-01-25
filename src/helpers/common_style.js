@@ -8,6 +8,7 @@ export default css`
     --primary-light-alpha-color: rgba(105, 211, 251, 0.5);
     --secondary-light-color: rgb(102, 156, 210);
     --secondary-light-alpha-color: rgba(102, 156, 210, 0.5);
+    --secondary-light-light-alpha-color: rgba(102, 156, 210, 0.2);
 
     --primary-error-color: rgb(250 146 29);
     --primary-error-alpha-color: rgba(250, 146, 29, 0.9);
@@ -21,15 +22,20 @@ export default css`
     --font-size-normal: 14px;
     --font-size-small: 12px;
     --font-size-xsmall: 10px;
+    --font-size-xxsmall: 7px;
 
+    --icon-size-xlarge: 60px;
     --icon-size-large: 50px;
     --icon-size-title: 36px;
+    --icon-size-subtitle: 30px;
     --icon-size-normal: 25px;
     --icon-size-small: 20px;
     --icon-size-xsmall: 15px;
+    --icon-size-xxsmall: 10px;
 
-    --tile-width: 155px;
-    --tile-height: calc(var(--tile-width) * 1.1547);
+    --default-hexa-width: 60px;
+    --medium-hexa-width: 70px;
+    --selected-hexa-width: 80px;
 
     --border-width: 1px;
     --border-radius: 5px;
@@ -38,6 +44,10 @@ export default css`
     font-family: 'Titillium Web', sans-serif;
     color: var(--primary-color);
     display: flex;
+  }
+  .svg-container {
+    display: flex;
+    justify-content: center;
   }
   /********* CARD ************/
   .card-corner {

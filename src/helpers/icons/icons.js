@@ -7,7 +7,7 @@ import WEATHER_ICON_SET from './weather_iconset.js';
 
 let SVG_ICONSET = {};
 // MDI ICONS
-Object.keys(mdi).map((k) => {
+Object.keys(mdi).forEach((k) => {
   const ha_name =
     k.substring(0, 3) +
     ':' +

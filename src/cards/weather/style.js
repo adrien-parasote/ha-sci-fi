@@ -10,6 +10,7 @@ export default css`
     font-size: var(--font-size-small);
     height: 100%;
     width: 100%;
+    background-color: black;
   }
   .container {
     display: flex;

@@ -2,6 +2,7 @@ import {SciFiAccordionCard} from './accordion.js';
 import {SciFiButton, SciFiToggleSwitch} from './button.js';
 import {
   SciFiChipsInput,
+  SciFiColorPicker,
   SciFiDropdownEntityInput,
   SciFiDropdownIconInput,
   SciFiDropdownInput,
@@ -22,6 +23,7 @@ const elements = {
   'sci-fi-dropdown-multi-entities-input': SciFiDropdownMultiEntitiesInput,
   'sci-fi-dropdown-icon-input': SciFiDropdownIconInput,
   'sci-fi-slider': SciFiSlider,
+  'sci-fi-color-picker': SciFiColorPicker,
 };
 Object.entries(elements).forEach(([key, value]) => {
   window.customElements.get(key) || window.customElements.define(key, value);

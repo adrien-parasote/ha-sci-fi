@@ -4,13 +4,13 @@ import {isEqual} from 'lodash-es';
 
 import '../../helpers/card/tiles.js';
 import common_style from '../../helpers/common_style.js';
-import {WEEK_DAYS} from '../../helpers/entities/const.js';
 import {
   DailyForecast,
   HourlyForecast,
   SunEntity,
   WeatherEntity,
 } from '../../helpers/entities/weather.js';
+import {WEEK_DAYS} from '../../helpers/entities/weather_const.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
 import WEATHER_ICON_SET from '../../helpers/icons/weather_iconset.js';
 import {
@@ -49,7 +49,6 @@ export class SciFiWeather extends LitElement {
     super();
     // Default
     this._date = new Date();
-    this._loaded = false;
     // Auto update date
     setInterval(() => {
       this._date = new Date();
@@ -57,11 +56,12 @@ export class SciFiWeather extends LitElement {
   }
 
   __validateConfig(config) {
-    if (!config.sun_entity) config.sun_entity = 'sun.sun';
     if (!config.weather_entity)
       throw new Error('You need to define a weather entity');
     if (!config.weather_hourly_forecast_limit)
-      config.weather_hourly_forecast_limit = 24; // max 72
+      config.weather_hourly_forecast_limit = 24; // max 24
+    if (config.weather_hourly_forecast_limit > 24)
+      config.weather_hourly_forecast_limit = 24; // max 24
     if (config.weather_hourly_forecast_limit > 72)
       throw new Error('Hourly forecast is limited to 72h max');
     if (!config.weather_daily_forecast_limit)
@@ -96,7 +96,7 @@ export class SciFiWeather extends LitElement {
     if (!this._config) return; // Can't assume setConfig is called before hass is set
 
     // Get Weather and sun entity once (no need to track change)
-    if (!this._sun) this._sun = new SunEntity(hass, this._config.sun_entity);
+    if (!this._sun) this._sun = new SunEntity(hass, 'sun.sun');
     if (!this._weather)
       this._weather = new WeatherEntity(hass, this._config.weather_entity);
 
@@ -115,9 +115,9 @@ export class SciFiWeather extends LitElement {
   __getDaysForecasts(hass) {
     const unsub = hass.connection.subscribeMessage(
       (event) => {
-        this._weather_daily_forecast = event.forecast.map((value) => {
-          return new DailyForecast(value, this.temperature_unit);
-        });
+        this._weather_daily_forecast = event.forecast.map(
+          (value) => new DailyForecast(value, this.temperature_unit)
+        );
         unsub.then((unsub) => unsub());
       },
       {
@@ -131,9 +131,9 @@ export class SciFiWeather extends LitElement {
   __getHoursForecasts(hass) {
     const unsub = hass.connection.subscribeMessage(
       (event) => {
-        this._weather_hourly_forecast = event.forecast.map((value) => {
-          return new HourlyForecast(value, this.temperature_unit);
-        });
+        this._weather_hourly_forecast = event.forecast.map(
+          (value) => new HourlyForecast(value, this.temperature_unit)
+        );
         unsub.then((unsub) => unsub());
         // draw chart
         this.__drawChart();
@@ -186,14 +186,13 @@ export class SciFiWeather extends LitElement {
       .filter((x) =>
         Object.keys(alert_states).includes(this._alert.attributes[x])
       )
-      .map((key) => {
-        return html`<div
-          class="alert ${alert_states[this._alert.attributes[key]]}"
-        >
-          ${getIcon('mdi:alert')}
-          <div>${key}</div>
-        </div>`;
-      })}`;
+      .map(
+        (key) =>
+          html`<div class="alert ${alert_states[this._alert.attributes[key]]}">
+            ${getIcon('mdi:alert')}
+            <div>${key}</div>
+          </div>`
+      )}`;
   }
 
   __getHour() {
@@ -227,9 +226,7 @@ export class SciFiWeather extends LitElement {
     return html` <div class="content">
       ${this._weather_daily_forecast
         .slice(0, this._config.weather_daily_forecast_limit)
-        .map((daily_forecast) => {
-          return html`${daily_forecast.render(true)}`;
-        })}
+        .map((daily_forecast) => html`${daily_forecast.render(true)}`)}
     </div>`;
   }
 
@@ -248,17 +245,18 @@ export class SciFiWeather extends LitElement {
         ${getIcon('mdi:chevron-down')}
       </button>
       <div class="dropdown-content">
-        ${Object.keys(SENSORS_MAP).map((key) => {
-          return html` <div
-            @click=${(e) => this.__selectChartDataKind(e, key)}
-            class="dropdown-item"
-          >
-            ${getWeatherIcon(SENSORS_MAP[key].dropdown.icon)}
-            <div class="dropdown-item-label">
-              ${SENSORS_MAP[key].dropdown.label}
-            </div>
-          </div>`;
-        })}
+        ${Object.keys(SENSORS_MAP).map(
+          (key) =>
+            html` <div
+              @click=${(e) => this.__selectChartDataKind(e, key)}
+              class="dropdown-item"
+            >
+              ${getWeatherIcon(SENSORS_MAP[key].dropdown.icon)}
+              <div class="dropdown-item-label">
+                ${SENSORS_MAP[key].dropdown.label}
+              </div>
+            </div>`
+        )}
       </div>
     </div>`;
   }
@@ -282,9 +280,9 @@ export class SciFiWeather extends LitElement {
       this._weather.rain_chance,
       this._weather.freeze_chance,
       this._weather.snow_chance,
-    ].map((sensor) => {
-      return this.__renderTodaySensor(sensor.name, sensor.icon, sensor.value);
-    });
+    ].map((sensor) =>
+      this.__renderTodaySensor(sensor.name, sensor.icon, sensor.value)
+    );
     return html`${sensors}`;
   }
 
@@ -305,6 +303,7 @@ export class SciFiWeather extends LitElement {
       this._chart = new Chart(ctx, {
         data: this.__getChartDatasets(),
         options: {
+          scales: SENSORS_MAP[this._chartDataKind].chartOptionsScales,
           plugins: {
             title: {
               display: true,
@@ -418,7 +417,6 @@ export class SciFiWeather extends LitElement {
   }
   static getStubConfig() {
     return {
-      sun_entity: 'sun.sun',
       weather_entity: null,
       weather_hourly_forecast_limit: 24,
       weather_daily_forecast_limit: 10,

@@ -4,7 +4,7 @@ import common_style from '../common_style.js';
 import {getIcon} from '../icons/icons.js';
 import './tiles.js';
 
-export class SciFiWheel extends LitElement {
+class SciFiWheel extends LitElement {
   static get styles() {
     return [
       common_style,
@@ -73,10 +73,7 @@ export class SciFiWheel extends LitElement {
   }
 
   set items(items) {
-    this._items = [];
-    items.map((el) => {
-      if (!el.inactive) this._items.push(el);
-    });
+    this._items = items.filter((el) => !el.inactive);
   }
 
   render() {
@@ -102,8 +99,8 @@ export class SciFiWheel extends LitElement {
   }
 
   __buildSliderContent() {
-    return this._items.map((el) => {
-      return html`
+    return this._items.map(
+      (el) => html`
         <div
           class="slider-item ${el.id == this.selectedId
             ? 'show'
@@ -112,8 +109,8 @@ export class SciFiWheel extends LitElement {
           ${getIcon(el.icon)}
           ${this.showName ? html`<div>${el.name}</div>` : ''}
         </div>
-      `;
-    });
+      `
+    );
   }
 
   __findNext(direction) {

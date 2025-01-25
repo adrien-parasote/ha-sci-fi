@@ -2,9 +2,6 @@ import {css} from 'lit';
 
 export default css`
   :host {
-    --default-hexa-width: 60px;
-    --selected-hexa-width: 80px;
-
     --light-on-color: rgb(255, 193, 7);
 
     background-color: black;
@@ -16,40 +13,76 @@ export default css`
     flex-direction: column;
     flex: 1;
   }
-  /******** COMMON *********/
-  svg {
+  /*********** HEADER *************/
+  .header {
+    display: flex;
+    flex-direction: row;
+    border-bottom: var(--border-width) solid var(--primary-bg-color);
+    background-color: var(--primary-bg-alpha-color);
+    padding: 5px 10px 0 10px;
+  }
+  .header .info {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    column-gap: 5px;
+    align-items: center;
+  }
+  .header .info .power {
+    cursor: pointer;
+  }
+  .header .info .power svg {
     fill: var(--primary-light-color);
+    width: var(--icon-size-normal);
+    height: var(--icon-size-normal);
   }
-  .off {
-    color: var(--secondary-light-color) !important;
+  .header .info .power.off svg {
+    fill: var(--secondary-light-color);
   }
-  .off svg {
-    fill: var(--secondary-light-color) !important;
+  .header .info .text {
+    font-size: var(--font-size-normal);
+    color: var(--primary-light-color);
+    text-shadow: 0px 0px 5px var(--primary-light-color);
   }
+  .header .weather svg {
+    width: var(--icon-size-title);
+    height: var(--icon-size-title);
+  }
+  /******** COMMON *********/
   .title .power {
     float: right;
+    color: var(--primary-light-color);
   }
   .title .power svg {
     width: var(--icon-size-xsmall);
     height: var(--icon-size-xsmall);
-  }
-  .title .power svg:hover {
+    fill: var(--primary-light-color);
     cursor: pointer;
+  }
+  .title .power.off {
+    color: var(--secondary-light-color);
+  }
+  .title .power.off svg {
+    fill: var(--secondary-light-color);
   }
   /******** FLOORS *********/
   .floors {
     display: flex;
     flex-direction: row;
-    column-gap: 10px;
+    column-gap: 5px;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 10px;
   }
   .floors sci-fi-hexa-tile {
     --hexa-width: var(--default-hexa-width);
   }
   .floors sci-fi-hexa-tile .item-icon svg {
     width: var(--icon-size-title);
+    fill: var(--primary-light-color);
+  }
+  .floors sci-fi-hexa-tile .item-icon.off svg {
+    fill: var(--secondary-bg-color);
   }
   .floors sci-fi-hexa-tile.selected {
     --hexa-width: var(--selected-hexa-width);
@@ -64,7 +97,7 @@ export default css`
     border-bottom: var(--border-width) solid var(--primary-bg-color);
     border-top: var(--border-width) solid var(--primary-bg-color);
     padding: 10px 0;
-    margin: 20px 0 40px 0;
+    margin: 10px 0 20px 0;
     background-color: var(--primary-bg-alpha-color);
   }
   .floor-content .info {
@@ -121,6 +154,10 @@ export default css`
   }
   .areas .area-list .row sci-fi-hexa-tile .item-icon svg {
     width: var(--icon-size-title);
+    fill: var(--primary-light-color);
+  }
+  .areas .area-list .row sci-fi-hexa-tile .item-icon.off svg {
+    fill: var(--secondary-bg-color);
   }
   /******** AREA CONTENT *********/
   .areas .area-content {
@@ -173,5 +210,8 @@ export default css`
     width: var(--icon-size-normal);
     height: var(--icon-size-normal);
     fill: var(--light-on-color);
+  }
+  .area-content .lights .light.off svg {
+    fill: var(--secondary-light-alpha-color);
   }
 `;

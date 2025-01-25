@@ -3,8 +3,8 @@ import {html} from 'lit';
 import {SciFiBaseEditor} from '../../helpers/card/base_editor.js';
 import common_style from '../../helpers/common_style.js';
 import editor_common_style from '../../helpers/editor_common_style.js';
-import {ENTITY_KIND_LIGHT} from '../../helpers/entities/const.js';
 import {House} from '../../helpers/entities/house.js';
+import {ENTITY_KIND_LIGHT} from '../../helpers/entities/light_const.js';
 import '../../helpers/form/form.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 import editor_style from './style_editor.js';
@@ -55,12 +55,27 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
     return html`
       <div class="card card-corner">
         <div class="container ${!this._edit}">
-          ${this.__renderSectionDefaultIcon()}
+          ${this.__renderHeader()} ${this.__renderSectionDefaultIcon()}
           ${this.__renderSectionFloorAreaSelection()}
           ${this.__renderSectionCustomEntities()}
         </div>
         <div class="editor ${this._edit}">${this.__renderEntityCustom()}</div>
       </div>
+    `;
+  }
+
+  __renderHeader() {
+    return html`
+      <section>
+        <h1>Header</h1>
+        <sci-fi-input
+          label="Header card message"
+          value=${this._config.header}
+          element-id="header"
+          kind="header"
+          @input-update=${this.__update}
+        ></sci-fi-input>
+      </section>
     `;
   }
 
@@ -91,17 +106,17 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
       <sci-fi-dropdown-icon-input
         label="Active icon (required)"
         element-id="default_icons"
-        kind="on"
-        icon=${this._config.default_icons.on}
-        value=${this._config.default_icons.on}
+        kind="default_icon_on"
+        icon=${this._config.default_icon_on}
+        value=${this._config.default_icon_on}
         @input-update=${this.__update}
       ></sci-fi-dropdown-icon-input>
       <sci-fi-dropdown-icon-input
         label="Inactive icon (required)"
         element-id="default_icons"
-        kind="off"
-        icon=${this._config.default_icons.off}
-        value=${this._config.default_icons.off}
+        kind="default_icon_off"
+        icon=${this._config.default_icon_off}
+        value=${this._config.default_icon_off}
         @input-update=${this.__update}
       ></sci-fi-dropdown-icon-input>
     </section>`;
@@ -151,9 +166,9 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
         <span>${getIcon('mdi:selection-ellipse-arrow-inside')}</span>Light
         entities customization
       </h1>
-      ${Object.keys(this._config.custom_entities).map((entity_id) => {
-        return this.__renderCustomEntity(entity_id);
-      })}
+      ${Object.keys(this._config.custom_entities).map((entity_id) =>
+        this.__renderCustomEntity(entity_id)
+      )}
       <sci-fi-button
         has-border
         icon="mdi:plus"
@@ -254,8 +269,8 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
   __update(e) {
     let newConfig = this.__getNewConfig();
     switch (e.detail.id) {
-      case 'default_icons':
-        newConfig[e.detail.id][e.detail.kind] = e.detail.value;
+      case 'header':
+        newConfig[e.detail.id] = e.detail.value;
         break;
       case 'first_floor_to_render':
         newConfig[e.detail.id] = e.detail.value;
@@ -263,6 +278,9 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
         break;
       case 'first_area_to_render':
         newConfig[e.detail.id] = e.detail.value;
+        break;
+      case 'default_icons':
+        newConfig[e.detail.kind] = e.detail.value;
         break;
       default:
         // Custom entity

@@ -1,21 +1,26 @@
 import {css} from 'lit';
 
 export default css`
+  .header > *,
+  .settings > * {
+    margin-bottom: 10px;
+  }
   .container.false {
     display: none;
   }
   .editor.false {
     display: none;
   }
-  .entity-row {
+  .state-mode-row {
     display: flex;
     flex-direction: row;
     column-gap: 5px;
+    margin-bottom: 10px;
   }
-  .entity-row sci-fi-dropdown-entity-input {
+  .state-mode-row sci-fi-input {
     flex: 1;
   }
-  .entity-row sci-fi-button {
+  .state-mode-row sci-fi-button {
     align-self: center;
   }
   .editor {

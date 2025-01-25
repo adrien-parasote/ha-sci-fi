@@ -3,13 +3,15 @@ import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 import {isEqual} from 'lodash-es';
 
 import '../../helpers/card/tiles.js';
+import '../../helpers/card/toast.js';
 import common_style from '../../helpers/common_style.js';
+import {House} from '../../helpers/entities/house.js';
 import {
   ENTITY_KIND_LIGHT,
   STATE_LIGHT_ON,
-} from '../../helpers/entities/const.js';
-import {House} from '../../helpers/entities/house.js';
-import {getIcon} from '../../helpers/icons/icons.js';
+} from '../../helpers/entities/light_const.js';
+import {SunEntity} from '../../helpers/entities/weather.js';
+import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
 import {PACKAGE} from './const.js';
 import {SciFiLightsEditor} from './editor.js';
 import style from './style.js';
@@ -20,6 +22,7 @@ export class SciFiLights extends LitElement {
   }
 
   _hass; // private
+  _sun;
 
   static get properties() {
     return {
@@ -30,16 +33,12 @@ export class SciFiLights extends LitElement {
     };
   }
 
-  constructor() {
-    super();
-  }
-
   __validateConfig(config) {
-    if (!config.default_icons) config.default_icons = {};
-    if (!config.default_icons.on)
-      config.default_icons.on = 'mdi:lightbulb-on-outline';
-    if (!config.default_icons.off)
-      config.default_icons.off = 'mdi:lightbulb-outline';
+    if (!config.header) config.header = '';
+    if (!config.default_icon_on)
+      config.default_icon_on = 'mdi:lightbulb-on-outline';
+    if (!config.default_icon_off)
+      config.default_icon_off = 'mdi:lightbulb-outline';
     if (!config.custom_entities) config.custom_entities = {};
     return config;
   }
@@ -73,6 +72,9 @@ export class SciFiLights extends LitElement {
 
     if (!this._config) return; // Can't assume setConfig is called before hass is set
 
+    if (!this._sun && hass.states['sun.sun'])
+      this._sun = new SunEntity(hass, 'sun.sun');
+
     // Build house
     const house = new House(hass);
     if (!this._house || !isEqual(house, this._house)) this._house = house;
@@ -91,27 +93,66 @@ export class SciFiLights extends LitElement {
 
     return html`
       <div class="container">
+        <div class="header">${this.__displayHeader()}</div>
         <div class="floors">${this.__displayHouseFloors()}</div>
         <div class="floor-content">${this.__displayFloorInfo()}</div>
         <div class="areas">
           ${this.__displayAreas()} ${this.__displayAreaInfo()}
         </div>
       </div>
+      <sci-fi-toast></sci-fi-toast>
     `;
   }
 
+  __displayHeader() {
+    return html`
+      <div class="info">
+        <div
+          class="power ${this._house.isActive(ENTITY_KIND_LIGHT)
+            ? 'on'
+            : 'off'}"
+          @click="${this.__turnOnOffHouse}"
+        >
+          ${getIcon('mdi:power-standby')}
+        </div>
+        <div class="text">${this._config.header}</div>
+      </div>
+      <div class="weather">
+        ${this._sun ? getWeatherIcon(this._sun.dayPhaseIcon()) : ''}
+      </div>
+    `;
+  }
+
+  __turnOnOffHouse(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this._house.turnOnOffLight(this._hass).then(
+      () => this.__toast(false),
+      (e) => this.__toast(true, e)
+    );
+  }
+
   __displayHouseFloors() {
-    return this._house.floors.map((floor) => {
-      if (!floor.hasEntityKind(ENTITY_KIND_LIGHT)) return;
-      return html` <sci-fi-hexa-tile
-        active-tile
-        state="${floor.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}"
-        class="${this._active_floor_id == floor.id ? 'selected' : ''}"
-        @click="${(e) => this.__onFloorSelect(e, floor)}"
-      >
-        <div class="item-icon">${getIcon(floor.icon)}</div>
-      </sci-fi-hexa-tile>`;
-    });
+    return this._house
+      .getFloorsOrderedByLevel()
+      .filter((floor) => floor.hasEntityKind(ENTITY_KIND_LIGHT))
+      .map(
+        (floor) =>
+          html` <sci-fi-hexa-tile
+            active-tile
+            state="${this._active_floor_id == floor.id ? 'on' : 'off'}"
+            class="${this._active_floor_id == floor.id ? 'selected' : ''}"
+            @click="${(e) => this.__onFloorSelect(e, floor)}"
+          >
+            <div
+              class="item-icon ${floor.isActive(ENTITY_KIND_LIGHT)
+                ? 'on'
+                : 'off'}"
+            >
+              ${getIcon(floor.icon)}
+            </div>
+          </sci-fi-hexa-tile>`
+      );
   }
 
   __displayFloorInfo() {
@@ -120,9 +161,7 @@ export class SciFiLights extends LitElement {
     return html` <div
       class="info ${floor.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}"
     >
-      <div class="title">
-        ${floor.name} (level : ${floor.level}) ${this.__displayPowerBtn(floor)}
-      </div>
+      <div class="title">${floor.name} ${this.__displayPowerBtn(floor)}</div>
       <div class="floor-lights">
         ${this.__displayOnLights(
           entities.length,
@@ -174,15 +213,18 @@ export class SciFiLights extends LitElement {
   }
 
   __displayArea(area) {
-    const area_state = area.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off';
     return html`
       <sci-fi-hexa-tile
         active-tile
-        state="${area_state}"
-        class="${area_state}"
+        state="${area.id == this._active_area_id ? 'on' : 'off'}"
+        class="${area.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}"
         @click="${(e) => this.__onAreaSelect(e, area)}"
       >
-        <div class="item-icon">${getIcon(area.icon)}</div>
+        <div
+          class="item-icon ${area.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}"
+        >
+          ${getIcon(area.icon)}
+        </div>
       </sci-fi-hexa-tile>
     `;
   }
@@ -235,12 +277,12 @@ export class SciFiLights extends LitElement {
       icon =
         custom && custom.icon_on
           ? custom.icon_on
-          : this._config.default_icons.on;
+          : this._config.default_icon_on;
     } else {
       icon =
         custom && custom.icon_off
           ? custom.icon_off
-          : this._config.default_icons.off;
+          : this._config.default_icon_off;
     }
     return getIcon(icon);
   }
@@ -263,13 +305,24 @@ export class SciFiLights extends LitElement {
   __onPowerBtnClick(e, element) {
     e.preventDefault();
     e.stopPropagation();
-    element.callService(this._hass, ENTITY_KIND_LIGHT);
+    element.callService(this._hass, ENTITY_KIND_LIGHT).then(
+      () => this.__toast(false),
+      (e) => this.__toast(true, e)
+    );
   }
 
   __onLightClick(e, light) {
     e.preventDefault();
     e.stopPropagation();
-    light.callService(this._hass);
+    light.callService(this._hass).then(
+      () => this.__toast(false),
+      (e) => this.__toast(true, e)
+    );
+  }
+
+  __toast(error, e) {
+    const msg = error ? e.message : 'done';
+    this.shadowRoot.querySelector('sci-fi-toast').addMessage(msg, error);
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/
@@ -279,10 +332,9 @@ export class SciFiLights extends LitElement {
 
   static getStubConfig() {
     return {
-      default_icons: {
-        on: 'mdi:lightbulb-on-outline',
-        off: 'mdi:lightbulb-outline',
-      },
+      header: 'Lights',
+      default_icon_on: 'mdi:lightbulb-on-outline',
+      default_icon_off: 'mdi:lightbulb-outline',
       first_floor_to_render: null,
       first_area_to_render: null,
       custom_entities: {},

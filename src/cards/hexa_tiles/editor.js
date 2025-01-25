@@ -12,15 +12,16 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
     this._hass = hass;
     // initialized entity kind list
     if (hass.states) {
-      this._entity_kind = Object.keys(hass.states).reduce((cur, key) => {
-        const k = key.split('.')[0];
-        if (cur[k]) {
-          cur[k].push(hass.states[key]);
-        } else {
-          cur[k] = [hass.states[key]];
-        }
-        return cur;
-      }, {});
+      if (!this._entity_kind || this._entity_kind.length == 0)
+        this._entity_kind = Object.keys(hass.states).reduce((cur, key) => {
+          const k = key.split('.')[0];
+          if (cur[k]) {
+            cur[k].push(hass.states[key]);
+          } else {
+            cur[k] = [hass.states[key]];
+          }
+          return cur;
+        }, {});
     } else {
       this._entity_kind = [];
     }
@@ -76,14 +77,6 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   __renderWeatherEntities() {
     return html`
       <sci-fi-dropdown-entity-input
-        label="Sun entity (required)"
-        element-id="weather"
-        kind="sun_entity"
-        value="${this._config.weather.sun_entity}"
-        items="${JSON.stringify(this._entity_kind['sun'].flat())}"
-        @input-update=${this.__update}
-      ></sci-fi-dropdown-entity-input>
-      <sci-fi-dropdown-entity-input
         label="Weather entity (required)"
         element-id="weather"
         kind="weather_entity"
@@ -105,20 +98,21 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
     return html`
       <section>
         <h1>Tiles</h1>
-        ${this._config.tiles.map((entity, id) => {
-          return html`<sci-fi-accordion-card
-            element-id=${id}
-            title="Tile ${id + 1}"
-            icon="mdi:hexagon-slice-6"
-            ?deletable=${this._config.tiles.length > 1}
-            @accordion-delete=${this.__update}
-            ?open=${id == 0}
-          >
-            ${this.__renderEntity(id, entity)}
-            ${this.__renderAppearance(id, entity)}
-            ${this.__renderTechnical(id, entity)}
-          </sci-fi-accordion-card>`;
-        })}
+        ${this._config.tiles.map(
+          (entity, id) =>
+            html`<sci-fi-accordion-card
+              element-id=${id}
+              title="Tile ${id + 1}"
+              icon="mdi:hexagon-slice-6"
+              ?deletable=${this._config.tiles.length > 1}
+              @accordion-delete=${this.__update}
+              ?open=${id == 0}
+            >
+              ${this.__renderEntity(id, entity)}
+              ${this.__renderAppearance(id, entity)}
+              ${this.__renderTechnical(id, entity)}
+            </sci-fi-accordion-card>`
+        )}
         <sci-fi-button
           has-border
           icon="mdi:plus"
@@ -294,8 +288,6 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
       } else {
         // Update data
         newConfig[elemmentId][e.detail.kind] = e.detail.value;
-        if (e.detail.kind == 'activate' && !newConfig[elemmentId]['sun_entity'])
-          newConfig[elemmentId]['sun_entity'] = 'sun.sun';
       }
     }
     this.__dispatchChange(e, newConfig);

@@ -15,6 +15,7 @@ The aim is to have your phone as a single entry point an use it as a remote hous
     3. [Sci-Fi icon](#icon)
     4. [Sci-Fi Lights card](#lights_card)
     5. [Sci-Fi Weather card](#weather_card)
+    5. [Sci-Fi Climates card](#climates_card)
 
 # 🛠️ How to install ?<a name="how_to_install"></a>
 
@@ -68,7 +69,7 @@ If it's not working, just try to clear your browser cache.`
 
 ### Description:
 
-Main package card, allowing you to have a single entities' vision you want to know. Then on tile's click, you're redirected to your dedicated page (example: can be a dashboard subview).<br>
+Main package card, allowing you to have a single entities' vision you want. Then on tile's click, you're redirected to your dedicated HA dashboard page (example: a dashboard subview).<br>
 Two modes are available: 
 
 1. Kind (ex: light): parse you HA entities to give you a global state (ex: on - if at least one light is on - else off)
@@ -76,7 +77,7 @@ Two modes are available:
 
 ### Card features:
 
-- Show current connected person with a custom welcome message
+- Show current connected person with a custom optional welcome message
 - Weather (optional) tile: special weather tile based on following entities:
     - `sun.sun` 
     - `weather.<my_city>`
@@ -183,7 +184,7 @@ weather:
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
 | entity_kind | String | **Required** | Entities' kind you want to track. Example : `light`, `person`, `sensor`... | |
-| entities_to_exclude | List[String] | **Optional** | Entities's id list to exclude from tracking. Example: `light.excluded_light_1`, `light.excluded_light_2`  | |
+| entities_to_exclude | List[String] | **Optional** | Entities' id list to exclude from tracking. Example: `light.excluded_light_1`, `light.excluded_light_2`  | `[]` |
 | active_icon | String | **Required** | `mdi`/ `sci` icon to render when state is active. Example: `mdi:lightbulb-on-outline` | |
 | inactive_icon | String | **Required** | `mdi`/ `sci` icon to render when state is active. Example: `mdi:lightbulb` | |
 | name | String | **Optional** | Tile's name to display | |
@@ -274,18 +275,18 @@ Lights package card, allowing you to dynamically manage your home lights by auto
 ### Card features:
 
 Allow to deal with lights entities, grouping them per floors/areas.
+- Display house global turn on / off lights button
 - Display house's floors linked with lights entities
 - Display per floor:
     - Global information 
-        - name
-        - level
-        - number of lights on/off
-    - Global turn on/off light button
-    - Attached area with lights entities (areas' icon are from HA area definition)
+        - Name
+        - Number of lights on/off
+    - Floor turn on/off lights button
+    - Attached area with lights entities
 - Display per area:
     - Area name
-    - Global turn on/off light button
-    - Light entities button
+    - Area turn on/off lights button
+    - Light entities button (turn on/off ligth)
 
 > [!TIP]
 > Floors & Areas icons are the one you define in `Areas, labels & zones` in your HA configuration
@@ -503,5 +504,216 @@ alert:
 
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/weather.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/weather_edit.jpeg" width="300">
+
+</details>
+
+## 🌦️ Sci-Fi Climates card <a name="climates_card"></a>
+
+> [!CAUTION]
+> Card is currently build for **climate[type] = radiator** only
+
+### Description:
+
+Climates package card, allowing you to dynamically manage your home climates by auto-discovering HA `climate` entities.
+
+### Card features:
+
+Allow to deal with climates entities, grouping them per floors/areas.
+- Display average house temperature, global turn on (preset mode `eco`) / off (preset mode `frost_protection`)
+- Display house's floors linked with climates entities
+- Display per floor:
+    - Global information 
+        - Name
+        - Average temperature
+    - Attached area with climates entities
+- Display per area:
+    - Area name
+    - Climate entities:
+        - Current temperature
+        - Current mode
+        - Target temperature
+        - Preset mode change button
+        - HVAC change button
+
+> [!TIP]
+> Floors & Areas icons are the one you define in `Areas, labels & zones` in your HA configuration
+
+> [!NOTE]
+> If Home Assistant `Sun` entity is available, day phase will be displayed on top of the card (dawn, dusk, day, rising, seting)
+
+
+### Configuration
+
+> [!TIP]
+> This card can be configure through the UI that allow use to use HA interface for the configuration.
+
+
+<details>
+<summary>YAML</summary>
+
+#### Minimal configuration
+
+```yaml
+type: custom:sci-fi-climates
+```
+
+#### Full configuration
+
+```yaml
+type: custom:sci-fi-climates
+header:
+  icon_winter_state: mdi:thermometer-chevron-up
+  message_winter_state: Winter is coming
+  icon_summer_state: mdi:thermometer-chevron-down
+  message_summer_state: Summer time
+unit: "°C"
+entities_to_exclude:
+  - climate.excluded_1
+state_icons:
+  auto: sci:radiator-auto
+  'off': sci:radiator-off
+  heat: sci:radiator-heat
+state_colors:
+  auto: "#669cd2"
+  'off': "#6c757d"
+  heat: "#ff7f50"
+mode_icons:
+  frost_protection: mdi:snowflake
+  eco: mdi:leaf
+  comfort: mdi:sun-thermometer-outline
+  comfort-1: mdi:sun-thermometer-outline
+  comfort-2: mdi:sun-thermometer-outline
+  boost: mdi:fire
+mode_colors:
+  frost_protection: "#acd5f3"
+  eco: "#4fe38b"
+  comfort: "#fdda0d"
+  comfort-1: "#ffea00"
+  comfort-2: "#ffff8f"
+  boost: "#ff7f50"
+```
+
+#### Options
+
+| Name | Type | Requirement | Description | Default   |
+| - | - | - | - | - |
+| type | string | **Required** | Card definition | `custom:sci-fi-climates`| 
+| `header` | Object | **Optionnal** | Header card options  |  |
+| entities_to_exclude | List[String] | **Optional** | Entities' id list to exclude from tracking. Example: `climate.excluded_1`, `climate.excluded_1`  | `[]`|
+| `state_icons` | Object | **Optionnal** | Icons for each climate states  |  |
+| `state_colors` | Object | **Optionnal** | Color for each climate states  |  |
+| `mode_icons` | Object | **Optionnal** | Icon for each climate preset mode  |  |
+| `mode_colors` | Object | **Optionnal** | Color for each climate preset mode  |  |
+
+**Example**
+```yaml
+type: custom:sci-fi-climates
+header:
+  ... # see header configuration bellow
+unit: "°C"
+entities_to_exclude:
+  - climate.excluded_1
+  - climate.excluded_2
+state_icons:
+  ... # see state_icons configuration bellow
+state_colors:
+  ... # see state_colors configuration bellow
+mode_icons:
+  ... # see mode_icons configuration bellow
+mode_colors:
+  ... # see mode_colors configuration bellow
+```
+
+<br>
+
+***`header` config***
+
+| Name | Type | Requirement | Description | Default   |
+| - | - | - | - | - |
+| icon_winter_state | string | **Optional** | Icon to display when you're in a summer period and all our climates are in `frost_protection` mode | `mdi:thermometer-chevron-up` |
+| message_winter_state | string | **Optional** | Message to display when you're in a summer period and all our climates are in `frost_protection` mode | Winter is coming |
+| icon_summer_state | string | **Optional** | Icon to display when you're in a winter period and all our climates aren't in `frost_protection` mode | `mdi:thermometer-chevron-down` |
+| message_summer_state | string | **Optional** | Icon to display when you're in a winter period and all our climates aren't in `frost_protection` mode | Summer time |
+
+
+**Example**
+```yaml
+header:
+  icon_winter_state: mdi:thermometer-chevron-up
+  message_winter_state: Winter is coming
+  icon_summer_state: mdi:thermometer-chevron-down
+  message_summer_state: Summer time
+```
+
+<br>
+
+***`state_icons` & `state_colors` config***
+
+`state_icons` & `state_colors` have the same parameters, as follow
+
+| Name | Type | Requirement | Description | Default   |
+| - | - | - | - | - |
+| auto | string | **Optional** | Icon/Color to use when climate is in `auto` HVAC state | icon : `sci:radiator-auto` <br> color : `#669cd2` |
+| off | string | **Optional** | Icon/Color to use when climate is in `off` HVAC state | icon : `sci:radiator-off` <br> color : `#6c757d` |
+| heat | string | **Optional** | Icon/Color to use when climate is in `heat` HVAC state | icon : `sci:radiator-heat` <br> color : `#ff7f50` |
+
+**Example**
+```yaml
+state_icons:
+  auto: sci:radiator-auto
+  'off': sci:radiator-off
+  heat: sci:radiator-heat
+state_colors:
+  auto: "#669cd2"
+  'off': "#6c757d"
+  heat: "#ff7f50"
+```
+
+<br>
+
+***`mode_icons` & `mode_colors` config***
+
+`mode_icons` & `mode_colors` have the same parameters, as follow
+
+| Name | Type | Requirement | Description | Default   |
+| - | - | - | - | - |
+| frost_protection | string | **Optional** | Icon/Color to use when climate preset mode is `frost_protection` | icon : `mdi:snowflake` <br> color : `#acd5f3` |
+| eco | string | **Optional** | Icon/Color to use when climate preset mode is `eco` | icon : `mdi:leaf` <br> color : `#4fe38b` |
+| comfort | string | **Optional** | Icon/Color to use when climate preset mode is `comfort` | icon : `mdi:sun-thermometer-outline` <br> color : `#fdda0d` |
+| comfort-1 | string | **Optional** | Icon/Color to use when climate preset mode is `comfort-1` | icon : `mdi:sun-thermometer-outline` <br> color : `#ffea00` |
+| comfort-2 | string | **Optional** | Icon/Color to use when climate preset mode is `comfort-2` | icon : `mdi:sun-thermometer-outline` <br> color : `#ffff8f` |
+| boost | string | **Optional** | Icon/Color to use when climate preset mode is `boost` | icon : `mdi:fire` <br> color : `#ff7f50` |
+
+**Example**
+```yaml
+mode_icons:
+  frost_protection: mdi:snowflake
+  eco: mdi:leaf
+  comfort: mdi:sun-thermometer-outline
+  comfort-1: mdi:sun-thermometer-outline
+  comfort-2: mdi:sun-thermometer-outline
+  boost: mdi:fire
+mode_colors:
+  frost_protection: "#acd5f3"
+  eco: "#4fe38b"
+  comfort: "#fdda0d"
+  comfort-1: "#ffea00"
+  comfort-2: "#ffff8f"
+  boost: "#ff7f50"
+```
+
+</details>
+
+### Screenshots
+
+<details>
+<summary>Show</summary>
+
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_1.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_2.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_3.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_edit_1.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_edit_2.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_edit_3.jpeg" width="300">
 
 </details>

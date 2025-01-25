@@ -9,13 +9,13 @@ The aim is to have your phone as a single entry point an use it as a remote hous
 
 # 📚 Table of contents
 
-1. [How to install ?](#how_to_install)
-2. [Available components](#available_components)
-    1. [Sci-Fi Hexa-Tiles card](#hexa_tiles)
-    3. [Sci-Fi icon](#icon)
-    4. [Sci-Fi Lights card](#lights_card)
-    5. [Sci-Fi Weather card](#weather_card)
-    5. [Sci-Fi Climates card](#climates_card)
+1. 🛠️ [How to install ?](#how_to_install)
+2. 🧩 [Available components](#available_components)
+    * ⬡ [Sci-Fi Hexa-Tiles card](#hexa_tiles)
+    * 💡 [Sci-Fi Lights card](#lights_card)
+    * 🌦️ [Sci-Fi Weather card](#weather_card)
+    * 🌡️ [Sci-Fi Climates card](#climates_card)
+3. 🖼️ [Sci-Fi icon](#icon)
 
 # 🛠️ How to install ?<a name="how_to_install"></a>
 
@@ -248,22 +248,6 @@ tiles:
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/hexa_edit_2.jpeg" width="300">
 
 </details>
-
-
-## 🖼️ Sci-Fi icons <a name="icon"></a>
-
-To complete HA icon set, sci-fi package onboard the following icons : 
-
-| Name | HA string | Preview  |
-| - | - | - |
-| Radiator auto | sci:radiator-auto | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_auto.svg" alt="Radiator auto"  height="25"/> |
-| Radiator frost protection | sci:radiator-frost-protection | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_frost_protection.svg" alt="Radiator frost protection"  height="25"/> |
-| Radiator heat | sci:radiator-heat | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_heat.svg" alt="Radiator heat"  height="25"/> |
-| Radiator off | sci:radiator-off | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_off.svg" alt="Radiator off"  height="25"/> |
-| Sleeping vaccum | sci:vacuum-sleep | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/sleeping_vacuum.svg" alt="Sleeping vaccum"  height="25"/> |
-| Stove | sci:stove | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove.svg" alt="Stove"  height="25"/> |
-| Stove heat | sci:stove-heat | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_heat.svg" alt="Stove heat"  height="25"/> |
-| Stove cool | sci:stove-cool | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_cool.svg" alt="Stove cool"  height="25"/> |
 
 
 ## 💡 Sci-Fi Lights card <a name="lights_card"></a>
@@ -507,7 +491,7 @@ alert:
 
 </details>
 
-## 🌦️ Sci-Fi Climates card <a name="climates_card"></a>
+## 🌡️ Sci-Fi Climates card <a name="climates_card"></a>
 
 > [!CAUTION]
 > Card is currently build for **climate[type] = radiator** only
@@ -717,3 +701,24 @@ mode_colors:
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_edit_3.jpeg" width="300">
 
 </details>
+
+<br>
+
+# 🖼️ Sci-Fi icons <a name="icon"></a>
+
+To complete HA icon set, sci-fi package onboard the following icons : 
+
+> [!CAUTION]
+> Icons can only be used with this package. It's currently not something use can use to customize other HA card.
+
+| Name | HA string | Preview  |
+| - | - | - |
+| Radiator auto | sci:radiator-auto | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_auto.svg" alt="Radiator auto"  height="25"/> |
+| Radiator frost protection | sci:radiator-frost-protection | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_frost_protection.svg" alt="Radiator frost protection"  height="25"/> |
+| Radiator heat | sci:radiator-heat | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_heat.svg" alt="Radiator heat"  height="25"/> |
+| Radiator off | sci:radiator-off | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_off.svg" alt="Radiator off"  height="25"/> |
+| Sleeping vaccum | sci:vacuum-sleep | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/sleeping_vacuum.svg" alt="Sleeping vaccum"  height="25"/> |
+| Stove | sci:stove | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove.svg" alt="Stove"  height="25"/> |
+| Stove heat | sci:stove-heat | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_heat.svg" alt="Stove heat"  height="25"/> |
+| Stove cool | sci:stove-cool | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_cool.svg" alt="Stove cool"  height="25"/> |
+

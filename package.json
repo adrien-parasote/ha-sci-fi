@@ -1,5 +1,5 @@
 {
-  "version": "0.3.15",
+  "version": "0.4.0",
   "description": "Sci-fi cards for HA dashboard",
   "main": "src/sci-fi.js",
   "type": "module",
@@ -14,7 +14,7 @@
     "update-local": "npm --allow-same-version=true --no-git-tag-version version $npm_config_ver",
     "build-release": "npm run format && npm run prepare-env && rollup -c && npm run clean-up",
     "git-tag": "git tag -a $npm_config_ver -m $npm_config_m && git push origin --tags",
-    "git-comit": "git comit -a -m 'Prepare release $npm_config_ver' && git push --all",
+    "git-commit": "git commit -a -m 'Prepare release $npm_config_ver' && git push --all",
     "prepare-release": "npm run update_local && npm run build-release && npm run git-comit && npm run git-tag"
   },
   "keywords": [],

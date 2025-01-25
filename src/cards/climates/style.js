@@ -174,6 +174,8 @@ export default css`
     padding: 10px;
     background-color: var(--primary-bg-alpha-color);
     font-weight: bold;
+    width: 100%;
+    align-items: center;
   }
   .area-content .climates .title {
     font-size: var(--font-size-normal);

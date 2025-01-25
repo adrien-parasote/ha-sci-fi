@@ -16,7 +16,7 @@ class SciFiToast extends LitElement {
         #toast {
           position: fixed;
           right: 5px;
-          bottom: 5px;
+          bottom: 50px;
           z-index: 999999;
           min-width: 300px;
           max-width: 300px;

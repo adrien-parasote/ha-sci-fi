@@ -47,7 +47,7 @@ export class SunEntity {
     } else {
       // Morning
       if (!isSameDay(date, this.next_rising)) {
-        state = 'sunset';
+        state = 'sunny-day';
       } else if (!isSameDay(date, this.next_dawn)) {
         state = 'sunrise';
       } else {

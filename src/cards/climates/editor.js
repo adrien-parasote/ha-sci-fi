@@ -1,4 +1,4 @@
-import {css, html} from 'lit';
+import {html} from 'lit';
 
 import {SciFiBaseEditor} from '../../helpers/card/base_editor.js';
 import common_style from '../../helpers/common_style.js';
@@ -15,7 +15,6 @@ import {
   STATE_CLIMATE_OFF,
 } from '../../helpers/entities/climate_const.js';
 import '../../helpers/form/form.js';
-import {getIcon} from '../../helpers/icons/icons.js';
 import editor_style from './style_editor.js';
 
 export class SciFiClimatesEditor extends SciFiBaseEditor {

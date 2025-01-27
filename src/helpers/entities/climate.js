@@ -1,4 +1,4 @@
-import {LitElement, css, html} from 'lit';
+import {LitElement, html, nothing} from 'lit';
 
 import common_style from '../common_style.js';
 import {getIcon} from '../icons/icons.js';
@@ -61,10 +61,11 @@ export class ClimateEntity {
 
     this.manufacturer = device.manufacturer ? device.manufacturer : null;
     this.model = device.model ? device.model : null;
+    this.device_id = device.id ? device.id : null;
 
     // Floor & area links
     this.floor_id = null;
-    this.area_id = null;
+    this.area_id = device.area_id ? device.area_id : null;
   }
 
   get kind() {
@@ -122,6 +123,12 @@ export class ClimateEntity {
   }
 }
 
+export class StoveEntity extends ClimateEntity {
+  get active() {
+    return STATE_CLIMATE_HEAT == this.state;
+  }
+}
+
 class SciFiRadiator extends LitElement {
   static get styles() {
     return [common_style, style];
@@ -156,7 +163,7 @@ class SciFiRadiator extends LitElement {
   }
 
   render() {
-    if (!this.climateEntity) return html``;
+    if (!this.climateEntity) nothing;
     return html`
       <div class="hexagon-container">
         ${this.__displayHexagonContent()} ${this.__displayPointer()}
@@ -294,7 +301,7 @@ class SciFiRadiator extends LitElement {
   }
 
   __getCurrentTemperature() {
-    if (!this.climateEntity.attributes.current_temperature) return html``;
+    if (!this.climateEntity.attributes.current_temperature) return nothing;
     return html` <div
       class="temperature-label"
       style="color:var(${this.__getCurrentTemperatureColor()})"

@@ -322,7 +322,7 @@ class Floor {
   }
 }
 
-class Area {
+export class Area {
   constructor(area_id, hass) {
     this.id = area_id;
     this.icon = hass.areas[area_id].icon;

@@ -8,7 +8,11 @@ export default css`
   }
   .container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     flex: 1;
+  }
+
+  .container sci-fi-stove-image {
+    height: 500px;
   }
 `;

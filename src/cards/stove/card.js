@@ -1,7 +1,10 @@
-import {LitElement, html} from 'lit';
+import {LitElement, html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
+import '../../helpers/card/stove.js';
 import common_style from '../../helpers/common_style.js';
+import {ClimateEntity, StoveEntity} from '../../helpers/entities/climate.js';
+import {Area} from '../../helpers/entities/house.js';
 import {PACKAGE} from './const.js';
 import {SciFiStoveEditor} from './editor.js';
 import style from './style.js';
@@ -16,6 +19,8 @@ export class SciFiStove extends LitElement {
   static get properties() {
     return {
       _config: {type: Object},
+      _stove: {type: Object},
+      _area: {type: Object},
     };
   }
 
@@ -46,11 +51,42 @@ export class SciFiStove extends LitElement {
   set hass(hass) {
     this._hass = hass;
     if (!this._config) return; // Can't assume setConfig is called before hass is set
+
+    const stove_id = 'climate.clou'; // TODO FROM CONF
+
+    // Get stove entity
+    const stove_entity = new StoveEntity(
+      hass.states[stove_id],
+      hass.devices[hass.entities[stove_id].device_id]
+    );
+    if (
+      !this._stove ||
+      !isEqual(stove_entity.renderAsEntity(), this._stove.renderAsEntity())
+    )
+      this._stove = stove_entity;
+
+    // Build area
+    const area_other_climate_entities = Object.values(hass.entities)
+      .filter(
+        (e) =>
+          e.entity_id.startsWith('climate.') &&
+          e.entity_id != stove_id &&
+          hass.devices[e.device_id].area_id == this._stove.area_id
+      )
+      .map(
+        (e) =>
+          new ClimateEntity(hass.states[e.entity_id], hass.devices[e.device_id])
+      );
+    const area = new Area(this._stove.area_id, hass);
+    area.addEntities([this._stove].concat(area_other_climate_entities));
+    if (!this._area || !isEqual(area, this._area)) this._area = area;
   }
 
   render() {
-    if (!this._hass || !this._config) return html``;
-    return html` <div class="container">TODO</div> `;
+    if (!this._hass || !this._config) return nothing;
+    return html`<div class="container">
+      <sci-fi-stove-image ?active=${this._stove.active}></sci-fi-stove-image>
+    </div>`;
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

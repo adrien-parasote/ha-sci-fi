@@ -1,4 +1,4 @@
-import {html} from 'lit';
+import {html, nothing} from 'lit';
 
 import {SciFiBaseEditor} from '../../helpers/card/base_editor.js';
 import common_style from '../../helpers/common_style.js';
@@ -51,7 +51,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
   }
 
   render() {
-    if (!this._hass || !this._config) return html``;
+    if (!this._hass || !this._config) return nothing;
     return html`
       <div class="card card-corner">
         <div class="container ${!this._edit}">
@@ -203,7 +203,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
   }
 
   __renderEntityCustom() {
-    if (!this._custom_entity_id) return html``;
+    if (!this._custom_entity_id) return nothing;
     const entity_info = this._config.custom_entities[this._custom_entity_id];
     return html`
       <div class="head">

@@ -1,4 +1,4 @@
-import {html} from 'lit';
+import {html, nothing} from 'lit';
 
 import {SciFiBaseEditor} from '../../helpers/card/base_editor.js';
 import '../../helpers/form/form.js';
@@ -33,7 +33,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   }
 
   render() {
-    if (!this._hass || !this._config) return html``;
+    if (!this._hass || !this._config) return nothing;
     return html`
       <div class="card card-corner">
         <div class="container">

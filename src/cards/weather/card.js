@@ -1,5 +1,5 @@
 import Chart from 'chart.js/auto';
-import {LitElement, html} from 'lit';
+import {LitElement, html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
 import '../../helpers/card/tiles.js';
@@ -142,7 +142,7 @@ export class SciFiWeather extends LitElement {
   }
 
   render() {
-    if (!this._hass || !this._config) return html``;
+    if (!this._hass || !this._config) return nothing;
     return html`
       <div class="container">
         <div class="header">${this.__renderHeader()}</div>
@@ -171,7 +171,7 @@ export class SciFiWeather extends LitElement {
 
   __renderAlerts() {
     if (!this._alert || this._alert.state == this._config.alert.state_green)
-      return html``;
+      return nothing;
     let alert_states = {};
     alert_states[this._config.alert.state_yellow] = 'yellow';
     alert_states[this._config.alert.state_orange] = 'orange';
@@ -217,7 +217,7 @@ export class SciFiWeather extends LitElement {
   }
 
   __renderDays() {
-    if (!this._weather_daily_forecast) return html``;
+    if (!this._weather_daily_forecast) return nothing;
     return html` <div class="content">
       ${this._weather_daily_forecast
         .slice(0, this._config.weather_daily_forecast_limit)

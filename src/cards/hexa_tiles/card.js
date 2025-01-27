@@ -1,4 +1,4 @@
-import {LitElement, html} from 'lit';
+import {LitElement, html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
 import '../../helpers/card/tiles.js';
@@ -207,7 +207,7 @@ export class SciFiHexaTiles extends LitElement {
   }
 
   render() {
-    if (!this._hass || !this._config) return html``;
+    if (!this._hass || !this._config) return nothing;
     const matrix = this.__getEntitiesMatrix();
     return html`
       <div class="container">

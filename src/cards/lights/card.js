@@ -1,4 +1,4 @@
-import {LitElement, html} from 'lit';
+import {LitElement, html, nothing} from 'lit';
 import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 import {isEqual} from 'lodash-es';
 
@@ -81,7 +81,7 @@ export class SciFiLights extends LitElement {
   }
 
   render() {
-    if (!this._hass || !this._config) return html``;
+    if (!this._hass || !this._config) return nothing;
     // Setup first time attribute
     if (!this._active_floor_id)
       this._active_floor_id = this._house.getDefaultFloor(ENTITY_KIND_LIGHT).id;

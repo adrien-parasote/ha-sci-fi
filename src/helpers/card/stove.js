@@ -1,6 +1,11 @@
 import {LitElement, css, html, svg} from 'lit';
 
 import common_style from '../common_style.js';
+import {
+  STATE_CLIMATE_COOL,
+  STATE_CLIMATE_HEAT,
+  STATE_CLIMATE_OFF,
+} from '../entities/climate_const.js';
 
 const SVG_VIEWBOX_WIDTH = 124;
 const SVG_VIEWBOX_HEIGHT = 480;
@@ -26,13 +31,13 @@ class SciFiStoveImage extends LitElement {
 
   static get properties() {
     return {
-      active: {type: Boolean},
+      state: {type: String},
     };
   }
 
   constructor() {
     super();
-    this.active = this.active ? this.active : false;
+    this.state = this.state ? this.state : STATE_CLIMATE_OFF;
   }
 
   render() {
@@ -41,10 +46,15 @@ class SciFiStoveImage extends LitElement {
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 ${SVG_VIEWBOX_WIDTH} ${SVG_VIEWBOX_HEIGHT}"
       >
-        ${this.__getDefs()} ${this.__getCommons()}
-        ${this.active ? this.__getActive() : this.__getInactive()}
+        ${this.__getDefs()} ${this.__getCommons()} ${this.__getContent()}
       </svg>
     `;
+  }
+
+  __getContent() {
+    if (this.state == STATE_CLIMATE_HEAT) return this.__getActive();
+    if (this.state == STATE_CLIMATE_COOL) return this.__getCool();
+    return this.__getInactive();
   }
 
   __getDefs() {
@@ -132,6 +142,27 @@ class SciFiStoveImage extends LitElement {
       </g>
     </g>
     `;
+  }
+
+  __getCool() {
+    return svg`
+    <g>
+      <path d="M 96.97 239.972 C 96.97 293.534 53.558 336.956 0 336.972 L 0 142.972 C 53.558 142.988 96.97 186.41 96.97 239.972 Z" style="fill: #FFFEE7;"></path>
+      <g>
+        <path d="M 100 240 C 100 295.228 55.228 340 0 340 L 0 337 C 53.571 337 97 293.571 97 240 C 97 186.429 53.571 143 0 143 L 0 140 C 55.228 140 100 184.772 100 240 Z" style="fill: #000000;"></path>
+        <path d="M 103 240 C 103 296.885 56.885 343 0 343 L 0 339.91 C 55.178 339.91 99.91 295.178 99.91 240 C 99.91 184.822 55.178 140.09 0 140.09 L 0 137 C 56.885 137 103 183.115 103 240 Z" style="fill: var(--stove-primary-color);"></path>
+      </g>
+      <g>
+        <path d="M 2 330.028 L 2 149.973 C 17.301 149.978 31.645 154.364 44 162.025 L 44 317.977 C 31.645 325.637 17.301 330.023 2 330.028 Z M 89.5 240 C 89.5 273.318 71.402 302.408 44.5 317.976 L 44.5 162.024 C 71.402 177.592 89.5 206.682 89.5 240 Z" style="fill: #FFFEE7; stroke: #f9edd8; stroke-linejoin: round; stroke-linecap: round; stroke-width: 2px;"></path>
+      </g>
+      <path d="M 96.97 240 C 96.97 293.562 53.558 336.984 0 337 L 0 143 C 53.558 143.016 96.97 186.438 96.97 240 Z" style="fill: url(#gradient-inside-on); opacity: 0.8;"></path>
+      <g>
+        <path d="M 9.16 315.8 C 18.782 315.8 26.585 323.603 26.585 333.229 L 26.585 333.29 C 18.136 335.693 9.22 336.979 0 336.979 L 0 315.8 L 9.16 315.8 Z" style="fill: #FFFEE7"></path>
+        <path d="M 9.16 315.8 C 18.782 315.8 26.585 323.603 26.585 333.229 L 26.585 333.29 C 18.136 335.693 9.22 336.979 0 336.979 L 0 315.8 L 9.16 315.8 Z" style="opacity: 0.6; fill: url(#gradient-pellet-dug-on);"></path>
+      </g>
+    </g>
+    <rect width="116" height="480" style="fill: url(#gradient-outside-on); opacity: 0.3;"></rect>
+  `;
   }
 
   __getActive() {

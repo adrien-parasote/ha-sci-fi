@@ -5,6 +5,7 @@ export const HASS_CLIMATE_SERVICE_SET_PRESET_MODE = 'set_preset_mode';
 export const HASS_CLIMATE_SERVICE_SET_HVAC_MODE = 'set_hvac_mode';
 
 export const STATE_CLIMATE_HEAT = 'heat';
+export const STATE_CLIMATE_COOL = 'cool';
 export const STATE_CLIMATE_OFF = 'off';
 export const STATE_CLIMATE_AUTO = 'auto';
 

@@ -24,7 +24,9 @@ import {
   RADIATOR_SVG_VIEWBOX_HEIGHT,
   RADIATOR_SVG_VIEWBOX_WIDTH,
   STATE_CLIMATE_AUTO,
+  STATE_CLIMATE_COOL,
   STATE_CLIMATE_HEAT,
+  STATE_CLIMATE_OFF,
 } from './climate_const.js';
 import style from './climate_style.js';
 
@@ -33,7 +35,7 @@ export class ClimateEntity {
 
   constructor(entity, device) {
     this.entity_id = entity.entity_id ? entity.entity_id : null;
-    this.state = entity.state ? entity.state : STATE_LIGHT_OFF;
+    this.state = entity.state ? entity.state : STATE_CLIMATE_OFF;
 
     this.hvac_modes = entity.attributes.hvac_modes
       ? entity.attributes.hvac_modes
@@ -125,7 +127,7 @@ export class ClimateEntity {
 
 export class StoveEntity extends ClimateEntity {
   get active() {
-    return STATE_CLIMATE_HEAT == this.state;
+    return [STATE_CLIMATE_HEAT, STATE_CLIMATE_COOL].includes(this.state);
   }
 }
 

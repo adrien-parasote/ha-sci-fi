@@ -85,7 +85,7 @@ export class SciFiStove extends LitElement {
   render() {
     if (!this._hass || !this._config) return nothing;
     return html`<div class="container">
-      <sci-fi-stove-image ?active=${this._stove.active}></sci-fi-stove-image>
+      <sci-fi-stove-image state=${this._stove.state}></sci-fi-stove-image>
     </div>`;
   }
 

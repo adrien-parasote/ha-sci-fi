@@ -29,6 +29,16 @@ import {
   STATE_CLIMATE_OFF,
 } from './climate_const.js';
 import style from './climate_style.js';
+import {Counter} from './counter.js';
+import {Sensor} from './sensor.js';
+import {
+  STOVE_SENSORS,
+  STOVE_SENSOR_ACTUAL_POWER,
+  STOVE_SENSOR_COMBUSTION_CHAMBER_TEMP,
+  STOVE_SENSOR_INSIDE_TEMP,
+  STOVE_SENSOR_PELLET_QTY,
+  STOVE_SENSOR_POWER,
+} from './sensor_const.js';
 
 export class ClimateEntity {
   static kind = ENTITY_KIND_CLIMATE;
@@ -50,7 +60,7 @@ export class ClimateEntity {
     this.preset_modes = entity.attributes.preset_modes
       ? entity.attributes.preset_modes
       : [];
-    this.current_temperature = entity.attributes.current_temperature
+    this._current_temperature = entity.attributes.current_temperature
       ? entity.attributes.current_temperature
       : null;
     this.temperature = entity.attributes.temperature
@@ -68,6 +78,10 @@ export class ClimateEntity {
     // Floor & area links
     this.floor_id = null;
     this.area_id = device.area_id ? device.area_id : null;
+  }
+
+  get current_temperature() {
+    return this._current_temperature;
   }
 
   get kind() {
@@ -126,8 +140,75 @@ export class ClimateEntity {
 }
 
 export class StoveEntity extends ClimateEntity {
+  constructor(entity, device) {
+    super(entity, device);
+    this.sensors = {};
+    STOVE_SENSORS.forEach((sensor) => (this.sensors[sensor] = null));
+    this.storage = {};
+  }
+
+  get current_temperature() {
+    return this.inside_temperature
+      ? parseFloat(this.inside_temperature)
+      : this._current_temperature;
+  }
+
+  get inside_temperature() {
+    return this.sensors[STOVE_SENSOR_INSIDE_TEMP]
+      ? this.sensors[STOVE_SENSOR_INSIDE_TEMP].state
+      : null;
+  }
+
+  get actual_power() {
+    return this.sensors[STOVE_SENSOR_ACTUAL_POWER]
+      ? [
+          this.sensors[STOVE_SENSOR_ACTUAL_POWER].state,
+          this.sensors[STOVE_SENSOR_ACTUAL_POWER].unit_of_measurement,
+        ].join('')
+      : null;
+  }
+
+  get combustion_chamber_temperature() {
+    return this.sensors[STOVE_SENSOR_COMBUSTION_CHAMBER_TEMP]
+      ? [
+          this.sensors[STOVE_SENSOR_COMBUSTION_CHAMBER_TEMP].state,
+          this.sensors[STOVE_SENSOR_COMBUSTION_CHAMBER_TEMP]
+            .unit_of_measurement,
+        ].join('')
+      : null;
+  }
+
+  get sensor_pellet_quantity() {
+    return this.sensors[STOVE_SENSOR_PELLET_QTY]
+      ? [
+          this.sensors[STOVE_SENSOR_PELLET_QTY].state,
+          this.sensors[STOVE_SENSOR_PELLET_QTY].unit_of_measurement,
+        ].join('')
+      : null;
+  }
+
+  get power() {
+    return this.sensors[STOVE_SENSOR_POWER]
+      ? [
+          this.sensors[STOVE_SENSOR_POWER].state,
+          this.sensors[STOVE_SENSOR_POWER].unit_of_measurement,
+        ].join('')
+      : null;
+  }
+
+  addSensors(sensors, hass) {
+    Object.keys(sensors).forEach((sensor_key) => {
+      if (sensors[sensor_key])
+        this.sensors[sensor_key] = new Sensor(sensors[sensor_key], hass);
+    });
+  }
+
   get active() {
     return [STATE_CLIMATE_HEAT, STATE_CLIMATE_COOL].includes(this.state);
+  }
+
+  addStockCounter(counter_id, hass) {
+    this.storage = new Counter(counter_id, hass);
   }
 }
 

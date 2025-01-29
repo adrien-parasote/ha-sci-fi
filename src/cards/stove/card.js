@@ -5,6 +5,7 @@ import '../../helpers/card/stove.js';
 import common_style from '../../helpers/common_style.js';
 import {ClimateEntity, StoveEntity} from '../../helpers/entities/climate.js';
 import {Area} from '../../helpers/entities/house.js';
+import {STOVE_SENSORS} from '../../helpers/entities/sensor_const.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 import {PACKAGE} from './const.js';
 import {SciFiStoveEditor} from './editor.js';
@@ -26,10 +27,27 @@ export class SciFiStove extends LitElement {
   }
 
   __validateConfig(config) {
-    if (!config.entity || !config.entity.startsWith('climate.'))
+    if (!config.entity)
       throw new Error(
         'You need to define your stove entity (ex: climate.<my_stove>)'
       );
+    if (!config.entity.startsWith('climate.'))
+      throw new Error(config.entity + 'is not a climate entity.');
+    if (!config.sensors) config.sensors = {};
+    STOVE_SENSORS.forEach((sensor) => {
+      if (!config.sensors[sensor]) {
+        config.sensors[sensor] = null;
+      } else {
+        if (!this._hass.entities[config.sensors[sensor]])
+          throw new Error(
+            'Sensor ' + config.sensors[sensor] + ' cannot be found.'
+          );
+      }
+    });
+
+    if (config.storage_counter && !this._hass.entities[config.storage_counter])
+      throw new Error(config.storage_counter + ' cannot be found.');
+    if (!config.storage_counter) config.storage_counter = null;
     if (!config.unit) config.unit = '°C';
     return config;
   }
@@ -62,6 +80,11 @@ export class SciFiStove extends LitElement {
       hass.states[this._config.entity],
       hass.devices[hass.entities[this._config.entity].device_id]
     );
+    // Add external sensors if defined
+    stove_entity.addSensors(this._config.sensors, hass);
+    if (this._config.storage_counter)
+      stove_entity.addStockCounter(this._config.storage_counter, hass);
+
     if (
       !this._stove ||
       !isEqual(stove_entity.renderAsEntity(), this._stove.renderAsEntity())
@@ -88,13 +111,13 @@ export class SciFiStove extends LitElement {
   render() {
     if (!this._hass || !this._config) return nothing;
     return html`<div class="container">
-      ${this.__displayHeader()} ${this.__displayStove()}
+      ${this.__displayStove()} ${this.__displayBottom()}
     </div>`;
   }
 
-  __displayHeader() {
+  __displayBottom() {
     return html`
-      <div class="header">
+      <div class="bottom">
         <div class="info">
           <div>${this._area.name} -</div>
           ${getIcon('mdi:thermometer')}
@@ -107,7 +130,30 @@ export class SciFiStove extends LitElement {
   __displayStove() {
     return html` <div class="content">
       <sci-fi-stove-image state=${this._stove.state}></sci-fi-stove-image>
-      <div class="stove-name">${this._stove.friendly_name}</div>
+      <div class="info">
+        <div class="e">
+          <div>Pellet quantity : ${this._stove.sensor_pellet_quantity}</div>
+          <div>
+            Pellet stock : ${this._stove.storage.value} (min
+            :${this._stove.storage.minimum} / max
+            ${this._stove.storage.maximum})
+          </div>
+        </div>
+        <div class="m">
+          <div>
+            Current temp :
+            ${this._stove.current_temperature}${this._config.unit}
+          </div>
+          <div>
+            Combustion chamber temperature :
+            ${this._stove.combustion_chamber_temperature}
+          </div>
+        </div>
+        <div class="e">
+          <div>Actual power : ${this._stove.actual_power}</div>
+          <div>Power : ${this._stove.power}</div>
+        </div>
+      </div>
     </div>`;
   }
 
@@ -118,8 +164,10 @@ export class SciFiStove extends LitElement {
 
   static getStubConfig() {
     return {
-      entity: '',
+      entity: null,
       unit: '°C',
+      sensors: {},
+      storage_counter: null,
     };
   }
 }

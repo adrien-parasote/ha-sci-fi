@@ -91,12 +91,16 @@ export class SciFiLights extends LitElement {
         ENTITY_KIND_LIGHT
       ).id;
 
+    const max_areas = Math.max.apply(
+      null,
+      this._house.floors.map((floor) => Object.keys(floor.areas).length)
+    );
     return html`
       <div class="container">
         <div class="header">${this.__displayHeader()}</div>
         <div class="floors">${this.__displayHouseFloors()}</div>
         <div class="floor-content">${this.__displayFloorInfo()}</div>
-        <div class="areas">
+        <div class="areas" style="--hexa-max-count: ${max_areas}">
           ${this.__displayAreas()} ${this.__displayAreaInfo()}
         </div>
       </div>

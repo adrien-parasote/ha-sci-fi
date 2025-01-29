@@ -143,6 +143,7 @@ export default css`
     display: flex;
     flex-direction: row;
     padding: 0 10px;
+    height: calc(var(--hexa-max-count) * var(--default-hexa-width) + 10px);
   }
   .areas .area-list .row {
     display: flex;
@@ -166,7 +167,6 @@ export default css`
     align-items: start;
     flex-direction: column;
     color: var(--primary-light-color);
-    height: 100%;
   }
   .area-content .title {
     font-size: var(--font-size-normal);

@@ -71,13 +71,12 @@ export default css`
     padding-left: 10px;
     font-weight: bold;
     font-size: var(--font-size-normal);
-    background-color: black;
+    background-color: #4e545c;
     color: transparent;
-    text-shadow: 0.5px 0.5px 0.75px rgba(255, 255, 255, 0.5);
+    text-shadow: 0.5px 0.5px 0.75px rgba(24, 24, 24, 0.8);
     -webkit-background-clip: text;
     -moz-background-clip: text;
     background-clip: text;
-
     width: calc(var(--stove-width) - 30px);
   }
 `;

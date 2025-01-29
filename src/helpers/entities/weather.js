@@ -234,7 +234,7 @@ export class HourlyForecast {
         if (isSameDay(sun.next_dawn, this.datetime)) state = 'night';
       } else {
         // After noon & dusk
-        if (!isSameDay(sun.next_dusk, this.datetime)) state = 'night';
+        if (this.datetime > sun.next_dusk) state = 'night';
       }
     } else {
       // Forecast if for tomorrow

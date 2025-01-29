@@ -16,6 +16,7 @@
 ## 🐛 Fixes
 - [Climates card - CSS issue on big screen](https://github.com/adrien-parasote/ha-sci-fi/issues/16)
 - [Lights card - Component height](https://github.com/adrien-parasote/ha-sci-fi/issues/22)
+- [Weather card - SVG icons update](https://github.com/adrien-parasote/ha-sci-fi/issues/21)
 
 <br>
 

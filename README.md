@@ -427,6 +427,7 @@ weather_entity: weather_home  # replace with your weather providers's entity id
 type: custom:sci-fi-weather
 weather_entity: weather_home # replace with your weather providers's entity id
 weather_daily_forecast_limit: 10
+chart_first_kind_to_render: temperature
 alert:
   state_green: green # replace with your alert green state
   state_yellow: yellow # replace with your alert yellow state
@@ -442,6 +443,7 @@ alert:
 | type | string | **Required** | Card definition | `custom:sci-fi-weather`| 
 | weather_entity | String | **Required** | Your provider weather entity id  |  |
 | weather_daily_forecast_limit | Integer | **Optionnal** | Forecasted weather days between 0 and 15   | 10 |
+| chart_first_kind_to_render | String | **Optionnal** | First data to display on the chart, can be : `temperature`, `precipitation` or `wind_speed` | temperature |
 | `alert` | Object | **Optional** | Alert sensor config |  | 
 
 **Example**
@@ -449,6 +451,7 @@ alert:
 type: custom:sci-fi-weather
 weather_entity: weather_home # replace with your weather providers's entity id
 weather_daily_forecast_limit: 10
+chart_first_kind_to_render: temperature
 alert:
    ... # see alert configuration bellow
 ```

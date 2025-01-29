@@ -9,10 +9,13 @@
 ## 🆙  What's Changed
 
 🌦️ Weather card
-- Feature request [Weather tile - Forecast improvement](https://github.com/adrien-parasote/ha-sci-fi/issues/14): `weather_hourly_forecast_limit` config parameter is not needed anymore.
+- Feature requests :
+  - [Weather tile - Forecast improvement](https://github.com/adrien-parasote/ha-sci-fi/issues/14): `weather_hourly_forecast_limit` config parameter is not needed anymore.
+  - [Weather card - First chart data rendering](https://github.com/adrien-parasote/ha-sci-fi/issues/20): new card optionnal parameter `chart_first_kind_to_render`, by default is equal to `temperature`.
 
 ## 🐛 Fixes
 - [Climates card - CSS issue on big screen](https://github.com/adrien-parasote/ha-sci-fi/issues/16)
+- [Lights card - Component height](https://github.com/adrien-parasote/ha-sci-fi/issues/22)
 
 <br>
 

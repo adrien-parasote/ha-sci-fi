@@ -29,7 +29,7 @@ export class SciFiWeather extends LitElement {
 
   _hass; // private
   _chart;
-  _chartDataKind = 'temperature';
+  _chartDataKind;
   _daily_subscribed;
   _hourly_subscribed;
   _day_selected = 0;
@@ -63,11 +63,20 @@ export class SciFiWeather extends LitElement {
       config.weather_daily_forecast_limit = 10; // max 15
     if (config.weather_daily_forecast_limit > 15)
       throw new Error('Daily forecast is limited to 15 days max');
+    if (!config.chart_first_kind_to_render)
+      config.chart_first_kind_to_render = 'temperature';
+    if (!Object.keys(SENSORS_MAP).includes(config.chart_first_kind_to_render))
+      throw new Error(
+        'Chart first kind to render must be "temperature", "precipitation" or "wind_speed"'
+      );
+
     return config;
   }
 
   setConfig(config) {
     this._config = this.__validateConfig(JSON.parse(JSON.stringify(config)));
+    this._chartDataKind = this._config.chart_first_kind_to_render;
+
     // call set hass() to immediately adjust to a changed entity
     // while editing the entity in the card editor
     if (this._hass) {
@@ -431,6 +440,7 @@ export class SciFiWeather extends LitElement {
     return {
       weather_entity: null,
       weather_daily_forecast_limit: 10,
+      chart_first_kind_to_render: 'temperature',
       alert: {},
     };
   }

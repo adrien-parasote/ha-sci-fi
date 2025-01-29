@@ -40,6 +40,16 @@ export class SciFiLights extends LitElement {
     if (!config.default_icon_off)
       config.default_icon_off = 'mdi:lightbulb-outline';
     if (!config.custom_entities) config.custom_entities = {};
+
+    if (!Object.keys(this._hass.floors).includes(config.first_floor_to_render))
+      throw new Error(
+        'Floor ' + config.first_floor_to_render + ' cannot be found.'
+      );
+    if (!Object.keys(this._hass.areas).includes(config.first_area_to_render))
+      throw new Error(
+        'Area ' + config.first_area_to_render + ' cannot be found.'
+      );
+
     return config;
   }
 

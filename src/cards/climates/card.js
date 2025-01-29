@@ -33,6 +33,10 @@ export class SciFiClimates extends LitElement {
   __validateConfig(config) {
     if (!config.unit) config.unit = '°C';
     if (!config.entities_to_exclude) config.entities_to_exclude = [];
+    config.entities_to_exclude.forEach((entity) => {
+      if (!this._hass.entities[entity])
+        throw new Error('Entity ' + entity + ' cannot be found.');
+    });
 
     if (!config.header) config.header = {};
     if (!config.header.icon_winter_state)

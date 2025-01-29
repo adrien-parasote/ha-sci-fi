@@ -88,10 +88,7 @@ export class SciFiStove extends LitElement {
   render() {
     if (!this._hass || !this._config) return nothing;
     return html`<div class="container">
-      ${this.__displayHeader()}
-      <div class="content">
-        <sci-fi-stove-image state=${this._stove.state}></sci-fi-stove-image>
-      </div>
+      ${this.__displayHeader()} ${this.__displayStove()}
     </div>`;
   }
 
@@ -99,20 +96,19 @@ export class SciFiStove extends LitElement {
     return html`
       <div class="header">
         <div class="info">
-          <div>${this._area.name}</div>
+          <div>${this._area.name} -</div>
+          ${getIcon('mdi:thermometer')}
           <div>${this._area.getTemperature()}${this._config.unit}</div>
         </div>
-        <sci-fi-hexa-tile
-          active-tile
-          state="${this._stove.active ? 'on' : 'off'}"
-          class="selected"
-        >
-          <div class="item-icon ${this._stove.active}">
-            ${getIcon(this._area.icon)}
-          </div>
-        </sci-fi-hexa-tile>
       </div>
     `;
+  }
+
+  __displayStove() {
+    return html` <div class="content">
+      <sci-fi-stove-image state=${this._stove.state}></sci-fi-stove-image>
+      <div class="stove-name">${this._stove.friendly_name}</div>
+    </div>`;
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

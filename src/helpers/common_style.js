@@ -33,6 +33,7 @@ export default css`
     --icon-size-xsmall: 15px;
     --icon-size-xxsmall: 10px;
 
+    --small-hexa-width: 40px;
     --default-hexa-width: 60px;
     --medium-hexa-width: 70px;
     --selected-hexa-width: 80px;

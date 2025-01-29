@@ -5,6 +5,7 @@ import '../../helpers/card/stove.js';
 import common_style from '../../helpers/common_style.js';
 import {ClimateEntity, StoveEntity} from '../../helpers/entities/climate.js';
 import {Area} from '../../helpers/entities/house.js';
+import {getIcon} from '../../helpers/icons/icons.js';
 import {PACKAGE} from './const.js';
 import {SciFiStoveEditor} from './editor.js';
 import style from './style.js';
@@ -25,6 +26,11 @@ export class SciFiStove extends LitElement {
   }
 
   __validateConfig(config) {
+    if (!config.entity || !config.entity.startsWith('climate.'))
+      throw new Error(
+        'You need to define your stove entity (ex: climate.<my_stove>)'
+      );
+    if (!config.unit) config.unit = '°C';
     return config;
   }
 
@@ -51,13 +57,10 @@ export class SciFiStove extends LitElement {
   set hass(hass) {
     this._hass = hass;
     if (!this._config) return; // Can't assume setConfig is called before hass is set
-
-    const stove_id = 'climate.clou'; // TODO FROM CONF
-
     // Get stove entity
     const stove_entity = new StoveEntity(
-      hass.states[stove_id],
-      hass.devices[hass.entities[stove_id].device_id]
+      hass.states[this._config.entity],
+      hass.devices[hass.entities[this._config.entity].device_id]
     );
     if (
       !this._stove ||
@@ -70,7 +73,7 @@ export class SciFiStove extends LitElement {
       .filter(
         (e) =>
           e.entity_id.startsWith('climate.') &&
-          e.entity_id != stove_id &&
+          e.entity_id != this._config.entity &&
           hass.devices[e.device_id].area_id == this._stove.area_id
       )
       .map(
@@ -85,8 +88,31 @@ export class SciFiStove extends LitElement {
   render() {
     if (!this._hass || !this._config) return nothing;
     return html`<div class="container">
-      <sci-fi-stove-image state=${this._stove.state}></sci-fi-stove-image>
+      ${this.__displayHeader()}
+      <div class="content">
+        <sci-fi-stove-image state=${this._stove.state}></sci-fi-stove-image>
+      </div>
     </div>`;
+  }
+
+  __displayHeader() {
+    return html`
+      <div class="header">
+        <div class="info">
+          <div>${this._area.name}</div>
+          <div>${this._area.getTemperature()}${this._config.unit}</div>
+        </div>
+        <sci-fi-hexa-tile
+          active-tile
+          state="${this._stove.active ? 'on' : 'off'}"
+          class="selected"
+        >
+          <div class="item-icon ${this._stove.active}">
+            ${getIcon(this._area.icon)}
+          </div>
+        </sci-fi-hexa-tile>
+      </div>
+    `;
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/
@@ -95,7 +121,10 @@ export class SciFiStove extends LitElement {
   }
 
   static getStubConfig() {
-    return {};
+    return {
+      entity: '',
+      unit: '°C',
+    };
   }
 }
 

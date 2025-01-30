@@ -144,55 +144,42 @@ export class StoveEntity extends ClimateEntity {
     super(entity, device);
     this.sensors = {};
     STOVE_SENSORS.forEach((sensor) => (this.sensors[sensor] = null));
-    this.storage = {};
+    this.storage = null;
   }
 
   get current_temperature() {
     return this.inside_temperature
-      ? parseFloat(this.inside_temperature)
+      ? parseFloat(this.inside_temperature.value)
       : this._current_temperature;
   }
 
   get inside_temperature() {
     return this.sensors[STOVE_SENSOR_INSIDE_TEMP]
-      ? this.sensors[STOVE_SENSOR_INSIDE_TEMP].state
+      ? this.sensors[STOVE_SENSOR_INSIDE_TEMP]
       : null;
   }
 
   get actual_power() {
     return this.sensors[STOVE_SENSOR_ACTUAL_POWER]
-      ? [
-          this.sensors[STOVE_SENSOR_ACTUAL_POWER].state,
-          this.sensors[STOVE_SENSOR_ACTUAL_POWER].unit_of_measurement,
-        ].join('')
+      ? this.sensors[STOVE_SENSOR_ACTUAL_POWER]
       : null;
   }
 
   get combustion_chamber_temperature() {
     return this.sensors[STOVE_SENSOR_COMBUSTION_CHAMBER_TEMP]
-      ? [
-          this.sensors[STOVE_SENSOR_COMBUSTION_CHAMBER_TEMP].state,
-          this.sensors[STOVE_SENSOR_COMBUSTION_CHAMBER_TEMP]
-            .unit_of_measurement,
-        ].join('')
+      ? this.sensors[STOVE_SENSOR_COMBUSTION_CHAMBER_TEMP]
       : null;
   }
 
   get sensor_pellet_quantity() {
     return this.sensors[STOVE_SENSOR_PELLET_QTY]
-      ? [
-          this.sensors[STOVE_SENSOR_PELLET_QTY].state,
-          this.sensors[STOVE_SENSOR_PELLET_QTY].unit_of_measurement,
-        ].join('')
+      ? this.sensors[STOVE_SENSOR_PELLET_QTY]
       : null;
   }
 
   get power() {
     return this.sensors[STOVE_SENSOR_POWER]
-      ? [
-          this.sensors[STOVE_SENSOR_POWER].state,
-          this.sensors[STOVE_SENSOR_POWER].unit_of_measurement,
-        ].join('')
+      ? this.sensors[STOVE_SENSOR_POWER]
       : null;
   }
 

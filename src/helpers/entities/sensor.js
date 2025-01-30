@@ -12,4 +12,9 @@ export class Sensor {
   get unit_of_measurement() {
     return this.attributes.unit_of_measurement;
   }
+
+  get value() {
+    if (this.unit_of_measurement) return parseFloat(this.state);
+    return this.state;
+  }
 }

@@ -1,6 +1,7 @@
 import {LitElement, html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
+import '../../helpers/card/stack_bar.js';
 import '../../helpers/card/stove.js';
 import common_style from '../../helpers/common_style.js';
 import {ClimateEntity, StoveEntity} from '../../helpers/entities/climate.js';
@@ -33,6 +34,12 @@ export class SciFiStove extends LitElement {
       );
     if (!config.entity.startsWith('climate.'))
       throw new Error(config.entity + 'is not a climate entity.');
+
+    if (!config.pellet_quantity_threshold)
+      config.pellet_quantity_threshold = 0.5;
+    if (!config.storage_counter_threshold)
+      config.storage_counter_threshold = 0.1;
+
     if (!config.sensors) config.sensors = {};
     STOVE_SENSORS.forEach((sensor) => {
       if (!config.sensors[sensor]) {
@@ -131,30 +138,136 @@ export class SciFiStove extends LitElement {
     return html` <div class="content">
       <sci-fi-stove-image state=${this._stove.state}></sci-fi-stove-image>
       <div class="info">
-        <div class="e">
-          <div>Pellet quantity : ${this._stove.sensor_pellet_quantity}</div>
-          <div>
-            Pellet stock : ${this._stove.storage.value} (min
-            :${this._stove.storage.minimum} / max
-            ${this._stove.storage.maximum})
+        <div class="e bottom-path">
+          <div class="display">
+            <div class="circle"></div>
+            <div class="h-path"></div>
+            <div class="d-path"></div>
+          </div>
+          <div class="quantities">
+            ${this.__displayPelletQuantity()} ${this.__displayPelletStock()}
           </div>
         </div>
         <div class="m">
-          <div>
-            Current temp :
-            ${this._stove.current_temperature}${this._config.unit}
+          <div class="display">
+            <div class="circle"></div>
+            <div class="h-path"></div>
           </div>
-          <div>
-            Combustion chamber temperature :
-            ${this._stove.combustion_chamber_temperature}
+          <div class="temperatures">
+            ${this.__displayTemperature(
+              'External stove',
+              this._stove.current_temperature,
+              this._config.unit
+            )}
+            ${this.__displayTemperature(
+              'Internal stove',
+              this._stove.combustion_chamber_temperature.value,
+              this._config.unit
+            )}
           </div>
         </div>
-        <div class="e">
-          <div>Actual power : ${this._stove.actual_power}</div>
-          <div>Power : ${this._stove.power}</div>
+        <div class="e top-path">
+          <div class="display">
+            <div class="circle"></div>
+            <div class="h-path"></div>
+            <div class="d-path"></div>
+          </div>
+          <div class="powers">
+            ${this.__displayPower(
+              'Render',
+              this._stove.actual_power.value,
+              this._stove.actual_power.unit_of_measurement
+            )}
+            ${this.__displayPower(
+              'Consume',
+              this._stove.power.value,
+              this._stove.power.unit_of_measurement
+            )}
+          </div>
         </div>
       </div>
     </div>`;
+  }
+
+  __noQuantity(text) {
+    return html`
+      <div class="nothing">
+        <div>N/A</div>
+        <div>${text}</div>
+      </div>
+    `;
+  }
+
+  __displayPelletQuantity() {
+    const sensor_pellet_quantity = this._stove.sensor_pellet_quantity;
+    if (!sensor_pellet_quantity) return this.__noQuantity('Fuel quantity');
+    return html`
+      <sci-fi-stack-bar
+        text="Fuel quantity"
+        val=${sensor_pellet_quantity.value}
+        threshold=${this._config.pellet_quantity_threshold}
+      ></sci-fi-stack-bar>
+    `;
+  }
+
+  __displayPelletStock() {
+    const storage = this._stove.storage;
+    if (!storage) return this.__noQuantity('Stock');
+    return html`
+      <sci-fi-stack-bar
+        text="Stock"
+        val=${storage.value}
+        minimum=${storage.minimum}
+        maximum=${storage.maximum}
+        threshold=${this._config.storage_counter_threshold}
+      ></sci-fi-stack-bar>
+    `;
+  }
+
+  __noTemperature(text) {
+    return html`<div class="temperature off">
+      <div class="no-temp">
+        ${getIcon('mdi:thermometer')} ${getIcon('mdi:help')}
+      </div>
+      <div class="label">${text}:</div>
+      <div>N/A</div>
+    </div>`;
+  }
+
+  __displayTemperature(text, temperature, unit) {
+    if (!temperature) return this.__noTemperature(text);
+    let icon = 'mdi:thermometer-off';
+    let state = 'off';
+    if (temperature) {
+      if (temperature >= 25) {
+        icon = 'mdi:thermometer-high';
+        state = 'high';
+      } else if (temperature >= 16) {
+        icon = 'mdi:thermometer';
+        state = 'medium';
+      } else {
+        icon = 'mdi:thermometer-low';
+        state = 'low';
+      }
+    }
+    return html`
+      <div class="temperature ${state}">
+        ${getIcon(icon)}
+        <div class="label">${text}:</div>
+        <div>${temperature}${unit}</div>
+      </div>
+    `;
+  }
+
+  __displayPower(text, power, unit) {
+    if (power == null) return this.__displayPower(text, 'N/A', '');
+    return html`
+      <div class="power">
+        ${getIcon('mdi:lightning-bolt')}
+        <div class="label">${text}</div>
+        <div class="${power == 'N/A' ? 'nothing' : ''}">${power} ${unit}</div>
+      </div>
+    `;
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/
@@ -168,6 +281,8 @@ export class SciFiStove extends LitElement {
       unit: '°C',
       sensors: {},
       storage_counter: null,
+      storage_counter_threshold: 0.1,
+      pellet_quantity_threshold: 0.5,
     };
   }
 }

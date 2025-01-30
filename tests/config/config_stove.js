@@ -10,4 +10,6 @@ export default {
     sensor_power: 'sensor.clou_power_2',
   },
   storage_counter: 'counter.pellet_stock',
+  pellet_quantity_threshold: 0.4,
+  storage_counter_threshold: 0.07,
 };

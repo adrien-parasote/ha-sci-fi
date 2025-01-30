@@ -10,7 +10,7 @@ export default css`
     --secondary-light-alpha-color: rgba(102, 156, 210, 0.5);
     --secondary-light-light-alpha-color: rgba(102, 156, 210, 0.2);
 
-    --primary-error-color: rgb(250 146 29);
+    --primary-error-color: rgb(250, 146, 29);
     --primary-error-alpha-color: rgba(250, 146, 29, 0.9);
 
     --primary-bg-color: rgb(39, 40, 43);

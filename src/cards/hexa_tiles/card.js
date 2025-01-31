@@ -1,7 +1,7 @@
 import {LitElement, html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
-import '../../helpers/card/tiles.js';
+import '../../helpers/components/tiles.js';
 import common_style from '../../helpers/common_style.js';
 import '../../helpers/entities/person.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';

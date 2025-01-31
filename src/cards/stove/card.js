@@ -1,9 +1,9 @@
 import {LitElement, html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
-import '../../helpers/card/circle_progress_bar.js';
-import '../../helpers/card/stack_bar.js';
-import '../../helpers/card/stove.js';
+import '../../helpers/components/circle_progress_bar.js';
+import '../../helpers/components/stack_bar.js';
+import '../../helpers/components/stove.js';
 import common_style from '../../helpers/common_style.js';
 import {ClimateEntity, StoveEntity} from '../../helpers/entities/climate.js';
 import {Area} from '../../helpers/entities/house.js';

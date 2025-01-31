@@ -2,8 +2,8 @@ import {LitElement, html, nothing} from 'lit';
 import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 import {isEqual} from 'lodash-es';
 
-import '../../helpers/card/tiles.js';
-import '../../helpers/card/toast.js';
+import '../../helpers/components/tiles.js';
+import '../../helpers/components/toast.js';
 import common_style from '../../helpers/common_style.js';
 import {House} from '../../helpers/entities/house.js';
 import {

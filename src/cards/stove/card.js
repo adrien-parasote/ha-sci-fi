@@ -4,6 +4,7 @@ import {isEqual} from 'lodash-es';
 import common_style from '../../helpers/common_style.js';
 import '../../helpers/components/stack_bar.js';
 import '../../helpers/components/stove.js';
+import '../../helpers/components/toast.js';
 import '../../helpers/components/wheel.js';
 import {StoveEntity} from '../../helpers/entities/climate.js';
 import {STOVE_SENSORS} from '../../helpers/entities/sensor_const.js';
@@ -102,10 +103,13 @@ export class SciFiStove extends LitElement {
 
   render() {
     if (!this._hass || !this._config) return nothing;
-    return html`<div class="container">
-      ${this.__displayHeader()} ${this.__displayStove()}
-      ${this.__displayBottom()}
-    </div>`;
+    return html`
+      <div class="container">
+        ${this.__displayHeader()} ${this.__displayStove()}
+        ${this.__displayBottom()}
+      </div>
+      <sci-fi-toast></sci-fi-toast>
+    `;
   }
 
   __displayHeader() {
@@ -113,25 +117,47 @@ export class SciFiStove extends LitElement {
   }
 
   __displayBottom() {
+    const hvac_items = this._stove.hvac_modes.map((mode) => {
+      return {
+        action: 'hvac',
+        value: mode,
+        icon: HVAC_MODES_ICONS[this._stove.state]
+          ? HVAC_MODES_ICONS[this._stove.state]
+          : 'mdi:information-off-outline',
+        text: mode,
+      };
+    });
+    const preset_items = this._stove.preset_modes.map((mode) => {
+      return {
+        action: 'preset',
+        value: mode,
+        icon: PRESET_MODES_ICONS[mode]
+          ? PRESET_MODES_ICONS[mode]
+          : 'mdi:information-off-outline',
+        text: mode,
+      };
+    });
+
     return html`
       <div class="bottom">
-        <sci-fi-button-card
+        <sci-fi-button-select-card
           icon=${HVAC_MODES_ICONS[this._stove.state]
             ? HVAC_MODES_ICONS[this._stove.state]
             : 'mdi:information-off-outline'}
           title="mode"
           text=${this._stove.state}
-          @button-click="${this.__select}"
-        ></sci-fi-button-card>
-
-        <sci-fi-button-card
+          items=${JSON.stringify(hvac_items)}
+          @button-select="${this.__select}"
+        ></sci-fi-button-select-card>
+        <sci-fi-button-select-card
           icon=${PRESET_MODES_ICONS[this._stove.preset_mode]
             ? PRESET_MODES_ICONS[this._stove.preset_mode]
             : 'mdi:information-off-outline'}
           title="preset"
           text=${this._stove.preset_mode}
-          @button-click="${this.__select}"
-        ></sci-fi-button-card>
+          items=${JSON.stringify(preset_items)}
+          @button-select="${this.__select}"
+        ></sci-fi-button-select-card>
       </div>
     `;
   }
@@ -273,7 +299,26 @@ export class SciFiStove extends LitElement {
   }
 
   __select(e) {
-    console.log(e);
+    let handler = null;
+    if (
+      e.detail.action == 'preset' &&
+      e.detail.value != this._stove.preset_mode
+    )
+      handler = this._stove.setPresetMode;
+    if (e.detail.action == 'hvac' && e.detail.value != this._stove.preset_mode)
+      handler = this._stove.setPresetMode;
+
+    if (handler) {
+      handler(this._hass, e.detail.value).then(
+        () => this.__toast(false),
+        (e) => this.__toast(true, e)
+      );
+    }
+  }
+
+  __toast(error, e) {
+    const msg = error ? e.message : 'done';
+    this.shadowRoot.querySelector('sci-fi-toast').addMessage(msg, error);
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

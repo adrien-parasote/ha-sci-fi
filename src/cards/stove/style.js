@@ -253,4 +253,7 @@ export default css`
     padding: 10px;
     background-color: var(--primary-bg-alpha-color);
   }
+  .bottom sci-fi-button-select-card {
+    --title-color: var(--line-color);
+  }
 `;

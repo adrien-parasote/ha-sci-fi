@@ -2,8 +2,8 @@ import Chart from 'chart.js/auto';
 import {LitElement, html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
-import '../../helpers/components/tiles.js';
 import common_style from '../../helpers/common_style.js';
+import '../../helpers/components/tiles.js';
 import {
   DailyForecast,
   HourlyForecast,

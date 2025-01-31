@@ -1,6 +1,7 @@
 import {LitElement, html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
+import '../../helpers/card/circle_progress_bar.js';
 import '../../helpers/card/stack_bar.js';
 import '../../helpers/card/stove.js';
 import common_style from '../../helpers/common_style.js';
@@ -202,11 +203,11 @@ export class SciFiStove extends LitElement {
     const sensor_pellet_quantity = this._stove.sensor_pellet_quantity;
     if (!sensor_pellet_quantity) return this.__noQuantity('Fuel quantity');
     return html`
-      <sci-fi-stack-bar
+      <sci-fi-circle-progress-bar
         text="Fuel quantity"
         val=${sensor_pellet_quantity.value}
         threshold=${this._config.pellet_quantity_threshold}
-      ></sci-fi-stack-bar>
+      ></sci-fi-circle-progress-bar>
     `;
   }
 

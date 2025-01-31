@@ -60,7 +60,8 @@ export default css`
     height: 90%;
     align-self: center;
   }
-  .content .info .e.bottom-path .quantities sci-fi-stack-bar {
+  .content .info .e.bottom-path .quantities sci-fi-stack-bar,
+  .content .info .e.bottom-path .quantities sci-fi-circle-progress-bar {
     height: 100%;
   }
   .content .info .e.top-path .powers {

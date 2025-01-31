@@ -86,6 +86,17 @@ Two modes are available:
 > [!CAUTION]
 > You need to have default Home Assistant `sun` service activated.
 
+### Screenshots
+
+<details>
+<summary>Show</summary>
+
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/hexa.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/hexa_edit_1.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/hexa_edit_2.jpeg" width="300">
+
+</details>
+
 ### Configuration
 
 > [!TIP]
@@ -238,17 +249,7 @@ tiles:
 
 </details>
 
-### Screenshots
-
-<details>
-<summary>Show</summary>
-
-<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/hexa.jpeg" width="300">
-<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/hexa_edit_1.jpeg" width="300">
-<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/hexa_edit_2.jpeg" width="300">
-
-</details>
-
+<br>
 
 ## 💡 Sci-Fi Lights card <a name="lights_card"></a>
 
@@ -278,11 +279,22 @@ Allow to deal with lights entities, grouping them per floors/areas.
 > [!NOTE]
 > If Home Assistant `Sun` entity is available, day phase will be displayed on top of the card (dawn, dusk, day, rising, seting)
 
+
+### Screenshots
+
+<details>
+<summary>Show</summary>
+
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/lights.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/lights_edit_1.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/lights_edit_2.jpeg" width="300">
+
+</details>
+
 ### Configuration
 
 > [!TIP]
 > This card can be configure through the UI that allow use to use HA interface for the configuration.
-
 
 <details>
 
@@ -359,16 +371,7 @@ light.light_id_1: # The light entity ID you want to customize
 
 </details>
 
-### Screenshots
-
-<details>
-<summary>Show</summary>
-
-<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/lights.jpeg" width="300">
-<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/lights_edit_1.jpeg" width="300">
-<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/lights_edit_2.jpeg" width="300">
-
-</details>
+<br>
 
 ## 🌦️ Sci-Fi Weather card <a name="weather_card"></a>
 
@@ -404,6 +407,16 @@ Card is composed of:
     - precipitations
     - wind speed
 - A next day weather part used to select chart data day to display
+
+### Screenshots
+
+<details>
+<summary>Show</summary>
+
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/weather.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/weather_edit.jpeg" width="300">
+
+</details>
 
 ### Configuration
 
@@ -481,15 +494,7 @@ alert:
 
 </details>
 
-### Screenshots
-
-<details>
-<summary>Show</summary>
-
-<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/weather.jpeg" width="300">
-<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/weather_edit.jpeg" width="300">
-
-</details>
+<br>
 
 ## 🌡️ Sci-Fi Climates card <a name="climates_card"></a>
 
@@ -525,6 +530,19 @@ Allow to deal with climates entities, grouping them per floors/areas.
 > [!NOTE]
 > If Home Assistant `Sun` entity is available, day phase will be displayed on top of the card (dawn, dusk, day, rising, seting)
 
+### Screenshots
+
+<details>
+<summary>Show</summary>
+
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_1.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_2.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_3.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_edit_1.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_edit_2.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_edit_3.jpeg" width="300">
+
+</details>
 
 ### Configuration
 
@@ -685,20 +703,6 @@ mode_colors:
   comfort-2: "#ffff8f"
   boost: "#ff7f50"
 ```
-
-</details>
-
-### Screenshots
-
-<details>
-<summary>Show</summary>
-
-<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_1.jpeg" width="300">
-<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_2.jpeg" width="300">
-<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_3.jpeg" width="300">
-<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_edit_1.jpeg" width="300">
-<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_edit_2.jpeg" width="300">
-<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_edit_3.jpeg" width="300">
 
 </details>
 

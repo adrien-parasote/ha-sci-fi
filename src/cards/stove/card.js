@@ -5,8 +5,7 @@ import '../../helpers/components/circle_progress_bar.js';
 import '../../helpers/components/stack_bar.js';
 import '../../helpers/components/stove.js';
 import common_style from '../../helpers/common_style.js';
-import {ClimateEntity, StoveEntity} from '../../helpers/entities/climate.js';
-import {Area} from '../../helpers/entities/house.js';
+import {StoveEntity} from '../../helpers/entities/climate.js';
 import {STOVE_SENSORS} from '../../helpers/entities/sensor_const.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 import {PACKAGE} from './const.js';
@@ -98,39 +97,25 @@ export class SciFiStove extends LitElement {
       !isEqual(stove_entity.renderAsEntity(), this._stove.renderAsEntity())
     )
       this._stove = stove_entity;
-
-    // Build area
-    const area_other_climate_entities = Object.values(hass.entities)
-      .filter(
-        (e) =>
-          e.entity_id.startsWith('climate.') &&
-          e.entity_id != this._config.entity &&
-          hass.devices[e.device_id].area_id == this._stove.area_id
-      )
-      .map(
-        (e) =>
-          new ClimateEntity(hass.states[e.entity_id], hass.devices[e.device_id])
-      );
-    const area = new Area(this._stove.area_id, hass);
-    area.addEntities([this._stove].concat(area_other_climate_entities));
-    if (!this._area || !isEqual(area, this._area)) this._area = area;
   }
 
   render() {
     if (!this._hass || !this._config) return nothing;
     return html`<div class="container">
-      ${this.__displayStove()} ${this.__displayBottom()}
+     ${this.__displayHeader()} ${this.__displayStove()} ${this.__displayBottom()}
     </div>`;
   }
-
+  __displayHeader() {
+    return html`
+      <div class="header">
+        ${this._stove.friendly_name}
+      </div>
+    `;
+  }
   __displayBottom() {
     return html`
       <div class="bottom">
-        <div class="info">
-          <div>${this._area.name} -</div>
-          ${getIcon('mdi:thermometer')}
-          <div>${this._area.getTemperature()}${this._config.unit}</div>
-        </div>
+        
       </div>
     `;
   }

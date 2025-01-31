@@ -85,6 +85,82 @@ export class SciFiButton extends LitElement {
   }
 }
 
+export class SciFiCardButton extends SciFiButton {
+  static get styles() {
+    return [
+      common_style,
+      css`
+        :host {
+          --title-text-color: var(--title-color, var(--secondary-light-color));
+        }
+        .btn {
+          display: flex;
+          flex-direction: row;
+          font-weight: bold;
+          border: var(--border-width) solid var(--primary-bg-color);
+          border-radius: var(--border-radius);
+          font-size: var(--font-size-small);
+          padding: 10px 5px;
+          align-items: center;
+          text-transform: capitalize;
+          min-width: 100px;
+          height: fit-content;
+          justify-content: left;
+          column-gap: 10px;
+          cursor: pointer;
+        }
+        .btn:hover {
+          background-color: var(--secondary-light-light-alpha-color);
+        }
+        .btn .label {
+          display: flex;
+          flex-direction: column;
+          row-gap: 5px;
+          color: var(--secondary-light-color);
+        }
+        .btn .label div:first-of-type {
+          font-size: var(--font-size-xsmall);
+          font-weight: normal;
+          color: var(--title-text-color);
+        }
+
+        .btn svg {
+          fill: var(--secondary-light-color);
+          width: var(--icon-size-small);
+          height: var(--icon-size-small);
+        }
+      `,
+    ];
+  }
+
+  static get properties() {
+    return {
+      icon: {type: String},
+      title: {type: String},
+      text: {type: String},
+    };
+  }
+
+  constructor() {
+    super();
+    this.icon = this.icon ? this.icon : '';
+    this.title = this.title ? this.title : '';
+    this.text = this.text ? this.text : '';
+  }
+
+  render() {
+    return html`
+      <div class="btn" @click="${this.click}">
+        ${getIcon(this.icon)}
+        <div class="label">
+          <div>${this.title}</div>
+          <div>${this.text}</div>
+        </div>
+      </div>
+    `;
+  }
+}
+
 export class SciFiToggleSwitch extends LitElement {
   static get styles() {
     return [

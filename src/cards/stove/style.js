@@ -79,11 +79,11 @@ export default css`
     font-size: var(--font-size-small);
     color: var(--line-color);
     text-align: center;
+    font-weight: bold;
     flex: 1;
   }
   .content .info .e.top-path .powers .power div:last-child {
     font-size: var(--font-size-normal);
-    font-weight: bold;
     color: var(--primary-light-color);
   }
   .content .info .e.top-path .powers .power div:last-child.nothing {
@@ -245,6 +245,9 @@ export default css`
   .bottom {
     display: flex;
     flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    column-gap: 10px;
     flex: 1;
     border-top: var(--border-width) solid var(--primary-bg-color);
     padding: 10px;

@@ -1,14 +1,15 @@
 import {LitElement, html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
-import '../../helpers/components/circle_progress_bar.js';
+import common_style from '../../helpers/common_style.js';
 import '../../helpers/components/stack_bar.js';
 import '../../helpers/components/stove.js';
-import common_style from '../../helpers/common_style.js';
+import '../../helpers/components/wheel.js';
 import {StoveEntity} from '../../helpers/entities/climate.js';
 import {STOVE_SENSORS} from '../../helpers/entities/sensor_const.js';
+import '../../helpers/form/form.js';
 import {getIcon} from '../../helpers/icons/icons.js';
-import {PACKAGE} from './const.js';
+import {HVAC_MODES_ICONS, PACKAGE, PRESET_MODES_ICONS} from './const.js';
 import {SciFiStoveEditor} from './editor.js';
 import style from './style.js';
 
@@ -102,20 +103,35 @@ export class SciFiStove extends LitElement {
   render() {
     if (!this._hass || !this._config) return nothing;
     return html`<div class="container">
-     ${this.__displayHeader()} ${this.__displayStove()} ${this.__displayBottom()}
+      ${this.__displayHeader()} ${this.__displayStove()}
+      ${this.__displayBottom()}
     </div>`;
   }
+
   __displayHeader() {
-    return html`
-      <div class="header">
-        ${this._stove.friendly_name}
-      </div>
-    `;
+    return html` <div class="header">${this._stove.friendly_name}</div> `;
   }
+
   __displayBottom() {
     return html`
       <div class="bottom">
-        
+        <sci-fi-button-card
+          icon=${HVAC_MODES_ICONS[this._stove.state]
+            ? HVAC_MODES_ICONS[this._stove.state]
+            : 'mdi:information-off-outline'}
+          title="mode"
+          text=${this._stove.state}
+          @button-click="${this.__select}"
+        ></sci-fi-button-card>
+
+        <sci-fi-button-card
+          icon=${PRESET_MODES_ICONS[this._stove.preset_mode]
+            ? PRESET_MODES_ICONS[this._stove.preset_mode]
+            : 'mdi:information-off-outline'}
+          title="preset"
+          text=${this._stove.preset_mode}
+          @button-click="${this.__select}"
+        ></sci-fi-button-card>
       </div>
     `;
   }
@@ -254,6 +270,10 @@ export class SciFiStove extends LitElement {
         <div class="${power == 'N/A' ? 'nothing' : ''}">${power} ${unit}</div>
       </div>
     `;
+  }
+
+  __select(e) {
+    console.log(e);
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

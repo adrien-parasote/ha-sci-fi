@@ -1,5 +1,5 @@
 import {SciFiAccordionCard} from './accordion.js';
-import {SciFiButton, SciFiToggleSwitch} from './button.js';
+import {SciFiButton, SciFiCardButton, SciFiToggleSwitch} from './button.js';
 import {
   SciFiChipsInput,
   SciFiColorPicker,
@@ -15,6 +15,7 @@ import {
 const elements = {
   'sci-fi-accordion-card': SciFiAccordionCard,
   'sci-fi-button': SciFiButton,
+  'sci-fi-button-card': SciFiCardButton,
   'sci-fi-toggle': SciFiToggleSwitch,
   'sci-fi-input': SciFiInput,
   'sci-fi-chips-input': SciFiChipsInput,

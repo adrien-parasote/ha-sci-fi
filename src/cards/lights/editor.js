@@ -65,8 +65,12 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
   __renderHeader() {
     return html`
       <section>
-        <h1>Header</h1>
+        <h1>
+          <span>${getIcon('mdi:page-layout-header')}</span>
+          Header
+        </h1>
         <sci-fi-input
+          icon="mdi:cursor-text"
           label="Header card message"
           value=${this._config.header}
           element-id="header"
@@ -212,6 +216,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
         <span>Edit ${this._custom_entity_id}</span>
       </div>
       <sci-fi-input
+        icon="mdi:cursor-text"
         label="Custom name"
         value=${entity_info.name}
         element-id="${this._custom_entity_id}"

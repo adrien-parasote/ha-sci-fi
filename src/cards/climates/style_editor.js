@@ -1,10 +1,6 @@
 import {css} from 'lit';
 
 export default css`
-  .header > *,
-  .settings > * {
-    margin-bottom: 10px;
-  }
   .container.false {
     display: none;
   }
@@ -15,7 +11,6 @@ export default css`
     display: flex;
     flex-direction: row;
     column-gap: 5px;
-    margin-bottom: 10px;
   }
   .state-mode-row sci-fi-input {
     flex: 1;

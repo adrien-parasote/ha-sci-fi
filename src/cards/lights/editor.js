@@ -1,8 +1,6 @@
 import {html, nothing} from 'lit';
 
-import common_style from '../../helpers/common_style.js';
 import {SciFiBaseEditor} from '../../helpers/components/base_editor.js';
-import editor_common_style from '../../helpers/editor_common_style.js';
 import {House} from '../../helpers/entities/house.js';
 import {ENTITY_KIND_LIGHT} from '../../helpers/entities/light_const.js';
 import '../../helpers/form/form.js';
@@ -11,7 +9,7 @@ import editor_style from './style_editor.js';
 
 export class SciFiLightsEditor extends SciFiBaseEditor {
   static get styles() {
-    return [common_style, editor_common_style, editor_style];
+    return super.styles.concat([editor_style]);
   }
 
   static get properties() {

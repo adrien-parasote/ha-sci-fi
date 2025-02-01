@@ -181,8 +181,8 @@ export class SciFiStove extends LitElement {
       return {
         action: 'hvac',
         value: mode,
-        icon: HVAC_MODES_ICONS[this._stove.state]
-          ? HVAC_MODES_ICONS[this._stove.state]
+        icon: HVAC_MODES_ICONS[mode]
+          ? HVAC_MODES_ICONS[mode]
           : 'mdi:information-off-outline',
         text: mode,
       };

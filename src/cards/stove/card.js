@@ -3,7 +3,7 @@ import {isEqual} from 'lodash-es';
 
 import common_style from '../../helpers/common_style.js';
 import '../../helpers/components/circle_progress_bar.js';
-import '../../helpers/components/hexa_wheel.js';
+import '../../helpers/components/wheel.js';
 import '../../helpers/components/stack_bar.js';
 import '../../helpers/components/stove.js';
 import '../../helpers/components/toast.js';
@@ -134,11 +134,12 @@ export class SciFiStove extends LitElement {
     return html`
       <div class="bottom">
         ${this.__displayHvacButton()}
-        <sci-fi-hexa-wheel
+        <sci-fi-wheel
           .items=${items}
           selected-id="${selected_item_id}"
+          text="Temperature"
           @wheel-change="${this.__select}"
-        ></sci-fi-hexa-wheel>
+        ></sci-fi-wheel>
         ${this.__displayPresetButton()}
       </div>
     `;

@@ -1,31 +1,36 @@
-import {LitElement, css, html} from 'lit';
+import {LitElement, css, html, nothing} from 'lit';
 
 import common_style from '../common_style.js';
 import {getIcon} from '../icons/icons.js';
 import './tiles.js';
 
-class SciFiHexaWheel extends LitElement {
+class SciFiWheel extends LitElement {
   static get styles() {
     return [
       common_style,
       css`
         :host {
-          position: relative;
-          --width: var(--hexa-width, 100px);
-          --item-font-size: var(--font-size, var(--font-size-small));
-          --item-font-color: var(--font-color, var(--secondary-light-color));
+          --item-font-size: var(--item-font-size, var(--font-size-small));
+          --item-font-color: var(--item-font-color, var(--secondary-light-color));
+          --wheel-text-color: var(--text-font-color, var(--secondary-light-color));
         }
-        .container sci-fi-hexa-tile {
-          --hexa-width: var(--width);
-          --hexa-height: calc(var(--width) * 1.1547);
+        .container {
+          display: flex;
+          flex-direction: column;
+          row-gap: 10px;
+          border: var(--border-width) solid var(--primary-bg-color);
+          border-radius: var(--border-radius);
+          padding: 10px;
         }
-        .up {
-          position: relative;
-          top: -5px;
+        .text {
+          font-weight: bold;
+          font-size: var(--font-size-normal);
+          color: var(--wheel-text-color)
         }
-        .down {
-          position: relative;
-          bottom: 0;
+        .core {
+          display: flex;
+          flex-direction: column;
+          row-gap: 5px;
         }
         .slider {
           display: flex;
@@ -63,7 +68,7 @@ class SciFiHexaWheel extends LitElement {
     return {
       items: {type: Array},
       selectedId: {type: String, attribute: 'selected-id'},
-      state: {type: String},
+      text: {type: String},
     };
   }
 
@@ -71,13 +76,13 @@ class SciFiHexaWheel extends LitElement {
     super();
     this.items = this.items ? this.items : [];
     this.selectedId = this.selectedId ? this.selectedId : null;
-    this.state = this.state ? this.state : 'off';
+    this.text = this.text ? this.text : null;
   }
 
   render() {
     return html`
       <div class="container">
-        <sci-fi-hexa-tile active-tile state=${this.state}>
+        <div class="core">
           <sci-fi-button
             class="up"
             icon="mdi:menu-up-outline"
@@ -91,9 +96,15 @@ class SciFiHexaWheel extends LitElement {
             icon="mdi:menu-down-outline"
             @button-click=${(e) => this.__click(e, 'down')}
           ></sci-fi-button>
-        </sci-fi-hexa-tile>
+        </div>
+        ${this.__displayText()}
       </div>
     `;
+  }
+
+  __displayText(){
+    if(!this.text) return nothing
+    return html `<div class="text">${this.text}</div>`;
   }
 
   __buildSliderContent() {
@@ -136,5 +147,5 @@ class SciFiHexaWheel extends LitElement {
   }
 }
 
-window.customElements.get('sci-fi-hexa-wheel') ||
-  window.customElements.define('sci-fi-hexa-wheel', SciFiHexaWheel);
+window.customElements.get('sci-fi-wheel') ||
+  window.customElements.define('sci-fi-wheel', SciFiWheel);

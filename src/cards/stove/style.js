@@ -257,8 +257,9 @@ export default css`
     --title-color: var(--line-color);
     --label-text-color: var(--primary-light-color);
   }
-  .bottom sci-fi-hexa-wheel {
-    --font-size: var(--font-size-title);
-    --font-color: var(--primary-light-color);
+  .bottom sci-fi-wheel {
+    --item-font-size: var(--font-size-title);
+    --item-font-color: var(--primary-light-color);
+    --text-font-color: var(--line-color);
   }
 `;

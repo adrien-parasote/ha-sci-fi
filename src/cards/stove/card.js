@@ -405,7 +405,7 @@ export class SciFiStove extends LitElement {
       sensors: {},
       storage_counter: null,
       storage_counter_threshold: 0.1,
-      pellet_quantity_threshold: 0.5,
+      pellet_quantity_threshold: 0.1,
     };
   }
 }

@@ -4,7 +4,7 @@ import common_style from '../common_style.js';
 import {getIcon} from '../icons/icons.js';
 import './tiles.js';
 
-class SciFiWheel extends LitElement {
+class SciFiHexaWheel extends LitElement {
   static get styles() {
     return [
       common_style,
@@ -12,6 +12,8 @@ class SciFiWheel extends LitElement {
         :host {
           position: relative;
           --width: var(--hexa-width, 100px);
+          --item-font-size: var(--font-size, var(--font-size-small));
+          --item-font-color: var(--font-color, var(--secondary-light-color));
         }
         .container sci-fi-hexa-tile {
           --hexa-width: var(--width);
@@ -34,7 +36,9 @@ class SciFiWheel extends LitElement {
         .slider .slider-item {
           display: flex;
           flex-direction: column;
-          font-size: var(--font-size-small);
+          font-size: var(--item-font-size);
+          color: var(--item-font-color);
+          font-weight: bold;
           align-items: center;
         }
         .slider .slider-item.hide {
@@ -60,7 +64,6 @@ class SciFiWheel extends LitElement {
       items: {type: Array},
       selectedId: {type: String, attribute: 'selected-id'},
       state: {type: String},
-      showName: {type: Boolean, attribute: 'show-name'},
     };
   }
 
@@ -69,11 +72,6 @@ class SciFiWheel extends LitElement {
     this.items = this.items ? this.items : [];
     this.selectedId = this.selectedId ? this.selectedId : null;
     this.state = this.state ? this.state : 'off';
-    this.showName = this.showName ? this.showName : false;
-  }
-
-  set items(items) {
-    this._items = items.filter((el) => !el.inactive);
   }
 
   render() {
@@ -99,32 +97,30 @@ class SciFiWheel extends LitElement {
   }
 
   __buildSliderContent() {
-    return this._items.map(
+    return this.items.map(
       (el) => html`
         <div
           class="slider-item ${el.id == this.selectedId
             ? 'show'
             : 'hide'} ${this.state}"
         >
-          ${getIcon(el.icon)}
-          ${this.showName ? html`<div>${el.name}</div>` : ''}
+          ${el.icon ? getIcon(el.icon) : ''}
+          <div>${el.text}</div>
         </div>
       `
     );
   }
 
   __findNext(direction) {
-    let item_id = this._items.findIndex(
-      (e) => e.id === this.selectedId && e.inactive === false
-    );
+    let item_id = this.items.findIndex((e) => e.id == this.selectedId);
     if (direction) {
       if (direction == 'up') {
-        item_id = item_id + 1 >= this._items.length ? 0 : item_id + 1;
+        item_id = item_id + 1 >= this.items.length ? 0 : item_id + 1;
       } else {
-        item_id = item_id - 1 < 0 ? this._items.length - 1 : item_id - 1;
+        item_id = item_id - 1 < 0 ? this.items.length - 1 : item_id - 1;
       }
     }
-    return this._items[item_id];
+    return this.items[item_id];
   }
 
   __click(e, direction) {
@@ -140,5 +136,5 @@ class SciFiWheel extends LitElement {
   }
 }
 
-window.customElements.get('sci-fi-wheel') ||
-  window.customElements.define('sci-fi-wheel', SciFiWheel);
+window.customElements.get('sci-fi-hexa-wheel') ||
+  window.customElements.define('sci-fi-hexa-wheel', SciFiHexaWheel);

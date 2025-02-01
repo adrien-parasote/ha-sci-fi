@@ -92,6 +92,7 @@ export class SciFiCardButton extends SciFiButton {
       css`
         :host {
           --title-text-color: var(--title-color, var(--secondary-light-color));
+          --label-text-color: var(--label-color, var(--secondary-light-color));
         }
         .btn {
           display: flex;
@@ -116,7 +117,7 @@ export class SciFiCardButton extends SciFiButton {
           display: flex;
           flex-direction: column;
           row-gap: 5px;
-          color: var(--secondary-light-color);
+          color: var(--label-text-color);
         }
         .btn .label div:first-of-type {
           font-size: var(--font-size-xsmall);

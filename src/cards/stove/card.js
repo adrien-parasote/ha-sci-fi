@@ -2,10 +2,11 @@ import {LitElement, html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
 import common_style from '../../helpers/common_style.js';
+import '../../helpers/components/circle_progress_bar.js';
+import '../../helpers/components/hexa_wheel.js';
 import '../../helpers/components/stack_bar.js';
 import '../../helpers/components/stove.js';
 import '../../helpers/components/toast.js';
-import '../../helpers/components/wheel.js';
 import {StoveEntity} from '../../helpers/entities/climate.js';
 import {STOVE_SENSORS} from '../../helpers/entities/sensor_const.js';
 import '../../helpers/form/form.js';
@@ -117,16 +118,33 @@ export class SciFiStove extends LitElement {
   }
 
   __displayBottom() {
-    const hvac_items = this._stove.hvac_modes.map((mode) => {
+    // Build item
+    const items = Array.from(
+      Array(this._stove.max_temp - this._stove.min_temp + 1).keys()
+    ).map((e, idx) => {
       return {
-        action: 'hvac',
-        value: mode,
-        icon: HVAC_MODES_ICONS[this._stove.state]
-          ? HVAC_MODES_ICONS[this._stove.state]
-          : 'mdi:information-off-outline',
-        text: mode,
+        id: idx,
+        text: idx + this._stove.min_temp,
+        value: idx + this._stove.min_temp,
       };
     });
+    // Get current temp & associate with item id
+    const selected_item_id =
+      Math.round(this._stove.current_temperature, 0) - this._stove.min_temp;
+    return html`
+      <div class="bottom">
+        ${this.__displayHvacButton()}
+        <sci-fi-hexa-wheel
+          .items=${items}
+          selected-id="${selected_item_id}"
+          @wheel-change="${this.__select}"
+        ></sci-fi-hexa-wheel>
+        ${this.__displayPresetButton()}
+      </div>
+    `;
+  }
+
+  __displayPresetButton() {
     const preset_items = this._stove.preset_modes.map((mode) => {
       return {
         action: 'preset',
@@ -137,28 +155,40 @@ export class SciFiStove extends LitElement {
         text: mode,
       };
     });
-
     return html`
-      <div class="bottom">
-        <sci-fi-button-select-card
-          icon=${HVAC_MODES_ICONS[this._stove.state]
-            ? HVAC_MODES_ICONS[this._stove.state]
-            : 'mdi:information-off-outline'}
-          title="mode"
-          text=${this._stove.state}
-          items=${JSON.stringify(hvac_items)}
-          @button-select="${this.__select}"
-        ></sci-fi-button-select-card>
-        <sci-fi-button-select-card
-          icon=${PRESET_MODES_ICONS[this._stove.preset_mode]
-            ? PRESET_MODES_ICONS[this._stove.preset_mode]
-            : 'mdi:information-off-outline'}
-          title="preset"
-          text=${this._stove.preset_mode}
-          items=${JSON.stringify(preset_items)}
-          @button-select="${this.__select}"
-        ></sci-fi-button-select-card>
-      </div>
+      <sci-fi-button-select-card
+        icon=${PRESET_MODES_ICONS[this._stove.preset_mode]
+          ? PRESET_MODES_ICONS[this._stove.preset_mode]
+          : 'mdi:information-off-outline'}
+        title="preset"
+        text=${this._stove.preset_mode}
+        items=${JSON.stringify(preset_items)}
+        @button-select="${this.__select}"
+      ></sci-fi-button-select-card>
+    `;
+  }
+
+  __displayHvacButton() {
+    const hvac_items = this._stove.hvac_modes.map((mode) => {
+      return {
+        action: 'hvac',
+        value: mode,
+        icon: HVAC_MODES_ICONS[this._stove.state]
+          ? HVAC_MODES_ICONS[this._stove.state]
+          : 'mdi:information-off-outline',
+        text: mode,
+      };
+    });
+    return html`
+      <sci-fi-button-select-card
+        icon=${HVAC_MODES_ICONS[this._stove.state]
+          ? HVAC_MODES_ICONS[this._stove.state]
+          : 'mdi:information-off-outline'}
+        title="mode"
+        text=${this._stove.state}
+        items=${JSON.stringify(hvac_items)}
+        @button-select="${this.__select}"
+      ></sci-fi-button-select-card>
     `;
   }
 
@@ -227,7 +257,7 @@ export class SciFiStove extends LitElement {
   }
 
   __displayPelletQuantity() {
-    const sensor_pellet_quantity = this._stove.sensor_pellet_quantity;
+    const sensor_pellet_quantity = this._stove.pellet_quantity;
     if (!sensor_pellet_quantity) return this.__noQuantity('Fuel quantity');
     return html`
       <sci-fi-circle-progress-bar
@@ -307,6 +337,8 @@ export class SciFiStove extends LitElement {
       handler = this._stove.setPresetMode;
     if (e.detail.action == 'hvac' && e.detail.value != this._stove.preset_mode)
       handler = this._stove.setPresetMode;
+
+    if (e.type == 'wheel-change') handler = this._stove.setTemperature;
 
     if (handler) {
       handler(this._hass, e.detail.value).then(

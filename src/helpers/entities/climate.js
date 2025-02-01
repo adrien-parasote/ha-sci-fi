@@ -137,6 +137,17 @@ export class ClimateEntity {
       }
     );
   }
+
+  setTemperature(hass, temperature) {
+    return hass.callService(
+      HASS_CLIMATE_SERVICE,
+      HASS_CLIMATE_SERVICE_SET_HVAC_MODE,
+      {
+        entity_id: [this.entity_id],
+        temperature: temperature,
+      }
+    );
+  }
 }
 
 export class StoveEntity extends ClimateEntity {
@@ -171,7 +182,7 @@ export class StoveEntity extends ClimateEntity {
       : null;
   }
 
-  get sensor_pellet_quantity() {
+  get pellet_quantity() {
     return this.sensors[STOVE_SENSOR_PELLET_QTY]
       ? this.sensors[STOVE_SENSOR_PELLET_QTY]
       : null;

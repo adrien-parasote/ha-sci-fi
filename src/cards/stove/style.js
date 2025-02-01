@@ -255,5 +255,10 @@ export default css`
   }
   .bottom sci-fi-button-select-card {
     --title-color: var(--line-color);
+    --label-text-color: var(--primary-light-color);
+  }
+  .bottom sci-fi-hexa-wheel {
+    --font-size: var(--font-size-title);
+    --font-color: var(--primary-light-color);
   }
 `;

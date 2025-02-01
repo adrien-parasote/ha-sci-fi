@@ -3,6 +3,7 @@ export const ENTITY_KIND_CLIMATE = 'climate';
 export const HASS_CLIMATE_SERVICE = 'climate';
 export const HASS_CLIMATE_SERVICE_SET_PRESET_MODE = 'set_preset_mode';
 export const HASS_CLIMATE_SERVICE_SET_HVAC_MODE = 'set_hvac_mode';
+export const HASS_CLIMATE_SERVICE_SET_TEMPERATURE = 'set_temperature';
 
 export const STATE_CLIMATE_HEAT = 'heat';
 export const STATE_CLIMATE_COOL = 'cool';

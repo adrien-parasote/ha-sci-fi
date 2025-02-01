@@ -18,6 +18,7 @@ import {
   HASS_CLIMATE_SERVICE,
   HASS_CLIMATE_SERVICE_SET_HVAC_MODE,
   HASS_CLIMATE_SERVICE_SET_PRESET_MODE,
+  HASS_CLIMATE_SERVICE_SET_TEMPERATURE,
   RADIATOR_BACKGROUND_PATH,
   RADIATOR_BORDER_PATH,
   RADIATOR_GRADIENT_PATH,
@@ -142,7 +143,7 @@ export class ClimateEntity {
   setTemperature(hass, temperature) {
     return hass.callService(
       HASS_CLIMATE_SERVICE,
-      HASS_CLIMATE_SERVICE_SET_HVAC_MODE,
+      HASS_CLIMATE_SERVICE_SET_TEMPERATURE,
       {
         entity_id: [this.entity_id],
         temperature: temperature,

@@ -11,10 +11,7 @@ class SciFiWheel extends LitElement {
       css`
         :host {
           --item-font-size: var(--item-font-size, var(--font-size-small));
-          --item-font-color: var(
-            --item-font-color,
-            var(--secondary-light-color)
-          );
+          --item--color: var(--item-color, var(--secondary-light-color));
           --wheel-text-color: var(
             --text-font-color,
             var(--secondary-light-color)
@@ -41,14 +38,12 @@ class SciFiWheel extends LitElement {
         .slider {
           display: flex;
           flex-direction: column;
-          width: var(--width);
-          margin-bottom: 5px;
         }
         .slider .slider-item {
           display: flex;
           flex-direction: column;
           font-size: var(--item-font-size);
-          color: var(--item-font-color);
+          color: var(--item--color);
           font-weight: bold;
           align-items: center;
         }
@@ -62,7 +57,7 @@ class SciFiWheel extends LitElement {
           margin-bottom: 5px;
         }
         .slider .slider-item.on .svg-container {
-          fill: var(--primary-light-color);
+          fill: var(--item--color);
         }
       `,
     ];

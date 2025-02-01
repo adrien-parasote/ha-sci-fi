@@ -132,7 +132,7 @@ export class SciFiStove extends LitElement {
     ).map((e, idx) => {
       return {
         id: idx,
-        text: idx + this._stove.min_temp,
+        text: [idx + this._stove.min_temp, this._config.unit].join(''),
         value: idx + this._stove.min_temp,
       };
     });
@@ -367,23 +367,25 @@ export class SciFiStove extends LitElement {
   }
 
   __select(e) {
-    let handler = null;
     if (
       e.detail.action == 'preset' &&
       e.detail.value != this._stove.preset_mode
     )
-      handler = this._stove.setPresetMode;
-    if (e.detail.action == 'hvac' && e.detail.value != this._stove.preset_mode)
-      handler = this._stove.setPresetMode;
-
-    if (e.type == 'wheel-change') handler = this._stove.setTemperature;
-
-    if (handler) {
-      handler(this._hass, e.detail.value).then(
+      this._stove.setPresetMode(this._hass, e.detail.value).then(
         () => this.__toast(false),
         (e) => this.__toast(true, e)
       );
-    }
+    if (e.detail.action == 'hvac' && e.detail.value != this._stove.preset_mode)
+      this._stove.setPresetMode(this._hass, e.detail.value).then(
+        () => this.__toast(false),
+        (e) => this.__toast(true, e)
+      );
+
+    if (e.type == 'wheel-change')
+      this._stove.setTemperature(this._hass, e.detail.value).then(
+        () => this.__toast(false),
+        (e) => this.__toast(true, e)
+      );
   }
 
   __toast(error, e) {

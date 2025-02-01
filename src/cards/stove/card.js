@@ -3,12 +3,20 @@ import {isEqual} from 'lodash-es';
 
 import common_style from '../../helpers/common_style.js';
 import '../../helpers/components/circle_progress_bar.js';
-import '../../helpers/components/wheel.js';
 import '../../helpers/components/stack_bar.js';
 import '../../helpers/components/stove.js';
 import '../../helpers/components/toast.js';
+import '../../helpers/components/wheel.js';
 import {StoveEntity} from '../../helpers/entities/climate.js';
-import {STOVE_SENSORS} from '../../helpers/entities/sensor_const.js';
+import {
+  STOVE_SENSORS,
+  STOVE_SENSOR_STATUS_COMBUSTION,
+  STOVE_SENSOR_STATUS_COOLING,
+  STOVE_SENSOR_STATUS_ECO,
+  STOVE_SENSOR_STATUS_IGNITION,
+  STOVE_SENSOR_STATUS_OFF,
+  STOVE_SENSOR_STATUS_PRE_HEATING,
+} from '../../helpers/entities/sensor_const.js';
 import '../../helpers/form/form.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 import {HVAC_MODES_ICONS, PACKAGE, PRESET_MODES_ICONS} from './const.js';
@@ -129,8 +137,7 @@ export class SciFiStove extends LitElement {
       };
     });
     // Get current temp & associate with item id
-    const selected_item_id =
-      Math.round(this._stove.current_temperature, 0) - this._stove.min_temp;
+    const selected_item_id = this._stove.temperature - this._stove.min_temp;
     return html`
       <div class="bottom">
         ${this.__displayHvacButton()}
@@ -213,13 +220,14 @@ export class SciFiStove extends LitElement {
             <div class="h-path"></div>
           </div>
           <div class="temperatures">
+            ${this.__displayStatus('Status', this._stove.status)}
             ${this.__displayTemperature(
-              'External stove',
+              'External',
               this._stove.current_temperature,
               this._config.unit
             )}
             ${this.__displayTemperature(
-              'Internal stove',
+              'Internal',
               this._stove.combustion_chamber_temperature.value,
               this._config.unit
             )}
@@ -280,6 +288,35 @@ export class SciFiStove extends LitElement {
         maximum=${storage.maximum}
         threshold=${this._config.storage_counter_threshold}
       ></sci-fi-stack-bar>
+    `;
+  }
+
+  __displayStatus(text, status) {
+    const icons = {};
+    icons[STOVE_SENSOR_STATUS_OFF] = {icon: 'sci:stove-off', color: 'off'};
+    icons[STOVE_SENSOR_STATUS_PRE_HEATING] = {
+      icon: 'sci:stove-heat',
+      color: 'amber',
+    };
+    icons[STOVE_SENSOR_STATUS_IGNITION] = {
+      icon: 'sci:stove-heat',
+      color: 'amber',
+    };
+    icons[STOVE_SENSOR_STATUS_COMBUSTION] = {
+      icon: 'sci:stove-heat',
+      color: 'red',
+    };
+    icons[STOVE_SENSOR_STATUS_ECO] = {icon: 'sci:stove-eco', color: 'green'};
+    icons[STOVE_SENSOR_STATUS_COOLING] = {
+      icon: 'sci:stove-cool',
+      color: 'blue',
+    };
+    return html`
+      <div class="status ${icons[status] ? icons[status].color : 'off'}">
+        ${getIcon(icons[status] ? icons[status].icon : 'sci:stove-unknow')}
+        <div class="label">${text}:</div>
+        <div>${status.replace('_', ' ')}</div>
+      </div>
     `;
   }
 

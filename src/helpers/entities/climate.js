@@ -38,6 +38,7 @@ import {
   STOVE_SENSOR_INSIDE_TEMP,
   STOVE_SENSOR_PELLET_QTY,
   STOVE_SENSOR_POWER,
+  STOVE_SENSOR_STATUS,
 } from './sensor_const.js';
 
 export class ClimateEntity {
@@ -185,6 +186,12 @@ export class StoveEntity extends ClimateEntity {
   get pellet_quantity() {
     return this.sensors[STOVE_SENSOR_PELLET_QTY]
       ? this.sensors[STOVE_SENSOR_PELLET_QTY]
+      : null;
+  }
+
+  get status() {
+    return this.sensors[STOVE_SENSOR_STATUS]
+      ? this.sensors[STOVE_SENSOR_STATUS].state
       : null;
   }
 

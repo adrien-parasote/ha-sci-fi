@@ -12,6 +12,7 @@ export default css`
 
     --primary-error-color: rgb(250, 146, 29);
     --primary-error-alpha-color: rgba(250, 146, 29, 0.9);
+    --primary-green-color: rgb(79, 227, 139);
 
     --primary-bg-color: rgb(39, 40, 43);
     --primary-bg-alpha-color: rgba(39, 40, 43, 0.3);

@@ -11,8 +11,14 @@ class SciFiWheel extends LitElement {
       css`
         :host {
           --item-font-size: var(--item-font-size, var(--font-size-small));
-          --item-font-color: var(--item-font-color, var(--secondary-light-color));
-          --wheel-text-color: var(--text-font-color, var(--secondary-light-color));
+          --item-font-color: var(
+            --item-font-color,
+            var(--secondary-light-color)
+          );
+          --wheel-text-color: var(
+            --text-font-color,
+            var(--secondary-light-color)
+          );
         }
         .container {
           display: flex;
@@ -25,7 +31,7 @@ class SciFiWheel extends LitElement {
         .text {
           font-weight: bold;
           font-size: var(--font-size-normal);
-          color: var(--wheel-text-color)
+          color: var(--wheel-text-color);
         }
         .core {
           display: flex;
@@ -102,9 +108,9 @@ class SciFiWheel extends LitElement {
     `;
   }
 
-  __displayText(){
-    if(!this.text) return nothing
-    return html `<div class="text">${this.text}</div>`;
+  __displayText() {
+    if (!this.text) return nothing;
+    return html`<div class="text">${this.text}</div>`;
   }
 
   __buildSliderContent() {

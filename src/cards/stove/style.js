@@ -167,6 +167,7 @@ export default css`
     flex-direction: column;
     row-gap: 20px;
   }
+  .content .info .m .temperatures .status,
   .content .info .m .temperatures .temperature {
     display: flex;
     flex-direction: row;
@@ -174,13 +175,29 @@ export default css`
     align-items: center;
     font-weight: bold;
   }
+  .content .info .m .temperatures .status .label,
   .content .info .m .temperatures .temperature .label {
     color: var(--line-color);
     font-size: var(--font-size-small);
   }
-  .content .info .m .temperatures .temperature div:last-child {
+  .content .info .m .temperatures .status div:last-child {
     color: var(--secondary-light-color);
-    font-size: var(--font-size-normal);
+    font-size: var(--line-color);
+  }
+  .content .info .m .temperatures .status.off div:last-child {
+    color: var(--line-color);
+  }
+  .content .info .m .temperatures .status.amber div:last-child {
+    color: var(--primary-error-color);
+  }
+  .content .info .m .temperatures .status.red div:last-child {
+    color: red;
+  }
+  .content .info .m .temperatures .status.green div:last-child {
+    color: var(--primary-green-color);
+  }
+  .content .info .m .temperatures .status.blue div:last-child {
+    color: var(--primary-light-color);
   }
   .content .info .m .temperatures .temperature.high div:last-child {
     color: red;
@@ -188,19 +205,26 @@ export default css`
   .content .info .m .temperatures .temperature.medium div:last-child {
     color: var(--primary-error-color);
   }
-  .content .info .m .temperatures .temperature.off div:last-child {
-    color: var(--line-color);
-  }
+  .content .info .m .temperatures .status svg,
   .content .info .m .temperatures .temperature svg {
     width: var(--icon-size-normal);
     height: var(--icon-size-normal);
-  }
-  .content .info .m .temperatures .temperature svg {
     fill: var(--secondary-light-color);
   }
+  .content .info .m .temperatures .status.green svg {
+    fill: var(--primary-green-color);
+  }
+  .content .info .m .temperatures .status.off svg {
+    fill: var(--line-color);
+  }
+  .content .info .m .temperatures .status.off svg {
+    fill: var(--line-color);
+  }
+  .content .info .m .temperatures .status.red svg,
   .content .info .m .temperatures .temperature.high svg {
     fill: red;
   }
+  .content .info .m .temperatures .status.amber svg,
   .content .info .m .temperatures .temperature.medium svg {
     fill: var(--primary-error-color);
   }

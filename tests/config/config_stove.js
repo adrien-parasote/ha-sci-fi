@@ -8,6 +8,7 @@ export default {
     sensor_inside_temperature: 'sensor.clou_inside_temperature',
     sensor_pellet_quantity: 'sensor.clou_pellet_quantity',
     sensor_power: 'sensor.clou_power_2',
+    sensor_status: 'binary_sensor.clou_stove_status',
   },
   storage_counter: 'counter.pellet_stock',
   pellet_quantity_threshold: 0.4,

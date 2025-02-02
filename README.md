@@ -15,6 +15,7 @@ The aim is to have your phone as a single entry point an use it as a remote hous
     * 💡 [Sci-Fi Lights card](#lights_card)
     * 🌦️ [Sci-Fi Weather card](#weather_card)
     * 🌡️ [Sci-Fi Climates card](#climates_card)
+    * 🪵🔥 [Sci-Fi Stove card](#stove_card)
 3. 🖼️ [Sci-Fi icon](#icon)
 
 # 🛠️ How to install ?<a name="how_to_install"></a>
@@ -150,8 +151,8 @@ tiles:
 
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
-| type | string | **Required** | Card definition | `custom:sci-fi-hexa-tiles`|
-| header_message | string| **Optionnal** | A message to display on top of the card | `''` |
+| type | String | **Required** | Card definition | `custom:sci-fi-hexa-tiles`|
+| header_message | String | **Optionnal** | A message to display on top of the card | `''` |
 | `weather` | Object | **Optional** | Section describing weather tile |  | 
 | `tiles` | Object | **Optional** | list of custom tiles |  | 
 
@@ -330,10 +331,10 @@ custom_entities:
 
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
-| type | string | **Required** | Card definition | `custom:sci-fi-lights` |
-| header | string | **Optionnal** | Card header message | |
-| default_icon_on | string | **Optionnal** | State on card icon | `mdi:lightbulb-on-outline`|
-| default_icon_off | string | **Optionnal** | State off card icon | `mdi:lightbulb-outline`|
+| type | String | **Required** | Card definition | `custom:sci-fi-lights` |
+| header | String | **Optionnal** | Card header message | |
+| default_icon_on | String | **Optionnal** | State on card icon | `mdi:lightbulb-on-outline`|
+| default_icon_off | String | **Optionnal** | State off card icon | `mdi:lightbulb-outline`|
 | first_floor_to_render | String | **Optional** | Floor you want to see when card is first rendered |  | 
 | first_area_to_render | Object | **Optional** | Area from `first_floor_to_render` floor you want to see when card is first rendered |  | 
 
@@ -357,9 +358,9 @@ Each `custom_entities` entries must be a light entity ID. Then for each, options
 
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
-| name | string | **Optionnal** | Custom name to display | `light.entity_id`|
-| icon_on | string | **Optionnal** | Custom MID/SCI icon to display for entity state on | `config.default_icons.on`|
-| icon_off | string | **Optionnal** | Custom MID/SCI icon to display for entity state off  | `config.default_icons.off`|
+| name | String | **Optionnal** | Custom name to display | `light.entity_id`|
+| icon_on | String | **Optionnal** | Custom MID/SCI icon to display for entity state on | `config.default_icons.on`|
+| icon_off | String | **Optionnal** | Custom MID/SCI icon to display for entity state off  | `config.default_icons.off`|
 
 **Example**
 ```yaml
@@ -453,7 +454,7 @@ alert:
 
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
-| type | string | **Required** | Card definition | `custom:sci-fi-weather`| 
+| type | String | **Required** | Card definition | `custom:sci-fi-weather`| 
 | weather_entity | String | **Required** | Your provider weather entity id  |  |
 | weather_daily_forecast_limit | Integer | **Optionnal** | Forecasted weather days between 0 and 15   | 10 |
 | chart_first_kind_to_render | String | **Optionnal** | First data to display on the chart, can be : `temperature`, `precipitation` or `wind_speed` | temperature |
@@ -475,11 +476,11 @@ alert:
 
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
-| entity_id | string | **Required** | Weather alert sensor ID | |
-| state_green | string | **Required** | Green state alert | |
-| state_yellow | string | **Required** | Yellow state alert | |
-| state_orange | string | **Required** | Orange state alert | |
-| state_red | string | **Required** | Red state alert | |
+| entity_id | String | **Required** | Weather alert sensor ID | |
+| state_green | String | **Required** | Green state alert | |
+| state_yellow | String | **Required** | Yellow state alert | |
+| state_orange | String | **Required** | Orange state alert | |
+| state_red | String | **Required** | Red state alert | |
 
 
 **Example**
@@ -599,8 +600,9 @@ mode_colors:
 
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
-| type | string | **Required** | Card definition | `custom:sci-fi-climates`| 
+| type | String | **Required** | Card definition | `custom:sci-fi-climates`| 
 | `header` | Object | **Optionnal** | Header card options  |  |
+| unit | String | **Optionnal** | Climate temperature unit  | °C |
 | entities_to_exclude | List[String] | **Optional** | Entities' id list to exclude from tracking. Example: `climate.excluded_1`, `climate.excluded_1`  | `[]`|
 | `state_icons` | Object | **Optionnal** | Icons for each climate states  |  |
 | `state_colors` | Object | **Optionnal** | Color for each climate states  |  |
@@ -632,10 +634,10 @@ mode_colors:
 
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
-| icon_winter_state | string | **Optional** | Icon to display when you're in a summer period and all our climates are in `frost_protection` mode | `mdi:thermometer-chevron-up` |
-| message_winter_state | string | **Optional** | Message to display when you're in a summer period and all our climates are in `frost_protection` mode | Winter is coming |
-| icon_summer_state | string | **Optional** | Icon to display when you're in a winter period and all our climates aren't in `frost_protection` mode | `mdi:thermometer-chevron-down` |
-| message_summer_state | string | **Optional** | Icon to display when you're in a winter period and all our climates aren't in `frost_protection` mode | Summer time |
+| icon_winter_state | String | **Optional** | Icon to display when you're in a summer period and all our climates are in `frost_protection` mode | `mdi:thermometer-chevron-up` |
+| message_winter_state | String | **Optional** | Message to display when you're in a summer period and all our climates are in `frost_protection` mode | Winter is coming |
+| icon_summer_state | String | **Optional** | Icon to display when you're in a winter period and all our climates aren't in `frost_protection` mode | `mdi:thermometer-chevron-down` |
+| message_summer_state | String | **Optional** | Icon to display when you're in a winter period and all our climates aren't in `frost_protection` mode | Summer time |
 
 
 **Example**
@@ -655,9 +657,9 @@ header:
 
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
-| auto | string | **Optional** | Icon/Color to use when climate is in `auto` HVAC state | icon : `sci:radiator-auto` <br> color : `#669cd2` |
-| off | string | **Optional** | Icon/Color to use when climate is in `off` HVAC state | icon : `sci:radiator-off` <br> color : `#6c757d` |
-| heat | string | **Optional** | Icon/Color to use when climate is in `heat` HVAC state | icon : `sci:radiator-heat` <br> color : `#ff7f50` |
+| auto | String | **Optional** | Icon/Color to use when climate is in `auto` HVAC state | icon : `sci:radiator-auto` <br> color : `#669cd2` |
+| off | String | **Optional** | Icon/Color to use when climate is in `off` HVAC state | icon : `sci:radiator-off` <br> color : `#6c757d` |
+| heat | String | **Optional** | Icon/Color to use when climate is in `heat` HVAC state | icon : `sci:radiator-heat` <br> color : `#ff7f50` |
 
 **Example**
 ```yaml
@@ -679,12 +681,12 @@ state_colors:
 
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
-| frost_protection | string | **Optional** | Icon/Color to use when climate preset mode is `frost_protection` | icon : `mdi:snowflake` <br> color : `#acd5f3` |
-| eco | string | **Optional** | Icon/Color to use when climate preset mode is `eco` | icon : `mdi:leaf` <br> color : `#4fe38b` |
-| comfort | string | **Optional** | Icon/Color to use when climate preset mode is `comfort` | icon : `mdi:sun-thermometer-outline` <br> color : `#fdda0d` |
-| comfort-1 | string | **Optional** | Icon/Color to use when climate preset mode is `comfort-1` | icon : `mdi:sun-thermometer-outline` <br> color : `#ffea00` |
-| comfort-2 | string | **Optional** | Icon/Color to use when climate preset mode is `comfort-2` | icon : `mdi:sun-thermometer-outline` <br> color : `#ffff8f` |
-| boost | string | **Optional** | Icon/Color to use when climate preset mode is `boost` | icon : `mdi:fire` <br> color : `#ff7f50` |
+| frost_protection | String | **Optional** | Icon/Color to use when climate preset mode is `frost_protection` | icon : `mdi:snowflake` <br> color : `#acd5f3` |
+| eco | String | **Optional** | Icon/Color to use when climate preset mode is `eco` | icon : `mdi:leaf` <br> color : `#4fe38b` |
+| comfort | String | **Optional** | Icon/Color to use when climate preset mode is `comfort` | icon : `mdi:sun-thermometer-outline` <br> color : `#fdda0d` |
+| comfort-1 | String | **Optional** | Icon/Color to use when climate preset mode is `comfort-1` | icon : `mdi:sun-thermometer-outline` <br> color : `#ffea00` |
+| comfort-2 | String | **Optional** | Icon/Color to use when climate preset mode is `comfort-2` | icon : `mdi:sun-thermometer-outline` <br> color : `#ffff8f` |
+| boost | String | **Optional** | Icon/Color to use when climate preset mode is `boost` | icon : `mdi:fire` <br> color : `#ff7f50` |
 
 **Example**
 ```yaml
@@ -705,6 +707,169 @@ mode_colors:
 ```
 
 </details>
+
+<br>
+
+## 🪵🔥 Sci-Fi Stove card <a name="stove_card"></a>
+
+> [!NOTE]
+> Card is based on [Maheus](https://github.com/maheus) work on the awesome [fumis integration](https://github.com/maheus/fumis_integration)
+
+### Description:
+
+Stove package card, display your `climate.<stove>` in order you can see informations & control it in a more design way than HA basic one.
+
+### Card features:
+
+From top to bottom, display:
+- Global information:
+  - Stove friendly name
+  - Graphical stove state
+  - Storage and fuel quantity
+  - State and associated temperarures
+  - Energy consumed & rendered
+- Stove actions: mode, temperature and preset
+
+### Screenshots
+
+<details>
+<summary>Show</summary>
+
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_1.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_2.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_3.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_edit_1.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_edit_2.jpeg" width="300">
+
+</details>
+
+### Configuration
+
+> [!TIP]
+> This card can be configure through the UI that allow use to use HA interface for the configuration.
+
+<details>
+
+<summary>YAML</summary>
+
+#### Minimal configuration
+
+```yaml
+type: custom:sci-fi-stove
+entity: climate.my_stove # replace with your stove's entity id
+```
+
+#### Full configuration
+
+```yaml
+type: custom:sci-fi-stove
+entity: climate.my_stove # replace with your stove's entity id
+unit: "°C"
+sensors:
+  sensor_actual_power: sensor.my_stove_actual_power # replace with your stove's render power sensor id
+  sensor_power: sensor.my_stove_power # replace with your stove's power consumer sensor id
+  sensor_combustion_chamber_temperature: sensor.my_stove_combustion_chamber_temperature # replace with your stove's combustion chamber temperature sensor id
+  sensor_inside_temperature: sensor.my_stove_inside_temperature # replace with your stove's room temperature sensor id
+  sensor_pellet_quantity: sensor.my_stove_pellet_quantity # replace with your stove's internal pellet storage sensor id
+  sensor_status: binary_sensor.my_stove_stove_status # replace with your stove's state sensor id
+pellet_quantity_threshold: 0.4
+storage_counter: counter.pellet_stock # replace with your pellet bags sensor counter id
+storage_counter_threshold: 0.07
+```
+
+#### Options
+
+| Name | Type | Requirement | Description | Default   |
+| - | - | - | - | - |
+| type | String | **Required** | Card definition | `custom:sci-fi-stove`|
+| entity | String | **Required** | Stove climate entity ID | `''` |
+| unit | String | **Optionnal** | Climate temperature unit  | °C |
+| `sensors` | Object | **Optional** | Section describing stove additional sensors |  | 
+| pellet_quantity_threshold | Float | **Optional** | Threshold for internal stove pellet quantity (for displaying graphical alert)</br> Must be between 0 (0%) & 1 (100%) | `0.5` | 
+| storage_counter | String | **Optional** | Stove pellet bags sensor counter ID | `''` | 
+| storage_counter_threshold | Float | **Optional** | Threshold for stove pellet bags sensor counter (for displaying graphical alert)</br> Must be between 0 (0%) & 1 (100%) | `0.1` | 
+
+**Example**
+```yaml
+type: custom:sci-fi-hexa-tiles
+entity: climate.my_stove # replace with your stove's entity id
+unit: "°C"
+sensors:
+  ... # see sensor configuration bellow
+pellet_quantity_threshold: 0.4
+storage_counter: counter.pellet_stock # replace with your pellet bags sensor counter id
+storage_counter_threshold: 0.07
+```
+
+<br>
+
+***`sensors` config***
+
+| Name | Type | Requirement | Description | Default   |
+| - | - | - | - | - |
+| sensor_actual_power | String | **Optional** | Stove rendered power sensor ID | `''` |
+| sensor_power | String | **Optional** | Stove power consume sensor ID | `''` |
+| sensor_combustion_chamber_temperature | String | **Optional** | Stove internal combustion chamber temperature sensor ID | `''` |
+| sensor_inside_temperature | String | **Optional** | Stove external temperature sensor ID | `''` |
+| sensor_pellet_quantity | String | **Optional** | Stove internal pellet storage sensor  ID | `''` |
+| sensor_status | String | **Optional** | Stove states sensor ID | `''` |
+
+**Example**
+```yaml
+sensors:
+  sensor_actual_power: sensor.my_stove_actual_power # replace with your stove's render power sensor id
+  sensor_power: sensor.my_stove_power # replace with your stove's power consumer sensor id
+  sensor_combustion_chamber_temperature: sensor.my_stove_combustion_chamber_temperature # replace with your stove's combustion chamber temperature sensor id
+  sensor_inside_temperature: sensor.my_stove_inside_temperature # replace with your stove's room temperature sensor id
+  sensor_pellet_quantity: sensor.my_stove_pellet_quantity # replace with your stove's internal pellet storage sensor id
+  sensor_status: binary_sensor.my_stove_stove_status # replace with your stove's state sensor id
+```
+<br>
+
+</details>
+
+### Additional: How to setup a storage counter ?
+
+By default [fumis integration](https://github.com/maheus/fumis_integration) provide all needed sensors to setup this card. However, `storage_counter` is an additional one you might want to setup. To do so, follow those steps :
+
+***Step 1 : Create your counter***
+
+1. Go to your HA app and open `Settings > Devices & services`
+2. On top of the page, click on `Helpers` tab then `Create Helper` bottom button
+3. Select `counter` in the next popup
+4. Fill the form and click on `create`
+
+Good you now have a counter ! However, you might want to automate the drecrease storage part when you feed your stove with a pellet bag ? If so, go to the second part !
+
+***Step 2 : Setup your automation***
+
+1. Go to your HA app and open `Settings > Automations & scenes`
+2. Click on `Create Automation` bottom button
+3. Select `Create new automation` in the next popup
+3. Clik on the three top right dot and then `Edit in YAML`
+4. Copy the following code
+
+```yaml
+alias: Pellet stock management
+description: Automate my pellet stock
+triggers:
+  - trigger: state
+    entity_id:
+      - sensor.my_stove_pellet_quantity # replace with your stove's internal pellet storage sensor id
+    from: null
+conditions:
+  - condition: numeric_state
+    entity_id: sensor.my_stove_pellet_quantity # replace with your stove's internal pellet storage sensor id
+    above: 99
+actions:
+  - action: counter.decrement
+    data: {}
+    target:
+      entity_id: counter.pellet_stock # replace with your pellet bags sensor counter id you previously created
+mode: single
+```
+
+Enjoy 🥳.
 
 <br>
 

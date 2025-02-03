@@ -9,6 +9,8 @@ export default {
     sensor_pellet_quantity: 'sensor.clou_pellet_quantity',
     sensor_power: 'sensor.clou_power_2',
     sensor_status: 'binary_sensor.clou_stove_status',
+    sensor_fan_speed: 'sensor.clou_fan_speed',
+    sensor_pressure: 'sensor.clou_pressure',
   },
   storage_counter: 'counter.pellet_stock',
   pellet_quantity_threshold: 0.4,

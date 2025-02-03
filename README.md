@@ -771,7 +771,9 @@ sensors:
   sensor_combustion_chamber_temperature: sensor.my_stove_combustion_chamber_temperature # replace with your stove's combustion chamber temperature sensor id
   sensor_inside_temperature: sensor.my_stove_inside_temperature # replace with your stove's room temperature sensor id
   sensor_pellet_quantity: sensor.my_stove_pellet_quantity # replace with your stove's internal pellet storage sensor id
-  sensor_status: binary_sensor.my_stove_stove_status # replace with your stove's state sensor id
+  sensor_status: binary_sensor.my_stove_status # replace with your stove's state sensor id
+  sensor_fan_speed: sensor.my_stove_fan_speed # replace with your stove's fan speed sensor id
+  sensor_pressure: sensor.my_stove_pressure # replace with your stove's pressure sensor id
 pellet_quantity_threshold: 0.4
 storage_counter: counter.pellet_stock # replace with your pellet bags sensor counter id
 storage_counter_threshold: 0.07
@@ -813,6 +815,8 @@ storage_counter_threshold: 0.07
 | sensor_inside_temperature | String | **Optional** | Stove external temperature sensor ID | `''` |
 | sensor_pellet_quantity | String | **Optional** | Stove internal pellet storage sensor  ID | `''` |
 | sensor_status | String | **Optional** | Stove states sensor ID | `''` |
+| sensor_fan_speed | String | **Optional** | Stove fan speed sensor ID | `''` |
+| sensor_pressure | String | **Optional** | Stove pressure sensor ID | `''` |
 
 **Example**
 ```yaml
@@ -822,7 +826,9 @@ sensors:
   sensor_combustion_chamber_temperature: sensor.my_stove_combustion_chamber_temperature # replace with your stove's combustion chamber temperature sensor id
   sensor_inside_temperature: sensor.my_stove_inside_temperature # replace with your stove's room temperature sensor id
   sensor_pellet_quantity: sensor.my_stove_pellet_quantity # replace with your stove's internal pellet storage sensor id
-  sensor_status: binary_sensor.my_stove_stove_status # replace with your stove's state sensor id
+  sensor_status: binary_sensor.my_stove_status # replace with your stove's state sensor id
+  sensor_fan_speed: sensor.my_stove_fan_speed # replace with your stove's fan speed sensor id
+  sensor_pressure: sensor.my_stove_pressure # replace with your stove's pressure sensor id
 ```
 <br>
 

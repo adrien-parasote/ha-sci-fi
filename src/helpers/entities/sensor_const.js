@@ -5,6 +5,8 @@ export const STOVE_SENSOR_PELLET_QTY = 'sensor_pellet_quantity';
 export const STOVE_SENSOR_POWER = 'sensor_power';
 export const STOVE_SENSOR_INSIDE_TEMP = 'sensor_inside_temperature';
 export const STOVE_SENSOR_STATUS = 'sensor_status';
+export const STOVE_SENSOR_FAN_SPEED = 'sensor_fan_speed';
+export const STOVE_SENSOR_PRESSURE = 'sensor_pressure';
 
 export const STOVE_SENSORS = [
   STOVE_SENSOR_ACTUAL_POWER,
@@ -13,6 +15,8 @@ export const STOVE_SENSORS = [
   STOVE_SENSOR_POWER,
   STOVE_SENSOR_INSIDE_TEMP,
   STOVE_SENSOR_STATUS,
+  STOVE_SENSOR_FAN_SPEED,
+  STOVE_SENSOR_PRESSURE,
 ];
 
 export const STOVE_SENSOR_STATUS_OFF = 'off';

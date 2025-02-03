@@ -231,6 +231,7 @@ export class SciFiStove extends LitElement {
               this._stove.combustion_chamber_temperature.value,
               this._config.unit
             )}
+            ${this.__displayPressure('Pressure', this._stove.pressure.value)}
           </div>
         </div>
         <div class="e top-path">
@@ -249,6 +250,11 @@ export class SciFiStove extends LitElement {
               'Consume',
               this._stove.power.value,
               this._stove.power.unit_of_measurement
+            )}
+            ${this.__displayFan(
+              'Fan speed',
+              this._stove.fan_speed.value,
+              this._stove.fan_speed.unit_of_measurement
             )}
           </div>
         </div>
@@ -330,6 +336,17 @@ export class SciFiStove extends LitElement {
     </div>`;
   }
 
+  __displayPressure(text, pressure) {
+    if (!pressure) return nothing;
+    return html`
+      <div class="temperature ${pressure == '0' ? 'off' : ''}">
+        ${getIcon('mdi:gauge')}
+        <div class="label">${text}:</div>
+        <div>${pressure}</div>
+      </div>
+    `;
+  }
+
   __displayTemperature(text, temperature, unit) {
     if (!temperature) return this.__noTemperature(text);
     let icon = 'mdi:thermometer-off';
@@ -362,6 +379,17 @@ export class SciFiStove extends LitElement {
         ${getIcon('mdi:lightning-bolt')}
         <div class="label">${text}</div>
         <div class="${power == 'N/A' ? 'nothing' : ''}">${power} ${unit}</div>
+      </div>
+    `;
+  }
+
+  __displayFan(text, fan, unit) {
+    if (fan == null) return nothing;
+    return html`
+      <div class="power">
+        ${getIcon('mdi:speedometer')}
+        <div class="label">${text}</div>
+        <div>${fan} ${unit}</div>
       </div>
     `;
   }

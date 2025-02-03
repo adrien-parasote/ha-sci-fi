@@ -36,9 +36,11 @@ import {
   STOVE_SENSORS,
   STOVE_SENSOR_ACTUAL_POWER,
   STOVE_SENSOR_COMBUSTION_CHAMBER_TEMP,
+  STOVE_SENSOR_FAN_SPEED,
   STOVE_SENSOR_INSIDE_TEMP,
   STOVE_SENSOR_PELLET_QTY,
   STOVE_SENSOR_POWER,
+  STOVE_SENSOR_PRESSURE,
   STOVE_SENSOR_STATUS,
 } from './sensor_const.js';
 
@@ -169,25 +171,25 @@ export class StoveEntity extends ClimateEntity {
   get inside_temperature() {
     return this.sensors[STOVE_SENSOR_INSIDE_TEMP]
       ? this.sensors[STOVE_SENSOR_INSIDE_TEMP]
-      : null;
+      : {};
   }
 
   get actual_power() {
     return this.sensors[STOVE_SENSOR_ACTUAL_POWER]
       ? this.sensors[STOVE_SENSOR_ACTUAL_POWER]
-      : null;
+      : {};
   }
 
   get combustion_chamber_temperature() {
     return this.sensors[STOVE_SENSOR_COMBUSTION_CHAMBER_TEMP]
       ? this.sensors[STOVE_SENSOR_COMBUSTION_CHAMBER_TEMP]
-      : null;
+      : {};
   }
 
   get pellet_quantity() {
     return this.sensors[STOVE_SENSOR_PELLET_QTY]
       ? this.sensors[STOVE_SENSOR_PELLET_QTY]
-      : null;
+      : {};
   }
 
   get status() {
@@ -199,7 +201,19 @@ export class StoveEntity extends ClimateEntity {
   get power() {
     return this.sensors[STOVE_SENSOR_POWER]
       ? this.sensors[STOVE_SENSOR_POWER]
-      : null;
+      : {};
+  }
+
+  get fan_speed() {
+    return this.sensors[STOVE_SENSOR_FAN_SPEED]
+      ? this.sensors[STOVE_SENSOR_FAN_SPEED]
+      : {};
+  }
+
+  get pressure() {
+    return this.sensors[STOVE_SENSOR_PRESSURE]
+      ? this.sensors[STOVE_SENSOR_PRESSURE]
+      : {};
   }
 
   addSensors(sensors, hass) {

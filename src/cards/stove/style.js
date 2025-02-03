@@ -174,6 +174,7 @@ export default css`
     column-gap: 5px;
     align-items: center;
     font-weight: bold;
+    color: var(--secondary-light-color);
   }
   .content .info .m .temperatures .status .label,
   .content .info .m .temperatures .temperature .label {
@@ -184,7 +185,8 @@ export default css`
     color: var(--secondary-light-color);
     font-size: var(--line-color);
   }
-  .content .info .m .temperatures .status.off div:last-child {
+  .content .info .m .temperatures .status.off div:last-child,
+  .content .info .m .temperatures .temperature.off div:last-child {
     color: var(--line-color);
   }
   .content .info .m .temperatures .status.amber div:last-child {

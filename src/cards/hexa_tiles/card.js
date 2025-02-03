@@ -134,6 +134,7 @@ export class SciFiHexaTiles extends LitElement {
 
   set hass(hass) {
     this._hass = hass;
+    console.log(hass);
     if (!this._config) return; // Can't assume setConfig is called before hass is set
 
     // Extract entity for kind part

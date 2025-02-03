@@ -116,6 +116,23 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
       ></sci-fi-input>
 
       <sci-fi-input
+        icon="mdi:gauge"
+        label="Stove pressure (optionnal)"
+        value=${this._config.sensors.sensor_pressure}
+        element-id="sensors"
+        kind="sensor_pressure"
+        @input-update=${this.__update}
+      ></sci-fi-input>
+      <sci-fi-input
+        icon="mdi:speedometer"
+        label="Stove fans speed (optionnal)"
+        value=${this._config.sensors.sensor_fan_speed}
+        element-id="sensors"
+        kind="sensor_fan_speed"
+        @input-update=${this.__update}
+      ></sci-fi-input>
+
+      <sci-fi-input
         icon="mdi:lightning-bolt"
         label="Stove power rendered (optionnal)"
         value=${this._config.sensors.clou_actual_power}

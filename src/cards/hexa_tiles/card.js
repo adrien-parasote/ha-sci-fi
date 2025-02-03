@@ -72,10 +72,6 @@ export class SciFiHexaTiles extends LitElement {
           throw new Error(
             config.weather.weather_entity + 'is not a weather entity.'
           );
-        if (!this._hass.entities[config.weather.weather_entity])
-          throw new Error(
-            'Entity ' + config.weather.weather_entity + ' cannot be found.'
-          );
       }
     }
 
@@ -86,15 +82,9 @@ export class SciFiHexaTiles extends LitElement {
         if (!tile.entity_kind)
           throw new Error('You need to define an entity kind (ex: light)');
         if (!tile.entities_to_exclude) tile.entities_to_exclude = [];
-        tile.entities_to_exclude.forEach((entity) => {
-          if (!this._hass.entities[entity])
-            throw new Error('Entity ' + entity + ' cannot be found.');
-        });
       } else {
         if (!tile.entity)
           throw new Error('You need to define an entity (ex: sensor.light)');
-        if (!this._hass.entities[tile.entity])
-          throw new Error('Entity ' + tile.entity + ' cannot be found.');
         tile.entity_kind = null;
         tile.entities_to_exclude = [];
       }
@@ -134,7 +124,6 @@ export class SciFiHexaTiles extends LitElement {
 
   set hass(hass) {
     this._hass = hass;
-    console.log(hass);
     if (!this._config) return; // Can't assume setConfig is called before hass is set
 
     // Extract entity for kind part

@@ -46,12 +46,12 @@ function renderElement(){
     const editor = MAP[component_name].element.getConfigElement();
 
     if(document.getElementById('editor').checked){
-      editor.hass = window.hass;
       editor.setConfig(MAP[component_name].element.getStubConfig());
+      editor.hass = window.hass;
       content = document.getElementById('phone').appendChild(editor);
     }else{
-      component.hass = window.hass;
       component.setConfig(MAP[component_name].config);
+      component.hass = window.hass;
       content = document.getElementById('phone').appendChild(component);
     }
   } else {

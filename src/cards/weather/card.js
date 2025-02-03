@@ -61,9 +61,6 @@ export class SciFiWeather extends LitElement {
       throw new Error('You need to define a weather entity');
     if (!config.weather_entity.startsWith('weather.'))
       throw new Error(config.weather_entity + 'is not a weather entity.');
-    if (!this._hass.entities[config.weather_entity])
-      throw new Error('Entity ' + config.weather_entity + ' cannot be found.');
-
     if (!config.weather_daily_forecast_limit)
       config.weather_daily_forecast_limit = 10; // max 15
     if (config.weather_daily_forecast_limit > 15)
@@ -74,7 +71,6 @@ export class SciFiWeather extends LitElement {
       throw new Error(
         'Chart first kind to render must be "temperature", "precipitation" or "wind_speed"'
       );
-
     return config;
   }
 

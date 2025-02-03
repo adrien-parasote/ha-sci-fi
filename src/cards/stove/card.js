@@ -55,16 +55,8 @@ export class SciFiStove extends LitElement {
     STOVE_SENSORS.forEach((sensor) => {
       if (!config.sensors[sensor]) {
         config.sensors[sensor] = null;
-      } else {
-        if (!this._hass.entities[config.sensors[sensor]])
-          throw new Error(
-            'Sensor ' + config.sensors[sensor] + ' cannot be found.'
-          );
       }
     });
-
-    if (config.storage_counter && !this._hass.entities[config.storage_counter])
-      throw new Error(config.storage_counter + ' cannot be found.');
     if (!config.storage_counter) config.storage_counter = null;
     if (!config.unit) config.unit = '°C';
     return config;
@@ -298,6 +290,7 @@ export class SciFiStove extends LitElement {
   }
 
   __displayStatus(text, status) {
+    if (!status) return this.__displayStatus(text, 'N/A');
     const icons = {};
     icons[STOVE_SENSOR_STATUS_OFF] = {icon: 'sci:stove-off', color: 'off'};
     icons[STOVE_SENSOR_STATUS_PRE_HEATING] = {

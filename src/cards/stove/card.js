@@ -265,7 +265,8 @@ export class SciFiStove extends LitElement {
 
   __displayPelletQuantity() {
     const sensor_pellet_quantity = this._stove.pellet_quantity;
-    if (!sensor_pellet_quantity) return this.__noQuantity('Fuel quantity');
+    if (!sensor_pellet_quantity.value)
+      return this.__noQuantity('Fuel quantity');
     return html`
       <sci-fi-circle-progress-bar
         text="Fuel quantity"

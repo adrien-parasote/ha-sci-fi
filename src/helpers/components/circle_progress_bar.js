@@ -69,7 +69,7 @@ class SciFiCircleProgressBar extends LitElement {
 
   render() {
     const warning = this.val / 100 < this.threshold;
-    const progress = (565 * this.val) / 100;
+    const progress = Math.round(628.31 * ((100 - this.val) / 100)) + 'px';
     const text_pos = this.val < 10 ? '90px' : this.val > 99 ? '60px' : '80px';
     return html`
       <div class="container">
@@ -87,8 +87,8 @@ class SciFiCircleProgressBar extends LitElement {
             r="100"
             cx="125"
             cy="125"
-            stroke-dashoffset="${progress}px"
-            stroke-dasharray="565.48px"
+            stroke-dashoffset="${progress}"
+            stroke-dasharray="628.31px"
           ></circle>
           <text
             class="value ${warning ? 'warning' : ''}"

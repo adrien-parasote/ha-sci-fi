@@ -1,5 +1,10 @@
 # Changelog
 
+# [v0.5.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.5.1) - 2025-02-04
+
+## 🐛 Fixes
+- [Stove card - Fuel circle is inversed](https://github.com/adrien-parasote/ha-sci-fi/issues/25)
+
 # [v0.5.0](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.5.0) - 2025-02-04
 
 ## 🆕 What's New

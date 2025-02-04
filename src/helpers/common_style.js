@@ -6,7 +6,7 @@ export default css`
 
     --primary-light-color: rgb(105, 211, 251);
     --primary-light-alpha-color: rgba(105, 211, 251, 0.5);
-    --primary-dark-color: rgb(24, 24, 24);
+    --primary-dark-color: rgb(34, 34, 34);
 
     --secondary-light-color: rgb(102, 156, 210);
     --secondary-light-alpha-color: rgba(102, 156, 210, 0.5);

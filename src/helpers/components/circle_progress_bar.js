@@ -23,40 +23,23 @@ class SciFiCircleProgressBar extends LitElement {
           text-align: center;
           font-weight: bold;
         }
+        .value {
+          fill: var(--primary-light-color);
+        }
         .warning {
           color: var(--primary-error-color);
+          fill: var(--primary-error-color);
         }
-        .value {
-          position: absolute;
-          left: 39%;
-          top: 30%;
-          font-size: var(--font-size-small);
-          font-weight: bold;
-        }
-        .circular-progress {
-          --size: 250px;
-          --half-size: calc(var(--size) / 2);
-          --stroke-width: 10px;
-          --radius: calc((var(--size) - var(--stroke-width)) / 2);
-          --circumference: calc(var(--radius) * pi * 2);
-          --dash: calc((var(--progress) * var(--circumference)) / 100);
-          animation: progress-animation 5s linear 0s 1 forwards;
-        }
+
         .circular-progress circle {
-          cx: var(--half-size);
-          cy: var(--half-size);
-          r: var(--radius);
-          stroke-width: var(--stroke-width);
-          fill: none;
-          stroke-linecap: round;
+          stroke-width: 16px;
+          fill: transparent;
         }
         .circular-progress circle.bg {
           stroke: var(--secondary-light-alpha-color);
         }
         .circular-progress circle.fg {
-          transform: rotate(-90deg);
-          transform-origin: var(--half-size) var(--half-size);
-          stroke-dasharray: var(--dash) calc(var(--circumference) - var(--dash));
+          stroke-linecap: round;
           stroke: var(--primary-light-color);
           filter: drop-shadow(0px 0px 5px var(--primary-light-color));
           -webkit-filter: drop-shadow(0px 0px 5px var(--primary-light-color));
@@ -86,6 +69,8 @@ class SciFiCircleProgressBar extends LitElement {
 
   render() {
     const warning = this.val / 100 < this.threshold;
+    const progress = (565 * this.val) / 100;
+    const text_pos = this.val < 10 ? '90px' : this.val > 99 ? '60px' : '80px';
     return html`
       <div class="container">
         <svg
@@ -94,12 +79,28 @@ class SciFiCircleProgressBar extends LitElement {
           height="100%"
           viewBox="0 0 250 250"
           class="circular-progress ${warning ? 'warning' : ''}"
-          style="--progress:${this.val};"
+          style="transform:rotate(-90deg)"
         >
-          <circle class="bg"></circle>
-          <circle class="fg"></circle>
+          <circle class="bg" r="100" cx="125" cy="125"></circle>
+          <circle
+            class="fg"
+            r="100"
+            cx="125"
+            cy="125"
+            stroke-dashoffset="${progress}px"
+            stroke-dasharray="565.48px"
+          ></circle>
+          <text
+            class="value ${warning ? 'warning' : ''}"
+            x="${text_pos}"
+            y="90px"
+            font-size="52px"
+            font-weight="bold"
+            style="transform:rotate(90deg) translate(0px, -196px)"
+          >
+            ${this.val}%
+          </text>
         </svg>
-        <div class="value ${warning ? 'warning' : ''}">${this.val}%</div>
         <div class="text ${warning ? 'warning' : ''}">${this.text}</div>
       </div>
     `;

@@ -140,7 +140,7 @@ export default css`
     font-weight: bold;
   }
   .content .info .e.bottom-path .quantities .nothing div:first-of-type {
-    color: var(--primary-light-alpha-color);
+    color: var(--secondary-bg-color);
   }
   .content .info .m {
     flex: 1;

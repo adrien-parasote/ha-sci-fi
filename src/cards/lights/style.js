@@ -116,7 +116,7 @@ export default css`
     text-align: center;
   }
   .floor-content .info.off .title {
-    border-bottom-color: var(--secondary-light-alpha-color);
+    border-bottom-color: var(--secondary-bg-color);
   }
   .floor-content .info .floor-lights {
     display: flex;
@@ -179,7 +179,7 @@ export default css`
     min-height: 23px;
   }
   .area-content.off .title {
-    border-bottom-color: var(--secondary-light-alpha-color);
+    border-bottom-color: var(--secondary-bg-color);
   }
   .area-content .lights {
     align-self: center;
@@ -204,7 +204,8 @@ export default css`
     cursor: pointer;
   }
   .area-content .lights .light.off {
-    border-color: var(--secondary-light-alpha-color);
+    border-color: var(--secondary-bg-color);
+    color: var(--secondary-light-color);
   }
   .area-content .lights .light svg {
     width: var(--icon-size-normal);
@@ -212,6 +213,6 @@ export default css`
     fill: var(--light-on-color);
   }
   .area-content .lights .light.off svg {
-    fill: var(--secondary-light-alpha-color);
+    fill: var(--secondary-bg-color);
   }
 `;

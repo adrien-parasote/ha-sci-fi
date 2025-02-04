@@ -166,7 +166,13 @@ export class SciFiLights extends LitElement {
     return html` <div
       class="info ${floor.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}"
     >
-      <div class="title">${floor.name} ${this.__displayPowerBtn(floor)}</div>
+      <div class="title">
+        ${floor.name}
+        ${this.__displayPowerBtn(
+          floor,
+          floor.isActive(ENTITY_KIND_LIGHT) ? 'off' : 'on'
+        )}
+      </div>
       <div class="floor-lights">
         ${this.__displayOnLights(
           entities.length,
@@ -242,15 +248,17 @@ export class SciFiLights extends LitElement {
     const active = area.isActive(ENTITY_KIND_LIGHT);
     return html`
       <div class="card-corner area-content ${active ? 'on' : 'off'}">
-        <div class="title">${area.name} ${this.__displayPowerBtn(area)}</div>
+        <div class="title">
+          ${area.name} ${this.__displayPowerBtn(area, active ? 'off' : 'on')}
+        </div>
         ${this.__displayAreaLights(area)}
       </div>
     `;
   }
 
-  __displayPowerBtn(element) {
+  __displayPowerBtn(element, active) {
     return html`<div
-      class="power"
+      class="power ${active}"
       @click="${(e) => this.__onPowerBtnClick(e, element)}"
     >
       ${getIcon('mdi:power-standby')}

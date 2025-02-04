@@ -216,7 +216,7 @@ export default css`
     fill: var(--primary-green-color);
   }
   .content .info .m .temperatures .status.off svg,
-  .content .info .m .temperatures .temperature.off svg  {
+  .content .info .m .temperatures .temperature.off svg {
     fill: var(--secondary-bg-color);
   }
   .content .info .m .temperatures .status.red svg,

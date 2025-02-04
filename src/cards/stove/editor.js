@@ -137,7 +137,7 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
         label="Stove power rendered (optionnal)"
         value=${this._config.sensors.clou_actual_power}
         element-id="sensors"
-        kind="clou_actual_power"
+        kind="sensor_actual_power"
         @input-update=${this.__update}
       ></sci-fi-input>
       <sci-fi-input

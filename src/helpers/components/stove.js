@@ -19,7 +19,6 @@ class SciFiStoveImage extends LitElement {
           --stove-primary-color: #181818;
           --stove-secondary-color: #303030;
           --stove-tertiary-color: #383838;
-          --line-color: #343434;
         }
         :host > * {
           width: 100%;
@@ -112,9 +111,9 @@ class SciFiStoveImage extends LitElement {
       <path d="M 109.06 240 C 109.06 300.438 60.319 349.491 0 349.996 L 0 130.004 C 60.319 130.509 109.06 179.562 109.06 240 Z" style="fill: url(#gradient-stove-round); opacity: 0.9;"></path>
     </g>
     <g>
-      <line style="stroke-width: 2px; stroke: var(--line-color); fill: var(--line-color);" x1="114" y1="0" x2="114" y2="480"></line>
-      <path style="stroke-width: 4px; stroke: var(--line-color); fill: none;" d="M 0 95 L 14.77 94.9805 C 29.54 94.961 59.08 94.92 78.08 96.40 C 97.08 97.88 105.54 100.89 109.77 102.39 L 114 103.9"></path>
-      <path style="stroke-width: 4px; stroke: var(--line-color); fill: none;" d="M 0.06 385.124 L 14.83 385.14 C 29.60 385.163 59.14 385.202 78.13 383.68 C 97.12 382.16 105.56 379.08 109.78 377.54 L 114 376"></path>
+      <line style="stroke-width: 2px; stroke: var(--primary-dark-color); fill: var(--primary-dark-color);" x1="114" y1="0" x2="114" y2="480"></line>
+      <path style="stroke-width: 4px; stroke: var(--primary-dark-color); fill: none;" d="M 0 95 L 14.77 94.9805 C 29.54 94.961 59.08 94.92 78.08 96.40 C 97.08 97.88 105.54 100.89 109.77 102.39 L 114 103.9"></path>
+      <path style="stroke-width: 4px; stroke: var(--primary-dark-color); fill: none;" d="M 0.06 385.124 L 14.83 385.14 C 29.60 385.163 59.14 385.202 78.13 383.68 C 97.12 382.16 105.56 379.08 109.78 377.54 L 114 376"></path>
     </g>
     <g>
       <path d="M 100.265 238.655 C 100.265 247.45 101.587 255.282 103.647 260.322 L 110.072 260.961 L 109.794 217.46 L 103.189 218.184 C 101.394 223.224 100.265 230.528 100.265 238.655 Z" style="fill: #000000; transform-box: fill-box; transform-origin: 50% 50%;" transform="matrix(-1, 0, 0, -1, -0.000012, -0.000017)"></path>

@@ -7,7 +7,6 @@ export default css`
     width: 100%;
     --stove-width: 130px;
     --stove-height: 500px;
-    --line-color: #343434;
     --circle-color: #181818;
   }
   .container {
@@ -38,7 +37,7 @@ export default css`
   }
   .content .info .circle,
   .content .info .h-path {
-    border-color: var(--line-color);
+    border-color: var(--primary-dark-color);
     background-color: var(--circle-color);
   }
   .content .info .e.top-path .powers,
@@ -47,10 +46,10 @@ export default css`
     flex-direction: row;
   }
   .content .info .e.top-path {
-    border-top: calc(2 * var(--border-width)) solid var(--line-color);
+    border-top: calc(2 * var(--border-width)) solid var(--primary-dark-color);
   }
   .content .info .e.bottom-path {
-    border-bottom: calc(2 * var(--border-width)) solid var(--line-color);
+    border-bottom: calc(2 * var(--border-width)) solid var(--primary-dark-color);
   }
   .content .info .e.bottom-path .quantities {
     align-items: flex-end;
@@ -77,7 +76,7 @@ export default css`
     row-gap: 5px;
     align-self: center;
     font-size: var(--font-size-small);
-    color: var(--line-color);
+    color: var(--secondary-bg-color);
     text-align: center;
     font-weight: bold;
     flex: 1;
@@ -87,7 +86,7 @@ export default css`
     color: var(--primary-light-color);
   }
   .content .info .e.top-path .powers .power div:last-child.nothing {
-    color: var(--line-color);
+    color: var(--secondary-bg-color);
   }
   .content .info .e.top-path .powers .power svg {
     fill: var(--primary-light-color);
@@ -122,11 +121,11 @@ export default css`
     height: 54px;
   }
   .content .info .e.top-path .display .d-path {
-    background-color: var(--line-color);
+    background-color: var(--primary-dark-color);
     clip-path: polygon(0 95%, 100% 0, 100% 5%, 0 100%);
   }
   .content .info .e.bottom-path .display .d-path {
-    background-color: var(--line-color);
+    background-color: var(--primary-dark-color);
     clip-path: polygon(0 0, 100% 95%, 100% 100%, 0% 5%);
   }
   .content .info .e.bottom-path .quantities .nothing {
@@ -134,7 +133,7 @@ export default css`
     flex-direction: column;
     row-gap: 10px;
     font-size: var(--font-size-small);
-    color: var(--line-color);
+    color: var(--secondary-bg-color);
     text-align: center;
     align-items: center;
     min-width: 100px;
@@ -160,7 +159,7 @@ export default css`
     width: 35px;
   }
   .content .info .m .temperatures {
-    border-left: calc(2 * var(--border-width)) solid var(--line-color);
+    border-left: calc(2 * var(--border-width)) solid var(--primary-dark-color);
     padding: 10px;
     margin-left: 30px;
     display: flex;
@@ -178,16 +177,16 @@ export default css`
   }
   .content .info .m .temperatures .status .label,
   .content .info .m .temperatures .temperature .label {
-    color: var(--line-color);
+    color: var(--secondary-bg-color);
     font-size: var(--font-size-small);
   }
   .content .info .m .temperatures .status div:last-child {
     color: var(--secondary-light-color);
-    font-size: var(--line-color);
+    font-size: var(--secondary-bg-color);
   }
   .content .info .m .temperatures .status.off div:last-child,
   .content .info .m .temperatures .temperature.off div:last-child {
-    color: var(--line-color);
+    color: var(--secondary-bg-color);
   }
   .content .info .m .temperatures .status.amber div:last-child {
     color: var(--primary-error-color);
@@ -216,11 +215,9 @@ export default css`
   .content .info .m .temperatures .status.green svg {
     fill: var(--primary-green-color);
   }
-  .content .info .m .temperatures .status.off svg {
-    fill: var(--line-color);
-  }
-  .content .info .m .temperatures .status.off svg {
-    fill: var(--line-color);
+  .content .info .m .temperatures .status.off svg,
+  .content .info .m .temperatures .temperature.off svg  {
+    fill: var(--secondary-bg-color);
   }
   .content .info .m .temperatures .status.red svg,
   .content .info .m .temperatures .temperature.high svg {
@@ -229,9 +226,6 @@ export default css`
   .content .info .m .temperatures .status.amber svg,
   .content .info .m .temperatures .temperature.medium svg {
     fill: var(--primary-error-color);
-  }
-  .content .info .m .temperatures .temperature.off svg {
-    fill: var(--line-color);
   }
   .content .info .m .temperatures .temperature .no-temp {
     display: flex;
@@ -280,12 +274,12 @@ export default css`
     background-color: var(--primary-bg-alpha-color);
   }
   .bottom sci-fi-button-select-card {
-    --title-color: var(--line-color);
+    --title-color: var(--secondary-bg-color);
     --label-text-color: var(--primary-light-color);
   }
   .bottom sci-fi-wheel {
     --item-font-size: var(--font-size-title);
     --item-color: var(--primary-light-color);
-    --text-font-color: var(--line-color);
+    --text-font-color: var(--secondary-bg-color);
   }
 `;

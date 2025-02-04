@@ -26,7 +26,6 @@ class SciFiWheel extends LitElement {
           padding: 10px;
         }
         .text {
-          font-weight: bold;
           font-size: var(--font-size-normal);
           color: var(--wheel-text-color);
         }

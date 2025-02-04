@@ -76,7 +76,9 @@ class SciFiStackBar extends LitElement {
         >
           ${this.__buildRows(warning)}
         </svg>
-        <div class="text ${warning ? 'warning' : ''}">${this.text} (${this.val})</div>
+        <div class="text ${warning ? 'warning' : ''}">
+          ${this.text} (${this.val})
+        </div>
       </div>
     `;
   }

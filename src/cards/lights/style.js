@@ -116,7 +116,7 @@ export default css`
     text-align: center;
   }
   .floor-content .info.off .title {
-    border-bottom-color: var(--secondary-light-alpha-color);
+    border-bottom-color: var(--secondary-bg-color);
   }
   .floor-content .info .floor-lights {
     display: flex;
@@ -143,6 +143,7 @@ export default css`
     display: flex;
     flex-direction: row;
     padding: 0 10px;
+    height: calc(var(--hexa-max-count) * var(--default-hexa-width) + 10px);
   }
   .areas .area-list .row {
     display: flex;
@@ -166,7 +167,6 @@ export default css`
     align-items: start;
     flex-direction: column;
     color: var(--primary-light-color);
-    height: 100%;
   }
   .area-content .title {
     font-size: var(--font-size-normal);
@@ -179,7 +179,7 @@ export default css`
     min-height: 23px;
   }
   .area-content.off .title {
-    border-bottom-color: var(--secondary-light-alpha-color);
+    border-bottom-color: var(--secondary-bg-color);
   }
   .area-content .lights {
     align-self: center;
@@ -204,7 +204,8 @@ export default css`
     cursor: pointer;
   }
   .area-content .lights .light.off {
-    border-color: var(--secondary-light-alpha-color);
+    border-color: var(--secondary-bg-color);
+    color: var(--secondary-light-color);
   }
   .area-content .lights .light svg {
     width: var(--icon-size-normal);
@@ -212,6 +213,6 @@ export default css`
     fill: var(--light-on-color);
   }
   .area-content .lights .light.off svg {
-    fill: var(--secondary-light-alpha-color);
+    fill: var(--secondary-bg-color);
   }
 `;

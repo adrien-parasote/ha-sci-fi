@@ -1,10 +1,10 @@
-import {LitElement, html} from 'lit';
+import {LitElement, html, nothing} from 'lit';
 import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 import {isEqual} from 'lodash-es';
 
-import '../../helpers/card/tiles.js';
-import '../../helpers/card/toast.js';
 import common_style from '../../helpers/common_style.js';
+import '../../helpers/components/tiles.js';
+import '../../helpers/components/toast.js';
 import {House} from '../../helpers/entities/house.js';
 import {
   ENTITY_KIND_LIGHT,
@@ -40,6 +40,7 @@ export class SciFiLights extends LitElement {
     if (!config.default_icon_off)
       config.default_icon_off = 'mdi:lightbulb-outline';
     if (!config.custom_entities) config.custom_entities = {};
+
     return config;
   }
 
@@ -81,7 +82,7 @@ export class SciFiLights extends LitElement {
   }
 
   render() {
-    if (!this._hass || !this._config) return html``;
+    if (!this._hass || !this._config) return nothing;
     // Setup first time attribute
     if (!this._active_floor_id)
       this._active_floor_id = this._house.getDefaultFloor(ENTITY_KIND_LIGHT).id;
@@ -91,12 +92,16 @@ export class SciFiLights extends LitElement {
         ENTITY_KIND_LIGHT
       ).id;
 
+    const max_areas = Math.max.apply(
+      null,
+      this._house.floors.map((floor) => Object.keys(floor.areas).length)
+    );
     return html`
       <div class="container">
         <div class="header">${this.__displayHeader()}</div>
         <div class="floors">${this.__displayHouseFloors()}</div>
         <div class="floor-content">${this.__displayFloorInfo()}</div>
-        <div class="areas">
+        <div class="areas" style="--hexa-max-count: ${max_areas}">
           ${this.__displayAreas()} ${this.__displayAreaInfo()}
         </div>
       </div>
@@ -161,7 +166,13 @@ export class SciFiLights extends LitElement {
     return html` <div
       class="info ${floor.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}"
     >
-      <div class="title">${floor.name} ${this.__displayPowerBtn(floor)}</div>
+      <div class="title">
+        ${floor.name}
+        ${this.__displayPowerBtn(
+          floor,
+          floor.isActive(ENTITY_KIND_LIGHT) ? 'off' : 'on'
+        )}
+      </div>
       <div class="floor-lights">
         ${this.__displayOnLights(
           entities.length,
@@ -237,15 +248,17 @@ export class SciFiLights extends LitElement {
     const active = area.isActive(ENTITY_KIND_LIGHT);
     return html`
       <div class="card-corner area-content ${active ? 'on' : 'off'}">
-        <div class="title">${area.name} ${this.__displayPowerBtn(area)}</div>
+        <div class="title">
+          ${area.name} ${this.__displayPowerBtn(area, active ? 'off' : 'on')}
+        </div>
         ${this.__displayAreaLights(area)}
       </div>
     `;
   }
 
-  __displayPowerBtn(element) {
+  __displayPowerBtn(element, active) {
     return html`<div
-      class="power"
+      class="power ${active}"
       @click="${(e) => this.__onPowerBtnClick(e, element)}"
     >
       ${getIcon('mdi:power-standby')}

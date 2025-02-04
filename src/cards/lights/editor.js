@@ -1,8 +1,6 @@
-import {html} from 'lit';
+import {html, nothing} from 'lit';
 
-import {SciFiBaseEditor} from '../../helpers/card/base_editor.js';
-import common_style from '../../helpers/common_style.js';
-import editor_common_style from '../../helpers/editor_common_style.js';
+import {SciFiBaseEditor} from '../../helpers/components/base_editor.js';
 import {House} from '../../helpers/entities/house.js';
 import {ENTITY_KIND_LIGHT} from '../../helpers/entities/light_const.js';
 import '../../helpers/form/form.js';
@@ -11,7 +9,7 @@ import editor_style from './style_editor.js';
 
 export class SciFiLightsEditor extends SciFiBaseEditor {
   static get styles() {
-    return [common_style, editor_common_style, editor_style];
+    return super.styles.concat([editor_style]);
   }
 
   static get properties() {
@@ -51,7 +49,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
   }
 
   render() {
-    if (!this._hass || !this._config) return html``;
+    if (!this._hass || !this._config) return nothing;
     return html`
       <div class="card card-corner">
         <div class="container ${!this._edit}">
@@ -67,8 +65,12 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
   __renderHeader() {
     return html`
       <section>
-        <h1>Header</h1>
+        <h1>
+          <span>${getIcon('mdi:page-layout-header')}</span>
+          Header
+        </h1>
         <sci-fi-input
+          icon="mdi:cursor-text"
           label="Header card message"
           value=${this._config.header}
           element-id="header"
@@ -203,7 +205,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
   }
 
   __renderEntityCustom() {
-    if (!this._custom_entity_id) return html``;
+    if (!this._custom_entity_id) return nothing;
     const entity_info = this._config.custom_entities[this._custom_entity_id];
     return html`
       <div class="head">
@@ -214,6 +216,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
         <span>Edit ${this._custom_entity_id}</span>
       </div>
       <sci-fi-input
+        icon="mdi:cursor-text"
         label="Custom name"
         value=${entity_info.name}
         element-id="${this._custom_entity_id}"

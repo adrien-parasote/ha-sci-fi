@@ -163,20 +163,28 @@ export class DailyForecast {
     this.temperature_unit = temperature_unit;
   }
 
+  get date() {
+    return new Date(
+      this.datetime.getFullYear(),
+      this.datetime.getMonth(),
+      this.datetime.getDate(),
+      0,
+      0,
+      0,
+      0
+    );
+  }
+
   getWeatherIcon(day = true) {
     return getWeatherIcon([this.condition, day ? 'day' : 'night'].join('-'));
   }
 
   render(day = true) {
     return html`
-      <div class="weather">
-        <div class="label">${this.__getDay()}</div>
-        <div class="state">${this.getWeatherIcon(day)}</div>
-        <div class="temp">${this.templow}${this.temperature_unit}</div>
-        <div class="temp hight">
-          ${this.temperature}${this.temperature_unit}
-        </div>
-      </div>
+      <div class="label">${this.__getDay()}</div>
+      <div class="state">${this.getWeatherIcon(day)}</div>
+      <div class="temp">${this.templow}${this.temperature_unit}</div>
+      <div class="temp hight">${this.temperature}${this.temperature_unit}</div>
     `;
   }
 
@@ -226,7 +234,7 @@ export class HourlyForecast {
         if (isSameDay(sun.next_dawn, this.datetime)) state = 'night';
       } else {
         // After noon & dusk
-        if (!isSameDay(sun.next_dusk, this.datetime)) state = 'night';
+        if (this.datetime > sun.next_dusk) state = 'night';
       }
     } else {
       // Forecast if for tomorrow
@@ -265,5 +273,13 @@ export class HourlyForecast {
 
   __getDay() {
     return WEEK_DAYS[this.datetime.getDay()].short;
+  }
+
+  isPartOfDay(date) {
+    return (
+      this.datetime.getFullYear() == date.getFullYear() &&
+      this.datetime.getMonth() == date.getMonth() &&
+      this.datetime.getDate() == date.getDate()
+    );
   }
 }

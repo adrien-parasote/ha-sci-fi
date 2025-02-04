@@ -59,7 +59,7 @@ class SciFiHexaTile extends LitElement {
           text-shadow: 0px 0px 5px var(--secondary-light-color);
         }
         .item-off .item-content {
-          color: var(--secondary-light-alpha-color);
+          color: var(--secondary-bg-color);
           text-shadow: none;
         }
         .item-error svg .border {

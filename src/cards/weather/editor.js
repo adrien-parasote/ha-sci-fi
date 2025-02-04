@@ -1,11 +1,17 @@
-import {html} from 'lit';
+import {html, nothing} from 'lit';
 
-import {SciFiBaseEditor} from '../../helpers/card/base_editor.js';
+import {SciFiBaseEditor} from '../../helpers/components/base_editor.js';
 import '../../helpers/form/form.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 
 export class SciFiWeatherEditor extends SciFiBaseEditor {
   _weather_entities;
+
+  _chart_data_kind = {
+    Temperature: 'temperature',
+    Precipitation: 'precipitation',
+    'Wind Speed': 'wind_speed',
+  };
 
   set hass(hass) {
     this._hass = hass;
@@ -17,12 +23,12 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
   }
 
   render() {
-    if (!this._hass || !this._config) return html``;
+    if (!this._hass || !this._config) return nothing;
     return html`
       <div class="card card-corner">
         <div class="container">
           ${this.__renderSectionEntities()} ${this.__renderSectionDisplay()}
-          ${this.__renderSectionAlert()}
+          ${this.__renderSectionChart()} ${this.__renderSectionAlert()}
         </div>
       </div>
     `;
@@ -31,7 +37,10 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
   __renderSectionEntities() {
     return html`
       <section>
-        <h1><span>${getIcon('mdi:theme-light-dark')}</span>Weather entity</h1>
+        <h1>
+          <span>${getIcon('mdi:theme-light-dark')}</span>Weather entity
+          (required)
+        </h1>
         <sci-fi-dropdown-entity-input
           label="City weather entity (required)"
           icon="mdi:city"
@@ -44,11 +53,12 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
       </section>
     `;
   }
+
   __renderSectionDisplay() {
     return html` <section>
-      <h1><span>${getIcon('mdi:cog-outline')}</span>Technical</h1>
+      <h1><span>${getIcon('mdi:cog-outline')}</span>Technical (optionnal)</h1>
       <sci-fi-slider
-        label="Daily forecast number(required)"
+        label="Daily forecast number (optionnal)"
         icon="mdi:counter"
         element-id="weather_daily_forecast_limit"
         kind="weather_daily_forecast_limit"
@@ -57,16 +67,21 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
         max="15"
         @input-update=${this.__update}
       ></sci-fi-slider>
-      <sci-fi-slider
-        label="Hourly forecast number(required)"
-        icon="mdi:counter"
-        element-id="weather_hourly_forecast_limit"
-        kind="weather_hourly_forecast_limit"
-        value="${this._config.weather_hourly_forecast_limit}"
-        min="1"
-        max="24"
+    </section>`;
+  }
+
+  __renderSectionChart() {
+    return html` <section>
+      <h1><span>${getIcon('mdi:chart-bell-curve')}</span>Chart (optionnal)</h1>
+      <sci-fi-dropdown-input
+        label="Chart first focused data (required)"
+        value=${this._config.chart_first_kind_to_render}
+        element-id="chart_first_kind_to_render"
+        kind="chart"
+        items="${JSON.stringify(Object.keys(this._chart_data_kind))}"
+        @select-item=${this.__update}
         @input-update=${this.__update}
-      ></sci-fi-slider>
+      ></sci-fi-dropdown-input>
     </section>`;
   }
 
@@ -133,11 +148,20 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
 
   __update(e) {
     let newConfig = this.__getNewConfig();
-    if (e.detail.kind == 'alert') {
-      if (!newConfig.alert) newConfig.alert = {};
-      newConfig.alert[e.detail.id] = e.detail.value;
-    } else {
-      newConfig[e.detail.id] = e.detail.value;
+    switch (e.detail.kind) {
+      case 'alert':
+        if (!newConfig.alert) newConfig.alert = {};
+        newConfig.alert[e.detail.id] = e.detail.value;
+        break;
+      case 'chart':
+        if (!newConfig.chart_first_kind_to_render)
+          newConfig.chart_first_kind_to_render = null;
+        newConfig.chart_first_kind_to_render =
+          this._chart_data_kind[e.detail.value];
+        break;
+      default:
+        newConfig[e.detail.id] = e.detail.value;
+        break;
     }
     this.__dispatchChange(e, newConfig);
   }

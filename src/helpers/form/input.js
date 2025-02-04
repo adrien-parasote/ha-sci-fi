@@ -694,6 +694,7 @@ export class SciFiSlider extends SciFiInput {
     let p = super.properties;
     p['min'] = {type: Number};
     p['max'] = {type: Number};
+    p['step'] = {type: Number};
     return p;
   }
 
@@ -701,6 +702,7 @@ export class SciFiSlider extends SciFiInput {
     super();
     this.min = this.min ? this.min : null;
     this.max = this.max ? this.max : null;
+    this.step = this.step ? this.step : 1;
   }
 
   render() {
@@ -713,6 +715,7 @@ export class SciFiSlider extends SciFiInput {
             min="${this.min}"
             max="${this.max}"
             value="${this.value}"
+            step="${this.step}"
             class="slider"
             @input=${this._changeValue}
           />

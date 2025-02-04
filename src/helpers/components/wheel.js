@@ -1,4 +1,4 @@
-import {LitElement, css, html} from 'lit';
+import {LitElement, css, html, nothing} from 'lit';
 
 import common_style from '../common_style.js';
 import {getIcon} from '../icons/icons.js';
@@ -10,31 +10,40 @@ class SciFiWheel extends LitElement {
       common_style,
       css`
         :host {
-          position: relative;
-          --width: var(--hexa-width, 100px);
+          --item-font-size: var(--item-font-size, var(--font-size-small));
+          --item--color: var(--item-color, var(--secondary-light-color));
+          --wheel-text-color: var(
+            --text-font-color,
+            var(--secondary-light-color)
+          );
         }
-        .container sci-fi-hexa-tile {
-          --hexa-width: var(--width);
-          --hexa-height: calc(var(--width) * 1.1547);
+        .container {
+          display: flex;
+          flex-direction: column;
+          row-gap: 10px;
+          border: var(--border-width) solid var(--primary-bg-color);
+          border-radius: var(--border-radius);
+          padding: 10px;
         }
-        .up {
-          position: relative;
-          top: -5px;
+        .text {
+          font-size: var(--font-size-normal);
+          color: var(--wheel-text-color);
         }
-        .down {
-          position: relative;
-          bottom: 0;
+        .core {
+          display: flex;
+          flex-direction: column;
+          row-gap: 5px;
         }
         .slider {
           display: flex;
           flex-direction: column;
-          width: var(--width);
-          margin-bottom: 5px;
         }
         .slider .slider-item {
           display: flex;
           flex-direction: column;
-          font-size: var(--font-size-small);
+          font-size: var(--item-font-size);
+          color: var(--item--color);
+          font-weight: bold;
           align-items: center;
         }
         .slider .slider-item.hide {
@@ -47,7 +56,7 @@ class SciFiWheel extends LitElement {
           margin-bottom: 5px;
         }
         .slider .slider-item.on .svg-container {
-          fill: var(--primary-light-color);
+          fill: var(--item--color);
         }
       `,
     ];
@@ -59,8 +68,7 @@ class SciFiWheel extends LitElement {
     return {
       items: {type: Array},
       selectedId: {type: String, attribute: 'selected-id'},
-      state: {type: String},
-      showName: {type: Boolean, attribute: 'show-name'},
+      text: {type: String},
     };
   }
 
@@ -68,18 +76,13 @@ class SciFiWheel extends LitElement {
     super();
     this.items = this.items ? this.items : [];
     this.selectedId = this.selectedId ? this.selectedId : null;
-    this.state = this.state ? this.state : 'off';
-    this.showName = this.showName ? this.showName : false;
-  }
-
-  set items(items) {
-    this._items = items.filter((el) => !el.inactive);
+    this.text = this.text ? this.text : null;
   }
 
   render() {
     return html`
       <div class="container">
-        <sci-fi-hexa-tile active-tile state=${this.state}>
+        <div class="core">
           <sci-fi-button
             class="up"
             icon="mdi:menu-up-outline"
@@ -93,38 +96,42 @@ class SciFiWheel extends LitElement {
             icon="mdi:menu-down-outline"
             @button-click=${(e) => this.__click(e, 'down')}
           ></sci-fi-button>
-        </sci-fi-hexa-tile>
+        </div>
+        ${this.__displayText()}
       </div>
     `;
   }
 
+  __displayText() {
+    if (!this.text) return nothing;
+    return html`<div class="text">${this.text}</div>`;
+  }
+
   __buildSliderContent() {
-    return this._items.map(
+    return this.items.map(
       (el) => html`
         <div
           class="slider-item ${el.id == this.selectedId
             ? 'show'
             : 'hide'} ${this.state}"
         >
-          ${getIcon(el.icon)}
-          ${this.showName ? html`<div>${el.name}</div>` : ''}
+          ${el.icon ? getIcon(el.icon) : ''}
+          <div>${el.text}</div>
         </div>
       `
     );
   }
 
   __findNext(direction) {
-    let item_id = this._items.findIndex(
-      (e) => e.id === this.selectedId && e.inactive === false
-    );
+    let item_id = this.items.findIndex((e) => e.id == this.selectedId);
     if (direction) {
       if (direction == 'up') {
-        item_id = item_id + 1 >= this._items.length ? 0 : item_id + 1;
+        item_id = item_id + 1 >= this.items.length ? 0 : item_id + 1;
       } else {
-        item_id = item_id - 1 < 0 ? this._items.length - 1 : item_id - 1;
+        item_id = item_id - 1 < 0 ? this.items.length - 1 : item_id - 1;
       }
     }
-    return this._items[item_id];
+    return this.items[item_id];
   }
 
   __click(e, direction) {

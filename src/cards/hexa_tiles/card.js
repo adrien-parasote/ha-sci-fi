@@ -1,8 +1,8 @@
-import {LitElement, html} from 'lit';
+import {LitElement, html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
-import '../../helpers/card/tiles.js';
 import common_style from '../../helpers/common_style.js';
+import '../../helpers/components/tiles.js';
 import '../../helpers/entities/person.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
 import {LANDSCAPE_DISPLAY, PACKAGE, PORTRAIT_DISPLAY} from './const.js';
@@ -67,7 +67,11 @@ export class SciFiHexaTiles extends LitElement {
     } else {
       if (config.weather.activate) {
         if (!config.weather.weather_entity)
-          throw new Error('You need to define a weather entity');
+          throw new Error('You need to define a weather entity.');
+        if (!config.weather.weather_entity.startsWith('weather.'))
+          throw new Error(
+            config.weather.weather_entity + 'is not a weather entity.'
+          );
       }
     }
 
@@ -207,7 +211,7 @@ export class SciFiHexaTiles extends LitElement {
   }
 
   render() {
-    if (!this._hass || !this._config) return html``;
+    if (!this._hass || !this._config) return nothing;
     const matrix = this.__getEntitiesMatrix();
     return html`
       <div class="container">

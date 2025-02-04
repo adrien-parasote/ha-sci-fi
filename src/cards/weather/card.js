@@ -1,9 +1,9 @@
 import Chart from 'chart.js/auto';
-import {LitElement, html} from 'lit';
+import {LitElement, html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
-import '../../helpers/card/tiles.js';
 import common_style from '../../helpers/common_style.js';
+import '../../helpers/components/tiles.js';
 import {
   DailyForecast,
   HourlyForecast,
@@ -29,9 +29,10 @@ export class SciFiWeather extends LitElement {
 
   _hass; // private
   _chart;
-  _chartDataKind = 'temperature';
+  _chartDataKind;
   _daily_subscribed;
   _hourly_subscribed;
+  _day_selected = 0;
 
   static get properties() {
     return {
@@ -58,21 +59,25 @@ export class SciFiWeather extends LitElement {
   __validateConfig(config) {
     if (!config.weather_entity)
       throw new Error('You need to define a weather entity');
-    if (!config.weather_hourly_forecast_limit)
-      config.weather_hourly_forecast_limit = 24; // max 24
-    if (config.weather_hourly_forecast_limit > 24)
-      config.weather_hourly_forecast_limit = 24; // max 24
-    if (config.weather_hourly_forecast_limit > 72)
-      throw new Error('Hourly forecast is limited to 72h max');
+    if (!config.weather_entity.startsWith('weather.'))
+      throw new Error(config.weather_entity + 'is not a weather entity.');
     if (!config.weather_daily_forecast_limit)
-      config.weather_daily_forecast_limit = 15; // max 15
+      config.weather_daily_forecast_limit = 10; // max 15
     if (config.weather_daily_forecast_limit > 15)
       throw new Error('Daily forecast is limited to 15 days max');
+    if (!config.chart_first_kind_to_render)
+      config.chart_first_kind_to_render = 'temperature';
+    if (!Object.keys(SENSORS_MAP).includes(config.chart_first_kind_to_render))
+      throw new Error(
+        'Chart first kind to render must be "temperature", "precipitation" or "wind_speed"'
+      );
     return config;
   }
 
   setConfig(config) {
     this._config = this.__validateConfig(JSON.parse(JSON.stringify(config)));
+    this._chartDataKind = this._config.chart_first_kind_to_render;
+
     // call set hass() to immediately adjust to a changed entity
     // while editing the entity in the card editor
     if (this._hass) {
@@ -147,7 +152,7 @@ export class SciFiWeather extends LitElement {
   }
 
   render() {
-    if (!this._hass || !this._config) return html``;
+    if (!this._hass || !this._config) return nothing;
     return html`
       <div class="container">
         <div class="header">${this.__renderHeader()}</div>
@@ -176,7 +181,7 @@ export class SciFiWeather extends LitElement {
 
   __renderAlerts() {
     if (!this._alert || this._alert.state == this._config.alert.state_green)
-      return html``;
+      return nothing;
     let alert_states = {};
     alert_states[this._config.alert.state_yellow] = 'yellow';
     alert_states[this._config.alert.state_orange] = 'orange';
@@ -222,12 +227,28 @@ export class SciFiWeather extends LitElement {
   }
 
   __renderDays() {
-    if (!this._weather_daily_forecast) return html``;
+    if (!this._weather_daily_forecast) return nothing;
     return html` <div class="content">
       ${this._weather_daily_forecast
         .slice(0, this._config.weather_daily_forecast_limit)
-        .map((daily_forecast) => html`${daily_forecast.render(true)}`)}
+        .map((daily_forecast, idx) => {
+          return html` <div
+            class="weather ${this._day_selected == idx ? 'selected' : ''}"
+            @click="${(e) => this.__selectDay(idx)}"
+          >
+            ${daily_forecast.render(true)}
+          </div>`;
+        })}
     </div>`;
+  }
+
+  __selectDay(idx) {
+    if (idx != this._day_selected) {
+      this._day_selected = idx;
+      this._chart.data = this.__getChartDatasets();
+      this._chart.update();
+      this.requestUpdate();
+    }
   }
 
   __renderChart() {
@@ -356,7 +377,7 @@ export class SciFiWeather extends LitElement {
   }
 
   __getChartDatasets() {
-    let datasets = [
+    const datasets = [
       {
         data: [],
         weather: [],
@@ -371,8 +392,9 @@ export class SciFiWeather extends LitElement {
       datasets[0].borderWidth = 2;
       datasets[0].borderRadius = 5;
     }
+    const forecastDate = this._weather_daily_forecast[this._day_selected].date;
     this._weather_hourly_forecast
-      .slice(0, this._config.weather_hourly_forecast_limit)
+      .filter((hour) => hour.isPartOfDay(forecastDate))
       .map((hourly) => {
         datasets[0].data.push({
           x: hourly.hours,
@@ -418,8 +440,8 @@ export class SciFiWeather extends LitElement {
   static getStubConfig() {
     return {
       weather_entity: null,
-      weather_hourly_forecast_limit: 24,
       weather_daily_forecast_limit: 10,
+      chart_first_kind_to_render: 'temperature',
       alert: {},
     };
   }

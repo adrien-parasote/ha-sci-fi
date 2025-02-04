@@ -1,7 +1,8 @@
+import config_climates from './config/config_climates.js';
 import config_hexa from './config/config_hexa.js';
 import config_lights from './config/config_lights.js';
+import config_stove from './config/config_stove.js';
 import config_weather from './config/config_weather.js';
-import config_climates from './config/config_climates.js';
 
 const MAP = {
   hexa: {
@@ -19,6 +20,10 @@ const MAP = {
   climate: {
     config: config_climates,
     element: window.customElements.get('sci-fi-climates'),
+  },
+  stove: {
+    config: config_stove,
+    element: window.customElements.get('sci-fi-stove'),
   },
 };
 
@@ -41,12 +46,12 @@ function renderElement(){
     const editor = MAP[component_name].element.getConfigElement();
 
     if(document.getElementById('editor').checked){
-      editor.hass = window.hass;
       editor.setConfig(MAP[component_name].element.getStubConfig());
+      editor.hass = window.hass;
       content = document.getElementById('phone').appendChild(editor);
     }else{
-      component.hass = window.hass;
       component.setConfig(MAP[component_name].config);
+      component.hass = window.hass;
       content = document.getElementById('phone').appendChild(component);
     }
   } else {

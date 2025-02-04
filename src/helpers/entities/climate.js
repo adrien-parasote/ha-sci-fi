@@ -1,4 +1,4 @@
-import {LitElement, css, html} from 'lit';
+import {LitElement, html, nothing} from 'lit';
 
 import common_style from '../common_style.js';
 import {getIcon} from '../icons/icons.js';
@@ -18,22 +18,38 @@ import {
   HASS_CLIMATE_SERVICE,
   HASS_CLIMATE_SERVICE_SET_HVAC_MODE,
   HASS_CLIMATE_SERVICE_SET_PRESET_MODE,
+  HASS_CLIMATE_SERVICE_SET_TEMPERATURE,
   RADIATOR_BACKGROUND_PATH,
   RADIATOR_BORDER_PATH,
   RADIATOR_GRADIENT_PATH,
   RADIATOR_SVG_VIEWBOX_HEIGHT,
   RADIATOR_SVG_VIEWBOX_WIDTH,
   STATE_CLIMATE_AUTO,
+  STATE_CLIMATE_COOL,
   STATE_CLIMATE_HEAT,
+  STATE_CLIMATE_OFF,
 } from './climate_const.js';
 import style from './climate_style.js';
+import {Counter} from './counter.js';
+import {Sensor} from './sensor.js';
+import {
+  STOVE_SENSORS,
+  STOVE_SENSOR_ACTUAL_POWER,
+  STOVE_SENSOR_COMBUSTION_CHAMBER_TEMP,
+  STOVE_SENSOR_FAN_SPEED,
+  STOVE_SENSOR_INSIDE_TEMP,
+  STOVE_SENSOR_PELLET_QTY,
+  STOVE_SENSOR_POWER,
+  STOVE_SENSOR_PRESSURE,
+  STOVE_SENSOR_STATUS,
+} from './sensor_const.js';
 
 export class ClimateEntity {
   static kind = ENTITY_KIND_CLIMATE;
 
   constructor(entity, device) {
     this.entity_id = entity.entity_id ? entity.entity_id : null;
-    this.state = entity.state ? entity.state : STATE_LIGHT_OFF;
+    this.state = entity.state ? entity.state : STATE_CLIMATE_OFF;
 
     this.hvac_modes = entity.attributes.hvac_modes
       ? entity.attributes.hvac_modes
@@ -48,7 +64,7 @@ export class ClimateEntity {
     this.preset_modes = entity.attributes.preset_modes
       ? entity.attributes.preset_modes
       : [];
-    this.current_temperature = entity.attributes.current_temperature
+    this._current_temperature = entity.attributes.current_temperature
       ? entity.attributes.current_temperature
       : null;
     this.temperature = entity.attributes.temperature
@@ -61,10 +77,15 @@ export class ClimateEntity {
 
     this.manufacturer = device.manufacturer ? device.manufacturer : null;
     this.model = device.model ? device.model : null;
+    this.device_id = device.id ? device.id : null;
 
     // Floor & area links
     this.floor_id = null;
-    this.area_id = null;
+    this.area_id = device.area_id ? device.area_id : null;
+  }
+
+  get current_temperature() {
+    return this._current_temperature;
   }
 
   get kind() {
@@ -120,6 +141,95 @@ export class ClimateEntity {
       }
     );
   }
+
+  setTemperature(hass, temperature) {
+    return hass.callService(
+      HASS_CLIMATE_SERVICE,
+      HASS_CLIMATE_SERVICE_SET_TEMPERATURE,
+      {
+        entity_id: [this.entity_id],
+        temperature: temperature,
+      }
+    );
+  }
+}
+
+export class StoveEntity extends ClimateEntity {
+  constructor(entity, device) {
+    super(entity, device);
+    this.sensors = {};
+    STOVE_SENSORS.forEach((sensor) => (this.sensors[sensor] = null));
+    this.storage = null;
+  }
+
+  get current_temperature() {
+    return this.inside_temperature
+      ? parseFloat(this.inside_temperature.value)
+      : this._current_temperature;
+  }
+
+  get inside_temperature() {
+    return this.sensors[STOVE_SENSOR_INSIDE_TEMP]
+      ? this.sensors[STOVE_SENSOR_INSIDE_TEMP]
+      : {};
+  }
+
+  get actual_power() {
+    return this.sensors[STOVE_SENSOR_ACTUAL_POWER]
+      ? this.sensors[STOVE_SENSOR_ACTUAL_POWER]
+      : {};
+  }
+
+  get combustion_chamber_temperature() {
+    return this.sensors[STOVE_SENSOR_COMBUSTION_CHAMBER_TEMP]
+      ? this.sensors[STOVE_SENSOR_COMBUSTION_CHAMBER_TEMP]
+      : {};
+  }
+
+  get pellet_quantity() {
+    return this.sensors[STOVE_SENSOR_PELLET_QTY]
+      ? this.sensors[STOVE_SENSOR_PELLET_QTY]
+      : {};
+  }
+
+  get status() {
+    return this.sensors[STOVE_SENSOR_STATUS]
+      ? this.sensors[STOVE_SENSOR_STATUS].state
+      : null;
+  }
+
+  get power() {
+    return this.sensors[STOVE_SENSOR_POWER]
+      ? this.sensors[STOVE_SENSOR_POWER]
+      : {};
+  }
+
+  get fan_speed() {
+    return this.sensors[STOVE_SENSOR_FAN_SPEED]
+      ? this.sensors[STOVE_SENSOR_FAN_SPEED]
+      : {};
+  }
+
+  get pressure() {
+    return this.sensors[STOVE_SENSOR_PRESSURE]
+      ? this.sensors[STOVE_SENSOR_PRESSURE]
+      : {};
+  }
+
+  addSensors(sensors, hass) {
+    Object.keys(sensors).forEach((sensor_key) => {
+      if (sensors[sensor_key])
+        this.sensors[sensor_key] = new Sensor(sensors[sensor_key], hass);
+    });
+  }
+
+  get active() {
+    return [STATE_CLIMATE_HEAT, STATE_CLIMATE_COOL].includes(this.state);
+  }
+
+  addStockCounter(counter_id, hass) {
+    this.storage = new Counter(counter_id, hass);
+  }
 }
 
 class SciFiRadiator extends LitElement {
@@ -156,7 +266,7 @@ class SciFiRadiator extends LitElement {
   }
 
   render() {
-    if (!this.climateEntity) return html``;
+    if (!this.climateEntity) nothing;
     return html`
       <div class="hexagon-container">
         ${this.__displayHexagonContent()} ${this.__displayPointer()}
@@ -294,7 +404,7 @@ class SciFiRadiator extends LitElement {
   }
 
   __getCurrentTemperature() {
-    if (!this.climateEntity.attributes.current_temperature) return html``;
+    if (!this.climateEntity.attributes.current_temperature) return nothing;
     return html` <div
       class="temperature-label"
       style="color:var(${this.__getCurrentTemperatureColor()})"

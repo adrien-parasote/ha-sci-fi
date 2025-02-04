@@ -1,8 +1,6 @@
-import {css, html} from 'lit';
+import {html, nothing} from 'lit';
 
-import {SciFiBaseEditor} from '../../helpers/card/base_editor.js';
-import common_style from '../../helpers/common_style.js';
-import editor_common_style from '../../helpers/editor_common_style.js';
+import {SciFiBaseEditor} from '../../helpers/components/base_editor.js';
 import {
   HASS_CLIMATE_PRESET_MODE_BOOST,
   HASS_CLIMATE_PRESET_MODE_COMFORT,
@@ -20,7 +18,7 @@ import editor_style from './style_editor.js';
 
 export class SciFiClimatesEditor extends SciFiBaseEditor {
   static get styles() {
-    return [common_style, editor_common_style, editor_style];
+    return super.styles.concat([editor_style]);
   }
 
   _climates; // Privates
@@ -47,7 +45,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
   }
 
   render() {
-    if (!this._hass || !this._config) return html``;
+    if (!this._hass || !this._config) return nothing;
     return html`
       <div class="card card-corner">
         <div class="container ${!this._edit}">
@@ -61,13 +59,12 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
   }
 
   __renderAppearance() {
-    return html` <sci-fi-accordion-card
-      title="Header (optionnal)"
-      icon="mdi:page-layout-header"
-      open
-      class="header"
-    >
+    return html` <section>
+      <h1>
+        <span>${getIcon('mdi:page-layout-header')}</span>Header (optionnal)
+      </h1>
       <sci-fi-input
+        icon="mdi:cursor-text"
         label="Winter period message (optionnal)"
         value=${this._config.header.message_winter_state}
         element-id="header"
@@ -84,6 +81,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
       ></sci-fi-dropdown-icon-input>
 
       <sci-fi-input
+        icon="mdi:cursor-text"
         label="Summer period message (optionnal)"
         value=${this._config.header.message_summer_state}
         element-id="header"
@@ -98,17 +96,16 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
         value=${this._config.header.icon_summer_state}
         @input-update=${this.__update}
       ></sci-fi-dropdown-icon-input>
-    </sci-fi-accordion-card>`;
+    </section>`;
   }
 
   __renderConfig() {
-    return html` <sci-fi-accordion-card
-      title="Settings (optionnal)"
-      icon="mdi:tune-vertical-variant"
-      open
-      class="settings"
-    >
+    return html` <section>
+      <h1>
+        <span>${getIcon('mdi:tune-vertical-variant')}</span>Settings (optionnal)
+      </h1>
       <sci-fi-input
+        icon="mdi:thermometer"
         label="Unit (optionnal)"
         value=${this._config.unit}
         element-id="unit"
@@ -123,7 +120,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
         items="${JSON.stringify(this._climates)}"
         @input-update=${this.__update}
       ></sci-fi-dropdown-multi-entities-input>
-    </sci-fi-accordion-card>`;
+    </section>`;
   }
 
   __capitalizeFirstLetter(val) {
@@ -186,7 +183,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
   }
 
   __renderCustomization() {
-    if (!this._custom_info) return html``;
+    if (!this._custom_info) return nothing;
     const state = this._custom_info.state;
     const icon =
       this._custom_info.kind == 'state'

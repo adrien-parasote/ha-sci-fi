@@ -41,6 +41,7 @@ export class SciFiAccordionCard extends LitElement {
           margin: 0;
           display: flex;
           flex-direction: column;
+          row-gap: 10px;
         }
         .tab input:checked ~ .content {
           max-height: fit-content;

@@ -6,12 +6,15 @@ export default css`
 
     --primary-light-color: rgb(105, 211, 251);
     --primary-light-alpha-color: rgba(105, 211, 251, 0.5);
+    --primary-dark-color: rgb(34, 34, 34);
+
     --secondary-light-color: rgb(102, 156, 210);
     --secondary-light-alpha-color: rgba(102, 156, 210, 0.5);
     --secondary-light-light-alpha-color: rgba(102, 156, 210, 0.2);
 
-    --primary-error-color: rgb(250 146 29);
+    --primary-error-color: rgb(250, 146, 29);
     --primary-error-alpha-color: rgba(250, 146, 29, 0.9);
+    --primary-green-color: rgb(79, 227, 139);
 
     --primary-bg-color: rgb(39, 40, 43);
     --primary-bg-alpha-color: rgba(39, 40, 43, 0.3);
@@ -33,6 +36,7 @@ export default css`
     --icon-size-xsmall: 15px;
     --icon-size-xxsmall: 10px;
 
+    --small-hexa-width: 40px;
     --default-hexa-width: 60px;
     --medium-hexa-width: 70px;
     --selected-hexa-width: 80px;

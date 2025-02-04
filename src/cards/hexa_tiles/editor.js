@@ -1,6 +1,6 @@
-import {html} from 'lit';
+import {html, nothing} from 'lit';
 
-import {SciFiBaseEditor} from '../../helpers/card/base_editor.js';
+import {SciFiBaseEditor} from '../../helpers/components/base_editor.js';
 import '../../helpers/form/form.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 
@@ -33,7 +33,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   }
 
   render() {
-    if (!this._hass || !this._config) return html``;
+    if (!this._hass || !this._config) return nothing;
     return html`
       <div class="card card-corner">
         <div class="container">
@@ -47,8 +47,12 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   __renderHeader() {
     return html`
       <section>
-        <h1>Header</h1>
+        <h1>
+          <span>${getIcon('mdi:page-layout-header')}</span>
+          Header
+        </h1>
         <sci-fi-input
+          icon="mdi:cursor-text"
           label="Message"
           value=${this._config.header_message}
           element-id="header_message"
@@ -62,7 +66,10 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   __renderWeather() {
     return html`
       <section>
-        <h1>Weather</h1>
+        <h1>
+          <span>${getIcon('mdi:theme-light-dark')}</span>
+          Weather
+        </h1>
         <sci-fi-toggle
           label="Add weather tile ?"
           element-id="weather"
@@ -85,6 +92,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         @input-update=${this.__update}
       ></sci-fi-dropdown-entity-input>
       <sci-fi-input
+        icon="mdi:link-edit"
         label="Link"
         value=${this._config.weather.link}
         element-id="weather"
@@ -96,29 +104,26 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
 
   __renderTiles() {
     return html`
-      <section>
-        <h1>Tiles</h1>
-        ${this._config.tiles.map(
-          (entity, id) =>
-            html`<sci-fi-accordion-card
-              element-id=${id}
-              title="Tile ${id + 1}"
-              icon="mdi:hexagon-slice-6"
-              ?deletable=${this._config.tiles.length > 1}
-              @accordion-delete=${this.__update}
-              ?open=${id == 0}
-            >
-              ${this.__renderEntity(id, entity)}
-              ${this.__renderAppearance(id, entity)}
-              ${this.__renderTechnical(id, entity)}
-            </sci-fi-accordion-card>`
-        )}
-        <sci-fi-button
-          has-border
-          icon="mdi:plus"
-          @button-click=${this.__addElement}
-        ></sci-fi-button>
-      </section>
+      ${this._config.tiles.map(
+        (entity, id) =>
+          html`<sci-fi-accordion-card
+            element-id=${id}
+            title="Tile ${id + 1}"
+            icon="mdi:hexagon-slice-6"
+            ?deletable=${this._config.tiles.length > 1}
+            @accordion-delete=${this.__update}
+            ?open=${id == 0}
+          >
+            ${this.__renderEntity(id, entity)}
+            ${this.__renderAppearance(id, entity)}
+            ${this.__renderTechnical(id, entity)}
+          </sci-fi-accordion-card>`
+      )}
+      <sci-fi-button
+        has-border
+        icon="mdi:plus"
+        @button-click=${this.__addElement}
+      ></sci-fi-button>
     `;
   }
 
@@ -217,6 +222,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
           @input-update=${this.__update}
         ></sci-fi-chips-input>
         <sci-fi-input
+          icon="mdi:alert-circle"
           label="Error state (optionnal)"
           element-id="${id}"
           kind="state_error"
@@ -224,6 +230,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
           value="${entity.state_error}"
         ></sci-fi-input>
         <sci-fi-input
+          icon="mdi:link-edit"
           label="Link (optionnal)"
           element-id="${id}"
           kind="link"
@@ -254,7 +261,6 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   __update(e) {
     let newConfig = this.__getNewConfig();
     const elemmentId = e.detail.id;
-    console.log(e);
     if (e.type == 'accordion-delete') {
       newConfig.tiles.splice(elemmentId, 1);
     } else if (!['header_message', 'weather'].includes(elemmentId)) {

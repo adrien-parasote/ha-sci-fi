@@ -4,7 +4,7 @@ import {isEqual} from 'lodash-es';
 import common_style from '../../helpers/common_style.js';
 import '../../helpers/components/tiles.js';
 import '../../helpers/components/toast.js';
-import '../../helpers/entities/climate.js';
+import '../../helpers/components/radiator.js';
 import {ENTITY_KIND_CLIMATE} from '../../helpers/entities/climate_const.js';
 import {House} from '../../helpers/entities/house.js';
 import {SunEntity} from '../../helpers/entities/weather.js';

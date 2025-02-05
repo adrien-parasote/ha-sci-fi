@@ -23,6 +23,7 @@ export const STOVE_SENSOR_STATUS_OFF = 'off';
 export const STOVE_SENSOR_STATUS_PRE_HEATING = 'pre_heating';
 export const STOVE_SENSOR_STATUS_IGNITION = 'ignition';
 export const STOVE_SENSOR_STATUS_COMBUSTION = 'combustion';
+export const STOVE_SENSOR_STATUS_PRE_COMBUSTION = 'pre_combustion';
 export const STOVE_SENSOR_STATUS_ECO = 'eco';
 export const STOVE_SENSOR_STATUS_COOLING = 'cooling';
 export const STOVE_SENSOR_STATUS_UNKNOWN = 'unknown';

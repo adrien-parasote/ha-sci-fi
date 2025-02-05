@@ -8,18 +8,15 @@ import '../../helpers/components/stove.js';
 import '../../helpers/components/toast.js';
 import '../../helpers/components/wheel.js';
 import {StoveEntity} from '../../helpers/entities/climate.js';
-import {
-  STOVE_SENSORS,
-  STOVE_SENSOR_STATUS_COMBUSTION,
-  STOVE_SENSOR_STATUS_COOLING,
-  STOVE_SENSOR_STATUS_ECO,
-  STOVE_SENSOR_STATUS_IGNITION,
-  STOVE_SENSOR_STATUS_OFF,
-  STOVE_SENSOR_STATUS_PRE_HEATING,
-} from '../../helpers/entities/sensor_const.js';
+import {STOVE_SENSORS} from '../../helpers/entities/sensor_const.js';
 import '../../helpers/form/form.js';
 import {getIcon} from '../../helpers/icons/icons.js';
-import {HVAC_MODES_ICONS, PACKAGE, PRESET_MODES_ICONS} from './const.js';
+import {
+  HVAC_MODES_ICONS,
+  PACKAGE,
+  PRESET_MODES_ICONS,
+  STATUS_ICONS_COLORS,
+} from './const.js';
 import {SciFiStoveEditor} from './editor.js';
 import style from './style.js';
 
@@ -292,28 +289,11 @@ export class SciFiStove extends LitElement {
 
   __displayStatus(text, status) {
     if (!status) return this.__displayStatus(text, 'N/A');
-    const icons = {};
-    icons[STOVE_SENSOR_STATUS_OFF] = {icon: 'sci:stove-off', color: 'off'};
-    icons[STOVE_SENSOR_STATUS_PRE_HEATING] = {
-      icon: 'sci:stove-heat',
-      color: 'amber',
-    };
-    icons[STOVE_SENSOR_STATUS_IGNITION] = {
-      icon: 'sci:stove-heat',
-      color: 'amber',
-    };
-    icons[STOVE_SENSOR_STATUS_COMBUSTION] = {
-      icon: 'sci:stove-heat',
-      color: 'red',
-    };
-    icons[STOVE_SENSOR_STATUS_ECO] = {icon: 'sci:stove-eco', color: 'green'};
-    icons[STOVE_SENSOR_STATUS_COOLING] = {
-      icon: 'sci:stove-cool',
-      color: 'blue',
-    };
     return html`
-      <div class="status ${icons[status] ? icons[status].color : 'off'}">
-        ${getIcon(icons[status] ? icons[status].icon : 'sci:stove-unknow')}
+      <div class="status ${STATUS_ICONS_COLORS[status] ? STATUS_ICONS_COLORS[status].color : 'off'}">
+        ${getIcon(
+          STATUS_ICONS_COLORS[status] ? STATUS_ICONS_COLORS[status].icon : 'sci:stove-unknow'
+        )}
         <div class="label">${text}:</div>
         <div>${status.replace('_', ' ')}</div>
       </div>

@@ -290,9 +290,15 @@ export class SciFiStove extends LitElement {
   __displayStatus(text, status) {
     if (!status) return this.__displayStatus(text, 'N/A');
     return html`
-      <div class="status ${STATUS_ICONS_COLORS[status] ? STATUS_ICONS_COLORS[status].color : 'off'}">
+      <div
+        class="status ${STATUS_ICONS_COLORS[status]
+          ? STATUS_ICONS_COLORS[status].color
+          : 'off'}"
+      >
         ${getIcon(
-          STATUS_ICONS_COLORS[status] ? STATUS_ICONS_COLORS[status].icon : 'sci:stove-unknow'
+          STATUS_ICONS_COLORS[status]
+            ? STATUS_ICONS_COLORS[status].icon
+            : 'sci:stove-unknow'
         )}
         <div class="label">${text}:</div>
         <div>${status.replace('_', ' ')}</div>

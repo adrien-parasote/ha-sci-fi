@@ -9,6 +9,7 @@ import '../../helpers/components/stove.js';
 import '../../helpers/components/toast.js';
 import '../../helpers/components/wheel.js';
 import {StoveEntity} from '../../helpers/entities/climate.js';
+import {STATE_CLIMATE_OFF} from '../../helpers/entities/climate_const.js';
 import {STOVE_SENSORS} from '../../helpers/entities/sensor_const.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 import {
@@ -19,7 +20,6 @@ import {
 } from './const.js';
 import {SciFiStoveEditor} from './editor.js';
 import style from './style.js';
-import { STATE_CLIMATE_OFF } from '../../helpers/entities/climate_const.js';
 
 export class SciFiStove extends LitElement {
   static get styles() {
@@ -254,13 +254,13 @@ export class SciFiStove extends LitElement {
     </div>`;
   }
 
-  __displayTimeToService(){
-    if(!this._stove.time_to_service) return nothing;
+  __displayTimeToService() {
+    if (!this._stove.time_to_service) return nothing;
 
-    const hours =this._stove.time_to_service.state;
-    let state=null;
-    if(hours <= 240) state = "high";
-    if(hours <= 480) state = "medium";
+    const hours = this._stove.time_to_service.state;
+    let state = null;
+    if (hours <= 240) state = 'high';
+    if (hours <= 480) state = 'medium';
     return html`
       <div class="temperature ${state}">
         ${getIcon('mdi:timeline-clock-outline')}

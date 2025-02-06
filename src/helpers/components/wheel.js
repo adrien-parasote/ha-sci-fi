@@ -51,8 +51,8 @@ class SciFiWheel extends LitElement {
           font-weight: bold;
           align-items: center;
         }
-        .slider .slider-item.disable{
-          color:var(--secondary-bg-color);
+        .slider .slider-item.disable {
+          color: var(--secondary-bg-color);
         }
         .slider .slider-item.hide {
           display: none;
@@ -94,7 +94,7 @@ class SciFiWheel extends LitElement {
   render() {
     return html`
       <div class="container">
-        <div class="core ${this.inLine ? "inline": ""}">
+        <div class="core ${this.inLine ? 'inline' : ''}">
           <sci-fi-button
             class="up"
             icon="mdi:menu-up-outline"
@@ -127,7 +127,7 @@ class SciFiWheel extends LitElement {
         <div
           class="slider-item ${el.id == this.selectedId
             ? 'show'
-            : 'hide'} ${this.disable ? "disable" : ""}"
+            : 'hide'} ${this.disable ? 'disable' : ''}"
         >
           ${el.icon ? getIcon(el.icon) : ''}
           <div>${el.text}</div>

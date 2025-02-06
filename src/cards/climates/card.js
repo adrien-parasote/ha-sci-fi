@@ -324,8 +324,19 @@ export class SciFiClimates extends LitElement {
             styles="${JSON.stringify(styles)}"
             @change-preset-mode="${this._changePresetMode}"
             @change-hvac-mode="${this._changeHvacMode}"
+            @change-temperature="${this._changeTemperature}"
           ></sci-fi-radiator>
         </div>`
+    );
+  }
+
+  _changeTemperature(e) {
+    const climate = this._house
+      .getEntitiesByKind(ENTITY_KIND_CLIMATE, this._config.entities_to_exclude)
+      .filter((climate) => climate.entity_id == e.detail.id)[0];
+    climate.setTemperature(this._hass, e.detail.temperature).then(
+      () => this.__toast(false),
+      (e) => this.__toast(true, e)
     );
   }
 

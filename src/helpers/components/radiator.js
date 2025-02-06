@@ -1,201 +1,131 @@
-import {LitElement, html, nothing, css} from 'lit';
+import {LitElement, css, html, nothing} from 'lit';
 
+import '../../helpers/components/button.js';
+import '../../helpers/components/wheel.js';
 import common_style from '../common_style.js';
-import {getIcon} from '../icons/icons.js';
 import {
   HASS_CLIMATE_HVAC_MODE_OFF,
   HASS_CLIMATE_PRESET_MODE_AUTO,
-  HASS_CLIMATE_PRESET_MODE_BOOST,
   HASS_CLIMATE_PRESET_MODE_COMFORT,
-  HASS_CLIMATE_PRESET_MODE_COMFORT_1,
-  HASS_CLIMATE_PRESET_MODE_COMFORT_2,
   HASS_CLIMATE_PRESET_MODE_ECO,
   HASS_CLIMATE_PRESET_MODE_EXTERNAL,
   HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION,
   HASS_CLIMATE_PRESET_MODE_NONE,
   HASS_CLIMATE_PRESET_MODE_PROG,
   STATE_CLIMATE_AUTO,
+  STATE_CLIMATE_OFF,
 } from '../entities/climate_const.js';
-
-const RADIATOR_SVG_VIEWBOX_WIDTH = 50;
-const RADIATOR_SVG_VIEWBOX_HEIGHT = 55.75;
-const RADIATOR_GRADIENT_PATH =
-  'M 25 0 L 50 14.364 L 50 42.28 L 48.442 42.28 L 48.496 42.249 L 48.496 15.251 L 25 1.75 L 1.503 15.25 L 1.503 42.25 L 1.555 42.28 L 0 42.28 L 0 14.363 Z';
-const RADIATOR_BORDER_PATH =
-  'M 25 1.75 L 48.496 15.251 L 48.496 42.249 L 25 55.75 L 1.503 42.25 L 1.503 15.25 L 25 1.75 Z';
-const RADIATOR_BACKGROUND_PATH =
-  'M 25 2.895 L 47.5 15.824 L 47.5 41.676 L 25 54.605 L 2.5 41.677 L 2.5 15.823 L 25 2.895 Z';
-
 
 class SciFiRadiator extends LitElement {
   static get styles() {
-    return [common_style, css`
-      :host {
-    --stop-color-0: #aed6f1;
-    --stop-color-0-25: #f9e79f;
-    --stop-color-0-5: #fad7a0;
-    --stop-color-0-75: #edbb99;
-    --stop-color-1: #c0392b;
-    display: flex;
-    flex-direction: column;
-    border: var(--border-width) solid var(--secondary-bg-color);
-    border-radius: var(--border-radius);
-    padding: 10px;
-    row-gap: 10px;
-    height: 240px;
-    width: 332px;
-  }
-  .hexagon-container {
-    position: relative;
-    display: flex;
-    flex: 1;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-  }
-  .hexagon-container svg {
-    width: 180px;
-    height: 180px;
-  }
-  .hexagon-container svg .border {
-    fill: var(--secondary-bg-color);
-  }
-  .hexagon-container svg .background {
-    fill: var(--primary-bg-color);
-  }
-  .hexagon-container .pointer {
-    position: absolute;
-    content: '';
-    width: 15px;
-    height: 15px;
-    background-color: var(--pointer-color);
-    border: 2px solid white;
-    top: var(--pointer-top);
-    left: var(--pointer-left);
-    border-radius: 50%;
-  }
-  .hexagon-container .info {
-    position: absolute;
-  }
-  .hexagon-container .info .state svg {
-    width: var(--icon-size-subtitle);
-    height: var(---icon-size-subtitle);
-    fill: var(--state-color);
-  }
-  .hexagon-container .info .temperature-label {
-    display: flex;
-    flex-direction: row;
-    font-size: 40px;
-    justify-content: center;
-    margin: 10px;
-    color: var(--primary-light-color);
-  }
-  .hexagon-container .info .temperature-label .radical {
-    align-self: center;
-  }
-  .hexagon-container .info .temperature-label .decimal {
-    display: flex;
-    flex-direction: column;
-    font-size: 15px;
-    justify-content: center;
-  }
-  .hexagon-container .info .target-temperature {
-    text-align: center;
-    font-size: var(--font-size-xsmall);
-    color: var(--secondary-light-color);
-  }
-  .hexagon-container .info .target-temperature .label {
-    text-transform: capitalize;
-  }
-  .controls {
-    position: relative;
-    display: flex;
-    flex-direction: row;
-    column-gap: 5px;
-    align-self: center;
-  }
-  .controls .spacer-middle {
-    content: '';
-    width: 50px;
-  }
-  .controls .button {
-    border: var(--border-width) solid var(--secondary-bg-color);
-    padding: 10px;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    background: var(--secondary-light-light-alpha-color);
-  }
-  .controls .button svg {
-    width: var(--icon-size-normal);
-    height: var(---icon-size-normal);
-    fill: var(--mode-color);
-  }
-  .controls .spacer {
-    width: 50px;
-    display: flex;
-    flex-direction: row;
-  }
-  .controls .spacer.hide > * {
-    display: none;
-  }
-  .controls .spacer .vertical {
-    border: var(--border-width) solid var(--primary-light-color);
-    height: 22px;
-  }
-  .controls .spacer .horizontal {
-    border: var(--border-width) solid var(--primary-light-color);
-    width: 100%;
-    height: fit-content;
-    align-self: center;
-  }
-  .controls .spacer .circle {
-    align-self: center;
-    width: 7px;
-  }
-  .controls .hvac-options.hide,
-  .controls .preset-mode-options.hide {
-    display: none;
-  }
-  .controls .hvac-options,
-  .controls .preset-mode-options {
-    display: flex;
-    flex-direction: column;
-    border: var(--border-width) solid var(--primary-light-color);
-    border-radius: var(--border-radius);
-    padding: 5px;
-    position: absolute;
-    width: 100px;
-    background: black;
-    bottom: 47px;
-  }
-  .controls .hvac-options {
-    right: -40px;
-  }
-  .controls .preset-mode-options {
-    left: -40px;
-  }
-  .controls .hvac-options > div,
-  .controls .preset-mode-options > div {
-    display: flex;
-    flex-direction: row;
-    column-gap: 5px;
-    color: var(--option-color);
-    align-items: center;
-    cursor: pointer;
-    padding: 5px 0;
-    font-size: var(--font-size-xsmall);
-  }
-  .controls .hvac-options > div:not(:last-child),
-  .controls .preset-mode-options > div:not(:last-child) {
-    border-bottom: var(--border-width) solid var(--secondary-light-alpha-color);
-  }
-  .controls .hvac-options svg,
-  .controls .preset-mode-options svg {
-    fill: var(--option-color);
-    width: var(--icon-size-small);
-    height: var(---icon-size-small);
-  }
-  `];
+    return [
+      common_style,
+      css`
+        :host {
+          display: flex;
+          flex-direction: row;
+          border: var(--border-width) solid var(--secondary-bg-color);
+          border-radius: var(--border-radius);
+          border-top-left-radius: unset;
+          border-bottom-left-radius: unset;
+          height: 240px;
+          width: 336px;
+        }
+        .img {
+          display: flex;
+          height: 100%;
+          align-items: end;
+        }
+        .content {
+          flex: 1;
+          display: flex;
+          flex-direction: row;
+        }
+        .content .right {
+          padding: 25px 10px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+        .content .right sci-fi-button-select-card {
+          --title-color: var(--secondary-bg-color);
+          --btn-padding: 5px 5px 5px 10px;
+        }
+        .content .left {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          flex-direction: column;
+          justify-content: center;
+        }
+        .content .left .select-temperature {
+          margin-top: 25px;
+          position: relative;
+        }
+        .content .left .select-temperature .display {
+          position: absolute;
+          display: flex;
+          flex-direction: row;
+          left: -14px;
+          top: 14px;
+          align-items: center;
+        }
+        .content .left .select-temperature .display .h-path,
+        .content .left .temperature .temperature-label .display .h-path {
+          border-color: var(--secondary-bg-color);
+          width: 5px;
+        }
+        .content .left .select-temperature .display .circle {
+          background-color: unset;
+        }
+        .content .left .select-temperature sci-fi-wheel {
+          --item-font-size: var(--font-size-small);
+          --item-color: var(--primary-light-color);
+          --text-font-color: var(--secondary-bg-color);
+          --padding: 5px;
+        }
+        .content .left .temperature {
+          display: flex;
+          flex: 1;
+          width: 100%;
+          align-items: center;
+        }
+        .content .left .temperature .temperature-label {
+          display: flex;
+          position: relative;
+          flex-direction: row;
+          font-size: 40px;
+          justify-content: center;
+          color: var(--primary-light-color);
+          text-shadow: 0px 0px 5px var(--primary-light-color);
+          width: 100%;
+          height: fit-content;
+          border-bottom: calc(2 * var(--border-width)) solid
+            var(--secondary-bg-color);
+          margin-right: 10px;
+        }
+        .content .left .temperature .temperature-label .radical {
+          align-self: center;
+        }
+        .content .left .temperature .temperature-label .decimal {
+          display: flex;
+          flex-direction: column;
+          font-size: 15px;
+          justify-content: center;
+        }
+        .content .left .temperature .temperature-label .display {
+          position: absolute;
+          display: flex;
+          flex-direction: row;
+          left: -45px;
+          bottom: -5px;
+          align-items: center;
+        }
+        .content .left .temperature .temperature-label .display .h-path {
+          width: 35px;
+        }
+      `,
+    ];
   }
 
   static get properties() {
@@ -229,322 +159,335 @@ class SciFiRadiator extends LitElement {
   render() {
     if (!this.climateEntity) nothing;
     return html`
-      <div class="hexagon-container">
-        ${this.__displayHexagonContent()} ${this.__displayPointer()}
-        ${this.__displayHexagon()}
+      <div class="img">${this.__displayImage()}</div>
+      <div class="content">
+        <div class="left">${this.__displayleft()}</div>
+        <div class="right">${this.__displayRight()}</div>
       </div>
-      <div class="controls">${this.__displayControls()}</div>
     `;
   }
 
-  __displayPointer() {
-    var position = this.__getPointerPosition();
-    return html`<div
-      class="pointer"
-      style="--pointer-color:var(${this.__getCurrentTemperatureColor()});
-             --pointer-left:${position[0]}px;
-             --pointer-top:${position[1]}px;"
-    ></div>`;
-  }
-
-  __getPointerPosition() {
-    const temp = this.climateEntity.attributes.current_temperature;
-
-    const l_min = 68; // x = 7 => this.climateEntity.attributes.min_temp
-    const l_max = 241; // => this.climateEntity.attributes.max_temp
-    const dx = l_max - l_min; // => this.climateEntity.attributes.max_temp - this.climateEntity.attributes.min_temp
-    const l_temp = Math.round(
-      (dx * (temp - this.climateEntity.attributes.min_temp)) /
-        (this.climateEntity.attributes.max_temp -
-          this.climateEntity.attributes.min_temp) +
-        l_min
-    );
-    const avg_temp =
-      (this.climateEntity.attributes.max_temp +
-        this.climateEntity.attributes.min_temp) /
-      2;
-    const t_min = -1; // => avg_temp
-    const t_max = 44; // => this.climateEntity.attributes.max_temp || this.climateEntity.attributes.min_temp
-    const dy = t_max - t_min; // => this.climateEntity.attributes.max_temp || this.climateEntity.attributes.min_temp - avg_temp
-    let t_temp = null;
-    if (temp < avg_temp) {
-      t_temp = Math.round(
-        (dy * (temp - avg_temp)) /
-          (this.climateEntity.attributes.min_temp - avg_temp) +
-          t_min
-      );
-    } else {
-      t_temp = Math.round(
-        (dy * (temp - avg_temp)) /
-          (this.climateEntity.attributes.max_temp - avg_temp) +
-          t_min -
-          3 // compensation
-      );
-    }
-    return [l_temp - 2, t_temp - 2]; // -2 for border
-  }
-
-  __displayHexagon() {
-    return html`
+  __displayImage() {
+    return html`<?xml version="1.0" encoding="utf-8"?>
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 ${RADIATOR_SVG_VIEWBOX_WIDTH} ${RADIATOR_SVG_VIEWBOX_HEIGHT}"
+        viewBox="0 0 100 210"
+        width="100px"
+        height="210px"
       >
         <defs>
           <linearGradient
+            x1="113.519"
+            y1="127.222"
+            x2="113.519"
+            y2="327.222"
+            id="gl"
             gradientUnits="userSpaceOnUse"
-            x1="0"
-            y1="0"
-            x2="50"
-            y2="50"
-            id="gradient"
-            gradientTransform="matrix(0.415813, -0.742372, 0.566876, 0.743768, 0.347302, 0.027379)"
+            gradientTransform="matrix(-0.001038, -1, 0.069085, -0.000071, -8.829216, 113.537067)"
           >
-            <stop offset="0" style="stop-color: var(--stop-color-0);" />
-            <stop offset="0.25" style="stop-color: var(--stop-color-0-25);" />
-            <stop offset="0.5" style="stop-color: var( --stop-color-0-5);" />
-            <stop offset="0.75" style="stop-color: var(--stop-color-0-75);" />
-            <stop offset="1" style="stop-color: var(--stop-color-1);" />
+            <stop offset="0" style="stop-color: #383838" />
+            <stop offset="1" style="stop-color: #181818" />
+          </linearGradient>
+          <linearGradient
+            gradientUnits="userSpaceOnUse"
+            x1="143.519"
+            y1="127.222"
+            x2="143.519"
+            y2="327.222"
+            id="gr"
+            gradientTransform="matrix(-0.005887, 0.999983, -0.075024, -0.000442, 45.392197, -143.43744)"
+          >
+            <stop offset="0" style="stop-color: #383838" />
+            <stop offset="1" style="stop-color: #181818" />
+          </linearGradient>
+          <linearGradient
+            x1="113.519"
+            y1="127.222"
+            x2="113.519"
+            y2="327.222"
+            id="gl1"
+            gradientUnits="userSpaceOnUse"
+            gradientTransform="matrix(-0.005477, -0.999985, 0.075758, -0.000415, 30.825578, 113.579361)"
+          >
+            <stop offset="0" style="stop-color: #383838" />
+            <stop offset="1" style="stop-color: #181818" />
+          </linearGradient>
+          <linearGradient
+            gradientUnits="userSpaceOnUse"
+            x1="143.519"
+            y1="127.222"
+            x2="143.519"
+            y2="327.222"
+            id="gr1"
+            gradientTransform="matrix(0.008704, 0.999962, -0.056213, 0.000489, 77.202131, -143.618407)"
+          >
+            <stop offset="0" style="stop-color: #383838" />
+            <stop offset="1" style="stop-color: #181818" />
+          </linearGradient>
+          <linearGradient
+            gradientUnits="userSpaceOnUse"
+            x1="110"
+            y1="188"
+            x2="117"
+            y2="188"
+            id="steel"
+            gradientTransform="matrix(1, 0, 0, 1, -30, -0.000001)"
+          >
+            <stop offset="0" style="stop-color: #99a3a3" />
+            <stop offset="0.344" style="stop-color: #a8b0b2" />
+            <stop offset="1" style="stop-color: #99a3a3" />
           </linearGradient>
         </defs>
-        <path
-          d="${RADIATOR_GRADIENT_PATH}"
-          style='fill: url("#gradient");'
-          transform="matrix(1, 0, 0, 1, 0, -4.440892098500626e-16)"
-        />
-        <path
-          class="border"
-          d="${RADIATOR_BORDER_PATH}"
-          transform="matrix(1, 0, 0, 1, 0, -4.440892098500626e-16)"
-        />
-        <path
-          class="background"
-          d="${RADIATOR_BACKGROUND_PATH}"
-          transform="matrix(1, 0, 0, 1, 0, -4.440892098500626e-16)"
-        />
-      </svg>
-    `;
+        <g
+          transform="matrix(1, 0, 0, 1, -1.1191048088221578e-13, -6.039613253960852e-14)"
+        >
+          <path
+            d="M 0 0 L 71.149 0 C 73.276 0 75 1.724 75 3.851 L 75 196.149 C 75 198.276 73.276 200 71.149 200 L 0 200 Z"
+            style="fill:#181818"
+          />
+          <rect
+            width="15"
+            height="200"
+            style='fill: url("#gl"); opacity: 0.6;'
+          />
+          <rect
+            x="20"
+            width="15"
+            height="200"
+            style='fill: url("#gr"); opacity: 0.6;'
+          />
+          <rect
+            width="15"
+            height="200"
+            style='fill: url("#gl1"); opacity: 0.6;'
+            x="40"
+          />
+          <rect
+            x="60"
+            width="15"
+            height="200"
+            style='fill: url("#gr1"); opacity: 0.6;'
+            rx="3.798"
+            ry="3.798"
+          />
+        </g>
+        <g>
+          <path
+            d="M 85.085 195.569 L 86 199 L 86 210 L 81 210 L 81 199 L 81.567 196.524 L 80 196 L 75 196 L 75 191 L 80 191 L 81.26 191.133 L 84.473 191.925 L 85.085 195.569 Z"
+            style="fill: #cd9d70"
+          />
+          <rect
+            x="80"
+            y="188"
+            width="7"
+            height="11"
+            style='fill: url("#steel");'
+            rx="0.751"
+            ry="0.751"
+          />
+          <rect x="75" width="5" height="5" style="fill:#cd9d70;" y="10" />
+          <rect
+            x="80"
+            y="5"
+            width="20"
+            height="15"
+            style="fill: #e5e3d9; stroke: #eaecec; stroke-width: 0.5px;"
+            rx="1.007"
+            ry="1.007"
+          />
+        </g>
+      </svg>`;
   }
 
-  __displayHexagonContent() {
+  __displayleft() {
     return html`
-      <div class="info">
-        ${this.__getState()} ${this.__getCurrentTemperature()}
-        <div class="target-temperature">
-          <div class="label">
-            ${this.climateEntity.attributes.preset_mode.replace('_', ' ')}
-          </div>
-          <div class="value">${this.__getTargetTemperature()}${this.unit}</div>
+      <div class="select-temperature">
+        <div class="display">
+          <div class="circle"></div>
+          <div class="h-path"></div>
         </div>
+        <sci-fi-wheel
+          .items=${this.__getTemperatureItems()}
+          selected-id="${this.climateEntity.attributes.temperature -
+          this.climateEntity.attributes.min_temp}"
+          @wheel-change="${this.__select}"
+          ?disable=${[STATE_CLIMATE_AUTO, STATE_CLIMATE_OFF].includes(
+            this.climateEntity.state
+          )}
+          in-line
+        ></sci-fi-wheel>
       </div>
+      ${this.__getCurrentTemperature()}
     `;
-  }
-
-  __getTargetTemperature() {
-    const modes_temp = {};
-    modes_temp[HASS_CLIMATE_PRESET_MODE_NONE] = null;
-    modes_temp[HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION] =
-      this.climateEntity.attributes.min_temp;
-    modes_temp[HASS_CLIMATE_PRESET_MODE_ECO] =
-      this.climateEntity.attributes.temperature - 3;
-    modes_temp[HASS_CLIMATE_PRESET_MODE_COMFORT] =
-      this.climateEntity.attributes.temperature;
-    modes_temp[HASS_CLIMATE_PRESET_MODE_COMFORT_1] =
-      this.climateEntity.attributes.temperature - 1;
-    modes_temp[HASS_CLIMATE_PRESET_MODE_COMFORT_2] =
-      this.climateEntity.attributes.temperature - 2;
-    modes_temp[HASS_CLIMATE_PRESET_MODE_AUTO] =
-      this.climateEntity.attributes.temperature;
-    modes_temp[HASS_CLIMATE_PRESET_MODE_BOOST] =
-      this.climateEntity.attributes.max_temp;
-    modes_temp[HASS_CLIMATE_PRESET_MODE_EXTERNAL] =
-      this.climateEntity.attributes.temperature;
-    modes_temp[HASS_CLIMATE_PRESET_MODE_PROG] =
-      this.climateEntity.attributes.temperature;
-    return modes_temp[this.climateEntity.attributes.preset_mode];
   }
 
   __getCurrentTemperature() {
     if (!this.climateEntity.attributes.current_temperature) return nothing;
-    return html` <div
-      class="temperature-label"
-      style="color:var(${this.__getCurrentTemperatureColor()})"
-    >
-      <div class="radical">
-        ${this.climateEntity.attributes.current_temperature
-          .toFixed(1)
-          .split('.')[0]}
-      </div>
-      <div class="decimal">
-        <div>${this.unit}</div>
-        <div>
-          .${this.climateEntity.attributes.current_temperature
+    return html` <div class="temperature">
+      <div class="temperature-label">
+        <div class="display">
+          <div class="circle"></div>
+          <div class="h-path"></div>
+        </div>
+        <div class="radical">
+          ${this.climateEntity.attributes.current_temperature
             .toFixed(1)
-            .split('.')[1]}
+            .split('.')[0]}
+        </div>
+        <div class="decimal">
+          <div>${this.unit}</div>
+          <div>
+            .${this.climateEntity.attributes.current_temperature
+              .toFixed(1)
+              .split('.')[1]}
+          </div>
         </div>
       </div>
     </div>`;
   }
 
-  __getCurrentTemperatureColor() {
-    const colors = {
-      0: '--stop-color-0',
-      0.25: '--stop-color-0-25',
-      0.5: '--stop-color-0-5',
-      0.75: '--stop-color-0-75',
-      1: '--stop-color-1',
-    };
-    return colors[
-      Math.round(
-        (this.climateEntity.attributes.current_temperature /
-          this.climateEntity.attributes.max_temp) *
-          4
-      ) / 4
-    ];
-  }
-
-  __getState() {
-    const icon = this.styles.state.icons[this.climateEntity.state];
-    const color = this.styles.state.colors[this.climateEntity.state];
+  __displayRight() {
+    const preset_color =
+      this.styles.mode.colors[this.climateEntity.attributes.preset_mode];
+    const hvac_color = this.styles.state.colors[this.climateEntity.state];
     return html`
-      <div class="state" style="--state-color:${color}">${getIcon(icon)}</div>
-    `;
-  }
-
-  __displayControls() {
-    return html`
-      <div class="spacer hide spacer-preset-mode">
-        <div class="vertical"></div>
-        <div class="horizontal"></div>
-        <div class="circle"></div>
-      </div>
-      <div
-        class="button"
-        style="--mode-color:${this.styles.mode.colors[
+      <sci-fi-button-select-card
+        position="left down"
+        icon=${this.styles.mode.icons[
           this.climateEntity.attributes.preset_mode
-        ]}"
-        @click="${(e) => this.__showHideDropdown('preset-mode')}"
-      >
-        ${getIcon(
-          this.styles.mode.icons[this.climateEntity.attributes.preset_mode]
-        )}
-      </div>
-      <div class="spacer-middle"></div>
-      <div
-        class="button"
-        style="--mode-color:${this.styles.state.colors[
-          this.climateEntity.state
-        ]}"
-        @click="${(e) => this.__showHideDropdown('hvac')}"
-      >
-        ${getIcon(this.styles.state.icons[this.climateEntity.state])}
-      </div>
-      <div class="spacer hide spacer-hvac">
-        <div class="circle"></div>
-        <div class="horizontal"></div>
-        <div class="vertical"></div>
-      </div>
-
-      ${this.__displayHvacOptions()} ${this.__displayPresetOptions()}
+        ]}
+        title="preset"
+        text=${this.climateEntity.attributes.preset_mode}
+        items=${JSON.stringify(this.__getPresetOptions())}
+        @button-select="${this.__select}"
+        style="--primary-icon-color:${preset_color};--label-text-color: ${preset_color};"
+      ></sci-fi-button-select-card>
+      <div style="flex:1"></div>
+      <sci-fi-button-select-card
+        position="left"
+        icon=${this.styles.state.icons[this.climateEntity.state]}
+        title="mode"
+        text=${this.climateEntity.state}
+        items=${JSON.stringify(this.__getHvacOptions())}
+        @button-select="${this.__select}"
+        style="--primary-icon-color:${hvac_color};--label-text-color: ${hvac_color};"
+      ></sci-fi-button-select-card>
     `;
   }
 
-  __displayHvacOptions() {
-    return html`
-      <div class="hvac-options hide">
-        ${this.climateEntity.attributes.hvac_modes
-          .filter((m) => !this.excludeHvac.includes(m))
-          .map(
-            (hvac_mode) => html`
-              <div
-                style="--option-color:${this.styles.state.colors[hvac_mode]}"
-                @click="${(e) => this.__selectHvacMode(e, hvac_mode)}"
-              >
-                ${getIcon(this.styles.state.icons[hvac_mode])} ${hvac_mode}
-              </div>
-            `
-          )}
-      </div>
-    `;
+  __getPresetOptions() {
+    return this.climateEntity.attributes.preset_modes
+      .filter((m) => {
+        if (this.climateEntity.state == STATE_CLIMATE_AUTO) {
+          if (
+            this.climateEntity.attributes.preset_mode !=
+            HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION
+          )
+            return m == HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION;
+          return [
+            HASS_CLIMATE_PRESET_MODE_ECO,
+            HASS_CLIMATE_PRESET_MODE_COMFORT,
+          ].includes(m);
+        }
+        return (
+          !this.excludedModes.includes(m) &&
+          m != this.climateEntity.attributes.preset_mode
+        );
+      })
+      .map((mode) => {
+        return {
+          value: mode,
+          action: 'preset',
+          color: this.styles.mode.colors[mode],
+          icon: this.styles.mode.icons[mode]
+            ? this.styles.mode.icons[mode]
+            : 'mdi:information-off-outline',
+          text: mode.replace('_', ' '),
+        };
+      });
   }
 
-  __displayPresetOptions() {
-    return html`
-      <div class="preset-mode-options hide">
-        ${this.climateEntity.attributes.preset_modes
-          .filter((m) => {
-            if (this.climateEntity.state == STATE_CLIMATE_AUTO) {
-              if (
-                this.climateEntity.attributes.preset_mode !=
-                HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION
-              )
-                return m == HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION;
-              return [
-                HASS_CLIMATE_PRESET_MODE_ECO,
-                HASS_CLIMATE_PRESET_MODE_COMFORT,
-              ].includes(m);
-            }
-            return (
-              !this.excludedModes.includes(m) &&
-              m != this.climateEntity.attributes.preset_mode
-            );
-          })
-          .map(
-            (preset_mode) => html`
-              <div
-                style="--option-color:${this.styles.mode.colors[preset_mode]}"
-                @click="${(e) => this.__selectPresetMode(e, preset_mode)}"
-              >
-                ${getIcon(this.styles.mode.icons[preset_mode])}
-                ${preset_mode.replace('_', ' ')}
-              </div>
-            `
-          )}
-      </div>
-    `;
+  __getHvacOptions() {
+    return this.climateEntity.attributes.hvac_modes
+      .filter((m) => !this.excludeHvac.includes(m))
+      .map((hvac_mode) => {
+        return {
+          value: hvac_mode,
+          action: 'mode',
+          color: this.styles.state.colors[hvac_mode],
+          icon: this.styles.state.icons[hvac_mode]
+            ? this.styles.state.icons[hvac_mode]
+            : 'mdi:information-off-outline',
+          text: hvac_mode.replace('_', ' '),
+        };
+      });
   }
 
-  __showHideDropdown(kind) {
-    this.shadowRoot.querySelector('.spacer-' + kind).classList.toggle('hide');
-    this.shadowRoot
-      .querySelector('.' + kind + '-options')
-      .classList.toggle('hide');
+  __getTemperatureItems() {
+    // Build item
+    return Array.from(
+      Array(
+        this.climateEntity.attributes.max_temp -
+          this.climateEntity.attributes.min_temp +
+          1
+      ).keys()
+    ).map((e, idx) => {
+      return {
+        id: idx,
+        action: 'temperature',
+        text: [idx + this.climateEntity.attributes.min_temp, this.unit].join(
+          ''
+        ),
+        value: idx + this.climateEntity.attributes.min_temp,
+      };
+    });
   }
 
-  __selectHvacMode(e, hvac_mode) {
+  __select(e) {
     e.preventDefault();
     e.stopPropagation();
-    if (hvac_mode != this.climateEntity.state) {
-      this.dispatchEvent(
-        new CustomEvent('change-hvac-mode', {
-          bubbles: true,
-          composed: true,
-          detail: {
-            id: this.climateEntity.entity_id,
-            mode: hvac_mode,
-          },
-        })
-      );
-    }
-    this.__showHideDropdown('hvac');
-  }
+    let event;
 
-  __selectPresetMode(e, preset_mode) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (preset_mode != this.climateEntity.attributes.preset_mode) {
-      this.dispatchEvent(
-        new CustomEvent('change-preset-mode', {
-          bubbles: true,
-          composed: true,
-          detail: {
-            id: this.climateEntity.entity_id,
-            mode: preset_mode,
-          },
-        })
-      );
+    if (
+      e.detail.action == 'mode' &&
+      e.detail.value != this.climateEntity.state
+    ) {
+      event = new CustomEvent('change-hvac-mode', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          id: this.climateEntity.entity_id,
+          mode: e.detail.value,
+        },
+      });
     }
-    this.__showHideDropdown('preset-mode');
+
+    if (
+      e.detail.action == 'preset' &&
+      e.detail.value != this.climateEntity.attributes.preset_mode
+    ) {
+      event = new CustomEvent('change-preset-mode', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          id: this.climateEntity.entity_id,
+          mode: e.detail.value,
+        },
+      });
+    }
+
+    if (e.detail.action == 'temperature') {
+      event = new CustomEvent('change-temperature', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          id: this.climateEntity.entity_id,
+          temperature: e.detail.value,
+        },
+      });
+    }
+
+    if (event) this.dispatchEvent(event);
   }
 }
 

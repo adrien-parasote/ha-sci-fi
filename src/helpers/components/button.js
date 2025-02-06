@@ -8,6 +8,17 @@ export class SciFiButton extends LitElement {
     return [
       common_style,
       css`
+        :host {
+          --btn-icon-color: var(
+            --primary-icon-color,
+            var(--primary-light-color)
+          );
+
+          --btn-icon-disable-color: var(
+            --disable-icon-color,
+            var(--primary-dark-color)
+          );
+        }
         .btn {
           background-color: transparent;
           border: none;
@@ -27,7 +38,7 @@ export class SciFiButton extends LitElement {
           padding: 5px;
         }
         .btn .svg-container {
-          fill: var(--secondary-light-color);
+          fill: var(--btn-icon-color);
           width: var(--icon-size-normal);
           height: var(--icon-size-normal);
         }
@@ -37,7 +48,10 @@ export class SciFiButton extends LitElement {
         }
         .btn:hover .svg-container {
           cursor: pointer;
-          fill: var(--primary-light-color);
+        }
+        .btn.disable .svg-container {
+          fill: var(--btn-icon-disable-color);
+          cursor: unset;
         }
         .btn-border:hover {
           background-color: var(--secondary-light-alpha-color);
@@ -50,6 +64,7 @@ export class SciFiButton extends LitElement {
     return {
       hasBorder: {type: Boolean, attribute: 'has-border'},
       icon: {type: String},
+      disable: {type: Boolean},
     };
   }
 
@@ -57,12 +72,15 @@ export class SciFiButton extends LitElement {
     super();
     this.hasBorder = this.hasBorder ? this.hasBorder : false;
     this.icon = this.icon ? this.icon : '';
+    this.disable = this.disable ? this.disable : false;
   }
 
   render() {
     return html`
       <div
-        class="btn ${this.hasBorder ? 'btn-border' : ''}"
+        class="btn ${this.hasBorder ? 'btn-border' : ''} ${this.disable
+          ? 'disable'
+          : ''}"
         @click="${this.click}"
       >
         ${getIcon(this.icon)}
@@ -71,6 +89,7 @@ export class SciFiButton extends LitElement {
   }
 
   click(e) {
+    if (this.disable) return;
     e.preventDefault();
     e.stopPropagation();
     this.dispatchEvent(
@@ -93,6 +112,11 @@ export class SciFiCardButton extends SciFiButton {
         :host {
           --title-text-color: var(--title-color, var(--secondary-light-color));
           --label-text-color: var(--label-color, var(--secondary-light-color));
+          --btn-icon-color: var(
+            --primary-icon-color,
+            var(--primary-light-color)
+          );
+          --btn-space: var(--btn-padding, 10px);
         }
         .btn {
           display: flex;
@@ -101,7 +125,7 @@ export class SciFiCardButton extends SciFiButton {
           border: var(--border-width) solid var(--primary-bg-color);
           border-radius: var(--border-radius);
           font-size: var(--font-size-small);
-          padding: 10px;
+          padding: var(--btn-space);
           align-items: center;
           text-transform: capitalize;
           min-width: 90px;
@@ -115,6 +139,7 @@ export class SciFiCardButton extends SciFiButton {
         }
         .btn .label {
           display: flex;
+          flex: 1;
           flex-direction: column;
           row-gap: 5px;
           color: var(--label-text-color);
@@ -125,7 +150,7 @@ export class SciFiCardButton extends SciFiButton {
           color: var(--title-text-color);
         }
         .btn svg {
-          fill: var(--secondary-light-color);
+          fill: var(--btn-icon-color);
           width: var(--icon-size-small);
           height: var(--icon-size-small);
         }
@@ -177,10 +202,11 @@ export class SciFiCardSelectButton extends SciFiCardButton {
         }
         .items {
           position: absolute;
-          bottom: 55px;
+          transform: translateY(-100%);
           display: flex;
           background-color: black;
           flex-direction: column;
+          min-height: fit-content;
           border: var(--border-width) solid var(--primary-bg-color);
           border-bottom: none;
           border-top-left-radius: var(--border-radius);
@@ -188,6 +214,16 @@ export class SciFiCardSelectButton extends SciFiCardButton {
           color: var(--secondary-light-color);
           font-size: var(--font-size-small);
           cursor: pointer;
+        }
+        .items.left {
+          bottom: 0;
+          -webkit-transform: translateX(-100%);
+          transform: translateX(-100%);
+          border-radius: var(--border-radius);
+          border-bottom: var(--border-width) solid var(--primary-bg-color);
+        }
+        .items.left.down {
+          top: 0;
         }
         .items .item {
           display: flex;
@@ -217,12 +253,14 @@ export class SciFiCardSelectButton extends SciFiCardButton {
   static get properties() {
     let p = super.properties;
     p['items'] = {type: Array};
+    p['position'] = {type: String};
     return p;
   }
 
   constructor() {
     super();
     this.items = this.items ? this.items : [];
+    this.position = this.position ? this.position : 'top';
   }
 
   render() {
@@ -231,13 +269,16 @@ export class SciFiCardSelectButton extends SciFiCardButton {
 
   __displayItems() {
     return html`
-      <div class="items hide">
+      <div class="items hide ${this.position}">
         ${this.items.map((item, idx) => {
           return html`<div
             class="item"
+            style="color:${item.color
+              ? item.color
+              : 'var(--secondary-light-color)'}"
             @click="${(e) => this.__select(e, idx)}"
           >
-            ${getIcon(item.icon)}
+            ${getIcon(item.icon, item.color)}
             <div>${item.text}</div>
           </div>`;
         })}

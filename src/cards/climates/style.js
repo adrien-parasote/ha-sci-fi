@@ -174,7 +174,7 @@ export default css`
     padding: 10px;
     background-color: var(--primary-bg-alpha-color);
     font-weight: bold;
-    width: 100%;
+    width: 95%;
     align-items: center;
   }
   .area-content .climates .title {

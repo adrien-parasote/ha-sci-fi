@@ -48,10 +48,12 @@ export default css`
     flex-direction: row;
   }
   .content .info .e.top-path {
-    border-top: calc(2 * var(--border-width)) solid var(--secondary-light-light-alpha-color);
+    border-top: calc(2 * var(--border-width)) solid
+      var(--secondary-light-light-alpha-color);
   }
   .content .info .e.bottom-path {
-    border-bottom: calc(2 * var(--border-width)) solid var(--secondary-light-light-alpha-color);
+    border-bottom: calc(2 * var(--border-width)) solid
+      var(--secondary-light-light-alpha-color);
   }
   .content .info .e.bottom-path .quantities {
     align-items: flex-end;
@@ -161,7 +163,8 @@ export default css`
     width: 33px;
   }
   .content .info .m .temperatures {
-    border-left: calc(2 * var(--border-width)) solid var(--secondary-light-light-alpha-color);
+    border-left: calc(2 * var(--border-width)) solid
+      var(--secondary-light-light-alpha-color);
     padding: 10px;
     margin-left: 30px;
     display: flex;

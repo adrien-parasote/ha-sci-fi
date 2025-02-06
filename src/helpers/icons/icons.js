@@ -24,7 +24,7 @@ Object.keys(mdi).forEach((k) => {
 // Add custom icon
 export const ICONSET = Object.assign({}, SVG_ICONSET, CUSTOM_ICON_SET);
 
-export function getIcon(name) {
+export function getIcon(name, color = null) {
   let icon = name;
   if (!ICONSET[icon]) {
     console.info('Icon : ' + name + ' cannot be found');
@@ -32,7 +32,11 @@ export function getIcon(name) {
   }
   return html`
     <div class="svg-container">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        style="${color ? 'fill:' + color + ';' : ''}"
+      >
         <path d="${ICONSET[icon].path}" />
       </svg>
     </div>

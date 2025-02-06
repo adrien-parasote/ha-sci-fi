@@ -19,6 +19,7 @@ import {
 } from './const.js';
 import {SciFiStoveEditor} from './editor.js';
 import style from './style.js';
+import { STATE_CLIMATE_OFF } from '../../helpers/entities/climate_const.js';
 
 export class SciFiStove extends LitElement {
   static get styles() {
@@ -135,6 +136,7 @@ export class SciFiStove extends LitElement {
           selected-id="${selected_item_id}"
           text="Temperature"
           @wheel-change="${this.__select}"
+          ?disable=${[STATE_CLIMATE_OFF].includes(this._stove.state)}
         ></sci-fi-wheel>
         ${this.__displayPresetButton()}
       </div>

@@ -1,6 +1,6 @@
 import {html, nothing} from 'lit';
 
-import {SciFiBaseEditor} from '../../helpers/components/base_editor.js';
+import {SciFiBaseEditor} from '../../helpers/base_editor.js';
 import {House} from '../../helpers/entities/house.js';
 import {ENTITY_KIND_LIGHT} from '../../helpers/entities/light_const.js';
 import '../../helpers/form/form.js';

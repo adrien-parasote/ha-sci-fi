@@ -1,6 +1,6 @@
 import {html, nothing} from 'lit';
 
-import {SciFiBaseEditor} from '../../helpers/components/base_editor.js';
+import {SciFiBaseEditor} from '../../helpers/base_editor.js';
 import {
   HASS_CLIMATE_PRESET_MODE_BOOST,
   HASS_CLIMATE_PRESET_MODE_COMFORT,

@@ -1,7 +1,7 @@
 import {html, nothing} from 'lit';
 
 import common_style from '../../helpers/common_style.js';
-import {SciFiBaseEditor} from '../../helpers/components/base_editor.js';
+import {SciFiBaseEditor} from '../../helpers/base_editor.js';
 import editor_common_style from '../../helpers/editor_common_style.js';
 import '../../helpers/form/form.js';
 import {getIcon} from '../../helpers/icons/icons.js';

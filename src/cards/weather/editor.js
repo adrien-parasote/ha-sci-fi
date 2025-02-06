@@ -1,6 +1,6 @@
 import {html, nothing} from 'lit';
 
-import {SciFiBaseEditor} from '../../helpers/components/base_editor.js';
+import {SciFiBaseEditor} from '../../helpers/base_editor.js';
 import '../../helpers/form/form.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 

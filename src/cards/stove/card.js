@@ -9,7 +9,7 @@ import '../../helpers/components/toast.js';
 import '../../helpers/components/wheel.js';
 import {StoveEntity} from '../../helpers/entities/climate.js';
 import {STOVE_SENSORS} from '../../helpers/entities/sensor_const.js';
-import '../../helpers/form/form.js';
+import '../../helpers/components/button.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 import {
   HVAC_MODES_ICONS,

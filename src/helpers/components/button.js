@@ -374,3 +374,14 @@ export class SciFiToggleSwitch extends LitElement {
     );
   }
 }
+
+// Define elements
+const elements = {
+  'sci-fi-button': SciFiButton,
+  'sci-fi-button-card': SciFiCardButton,
+  'sci-fi-button-select-card': SciFiCardSelectButton,
+  'sci-fi-toggle': SciFiToggleSwitch,
+};
+Object.entries(elements).forEach(([key, value]) => {
+  window.customElements.get(key) || window.customElements.define(key, value);
+});

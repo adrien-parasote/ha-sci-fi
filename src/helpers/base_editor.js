@@ -2,6 +2,9 @@ import {LitElement} from 'lit';
 
 import common_style from './common_style.js';
 import editor_common_style from './editor_common_style.js';
+import './components/accordion.js';
+import './components/button.js';
+import './components/input.js';
 
 export class SciFiBaseEditor extends LitElement {
   static get styles() {

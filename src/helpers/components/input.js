@@ -769,3 +769,18 @@ export class SciFiColorPicker extends SciFiInput {
     this.__dispatchEvent(e, e.target.value);
   }
 }
+
+// Define elements
+const elements = {
+  'sci-fi-input': SciFiInput,
+  'sci-fi-chips-input': SciFiChipsInput,
+  'sci-fi-dropdown-input': SciFiDropdownInput,
+  'sci-fi-dropdown-entity-input': SciFiDropdownEntityInput,
+  'sci-fi-dropdown-multi-entities-input': SciFiDropdownMultiEntitiesInput,
+  'sci-fi-dropdown-icon-input': SciFiDropdownIconInput,
+  'sci-fi-slider': SciFiSlider,
+  'sci-fi-color-picker': SciFiColorPicker,
+};
+Object.entries(elements).forEach(([key, value]) => {
+  window.customElements.get(key) || window.customElements.define(key, value);
+});

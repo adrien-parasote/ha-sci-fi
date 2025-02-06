@@ -184,3 +184,11 @@ export class SciFiAccordionCard extends LitElement {
     );
   }
 }
+
+// Define elements
+const elements = {
+  'sci-fi-accordion-card': SciFiAccordionCard,
+};
+Object.entries(elements).forEach(([key, value]) => {
+  window.customElements.get(key) || window.customElements.define(key, value);
+});

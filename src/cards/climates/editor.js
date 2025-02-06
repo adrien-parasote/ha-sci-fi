@@ -12,7 +12,6 @@ import {
   STATE_CLIMATE_HEAT,
   STATE_CLIMATE_OFF,
 } from '../../helpers/entities/climate_const.js';
-import '../../helpers/form/form.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 import editor_style from './style_editor.js';
 

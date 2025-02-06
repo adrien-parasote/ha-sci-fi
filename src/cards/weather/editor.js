@@ -1,7 +1,6 @@
 import {html, nothing} from 'lit';
 
 import {SciFiBaseEditor} from '../../helpers/base_editor.js';
-import '../../helpers/form/form.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 
 export class SciFiWeatherEditor extends SciFiBaseEditor {

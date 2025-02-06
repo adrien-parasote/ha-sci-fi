@@ -16,6 +16,7 @@ class SciFiWheel extends LitElement {
             --text-font-color,
             var(--secondary-light-color)
           );
+          --container-padding: var(--padding, 10px);
         }
         .container {
           display: flex;
@@ -23,7 +24,7 @@ class SciFiWheel extends LitElement {
           row-gap: 10px;
           border: var(--border-width) solid var(--primary-bg-color);
           border-radius: var(--border-radius);
-          padding: 10px;
+          padding: var(--container-padding);
         }
         .text {
           font-size: var(--font-size-normal);
@@ -34,9 +35,13 @@ class SciFiWheel extends LitElement {
           flex-direction: column;
           row-gap: 5px;
         }
+        .core.inline {
+          flex-direction: row;
+        }
         .slider {
           display: flex;
           flex-direction: column;
+          justify-content: center;
         }
         .slider .slider-item {
           display: flex;
@@ -45,6 +50,9 @@ class SciFiWheel extends LitElement {
           color: var(--item--color);
           font-weight: bold;
           align-items: center;
+        }
+        .slider .slider-item.disable{
+          color:var(--secondary-bg-color);
         }
         .slider .slider-item.hide {
           display: none;
@@ -69,6 +77,8 @@ class SciFiWheel extends LitElement {
       items: {type: Array},
       selectedId: {type: String, attribute: 'selected-id'},
       text: {type: String},
+      inLine: {type: Boolean, attribute: 'in-line'},
+      disable: {type: Boolean},
     };
   }
 
@@ -77,16 +87,19 @@ class SciFiWheel extends LitElement {
     this.items = this.items ? this.items : [];
     this.selectedId = this.selectedId ? this.selectedId : null;
     this.text = this.text ? this.text : null;
+    this.inLine = this.inLine ? this.inLine : false;
+    this.disable = this.disable ? this.disable : false;
   }
 
   render() {
     return html`
       <div class="container">
-        <div class="core">
+        <div class="core ${this.inLine ? "inline": ""}">
           <sci-fi-button
             class="up"
             icon="mdi:menu-up-outline"
             @button-click=${(e) => this.__click(e, 'up')}
+            ?disable=${this.disable}
           ></sci-fi-button>
           <div class="slider" @click="${(e) => this.__click(e, null)}">
             ${this.__buildSliderContent()}
@@ -95,6 +108,7 @@ class SciFiWheel extends LitElement {
             class="down"
             icon="mdi:menu-down-outline"
             @button-click=${(e) => this.__click(e, 'down')}
+            ?disable=${this.disable}
           ></sci-fi-button>
         </div>
         ${this.__displayText()}
@@ -113,7 +127,7 @@ class SciFiWheel extends LitElement {
         <div
           class="slider-item ${el.id == this.selectedId
             ? 'show'
-            : 'hide'} ${this.state}"
+            : 'hide'} ${this.disable ? "disable" : ""}"
         >
           ${el.icon ? getIcon(el.icon) : ''}
           <div>${el.text}</div>

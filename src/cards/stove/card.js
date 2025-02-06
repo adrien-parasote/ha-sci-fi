@@ -211,6 +211,7 @@ export class SciFiStove extends LitElement {
             <div class="h-path"></div>
           </div>
           <div class="temperatures">
+            ${this.__displayTimeToService()}
             ${this.__displayStatus('Status', this._stove.status)}
             ${this.__displayTemperature(
               'External',
@@ -251,6 +252,22 @@ export class SciFiStove extends LitElement {
         </div>
       </div>
     </div>`;
+  }
+
+  __displayTimeToService(){
+    if(!this._stove.time_to_service) return nothing;
+
+    const hours =this._stove.time_to_service.state;
+    let state=null;
+    if(hours <= 240) state = "high";
+    if(hours <= 480) state = "medium";
+    return html`
+      <div class="temperature ${state}">
+        ${getIcon('mdi:timeline-clock-outline')}
+        <div class="label">Time to Service:</div>
+        <div>${hours}${this._stove.time_to_service.unit_of_measurement}</div>
+      </div>
+    `;
   }
 
   __noQuantity(text) {

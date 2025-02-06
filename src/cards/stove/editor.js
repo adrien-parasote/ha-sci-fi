@@ -150,10 +150,19 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
 
       <sci-fi-input
         icon="mdi:state-machine"
-        label="Stove status(optionnal)"
+        label="Stove status (optionnal)"
         value=${this._config.sensors.sensor_status}
         element-id="sensors"
         kind="sensor_status"
+        @input-update=${this.__update}
+      ></sci-fi-input>
+
+      <sci-fi-input
+        icon="mdi:timeline-clock-outline"
+        label="Stove time to service (optionnal)"
+        value=${this._config.sensors.sensor_time_to_service}
+        element-id="sensors"
+        kind="sensor_time_to_service"
         @input-update=${this.__update}
       ></sci-fi-input>
 

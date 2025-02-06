@@ -11,6 +11,7 @@ export default {
     sensor_status: 'binary_sensor.clou_stove_status',
     sensor_fan_speed: 'sensor.clou_fan_speed',
     sensor_pressure: 'sensor.clou_pressure',
+    sensor_time_to_service: 'sensor.clou_time_to_service',
   },
   storage_counter: 'counter.pellet_stock',
   pellet_quantity_threshold: 0.4,

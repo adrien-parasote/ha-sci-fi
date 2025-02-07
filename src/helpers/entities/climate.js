@@ -22,6 +22,7 @@ import {
   STOVE_SENSOR_POWER,
   STOVE_SENSOR_PRESSURE,
   STOVE_SENSOR_STATUS,
+  STOVE_SENSOR_TIME_TO_SERVICE,
 } from './sensor_const.js';
 
 export class ClimateEntity {
@@ -194,6 +195,12 @@ export class StoveEntity extends ClimateEntity {
     return this.sensors[STOVE_SENSOR_PRESSURE]
       ? this.sensors[STOVE_SENSOR_PRESSURE]
       : {};
+  }
+
+  get time_to_service() {
+    return this.sensors[STOVE_SENSOR_TIME_TO_SERVICE]
+      ? this.sensors[STOVE_SENSOR_TIME_TO_SERVICE]
+      : null;
   }
 
   addSensors(sensors, hass) {

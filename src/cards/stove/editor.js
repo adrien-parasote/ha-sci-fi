@@ -1,9 +1,8 @@
 import {html, nothing} from 'lit';
 
+import {SciFiBaseEditor} from '../../helpers/base_editor.js';
 import common_style from '../../helpers/common_style.js';
-import {SciFiBaseEditor} from '../../helpers/components/base_editor.js';
 import editor_common_style from '../../helpers/editor_common_style.js';
-import '../../helpers/form/form.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 
 export class SciFiStoveEditor extends SciFiBaseEditor {
@@ -151,10 +150,19 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
 
       <sci-fi-input
         icon="mdi:state-machine"
-        label="Stove status(optionnal)"
+        label="Stove status (optionnal)"
         value=${this._config.sensors.sensor_status}
         element-id="sensors"
         kind="sensor_status"
+        @input-update=${this.__update}
+      ></sci-fi-input>
+
+      <sci-fi-input
+        icon="mdi:timeline-clock-outline"
+        label="Stove time to service (optionnal)"
+        value=${this._config.sensors.sensor_time_to_service}
+        element-id="sensors"
+        kind="sensor_time_to_service"
         @input-update=${this.__update}
       ></sci-fi-input>
 

@@ -529,7 +529,7 @@ Allow to deal with climates entities, grouping them per floors/areas.
 > Floors & Areas icons are the one you define in `Areas, labels & zones` in your HA configuration
 
 > [!NOTE]
-> If Home Assistant `Sun` entity is available, day phase will be displayed on top of the card (dawn, dusk, day, rising, seting)
+> If Home Assistant `Season` type `Meteorological` sensor is available, season icon (winter, spring, summer & autumn) will be displayed on top right of the card.
 
 ### Screenshots
 
@@ -538,7 +538,6 @@ Allow to deal with climates entities, grouping them per floors/areas.
 
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_1.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_2.jpeg" width="300">
-<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_3.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_edit_1.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_edit_2.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_edit_3.jpeg" width="300">
@@ -565,6 +564,7 @@ type: custom:sci-fi-climates
 ```yaml
 type: custom:sci-fi-climates
 header:
+  display: true
   icon_winter_state: mdi:thermometer-chevron-up
   message_winter_state: Winter is coming
   icon_summer_state: mdi:thermometer-chevron-down
@@ -634,6 +634,7 @@ mode_colors:
 
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
+| display | Boolean | **Optional** | Display or not global turn on/off climate mode | false |
 | icon_winter_state | String | **Optional** | Icon to display when you're in a summer period and all our climates are in `frost_protection` mode | `mdi:thermometer-chevron-up` |
 | message_winter_state | String | **Optional** | Message to display when you're in a summer period and all our climates are in `frost_protection` mode | Winter is coming |
 | icon_summer_state | String | **Optional** | Icon to display when you're in a winter period and all our climates aren't in `frost_protection` mode | `mdi:thermometer-chevron-down` |
@@ -643,6 +644,7 @@ mode_colors:
 **Example**
 ```yaml
 header:
+  display: false
   icon_winter_state: mdi:thermometer-chevron-up
   message_winter_state: Winter is coming
   icon_summer_state: mdi:thermometer-chevron-down
@@ -724,10 +726,10 @@ Stove package card, display your `climate.<stove>` in order you can see informat
 From top to bottom, display:
 - Global information:
   - Stove friendly name
-  - Graphical stove state
+  - Graphical stove state (cool, heat & off)
   - Storage and fuel quantity
-  - State and associated temperarures
-  - Energy consumed & rendered
+  - Global sensor information such as state, pressure, time to service & associated temperarures
+  - Energy consumed / rendered & fan speed
 - Stove actions: mode, temperature and preset
 
 ### Screenshots
@@ -738,6 +740,7 @@ From top to bottom, display:
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_1.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_2.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_3.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_4.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_edit_1.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_edit_2.jpeg" width="300">
 
@@ -888,16 +891,20 @@ To complete HA icon set, sci-fi package onboard the following icons :
 
 | Name | HA string | Preview  |
 | - | - | - |
+| Season winter | sci:winter | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/winter.svg" alt="Season winter"  height="25"/> |
+| Season spring | sci:spring | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/spring.svg" alt="Season spring"  height="25"/> |
+| Season autumn | sci:autumn | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/autumn.svg" alt="Season autumn"  height="25"/> |
+| Stove summer | sci:summer | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/summer.svg" alt="Stove summer"  height="25"/> |
+| Stove | sci:stove | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove.svg" alt="Stove"  height="25"/> |
+| Stove cool | sci:stove-cool | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_cool.svg" alt="Stove cool"  height="25"/> |
+| Stove eco | sci:stove-eco | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_eco.svg" alt="Stove eco"  height="25"/> |
+| Stove heat | sci:stove-heat | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_heat.svg" alt="Stove heat"  height="25"/> |
+| Stove off | sci:stove-off | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_off.svg" alt="Stove off"  height="25"/> |
+| Stove unknow | sci:stove-unknow | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_unknow.svg" alt="Stove unknow"  height="25"/> |
 | Radiator auto | sci:radiator-auto | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_auto.svg" alt="Radiator auto"  height="25"/> |
 | Radiator frost protection | sci:radiator-frost-protection | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_frost_protection.svg" alt="Radiator frost protection"  height="25"/> |
 | Radiator heat | sci:radiator-heat | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_heat.svg" alt="Radiator heat"  height="25"/> |
 | Radiator off | sci:radiator-off | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_off.svg" alt="Radiator off"  height="25"/> |
 | Sleeping vaccum | sci:vacuum-sleep | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/sleeping_vacuum.svg" alt="Sleeping vaccum"  height="25"/> |
-| Stove | sci:stove | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove.svg" alt="Stove"  height="25"/> |
-| Stove off | sci:stove-off | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_off.svg" alt="Stove off"  height="25"/> |
-| Stove heat | sci:stove-heat | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_heat.svg" alt="Stove heat"  height="25"/> |
-| Stove cool | sci:stove-cool | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_cool.svg" alt="Stove cool"  height="25"/> |
-| Stove eco | sci:stove-eco | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_eco.svg" alt="Stove eco"  height="25"/> |
-| Stove unknow | sci:stove-unknow | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_unknow.svg" alt="Stove unknow"  height="25"/> |
 
 

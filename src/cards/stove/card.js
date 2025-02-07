@@ -2,14 +2,15 @@ import {LitElement, html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
 import common_style from '../../helpers/common_style.js';
+import '../../helpers/components/button.js';
 import '../../helpers/components/circle_progress_bar.js';
 import '../../helpers/components/stack_bar.js';
 import '../../helpers/components/stove.js';
 import '../../helpers/components/toast.js';
 import '../../helpers/components/wheel.js';
 import {StoveEntity} from '../../helpers/entities/climate.js';
+import {STATE_CLIMATE_OFF} from '../../helpers/entities/climate_const.js';
 import {STOVE_SENSORS} from '../../helpers/entities/sensor_const.js';
-import '../../helpers/form/form.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 import {
   HVAC_MODES_ICONS,
@@ -135,6 +136,7 @@ export class SciFiStove extends LitElement {
           selected-id="${selected_item_id}"
           text="Temperature"
           @wheel-change="${this.__select}"
+          ?disable=${[STATE_CLIMATE_OFF].includes(this._stove.state)}
         ></sci-fi-wheel>
         ${this.__displayPresetButton()}
       </div>
@@ -209,6 +211,7 @@ export class SciFiStove extends LitElement {
             <div class="h-path"></div>
           </div>
           <div class="temperatures">
+            ${this.__displayTimeToService()}
             ${this.__displayStatus('Status', this._stove.status)}
             ${this.__displayTemperature(
               'External',
@@ -251,6 +254,22 @@ export class SciFiStove extends LitElement {
     </div>`;
   }
 
+  __displayTimeToService() {
+    if (!this._stove.time_to_service) return nothing;
+
+    const hours = this._stove.time_to_service.state;
+    let state = null;
+    if (hours <= 240) state = 'high';
+    if (hours <= 480) state = 'medium';
+    return html`
+      <div class="temperature ${state}">
+        ${getIcon('mdi:timeline-clock-outline')}
+        <div class="label">Time to Service:</div>
+        <div>${hours}${this._stove.time_to_service.unit_of_measurement}</div>
+      </div>
+    `;
+  }
+
   __noQuantity(text) {
     return html`
       <div class="nothing">
@@ -290,9 +309,15 @@ export class SciFiStove extends LitElement {
   __displayStatus(text, status) {
     if (!status) return this.__displayStatus(text, 'N/A');
     return html`
-      <div class="status ${STATUS_ICONS_COLORS[status] ? STATUS_ICONS_COLORS[status].color : 'off'}">
+      <div
+        class="status ${STATUS_ICONS_COLORS[status]
+          ? STATUS_ICONS_COLORS[status].color
+          : 'off'}"
+      >
         ${getIcon(
-          STATUS_ICONS_COLORS[status] ? STATUS_ICONS_COLORS[status].icon : 'sci:stove-unknow'
+          STATUS_ICONS_COLORS[status]
+            ? STATUS_ICONS_COLORS[status].icon
+            : 'sci:stove-unknow'
         )}
         <div class="label">${text}:</div>
         <div>${status.replace('_', ' ')}</div>

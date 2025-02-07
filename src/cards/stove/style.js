@@ -35,10 +35,12 @@ export default css`
     padding: 5px;
     display: flex;
   }
-  .content .info .circle,
-  .content .info .h-path {
+  .content .info .circle {
     border-color: var(--primary-dark-color);
-    background-color: var(--circle-color);
+    background-color: var(--primary-light-color);
+  }
+  .content .info .h-path {
+    border-color: var(--secondary-light-light-alpha-color);
   }
   .content .info .e.top-path .powers,
   .content .info .e.bottom-path .quantities {
@@ -46,10 +48,12 @@ export default css`
     flex-direction: row;
   }
   .content .info .e.top-path {
-    border-top: calc(2 * var(--border-width)) solid var(--primary-dark-color);
+    border-top: calc(2 * var(--border-width)) solid
+      var(--secondary-light-light-alpha-color);
   }
   .content .info .e.bottom-path {
-    border-bottom: calc(2 * var(--border-width)) solid var(--primary-dark-color);
+    border-bottom: calc(2 * var(--border-width)) solid
+      var(--secondary-light-light-alpha-color);
   }
   .content .info .e.bottom-path .quantities {
     align-items: flex-end;
@@ -121,11 +125,11 @@ export default css`
     height: 54px;
   }
   .content .info .e.top-path .display .d-path {
-    background-color: var(--primary-dark-color);
+    background-color: var(--secondary-light-light-alpha-color);
     clip-path: polygon(0 95%, 100% 0, 100% 5%, 0 100%);
   }
   .content .info .e.bottom-path .display .d-path {
-    background-color: var(--primary-dark-color);
+    background-color: var(--secondary-light-light-alpha-color);
     clip-path: polygon(0 0, 100% 95%, 100% 100%, 0% 5%);
   }
   .content .info .e.bottom-path .quantities .nothing {
@@ -156,10 +160,11 @@ export default css`
     align-items: center;
   }
   .content .info .m .display .h-path {
-    width: 35px;
+    width: 33px;
   }
   .content .info .m .temperatures {
-    border-left: calc(2 * var(--border-width)) solid var(--primary-dark-color);
+    border-left: calc(2 * var(--border-width)) solid
+      var(--secondary-light-light-alpha-color);
     padding: 10px;
     margin-left: 30px;
     display: flex;

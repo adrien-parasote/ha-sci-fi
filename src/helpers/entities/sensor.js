@@ -1,3 +1,6 @@
+import {getIcon} from '../icons/icons';
+import {SEASON_ICONS} from './sensor_const';
+
 export class Sensor {
   constructor(id, hass) {
     this.id = id;
@@ -16,5 +19,15 @@ export class Sensor {
   get value() {
     if (this.unit_of_measurement) return parseFloat(this.state);
     return this.state;
+  }
+}
+
+export class Season extends Sensor {
+  get state_icon() {
+    return getIcon(SEASON_ICONS[this.state].icon);
+  }
+
+  get color() {
+    return SEASON_ICONS[this.state].color;
   }
 }

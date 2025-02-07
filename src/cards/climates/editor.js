@@ -63,13 +63,13 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
         <span>${getIcon('mdi:page-layout-header')}</span>Header (optionnal)
       </h1>
       <sci-fi-toggle
-          label="Display global turn on/off button ?"
-          element-id="header_display"
-          ?checked=${this._config.header.display}
-          @toggle-change=${this.__update}
-        ></sci-fi-toggle>
+        label="Display global turn on/off button ?"
+        element-id="header_display"
+        ?checked=${this._config.header.display}
+        @toggle-change=${this.__update}
+      ></sci-fi-toggle>
       <sci-fi-input
-        class="${!this._config.header.display ? 'hide' : "show"}"
+        class="${!this._config.header.display ? 'hide' : 'show'}"
         icon="mdi:cursor-text"
         label="Winter period message (optionnal)"
         value=${this._config.header.message_winter_state}
@@ -78,7 +78,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
         @input-update=${this.__update}
       ></sci-fi-input>
       <sci-fi-dropdown-icon-input
-        class="${!this._config.header.display ? 'hide' : ""}"
+        class="${!this._config.header.display ? 'hide' : ''}"
         label="Winter period icon (optionnal)"
         element-id="header"
         kind="icon_winter_state"
@@ -88,7 +88,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
       ></sci-fi-dropdown-icon-input>
 
       <sci-fi-input
-        class="${!this._config.header.display ? 'hide' : ""}"
+        class="${!this._config.header.display ? 'hide' : ''}"
         icon="mdi:cursor-text"
         label="Summer period message (optionnal)"
         value=${this._config.header.message_summer_state}
@@ -97,7 +97,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
         @input-update=${this.__update}
       ></sci-fi-input>
       <sci-fi-dropdown-icon-input
-        class="${!this._config.header.display ? 'hide' : ""}"
+        class="${!this._config.header.display ? 'hide' : ''}"
         label="Summer period icon (optionnal)"
         element-id="header"
         kind="icon_summer_state"
@@ -248,9 +248,9 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
 
   __update(e) {
     let newConfig = this.__getNewConfig();
-    if(e.detail.id == "header_display") {
+    if (e.detail.id == 'header_display') {
       newConfig.header.display = e.detail.value;
-    }else{
+    } else {
       switch (e.detail.type) {
         case 'remove':
           newConfig[e.detail.kind].splice(e.detail.value, 1);

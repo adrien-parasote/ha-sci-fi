@@ -34,10 +34,12 @@ export default css`
     flex: 1;
     align-content: center;
   }
-  sci-fi-input.show, sci-fi-dropdown-icon-input.show {
-    display:flex;
+  sci-fi-input.show,
+  sci-fi-dropdown-icon-input.show {
+    display: flex;
   }
-  sci-fi-input.hide, sci-fi-dropdown-icon-input.hide {
-    display:none;
+  sci-fi-input.hide,
+  sci-fi-dropdown-icon-input.hide {
+    display: none;
   }
 `;

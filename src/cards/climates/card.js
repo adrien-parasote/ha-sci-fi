@@ -33,7 +33,7 @@ export class SciFiClimates extends LitElement {
   __validateConfig(config) {
     if (!config.unit) config.unit = '°C';
     if (!config.entities_to_exclude) config.entities_to_exclude = [];
-    if (!config.header) config.header = {display:false};
+    if (!config.header) config.header = {display: false};
     if (!config.header.display) config.header.display = false;
     if (!config.header.icon_winter_state)
       config.header.icon_winter_state = 'mdi:thermometer-chevron-up';
@@ -159,17 +159,15 @@ export class SciFiClimates extends LitElement {
             ._config.unit}
         </div>
       </div>
-      <div class="actions">
-        ${this.__displayActionHeader()}
-      </div>
+      <div class="actions">${this.__displayActionHeader()}</div>
       <div class="season ${this._season ? this._season.color : ''}">
         ${this._season ? this._season.state_icon : ''}
       </div>
     `;
   }
 
-  __displayActionHeader(){
-    if(!this._config.header.display) return nothing;
+  __displayActionHeader() {
+    if (!this._config.header.display) return nothing;
     const active = this._house.isActive(
       ENTITY_KIND_CLIMATE,
       this._config.entities_to_exclude
@@ -178,13 +176,13 @@ export class SciFiClimates extends LitElement {
       ? this._config.header.icon_summer_state
       : this._config.header.icon_winter_state;
     return html`<div class="action" @click="${this.__globalOnOffClimates}">
-    ${getIcon(icon)}
-    <div>
-      ${active
-        ? this._config.header.message_summer_state
-        : this._config.header.message_winter_state}
-    </div>
-  </div>`;
+      ${getIcon(icon)}
+      <div>
+        ${active
+          ? this._config.header.message_summer_state
+          : this._config.header.message_winter_state}
+      </div>
+    </div>`;
   }
 
   __displayFloors() {
@@ -322,16 +320,16 @@ export class SciFiClimates extends LitElement {
     return climates.map(
       (climate) =>
         html`<div class="climate">
-      <sci-fi-radiator
-        id="${climate.entity_id}"
-        climate-entity="${JSON.stringify(climate.renderAsEntity())}"
-        unit="${this._config.unit}"
-        styles="${JSON.stringify(styles)}"
-        @change-preset-mode="${this._changePresetMode}"
-        @change-hvac-mode="${this._changeHvacMode}"
-        @change-temperature="${this._changeTemperature}"
-      ></sci-fi-radiator>
-    </div>`
+          <sci-fi-radiator
+            id="${climate.entity_id}"
+            climate-entity="${JSON.stringify(climate.renderAsEntity())}"
+            unit="${this._config.unit}"
+            styles="${JSON.stringify(styles)}"
+            @change-preset-mode="${this._changePresetMode}"
+            @change-hvac-mode="${this._changeHvacMode}"
+            @change-temperature="${this._changeTemperature}"
+          ></sci-fi-radiator>
+        </div>`
     );
   }
 

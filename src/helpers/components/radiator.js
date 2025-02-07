@@ -25,7 +25,7 @@ class SciFiRadiator extends LitElement {
           display: flex;
           flex-direction: row;
           height: 100%;
-    width: 368px;
+          width: 368px;
         }
         .img {
           display: flex;

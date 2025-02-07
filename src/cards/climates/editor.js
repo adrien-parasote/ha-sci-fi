@@ -62,7 +62,14 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
       <h1>
         <span>${getIcon('mdi:page-layout-header')}</span>Header (optionnal)
       </h1>
+      <sci-fi-toggle
+          label="Display global turn on/off button ?"
+          element-id="header_display"
+          ?checked=${this._config.header.display}
+          @toggle-change=${this.__update}
+        ></sci-fi-toggle>
       <sci-fi-input
+        class="${!this._config.header.display ? 'hide' : "show"}"
         icon="mdi:cursor-text"
         label="Winter period message (optionnal)"
         value=${this._config.header.message_winter_state}
@@ -71,6 +78,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
         @input-update=${this.__update}
       ></sci-fi-input>
       <sci-fi-dropdown-icon-input
+        class="${!this._config.header.display ? 'hide' : ""}"
         label="Winter period icon (optionnal)"
         element-id="header"
         kind="icon_winter_state"
@@ -80,6 +88,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
       ></sci-fi-dropdown-icon-input>
 
       <sci-fi-input
+        class="${!this._config.header.display ? 'hide' : ""}"
         icon="mdi:cursor-text"
         label="Summer period message (optionnal)"
         value=${this._config.header.message_summer_state}
@@ -88,6 +97,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
         @input-update=${this.__update}
       ></sci-fi-input>
       <sci-fi-dropdown-icon-input
+        class="${!this._config.header.display ? 'hide' : ""}"
         label="Summer period icon (optionnal)"
         element-id="header"
         kind="icon_summer_state"
@@ -238,22 +248,26 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
 
   __update(e) {
     let newConfig = this.__getNewConfig();
-    switch (e.detail.type) {
-      case 'remove':
-        newConfig[e.detail.kind].splice(e.detail.value, 1);
-        break;
-      default:
-        // Update
-        if (e.detail.kind == 'entities_to_exclude') {
-          newConfig[e.detail.kind].push(e.detail.value);
-        } else {
-          if (e.detail.id == e.detail.kind) {
-            newConfig[e.detail.id] = e.detail.value;
+    if(e.detail.id == "header_display") {
+      newConfig.header.display = e.detail.value;
+    }else{
+      switch (e.detail.type) {
+        case 'remove':
+          newConfig[e.detail.kind].splice(e.detail.value, 1);
+          break;
+        default:
+          // Update
+          if (e.detail.kind == 'entities_to_exclude') {
+            newConfig[e.detail.kind].push(e.detail.value);
           } else {
-            newConfig[e.detail.id][e.detail.kind] = e.detail.value;
+            if (e.detail.id == e.detail.kind) {
+              newConfig[e.detail.id] = e.detail.value;
+            } else {
+              newConfig[e.detail.id][e.detail.kind] = e.detail.value;
+            }
           }
-        }
-        break;
+          break;
+      }
     }
     this.__dispatchChange(e, newConfig);
   }

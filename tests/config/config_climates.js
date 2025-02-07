@@ -2,6 +2,7 @@ export default {
   unit: '°C',
   entities_to_exclude: ['climate.clou'],
   header: {
+    display: true,
     icon_winter_state: 'mdi:thermometer-chevron-up',
     message_winter_state: 'Winter is coming',
     icon_summer_state: 'mdi:thermometer-chevron-down',

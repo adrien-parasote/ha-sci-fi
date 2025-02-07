@@ -565,6 +565,7 @@ type: custom:sci-fi-climates
 ```yaml
 type: custom:sci-fi-climates
 header:
+  display: true
   icon_winter_state: mdi:thermometer-chevron-up
   message_winter_state: Winter is coming
   icon_summer_state: mdi:thermometer-chevron-down
@@ -634,6 +635,7 @@ mode_colors:
 
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
+| display | Boolean | **Optional** | Display or not global turn on/off climate mode | false |
 | icon_winter_state | String | **Optional** | Icon to display when you're in a summer period and all our climates are in `frost_protection` mode | `mdi:thermometer-chevron-up` |
 | message_winter_state | String | **Optional** | Message to display when you're in a summer period and all our climates are in `frost_protection` mode | Winter is coming |
 | icon_summer_state | String | **Optional** | Icon to display when you're in a winter period and all our climates aren't in `frost_protection` mode | `mdi:thermometer-chevron-down` |
@@ -643,6 +645,7 @@ mode_colors:
 **Example**
 ```yaml
 header:
+  display: false
   icon_winter_state: mdi:thermometer-chevron-up
   message_winter_state: Winter is coming
   icon_summer_state: mdi:thermometer-chevron-down

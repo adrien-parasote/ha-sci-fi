@@ -33,8 +33,8 @@ export class SciFiClimates extends LitElement {
   __validateConfig(config) {
     if (!config.unit) config.unit = '°C';
     if (!config.entities_to_exclude) config.entities_to_exclude = [];
-
-    if (!config.header) config.header = {};
+    if (!config.header) config.header = {display:false};
+    if (!config.header.display) config.header.display = false;
     if (!config.header.icon_winter_state)
       config.header.icon_winter_state = 'mdi:thermometer-chevron-up';
     if (!config.header.message_winter_state)
@@ -151,13 +151,6 @@ export class SciFiClimates extends LitElement {
   }
 
   __displayHeader() {
-    const active = this._house.isActive(
-      ENTITY_KIND_CLIMATE,
-      this._config.entities_to_exclude
-    );
-    const icon = active
-      ? this._config.header.icon_summer_state
-      : this._config.header.icon_winter_state;
     return html`
       <div class="info">
         ${getIcon('mdi:home-thermometer-outline')}
@@ -167,19 +160,31 @@ export class SciFiClimates extends LitElement {
         </div>
       </div>
       <div class="actions">
-        <div class="action" @click="${this.__globalOnOffClimates}">
-          ${getIcon(icon)}
-          <div>
-            ${active
-              ? this._config.header.message_summer_state
-              : this._config.header.message_winter_state}
-          </div>
-        </div>
+        ${this.__displayActionHeader()}
       </div>
       <div class="season ${this._season ? this._season.color : ''}">
         ${this._season ? this._season.state_icon : ''}
       </div>
     `;
+  }
+
+  __displayActionHeader(){
+    if(!this._config.header.display) return nothing;
+    const active = this._house.isActive(
+      ENTITY_KIND_CLIMATE,
+      this._config.entities_to_exclude
+    );
+    const icon = active
+      ? this._config.header.icon_summer_state
+      : this._config.header.icon_winter_state;
+    return html`<div class="action" @click="${this.__globalOnOffClimates}">
+    ${getIcon(icon)}
+    <div>
+      ${active
+        ? this._config.header.message_summer_state
+        : this._config.header.message_winter_state}
+    </div>
+  </div>`;
   }
 
   __displayFloors() {
@@ -384,6 +389,7 @@ export class SciFiClimates extends LitElement {
       unit: '°C',
       entities_to_exclude: [],
       header: {
+        display: false,
         icon_winter_state: 'mdi:thermometer-chevron-up',
         message_winter_state: 'Winter is coming',
         icon_summer_state: 'mdi:thermometer-chevron-down',

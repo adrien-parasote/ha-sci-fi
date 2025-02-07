@@ -1,5 +1,25 @@
 # Changelog
 
+# [v0.5.2](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.5.2) - 2025-02-07
+
+## 🆙  What's Changed
+
+🪵🔥 Stove card
+- Style review to better show lines displayed
+- Disable temperature selection when stove is off
+- Feature requests :
+  - [Stove card - Add Time to service sensor](https://github.com/adrien-parasote/ha-sci-fi/issues/27)
+
+🌡️ Climate card
+- Review radiator style
+- Remove `sun.sun` by `sensor.season` to show (if available) season icon on card header
+- Add option to display or not global turn on/off button in card header
+- Feature requests :
+  - [Climate card - Add set temperature Button](https://github.com/adrien-parasote/ha-sci-fi/issues/23)
+
+🖼️ Sci-Fi icons
+- Adding new icons 
+
 # [v0.5.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.5.1) - 2025-02-04
 
 ## 🐛 Fixes

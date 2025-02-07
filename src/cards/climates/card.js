@@ -322,16 +322,16 @@ export class SciFiClimates extends LitElement {
     return climates.map(
       (climate) =>
         html`<div class="climate">
-          <sci-fi-radiator
-            id="${climate.entity_id}"
-            climate-entity="${JSON.stringify(climate.renderAsEntity())}"
-            unit="${this._config.unit}"
-            styles="${JSON.stringify(styles)}"
-            @change-preset-mode="${this._changePresetMode}"
-            @change-hvac-mode="${this._changeHvacMode}"
-            @change-temperature="${this._changeTemperature}"
-          ></sci-fi-radiator>
-        </div>`
+      <sci-fi-radiator
+        id="${climate.entity_id}"
+        climate-entity="${JSON.stringify(climate.renderAsEntity())}"
+        unit="${this._config.unit}"
+        styles="${JSON.stringify(styles)}"
+        @change-preset-mode="${this._changePresetMode}"
+        @change-hvac-mode="${this._changeHvacMode}"
+        @change-temperature="${this._changeTemperature}"
+      ></sci-fi-radiator>
+    </div>`
     );
   }
 

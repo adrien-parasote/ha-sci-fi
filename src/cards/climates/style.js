@@ -183,10 +183,10 @@ export default css`
     row-gap: 10px;
     border-bottom: var(--border-width) solid var(--primary-bg-color);
     border-top: var(--border-width) solid var(--primary-bg-color);
-    padding: 10px;
+    padding: 10px 0;
     background-color: var(--primary-bg-alpha-color);
     font-weight: bold;
-    width: 95%;
+    width: 100%;
     align-items: center;
   }
   .area-content .climates .title {
@@ -214,9 +214,10 @@ export default css`
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+    height: 95%;
   }
   .area-content .climates .slider .slides > * {
-    margin: 0 10px;
+    /*margin: 0 10px;*/
   }
   .area-content .climates .slider .slides::-webkit-scrollbar {
     width: 10px;

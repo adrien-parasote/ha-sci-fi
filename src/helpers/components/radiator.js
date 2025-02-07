@@ -24,12 +24,8 @@ class SciFiRadiator extends LitElement {
         :host {
           display: flex;
           flex-direction: row;
-          border: var(--border-width) solid var(--secondary-bg-color);
-          border-radius: var(--border-radius);
-          border-top-left-radius: unset;
-          border-bottom-left-radius: unset;
-          height: 240px;
-          width: 336px;
+          height: 100%;
+    width: 368px;
         }
         .img {
           display: flex;
@@ -59,21 +55,21 @@ class SciFiRadiator extends LitElement {
           justify-content: center;
         }
         .content .left .select-temperature {
-          margin-top: 25px;
+          margin-top: 70px;
           position: relative;
         }
         .content .left .select-temperature .display {
           position: absolute;
           display: flex;
           flex-direction: row;
-          left: -14px;
+          left: -30px;
           top: 14px;
           align-items: center;
         }
         .content .left .select-temperature .display .h-path,
         .content .left .temperature .temperature-label .display .h-path {
           border-color: var(--secondary-bg-color);
-          width: 5px;
+          width: 20px;
         }
         .content .left .select-temperature .display .circle {
           background-color: unset;

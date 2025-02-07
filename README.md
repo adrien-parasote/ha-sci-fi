@@ -538,7 +538,6 @@ Allow to deal with climates entities, grouping them per floors/areas.
 
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_1.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_2.jpeg" width="300">
-<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_3.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_edit_1.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_edit_2.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/climates_edit_3.jpeg" width="300">

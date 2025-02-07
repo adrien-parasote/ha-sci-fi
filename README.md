@@ -724,10 +724,10 @@ Stove package card, display your `climate.<stove>` in order you can see informat
 From top to bottom, display:
 - Global information:
   - Stove friendly name
-  - Graphical stove state
+  - Graphical stove state (cool, heat & off)
   - Storage and fuel quantity
-  - State and associated temperarures
-  - Energy consumed & rendered
+  - Global sensor information such as state, pressure, time to service & associated temperarures
+  - Energy consumed / rendered & fan speed
 - Stove actions: mode, temperature and preset
 
 ### Screenshots
@@ -738,6 +738,7 @@ From top to bottom, display:
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_1.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_2.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_3.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_4.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_edit_1.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_edit_2.jpeg" width="300">
 

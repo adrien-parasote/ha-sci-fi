@@ -344,8 +344,8 @@ class SciFiRadiator extends LitElement {
 
   __displayRight() {
     const preset_color =
-      this.styles.mode.colors[this.climateEntity.attributes.preset_mode];
-    const hvac_color = this.styles.state.colors[this.climateEntity.state];
+      this.styles.mode.colors[this.climateEntity.attributes.preset_mode] + ';'; // Force ; here to avoid issue when minify
+    const hvac_color = this.styles.state.colors[this.climateEntity.state] + ';'; // Force ; here to avoid issue when minify
     return html`
       <sci-fi-button-select-card
         position="left down"
@@ -356,7 +356,7 @@ class SciFiRadiator extends LitElement {
         text=${this.climateEntity.attributes.preset_mode}
         items=${JSON.stringify(this.__getPresetOptions())}
         @button-select="${this.__select}"
-        style="--primary-icon-color:${preset_color};--label-text-color: ${preset_color};"
+        style="--primary-icon-color:${preset_color} --label-text-color: ${preset_color}"
       ></sci-fi-button-select-card>
       <div style="flex:1"></div>
       <sci-fi-button-select-card
@@ -366,7 +366,7 @@ class SciFiRadiator extends LitElement {
         text=${this.climateEntity.state}
         items=${JSON.stringify(this.__getHvacOptions())}
         @button-select="${this.__select}"
-        style="--primary-icon-color:${hvac_color};--label-text-color: ${hvac_color};"
+        style="--primary-icon-color:${hvac_color} --label-text-color: ${hvac_color}"
       ></sci-fi-button-select-card>
     `;
   }

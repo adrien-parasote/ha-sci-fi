@@ -12,8 +12,8 @@
 
 🌡️ Climate card
 - Review radiator style
-- Remove `sun.sun` by `sensor.season` to show (if available) season icon on card header
-- Add option to display or not global turn on/off button in card header
+- Replace `sun.sun` by `sensor.season` to show (if available) season icon on card header
+- Add option to display or not global turn on/off button in card header (default is false)
 - Feature requests :
   - [Climate card - Add set temperature Button](https://github.com/adrien-parasote/ha-sci-fi/issues/23)
 

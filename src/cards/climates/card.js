@@ -7,8 +7,8 @@ import '../../helpers/components/tiles.js';
 import '../../helpers/components/toast.js';
 import {ENTITY_KIND_CLIMATE} from '../../helpers/entities/climate_const.js';
 import {House} from '../../helpers/entities/house.js';
-import {SunEntity} from '../../helpers/entities/weather.js';
-import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
+import {Season} from '../../helpers/entities/sensor.js';
+import {getIcon} from '../../helpers/icons/icons.js';
 import {PACKAGE} from './const.js';
 import {SciFiClimatesEditor} from './editor.js';
 import style from './style.js';
@@ -19,7 +19,7 @@ export class SciFiClimates extends LitElement {
   }
 
   _hass; // private
-  _sun;
+  _season;
 
   static get properties() {
     return {
@@ -115,8 +115,8 @@ export class SciFiClimates extends LitElement {
     this._hass = hass;
     if (!this._config) return; // Can't assume setConfig is called before hass is set
 
-    if (!this._sun && hass.states['sun.sun'])
-      this._sun = new SunEntity(hass, 'sun.sun');
+    if (!this._season && hass.states['sensor.season'])
+      this._season = new Season('sensor.season', hass);
     // Build house
     const house = new House(hass);
     if (!this._house || !isEqual(house, this._house)) this._house = house;
@@ -176,8 +176,8 @@ export class SciFiClimates extends LitElement {
           </div>
         </div>
       </div>
-      <div class="weather">
-        ${this._sun ? getWeatherIcon(this._sun.dayPhaseIcon()) : ''}
+      <div class="season ${this._season ? this._season.color : ''}">
+        ${this._season ? this._season.state_icon : ''}
       </div>
     `;
   }

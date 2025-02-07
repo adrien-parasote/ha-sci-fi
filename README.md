@@ -529,7 +529,7 @@ Allow to deal with climates entities, grouping them per floors/areas.
 > Floors & Areas icons are the one you define in `Areas, labels & zones` in your HA configuration
 
 > [!NOTE]
-> If Home Assistant `Sun` entity is available, day phase will be displayed on top of the card (dawn, dusk, day, rising, seting)
+> If Home Assistant `Season` type `Meteorological` sensor is available, season icon (winter, spring, summer & autumn) will be displayed on top right of the card.
 
 ### Screenshots
 
@@ -889,16 +889,20 @@ To complete HA icon set, sci-fi package onboard the following icons :
 
 | Name | HA string | Preview  |
 | - | - | - |
+| Season winter | sci:winter | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/winter.svg" alt="Season winter"  height="25"/> |
+| Season spring | sci:spring | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/spring.svg" alt="Season spring"  height="25"/> |
+| Season autumn | sci:autumn | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/autumn.svg" alt="Season autumn"  height="25"/> |
+| Stove summer | sci:summer | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/summer.svg" alt="Stove summer"  height="25"/> |
+| Stove | sci:stove | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove.svg" alt="Stove"  height="25"/> |
+| Stove cool | sci:stove-cool | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_cool.svg" alt="Stove cool"  height="25"/> |
+| Stove eco | sci:stove-eco | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_eco.svg" alt="Stove eco"  height="25"/> |
+| Stove heat | sci:stove-heat | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_heat.svg" alt="Stove heat"  height="25"/> |
+| Stove off | sci:stove-off | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_off.svg" alt="Stove off"  height="25"/> |
+| Stove unknow | sci:stove-unknow | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_unknow.svg" alt="Stove unknow"  height="25"/> |
 | Radiator auto | sci:radiator-auto | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_auto.svg" alt="Radiator auto"  height="25"/> |
 | Radiator frost protection | sci:radiator-frost-protection | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_frost_protection.svg" alt="Radiator frost protection"  height="25"/> |
 | Radiator heat | sci:radiator-heat | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_heat.svg" alt="Radiator heat"  height="25"/> |
 | Radiator off | sci:radiator-off | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_off.svg" alt="Radiator off"  height="25"/> |
 | Sleeping vaccum | sci:vacuum-sleep | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/sleeping_vacuum.svg" alt="Sleeping vaccum"  height="25"/> |
-| Stove | sci:stove | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove.svg" alt="Stove"  height="25"/> |
-| Stove off | sci:stove-off | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_off.svg" alt="Stove off"  height="25"/> |
-| Stove heat | sci:stove-heat | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_heat.svg" alt="Stove heat"  height="25"/> |
-| Stove cool | sci:stove-cool | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_cool.svg" alt="Stove cool"  height="25"/> |
-| Stove eco | sci:stove-eco | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_eco.svg" alt="Stove eco"  height="25"/> |
-| Stove unknow | sci:stove-unknow | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_unknow.svg" alt="Stove unknow"  height="25"/> |
 
 

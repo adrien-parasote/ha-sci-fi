@@ -18,7 +18,7 @@ export default css`
     flex-direction: row;
     border-bottom: var(--border-width) solid var(--primary-bg-color);
     background-color: var(--primary-bg-alpha-color);
-    padding: 5px 10px 0 10px;
+    padding: 5px 10px;
   }
   .header .info,
   .header .actions {
@@ -57,13 +57,25 @@ export default css`
     width: var(--icon-size-xsmall);
     height: var(--icon-size-xsmall);
   }
-  .header .weather {
+  .header .season {
     display: flex;
     align-items: center;
   }
-  .header .weather svg {
-    width: var(--icon-size-title);
-    height: var(--icon-size-title);
+  .header .season svg {
+    width: var(--icon-size-normal);
+    height: var(--icon-size-normal);
+  }
+  .header .season.blue svg {
+    fill: #acd5f3;
+  }
+  .header .season.green svg {
+    fill: #ace1af;
+  }
+  .header .season.yellow svg {
+    fill: #fdda0d;
+  }
+  .header .season.orange svg {
+    fill: #f47b20;
   }
   /*********** FLOORS *************/
   .floors {

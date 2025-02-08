@@ -403,7 +403,7 @@ export class SciFiStove extends LitElement {
         (e) => this.__toast(true, e)
       );
     if (e.detail.action == 'hvac' && e.detail.value != this._stove.preset_mode)
-      this._stove.setPresetMode(this._hass, e.detail.value).then(
+      this._stove.setHvacMode(this._hass, e.detail.value).then(
         () => this.__toast(false),
         (e) => this.__toast(true, e)
       );

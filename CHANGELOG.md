@@ -1,5 +1,10 @@
 # Changelog
 
+# [v0.5.3](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.5.3) - 2025-02-08
+
+## 🐛 Fixes
+- [Stove card - Change mode issue](https://github.com/adrien-parasote/ha-sci-fi/issues/29)
+
 # [v0.5.2](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.5.2) - 2025-02-07
 
 ## 🆙  What's Changed

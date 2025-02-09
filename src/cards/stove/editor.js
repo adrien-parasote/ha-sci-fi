@@ -1,9 +1,9 @@
 import {html, nothing} from 'lit';
 
-import {SciFiBaseEditor} from '../../helpers/utils/base_editor.js';
 import common_style from '../../helpers/common_style.js';
 import editor_common_style from '../../helpers/editor_common_style.js';
 import {getIcon} from '../../helpers/icons/icons.js';
+import {SciFiBaseEditor} from '../../helpers/utils/base_editor.js';
 
 export class SciFiStoveEditor extends SciFiBaseEditor {
   static get styles() {

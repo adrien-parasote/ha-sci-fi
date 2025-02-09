@@ -1,6 +1,5 @@
 import {html, nothing} from 'lit';
 
-import {SciFiBaseEditor} from '../../helpers/utils/base_editor.js';
 import {
   HASS_CLIMATE_PRESET_MODE_BOOST,
   HASS_CLIMATE_PRESET_MODE_COMFORT,
@@ -13,6 +12,7 @@ import {
   STATE_CLIMATE_OFF,
 } from '../../helpers/entities/climate_const.js';
 import {getIcon} from '../../helpers/icons/icons.js';
+import {SciFiBaseEditor} from '../../helpers/utils/base_editor.js';
 import editor_style from './style_editor.js';
 
 export class SciFiClimatesEditor extends SciFiBaseEditor {

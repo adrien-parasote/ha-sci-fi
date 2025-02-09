@@ -37,48 +37,42 @@
         border-radius: 5px;
         min-width: 90px;
       }
-      #icons .icon svg {
-        fill: rgb(102, 156, 210);
-        height: 25px;
-        width: 25px;
+      #icons .icon sci-fi-icon {
+        justify-content: center;
       }
     </style>
+    <script type="module" src="/tests/icons.js"></script>
+    <script type="module" src="/src/helpers/components/icons/sf-iconset.js"></script>
+    <script type="module" src="/src/helpers/components/icons/sf-icon.js"></script>
   </head>
   <body>
     <h3>🛸 Sci-fi icons 🛸</h3>
     <div id="icons"></div>
-    <script type="module">
-      import {getIcon} from '../src/helpers/icons/icons.js';
-      import SCIFI_ICONSET from '../src/helpers/icons/iconset.js';
-
-      const icons = document.querySelector('#icons');
-
-      Object.keys(SCIFI_ICONSET).map((key) => {
-        const inline = document.createElement('div');
-        const icon_container = document.createElement('div');
-        icon_container.classList.add('icon');
-        const icon_title = document.createElement('div');
-        icon_title.classList.add('title');
-        icon_title.textContent = key;
-
-        const iconSvg = document.createElementNS(
-          'http://www.w3.org/2000/svg',
-          'svg'
-        );
-        iconSvg.setAttribute('viewBox', '0 0 24 24');
-
-        const iconPath = document.createElementNS(
-          'http://www.w3.org/2000/svg',
-          'path'
-        );
-        iconPath.setAttribute('d', SCIFI_ICONSET[key].path);
-        iconSvg.appendChild(iconPath);
-
-        icon_container.appendChild(iconSvg);
-        icon_container.appendChild(icon_title);
-        inline.appendChild(icon_container);
-        icons.appendChild(inline);
-      });
-    </script>
+    
   </body>
+  <script type="module">
+    const iconSet = document.querySelector('#icons');
+
+    const addIcon = function(iconName){
+
+      const inline = document.createElement('div');
+
+      const iconContainer = document.createElement('div');
+      iconContainer.classList.add('icon');
+
+      const iconTitle = document.createElement('div');
+      iconTitle.classList.add('title');
+      iconTitle.textContent = iconName;
+
+      const iconComponent = document.createElement('sci-fi-icon');
+      iconComponent.icon = iconName;
+
+      iconContainer.appendChild(iconComponent);
+      iconContainer.appendChild(iconTitle);
+        inline.appendChild(iconContainer);
+        icons.appendChild(inline);
+    }
+    //window.customIcons.sci.getIconList().then((icons) => icons.forEach((icon) => addIcon('sci:'+icon.name)));
+  </script>
+  
 </html>

@@ -1,11 +1,23 @@
 import {html, nothing} from 'lit';
 
+import '../../components/accordion.js';
+import '../../components/button.js';
+import '../../components/input.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 import {SciFiBaseEditor} from '../../helpers/utils/base_editor.js';
 
 export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   _entity_kind; // list from hass
-  _empty_config; // basic config to add for new element
+  _empty_tile_config = {
+    entity_kind: 'light',
+    entities_to_exclude: [],
+    active_icon: 'mdi:lightbulb-on-outline',
+    inactive_icon: 'mdi:lightbulb-outline',
+    name: 'Lights',
+    state_on: ['on'],
+    state_error: null,
+    link: null,
+  }; // basic config to add for new element
 
   set hass(hass) {
     this._hass = hass;
@@ -28,7 +40,6 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
 
   setConfig(config) {
     this._config = config;
-    this._empty_config = this.__getNewConfig()['tiles'][0];
   }
 
   render() {
@@ -63,6 +74,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   }
 
   __renderWeather() {
+    if (!this._config.weather) this._config.weather = {activate: false};
     return html`
       <section>
         <h1>
@@ -75,7 +87,9 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
           ?checked=${this._config.weather.activate}
           @toggle-change=${this.__toggle}
         ></sci-fi-toggle>
-        ${this._config.weather.activate ? this.__renderWeatherEntities() : ''}
+        ${this._config.weather.activate
+          ? this.__renderWeatherEntities()
+          : nothing}
       </section>
     `;
   }
@@ -102,6 +116,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   }
 
   __renderTiles() {
+    if (!this._config.tiles) this._config.tiles = [];
     return html`
       ${this._config.tiles.map(
         (entity, id) =>
@@ -253,7 +268,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
 
   __addElement(e) {
     let newConfig = this.__getNewConfig();
-    newConfig.tiles.push(this._empty_config);
+    newConfig.tiles.push(this._empty_tile_config);
     this.__dispatchChange(e, newConfig);
   }
 
@@ -273,9 +288,11 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         default:
           // Update
           if (e.detail.kind == 'entities_to_exclude') {
-            if (!newConfig.tiles[elemmentId][e.detail.kind])
-              newConfig.tiles[elemmentId][e.detail.kind] = [];
-            newConfig.tiles[elemmentId][e.detail.kind].push(e.detail.value);
+            if (!newConfig.tiles[elemmentId].entities_to_exclude)
+              newConfig.tiles[elemmentId].entities_to_exclude = [];
+            newConfig.tiles[elemmentId].entities_to_exclude.push(
+              e.detail.value
+            );
           } else {
             newConfig.tiles[elemmentId][e.detail.kind] = e.detail.value;
           }

@@ -1,6 +1,6 @@
 import {LitElement, css, html} from 'lit';
 
-import common_style from '../../helpers/common_style.js';
+import common_style from '../helpers/styles/common_style.js';
 
 const SVG_VIEWBOX_WIDTH = 132;
 const SVG_VIEWBOX_HEIGHT = 164;

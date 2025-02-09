@@ -1,11 +1,11 @@
 import {LitElement, css, html, svg} from 'lit';
 
-import common_style from '../common_style.js';
 import {
   STATE_CLIMATE_COOL,
   STATE_CLIMATE_HEAT,
   STATE_CLIMATE_OFF,
-} from '../entities/climate_const.js';
+} from '../helpers/entities/climate_const.js';
+import common_style from '../helpers/styles/common_style.js';
 
 const SVG_VIEWBOX_WIDTH = 124;
 const SVG_VIEWBOX_HEIGHT = 480;

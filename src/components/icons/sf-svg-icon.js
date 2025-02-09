@@ -1,6 +1,6 @@
 import {LitElement, css, nothing, svg} from 'lit';
 
-import common_style from '../../common_style.js';
+import common_style from '../../helpers/styles/common_style.js';
 
 class SciFiSvgIcon extends LitElement {
   static get styles() {

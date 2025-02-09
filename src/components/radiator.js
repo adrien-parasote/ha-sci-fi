@@ -1,8 +1,5 @@
 import {LitElement, css, html, nothing} from 'lit';
 
-import '../../helpers/components/button.js';
-import '../../helpers/components/wheel.js';
-import common_style from '../common_style.js';
 import {
   HASS_CLIMATE_HVAC_MODE_OFF,
   HASS_CLIMATE_PRESET_MODE_AUTO,
@@ -14,7 +11,10 @@ import {
   HASS_CLIMATE_PRESET_MODE_PROG,
   STATE_CLIMATE_AUTO,
   STATE_CLIMATE_OFF,
-} from '../entities/climate_const.js';
+} from '../helpers/entities/climate_const.js';
+import common_style from '../helpers/styles/common_style.js';
+import './button.js';
+import './wheel.js';
 
 class SciFiRadiator extends LitElement {
   static get styles() {

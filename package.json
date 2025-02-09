@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "serve": "es-dev-server --app-index /tests/index.html --node-resolve --watch",
-    "format": "prettier tests/*.html tests/*.js tests/**/*.js src/*.js src/**/*.js src/**/**/*.js src/**/**/**/*.js src/**/**/**/**/*.js --write",
+    "format": "prettier tests/*.html tests/**/*.js src/*.js src/**/*.js src/**/**/*.js src/**/**/**/*.js src/**/**/**/**/*.js --write",
     "patch": "npm --no-git-tag-version version patch",
     "copy": "mkdir temp && cp -r ./src/* ./temp",
     "prepare-env": "npm run copy && rm ./temp/build/const.js && mv ./temp/build/const.js.PROD ./temp/build/const.js",

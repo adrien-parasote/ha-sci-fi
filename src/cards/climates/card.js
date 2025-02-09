@@ -1,14 +1,14 @@
 import {LitElement, html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
-import common_style from '../../helpers/common_style.js';
-import '../../helpers/components/radiator.js';
-import '../../helpers/components/tiles.js';
-import '../../helpers/components/toast.js';
+import '../../components/radiator.js';
+import '../../components/tiles.js';
+import '../../components/toast.js';
 import {ENTITY_KIND_CLIMATE} from '../../helpers/entities/climate_const.js';
 import {House} from '../../helpers/entities/house.js';
 import {Season} from '../../helpers/entities/sensor.js';
 import {getIcon} from '../../helpers/icons/icons.js';
+import common_style from '../../helpers/styles/common_style.js';
 import {PACKAGE} from './const.js';
 import {SciFiClimatesEditor} from './editor.js';
 import style from './style.js';

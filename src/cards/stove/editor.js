@@ -1,8 +1,10 @@
 import {html, nothing} from 'lit';
 
-import common_style from '../../helpers/common_style.js';
-import editor_common_style from '../../helpers/editor_common_style.js';
+import '../../components/accordion.js';
+import '../../components/input.js';
 import {getIcon} from '../../helpers/icons/icons.js';
+import common_style from '../../helpers/styles/common_style.js';
+import editor_common_style from '../../helpers/styles/editor_common_style.js';
 import {SciFiBaseEditor} from '../../helpers/utils/base_editor.js';
 
 export class SciFiStoveEditor extends SciFiBaseEditor {

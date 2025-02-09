@@ -1,17 +1,17 @@
 import {LitElement, html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
-import common_style from '../../helpers/common_style.js';
-import '../../helpers/components/button.js';
-import '../../helpers/components/circle_progress_bar.js';
-import '../../helpers/components/stack_bar.js';
-import '../../helpers/components/stove.js';
-import '../../helpers/components/toast.js';
-import '../../helpers/components/wheel.js';
+import '../../components/button.js';
+import '../../components/circle_progress_bar.js';
+import '../../components/stack_bar.js';
+import '../../components/stove.js';
+import '../../components/toast.js';
+import '../../components/wheel.js';
 import {StoveEntity} from '../../helpers/entities/climate.js';
 import {STATE_CLIMATE_OFF} from '../../helpers/entities/climate_const.js';
 import {STOVE_SENSORS} from '../../helpers/entities/sensor_const.js';
 import {getIcon} from '../../helpers/icons/icons.js';
+import common_style from '../../helpers/styles/common_style.js';
 import {
   HVAC_MODES_ICONS,
   PACKAGE,

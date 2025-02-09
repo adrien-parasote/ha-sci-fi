@@ -1,5 +1,7 @@
 import {html, nothing} from 'lit';
 
+import '../../components/button.js';
+import '../../components/input.js';
 import {House} from '../../helpers/entities/house.js';
 import {ENTITY_KIND_LIGHT} from '../../helpers/entities/light_const.js';
 import {getIcon} from '../../helpers/icons/icons.js';

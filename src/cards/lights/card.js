@@ -2,9 +2,8 @@ import {LitElement, html, nothing} from 'lit';
 import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 import {isEqual} from 'lodash-es';
 
-import common_style from '../../helpers/common_style.js';
-import '../../helpers/components/tiles.js';
-import '../../helpers/components/toast.js';
+import '../../components/tiles.js';
+import '../../components/toast.js';
 import {House} from '../../helpers/entities/house.js';
 import {
   ENTITY_KIND_LIGHT,
@@ -12,6 +11,7 @@ import {
 } from '../../helpers/entities/light_const.js';
 import {SunEntity} from '../../helpers/entities/weather.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
+import common_style from '../../helpers/styles/common_style.js';
 import {PACKAGE} from './const.js';
 import {SciFiLightsEditor} from './editor.js';
 import style from './style.js';

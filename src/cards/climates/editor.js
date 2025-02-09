@@ -1,5 +1,8 @@
 import {html, nothing} from 'lit';
 
+import '../../components/accordion.js';
+import '../../components/button.js';
+import '../../components/input.js';
 import {
   HASS_CLIMATE_PRESET_MODE_BOOST,
   HASS_CLIMATE_PRESET_MODE_COMFORT,

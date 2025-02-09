@@ -2,8 +2,7 @@ import Chart from 'chart.js/auto';
 import {LitElement, html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
-import common_style from '../../helpers/common_style.js';
-import '../../helpers/components/tiles.js';
+import '../../components/tiles.js';
 import {
   DailyForecast,
   HourlyForecast,
@@ -13,6 +12,7 @@ import {
 import {WEEK_DAYS} from '../../helpers/entities/weather_const.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
 import WEATHER_ICON_SET from '../../helpers/icons/weather_iconset.js';
+import common_style from '../../helpers/styles/common_style.js';
 import {
   CHART_BG_COLOR,
   CHART_BORDER_COLOR,

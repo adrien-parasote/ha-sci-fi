@@ -2,7 +2,7 @@ import {createStore, promisifyRequest} from 'idb-keyval';
 import {LitElement, css, html, nothing} from 'lit';
 import memoizeOne from 'memoize-one';
 
-import common_style from '../../common_style.js';
+import common_style from '../../helpers/styles/common_style.js';
 import './sf-svg-icon.js';
 
 const MDI_PREFIXES = 'mdi';
@@ -12,7 +12,7 @@ const getStore = memoizeOne(async () => {
   return createStore('hass-icon-db', 'mdi-icon-store');
 });
 
-const getStoredIcon = function(iconName){
+const getStoredIcon = function (iconName) {
   return new Promise((resolve, reject) => {
     const store = getStore();
     const readIcons = async () => {
@@ -47,8 +47,7 @@ class SciFiIcon extends LitElement {
 
   render() {
     if (!this.icon) return nothing;
-    return html`
-    <sci-fi-svg-icon
+    return html` <sci-fi-svg-icon
       .path=${this._path}
       .viewBox=${this._viewBox}
     ></sci-fi-svg-icon>`;
@@ -103,8 +102,10 @@ class SciFiIcon extends LitElement {
     // 2 cases : mdi icons or custom one
     if (MDI_PREFIXES != iconPrefix) {
       // custom
-      if (!iconPrefix in window.customIcons) return;
-      this.__getCustomIconData(window.customIcons[iconPrefix].getIcon(iconName));
+      if ((!iconPrefix) in window.customIcons) return;
+      this.__getCustomIconData(
+        window.customIcons[iconPrefix].getIcon(iconName)
+      );
     } else {
       // mdi : data store in indexDB
       this.__getMdiIconData(getStoredIcon(iconName));

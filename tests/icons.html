@@ -42,8 +42,8 @@
       }
     </style>
     <script type="module" src="/tests/js/icons.js"></script>
-    <script type="module" src="/src/helpers/components/icons/sf-iconset.js"></script>
-    <script type="module" src="/src/helpers/components/icons/sf-icon.js"></script>
+    <script type="module" src="/src/components/icons/sf-iconset.js"></script>
+    <script type="module" src="/src/components/icons/sf-icon.js"></script>
   </head>
   <body>
     <h3>🛸 Sci-fi icons 🛸</h3>
@@ -52,8 +52,7 @@
   <script type="module">
     const iconSet = document.querySelector('#icons');
 
-    const addIcon = function(iconName){
-
+    const addIcon = function (iconName) {
       const inline = document.createElement('div');
 
       const iconContainer = document.createElement('div');
@@ -68,10 +67,11 @@
 
       iconContainer.appendChild(iconComponent);
       iconContainer.appendChild(iconTitle);
-        inline.appendChild(iconContainer);
-        icons.appendChild(inline);
-    }
-    window.customIcons.sci.getIconList().then((icons) => icons.forEach((icon) => addIcon('sci:'+icon.name)));
+      inline.appendChild(iconContainer);
+      icons.appendChild(inline);
+    };
+    window.customIcons.sci
+      .getIconList()
+      .then((icons) => icons.forEach((icon) => addIcon('sci:' + icon.name)));
   </script>
-  
 </html>

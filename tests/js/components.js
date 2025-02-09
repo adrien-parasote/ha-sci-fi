@@ -109,4 +109,5 @@ window.addEventListener('config-changed', (e) => {
     cleanContent();
     renderElement();
   });
+  renderElement();
 })();

@@ -1,7 +1,7 @@
 import {LitElement, css, html} from 'lit';
 
-import common_style from '../common_style.js';
 import {getIcon} from '../icons/icons.js';
+import common_style from '../styles/common_style.js';
 
 const STATE_HOME = 'home';
 

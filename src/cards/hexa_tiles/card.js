@@ -1,20 +1,21 @@
-import {LitElement, html, nothing} from 'lit';
+import {html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
-import common_style from '../../helpers/common_style.js';
-import '../../helpers/components/tiles.js';
+import '../../components/tiles.js';
 import '../../helpers/entities/person.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
+import {SciFiBaseCard} from '../../helpers/utils/base-card.js';
+import configMetadata from './config-metadata.js';
 import {LANDSCAPE_DISPLAY, PACKAGE, PORTRAIT_DISPLAY} from './const.js';
 import {SciFiHexaTilesEditor} from './editor.js';
 import style from './style.js';
 
-export class SciFiHexaTiles extends LitElement {
+export class SciFiHexaTiles extends SciFiBaseCard {
   static get styles() {
-    return [common_style, style];
+    return super.styles.concat([style]);
   }
 
-  _hass; // private
+  _configMetadata = configMetadata;
   _display; // private
 
   static get properties() {
@@ -49,77 +50,6 @@ export class SciFiHexaTiles extends LitElement {
 
   __defineRowsCols(landscape) {
     this._display = landscape ? LANDSCAPE_DISPLAY : PORTRAIT_DISPLAY;
-  }
-
-  __validateConfig(config) {
-    // Default value
-    if (!config.header_message) {
-      config['header_message'] = '';
-    }
-
-    //validate Weather
-    if (!config.weather) {
-      config['weather'] = {
-        activate: false,
-        weather_entity: null,
-        link: null,
-      };
-    } else {
-      if (config.weather.activate) {
-        if (!config.weather.weather_entity)
-          throw new Error('You need to define a weather entity.');
-        if (!config.weather.weather_entity.startsWith('weather.'))
-          throw new Error(
-            config.weather.weather_entity + 'is not a weather entity.'
-          );
-      }
-    }
-
-    // Validate tiles
-    if (!config.tiles) config.tiles = [];
-    config.tiles.map((tile) => {
-      if (!tile.standalone) {
-        if (!tile.entity_kind)
-          throw new Error('You need to define an entity kind (ex: light)');
-        if (!tile.entities_to_exclude) tile.entities_to_exclude = [];
-      } else {
-        if (!tile.entity)
-          throw new Error('You need to define an entity (ex: sensor.light)');
-        tile.entity_kind = null;
-        tile.entities_to_exclude = [];
-      }
-      if (!tile.state_on || tile.state_on.length < 1)
-        throw new Error(
-          'You need to define an entity kind state active list (ex: ["on"])'
-        );
-
-      // Default value
-      if (!tile.active_icon) tile.active_icon = 'mdi:ufo-outline';
-      if (!tile.inactive_icon) tile.inactive_icon = 'mdi:ufo-outline';
-      if (!tile.name) tile.name = '';
-      if (!tile.state_error) tile.state_error = null;
-      if (!tile.link) tile.link = null;
-
-      // Sort & filter states & entity to exclude
-      tile.state_on = Array.from(new Set(tile.state_on.sort()));
-      tile.entities_to_exclude = Array.from(
-        new Set(tile.entities_to_exclude.sort())
-      );
-    });
-    return config;
-  }
-
-  setConfig(config) {
-    this._config = this.__validateConfig(JSON.parse(JSON.stringify(config)));
-    // call set hass() to immediately adjust to a changed entity
-    // while editing the entity in the card editor
-    if (this._hass) {
-      this.hass = this._hass;
-    }
-  }
-
-  getCardSize() {
-    return 1;
   }
 
   set hass(hass) {
@@ -330,27 +260,9 @@ export class SciFiHexaTiles extends LitElement {
   static getConfigElement() {
     return document.createElement(PACKAGE + '-editor');
   }
+
   static getStubConfig() {
-    return {
-      header_message: 'Welcome',
-      weather: {
-        activate: false,
-        weather_entity: null,
-        link: null,
-      },
-      tiles: [
-        {
-          entity_kind: 'light',
-          entities_to_exclude: [],
-          active_icon: 'mdi:lightbulb-on-outline',
-          inactive_icon: 'mdi:lightbulb-outline',
-          name: 'Lights',
-          state_on: ['on'],
-          state_error: null,
-          link: null,
-        },
-      ],
-    };
+    return super.getStubConfig();
   }
 }
 

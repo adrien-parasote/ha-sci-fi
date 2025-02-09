@@ -41,14 +41,13 @@
         justify-content: center;
       }
     </style>
-    <script type="module" src="/tests/icons.js"></script>
+    <script type="module" src="/tests/js/icons.js"></script>
     <script type="module" src="/src/helpers/components/icons/sf-iconset.js"></script>
     <script type="module" src="/src/helpers/components/icons/sf-icon.js"></script>
   </head>
   <body>
     <h3>🛸 Sci-fi icons 🛸</h3>
     <div id="icons"></div>
-    
   </body>
   <script type="module">
     const iconSet = document.querySelector('#icons');
@@ -72,7 +71,7 @@
         inline.appendChild(iconContainer);
         icons.appendChild(inline);
     }
-    //window.customIcons.sci.getIconList().then((icons) => icons.forEach((icon) => addIcon('sci:'+icon.name)));
+    window.customIcons.sci.getIconList().then((icons) => icons.forEach((icon) => addIcon('sci:'+icon.name)));
   </script>
   
 </html>

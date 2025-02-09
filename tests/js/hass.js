@@ -6,7 +6,7 @@ import {
   getUser,
   subscribeEntities,
   subscribeServices,
-} from '../node_modules/home-assistant-js-websocket/dist/index.js';
+} from 'home-assistant-js-websocket';
 
 window.hass = {
   dev: {},

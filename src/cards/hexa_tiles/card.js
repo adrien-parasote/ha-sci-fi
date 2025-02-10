@@ -7,7 +7,6 @@ import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
 import {SciFiBaseCard} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
 import {LANDSCAPE_DISPLAY, PACKAGE, PORTRAIT_DISPLAY} from './const.js';
-import {SciFiHexaTilesEditor} from './editor.js';
 import style from './style.js';
 
 export class SciFiHexaTiles extends SciFiBaseCard {
@@ -265,17 +264,3 @@ export class SciFiHexaTiles extends SciFiBaseCard {
     return super.getStubConfig();
   }
 }
-
-window.customElements.get(PACKAGE) ||
-  window.customElements.define(PACKAGE, SciFiHexaTiles);
-
-window.customElements.get(PACKAGE + '-editor') ||
-  window.customElements.define(PACKAGE + '-editor', SciFiHexaTilesEditor);
-
-window.customCards = window.customCards || [];
-window.customCards.push({
-  type: PACKAGE,
-  name: 'Sci-fi hexa tiles card',
-  description:
-    'Render sci-fi hexa tiles card with header and special weather tile if activated.',
-});

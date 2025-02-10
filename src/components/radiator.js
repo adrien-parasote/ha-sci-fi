@@ -26,6 +26,13 @@ class SciFiRadiator extends LitElement {
           flex-direction: row;
           height: 100%;
           width: 368px;
+          position: relative;
+        }
+        .name {
+          position: absolute;
+          top: 25px;
+          left: 0;
+          color: var(--primary-bg-color);
         }
         .img {
           display: flex;
@@ -155,6 +162,7 @@ class SciFiRadiator extends LitElement {
   render() {
     if (!this.climateEntity) nothing;
     return html`
+      <div class="name">${this.climateEntity.attributes.friendly_name}</div>
       <div class="img">${this.__displayImage()}</div>
       <div class="content">
         <div class="left">${this.__displayleft()}</div>

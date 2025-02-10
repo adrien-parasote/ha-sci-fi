@@ -64,10 +64,6 @@ export default css`
     flex-direction: column;
     text-align: center;
   }
-  .alerts .alert svg {
-    width: var(--icon-size-normal);
-    height: var(--icon-size-normal);
-  }
   .alerts .alert.yellow {
     color: var(--yellow);
   }
@@ -77,14 +73,14 @@ export default css`
   .alerts .alert.red {
     color: var(--red);
   }
-  .alerts .alert.yellow svg {
-    fill: var(--yellow);
+  .alerts .alert.yellow sci-fi-icon {
+    --icon-color: var(--yellow);
   }
-  .alerts .alert.orange svg {
-    fill: var(--orange);
+  .alerts .alert.orange sci-fi-icon {
+    --icon-color: var(--orange);
   }
-  .alerts .alert.red svg {
-    fill: var(--red);
+  .alerts .alert.red sci-fi-icon {
+    --icon-color: var(--red);
   }
 
   /******** TODAY SUMMARY *********/
@@ -210,11 +206,8 @@ export default css`
     .chart-header
     .dropdown
     .dropdow-button
-    .svg-container:last-of-type
-    svg {
-    fill: var(--secondary-light-alpha-color);
-    width: var(--icon-size-normal);
-    height: var(--icon-size-normal);
+    sci-fi-icon {
+    --icon-color: var(--secondary-light-alpha-color);
   }
   /******** DAILY FORECAST *********/
   .days-forecast {

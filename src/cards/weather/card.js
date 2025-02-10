@@ -9,7 +9,7 @@ import {
   WeatherEntity,
 } from '../../helpers/entities/weather/weather.js';
 import {WEEK_DAYS} from '../../helpers/entities/weather/weather_const.js';
-import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
+import {getWeatherIcon} from '../../helpers/icons/icons.js';
 import WEATHER_ICON_SET from '../../helpers/icons/weather_iconset.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
@@ -194,7 +194,7 @@ export class SciFiWeather extends SciFiBaseCard {
       .map(
         (key) =>
           html`<div class="alert ${alert_states[this._alert.attributes[key]]}">
-            ${getIcon('mdi:alert')}
+            <sci-fi-icon icon='mdi:alert'></sci-fi-icon>
             <div>${key}</div>
           </div>`
       )}`;
@@ -263,7 +263,7 @@ export class SciFiWeather extends SciFiBaseCard {
     return html` <div class="dropdown">
       <button @click=${this.__toggleDropdown} class="dropdow-button">
         ${getWeatherIcon(SENSORS_MAP[this._chartDataKind].dropdown.icon)}
-        ${getIcon('mdi:chevron-down')}
+        <sci-fi-icon icon='mdi:chevron-down'></sci-fi-icon>
       </button>
       <div class="dropdown-content">
         ${Object.keys(SENSORS_MAP).map(

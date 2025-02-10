@@ -2,7 +2,7 @@ import {html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
 import '../../components/button.js';
-import '../../components/circle_progress_bar.js';
+import '../../components/sf-circle_progress_bar.js';
 import '../../components/stack_bar.js';
 import '../../components/stove.js';
 import '../../components/toast.js';

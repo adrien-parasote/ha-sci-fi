@@ -14,7 +14,7 @@ import {
 } from '../helpers/entities/climate_const.js';
 import common_style from '../helpers/styles/common_style.js';
 import './button.js';
-import './wheel.js';
+import './sf-wheel.js';
 
 class SciFiRadiator extends LitElement {
   static get styles() {

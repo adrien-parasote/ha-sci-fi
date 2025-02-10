@@ -11,7 +11,6 @@ import {
 } from '../../helpers/entities/light_const.js';
 import {SunEntity} from '../../helpers/entities/weather.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
-import common_style from '../../helpers/styles/common_style.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
 import {PACKAGE} from './const.js';
@@ -19,7 +18,7 @@ import style from './style.js';
 
 export class SciFiLights extends SciFiBaseCard {
   static get styles() {
-    return [common_style, style];
+    return super.styles.concat([style]);
   }
 
   _configMetadata = configMetadata;

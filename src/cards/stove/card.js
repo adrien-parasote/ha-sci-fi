@@ -9,9 +9,7 @@ import '../../components/toast.js';
 import '../../components/wheel.js';
 import {StoveEntity} from '../../helpers/entities/climate.js';
 import {STATE_CLIMATE_OFF} from '../../helpers/entities/climate_const.js';
-import {STOVE_SENSORS} from '../../helpers/entities/sensor_const.js';
 import {getIcon} from '../../helpers/icons/icons.js';
-import common_style from '../../helpers/styles/common_style.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
 import {
@@ -24,8 +22,10 @@ import style from './style.js';
 
 export class SciFiStove extends SciFiBaseCard {
   static get styles() {
-    return [common_style, style];
+    return super.styles.concat([style]);
   }
+
+  _configMetadata = configMetadata;
 
   _configMetadata = configMetadata;
   _hass; // private

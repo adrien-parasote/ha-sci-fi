@@ -3,6 +3,7 @@ import {LitElement, css, html, nothing} from 'lit';
 import memoizeOne from 'memoize-one';
 
 import common_style from '../../helpers/styles/common_style.js';
+import {defineCustomElement} from '../../helpers/utils/import.js';
 import './sf-svg-icon.js';
 
 const MDI_PREFIXES = 'mdi';
@@ -113,5 +114,4 @@ class SciFiIcon extends LitElement {
   }
 }
 
-customElements.get('sci-fi-icon') ||
-  customElements.define('sci-fi-icon', SciFiIcon);
+defineCustomElement('sci-fi-icon', SciFiIcon);

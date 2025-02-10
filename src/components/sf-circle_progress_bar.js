@@ -1,6 +1,7 @@
 import {LitElement, css, html, svg} from 'lit';
 
 import common_style from '../helpers/styles/common_style.js';
+import {defineCustomElement} from '../helpers/utils/import.js';
 
 class SciFiCircleProgressBar extends LitElement {
   static get styles() {
@@ -107,8 +108,4 @@ class SciFiCircleProgressBar extends LitElement {
   }
 }
 
-window.customElements.get('sci-fi-circle-progress-bar') ||
-  window.customElements.define(
-    'sci-fi-circle-progress-bar',
-    SciFiCircleProgressBar
-  );
+defineCustomElement('sci-fi-circle-progress-bar', SciFiCircleProgressBar);

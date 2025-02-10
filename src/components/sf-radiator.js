@@ -13,6 +13,7 @@ import {
   STATE_CLIMATE_OFF,
 } from '../helpers/entities/climate/climate_const.js';
 import common_style from '../helpers/styles/common_style.js';
+import {defineCustomElement} from '../helpers/utils/import.js';
 
 class SciFiRadiator extends LitElement {
   static get styles() {
@@ -493,5 +494,4 @@ class SciFiRadiator extends LitElement {
   }
 }
 
-window.customElements.get('sci-fi-radiator') ||
-  window.customElements.define('sci-fi-radiator', SciFiRadiator);
+defineCustomElement('sci-fi-radiator', SciFiRadiator);

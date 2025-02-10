@@ -3,6 +3,7 @@ import {html, render} from 'lit-html';
 
 import {getIcon} from '../helpers/icons/icons.js';
 import common_style from '../helpers/styles/common_style.js';
+import {defineCustomElement} from '../helpers/utils/import.js';
 
 class SciFiToast extends LitElement {
   static get styles() {
@@ -125,5 +126,4 @@ class SciFiToast extends LitElement {
   }
 }
 
-window.customElements.get('sci-fi-toast') ||
-  window.customElements.define('sci-fi-toast', SciFiToast);
+defineCustomElement('sci-fi-toast', SciFiToast);

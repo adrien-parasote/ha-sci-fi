@@ -1,6 +1,7 @@
 import {css, html, nothing} from 'lit';
 
 import {getIcon} from '../../helpers/icons/icons.js';
+import {defineCustomElement} from '../../helpers/utils/import.js';
 import {SciFiInput} from './sf-input.js';
 
 export class SciFiSlider extends SciFiInput {
@@ -85,5 +86,4 @@ export class SciFiSlider extends SciFiInput {
   }
 }
 
-window.customElements.get('sci-fi-slider') ||
-  window.customElements.define('sci-fi-slider', SciFiSlider);
+defineCustomElement('sci-fi-slider', SciFiSlider);

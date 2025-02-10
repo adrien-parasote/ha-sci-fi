@@ -1,6 +1,7 @@
 import {css, html, nothing} from 'lit';
 
 import {getIcon} from '../../helpers/icons/icons.js';
+import {defineCustomElement} from '../../helpers/utils/import.js';
 import {SciFiInput} from './sf-input.js';
 
 export class SciFiColorPicker extends SciFiInput {
@@ -42,5 +43,4 @@ export class SciFiColorPicker extends SciFiInput {
   }
 }
 
-window.customElements.get('sci-fi-color-picker') ||
-  window.customElements.define('sci-fi-color-picker', SciFiColorPicker);
+defineCustomElement('sci-fi-color-picker', SciFiColorPicker);

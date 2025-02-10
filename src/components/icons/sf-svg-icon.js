@@ -1,6 +1,7 @@
 import {LitElement, css, nothing, svg} from 'lit';
 
 import common_style from '../../helpers/styles/common_style.js';
+import {defineCustomElement} from '../../helpers/utils/import.js';
 
 class SciFiSvgIcon extends LitElement {
   static get styles() {
@@ -50,5 +51,4 @@ class SciFiSvgIcon extends LitElement {
   }
 }
 
-customElements.get('sci-fi-svg-icon') ||
-  customElements.define('sci-fi-svg-icon', SciFiSvgIcon);
+defineCustomElement('sci-fi-svg-icon', SciFiSvgIcon);

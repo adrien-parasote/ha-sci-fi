@@ -1,6 +1,7 @@
 import {LitElement, css, html, svg} from 'lit';
 
 import common_style from '../helpers/styles/common_style.js';
+import {defineCustomElement} from '../helpers/utils/import.js';
 
 class SciFiStackBar extends LitElement {
   static get styles() {
@@ -100,5 +101,4 @@ class SciFiStackBar extends LitElement {
   }
 }
 
-window.customElements.get('sci-fi-stack-bar') ||
-  window.customElements.define('sci-fi-stack-bar', SciFiStackBar);
+defineCustomElement('sci-fi-stack-bar', SciFiStackBar);

@@ -2,6 +2,7 @@ import {LitElement, css, html, nothing} from 'lit';
 
 import {getIcon} from '../../helpers/icons/icons.js';
 import common_style from '../../helpers/styles/common_style.js';
+import {defineCustomElement} from '../../helpers/utils/import.js';
 
 export class SciFiInput extends LitElement {
   static get styles() {
@@ -160,5 +161,4 @@ export class SciFiInput extends LitElement {
   }
 }
 
-window.customElements.get('sci-fi-input') ||
-  window.customElements.define('sci-fi-input', SciFiInput);
+defineCustomElement('sci-fi-input', SciFiInput);

@@ -1,6 +1,7 @@
 import {LitElement, css, html} from 'lit';
 
 import common_style from '../helpers/styles/common_style.js';
+import {defineCustomElement} from '../helpers/utils/import.js';
 
 const SVG_VIEWBOX_WIDTH = 132;
 const SVG_VIEWBOX_HEIGHT = 164;
@@ -161,7 +162,5 @@ export class SciFiHexaHalfTile extends LitElement {
   }
 }
 
-window.customElements.get('sci-fi-hexa-tile') ||
-  window.customElements.define('sci-fi-hexa-tile', SciFiHexaTile);
-window.customElements.get('sci-fi-half-hexa-tile') ||
-  window.customElements.define('sci-fi-half-hexa-tile', SciFiHexaHalfTile);
+defineCustomElement('sci-fi-hexa-tile', SciFiHexaTile);
+defineCustomElement('sci-fi-half-hexa-tile', SciFiHexaHalfTile);

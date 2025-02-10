@@ -6,6 +6,7 @@ import {
   STATE_CLIMATE_OFF,
 } from '../helpers/entities/climate/climate_const.js';
 import common_style from '../helpers/styles/common_style.js';
+import {defineCustomElement} from '../helpers/utils/import.js';
 
 const SVG_VIEWBOX_WIDTH = 124;
 const SVG_VIEWBOX_HEIGHT = 480;
@@ -199,5 +200,4 @@ class SciFiStoveImage extends LitElement {
   }
 }
 
-window.customElements.get('sci-fi-stove-image') ||
-  window.customElements.define('sci-fi-stove-image', SciFiStoveImage);
+defineCustomElement('sci-fi-stove-image', SciFiStoveImage);

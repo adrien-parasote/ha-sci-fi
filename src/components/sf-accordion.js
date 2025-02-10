@@ -2,6 +2,7 @@ import {LitElement, css, html, nothing} from 'lit';
 
 import {getIcon} from '../helpers/icons/icons.js';
 import common_style from '../helpers/styles/common_style.js';
+import {defineCustomElement} from '../helpers/utils/import.js';
 
 export class SciFiAccordionCard extends LitElement {
   static get styles() {
@@ -185,5 +186,4 @@ export class SciFiAccordionCard extends LitElement {
   }
 }
 
-window.customElements.get('sci-fi-accordion-card') ||
-  window.customElements.define('sci-fi-accordion-card', SciFiAccordionCard);
+defineCustomElement('sci-fi-accordion-card', SciFiAccordionCard);

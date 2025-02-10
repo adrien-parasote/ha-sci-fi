@@ -2,6 +2,7 @@ import {LitElement, css, html} from 'lit';
 
 import {getIcon} from '../../helpers/icons/icons.js';
 import common_style from '../../helpers/styles/common_style.js';
+import {defineCustomElement} from '../../helpers/utils/import.js';
 
 export class SciFiButton extends LitElement {
   static get styles() {
@@ -104,5 +105,4 @@ export class SciFiButton extends LitElement {
   }
 }
 
-window.customElements.get('sci-fi-button') ||
-  window.customElements.define('sci-fi-button', SciFiButton);
+defineCustomElement('sci-fi-button', SciFiButton);

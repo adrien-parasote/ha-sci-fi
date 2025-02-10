@@ -1,6 +1,7 @@
 import {css, html} from 'lit';
 
 import {getIcon} from '../../helpers/icons/icons.js';
+import {defineCustomElement} from '../../helpers/utils/import.js';
 import {SciFiCardButton} from './sf-button-card.js';
 
 export class SciFiCardSelectButton extends SciFiCardButton {
@@ -117,8 +118,4 @@ export class SciFiCardSelectButton extends SciFiCardButton {
   }
 }
 
-window.customElements.get('sci-fi-button-select-card') ||
-  window.customElements.define(
-    'sci-fi-button-select-card',
-    SciFiCardSelectButton
-  );
+defineCustomElement('sci-fi-button-select-card', SciFiCardSelectButton);

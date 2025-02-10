@@ -2,6 +2,7 @@ import {LitElement, css, html, nothing} from 'lit';
 
 import {getIcon} from '../helpers/icons/icons.js';
 import common_style from '../helpers/styles/common_style.js';
+import {defineCustomElement} from '../helpers/utils/import.js';
 
 class SciFiWheel extends LitElement {
   static get styles() {
@@ -160,5 +161,4 @@ class SciFiWheel extends LitElement {
   }
 }
 
-window.customElements.get('sci-fi-wheel') ||
-  window.customElements.define('sci-fi-wheel', SciFiWheel);
+defineCustomElement('sci-fi-wheel', SciFiWheel);

@@ -8,6 +8,7 @@ import './sf-svg-icon.js';
 
 const MDI_PREFIXES = 'mdi';
 const CACHE = {};
+const CACHE_STORE_KEYS = [];
 
 const getStore = memoizeOne(async () => {
   return createStore('hass-icon-db', 'mdi-icon-store');
@@ -16,17 +17,49 @@ const getStore = memoizeOne(async () => {
 const getStoredIcon = function (iconName) {
   return new Promise((resolve, reject) => {
     const store = getStore();
-    const readIcons = async () => {
+    (async () => {
       const iconStore = await store;
       iconStore('readonly', (store) => {
         promisifyRequest(store.get(iconName))
           .then((icon) => resolve(icon))
           .catch((e) => reject(e));
       });
-    };
-    readIcons();
+    })();
   });
 };
+
+const getStoredKeys = function () {
+  return new Promise((resolve, reject) => {
+    const store = getStore();
+    (async () => {
+      const iconStore = await store;
+      iconStore('readonly', (store) => {
+        promisifyRequest(store.getAllKeys())
+          .then((keys) => resolve(keys))
+          .catch((e) => reject(e));
+      });
+    })();
+  });
+};
+
+export const getAllIconNames = memoizeOne(async function () {
+  if (!CACHE_STORE_KEYS) {
+    // TODO be more generic
+    const mdi_icons = await getStoredKeys();
+    const sci_icons = await window.customIcons.sci.getIconList();
+
+    CACHE_STORE_KEYS = sci_icons
+      .map((sciObj) => {
+        return {name: 'sci:' + sciObj.name};
+      })
+      .concat(
+        mdi_icons.map((mdiName) => {
+          return {name: 'mdi:' + mdiName};
+        })
+      );
+  }
+  return CACHE_STORE_KEYS;
+});
 
 class SciFiIcon extends LitElement {
   static get styles() {

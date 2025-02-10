@@ -1,7 +1,7 @@
 import {css, html} from 'lit';
 
-import {ICONSET} from '../../helpers/icons/icons.js';
 import {defineCustomElement} from '../../helpers/utils/import.js';
+import {getAllIconNames} from '../icons/sf-icon.js';
 import {SciFiDropdownInput} from './sf-input-dropdown.js';
 
 export class SciFiDropdownIconInput extends SciFiDropdownInput {
@@ -29,7 +29,9 @@ export class SciFiDropdownIconInput extends SciFiDropdownInput {
 
   constructor() {
     super();
-    this.items = Object.values(ICONSET);
+    getAllIconNames().then((icons) => {
+      this.items = icons;
+    });
   }
 
   __filter(e) {

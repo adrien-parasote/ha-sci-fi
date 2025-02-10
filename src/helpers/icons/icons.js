@@ -24,25 +24,6 @@ Object.keys(mdi).forEach((k) => {
 // Add custom icon
 export const ICONSET = Object.assign({}, SVG_ICONSET, CUSTOM_ICON_SET);
 
-export function getIcon(name, color = null) {
-  let icon = name;
-  if (!ICONSET[icon]) {
-    console.info('Icon : ' + name + ' cannot be found');
-    icon = 'mdi:alert';
-  }
-  return html`
-    <div class="svg-container">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        style="${color ? 'fill:' + color + ';' : ''}"
-      >
-        <path d="${ICONSET[icon].path}" />
-      </svg>
-    </div>
-  `;
-}
-
 export function getWeatherIcon(weather) {
   let icon = weather;
   if (!WEATHER_ICON_SET[icon]) {

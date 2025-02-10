@@ -13,7 +13,6 @@ import {
   STATE_CLIMATE_OFF,
 } from '../helpers/entities/climate_const.js';
 import common_style from '../helpers/styles/common_style.js';
-import './button.js';
 
 class SciFiRadiator extends LitElement {
   static get styles() {

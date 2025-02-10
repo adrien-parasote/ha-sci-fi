@@ -1,7 +1,5 @@
 import {html, nothing} from 'lit';
 
-import '../../components/button.js';
-import '../../components/input.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 import {SciFiBaseEditor} from '../../helpers/utils/base_editor.js';
 

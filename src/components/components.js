@@ -1,4 +1,6 @@
+import './buttons/buttons.js';
 import './icons/icons.js';
+import './inputs/inputs.js';
 import './sf-accordion.js';
 import './sf-circle_progress_bar.js';
 import './sf-radiator.js';
@@ -6,4 +8,5 @@ import './sf-stack_bar.js';
 import './sf-stove.js';
 import './sf-tiles.js';
 import './sf-toast.js';
+import './sf-toggle-switch.js';
 import './sf-wheel.js';

@@ -1,6 +1,6 @@
 import {PACKAGE_NAME, VERSION} from './build/const.js';
-import './cards/import.js';
-import './components/import.js';
+import './cards/cards.js';
+import './components/components.js';
 
 console.info(
   `%c🛸 ${PACKAGE_NAME.toUpperCase()} 🛸 - v${VERSION}`,

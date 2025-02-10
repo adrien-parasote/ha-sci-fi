@@ -1,7 +1,6 @@
 import {html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
-import '../../components/button.js';
 import {StoveEntity} from '../../helpers/entities/climate.js';
 import {STATE_CLIMATE_OFF} from '../../helpers/entities/climate_const.js';
 import {getIcon} from '../../helpers/icons/icons.js';

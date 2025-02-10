@@ -4,7 +4,7 @@ import {isEqual} from 'lodash-es';
 import '../../components/tiles.js';
 import '../../helpers/entities/person.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
-import {SciFiBaseCard} from '../../helpers/utils/base-card.js';
+import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
 import {LANDSCAPE_DISPLAY, PACKAGE, PORTRAIT_DISPLAY} from './const.js';
 import style from './style.js';
@@ -261,6 +261,6 @@ export class SciFiHexaTiles extends SciFiBaseCard {
   }
 
   static getStubConfig() {
-    return super.getStubConfig();
+    return buildStubConfig(configMetadata);
   }
 }

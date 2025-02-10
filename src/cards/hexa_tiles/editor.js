@@ -74,7 +74,6 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   }
 
   __renderWeather() {
-    if (!this._config.weather) this._config.weather = {activate: false};
     return html`
       <section>
         <h1>
@@ -116,7 +115,6 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   }
 
   __renderTiles() {
-    if (!this._config.tiles) this._config.tiles = [];
     return html`
       ${this._config.tiles.map(
         (entity, id) =>

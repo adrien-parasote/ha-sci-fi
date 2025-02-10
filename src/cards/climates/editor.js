@@ -89,7 +89,6 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
         value=${this._config.header.icon_winter_state}
         @input-update=${this.__update}
       ></sci-fi-dropdown-icon-input>
-
       <sci-fi-input
         class="${!this._config.header.display ? 'hide' : ''}"
         icon="mdi:cursor-text"

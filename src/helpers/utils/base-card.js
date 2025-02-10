@@ -42,12 +42,16 @@ const checkNumber = function (config, key, metadata) {
   return config;
 };
 
-const buildStubConfig = function (configMetadata) {
+export const buildStubConfig = function (configMetadata) {
   if (!configMetadata) return {};
   let cfg = {};
   Object.keys(configMetadata).forEach((key) => {
     const metadata = configMetadata[key];
-    if (metadata.mandatory) cfg[key] = metadata.default;
+    if (metadata.type == 'object') {
+      cfg[key] = buildStubConfig(metadata.data);
+    } else {
+      cfg[key] = metadata.default;
+    }
   });
   return cfg;
 };
@@ -118,19 +122,5 @@ export class SciFiBaseCard extends LitElement {
       grid_rows: 4,
       grid_columns: 4,
     };
-  }
-
-  __buildStubConfig() {
-    if (!this._configMetadata) return {};
-    let cfg = {};
-    Object.keys(this._configMetadata).forEach((key) => {
-      const metadata = configMetadata[key];
-      if (metadata.mandatory) cfg[key] = metadata.default;
-    });
-    return cfg;
-  }
-
-  static getStubConfig() {
-    return buildStubConfig(this._configMetadata);
   }
 }

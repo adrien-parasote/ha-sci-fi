@@ -66,10 +66,11 @@ export class SciFiPerson extends LitElement {
       <div class="avatar">
         <img src="${this.picture ? this.picture : ''}" />
         <div class="icon-container">
-          <sci-fi-icon icon=${this.state == STATE_HOME
+          <sci-fi-icon
+            icon=${this.state == STATE_HOME
               ? 'mdi:home-outline'
-              : 'mdi:home-off-outline'
-          }></sci-fi-icon>
+              : 'mdi:home-off-outline'}
+          ></sci-fi-icon>
         </div>
       </div>
     `;

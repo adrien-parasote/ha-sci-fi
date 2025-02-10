@@ -1,5 +1,6 @@
-import {SEASON_ICONS} from './sensor_const.js';
 import {html} from 'lit';
+
+import {SEASON_ICONS} from './sensor_const.js';
 
 export class Sensor {
   constructor(id, hass) {
@@ -24,7 +25,9 @@ export class Sensor {
 
 export class Season extends Sensor {
   get state_icon() {
-    return html`<sci-fi-icon icon=${SEASON_ICONS[this.state].icon}></sci-fi-icon>`;
+    return html`<sci-fi-icon
+      icon=${SEASON_ICONS[this.state].icon}
+    ></sci-fi-icon>`;
   }
 
   get color() {

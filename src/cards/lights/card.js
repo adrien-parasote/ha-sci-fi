@@ -99,7 +99,7 @@ export class SciFiLights extends SciFiBaseCard {
             : 'off'}"
           @click="${this.__turnOnOffHouse}"
         >
-          <sci-fi-icon icon='mdi:power-standby'></sci-fi-icon>
+          <sci-fi-icon icon="mdi:power-standby"></sci-fi-icon>
         </div>
         <div class="text">${this._config.header}</div>
       </div>
@@ -135,7 +135,7 @@ export class SciFiLights extends SciFiBaseCard {
                 ? 'on'
                 : 'off'}"
             >
-            <sci-fi-icon icon=${floor.icon}></sci-fi-icon>
+              <sci-fi-icon icon=${floor.icon}></sci-fi-icon>
             </div>
           </sci-fi-hexa-tile>`
       );
@@ -215,7 +215,7 @@ export class SciFiLights extends SciFiBaseCard {
         <div
           class="item-icon ${area.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}"
         >
-        <sci-fi-icon icon=${area.icon}></sci-fi-icon>
+          <sci-fi-icon icon=${area.icon}></sci-fi-icon>
         </div>
       </sci-fi-hexa-tile>
     `;
@@ -242,7 +242,7 @@ export class SciFiLights extends SciFiBaseCard {
       class="power ${active}"
       @click="${(e) => this.__onPowerBtnClick(e, element)}"
     >
-      <sci-fi-icon icon='mdi:power-standby'></sci-fi-icon>
+      <sci-fi-icon icon="mdi:power-standby"></sci-fi-icon>
     </div>`;
   }
 

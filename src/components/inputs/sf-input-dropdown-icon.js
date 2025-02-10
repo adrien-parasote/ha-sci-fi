@@ -1,6 +1,6 @@
 import {css, html} from 'lit';
 
-import {ICONSET, getIcon} from '../../helpers/icons/icons.js';
+import {ICONSET} from '../../helpers/icons/icons.js';
 import {defineCustomElement} from '../../helpers/utils/import.js';
 import {SciFiDropdownInput} from './sf-input-dropdown.js';
 
@@ -14,10 +14,8 @@ export class SciFiDropdownIconInput extends SciFiDropdownInput {
           column-gap: 20px;
           justify-content: center;
         }
-        .dropdown-menu .dropdown-item .svg-container {
-          width: var(--icon-size-normal);
-          height: var(--icon-size-normal);
-          fill: var(--secondary-light-color);
+        .dropdown-menu .dropdown-item sci-fi-icon {
+          --icon-color: var(--secondary-light-color);
         }
         .dropdown-menu .dropdown-item .name {
           color: var(--primary-light-color);
@@ -53,7 +51,7 @@ export class SciFiDropdownIconInput extends SciFiDropdownInput {
       class="dropdown-item"
       @click="${(e) => this.__selectedItem(e, item.name)}"
     >
-      ${getIcon(item.name)}
+      <sci-fi-icon icon=${item.name}></sci-fi-icon>
       <div class="name">${item.name}</div>
     </div>`;
   }

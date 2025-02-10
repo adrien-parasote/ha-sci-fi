@@ -1,6 +1,5 @@
 import {LitElement, css, html, nothing} from 'lit';
 
-import {getIcon} from '../../helpers/icons/icons.js';
 import common_style from '../../helpers/styles/common_style.js';
 import {defineCustomElement} from '../../helpers/utils/import.js';
 
@@ -10,7 +9,7 @@ export class SciFiInput extends LitElement {
       common_style,
       css`
         :host {
-          --icon-color: var(--input-icon-color, white);
+          --input-icon--color: var(--input-icon-color, white);
           color: var(--secondary-light-color);
         }
         input::placeholder {
@@ -30,10 +29,8 @@ export class SciFiInput extends LitElement {
         .container:focus-within {
           border-bottom: var(--border-width) solid var(--primary-light-color);
         }
-        .icon .svg-container {
-          width: var(--icon-size-normal);
-          height: var(--icon-size-normal);
-          fill: var(--icon-color);
+        .icon sci-fi-icon {
+          --icon-color: var(--input-icon--color);
           margin-right: 10px;
         }
         .input-group {
@@ -79,13 +76,11 @@ export class SciFiInput extends LitElement {
         .input-group .remove:hover {
           cursor: pointer;
         }
-        .input-group .remove .svg-container {
-          width: var(--icon-size-small);
-          height: var(--icon-size-small);
-          fill: var(--secondary-light-color);
+        .input-group .remove sci-fi-icon {
+          --icon-color: var(--secondary-light-color);
         }
-        .input-group .remove:hover .svg-container {
-          fill: var(--primary-light-color);
+        .input-group .remove:hover sci-fi-icon {
+          --icon-color: var(--primary-light-color);
         }
       `,
     ];
@@ -112,10 +107,16 @@ export class SciFiInput extends LitElement {
     this.disabled = this.disabled ? this.disabled : false;
   }
 
+
+  renderIcon(icon){
+    if(!icon) return nothing;
+    return html`<sci-fi-icon icon=${icon}></sci-fi-icon>`;
+  }
+
   render() {
     return html`
       <div class="container">
-        <div class="icon">${this.icon ? getIcon(this.icon) : nothing}</div>
+        <div class="icon">${this.renderIcon(this.icon)}</div>
         <div class="input-group">
           <input
             type="text"
@@ -127,8 +128,7 @@ export class SciFiInput extends LitElement {
           <label for="name">${this.label}</label>
           ${this.value && !this.disabled
             ? html`<span class="remove" @click="${this.__cleanInput}"
-                >${getIcon('mdi:close')}</span
-              >`
+                ><sci-fi-icon icon='mdi:close'></sci-fi-icon></span>`
             : ''}
         </div>
       </div>

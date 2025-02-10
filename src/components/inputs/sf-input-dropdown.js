@@ -1,6 +1,5 @@
 import {css, html, nothing} from 'lit';
 
-import {getIcon} from '../../helpers/icons/icons.js';
 import {defineCustomElement} from '../../helpers/utils/import.js';
 import {SciFiInput} from './sf-input.js';
 
@@ -76,7 +75,7 @@ export class SciFiDropdownInput extends SciFiInput {
   render() {
     return html`
       <div class="container">
-        <div class="icon">${this.icon ? getIcon(this.icon) : nothing}</div>
+        <div class="icon">${this.renderIcon(this.icon)}</div>
         <div class="input-group">
           <input
             type="text"
@@ -89,7 +88,7 @@ export class SciFiDropdownInput extends SciFiInput {
           <label for="name">${this.label}</label>
           ${this.value
             ? html`<span class="remove" @click="${this.__cleanInput}"
-                >${getIcon('mdi:close')}</span
+                ><sci-fi-icon icon='mdi:close'></sci-fi-icon></span
               >`
             : nothing}
         </div>

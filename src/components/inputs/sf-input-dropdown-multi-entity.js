@@ -1,6 +1,5 @@
-import {css, html, nothing} from 'lit';
+import {css, html} from 'lit';
 
-import {getIcon} from '../../helpers/icons/icons.js';
 import {defineCustomElement} from '../../helpers/utils/import.js';
 import {SciFiDropdownEntityInput} from './sf-input-dropdown-entity.js';
 
@@ -99,7 +98,7 @@ export class SciFiDropdownMultiEntitiesInput extends SciFiDropdownEntityInput {
         <ul class="chips">
           ${this.__renderChips()}
         </ul>
-        <div class="icon">${this.icon ? getIcon(this.icon) : nothing}</div>
+        <div class="icon">${this.renderIcon(this.icon)}</div>
         <div class="input-group">
           <input
             type="text"

@@ -1,6 +1,5 @@
-import {css, html, nothing} from 'lit';
+import {css, html} from 'lit';
 
-import {getIcon} from '../../helpers/icons/icons.js';
 import {defineCustomElement} from '../../helpers/utils/import.js';
 import {SciFiInput} from './sf-input.js';
 
@@ -63,7 +62,7 @@ export class SciFiSlider extends SciFiInput {
   render() {
     return html`
       <div class="container">
-        <div class="icon">${this.icon ? getIcon(this.icon) : nothing}</div>
+        <div class="icon">${this.renderIcon(this.icon)}</div>
         <div class="input-group">
           <input
             type="range"

@@ -92,11 +92,6 @@ export default css`
   .content .info .e.top-path .powers .power div:last-child.nothing {
     color: var(--secondary-bg-color);
   }
-  .content .info .e.top-path .powers .power svg {
-    fill: var(--primary-light-color);
-    width: var(--icon-size-normal);
-    height: var(--icon-size-normal);
-  }
   .content .info .e .display {
     position: absolute;
     display: flex;
@@ -211,26 +206,24 @@ export default css`
   .content .info .m .temperatures .temperature.medium div:last-child {
     color: var(--primary-error-color);
   }
-  .content .info .m .temperatures .status svg,
-  .content .info .m .temperatures .temperature svg {
-    width: var(--icon-size-normal);
-    height: var(--icon-size-normal);
-    fill: var(--secondary-light-color);
+  .content .info .m .temperatures .status sci-fi-icon,
+  .content .info .m .temperatures .temperature sci-fi-icon {
+    --icon-color: var(--secondary-light-color);
   }
-  .content .info .m .temperatures .status.green svg {
-    fill: var(--primary-green-color);
+  .content .info .m .temperatures .status.green sci-fi-icon {
+    --icon-color: var(--primary-green-color);
   }
-  .content .info .m .temperatures .status.off svg,
-  .content .info .m .temperatures .temperature.off svg {
-    fill: var(--secondary-bg-color);
+  .content .info .m .temperatures .status.off sci-fi-icon,
+  .content .info .m .temperatures .temperature.off sci-fi-icon {
+    --icon-color: var(--secondary-bg-color);
   }
-  .content .info .m .temperatures .status.red svg,
-  .content .info .m .temperatures .temperature.high svg {
-    fill: red;
+  .content .info .m .temperatures .status.red sci-fi-icon,
+  .content .info .m .temperatures .temperature.high sci-fi-icon {
+    --icon-color: red;
   }
-  .content .info .m .temperatures .status.amber svg,
-  .content .info .m .temperatures .temperature.medium svg {
-    fill: var(--primary-error-color);
+  .content .info .m .temperatures .status.amber sci-fi-icon,
+  .content .info .m .temperatures .temperature.medium sci-fi-icon {
+    --icon-color: var(--primary-error-color);
   }
   .content .info .m .temperatures .temperature .no-temp {
     display: flex;
@@ -243,7 +236,7 @@ export default css`
     .temperatures
     .temperature
     .no-temp
-    .svg-container:last-of-type {
+    sci-fi-icon:last-of-type {
     position: absolute;
     right: -4px;
   }
@@ -253,10 +246,9 @@ export default css`
     .temperatures
     .temperature
     .no-temp
-    .svg-container:last-of-type
-    svg {
-    width: var(--icon-size-xsmall);
-    height: var(--icon-size-xsmall);
+    sci-fi-icon:last-of-type {
+    --icon-width: var(--icon-size-xsmall);
+    --icon-height: var(--icon-size-xsmall);
   }
   /*********** HEADER ***********/
   .header {

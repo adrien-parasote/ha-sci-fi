@@ -3,7 +3,6 @@ import {isEqual} from 'lodash-es';
 
 import {StoveEntity} from '../../helpers/entities/climate/climate.js';
 import {STATE_CLIMATE_OFF} from '../../helpers/entities/climate/climate_const.js';
-import {getIcon} from '../../helpers/icons/icons.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
 import {
@@ -226,7 +225,7 @@ export class SciFiStove extends SciFiBaseCard {
     if (hours <= 480) state = 'medium';
     return html`
       <div class="temperature ${state}">
-        ${getIcon('mdi:timeline-clock-outline')}
+        <sci-fi-icon icon='mdi:timeline-clock-outline'></sci-fi-icon>
         <div class="label">Time to Service:</div>
         <div>${hours}${this._stove.time_to_service.unit_of_measurement}</div>
       </div>
@@ -277,11 +276,11 @@ export class SciFiStove extends SciFiBaseCard {
           ? STATUS_ICONS_COLORS[status].color
           : 'off'}"
       >
-        ${getIcon(
-          STATUS_ICONS_COLORS[status]
+
+      <sci-fi-icon icon=${STATUS_ICONS_COLORS[status]
             ? STATUS_ICONS_COLORS[status].icon
-            : 'sci:stove-unknow'
-        )}
+            : 'sci:stove-unknow'}></sci-fi-icon>
+        
         <div class="label">${text}:</div>
         <div>${status.replace('_', ' ')}</div>
       </div>
@@ -291,7 +290,7 @@ export class SciFiStove extends SciFiBaseCard {
   __noTemperature(text) {
     return html`<div class="temperature off">
       <div class="no-temp">
-        ${getIcon('mdi:thermometer')} ${getIcon('mdi:help')}
+        <sci-fi-icon icon='mdi:thermometer'></sci-fi-icon> <sci-fi-icon icon='mdi:help'></sci-fi-icon>
       </div>
       <div class="label">${text}:</div>
       <div>N/A</div>
@@ -302,7 +301,7 @@ export class SciFiStove extends SciFiBaseCard {
     if (!pressure) return nothing;
     return html`
       <div class="temperature ${pressure == '0' ? 'off' : ''}">
-        ${getIcon('mdi:gauge')}
+        <sci-fi-icon icon='mdi:gauge'></sci-fi-icon>
         <div class="label">${text}:</div>
         <div>${pressure}</div>
       </div>
@@ -327,7 +326,7 @@ export class SciFiStove extends SciFiBaseCard {
     }
     return html`
       <div class="temperature ${state}">
-        ${getIcon(icon)}
+        <sci-fi-icon icon=${icon}></sci-fi-icon>
         <div class="label">${text}:</div>
         <div>${temperature}${unit}</div>
       </div>
@@ -338,7 +337,7 @@ export class SciFiStove extends SciFiBaseCard {
     if (power == null) return this.__displayPower(text, 'N/A', '');
     return html`
       <div class="power">
-        ${getIcon('mdi:lightning-bolt')}
+        <sci-fi-icon icon='mdi:lightning-bolt'></sci-fi-icon>
         <div class="label">${text}</div>
         <div class="${power == 'N/A' ? 'nothing' : ''}">${power} ${unit}</div>
       </div>
@@ -349,7 +348,7 @@ export class SciFiStove extends SciFiBaseCard {
     if (fan == null) return nothing;
     return html`
       <div class="power">
-        ${getIcon('mdi:speedometer')}
+        <sci-fi-icon icon='mdi:speedometer'></sci-fi-icon>
         <div class="label">${text}</div>
         <div>${fan} ${unit}</div>
       </div>

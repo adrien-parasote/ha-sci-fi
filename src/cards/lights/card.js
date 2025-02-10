@@ -8,7 +8,7 @@ import {
   STATE_LIGHT_ON,
 } from '../../helpers/entities/light/light_const.js';
 import {SunEntity} from '../../helpers/entities/weather/weather.js';
-import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
+import {getWeatherIcon} from '../../helpers/icons/icons.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
 import {PACKAGE} from './const.js';
@@ -99,7 +99,7 @@ export class SciFiLights extends SciFiBaseCard {
             : 'off'}"
           @click="${this.__turnOnOffHouse}"
         >
-          ${getIcon('mdi:power-standby')}
+          <sci-fi-icon icon='mdi:power-standby'></sci-fi-icon>
         </div>
         <div class="text">${this._config.header}</div>
       </div>
@@ -135,7 +135,7 @@ export class SciFiLights extends SciFiBaseCard {
                 ? 'on'
                 : 'off'}"
             >
-              ${getIcon(floor.icon)}
+            <sci-fi-icon icon=${floor.icon}></sci-fi-icon>
             </div>
           </sci-fi-hexa-tile>`
       );
@@ -215,7 +215,7 @@ export class SciFiLights extends SciFiBaseCard {
         <div
           class="item-icon ${area.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}"
         >
-          ${getIcon(area.icon)}
+        <sci-fi-icon icon=${area.icon}></sci-fi-icon>
         </div>
       </sci-fi-hexa-tile>
     `;
@@ -242,7 +242,7 @@ export class SciFiLights extends SciFiBaseCard {
       class="power ${active}"
       @click="${(e) => this.__onPowerBtnClick(e, element)}"
     >
-      ${getIcon('mdi:power-standby')}
+      <sci-fi-icon icon='mdi:power-standby'></sci-fi-icon>
     </div>`;
   }
 
@@ -278,7 +278,7 @@ export class SciFiLights extends SciFiBaseCard {
           ? custom.icon_off
           : this._config.default_icon_off;
     }
-    return getIcon(icon);
+    return html`<sci-fi-icon icon=${icon}></sci-fi-icon>`;
   }
 
   __onFloorSelect(e, floor) {

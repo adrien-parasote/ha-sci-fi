@@ -1,6 +1,5 @@
 import {css, html} from 'lit';
 
-import {getIcon} from '../../helpers/icons/icons.js';
 import common_style from '../../helpers/styles/common_style.js';
 import {defineCustomElement} from '../../helpers/utils/import.js';
 import {SciFiButton} from './sf-button.js';
@@ -50,10 +49,10 @@ export class SciFiCardButton extends SciFiButton {
           font-weight: normal;
           color: var(--title-text-color);
         }
-        .btn svg {
-          fill: var(--btn-icon-color);
-          width: var(--icon-size-small);
-          height: var(--icon-size-small);
+        .btn sci-fi-icon {
+          --icon-color: var(--btn-icon-color);
+          --icon-width: var(--icon-size-small);
+          --icon-height: var(--icon-size-small);
         }
       `,
     ];
@@ -81,7 +80,7 @@ export class SciFiCardButton extends SciFiButton {
   displayBtn() {
     return html`
       <div class="btn" @click="${this.click}">
-        ${getIcon(this.icon)}
+        <sci-fi-icon icon=${this.icon}></sci-fi-icon>
         <div class="label">
           <div>${this.title}</div>
           <div>${this.text}</div>

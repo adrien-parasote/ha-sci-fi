@@ -1,6 +1,5 @@
 import {css, html} from 'lit';
 
-import {getIcon} from '../../helpers/icons/icons.js';
 import {defineCustomElement} from '../../helpers/utils/import.js';
 import {SciFiCardButton} from './sf-button-card.js';
 
@@ -55,10 +54,9 @@ export class SciFiCardSelectButton extends SciFiCardButton {
         .items .item:last-of-type {
           border-bottom: none;
         }
-        .items .item svg {
-          fill: var(--secondary-light-color);
-          width: var(--icon-size-small);
-          height: var(--icon-size-small);
+        .items .item sci-fi-icon {
+          --icon-width: var(--icon-size-small);
+          --icon-height: var(--icon-size-small);
         }
       `,
     ]);
@@ -85,14 +83,13 @@ export class SciFiCardSelectButton extends SciFiCardButton {
     return html`
       <div class="items hide ${this.position}">
         ${this.items.map((item, idx) => {
+          const color = item.color ? item.color : 'var(--secondary-light-color)';
           return html`<div
             class="item"
-            style="color:${item.color
-              ? item.color
-              : 'var(--secondary-light-color)'}"
+            style="color:${color}"
             @click="${(e) => this.__select(e, idx)}"
           >
-            ${getIcon(item.icon, item.color)}
+            <sci-fi-icon icon=${item.icon} style="--icon-color:${color}"></sci-fi-icon>
             <div>${item.text}</div>
           </div>`;
         })}

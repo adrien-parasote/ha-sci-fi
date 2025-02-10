@@ -1,6 +1,5 @@
 import {LitElement, css, html} from 'lit';
 
-import {getIcon} from '../../helpers/icons/icons.js';
 import common_style from '../../helpers/styles/common_style.js';
 import {defineCustomElement} from '../../helpers/utils/import.js';
 
@@ -38,20 +37,16 @@ export class SciFiButton extends LitElement {
           fill: var(--primary-light-color);
           padding: 5px;
         }
-        .btn .svg-container {
-          fill: var(--btn-icon-color);
-          width: var(--icon-size-normal);
-          height: var(--icon-size-normal);
-        }
-        .btn-border .svg-container {
-          width: var(--icon-size-small);
-          height: var(--icon-size-small);
-        }
-        .btn:hover .svg-container {
+        .btn sci-fi-icon {
+          --icon-color: var(--btn-icon-color);
           cursor: pointer;
         }
-        .btn.disable .svg-container {
-          fill: var(--btn-icon-disable-color);
+        .btn-border sci-fi-icon {
+          --icon-width: var(--icon-size-small);
+          --icon-height: var(--icon-size-small);
+        }
+        .btn.disable sci-fi-icon {
+          --icon-color: var(--btn-icon-disable-color);
           cursor: unset;
         }
         .btn-border:hover {
@@ -84,7 +79,7 @@ export class SciFiButton extends LitElement {
           : ''}"
         @click="${this.click}"
       >
-        ${getIcon(this.icon)}
+        <sci-fi-icon icon=${this.icon}></sci-fi-icon>
       </div>
     `;
   }

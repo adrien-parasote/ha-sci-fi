@@ -1,18 +1,18 @@
-import {ClimateEntity} from './climate.js';
+import {ClimateEntity} from './climate/climate.js';
 import {
   ENTITY_KIND_CLIMATE,
   HASS_CLIMATE_PRESET_MODE_ECO,
   HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION,
   HASS_CLIMATE_SERVICE,
   HASS_CLIMATE_SERVICE_SET_PRESET_MODE,
-} from './climate_const.js';
-import {LightEntity} from './light.js';
+} from './climate/climate_const.js';
+import {LightEntity} from './light/light.js';
 import {
   ENTITY_KIND_LIGHT,
   HASS_LIGHT_SERVICE,
   HASS_LIGHT_SERVICE_ACTION_TURN_OFF,
   HASS_LIGHT_SERVICE_ACTION_TURN_ON,
-} from './light_const.js';
+} from './light/light_const.js';
 
 const SCI_FI_ENTITIES = {};
 SCI_FI_ENTITIES[ENTITY_KIND_LIGHT] = LightEntity;

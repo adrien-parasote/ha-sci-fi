@@ -1,7 +1,7 @@
 import {css, html, nothing} from 'lit';
 
 import {getIcon} from '../../helpers/icons/icons.js';
-import { SciFiDropdownEntityInput } from './sf-input-dropdown-entity.js';
+import {SciFiDropdownEntityInput} from './sf-input-dropdown-entity.js';
 
 export class SciFiDropdownMultiEntitiesInput extends SciFiDropdownEntityInput {
   static get styles() {

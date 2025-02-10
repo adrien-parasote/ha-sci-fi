@@ -1,3 +1,17 @@
+import {Counter} from '../counter.js';
+import {Sensor} from '../sensor/sensor.js';
+import {
+  STOVE_SENSORS,
+  STOVE_SENSOR_ACTUAL_POWER,
+  STOVE_SENSOR_COMBUSTION_CHAMBER_TEMP,
+  STOVE_SENSOR_FAN_SPEED,
+  STOVE_SENSOR_INSIDE_TEMP,
+  STOVE_SENSOR_PELLET_QTY,
+  STOVE_SENSOR_POWER,
+  STOVE_SENSOR_PRESSURE,
+  STOVE_SENSOR_STATUS,
+  STOVE_SENSOR_TIME_TO_SERVICE,
+} from '../sensor/sensor_const.js';
 import {
   ENTITY_KIND_CLIMATE,
   HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION,
@@ -10,20 +24,6 @@ import {
   STATE_CLIMATE_HEAT,
   STATE_CLIMATE_OFF,
 } from './climate_const.js';
-import {Counter} from './counter.js';
-import {Sensor} from './sensor.js';
-import {
-  STOVE_SENSORS,
-  STOVE_SENSOR_ACTUAL_POWER,
-  STOVE_SENSOR_COMBUSTION_CHAMBER_TEMP,
-  STOVE_SENSOR_FAN_SPEED,
-  STOVE_SENSOR_INSIDE_TEMP,
-  STOVE_SENSOR_PELLET_QTY,
-  STOVE_SENSOR_POWER,
-  STOVE_SENSOR_PRESSURE,
-  STOVE_SENSOR_STATUS,
-  STOVE_SENSOR_TIME_TO_SERVICE,
-} from './sensor_const.js';
 
 export class ClimateEntity {
   static kind = ENTITY_KIND_CLIMATE;

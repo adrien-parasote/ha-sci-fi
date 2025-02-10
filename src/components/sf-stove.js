@@ -4,7 +4,7 @@ import {
   STATE_CLIMATE_COOL,
   STATE_CLIMATE_HEAT,
   STATE_CLIMATE_OFF,
-} from '../helpers/entities/climate_const.js';
+} from '../helpers/entities/climate/climate_const.js';
 import common_style from '../helpers/styles/common_style.js';
 
 const SVG_VIEWBOX_WIDTH = 124;

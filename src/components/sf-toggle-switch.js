@@ -115,7 +115,4 @@ export class SciFiToggleSwitch extends LitElement {
 }
 
 window.customElements.get('sci-fi-toggle') ||
-  window.customElements.define(
-    'sci-fi-toggle',
-    SciFiToggleSwitch
-  );
+  window.customElements.define('sci-fi-toggle', SciFiToggleSwitch);

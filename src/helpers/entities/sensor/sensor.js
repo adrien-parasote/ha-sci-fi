@@ -1,5 +1,5 @@
-import {getIcon} from '../icons/icons';
-import {SEASON_ICONS} from './sensor_const';
+import {getIcon} from '../../icons/icons.js';
+import {SEASON_ICONS} from './sensor_const.js';
 
 export class Sensor {
   constructor(id, hass) {

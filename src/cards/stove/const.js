@@ -6,7 +6,7 @@ import {
   STOVE_SENSOR_STATUS_OFF,
   STOVE_SENSOR_STATUS_PRE_COMBUSTION,
   STOVE_SENSOR_STATUS_PRE_HEATING,
-} from '../../helpers/entities/sensor_const.js';
+} from '../../helpers/entities/sensor/sensor_const.js';
 
 export const PACKAGE = 'sci-fi-stove';
 export const NAME = 'Sci-fi Stove card';

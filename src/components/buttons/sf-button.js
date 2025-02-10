@@ -105,7 +105,4 @@ export class SciFiButton extends LitElement {
 }
 
 window.customElements.get('sci-fi-button') ||
-  window.customElements.define(
-    'sci-fi-button',
-    SciFiButton
-  );
+  window.customElements.define('sci-fi-button', SciFiButton);

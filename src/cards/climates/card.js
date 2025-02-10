@@ -1,9 +1,9 @@
 import {html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
-import {ENTITY_KIND_CLIMATE} from '../../helpers/entities/climate_const.js';
+import {ENTITY_KIND_CLIMATE} from '../../helpers/entities/climate/climate_const.js';
 import {House} from '../../helpers/entities/house.js';
-import {Season} from '../../helpers/entities/sensor.js';
+import {Season} from '../../helpers/entities/sensor/sensor.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';

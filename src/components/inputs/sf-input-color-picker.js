@@ -1,7 +1,7 @@
 import {css, html, nothing} from 'lit';
 
-import { getIcon} from '../../helpers/icons/icons.js';
-import { SciFiInput } from './sf-input.js';
+import {getIcon} from '../../helpers/icons/icons.js';
+import {SciFiInput} from './sf-input.js';
 
 export class SciFiColorPicker extends SciFiInput {
   static get styles() {
@@ -43,7 +43,4 @@ export class SciFiColorPicker extends SciFiInput {
 }
 
 window.customElements.get('sci-fi-color-picker') ||
-  window.customElements.define(
-    'sci-fi-color-picker',
-    SciFiColorPicker
-  );
+  window.customElements.define('sci-fi-color-picker', SciFiColorPicker);

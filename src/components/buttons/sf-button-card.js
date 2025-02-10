@@ -91,7 +91,4 @@ export class SciFiCardButton extends SciFiButton {
 }
 
 window.customElements.get('sci-fi-button-card') ||
-  window.customElements.define(
-    'sci-fi-button-card',
-    SciFiCardButton
-  );
+  window.customElements.define('sci-fi-button-card', SciFiCardButton);

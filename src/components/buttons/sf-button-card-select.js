@@ -117,7 +117,6 @@ export class SciFiCardSelectButton extends SciFiCardButton {
   }
 }
 
-
 window.customElements.get('sci-fi-button-select-card') ||
   window.customElements.define(
     'sci-fi-button-select-card',

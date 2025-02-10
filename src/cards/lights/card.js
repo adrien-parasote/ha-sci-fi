@@ -6,8 +6,8 @@ import {House} from '../../helpers/entities/house.js';
 import {
   ENTITY_KIND_LIGHT,
   STATE_LIGHT_ON,
-} from '../../helpers/entities/light_const.js';
-import {SunEntity} from '../../helpers/entities/weather.js';
+} from '../../helpers/entities/light/light_const.js';
+import {SunEntity} from '../../helpers/entities/weather/weather.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';

@@ -1,7 +1,7 @@
 import {css, html, nothing} from 'lit';
 
 import {getIcon} from '../../helpers/icons/icons.js';
-import { SciFiInput } from './sf-input.js';
+import {SciFiInput} from './sf-input.js';
 
 export class SciFiDropdownInput extends SciFiInput {
   static get styles() {
@@ -134,7 +134,4 @@ export class SciFiDropdownInput extends SciFiInput {
 }
 
 window.customElements.get('sci-fi-dropdown-input') ||
-  window.customElements.define(
-    'sci-fi-dropdown-input',
-    SciFiDropdownInput
-  );
+  window.customElements.define('sci-fi-dropdown-input', SciFiDropdownInput);

@@ -1,7 +1,7 @@
 import {css, html, nothing} from 'lit';
 
 import {getIcon} from '../../helpers/icons/icons.js';
-import { SciFiInput } from './sf-input.js';
+import {SciFiInput} from './sf-input.js';
 
 export class SciFiSlider extends SciFiInput {
   static get styles() {
@@ -86,7 +86,4 @@ export class SciFiSlider extends SciFiInput {
 }
 
 window.customElements.get('sci-fi-slider') ||
-  window.customElements.define(
-    'sci-fi-slider',
-    SciFiSlider
-  );
+  window.customElements.define('sci-fi-slider', SciFiSlider);

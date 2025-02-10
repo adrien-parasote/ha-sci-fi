@@ -10,7 +10,7 @@ import {
   STATE_CLIMATE_AUTO,
   STATE_CLIMATE_HEAT,
   STATE_CLIMATE_OFF,
-} from '../../helpers/entities/climate_const.js';
+} from '../../helpers/entities/climate/climate_const.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 import {SciFiBaseEditor} from '../../helpers/utils/base_editor.js';
 import editor_style from './style_editor.js';

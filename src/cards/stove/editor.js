@@ -1,4 +1,5 @@
 import {html, nothing} from 'lit';
+
 import {getIcon} from '../../helpers/icons/icons.js';
 import common_style from '../../helpers/styles/common_style.js';
 import editor_common_style from '../../helpers/styles/editor_common_style.js';

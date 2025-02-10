@@ -1,7 +1,7 @@
 import {html, nothing} from 'lit';
 
 import {House} from '../../helpers/entities/house.js';
-import {ENTITY_KIND_LIGHT} from '../../helpers/entities/light_const.js';
+import {ENTITY_KIND_LIGHT} from '../../helpers/entities/light/light_const.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 import {SciFiBaseEditor} from '../../helpers/utils/base_editor.js';
 import editor_style from './style_editor.js';

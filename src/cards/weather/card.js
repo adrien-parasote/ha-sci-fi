@@ -7,8 +7,8 @@ import {
   HourlyForecast,
   SunEntity,
   WeatherEntity,
-} from '../../helpers/entities/weather.js';
-import {WEEK_DAYS} from '../../helpers/entities/weather_const.js';
+} from '../../helpers/entities/weather/weather.js';
+import {WEEK_DAYS} from '../../helpers/entities/weather/weather_const.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
 import WEATHER_ICON_SET from '../../helpers/icons/weather_iconset.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';

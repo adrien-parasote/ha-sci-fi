@@ -161,7 +161,4 @@ export class SciFiInput extends LitElement {
 }
 
 window.customElements.get('sci-fi-input') ||
-  window.customElements.define(
-    'sci-fi-input',
-    SciFiInput
-  );
+  window.customElements.define('sci-fi-input', SciFiInput);

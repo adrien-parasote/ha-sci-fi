@@ -11,7 +11,7 @@ import {
   HASS_CLIMATE_PRESET_MODE_PROG,
   STATE_CLIMATE_AUTO,
   STATE_CLIMATE_OFF,
-} from '../helpers/entities/climate_const.js';
+} from '../helpers/entities/climate/climate_const.js';
 import common_style from '../helpers/styles/common_style.js';
 
 class SciFiRadiator extends LitElement {

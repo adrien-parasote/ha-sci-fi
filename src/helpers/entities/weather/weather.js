@@ -1,7 +1,7 @@
 import {html} from 'lit';
 
-import {getWeatherIcon} from '../icons/icons.js';
-import {isSameDay, pad} from './utils.js';
+import {getWeatherIcon} from '../../icons/icons.js';
+import {isSameDay, pad} from '../../utils/utils.js';
 import {EXTRA_SENSORS, WEATHER_STATE_FR, WEEK_DAYS} from './weather_const.js';
 
 export class SunEntity {

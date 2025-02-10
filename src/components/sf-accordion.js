@@ -186,7 +186,4 @@ export class SciFiAccordionCard extends LitElement {
 }
 
 window.customElements.get('sci-fi-accordion-card') ||
-  window.customElements.define(
-    'sci-fi-accordion-card',
-    SciFiAccordionCard
-  );
+  window.customElements.define('sci-fi-accordion-card', SciFiAccordionCard);

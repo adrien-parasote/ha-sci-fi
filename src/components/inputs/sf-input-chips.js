@@ -1,5 +1,6 @@
 import {css, html} from 'lit';
-import { SciFiInput } from './sf-input';
+
+import {SciFiInput} from './sf-input';
 
 export class SciFiChipsInput extends SciFiInput {
   static get styles() {
@@ -101,7 +102,4 @@ export class SciFiChipsInput extends SciFiInput {
 }
 
 window.customElements.get('sci-fi-chips-input') ||
-  window.customElements.define(
-    'sci-fi-chips-input',
-    SciFiChipsInput
-  );
+  window.customElements.define('sci-fi-chips-input', SciFiChipsInput);

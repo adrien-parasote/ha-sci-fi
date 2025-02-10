@@ -59,6 +59,9 @@ export default css`
     --icon-width: var(--icon-size);
     --icon-height: var(--icon-size);
   }
+  .container .hexa-row sci-fi-hexa-tile svg {
+    width: var(--icon-size);
+  }
   .container .hexa-row sci-fi-hexa-tile[active-tile] sci-fi-icon {
     --icon-color: var(--primary-light-color);
   }

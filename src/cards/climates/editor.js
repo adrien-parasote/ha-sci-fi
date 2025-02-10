@@ -1,6 +1,6 @@
 import {html, nothing} from 'lit';
 
-import '../../components/accordion.js';
+import '../../components/sf-accordion.js';
 import '../../components/button.js';
 import '../../components/input.js';
 import {

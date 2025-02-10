@@ -35,6 +35,7 @@ class SciFiIcon extends LitElement {
         --icon--color: var(--icon-color, var(--primary-light-color));
         --icon--width: var(--icon-width, var(--icon-size-normal));
         --icon--height: var(--icon-height, var(--icon-size-normal));
+        justify-content: center;
       }
       sci-fi-svg-icon {
         --svg-color: var(--icon--color);

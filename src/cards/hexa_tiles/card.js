@@ -2,7 +2,7 @@ import {html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
 import '../../helpers/entities/person.js';
-import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
+import {getWeatherIcon} from '../../helpers/icons/icons.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
 import {LANDSCAPE_DISPLAY, PACKAGE, PORTRAIT_DISPLAY} from './const.js';
@@ -239,7 +239,7 @@ export class SciFiHexaTiles extends SciFiBaseCard {
           state=${entity.state}
           class="state-${entity.state}"
         >
-          <div class="item-icon">${getIcon(entity.icon)}</div>
+          <div class="item-icon"><sci-fi-icon icon=${entity.icon}></sci-fi-icon></div>
           <div class="item-name">${entity.title}</div>
         </sci-fi-hexa-tile>
       </a>

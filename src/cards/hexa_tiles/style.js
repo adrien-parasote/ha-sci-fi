@@ -55,16 +55,17 @@ export default css`
   #weather-tile .item-name {
     margin-top: 0;
   }
-  .container .hexa-row sci-fi-hexa-tile svg {
-    width: var(--icon-size);
+  .container .hexa-row sci-fi-hexa-tile sci-fi-icon {
+    --icon-width: var(--icon-size);
+    --icon-height: var(--icon-size);
   }
-  .container .hexa-row sci-fi-hexa-tile[active-tile] svg {
-    fill: var(--primary-light-color);
+  .container .hexa-row sci-fi-hexa-tile[active-tile] sci-fi-icon {
+    --icon-color: var(--primary-light-color);
   }
-  .container .hexa-row sci-fi-hexa-tile[active-tile].state-off svg {
-    fill: var(--secondary-light-alpha-color);
+  .container .hexa-row sci-fi-hexa-tile[active-tile].state-off sci-fi-icon {
+    --icon-color: var(--secondary-light-alpha-color);
   }
-  .container .hexa-row sci-fi-hexa-tile[active-tile].state-error svg {
-    fill: var(--primary-error-color);
+  .container .hexa-row sci-fi-hexa-tile[active-tile].state-error sci-fi-icon {
+    --icon-color: var(--primary-error-color);
   }
 `;

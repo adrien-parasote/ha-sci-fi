@@ -202,11 +202,7 @@ export default css`
     width: var(--icon-size-title);
     height: var(--icon-size-title);
   }
-  .chart-container
-    .chart-header
-    .dropdown
-    .dropdow-button
-    sci-fi-icon {
+  .chart-container .chart-header .dropdown .dropdow-button sci-fi-icon {
     --icon-color: var(--secondary-light-alpha-color);
   }
   /******** DAILY FORECAST *********/

@@ -64,7 +64,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
     return html`
       <section>
         <h1>
-          <span><sci-fi-icon icon='mdi:page-layout-header'></sci-fi-icon></span>
+          <span><sci-fi-icon icon="mdi:page-layout-header"></sci-fi-icon></span>
           Header
         </h1>
         <sci-fi-input
@@ -101,7 +101,9 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
   __renderSectionDefaultIcon() {
     return html` <section>
       <h1>
-        <span><sci-fi-icon icon='mdi:home-lightbulb-outline'></sci-fi-icon></span>Lights appearance
+        <span
+          ><sci-fi-icon icon="mdi:home-lightbulb-outline"></sci-fi-icon></span
+        >Lights appearance
       </h1>
       <sci-fi-dropdown-icon-input
         label="Active icon (required)"
@@ -136,7 +138,8 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
     }
     return html` <section>
       <h1>
-        <span><sci-fi-icon icon='mdi:home-search-outline'></sci-fi-icon></span>Display selection
+        <span><sci-fi-icon icon="mdi:home-search-outline"></sci-fi-icon></span
+        >Display selection
       </h1>
       <sci-fi-dropdown-entity-input
         icon="mdi:floor-plan"
@@ -163,8 +166,11 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
   __renderSectionCustomEntities() {
     return html` <section>
       <h1>
-        <span><sci-fi-icon icon='mdi:selection-ellipse-arrow-inside'></sci-fi-icon></span>Light
-        entities customization
+        <span
+          ><sci-fi-icon
+            icon="mdi:selection-ellipse-arrow-inside"
+          ></sci-fi-icon></span
+        >Light entities customization
       </h1>
       ${Object.keys(this._config.custom_entities).map((entity_id) =>
         this.__renderCustomEntity(entity_id)

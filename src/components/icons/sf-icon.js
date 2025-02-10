@@ -30,19 +30,22 @@ const getStoredIcon = function (iconName) {
 
 class SciFiIcon extends LitElement {
   static get styles() {
-    return [common_style, css`
-      :host{
-        --icon--color: var(--icon-color, var(--primary-light-color));
-        --icon--width: var(--icon-width, var(--icon-size-normal));
-        --icon--height: var(--icon-height, var(--icon-size-normal));
-        justify-content: center;
-      }
-      sci-fi-svg-icon {
-        --svg-color: var(--icon--color);
-        --svg-width: var(--icon--width);
-        --svg-height: var(--icon--height);
-      }
-      `];
+    return [
+      common_style,
+      css`
+        :host {
+          --icon--color: var(--icon-color, var(--primary-light-color));
+          --icon--width: var(--icon-width, var(--icon-size-normal));
+          --icon--height: var(--icon-height, var(--icon-size-normal));
+          justify-content: center;
+        }
+        sci-fi-svg-icon {
+          --svg-color: var(--icon--color);
+          --svg-width: var(--icon--width);
+          --svg-height: var(--icon--height);
+        }
+      `,
+    ];
   }
 
   static get properties() {

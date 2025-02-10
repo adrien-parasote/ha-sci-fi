@@ -41,7 +41,9 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
     return html`
       <section>
         <h1>
-          <span><sci-fi-icon icon='mdi:tune-vertical-variant'></sci-fi-icon></span>
+          <span
+            ><sci-fi-icon icon="mdi:tune-vertical-variant"></sci-fi-icon
+          ></span>
           General
         </h1>
         <sci-fi-dropdown-entity-input

@@ -59,7 +59,8 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
   __renderAppearance() {
     return html` <section>
       <h1>
-        <span><sci-fi-icon icon='mdi:page-layout-header'></sci-fi-icon></span>Header (optionnal)
+        <span><sci-fi-icon icon="mdi:page-layout-header"></sci-fi-icon></span
+        >Header (optionnal)
       </h1>
       <sci-fi-toggle
         label="Display global turn on/off button ?"
@@ -109,7 +110,8 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
   __renderConfig() {
     return html` <section>
       <h1>
-        <span><sci-fi-icon icon='mdi:tune-vertical-variant'></sci-fi-icon></span>Settings (optionnal)
+        <span><sci-fi-icon icon="mdi:tune-vertical-variant"></sci-fi-icon></span
+        >Settings (optionnal)
       </h1>
       <sci-fi-input
         icon="mdi:thermometer"

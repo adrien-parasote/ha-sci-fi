@@ -36,8 +36,8 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
     return html`
       <section>
         <h1>
-          <span><sci-fi-icon icon='mdi:theme-light-dark'></sci-fi-icon></span>Weather entity
-          (required)
+          <span><sci-fi-icon icon="mdi:theme-light-dark"></sci-fi-icon></span
+          >Weather entity (required)
         </h1>
         <sci-fi-dropdown-entity-input
           label="City weather entity (required)"
@@ -54,7 +54,10 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
 
   __renderSectionDisplay() {
     return html` <section>
-      <h1><span><sci-fi-icon icon='mdi:cog-outline'></sci-fi-icon></span>Technical (optionnal)</h1>
+      <h1>
+        <span><sci-fi-icon icon="mdi:cog-outline"></sci-fi-icon></span>Technical
+        (optionnal)
+      </h1>
       <sci-fi-slider
         label="Daily forecast number (optionnal)"
         icon="mdi:counter"
@@ -70,7 +73,10 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
 
   __renderSectionChart() {
     return html` <section>
-      <h1><span><sci-fi-icon icon='mdi:chart-bell-curve'></sci-fi-icon></span>Chart (optionnal)</h1>
+      <h1>
+        <span><sci-fi-icon icon="mdi:chart-bell-curve"></sci-fi-icon></span
+        >Chart (optionnal)
+      </h1>
       <sci-fi-dropdown-input
         label="Chart first focused data (required)"
         value=${this._config.chart_first_kind_to_render}
@@ -105,7 +111,10 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
         ? this._config.alert.state_red
         : '';
     return html` <section>
-      <h1><span><sci-fi-icon icon='mdi:alert'></sci-fi-icon></span>Alert (optionnal)</h1>
+      <h1>
+        <span><sci-fi-icon icon="mdi:alert"></sci-fi-icon></span>Alert
+        (optionnal)
+      </h1>
       <sci-fi-input
         label="Entity id"
         value=${entity_id}

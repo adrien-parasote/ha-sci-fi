@@ -69,7 +69,7 @@ export class SciFiClimates extends SciFiBaseCard {
   __displayHeader() {
     return html`
       <div class="info">
-        <sci-fi-icon icon='mdi:home-thermometer-outline'></sci-fi-icon>
+        <sci-fi-icon icon="mdi:home-thermometer-outline"></sci-fi-icon>
         <div class="text">
           ${this._house.getTemperature(this._config.entities_to_exclude)}${this
             ._config.unit}
@@ -92,7 +92,7 @@ export class SciFiClimates extends SciFiBaseCard {
       ? this._config.header.icon_summer_state
       : this._config.header.icon_winter_state;
     return html`<div class="action" @click="${this.__globalOnOffClimates}">
-      <sci-fi-icon icon=${icon}></sci-fi-icon> 
+      <sci-fi-icon icon=${icon}></sci-fi-icon>
       <div>
         ${active
           ? this._config.header.message_summer_state
@@ -121,8 +121,8 @@ export class SciFiClimates extends SciFiBaseCard {
           @click="${(e) => this.__onFloorSelect(e, floor)}"
         >
           <div class="item-icon ${active}">
-          <sci-fi-icon icon=${floor.icon}></sci-fi-icon> 
-        </div>
+            <sci-fi-icon icon=${floor.icon}></sci-fi-icon>
+          </div>
         </sci-fi-hexa-tile>`;
       });
   }
@@ -134,8 +134,8 @@ export class SciFiClimates extends SciFiBaseCard {
     const label = temperature ? temperature + this._config.unit : 'Off';
     return html`
       <div class="title ${!temperature ? 'off' : 'on'}">${floor.name} -</div>
-      <div class="temperature ${!temperature ? 'off' : 'on'}">       
-        <sci-fi-icon icon=${icon}></sci-fi-icon> 
+      <div class="temperature ${!temperature ? 'off' : 'on'}">
+        <sci-fi-icon icon=${icon}></sci-fi-icon>
         <div>${label}</div>
       </div>
     `;
@@ -183,7 +183,9 @@ export class SciFiClimates extends SciFiBaseCard {
           : 'off'} ${this._active_area_id == area.id ? 'selected' : ''}"
         @click="${(e) => this.__onAreaSelect(e, area)}"
       >
-        <div class="item-icon"><sci-fi-icon icon=${area.icon}></sci-fi-icon></div>
+        <div class="item-icon">
+          <sci-fi-icon icon=${area.icon}></sci-fi-icon>
+        </div>
       </sci-fi-hexa-tile>
     `;
   }

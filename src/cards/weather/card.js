@@ -194,7 +194,7 @@ export class SciFiWeather extends SciFiBaseCard {
       .map(
         (key) =>
           html`<div class="alert ${alert_states[this._alert.attributes[key]]}">
-            <sci-fi-icon icon='mdi:alert'></sci-fi-icon>
+            <sci-fi-icon icon="mdi:alert"></sci-fi-icon>
             <div>${key}</div>
           </div>`
       )}`;
@@ -263,7 +263,7 @@ export class SciFiWeather extends SciFiBaseCard {
     return html` <div class="dropdown">
       <button @click=${this.__toggleDropdown} class="dropdow-button">
         ${getWeatherIcon(SENSORS_MAP[this._chartDataKind].dropdown.icon)}
-        <sci-fi-icon icon='mdi:chevron-down'></sci-fi-icon>
+        <sci-fi-icon icon="mdi:chevron-down"></sci-fi-icon>
       </button>
       <div class="dropdown-content">
         ${Object.keys(SENSORS_MAP).map(

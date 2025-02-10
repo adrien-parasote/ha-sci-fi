@@ -239,7 +239,9 @@ export class SciFiHexaTiles extends SciFiBaseCard {
           state=${entity.state}
           class="state-${entity.state}"
         >
-          <div class="item-icon"><sci-fi-icon icon=${entity.icon}></sci-fi-icon></div>
+          <div class="item-icon">
+            <sci-fi-icon icon=${entity.icon}></sci-fi-icon>
+          </div>
           <div class="item-name">${entity.title}</div>
         </sci-fi-hexa-tile>
       </a>

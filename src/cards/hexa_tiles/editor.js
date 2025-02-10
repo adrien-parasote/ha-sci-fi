@@ -54,7 +54,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
     return html`
       <section>
         <h1>
-          <span><sci-fi-icon icon='mdi:page-layout-header'></sci-fi-icon></span>
+          <span><sci-fi-icon icon="mdi:page-layout-header"></sci-fi-icon></span>
           Header
         </h1>
         <sci-fi-input
@@ -73,7 +73,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
     return html`
       <section>
         <h1>
-          <span><sci-fi-icon icon='mdi:theme-light-dark'></sci-fi-icon></span>
+          <span><sci-fi-icon icon="mdi:theme-light-dark"></sci-fi-icon></span>
           Weather
         </h1>
         <sci-fi-toggle
@@ -138,8 +138,11 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   __renderEntity(id, entity) {
     return html` <section>
       <h1>
-        <span><sci-fi-icon icon='mdi:selection-ellipse-arrow-inside'></sci-fi-icon></span>Entity
-        (required)
+        <span
+          ><sci-fi-icon
+            icon="mdi:selection-ellipse-arrow-inside"
+          ></sci-fi-icon></span
+        >Entity (required)
       </h1>
       <sci-fi-toggle
         label="Standalone entity?"
@@ -191,7 +194,10 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
 
   __renderAppearance(id, entity) {
     return html` <section>
-      <h1><span><sci-fi-icon icon='mdi:palette-outline'></sci-fi-icon></span>Appearance</h1>
+      <h1>
+        <span><sci-fi-icon icon="mdi:palette-outline"></sci-fi-icon></span
+        >Appearance
+      </h1>
       <sci-fi-input
         label="Name"
         value=${entity.name}
@@ -221,7 +227,10 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   __renderTechnical(id, entity) {
     return html`
       <section>
-        <h1><span><sci-fi-icon icon='mdi:cog-outline'></sci-fi-icon></span>Technical</h1>
+        <h1>
+          <span><sci-fi-icon icon="mdi:cog-outline"></sci-fi-icon></span
+          >Technical
+        </h1>
         <sci-fi-chips-input
           label="State on (required)"
           element-id="${id}"

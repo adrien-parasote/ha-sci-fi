@@ -81,7 +81,7 @@ export class SciFiClimates extends SciFiBaseCard {
       </div>
       <div class="actions">${this.__displayActionHeader()}</div>
       <div class="season ${this._season ? this._season.color : ''}">
-        ${this._season ? this._season.state_icon : ''}
+        ${this._season ? this._season.state_icon : nothing}
       </div>
     `;
   }

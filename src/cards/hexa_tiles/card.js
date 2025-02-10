@@ -249,9 +249,9 @@ export class SciFiHexaTiles extends SciFiBaseCard {
 
   __renderColumns(cols, odd = true) {
     return html`
-      ${odd ? '' : html`<sci-fi-half-hexa-tile right></sci-fi-half-hexa-tile>`}
+      ${odd ? nothing : html`<sci-fi-half-hexa-tile right></sci-fi-half-hexa-tile>`}
       ${cols.map((entity) => entity)}
-      ${!odd ? '' : html`<sci-fi-half-hexa-tile></sci-fi-half-hexa-tile>`}
+      ${!odd ? nothing : html`<sci-fi-half-hexa-tile></sci-fi-half-hexa-tile>`}
     `;
   }
 

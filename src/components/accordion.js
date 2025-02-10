@@ -1,4 +1,4 @@
-import {LitElement, css, html} from 'lit';
+import {LitElement, css, html, nothing} from 'lit';
 
 import {getIcon} from '../helpers/icons/icons.js';
 import common_style from '../helpers/styles/common_style.js';
@@ -145,7 +145,7 @@ export class SciFiAccordionCard extends LitElement {
           />
           <label for="${this.elementId}" class="label">
             <div class="row column-gap">
-              ${this.icon ? getIcon(this.icon) : ''}
+              ${this.icon ? getIcon(this.icon) : nothing}
               <div>${this.title}</div>
             </div>
           </label>
@@ -154,7 +154,7 @@ export class SciFiAccordionCard extends LitElement {
           </div>
         </div>
       </section>
-      ${this.deletable ? this.__renderDeleteIcon() : ''}
+      ${this.deletable ? this.__renderDeleteIcon() : nothing}
     </div>`;
   }
 

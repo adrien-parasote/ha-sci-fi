@@ -106,7 +106,7 @@ export class SciFiLights extends SciFiBaseCard {
         <div class="text">${this._config.header}</div>
       </div>
       <div class="weather">
-        ${this._sun ? getWeatherIcon(this._sun.dayPhaseIcon()) : ''}
+        ${this._sun ? getWeatherIcon(this._sun.dayPhaseIcon()) : nothing}
       </div>
     `;
   }

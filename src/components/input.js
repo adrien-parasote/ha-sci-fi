@@ -1,4 +1,4 @@
-import {LitElement, css, html} from 'lit';
+import {LitElement, css, html, nothing} from 'lit';
 
 import {ICONSET, getIcon} from '../helpers/icons/icons.js';
 import common_style from '../helpers/styles/common_style.js';
@@ -114,7 +114,7 @@ export class SciFiInput extends LitElement {
   render() {
     return html`
       <div class="container">
-        <div class="icon">${this.icon ? getIcon(this.icon) : ''}</div>
+        <div class="icon">${this.icon ? getIcon(this.icon) : nothing}</div>
         <div class="input-group">
           <input
             type="text"
@@ -331,7 +331,7 @@ export class SciFiDropdownInput extends SciFiInput {
   render() {
     return html`
       <div class="container">
-        <div class="icon">${this.icon ? getIcon(this.icon) : ''}</div>
+        <div class="icon">${this.icon ? getIcon(this.icon) :nothing}</div>
         <div class="input-group">
           <input
             type="text"
@@ -346,7 +346,7 @@ export class SciFiDropdownInput extends SciFiInput {
             ? html`<span class="remove" @click="${this.__cleanInput}"
                 >${getIcon('mdi:close')}</span
               >`
-            : ''}
+            : nothing}
         </div>
       </div>
       <div class="dropdown-menu">
@@ -609,7 +609,7 @@ export class SciFiDropdownMultiEntitiesInput extends SciFiDropdownEntityInput {
         <ul class="chips">
           ${this.__renderChips()}
         </ul>
-        <div class="icon">${this.icon ? getIcon(this.icon) : ''}</div>
+        <div class="icon">${this.icon ? getIcon(this.icon) : nothing}</div>
         <div class="input-group">
           <input
             type="text"
@@ -708,7 +708,7 @@ export class SciFiSlider extends SciFiInput {
   render() {
     return html`
       <div class="container">
-        <div class="icon">${this.icon ? getIcon(this.icon) : ''}</div>
+        <div class="icon">${this.icon ? getIcon(this.icon) :nothing}</div>
         <div class="input-group">
           <input
             type="range"
@@ -752,7 +752,7 @@ export class SciFiColorPicker extends SciFiInput {
   render() {
     return html`
       <div class="container">
-        <div class="icon">${this.icon ? getIcon(this.icon) : ''}</div>
+        <div class="icon">${this.icon ? getIcon(this.icon) : nothing}</div>
         <div class="input-group">
           <label for="name">${this.label}</label>
           <input

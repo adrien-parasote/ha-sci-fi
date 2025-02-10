@@ -129,7 +129,7 @@ class SciFiWheel extends LitElement {
             ? 'show'
             : 'hide'} ${this.disable ? 'disable' : ''}"
         >
-          ${el.icon ? getIcon(el.icon) : ''}
+          ${el.icon ? getIcon(el.icon) : nothing}
           <div>${el.text}</div>
         </div>
       `

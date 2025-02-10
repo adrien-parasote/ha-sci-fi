@@ -276,7 +276,7 @@ export default css`
   }
   .bottom sci-fi-wheel {
     --item-font-size: var(--font-size-title);
-    --item-color: var(--primary-light-color);
+    --wheel-item-color: var(--primary-light-color);
     --text-font-color: var(--secondary-bg-color);
   }
 `;

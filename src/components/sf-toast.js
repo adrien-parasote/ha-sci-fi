@@ -1,7 +1,6 @@
 import {LitElement, css} from 'lit';
 import {html, render} from 'lit-html';
 
-import {getIcon} from '../helpers/icons/icons.js';
 import common_style from '../helpers/styles/common_style.js';
 import {defineCustomElement} from '../helpers/utils/import.js';
 
@@ -38,9 +37,9 @@ class SciFiToast extends LitElement {
           transition: all linear 0.3s;
           color: white;
         }
-        #toast .toast svg {
-          width: var(--icon-size-small);
-          height: var(--icon-size-small);
+        #toast .toast sci-fi-icon {
+          --icon-width: var(--icon-size-small);
+          --icon-height: var(--icon-size-small);
         }
 
         @keyframes slideInLeft {
@@ -61,14 +60,14 @@ class SciFiToast extends LitElement {
         #toast .toast.success {
           border-left-color: var(--green);
         }
-        #toast .toast.success .toast_icon svg {
-          fill: var(--green);
+        #toast .toast.success .toast_icon sci-fi-icon {
+          --icon-color: var(--green);
         }
         #toast .toast.error {
           border-left-color: var(--red);
         }
-        #toast .toast.error .toast_icon svg {
-          fill: var(--red);
+        #toast .toast.error .toast_icon sci-fi-icon {
+          --icon-color: var(--red);
         }
         #toast .toast .toast_icon,
         #toast .toast .toast_close {
@@ -82,8 +81,8 @@ class SciFiToast extends LitElement {
         #toast .toast .toast_close {
           cursor: pointer;
         }
-        #toast .toast .toast_close svg {
-          fill: white;
+        #toast .toast .toast_close sci-fi-icon {
+          --icon-color: white;
         }
       `,
     ];
@@ -100,7 +99,7 @@ class SciFiToast extends LitElement {
     // Auto remove toast
     const autoRemoveId = setTimeout(function () {
       main.removeChild(toast);
-    }, duration + 1000);
+    }, duration + 2000);
     // Remove toast when clicked
     toast.onclick = function (e) {
       if (e.target.closest('.toast_close')) {
@@ -115,10 +114,10 @@ class SciFiToast extends LitElement {
     render(
       html`
         <div class="toast_icon">
-          ${getIcon(error ? 'mdi:alert-circle' : 'mdi:check-circle')}
+          <sci-fi-icon icon=${error ? 'mdi:alert-circle' : 'mdi:check-circle'}></sci-f-icon>
         </div>
         <div class="toast_body">${message}</div>
-        <div class="toast_close">${getIcon('mdi:close')}</div>
+        <div class="toast_close"><sci-fi-icon icon='mdi:close'></sci-f-icon></div>
       `,
       toast
     );

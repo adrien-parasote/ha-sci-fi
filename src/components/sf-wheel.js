@@ -1,6 +1,5 @@
 import {LitElement, css, html, nothing} from 'lit';
 
-import {getIcon} from '../helpers/icons/icons.js';
 import common_style from '../helpers/styles/common_style.js';
 import {defineCustomElement} from '../helpers/utils/import.js';
 
@@ -11,7 +10,7 @@ class SciFiWheel extends LitElement {
       css`
         :host {
           --item-font-size: var(--item-font-size, var(--font-size-small));
-          --item--color: var(--item-color, var(--secondary-light-color));
+          --item--color: var(--wheel-item-color, var(--secondary-light-color));
           --wheel-text-color: var(
             --text-font-color,
             var(--secondary-light-color)
@@ -57,14 +56,12 @@ class SciFiWheel extends LitElement {
         .slider .slider-item.hide {
           display: none;
         }
-        .slider .slider-item .svg-container {
-          width: var(--icon-size, var(--icon-size-normal));
-          height: var(--icon-size, var(--icon-size-normal));
-          fill: var(--secondary-light-color);
+        .slider .slider-item sci-fi-icon {
+          --icon-color: var(--secondary-light-color);
           margin-bottom: 5px;
         }
-        .slider .slider-item.on .svg-container {
-          fill: var(--item--color);
+        .slider .slider-item.on sci-fi-icon {
+          --icon-color: var(--item--color);
         }
       `,
     ];
@@ -121,6 +118,10 @@ class SciFiWheel extends LitElement {
     return html`<div class="text">${this.text}</div>`;
   }
 
+  __renderIcon(icon){
+    if(!icon) return nothing;
+    return html`<sci-fi-icon icon=${icon}></sci-fi-icon>`;
+  }
   __buildSliderContent() {
     return this.items.map(
       (el) => html`
@@ -129,7 +130,7 @@ class SciFiWheel extends LitElement {
             ? 'show'
             : 'hide'} ${this.disable ? 'disable' : ''}"
         >
-          ${el.icon ? getIcon(el.icon) : nothing}
+          ${this.__renderIcon(el.icon)}
           <div>${el.text}</div>
         </div>
       `

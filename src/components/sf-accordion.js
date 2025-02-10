@@ -1,6 +1,5 @@
 import {LitElement, css, html, nothing} from 'lit';
 
-import {getIcon} from '../helpers/icons/icons.js';
 import common_style from '../helpers/styles/common_style.js';
 import {defineCustomElement} from '../helpers/utils/import.js';
 
@@ -84,13 +83,13 @@ export class SciFiAccordionCard extends LitElement {
           animation: bounce 0.5s infinite;
           -webkit-animation: bounce 0.5s infinite;
         }
-        .label .svg-container {
-          width: var(--icon-size-small);
-          height: var(--icon-size-small);
-          fill: var(--secondary-light-color);
+        .label sci-fi-icon {
+          --icon-width: var(--icon-size-small);
+          --icon-height: var(--icon-size-small);
+          --icon-color: var(--secondary-light-color);
         }
-        .label:hover .svg-container {
-          fill: var(--primary-light-color);
+        .label:hover sci-fi-icon {
+          --icon-color: var(--primary-light-color);
         }
         .delete {
           margin-top: 6px;
@@ -134,6 +133,10 @@ export class SciFiAccordionCard extends LitElement {
     this.icon = this.icon ? this.icon : null;
   }
 
+  __renderIcon(){
+    if(!this.icon) return nothing;
+    return html`<sci-fi-icon icon=${this.icon}></sci-fi-icon>`;
+  }
   render() {
     return html` <div class="row column-gap">
       <section class="accordion">
@@ -146,7 +149,7 @@ export class SciFiAccordionCard extends LitElement {
           />
           <label for="${this.elementId}" class="label">
             <div class="row column-gap">
-              ${this.icon ? getIcon(this.icon) : nothing}
+              ${this.__renderIcon()}
               <div>${this.title}</div>
             </div>
           </label>

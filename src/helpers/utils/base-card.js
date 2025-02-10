@@ -29,7 +29,7 @@ const checkNumber = function (config, key, metadata) {
   if (!metadata.range.min && !metadata.range.max) return config;
   if (
     (metadata.range.min && config[key] < metadata.range.min) ||
-    (metadata.range.max && config[key] > metadata.range.min)
+    (metadata.range.max && config[key] > metadata.range.max)
   )
     throw new Error(
       key +
@@ -37,7 +37,7 @@ const checkNumber = function (config, key, metadata) {
         metadata.range.min +
         ',' +
         metadata.range.max +
-        '].'
+        '], '+config[key]+' found.'
     );
   return config;
 };

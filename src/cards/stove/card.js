@@ -1,4 +1,4 @@
-import {LitElement, html, nothing} from 'lit';
+import {html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
 import '../../components/button.js';
@@ -12,6 +12,8 @@ import {STATE_CLIMATE_OFF} from '../../helpers/entities/climate_const.js';
 import {STOVE_SENSORS} from '../../helpers/entities/sensor_const.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 import common_style from '../../helpers/styles/common_style.js';
+import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
+import configMetadata from './config-metadata.js';
 import {
   HVAC_MODES_ICONS,
   PACKAGE,
@@ -20,11 +22,12 @@ import {
 } from './const.js';
 import style from './style.js';
 
-export class SciFiStove extends LitElement {
+export class SciFiStove extends SciFiBaseCard {
   static get styles() {
     return [common_style, style];
   }
 
+  _configMetadata = configMetadata;
   _hass; // private
 
   static get properties() {
@@ -33,39 +36,6 @@ export class SciFiStove extends LitElement {
       _stove: {type: Object},
       _area: {type: Object},
     };
-  }
-
-  __validateConfig(config) {
-    if (!config.entity)
-      throw new Error(
-        'You need to define your stove entity (ex: climate.<my_stove>)'
-      );
-    if (!config.entity.startsWith('climate.'))
-      throw new Error(config.entity + 'is not a climate entity.');
-
-    if (!config.pellet_quantity_threshold)
-      config.pellet_quantity_threshold = 0.5;
-    if (!config.storage_counter_threshold)
-      config.storage_counter_threshold = 0.1;
-
-    if (!config.sensors) config.sensors = {};
-    STOVE_SENSORS.forEach((sensor) => {
-      if (!config.sensors[sensor]) {
-        config.sensors[sensor] = null;
-      }
-    });
-    if (!config.storage_counter) config.storage_counter = null;
-    if (!config.unit) config.unit = '°C';
-    return config;
-  }
-
-  setConfig(config) {
-    this._config = this.__validateConfig(JSON.parse(JSON.stringify(config)));
-    // call set hass() to immediately adjust to a changed entity
-    // while editing the entity in the card editor
-    if (this._hass) {
-      this.hass = this._hass;
-    }
   }
 
   getCardSize() {
@@ -425,13 +395,6 @@ export class SciFiStove extends LitElement {
   }
 
   static getStubConfig() {
-    return {
-      entity: null,
-      unit: '°C',
-      sensors: {},
-      storage_counter: null,
-      storage_counter_threshold: 0.1,
-      pellet_quantity_threshold: 0.1,
-    };
+    return buildStubConfig(configMetadata);
   }
 }

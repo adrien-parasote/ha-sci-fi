@@ -1,7 +1,7 @@
 import {html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
-import '../../components/tiles.js';
+import '../../components/sf-tiles.js';
 import '../../helpers/entities/person.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';

@@ -2,7 +2,7 @@ import {LitElement, css, html, nothing} from 'lit';
 
 import {getIcon} from '../helpers/icons/icons.js';
 import common_style from '../helpers/styles/common_style.js';
-import './tiles.js';
+import './sf-tiles.js';
 
 class SciFiWheel extends LitElement {
   static get styles() {

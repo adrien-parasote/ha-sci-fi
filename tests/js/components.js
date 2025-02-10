@@ -3,6 +3,7 @@ import config_hexa from '../config/config_hexa.js';
 import config_lights from '../config/config_lights.js';
 import config_stove from '../config/config_stove.js';
 import config_weather from '../config/config_weather.js';
+import { stringify } from 'yaml'
 
 const MAP = {
   hexa: {
@@ -32,6 +33,10 @@ let hassRdy = false;
 let srvRdy = false;
 let statesRdy = false;
 
+function renderYaml(json){
+  document.getElementById('yaml').innerHTML = stringify(json);
+}
+
 function renderElement() {
   if (!content) {
     const param = new URLSearchParams(window.location.search).get('component');
@@ -43,10 +48,14 @@ function renderElement() {
     const editor = MAP[component_name].element.getConfigElement();
 
     if (document.getElementById('editor').checked) {
-      editor.setConfig(MAP[component_name].element.getStubConfig());
+      const config = MAP[component_name].element.getStubConfig()
+      editor.setConfig(config);
       editor.hass = window.hass;
       content = document.getElementById('phone').appendChild(editor);
+      document.getElementById('yaml').classList.remove('hide');
+      renderYaml(config);      
     } else {
+      document.getElementById('yaml').classList.add('hide');
       component.setConfig(MAP[component_name].config);
       component.hass = window.hass;
       content = document.getElementById('phone').appendChild(component);
@@ -84,6 +93,8 @@ window.editorMode = function (checkbox) {
 window.addEventListener('config-changed', (e) => {
   content.setConfig(e.detail.config);
   console.log(e.detail.config);
+  // Display yaml
+  renderYaml(e.detail.config)
 });
 
 (() => {

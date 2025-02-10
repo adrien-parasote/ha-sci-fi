@@ -58,14 +58,25 @@
       #content {
         height: 100vh;
         align-self: center;
+        display: flex;
+        flex-direction: row;
+        column-gap: 10px;
       }
       #phone {
-        border: 1px solid black;
         display: flex;
+      }
+      #phone, #yaml {
+        border: 1px solid black;
         width: 390px;
         height: 100%;
         overflow-x: auto;
         overflow-y: auto;
+      }
+      #yaml {
+        background-color: lightgray;
+      }
+      .hide {
+        display: none;
       }
     </style>
     <script type="module" src="/tests/js/icons.js"></script>
@@ -91,6 +102,7 @@
       </div>
       <div id="content">
         <div id="phone"></div>
+        <textarea id="yaml" class="hide"></textarea>
       </div>
     </div>
     <script type="module" src="/tests/js/hass.js"></script>

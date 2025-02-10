@@ -3,8 +3,8 @@ import {isEqual} from 'lodash-es';
 
 import '../../components/button.js';
 import '../../components/sf-circle_progress_bar.js';
-import '../../components/stack_bar.js';
-import '../../components/stove.js';
+import '../../components/sf-stack_bar.js';
+import '../../components/sf-stove.js';
 import '../../components/toast.js';
 import '../../components/wheel.js';
 import {StoveEntity} from '../../helpers/entities/climate.js';

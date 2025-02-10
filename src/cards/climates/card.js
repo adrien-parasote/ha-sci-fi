@@ -4,7 +4,6 @@ import {isEqual} from 'lodash-es';
 import {ENTITY_KIND_CLIMATE} from '../../helpers/entities/climate/climate_const.js';
 import {House} from '../../helpers/entities/house.js';
 import {Season} from '../../helpers/entities/sensor/sensor.js';
-import {getIcon} from '../../helpers/icons/icons.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
 import {PACKAGE} from './const.js';
@@ -70,7 +69,7 @@ export class SciFiClimates extends SciFiBaseCard {
   __displayHeader() {
     return html`
       <div class="info">
-        ${getIcon('mdi:home-thermometer-outline')}
+        <sci-fi-icon icon='mdi:home-thermometer-outline'></sci-fi-icon>
         <div class="text">
           ${this._house.getTemperature(this._config.entities_to_exclude)}${this
             ._config.unit}
@@ -93,7 +92,7 @@ export class SciFiClimates extends SciFiBaseCard {
       ? this._config.header.icon_summer_state
       : this._config.header.icon_winter_state;
     return html`<div class="action" @click="${this.__globalOnOffClimates}">
-      ${getIcon(icon)}
+      <sci-fi-icon icon=${icon}></sci-fi-icon> 
       <div>
         ${active
           ? this._config.header.message_summer_state
@@ -121,7 +120,9 @@ export class SciFiClimates extends SciFiBaseCard {
           class="${this._active_floor_id == floor.id ? 'selected' : ''}"
           @click="${(e) => this.__onFloorSelect(e, floor)}"
         >
-          <div class="item-icon ${active}">${getIcon(floor.icon)}</div>
+          <div class="item-icon ${active}">
+          <sci-fi-icon icon=${floor.icon}></sci-fi-icon> 
+        </div>
         </sci-fi-hexa-tile>`;
       });
   }
@@ -133,9 +134,9 @@ export class SciFiClimates extends SciFiBaseCard {
     const label = temperature ? temperature + this._config.unit : 'Off';
     return html`
       <div class="title ${!temperature ? 'off' : 'on'}">${floor.name} -</div>
-      <div class="temperature ${!temperature ? 'off' : 'on'}">
-        ${getIcon(icon)}
-        <div>${temperature}${this._config.unit}</div>
+      <div class="temperature ${!temperature ? 'off' : 'on'}">       
+        <sci-fi-icon icon=${icon}></sci-fi-icon> 
+        <div>${label}</div>
       </div>
     `;
   }
@@ -182,7 +183,7 @@ export class SciFiClimates extends SciFiBaseCard {
           : 'off'} ${this._active_area_id == area.id ? 'selected' : ''}"
         @click="${(e) => this.__onAreaSelect(e, area)}"
       >
-        <div class="item-icon">${getIcon(area.icon)}</div>
+        <div class="item-icon"><sci-fi-icon icon=${area.icon}></sci-fi-icon></div>
       </sci-fi-hexa-tile>
     `;
   }

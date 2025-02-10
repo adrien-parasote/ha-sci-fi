@@ -27,11 +27,6 @@ export default css`
     column-gap: 5px;
     align-items: center;
   }
-  .header .info svg {
-    fill: var(--primary-light-color);
-    width: var(--icon-size-normal);
-    height: var(--icon-size-normal);
-  }
   .header .info .text {
     color: var(--primary-light-color);
     text-shadow: 0px 0px 5px var(--primary-light-color);
@@ -52,10 +47,9 @@ export default css`
     background: var(--secondary-light-light-alpha-color);
     color: var(--primary-light-color);
   }
-  .header .actions svg {
-    fill: var(--primary-light-color);
-    width: var(--icon-size-xsmall);
-    height: var(--icon-size-xsmall);
+  .header .actions sci-fi-icon {
+    --icon-width: var(--icon-size-xsmall);
+    --icon-height: var(--icon-size-xsmall);
   }
   .header .season {
     display: flex;
@@ -92,15 +86,16 @@ export default css`
   .floors sci-fi-hexa-tile.selected {
     --hexa-width: var(--selected-hexa-width);
   }
-  .floors sci-fi-hexa-tile .item-icon svg {
-    width: var(--icon-size-title);
-    fill: var(--primary-light-color);
+  .floors sci-fi-hexa-tile .item-icon sci-fi-icon {
+    --icon-width: var(--icon-size-title);
+    --icon-height: var(--icon-size-title);
   }
-  .floors sci-fi-hexa-tile .item-icon.off svg {
-    fill: var(--secondary-bg-color);
+  .floors sci-fi-hexa-tile .item-icon.off sci-fi-icon {
+    --icon-color: var(--secondary-bg-color);
   }
-  .floors sci-fi-hexa-tile.selected .item-icon svg {
-    width: var(--icon-size-large);
+  .floors sci-fi-hexa-tile.selected .item-icon sci-fi-icon {
+    --icon-width: var(--icon-size-large);
+    --icon-height: var(--icon-size-large);
   }
   /*********** FLOOR CONTENT *************/
   .floor-content {
@@ -127,17 +122,16 @@ export default css`
     align-items: center;
     text-shadow: 0px 0px 5px var(--primary-light-color);
   }
-  .floor-content .temperature svg {
-    fill: var(--primary-light-color);
-    width: var(--icon-size-small);
-    height: var(--icon-size-small);
+  .floor-content .temperature sci-fi-icon {
+    --icon-width: var(--icon-size-small);
+    --icon-height: var(--icon-size-small);
   }
   .floor-content .temperature.off {
     color: var(--secondary-light-color);
   }
 
-  .floor-content .temperature.off svg {
-    fill: var(--secondary-light-color);
+  .floor-content .temperature.off sci-fi-icon {
+    --icon-color: var(--secondary-light-color);
   }
   /******** AREA LIST *********/
   .areas {
@@ -163,12 +157,12 @@ export default css`
   .areas .area-list .col sci-fi-hexa-tile.selected {
     --hexa-width: var(--medium-hexa-width);
   }
-  .areas .area-list .col sci-fi-hexa-tile .item-icon svg {
-    width: var(--icon-size-title);
-    fill: var(--primary-light-color);
+  .areas .area-list .col sci-fi-hexa-tile .item-icon sci-fi-icon {
+    --icon-width: var(--icon-size-title);
+    --icon-height: var(--icon-size-title);
   }
-  .areas .area-list .col sci-fi-hexa-tile .item-icon.off svg {
-    fill: var(--secondary-bg-color);
+  .areas .area-list .col sci-fi-hexa-tile .item-icon.off sci-fi-icon {
+    --icon-color: var(--secondary-bg-color);
   }
   /******** AREA CONTENT *********/
   .areas .area-content {

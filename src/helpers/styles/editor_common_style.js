@@ -42,10 +42,9 @@ export default css`
     flex-direction: row;
     align-items: center;
   }
-  section h1 .svg-container {
-    width: var(--icon-size-small);
-    height: var(--icon-size-small);
-    fill: var(--secondary-light-color);
+  section h1 sci-fi-icon {
+    --icon-width: var(--icon-size-small);
+    --icon-height: var(--icon-size-small);
     margin-right: 10px;
   }
 `;

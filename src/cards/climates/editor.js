@@ -11,7 +11,6 @@ import {
   STATE_CLIMATE_HEAT,
   STATE_CLIMATE_OFF,
 } from '../../helpers/entities/climate/climate_const.js';
-import {getIcon} from '../../helpers/icons/icons.js';
 import {SciFiBaseEditor} from '../../helpers/utils/base_editor.js';
 import editor_style from './style_editor.js';
 
@@ -60,7 +59,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
   __renderAppearance() {
     return html` <section>
       <h1>
-        <span>${getIcon('mdi:page-layout-header')}</span>Header (optionnal)
+        <span><sci-fi-icon icon='mdi:page-layout-header'></sci-fi-icon></span>Header (optionnal)
       </h1>
       <sci-fi-toggle
         label="Display global turn on/off button ?"
@@ -110,7 +109,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
   __renderConfig() {
     return html` <section>
       <h1>
-        <span>${getIcon('mdi:tune-vertical-variant')}</span>Settings (optionnal)
+        <span><sci-fi-icon icon='mdi:tune-vertical-variant'></sci-fi-icon></span>Settings (optionnal)
       </h1>
       <sci-fi-input
         icon="mdi:thermometer"

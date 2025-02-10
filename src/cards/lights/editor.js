@@ -2,7 +2,6 @@ import {html, nothing} from 'lit';
 
 import {House} from '../../helpers/entities/house.js';
 import {ENTITY_KIND_LIGHT} from '../../helpers/entities/light/light_const.js';
-import {getIcon} from '../../helpers/icons/icons.js';
 import {SciFiBaseEditor} from '../../helpers/utils/base_editor.js';
 import editor_style from './style_editor.js';
 
@@ -65,7 +64,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
     return html`
       <section>
         <h1>
-          <span>${getIcon('mdi:page-layout-header')}</span>
+          <span><sci-fi-icon icon='mdi:page-layout-header'></sci-fi-icon></span>
           Header
         </h1>
         <sci-fi-input
@@ -102,7 +101,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
   __renderSectionDefaultIcon() {
     return html` <section>
       <h1>
-        <span>${getIcon('mdi:home-lightbulb-outline')}</span>Lights appearance
+        <span><sci-fi-icon icon='mdi:home-lightbulb-outline'></sci-fi-icon></span>Lights appearance
       </h1>
       <sci-fi-dropdown-icon-input
         label="Active icon (required)"
@@ -137,7 +136,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
     }
     return html` <section>
       <h1>
-        <span>${getIcon('mdi:home-search-outline')}</span>Display selection
+        <span><sci-fi-icon icon='mdi:home-search-outline'></sci-fi-icon></span>Display selection
       </h1>
       <sci-fi-dropdown-entity-input
         icon="mdi:floor-plan"
@@ -164,7 +163,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
   __renderSectionCustomEntities() {
     return html` <section>
       <h1>
-        <span>${getIcon('mdi:selection-ellipse-arrow-inside')}</span>Light
+        <span><sci-fi-icon icon='mdi:selection-ellipse-arrow-inside'></sci-fi-icon></span>Light
         entities customization
       </h1>
       ${Object.keys(this._config.custom_entities).map((entity_id) =>

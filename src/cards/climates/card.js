@@ -10,7 +10,6 @@ import {Season} from '../../helpers/entities/sensor.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 import common_style from '../../helpers/styles/common_style.js';
 import {PACKAGE} from './const.js';
-import {SciFiClimatesEditor} from './editor.js';
 import style from './style.js';
 
 export class SciFiClimates extends LitElement {
@@ -422,16 +421,3 @@ export class SciFiClimates extends LitElement {
     };
   }
 }
-
-window.customElements.get(PACKAGE) ||
-  window.customElements.define(PACKAGE, SciFiClimates);
-
-window.customElements.get(PACKAGE + '-editor') ||
-  window.customElements.define(PACKAGE + '-editor', SciFiClimatesEditor);
-
-window.customCards = window.customCards || [];
-window.customCards.push({
-  type: PACKAGE,
-  name: 'Sci-fi Climates card',
-  description: 'Render sci-fi Climates card.',
-});

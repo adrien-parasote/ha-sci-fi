@@ -1,5 +1,5 @@
-import './climates/card.js';
+import './climates/import.js';
 import './hexa_tiles/import.js';
-import './lights/card.js';
-import './stove/card.js';
-import './weather/card.js';
+import './lights/import.js';
+import './stove/import.js';
+import './weather/import.js';

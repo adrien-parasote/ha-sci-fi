@@ -13,7 +13,6 @@ import {SunEntity} from '../../helpers/entities/weather.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
 import common_style from '../../helpers/styles/common_style.js';
 import {PACKAGE} from './const.js';
-import {SciFiLightsEditor} from './editor.js';
 import style from './style.js';
 
 export class SciFiLights extends LitElement {
@@ -354,16 +353,3 @@ export class SciFiLights extends LitElement {
     };
   }
 }
-
-window.customElements.get(PACKAGE) ||
-  window.customElements.define(PACKAGE, SciFiLights);
-
-window.customElements.get(PACKAGE + '-editor') ||
-  window.customElements.define(PACKAGE + '-editor', SciFiLightsEditor);
-
-window.customCards = window.customCards || [];
-window.customCards.push({
-  type: PACKAGE,
-  name: 'Sci-fi lights card',
-  description: 'Render sci-fi lights management.',
-});

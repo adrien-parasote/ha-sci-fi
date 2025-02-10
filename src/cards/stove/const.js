@@ -9,6 +9,8 @@ import {
 } from '../../helpers/entities/sensor_const.js';
 
 export const PACKAGE = 'sci-fi-stove';
+export const NAME = 'Sci-fi Stove card';
+export const DESCRIPTION = 'Render sci-fi Stove management card.';
 
 export const HVAC_MODES_ICONS = {
   off: 'mdi:power',

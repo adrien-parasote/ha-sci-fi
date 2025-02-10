@@ -19,7 +19,6 @@ import {
   PACKAGE,
   SENSORS_MAP,
 } from './const.js';
-import {SciFiWeatherEditor} from './editor.js';
 import style from './style.js';
 
 export class SciFiWeather extends LitElement {
@@ -446,16 +445,3 @@ export class SciFiWeather extends LitElement {
     };
   }
 }
-
-window.customElements.get(PACKAGE) ||
-  window.customElements.define(PACKAGE, SciFiWeather);
-
-window.customElements.get(PACKAGE + '-editor') ||
-  window.customElements.define(PACKAGE + '-editor', SciFiWeatherEditor);
-
-window.customCards = window.customCards || [];
-window.customCards.push({
-  type: PACKAGE,
-  name: 'Sci-fi weather card',
-  description: 'Render sci-fi weather card.',
-});

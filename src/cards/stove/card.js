@@ -18,7 +18,6 @@ import {
   PRESET_MODES_ICONS,
   STATUS_ICONS_COLORS,
 } from './const.js';
-import {SciFiStoveEditor} from './editor.js';
 import style from './style.js';
 
 export class SciFiStove extends LitElement {
@@ -436,16 +435,3 @@ export class SciFiStove extends LitElement {
     };
   }
 }
-
-window.customElements.get(PACKAGE) ||
-  window.customElements.define(PACKAGE, SciFiStove);
-
-window.customElements.get(PACKAGE + '-editor') ||
-  window.customElements.define(PACKAGE + '-editor', SciFiStoveEditor);
-
-window.customCards = window.customCards || [];
-window.customCards.push({
-  type: PACKAGE,
-  name: 'Sci-fi Stove card',
-  description: 'Render sci-fi Stove card.',
-});

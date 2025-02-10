@@ -3,7 +3,7 @@ import {isEqual} from 'lodash-es';
 
 import '../../components/sf-radiator.js';
 import '../../components/sf-tiles.js';
-import '../../components/toast.js';
+import '../../components/sf-toast.js';
 import {ENTITY_KIND_CLIMATE} from '../../helpers/entities/climate_const.js';
 import {House} from '../../helpers/entities/house.js';
 import {Season} from '../../helpers/entities/sensor.js';

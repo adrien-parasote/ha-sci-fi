@@ -5,7 +5,7 @@ import '../../components/button.js';
 import '../../components/sf-circle_progress_bar.js';
 import '../../components/sf-stack_bar.js';
 import '../../components/sf-stove.js';
-import '../../components/toast.js';
+import '../../components/sf-toast.js';
 import '../../components/wheel.js';
 import {StoveEntity} from '../../helpers/entities/climate.js';
 import {STATE_CLIMATE_OFF} from '../../helpers/entities/climate_const.js';

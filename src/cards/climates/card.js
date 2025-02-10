@@ -1,7 +1,7 @@
 import {html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
-import '../../components/radiator.js';
+import '../../components/sf-radiator.js';
 import '../../components/tiles.js';
 import '../../components/toast.js';
 import {ENTITY_KIND_CLIMATE} from '../../helpers/entities/climate_const.js';

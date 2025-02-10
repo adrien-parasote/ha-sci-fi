@@ -37,7 +37,9 @@ const checkNumber = function (config, key, metadata) {
         metadata.range.min +
         ',' +
         metadata.range.max +
-        '], '+config[key]+' found.'
+        '], ' +
+        config[key] +
+        ' found.'
     );
   return config;
 };

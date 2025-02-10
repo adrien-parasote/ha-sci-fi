@@ -1,5 +1,5 @@
 import Chart from 'chart.js/auto';
-import {LitElement, html, nothing} from 'lit';
+import {html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
 import '../../components/tiles.js';
@@ -12,7 +12,8 @@ import {
 import {WEEK_DAYS} from '../../helpers/entities/weather_const.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
 import WEATHER_ICON_SET from '../../helpers/icons/weather_iconset.js';
-import common_style from '../../helpers/styles/common_style.js';
+import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
+import configMetadata from './config-metadata.js';
 import {
   CHART_BG_COLOR,
   CHART_BORDER_COLOR,
@@ -21,11 +22,12 @@ import {
 } from './const.js';
 import style from './style.js';
 
-export class SciFiWeather extends LitElement {
+export class SciFiWeather extends SciFiBaseCard {
   static get styles() {
-    return [common_style, style];
+    return super.styles.concat([style]);
   }
 
+  _configMetadata = configMetadata;
   _hass; // private
   _chart;
   _chartDataKind;
@@ -436,12 +438,8 @@ export class SciFiWeather extends LitElement {
   static getConfigElement() {
     return document.createElement(PACKAGE + '-editor');
   }
+
   static getStubConfig() {
-    return {
-      weather_entity: null,
-      weather_daily_forecast_limit: 10,
-      chart_first_kind_to_render: 'temperature',
-      alert: {},
-    };
+    return buildStubConfig(configMetadata);
   }
 }

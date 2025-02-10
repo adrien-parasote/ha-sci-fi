@@ -118,8 +118,8 @@ class SciFiWheel extends LitElement {
     return html`<div class="text">${this.text}</div>`;
   }
 
-  __renderIcon(icon){
-    if(!icon) return nothing;
+  __renderIcon(icon) {
+    if (!icon) return nothing;
     return html`<sci-fi-icon icon=${icon}></sci-fi-icon>`;
   }
   __buildSliderContent() {

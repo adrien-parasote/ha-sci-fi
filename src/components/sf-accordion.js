@@ -133,8 +133,8 @@ export class SciFiAccordionCard extends LitElement {
     this.icon = this.icon ? this.icon : null;
   }
 
-  __renderIcon(){
-    if(!this.icon) return nothing;
+  __renderIcon() {
+    if (!this.icon) return nothing;
     return html`<sci-fi-icon icon=${this.icon}></sci-fi-icon>`;
   }
   render() {

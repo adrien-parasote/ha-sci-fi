@@ -88,8 +88,8 @@ export class SciFiDropdownInput extends SciFiInput {
           <label for="name">${this.label}</label>
           ${this.value
             ? html`<span class="remove" @click="${this.__cleanInput}"
-                ><sci-fi-icon icon='mdi:close'></sci-fi-icon></span
-              >`
+                ><sci-fi-icon icon="mdi:close"></sci-fi-icon
+              ></span>`
             : nothing}
         </div>
       </div>

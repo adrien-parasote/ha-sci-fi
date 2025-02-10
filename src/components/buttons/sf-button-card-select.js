@@ -83,13 +83,18 @@ export class SciFiCardSelectButton extends SciFiCardButton {
     return html`
       <div class="items hide ${this.position}">
         ${this.items.map((item, idx) => {
-          const color = item.color ? item.color : 'var(--secondary-light-color)';
+          const color = item.color
+            ? item.color
+            : 'var(--secondary-light-color)';
           return html`<div
             class="item"
             style="color:${color}"
             @click="${(e) => this.__select(e, idx)}"
           >
-            <sci-fi-icon icon=${item.icon} style="--icon-color:${color}"></sci-fi-icon>
+            <sci-fi-icon
+              icon=${item.icon}
+              style="--icon-color:${color}"
+            ></sci-fi-icon>
             <div>${item.text}</div>
           </div>`;
         })}

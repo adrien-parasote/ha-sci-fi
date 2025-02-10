@@ -107,9 +107,8 @@ export class SciFiInput extends LitElement {
     this.disabled = this.disabled ? this.disabled : false;
   }
 
-
-  renderIcon(icon){
-    if(!icon) return nothing;
+  renderIcon(icon) {
+    if (!icon) return nothing;
     return html`<sci-fi-icon icon=${icon}></sci-fi-icon>`;
   }
 
@@ -128,7 +127,8 @@ export class SciFiInput extends LitElement {
           <label for="name">${this.label}</label>
           ${this.value && !this.disabled
             ? html`<span class="remove" @click="${this.__cleanInput}"
-                ><sci-fi-icon icon='mdi:close'></sci-fi-icon></span>`
+                ><sci-fi-icon icon="mdi:close"></sci-fi-icon
+              ></span>`
             : ''}
         </div>
       </div>

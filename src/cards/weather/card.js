@@ -2,7 +2,6 @@ import Chart from 'chart.js/auto';
 import {html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
-import '../../components/sf-tiles.js';
 import {
   DailyForecast,
   HourlyForecast,

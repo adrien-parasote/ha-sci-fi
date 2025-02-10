@@ -1,6 +1,5 @@
 import {html, nothing} from 'lit';
 
-import '../../components/sf-accordion.js';
 import '../../components/input.js';
 import {getIcon} from '../../helpers/icons/icons.js';
 import common_style from '../../helpers/styles/common_style.js';

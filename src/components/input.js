@@ -331,7 +331,7 @@ export class SciFiDropdownInput extends SciFiInput {
   render() {
     return html`
       <div class="container">
-        <div class="icon">${this.icon ? getIcon(this.icon) :nothing}</div>
+        <div class="icon">${this.icon ? getIcon(this.icon) : nothing}</div>
         <div class="input-group">
           <input
             type="text"
@@ -708,7 +708,7 @@ export class SciFiSlider extends SciFiInput {
   render() {
     return html`
       <div class="container">
-        <div class="icon">${this.icon ? getIcon(this.icon) :nothing}</div>
+        <div class="icon">${this.icon ? getIcon(this.icon) : nothing}</div>
         <div class="input-group">
           <input
             type="range"

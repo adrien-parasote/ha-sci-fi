@@ -2,8 +2,6 @@ import {html, nothing} from 'lit';
 import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 import {isEqual} from 'lodash-es';
 
-import '../../components/sf-tiles.js';
-import '../../components/sf-toast.js';
 import {House} from '../../helpers/entities/house.js';
 import {
   ENTITY_KIND_LIGHT,

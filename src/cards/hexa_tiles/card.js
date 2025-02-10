@@ -1,7 +1,6 @@
 import {html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
-import '../../components/sf-tiles.js';
 import '../../helpers/entities/person.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
@@ -249,7 +248,9 @@ export class SciFiHexaTiles extends SciFiBaseCard {
 
   __renderColumns(cols, odd = true) {
     return html`
-      ${odd ? nothing : html`<sci-fi-half-hexa-tile right></sci-fi-half-hexa-tile>`}
+      ${odd
+        ? nothing
+        : html`<sci-fi-half-hexa-tile right></sci-fi-half-hexa-tile>`}
       ${cols.map((entity) => entity)}
       ${!odd ? nothing : html`<sci-fi-half-hexa-tile></sci-fi-half-hexa-tile>`}
     `;

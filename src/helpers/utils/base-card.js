@@ -47,10 +47,12 @@ export const buildStubConfig = function (configMetadata) {
   let cfg = {};
   Object.keys(configMetadata).forEach((key) => {
     const metadata = configMetadata[key];
-    if (metadata.type == 'object') {
-      cfg[key] = buildStubConfig(metadata.data);
-    } else {
-      cfg[key] = metadata.default;
+    if (metadata.default && key != '*eid*') {
+      if (metadata.type == 'object') {
+        cfg[key] = buildStubConfig(metadata.data);
+      } else {
+        cfg[key] = metadata.default;
+      }
     }
   });
   return cfg;
@@ -80,24 +82,32 @@ export class SciFiBaseCard extends LitElement {
     if (!configMetadata) return cfg;
     Object.keys(configMetadata).forEach((key) => {
       const metadata = configMetadata[key];
-      cfg = checkKey(cfg, key, metadata);
-      cfg = checkType(cfg, key, metadata);
-      if (metadata.type == 'number') cfg = checkNumber(cfg, key, metadata);
-      if (metadata.type == 'object')
-        cfg[key] = this.__validateConfig(cfg[key], metadata.data);
-      if (metadata.type == 'array') {
-        if (metadata.data_type == 'string') {
-          cfg[key].forEach((element) => {
-            if (typeof element != 'string')
-              throw new Error(
-                cfg[key] + ' parameter need to be a list of string'
-              );
-          });
+      // Special case where key = *eid*
+      if (key == '*eid*') {
+        Object.keys(cfg).forEach((key) => {
+          cfg[key] = this.__validateConfig(cfg[key], metadata.data);
+        });
+      } else {
+        cfg = checkKey(cfg, key, metadata);
+        cfg = checkType(cfg, key, metadata);
+        if (metadata.type == 'number') cfg = checkNumber(cfg, key, metadata);
+        if (metadata.type == 'object') {
+          cfg[key] = this.__validateConfig(cfg[key], metadata.data);
         }
-        if (metadata.data_type == 'object') {
-          cfg[key].map((element) =>
-            this.__validateConfig(element, metadata.data)
-          );
+        if (metadata.type == 'array') {
+          if (metadata.data_type == 'string') {
+            cfg[key].forEach((element) => {
+              if (typeof element != 'string')
+                throw new Error(
+                  cfg[key] + ' parameter need to be a list of string'
+                );
+            });
+          }
+          if (metadata.data_type == 'object') {
+            cfg[key].map((element) =>
+              this.__validateConfig(element, metadata.data)
+            );
+          }
         }
       }
     });

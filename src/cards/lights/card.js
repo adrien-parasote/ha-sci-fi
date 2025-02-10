@@ -1,4 +1,4 @@
-import {LitElement, html, nothing} from 'lit';
+import {html, nothing} from 'lit';
 import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 import {isEqual} from 'lodash-es';
 
@@ -12,14 +12,17 @@ import {
 import {SunEntity} from '../../helpers/entities/weather.js';
 import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
 import common_style from '../../helpers/styles/common_style.js';
+import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
+import configMetadata from './config-metadata.js';
 import {PACKAGE} from './const.js';
 import style from './style.js';
 
-export class SciFiLights extends LitElement {
+export class SciFiLights extends SciFiBaseCard {
   static get styles() {
     return [common_style, style];
   }
 
+  _configMetadata = configMetadata;
   _hass; // private
   _sun;
 
@@ -32,28 +35,10 @@ export class SciFiLights extends LitElement {
     };
   }
 
-  __validateConfig(config) {
-    if (!config.header) config.header = '';
-    if (!config.default_icon_on)
-      config.default_icon_on = 'mdi:lightbulb-on-outline';
-    if (!config.default_icon_off)
-      config.default_icon_off = 'mdi:lightbulb-outline';
-    if (!config.custom_entities) config.custom_entities = {};
-
-    return config;
-  }
-
   setConfig(config) {
-    if (!config) return;
-    this._config = this.__validateConfig(JSON.parse(JSON.stringify(config)));
+    super.setConfig(config);
     this._active_floor_id = this._config.first_floor_to_render;
     this._active_area_id = this._config.first_area_to_render;
-
-    // call set hass() to immediately adjust to a changed entity
-    // while editing the entity in the card editor
-    if (this._hass) {
-      this.hass = this._hass;
-    }
   }
 
   getCardSize() {
@@ -343,13 +328,6 @@ export class SciFiLights extends LitElement {
   }
 
   static getStubConfig() {
-    return {
-      header: 'Lights',
-      default_icon_on: 'mdi:lightbulb-on-outline',
-      default_icon_off: 'mdi:lightbulb-outline',
-      first_floor_to_render: null,
-      first_area_to_render: null,
-      custom_entities: {},
-    };
+    return buildStubConfig(configMetadata);
   }
 }

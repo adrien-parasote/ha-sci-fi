@@ -27,9 +27,9 @@ export default css`
     border-top: var(--border-width) solid var(--primary-bg-color);
     background-color: var(--primary-bg-alpha-color);
   }
-  .header .weather-icon svg {
-    width: var(--main-weather-icon-size);
-    height: var(--main-weather-icon-size);
+  .header .weather-icon sci-fi-weather-icon {
+    --weather-icon-width: var(--main-weather-icon-size);
+    --weather-icon-height: var(--main-weather-icon-size);
   }
   .header .weather-clock {
     display: flex;
@@ -100,10 +100,6 @@ export default css`
     min-width: 55px;
     padding: 10px;
   }
-  .today-summary .sensor .state svg {
-    width: var(--icon-size-normal);
-    height: var(--icon-size-normal);
-  }
   .today-summary div .label {
     color: var(--secondary-light-color);
     text-align: center;
@@ -128,9 +124,9 @@ export default css`
     flex: 1;
     flex-direction: row;
   }
-  .chart-container .chart-header .title svg {
-    width: var(--icon-size-title);
-    height: var(--icon-size-title);
+  .chart-container .chart-header .title sci-fi-weather-icon {
+    --weather-icon-width: var(--icon-size-title);
+    --weather-icon-height: var(--icon-size-title);
   }
   .chart-container .chart-header .title .label {
     align-self: center;
@@ -197,10 +193,15 @@ export default css`
     .dropdown-item:last-child {
     border: none;
   }
-  .chart-container .chart-header .dropdown .dropdown-content .dropdown-item svg,
-  .chart-container .chart-header .dropdown .dropdow-button svg {
-    width: var(--icon-size-title);
-    height: var(--icon-size-title);
+  .chart-container
+    .chart-header
+    .dropdown
+    .dropdown-content
+    .dropdown-item
+    sci-fi-weather-icon,
+  .chart-container .chart-header .dropdown .dropdow-button sci-fi-weather-icon {
+    --weather-icon-width: var(--icon-size-title);
+    --weather-icon-height: var(--icon-size-title);
   }
   .chart-container .chart-header .dropdown .dropdow-button sci-fi-icon {
     --icon-color: var(--secondary-light-alpha-color);
@@ -234,12 +235,9 @@ export default css`
   .days-forecast .content .weather.selected {
     background-color: var(--secondary-light-light-alpha-color);
   }
-  .days-forecast .content .weather .state .svg-container {
-    justify-self: center;
-  }
-  .days-forecast .content .weather .state svg {
-    width: var(--icon-size-title);
-    height: var(--icon-size-title);
+  .days-forecast .content .weather .state sci-fi-weather-icon {
+    --weather-icon-width: var(--icon-size-title);
+    --weather-icon-height: var(--icon-size-title);
   }
   .days-forecast .content .weather .label,
   .days-forecast .content .weather .temp {

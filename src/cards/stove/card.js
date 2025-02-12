@@ -31,17 +31,6 @@ export class SciFiStove extends SciFiBaseCard {
     };
   }
 
-  getCardSize() {
-    return 4;
-  }
-
-  getLayoutOptions() {
-    return {
-      grid_rows: 4,
-      grid_columns: 4,
-    };
-  }
-
   set hass(hass) {
     this._hass = hass;
     if (!this._config) return; // Can't assume setConfig is called before hass is set

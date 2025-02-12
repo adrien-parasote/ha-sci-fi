@@ -8,7 +8,6 @@ import {
   STATE_LIGHT_ON,
 } from '../../helpers/entities/light/light_const.js';
 import {SunEntity} from '../../helpers/entities/weather/weather.js';
-import {getWeatherIcon} from '../../helpers/icons/icons.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
 import {PACKAGE} from './const.js';
@@ -36,17 +35,6 @@ export class SciFiLights extends SciFiBaseCard {
     super.setConfig(config);
     this._active_floor_id = this._config.first_floor_to_render;
     this._active_area_id = this._config.first_area_to_render;
-  }
-
-  getCardSize() {
-    return 4;
-  }
-
-  getLayoutOptions() {
-    return {
-      grid_rows: 4,
-      grid_columns: 4,
-    };
   }
 
   set hass(hass) {
@@ -103,10 +91,15 @@ export class SciFiLights extends SciFiBaseCard {
         </div>
         <div class="text">${this._config.header}</div>
       </div>
-      <div class="weather">
-        ${this._sun ? getWeatherIcon(this._sun.dayPhaseIcon()) : nothing}
-      </div>
+      <div class="weather">${this.__displaySun()}</div>
     `;
+  }
+
+  __displaySun() {
+    if (!this._sun) return nothing;
+    return html`<sci-fi-weather-icon
+      icon="${this._sun.dayPhaseIcon()}"
+    ></sci-fi-weather-icon>`;
   }
 
   __turnOnOffHouse(e) {

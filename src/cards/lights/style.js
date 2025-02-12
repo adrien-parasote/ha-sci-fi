@@ -27,6 +27,7 @@ export default css`
     flex-direction: row;
     column-gap: 5px;
     align-items: center;
+    padding-bottom: 5px;
   }
   .header .info .power {
     cursor: pointer;
@@ -39,9 +40,8 @@ export default css`
     color: var(--primary-light-color);
     text-shadow: 0px 0px 5px var(--primary-light-color);
   }
-  .header .weather sci-fi-icon {
-    --icon-width: var(--icon-size-title);
-    --icon-height: var(--icon-size-title);
+  .header .weather {
+    display: flex;
   }
   /******** COMMON *********/
   .title .power {

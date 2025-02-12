@@ -1,7 +1,8 @@
-import {LitElement, css, svg, nothing} from 'lit';
-import WEATHER_ICONSET from './data/sf-weather-icons.js';
+import {LitElement, css, nothing, svg} from 'lit';
+
 import common_style from '../../helpers/styles/common_style.js';
 import {defineCustomElement} from '../../helpers/utils/import.js';
+import WEATHER_ICONSET from './data/sf-weather-icons.js';
 import './sf-svg-icon.js';
 
 class SciFiWeatherIcon extends LitElement {
@@ -40,7 +41,7 @@ class SciFiWeatherIcon extends LitElement {
   render() {
     if (!this.icon) return nothing;
     let icon = WEATHER_ICONSET[this.icon];
-    if(!icon){
+    if (!icon) {
       console.info('Weather icon : ' + this.icon + ' cannot be found');
       icon = WEATHER_ICONSET['na'];
     }

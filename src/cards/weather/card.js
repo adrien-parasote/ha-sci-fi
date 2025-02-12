@@ -2,6 +2,7 @@ import Chart from 'chart.js/auto';
 import {html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
+import WEATHER_ICON_SET from '../../components/icons/data/sf-weather-icons.js';
 import {
   DailyForecast,
   HourlyForecast,
@@ -9,8 +10,6 @@ import {
   WeatherEntity,
 } from '../../helpers/entities/weather/weather.js';
 import {WEEK_DAYS} from '../../helpers/entities/weather/weather_const.js';
-import {getWeatherIcon} from '../../helpers/icons/icons.js';
-import WEATHER_ICON_SET from '../../helpers/icons/weather_iconset.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
 import {
@@ -56,44 +55,9 @@ export class SciFiWeather extends SciFiBaseCard {
     }, 10000);
   }
 
-  __validateConfig(config) {
-    if (!config.weather_entity)
-      throw new Error('You need to define a weather entity');
-    if (!config.weather_entity.startsWith('weather.'))
-      throw new Error(config.weather_entity + 'is not a weather entity.');
-    if (!config.weather_daily_forecast_limit)
-      config.weather_daily_forecast_limit = 10; // max 15
-    if (config.weather_daily_forecast_limit > 15)
-      throw new Error('Daily forecast is limited to 15 days max');
-    if (!config.chart_first_kind_to_render)
-      config.chart_first_kind_to_render = 'temperature';
-    if (!Object.keys(SENSORS_MAP).includes(config.chart_first_kind_to_render))
-      throw new Error(
-        'Chart first kind to render must be "temperature", "precipitation" or "wind_speed"'
-      );
-    return config;
-  }
-
   setConfig(config) {
-    this._config = this.__validateConfig(JSON.parse(JSON.stringify(config)));
+    super.setConfig(config);
     this._chartDataKind = this._config.chart_first_kind_to_render;
-
-    // call set hass() to immediately adjust to a changed entity
-    // while editing the entity in the card editor
-    if (this._hass) {
-      this.hass = this._hass;
-    }
-  }
-
-  getCardSize() {
-    return 4;
-  }
-
-  getLayoutOptions() {
-    return {
-      grid_rows: 4,
-      grid_columns: 4,
-    };
   }
 
   set hass(hass) {
@@ -262,7 +226,9 @@ export class SciFiWeather extends SciFiBaseCard {
   __getDropdownMenu() {
     return html` <div class="dropdown">
       <button @click=${this.__toggleDropdown} class="dropdow-button">
-        ${getWeatherIcon(SENSORS_MAP[this._chartDataKind].dropdown.icon)}
+        <sci-fi-weather-icon
+          icon="${SENSORS_MAP[this._chartDataKind].dropdown.icon}"
+        ></sci-fi-weather-icon>
         <sci-fi-icon icon="mdi:chevron-down"></sci-fi-icon>
       </button>
       <div class="dropdown-content">
@@ -272,7 +238,9 @@ export class SciFiWeather extends SciFiBaseCard {
               @click=${(e) => this.__selectChartDataKind(e, key)}
               class="dropdown-item"
             >
-              ${getWeatherIcon(SENSORS_MAP[key].dropdown.icon)}
+              <sci-fi-weather-icon
+                icon="${SENSORS_MAP[key].dropdown.icon}"
+              ></sci-fi-weather-icon>
               <div class="dropdown-item-label">
                 ${SENSORS_MAP[key].dropdown.label}
               </div>
@@ -285,7 +253,9 @@ export class SciFiWeather extends SciFiBaseCard {
   __getChartTitle() {
     return html`
       <div class="title">
-        ${getWeatherIcon(SENSORS_MAP[this._chartDataKind].chartTitle.icon)}
+        <sci-fi-weather-icon
+          icon="${SENSORS_MAP[this._chartDataKind].chartTitle.icon}"
+        ></sci-fi-weather-icon>
         <div class="label">
           ${SENSORS_MAP[this._chartDataKind].chartTitle.label}
           (${this._weather.getUnit(this._chartDataKind)})
@@ -310,7 +280,9 @@ export class SciFiWeather extends SciFiBaseCard {
   __renderTodaySensor(name, icon, value) {
     return html`<div class="sensor">
       <div class="label">${name}</div>
-      <div class="state">${getWeatherIcon(icon)}</div>
+      <div class="state">
+        <sci-fi-weather-icon icon="${icon}"></sci-fi-weather-icon>
+      </div>
       <div class="label">${value}</div>
     </div>`;
   }
@@ -358,8 +330,8 @@ export class SciFiWeather extends SciFiBaseCard {
           if (idx % 2 === 0) {
             const xPos = chart.getDatasetMeta(0).data[idx].x;
             const icon = WEATHER_ICON_SET[iconName]
-              ? WEATHER_ICON_SET[iconName]
-              : WEATHER_ICON_SET['na'];
+              ? WEATHER_ICON_SET[iconName].content
+              : WEATHER_ICON_SET['na'].content;
             var image = new Image();
             image.onload = function () {
               ctx.drawImage(image, xPos - 10, top - 25, 20, 20);

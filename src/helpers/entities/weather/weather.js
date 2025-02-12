@@ -1,6 +1,5 @@
 import {html} from 'lit';
 
-import {getWeatherIcon} from '../../icons/icons.js';
 import {isSameDay, pad} from '../../utils/utils.js';
 import {EXTRA_SENSORS, WEATHER_STATE_FR, WEEK_DAYS} from './weather_const.js';
 
@@ -102,7 +101,9 @@ export class WeatherEntity {
   }
 
   getWeatherIcon(day = true) {
-    return getWeatherIcon([this.state, day ? 'day' : 'night'].join('-'));
+    return html`<sci-fi-weather-icon
+      icon="${[this.state, day ? 'day' : 'night'].join('-')}"
+    ></sci-fi-weather-icon>`;
   }
 
   get temperatureUnit() {
@@ -176,7 +177,9 @@ export class DailyForecast {
   }
 
   getWeatherIcon(day = true) {
-    return getWeatherIcon([this.condition, day ? 'day' : 'night'].join('-'));
+    return html`<sci-fi-weather-icon
+      icon="${[this.condition, day ? 'day' : 'night'].join('-')}"
+    ></sci-fi-weather-icon>`;
   }
 
   render(day = true) {

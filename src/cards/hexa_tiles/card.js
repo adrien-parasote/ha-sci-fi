@@ -96,7 +96,10 @@ export class SciFiHexaTiles extends SciFiBaseCard {
   __extractEntity() {
     return this._config.tiles.map((c) => {
       const states = !c.standalone
-        ? this.__extractHassKindState(c.entity_kind, c.entities_to_exclude)
+        ? this.__extractHassKindState(
+            c.entity_kind,
+            c.entities_to_exclude || []
+          )
         : [this._hass.states[c.entity].state];
 
       const state = this.__getEntityGlobalState(

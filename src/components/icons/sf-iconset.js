@@ -17,7 +17,8 @@ async function getIconList() {
   }));
 }
 
-window.customIconsets.get('sci') ||
-  window.customIconsets.define('sci', getIcon);
-window.customIcons.get('sci') ||
-  window.customIcons.define('sci', {getIcon, getIconList});
+window.customIconsets = window.customIconsets || {};
+window.customIconsets['sci'] = getIcon;
+
+window.customIcons = window.customIcons || {};
+window.customIcons['sci'] = {getIcon, getIconList};

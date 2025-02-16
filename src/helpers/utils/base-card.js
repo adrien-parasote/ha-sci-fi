@@ -12,13 +12,13 @@ const checkKey = function (config, key, metadata) {
 };
 
 const checkType = function (config, key, metadata) {
+  if (!metadata.mandatory && !config[key]) return config;
   if (
     ['string', 'boolean', 'number'].includes(metadata.type) &&
     typeof config[key] != metadata.type
   )
-    throw new Error(key + ' parameter need to be:' + metadata.type);
-  if (metadata.type == 'array' && !Array.isArray(config[key]))
-    throw new Error(key + ' parameter need to be an array.');
+    if (metadata.type == 'array' && !Array.isArray(config[key]))
+      throw new Error(key + ' parameter need to be an array.');
   if (metadata.type == 'object' && config[key].constructor !== Object)
     throw new Error(key + ' parameter need to be an object.');
   return config;

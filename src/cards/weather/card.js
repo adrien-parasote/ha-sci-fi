@@ -1,5 +1,5 @@
 import Chart from 'chart.js/auto';
-import {html, nothing} from 'lit';
+import {html, nothing, svg} from 'lit';
 import {isEqual} from 'lodash-es';
 
 import WEATHER_ICON_SET from '../../components/icons/data/sf-weather-icons.js';
@@ -317,6 +317,13 @@ export class SciFiWeather extends SciFiBaseCard {
   }
 
   __getChartPlugings() {
+    const getRenderString = (data) => {
+      const {strings, values} = data;
+      const v = [...values, ''].map((e) =>
+        typeof e === 'object' ? getRenderString(e) : e
+      );
+      return strings.reduce((acc, s, i) => acc + s + v[i], '');
+    };
     return {
       id: 'weatherIcon',
       afterDatasetsDraw(chart, args, plugins) {
@@ -326,18 +333,22 @@ export class SciFiWeather extends SciFiBaseCard {
           chartArea: {top, left, right},
         } = chart;
         ctx.save();
+        const dataLength = data.datasets[0].weather.length;
         data.datasets[0].weather.map((iconName, idx) => {
-          if (idx % 2 === 0) {
+          if (dataLength < 10 || (dataLength >= 10 && idx % 2 === 0)) {
             const xPos = chart.getDatasetMeta(0).data[idx].x;
             const icon = WEATHER_ICON_SET[iconName]
-              ? WEATHER_ICON_SET[iconName].content
-              : WEATHER_ICON_SET['na'].content;
+              ? WEATHER_ICON_SET[iconName]
+              : WEATHER_ICON_SET['na'];
             var image = new Image();
             image.onload = function () {
               ctx.drawImage(image, xPos - 10, top - 25, 20, 20);
             };
+            const content = encodeURIComponent(getRenderString(
+              svg`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="${icon.viewBox}">${icon.content}</svg>`
+            ));
             image.src =
-              'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(icon);
+              'data:image/svg+xml;charset=utf-8,' + content;
           }
         });
       },

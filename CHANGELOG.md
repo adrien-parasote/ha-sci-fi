@@ -1,6 +1,6 @@
 # Changelog
 
-# [v0.5.4](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.5.4) - 2025-mm-dd
+# [v0.5.4](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.5.4) - 2025-02-18
 
 ## 🆙  What's Changed
 

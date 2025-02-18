@@ -104,9 +104,11 @@ export class SciFiDropdownInput extends SciFiInput {
       this.__filter_items = this._items.filter((item) => {
         return item.toUpperCase().includes(e.srcElement.value.toUpperCase());
       });
+      this.shadowRoot.querySelector('.dropdown-menu').classList.add('open');
       this.requestUpdate();
     } else if (!e.srcElement.value) {
       this.__filter_items = JSON.parse(JSON.stringify(this._items));
+      this.shadowRoot.querySelector('.dropdown-menu').classList.add('open');
       this.requestUpdate();
     }
   }

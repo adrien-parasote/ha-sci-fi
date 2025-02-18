@@ -46,9 +46,11 @@ export class SciFiDropdownIconInput extends SciFiDropdownInput {
           .toUpperCase()
           .includes(e.srcElement.value.toUpperCase());
       });
+      this.shadowRoot.querySelector('.dropdown-menu').classList.add('open');
       this.requestUpdate();
     } else if (!e.srcElement.value) {
       this.__filter_items = [];
+      this.shadowRoot.querySelector('.dropdown-menu').classList.add('open');
       this.requestUpdate();
     }
   }

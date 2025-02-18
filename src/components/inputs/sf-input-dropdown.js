@@ -101,7 +101,7 @@ export class SciFiDropdownInput extends SciFiInput {
   }
 
   __dropdownItems(value) {
-    if(!value){
+    if (!value) {
       this.__filter_items = JSON.parse(JSON.stringify(this._items));
       return;
     }

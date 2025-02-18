@@ -40,14 +40,12 @@ export class SciFiDropdownIconInput extends SciFiDropdownInput {
   }
 
   __dropdownItems(value) {
-    if(!value){
+    if (!value) {
       this.__filter_items = [];
       return;
     }
     this.__filter_items = this._items.filter((item) => {
-      return item.name
-          .toUpperCase()
-          .includes(value.toUpperCase());
+      return item.name.toUpperCase().includes(value.toUpperCase());
     });
   }
 

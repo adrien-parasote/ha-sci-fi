@@ -34,14 +34,12 @@ export class SciFiDropdownEntityInput extends SciFiDropdownInput {
   }
 
   __dropdownItems(value) {
-    if(!value){
+    if (!value) {
       this.__filter_items = [];
       return;
     }
     this.__filter_items = this._items.filter((entity) => {
-      return entity.entity_id
-        .toUpperCase()
-        .includes(value.toUpperCase());
+      return entity.entity_id.toUpperCase().includes(value.toUpperCase());
     });
   }
 

@@ -1,4 +1,4 @@
-import {LitElement, css, nothing, svg} from 'lit';
+import {LitElement, css, html, nothing} from 'lit';
 
 import common_style from '../../helpers/styles/common_style.js';
 import {defineCustomElement} from '../../helpers/utils/import.js';
@@ -45,13 +45,7 @@ class SciFiWeatherIcon extends LitElement {
       console.info(`Weather icon : ${this.icon} cannot be found`);
       icon = WEATHER_ICONSET['na'];
     }
-    return svg`
-      <svg
-        xmlns="http://www.w3.org/2000/svg" 
-        xmlns:xlink="http://www.w3.org/1999/xlink" 
-        viewBox="${icon.viewBox}">
-        ${icon.content}
-      </svg>`;
+    return html`${icon}`;
   }
 }
 

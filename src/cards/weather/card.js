@@ -11,6 +11,7 @@ import {
 } from '../../helpers/entities/weather/weather.js';
 import {WEEK_DAYS} from '../../helpers/entities/weather/weather_const.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
+import {templateToString} from '../../helpers/utils/utils.js';
 import configMetadata from './config-metadata.js';
 import {
   CHART_BG_COLOR,
@@ -317,13 +318,6 @@ export class SciFiWeather extends SciFiBaseCard {
   }
 
   __getChartPlugings() {
-    const getRenderString = (data) => {
-      const {strings, values} = data;
-      const v = [...values, ''].map((e) =>
-        typeof e === 'object' ? getRenderString(e) : e
-      );
-      return strings.reduce((acc, s, i) => acc + s + v[i], '');
-    };
     return {
       id: 'weatherIcon',
       afterDatasetsDraw(chart, args, plugins) {
@@ -344,11 +338,9 @@ export class SciFiWeather extends SciFiBaseCard {
             image.onload = function () {
               ctx.drawImage(image, xPos - 10, top - 25, 20, 20);
             };
-            const content = encodeURIComponent(getRenderString(
-              svg`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="${icon.viewBox}">${icon.content}</svg>`
-            ));
             image.src =
-              'data:image/svg+xml;charset=utf-8,' + content;
+              'data:image/svg+xml;charset=utf-8,' +
+              encodeURIComponent(templateToString(html`${icon}`));
           }
         });
       },

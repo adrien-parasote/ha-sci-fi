@@ -11,7 +11,7 @@
 - Icons are now available even outside of sci-fi package
 
 🦾 Technical
-- Lighter package by removing mdi icon (now use from HA)
+- Lighter package by removing mdi icon (now use from HA) from 3.3MB to 560KB
 - Review package tree organization
 - Add global card class & method
 - Urbanize validated config method with metadata
@@ -20,7 +20,7 @@
 - Create new component to make job easier in the future
 - Rename files to match with HA frontend repository nomenclature
 - Review card rendering by using new created components such as icons
-- Display yaml config in edit mode
+- Display yaml config in edit mode for local tests
 
 # [v0.5.3](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.5.3) - 2025-02-08
 

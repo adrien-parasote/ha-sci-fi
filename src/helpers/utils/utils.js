@@ -9,3 +9,11 @@ export function isSameDay(dt1, dt2) {
     dt1.getDate() == dt2.getDate()
   );
 }
+
+export function templateToString(data) {
+  const {strings, values} = data;
+  const v = [...values, ''].map((e) =>
+    typeof e === 'object' ? templateToString(e) : e
+  );
+  return strings.reduce((acc, s, i) => acc + s + v[i], '');
+}

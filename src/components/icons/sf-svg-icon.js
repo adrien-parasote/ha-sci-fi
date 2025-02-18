@@ -28,8 +28,20 @@ class SciFiSvgIcon extends LitElement {
 
   static get properties() {
     return {
-      path: {type: String},
-      viewbox: {type: String},
+      path: {
+        type: String,
+        hasChanged(newVal, oldVal) {
+          if (newVal == undefined) return false;
+          return newVal != oldVal;
+        },
+      },
+      viewbox: {
+        type: String,
+        hasChanged(newVal, oldVal) {
+          if (newVal == undefined) return false;
+          return newVal != oldVal;
+        },
+      },
     };
   }
 

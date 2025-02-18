@@ -73,6 +73,7 @@ export class SciFiDropdownInput extends SciFiInput {
   }
 
   render() {
+    this.__dropdownItems(this.value);
     return html`
       <div class="container">
         <div class="icon">${this.renderIcon(this.icon)}</div>
@@ -83,7 +84,7 @@ export class SciFiDropdownInput extends SciFiInput {
             value=${this.value}
             ?disabled=${this.disabled}
             @focusin=${this.__focus}
-            @keyup=${this.__filter}
+            @keyup=${this.__filterKeyUp}
           />
           <label for="name">${this.label}</label>
           ${this.value
@@ -99,17 +100,20 @@ export class SciFiDropdownInput extends SciFiInput {
     `;
   }
 
-  __filter(e) {
-    if (e.key !== 'Enter' && e.srcElement.value) {
-      this.__filter_items = this._items.filter((item) => {
-        return item.toUpperCase().includes(e.srcElement.value.toUpperCase());
-      });
-      this.shadowRoot.querySelector('.dropdown-menu').classList.add('open');
-      this.requestUpdate();
-    } else if (!e.srcElement.value) {
+  __dropdownItems(value) {
+    if(!value){
       this.__filter_items = JSON.parse(JSON.stringify(this._items));
+      return;
+    }
+    this.__filter_items = this._items.filter((item) => {
+      return item.toUpperCase().includes(value.toUpperCase());
+    });
+  }
+
+  __filterKeyUp(e) {
+    if (e.key !== 'Enter') {
+      this.value = e.srcElement.value;
       this.shadowRoot.querySelector('.dropdown-menu').classList.add('open');
-      this.requestUpdate();
     }
   }
 

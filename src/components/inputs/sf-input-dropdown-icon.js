@@ -39,20 +39,16 @@ export class SciFiDropdownIconInput extends SciFiDropdownInput {
       });
   }
 
-  __filter(e) {
-    if (e.key !== 'Enter' && e.srcElement.value) {
-      this.__filter_items = this._items.filter((item) => {
-        return item.name
-          .toUpperCase()
-          .includes(e.srcElement.value.toUpperCase());
-      });
-      this.shadowRoot.querySelector('.dropdown-menu').classList.add('open');
-      this.requestUpdate();
-    } else if (!e.srcElement.value) {
+  __dropdownItems(value) {
+    if(!value){
       this.__filter_items = [];
-      this.shadowRoot.querySelector('.dropdown-menu').classList.add('open');
-      this.requestUpdate();
+      return;
     }
+    this.__filter_items = this._items.filter((item) => {
+      return item.name
+          .toUpperCase()
+          .includes(value.toUpperCase());
+    });
   }
 
   __renderItem(item) {

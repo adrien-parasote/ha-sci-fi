@@ -105,7 +105,7 @@ export class SciFiDropdownMultiEntitiesInput extends SciFiDropdownEntityInput {
             placeholder="Name"
             ?disabled=${this.disabled}
             @focusin=${this.__focus}
-            @keyup=${this.__filter}
+            @keyup=${this.__filterKeyUp}
           />
           <label for="name">${this.label}</label>
         </div>
@@ -139,6 +139,6 @@ export class SciFiDropdownMultiEntitiesInput extends SciFiDropdownEntityInput {
 }
 
 defineCustomElement(
-  'sci-fi-dropdown-multi-entity-input',
+  'sci-fi-dropdown-multi-entities-input',
   SciFiDropdownMultiEntitiesInput
 );

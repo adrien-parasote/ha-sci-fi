@@ -29,9 +29,14 @@ export class SciFiDropdownIconInput extends SciFiDropdownInput {
 
   constructor() {
     super();
-    getAllIconNames().then((icons) => {
-      this.items = icons;
-    });
+    getAllIconNames()
+      .then((icons) => {
+        this.items = icons;
+      })
+      .catch((e) => {
+        this.items = [];
+        console.error(`Error fetching icons : ${e}`);
+      });
   }
 
   __filter(e) {

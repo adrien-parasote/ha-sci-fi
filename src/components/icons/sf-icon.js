@@ -14,51 +14,86 @@ const getStore = memoizeOne(async () => {
   return createStore('hass-icon-db', 'mdi-icon-store');
 });
 
+class TimeoutError extends Error {
+  constructor(timeout, params) {
+    super(params);
+    // Maintains proper stack trace for where our error was thrown (only available on V8)
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TimeoutError);
+    }
+    this.name = 'TimeoutError';
+    // Custom debugging information
+    this.timeout = timeout;
+    this.message = `Timed out in ${timeout} ms.`;
+  }
+}
+
+const promiseTimeout = function (ms, promise) {
+  const timeout = new Promise((_resolve, reject) => {
+    setTimeout(() => {
+      reject(new TimeoutError(ms));
+    }, ms);
+  });
+  return Promise.race([promise, timeout]);
+};
+
 const getStoredIcon = function (iconName) {
   return new Promise((resolve, reject) => {
     const store = getStore();
-    (async () => {
-      const iconStore = await store;
-      iconStore('readonly', (store) => {
-        promisifyRequest(store.get(iconName))
-          .then((icon) => resolve(icon))
-          .catch((e) => reject(e));
-      });
-    })();
+    const readIcons = async () => {
+      store
+        .then((iconStore) => {
+          iconStore('readonly', (store) => {
+            promisifyRequest(store.get(iconName))
+              .then((icon) => resolve(icon))
+              .catch((e) => reject(e));
+          });
+        })
+        .catch((e) => reject(e));
+    };
+    promiseTimeout(1000, readIcons()).catch((e) => reject(e));
   });
 };
 
 const getStoredKeys = function () {
   return new Promise((resolve, reject) => {
     const store = getStore();
-    (async () => {
-      const iconStore = await store;
-      iconStore('readonly', (store) => {
-        promisifyRequest(store.getAllKeys())
-          .then((keys) => resolve(keys))
-          .catch((e) => reject(e));
-      });
-    })();
+    const readAll = async () => {
+      store
+        .then((iconStore) => {
+          iconStore('readonly', (store) => {
+            promisifyRequest(store.getAllKeys())
+              .then((keys) => resolve(keys))
+              .catch((e) => reject(e));
+          });
+        })
+        .catch((e) => reject(e));
+    };
+    promiseTimeout(1000, readAll()).catch((e) => reject(e));
   });
 };
 
-export const getAllIconNames = memoizeOne(async function () {
-  if (!CACHE_STORE_KEYS) {
-    // TODO be more generic
-    const mdi_icons = await getStoredKeys();
-    const sci_icons = await window.customIcons.sci.getIconList();
-
-    CACHE_STORE_KEYS = sci_icons
-      .map((sciObj) => {
-        return {name: 'sci:' + sciObj.name};
-      })
-      .concat(
-        mdi_icons.map((mdiName) => {
-          return {name: 'mdi:' + mdiName};
+export const getAllIconNames = memoizeOne(function () {
+  return new Promise((resolve, reject) => {
+    if (CACHE_STORE_KEYS.length > 0) {
+      resolve(CACHE_STORE_KEYS);
+    } else {
+      Promise.all([getStoredKeys(), window.customIcons.sci.getIconList()])
+        .then((responses) => {
+          for (const response of responses) {
+            response.forEach((element) => {
+              if (typeof element == 'string') {
+                CACHE_STORE_KEYS.push({name: 'mdi:' + element});
+              } else {
+                CACHE_STORE_KEYS.push({name: 'sci:' + element.name});
+              }
+            });
+          }
+          resolve(CACHE_STORE_KEYS);
         })
-      );
-  }
-  return CACHE_STORE_KEYS;
+        .catch((e) => reject(e));
+    }
+  });
 });
 
 class SciFiIcon extends LitElement {
@@ -117,22 +152,32 @@ class SciFiIcon extends LitElement {
   }
 
   async __getCustomIconData(promise) {
-    const icon = await promise;
-    this._path = icon.path;
-    this._viewBox = icon.viewBox ? icon.viewBox : '0 0 24 24';
-    CACHE[this.icon] = {
-      path: icon.path,
-      viewBox: icon.viewBox,
-    };
+    promise
+      .then((icon) => {
+        this._path = icon.path;
+        this._viewBox = icon.viewBox ? icon.viewBox : '0 0 24 24';
+        CACHE[this.icon] = {
+          path: icon.path,
+          viewBox: icon.viewBox,
+        };
+      })
+      .catch((error) => {
+        console.error(`Error when getting custom icon data: ${error}`);
+      });
   }
 
   async __getMdiIconData(promise) {
-    const path = await promise;
-    this._path = path;
-    CACHE[this.icon] = {
-      path: path,
-      viewBox: '0 0 24 24',
-    };
+    promise
+      .then((path) => {
+        this._path = path;
+        CACHE[this.icon] = {
+          path: path,
+          viewBox: '0 0 24 24',
+        };
+      })
+      .catch((error) => {
+        console.error(`Error when getting MDI icon data: ${error}`);
+      });
   }
 
   _loadIcon() {

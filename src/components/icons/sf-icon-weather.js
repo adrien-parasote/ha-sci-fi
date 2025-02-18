@@ -42,7 +42,7 @@ class SciFiWeatherIcon extends LitElement {
     if (!this.icon) return nothing;
     let icon = WEATHER_ICONSET[this.icon];
     if (!icon) {
-      console.info('Weather icon : ' + this.icon + ' cannot be found');
+      console.info(`Weather icon : ${this.icon} cannot be found`);
       icon = WEATHER_ICONSET['na'];
     }
     return svg`

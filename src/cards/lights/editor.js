@@ -200,7 +200,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
         >
         </sci-fi-button>
         <sci-fi-button
-          icon="mdi:pencil-outline"
+          icon="sci:edit"
           @button-click="${(e) => this.__editCustomEntity(entity_id)}"
         >
         </sci-fi-button>

@@ -176,7 +176,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
           style="--input-icon-color:${color};"
         ></sci-fi-input>
         <sci-fi-button
-          icon="mdi:pencil-outline"
+          icon="sci:edit"
           @button-click="${(e) => this.__editStateMode(kind, state)}"
         ></sci-fi-button>
       </div>

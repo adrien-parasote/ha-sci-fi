@@ -1,5 +1,5 @@
 {
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "Sci-fi cards for HA dashboard",
   "main": "src/sci-fi.js",
   "type": "module",
@@ -34,7 +34,7 @@
     "@lit/task": "1.0.2",
     "chart.js": "4.4.7",
     "home-assistant-js-websocket": "9.4.0",
-    "idb-keyval": "^6.2.1",
+    "idb-keyval": "6.2.1",
     "lit": "3.2.1",
     "lodash-es": "4.17.21",
     "memoize-one": "6.0.0"

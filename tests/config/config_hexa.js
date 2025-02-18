@@ -1,5 +1,5 @@
 export default {
-  header_message: 'Welcome',
+  header_message: 'Welcome back!',
   weather: {
     activate: true,
     weather_entity: 'weather.la_chapelle_sur_erdre',

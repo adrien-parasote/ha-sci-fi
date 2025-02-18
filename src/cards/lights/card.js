@@ -1,26 +1,24 @@
-import {LitElement, html, nothing} from 'lit';
+import {html, nothing} from 'lit';
 import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 import {isEqual} from 'lodash-es';
 
-import common_style from '../../helpers/common_style.js';
-import '../../helpers/components/tiles.js';
-import '../../helpers/components/toast.js';
 import {House} from '../../helpers/entities/house.js';
 import {
   ENTITY_KIND_LIGHT,
   STATE_LIGHT_ON,
-} from '../../helpers/entities/light_const.js';
-import {SunEntity} from '../../helpers/entities/weather.js';
-import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
+} from '../../helpers/entities/light/light_const.js';
+import {SunEntity} from '../../helpers/entities/weather/weather.js';
+import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
+import configMetadata from './config-metadata.js';
 import {PACKAGE} from './const.js';
-import {SciFiLightsEditor} from './editor.js';
 import style from './style.js';
 
-export class SciFiLights extends LitElement {
+export class SciFiLights extends SciFiBaseCard {
   static get styles() {
-    return [common_style, style];
+    return super.styles.concat([style]);
   }
 
+  _configMetadata = configMetadata;
   _hass; // private
   _sun;
 
@@ -33,39 +31,10 @@ export class SciFiLights extends LitElement {
     };
   }
 
-  __validateConfig(config) {
-    if (!config.header) config.header = '';
-    if (!config.default_icon_on)
-      config.default_icon_on = 'mdi:lightbulb-on-outline';
-    if (!config.default_icon_off)
-      config.default_icon_off = 'mdi:lightbulb-outline';
-    if (!config.custom_entities) config.custom_entities = {};
-
-    return config;
-  }
-
   setConfig(config) {
-    if (!config) return;
-    this._config = this.__validateConfig(JSON.parse(JSON.stringify(config)));
+    super.setConfig(config);
     this._active_floor_id = this._config.first_floor_to_render;
     this._active_area_id = this._config.first_area_to_render;
-
-    // call set hass() to immediately adjust to a changed entity
-    // while editing the entity in the card editor
-    if (this._hass) {
-      this.hass = this._hass;
-    }
-  }
-
-  getCardSize() {
-    return 4;
-  }
-
-  getLayoutOptions() {
-    return {
-      grid_rows: 4,
-      grid_columns: 4,
-    };
   }
 
   set hass(hass) {
@@ -118,14 +87,19 @@ export class SciFiLights extends LitElement {
             : 'off'}"
           @click="${this.__turnOnOffHouse}"
         >
-          ${getIcon('mdi:power-standby')}
+          <sci-fi-icon icon="mdi:power-standby"></sci-fi-icon>
         </div>
         <div class="text">${this._config.header}</div>
       </div>
-      <div class="weather">
-        ${this._sun ? getWeatherIcon(this._sun.dayPhaseIcon()) : ''}
-      </div>
+      <div class="weather">${this.__displaySun()}</div>
     `;
+  }
+
+  __displaySun() {
+    if (!this._sun) return nothing;
+    return html`<sci-fi-weather-icon
+      icon="${this._sun.dayPhaseIcon()}"
+    ></sci-fi-weather-icon>`;
   }
 
   __turnOnOffHouse(e) {
@@ -154,7 +128,7 @@ export class SciFiLights extends LitElement {
                 ? 'on'
                 : 'off'}"
             >
-              ${getIcon(floor.icon)}
+              <sci-fi-icon icon=${floor.icon}></sci-fi-icon>
             </div>
           </sci-fi-hexa-tile>`
       );
@@ -234,7 +208,7 @@ export class SciFiLights extends LitElement {
         <div
           class="item-icon ${area.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}"
         >
-          ${getIcon(area.icon)}
+          <sci-fi-icon icon=${area.icon}></sci-fi-icon>
         </div>
       </sci-fi-hexa-tile>
     `;
@@ -261,7 +235,7 @@ export class SciFiLights extends LitElement {
       class="power ${active}"
       @click="${(e) => this.__onPowerBtnClick(e, element)}"
     >
-      ${getIcon('mdi:power-standby')}
+      <sci-fi-icon icon="mdi:power-standby"></sci-fi-icon>
     </div>`;
   }
 
@@ -297,7 +271,7 @@ export class SciFiLights extends LitElement {
           ? custom.icon_off
           : this._config.default_icon_off;
     }
-    return getIcon(icon);
+    return html`<sci-fi-icon icon=${icon}></sci-fi-icon>`;
   }
 
   __onFloorSelect(e, floor) {
@@ -344,26 +318,6 @@ export class SciFiLights extends LitElement {
   }
 
   static getStubConfig() {
-    return {
-      header: 'Lights',
-      default_icon_on: 'mdi:lightbulb-on-outline',
-      default_icon_off: 'mdi:lightbulb-outline',
-      first_floor_to_render: null,
-      first_area_to_render: null,
-      custom_entities: {},
-    };
+    return buildStubConfig(configMetadata);
   }
 }
-
-window.customElements.get(PACKAGE) ||
-  window.customElements.define(PACKAGE, SciFiLights);
-
-window.customElements.get(PACKAGE + '-editor') ||
-  window.customElements.define(PACKAGE + '-editor', SciFiLightsEditor);
-
-window.customCards = window.customCards || [];
-window.customCards.push({
-  type: PACKAGE,
-  name: 'Sci-fi lights card',
-  description: 'Render sci-fi lights management.',
-});

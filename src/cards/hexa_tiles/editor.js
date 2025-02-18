@@ -1,11 +1,19 @@
 import {html, nothing} from 'lit';
 
-import {SciFiBaseEditor} from '../../helpers/base_editor.js';
-import {getIcon} from '../../helpers/icons/icons.js';
+import {SciFiBaseEditor} from '../../helpers/utils/base_editor.js';
 
 export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   _entity_kind; // list from hass
-  _empty_config; // basic config to add for new element
+  _empty_tile_config = {
+    entity_kind: 'light',
+    entities_to_exclude: [],
+    active_icon: 'mdi:lightbulb-on-outline',
+    inactive_icon: 'mdi:lightbulb-outline',
+    name: 'Lights',
+    state_on: ['on'],
+    state_error: null,
+    link: null,
+  }; // basic config to add for new element
 
   set hass(hass) {
     this._hass = hass;
@@ -28,7 +36,6 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
 
   setConfig(config) {
     this._config = config;
-    this._empty_config = this.__getNewConfig()['tiles'][0];
   }
 
   render() {
@@ -47,7 +54,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
     return html`
       <section>
         <h1>
-          <span>${getIcon('mdi:page-layout-header')}</span>
+          <span><sci-fi-icon icon="mdi:page-layout-header"></sci-fi-icon></span>
           Header
         </h1>
         <sci-fi-input
@@ -66,7 +73,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
     return html`
       <section>
         <h1>
-          <span>${getIcon('mdi:theme-light-dark')}</span>
+          <span><sci-fi-icon icon="mdi:theme-light-dark"></sci-fi-icon></span>
           Weather
         </h1>
         <sci-fi-toggle
@@ -75,7 +82,9 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
           ?checked=${this._config.weather.activate}
           @toggle-change=${this.__toggle}
         ></sci-fi-toggle>
-        ${this._config.weather.activate ? this.__renderWeatherEntities() : ''}
+        ${this._config.weather.activate
+          ? this.__renderWeatherEntities()
+          : nothing}
       </section>
     `;
   }
@@ -129,8 +138,11 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   __renderEntity(id, entity) {
     return html` <section>
       <h1>
-        <span>${getIcon('mdi:selection-ellipse-arrow-inside')}</span>Entity
-        (required)
+        <span
+          ><sci-fi-icon
+            icon="mdi:selection-ellipse-arrow-inside"
+          ></sci-fi-icon></span
+        >Entity (required)
       </h1>
       <sci-fi-toggle
         label="Standalone entity?"
@@ -182,7 +194,10 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
 
   __renderAppearance(id, entity) {
     return html` <section>
-      <h1><span>${getIcon('mdi:palette-outline')}</span>Appearance</h1>
+      <h1>
+        <span><sci-fi-icon icon="mdi:palette-outline"></sci-fi-icon></span
+        >Appearance
+      </h1>
       <sci-fi-input
         label="Name"
         value=${entity.name}
@@ -212,7 +227,10 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   __renderTechnical(id, entity) {
     return html`
       <section>
-        <h1><span>${getIcon('mdi:cog-outline')}</span>Technical</h1>
+        <h1>
+          <span><sci-fi-icon icon="mdi:cog-outline"></sci-fi-icon></span
+          >Technical
+        </h1>
         <sci-fi-chips-input
           label="State on (required)"
           element-id="${id}"
@@ -253,7 +271,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
 
   __addElement(e) {
     let newConfig = this.__getNewConfig();
-    newConfig.tiles.push(this._empty_config);
+    newConfig.tiles.push(this._empty_tile_config);
     this.__dispatchChange(e, newConfig);
   }
 
@@ -273,9 +291,11 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         default:
           // Update
           if (e.detail.kind == 'entities_to_exclude') {
-            if (!newConfig.tiles[elemmentId][e.detail.kind])
-              newConfig.tiles[elemmentId][e.detail.kind] = [];
-            newConfig.tiles[elemmentId][e.detail.kind].push(e.detail.value);
+            if (!newConfig.tiles[elemmentId].entities_to_exclude)
+              newConfig.tiles[elemmentId].entities_to_exclude = [];
+            newConfig.tiles[elemmentId].entities_to_exclude.push(
+              e.detail.value
+            );
           } else {
             newConfig.tiles[elemmentId][e.detail.kind] = e.detail.value;
           }

@@ -1,31 +1,26 @@
-import {LitElement, html, nothing} from 'lit';
+import {html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
-import common_style from '../../helpers/common_style.js';
-import '../../helpers/components/button.js';
-import '../../helpers/components/circle_progress_bar.js';
-import '../../helpers/components/stack_bar.js';
-import '../../helpers/components/stove.js';
-import '../../helpers/components/toast.js';
-import '../../helpers/components/wheel.js';
-import {StoveEntity} from '../../helpers/entities/climate.js';
-import {STATE_CLIMATE_OFF} from '../../helpers/entities/climate_const.js';
-import {STOVE_SENSORS} from '../../helpers/entities/sensor_const.js';
-import {getIcon} from '../../helpers/icons/icons.js';
+import {StoveEntity} from '../../helpers/entities/climate/climate.js';
+import {STATE_CLIMATE_OFF} from '../../helpers/entities/climate/climate_const.js';
+import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
+import configMetadata from './config-metadata.js';
 import {
   HVAC_MODES_ICONS,
   PACKAGE,
   PRESET_MODES_ICONS,
   STATUS_ICONS_COLORS,
 } from './const.js';
-import {SciFiStoveEditor} from './editor.js';
 import style from './style.js';
 
-export class SciFiStove extends LitElement {
+export class SciFiStove extends SciFiBaseCard {
   static get styles() {
-    return [common_style, style];
+    return super.styles.concat([style]);
   }
 
+  _configMetadata = configMetadata;
+
+  _configMetadata = configMetadata;
   _hass; // private
 
   static get properties() {
@@ -33,50 +28,6 @@ export class SciFiStove extends LitElement {
       _config: {type: Object},
       _stove: {type: Object},
       _area: {type: Object},
-    };
-  }
-
-  __validateConfig(config) {
-    if (!config.entity)
-      throw new Error(
-        'You need to define your stove entity (ex: climate.<my_stove>)'
-      );
-    if (!config.entity.startsWith('climate.'))
-      throw new Error(config.entity + 'is not a climate entity.');
-
-    if (!config.pellet_quantity_threshold)
-      config.pellet_quantity_threshold = 0.5;
-    if (!config.storage_counter_threshold)
-      config.storage_counter_threshold = 0.1;
-
-    if (!config.sensors) config.sensors = {};
-    STOVE_SENSORS.forEach((sensor) => {
-      if (!config.sensors[sensor]) {
-        config.sensors[sensor] = null;
-      }
-    });
-    if (!config.storage_counter) config.storage_counter = null;
-    if (!config.unit) config.unit = '°C';
-    return config;
-  }
-
-  setConfig(config) {
-    this._config = this.__validateConfig(JSON.parse(JSON.stringify(config)));
-    // call set hass() to immediately adjust to a changed entity
-    // while editing the entity in the card editor
-    if (this._hass) {
-      this.hass = this._hass;
-    }
-  }
-
-  getCardSize() {
-    return 4;
-  }
-
-  getLayoutOptions() {
-    return {
-      grid_rows: 4,
-      grid_columns: 4,
     };
   }
 
@@ -263,7 +214,7 @@ export class SciFiStove extends LitElement {
     if (hours <= 480) state = 'medium';
     return html`
       <div class="temperature ${state}">
-        ${getIcon('mdi:timeline-clock-outline')}
+        <sci-fi-icon icon="mdi:timeline-clock-outline"></sci-fi-icon>
         <div class="label">Time to Service:</div>
         <div>${hours}${this._stove.time_to_service.unit_of_measurement}</div>
       </div>
@@ -314,11 +265,12 @@ export class SciFiStove extends LitElement {
           ? STATUS_ICONS_COLORS[status].color
           : 'off'}"
       >
-        ${getIcon(
-          STATUS_ICONS_COLORS[status]
+        <sci-fi-icon
+          icon=${STATUS_ICONS_COLORS[status]
             ? STATUS_ICONS_COLORS[status].icon
-            : 'sci:stove-unknow'
-        )}
+            : 'sci:stove-unknow'}
+        ></sci-fi-icon>
+
         <div class="label">${text}:</div>
         <div>${status.replace('_', ' ')}</div>
       </div>
@@ -328,7 +280,8 @@ export class SciFiStove extends LitElement {
   __noTemperature(text) {
     return html`<div class="temperature off">
       <div class="no-temp">
-        ${getIcon('mdi:thermometer')} ${getIcon('mdi:help')}
+        <sci-fi-icon icon="mdi:thermometer"></sci-fi-icon>
+        <sci-fi-icon icon="mdi:help"></sci-fi-icon>
       </div>
       <div class="label">${text}:</div>
       <div>N/A</div>
@@ -339,7 +292,7 @@ export class SciFiStove extends LitElement {
     if (!pressure) return nothing;
     return html`
       <div class="temperature ${pressure == '0' ? 'off' : ''}">
-        ${getIcon('mdi:gauge')}
+        <sci-fi-icon icon="mdi:gauge"></sci-fi-icon>
         <div class="label">${text}:</div>
         <div>${pressure}</div>
       </div>
@@ -364,7 +317,7 @@ export class SciFiStove extends LitElement {
     }
     return html`
       <div class="temperature ${state}">
-        ${getIcon(icon)}
+        <sci-fi-icon icon=${icon}></sci-fi-icon>
         <div class="label">${text}:</div>
         <div>${temperature}${unit}</div>
       </div>
@@ -375,7 +328,7 @@ export class SciFiStove extends LitElement {
     if (power == null) return this.__displayPower(text, 'N/A', '');
     return html`
       <div class="power">
-        ${getIcon('mdi:lightning-bolt')}
+        <sci-fi-icon icon="mdi:lightning-bolt"></sci-fi-icon>
         <div class="label">${text}</div>
         <div class="${power == 'N/A' ? 'nothing' : ''}">${power} ${unit}</div>
       </div>
@@ -386,7 +339,7 @@ export class SciFiStove extends LitElement {
     if (fan == null) return nothing;
     return html`
       <div class="power">
-        ${getIcon('mdi:speedometer')}
+        <sci-fi-icon icon="mdi:speedometer"></sci-fi-icon>
         <div class="label">${text}</div>
         <div>${fan} ${unit}</div>
       </div>
@@ -426,26 +379,6 @@ export class SciFiStove extends LitElement {
   }
 
   static getStubConfig() {
-    return {
-      entity: null,
-      unit: '°C',
-      sensors: {},
-      storage_counter: null,
-      storage_counter_threshold: 0.1,
-      pellet_quantity_threshold: 0.1,
-    };
+    return buildStubConfig(configMetadata);
   }
 }
-
-window.customElements.get(PACKAGE) ||
-  window.customElements.define(PACKAGE, SciFiStove);
-
-window.customElements.get(PACKAGE + '-editor') ||
-  window.customElements.define(PACKAGE + '-editor', SciFiStoveEditor);
-
-window.customCards = window.customCards || [];
-window.customCards.push({
-  type: PACKAGE,
-  name: 'Sci-fi Stove card',
-  description: 'Render sci-fi Stove card.',
-});

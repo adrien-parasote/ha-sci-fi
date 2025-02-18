@@ -1,9 +1,8 @@
 import {html, nothing} from 'lit';
 
-import {SciFiBaseEditor} from '../../helpers/base_editor.js';
-import common_style from '../../helpers/common_style.js';
-import editor_common_style from '../../helpers/editor_common_style.js';
-import {getIcon} from '../../helpers/icons/icons.js';
+import common_style from '../../helpers/styles/common_style.js';
+import editor_common_style from '../../helpers/styles/editor_common_style.js';
+import {SciFiBaseEditor} from '../../helpers/utils/base_editor.js';
 
 export class SciFiStoveEditor extends SciFiBaseEditor {
   static get styles() {
@@ -42,7 +41,9 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
     return html`
       <section>
         <h1>
-          <span>${getIcon('mdi:tune-vertical-variant')}</span>
+          <span
+            ><sci-fi-icon icon="mdi:tune-vertical-variant"></sci-fi-icon
+          ></span>
           General
         </h1>
         <sci-fi-dropdown-entity-input

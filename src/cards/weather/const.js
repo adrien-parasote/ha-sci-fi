@@ -1,4 +1,6 @@
 export const PACKAGE = 'sci-fi-weather';
+export const NAME = 'Sci-fi weather card';
+export const DESCRIPTION = 'Render sci-fi weather card.';
 
 export const CHART_BG_COLOR = 'rgba(105, 211, 251, 0.5)';
 export const CHART_BORDER_COLOR = 'rgb(102, 156, 210)';

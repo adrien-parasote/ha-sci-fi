@@ -1,9 +1,6 @@
 import {PACKAGE_NAME, VERSION} from './build/const.js';
-import './cards/climates/card.js';
-import './cards/hexa_tiles/card.js';
-import './cards/lights/card.js';
-import './cards/stove/card.js';
-import './cards/weather/card.js';
+import './cards/cards.js';
+import './components/components.js';
 
 console.info(
   `%c🛸 ${PACKAGE_NAME.toUpperCase()} 🛸 - v${VERSION}`,

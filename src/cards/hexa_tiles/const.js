@@ -1,4 +1,7 @@
 export const PACKAGE = 'sci-fi-hexa-tiles';
+export const NAME = 'Sci-fi hexa tiles card';
+export const DESCRIPTION =
+  'Render sci-fi hexa tiles card with header and special weather tile if activated.';
 
 export const PORTRAIT_DISPLAY = {
   min_rows: 5,

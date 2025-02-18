@@ -1,32 +1,32 @@
 import Chart from 'chart.js/auto';
-import {LitElement, html, nothing} from 'lit';
+import {html, nothing, svg} from 'lit';
 import {isEqual} from 'lodash-es';
 
-import common_style from '../../helpers/common_style.js';
-import '../../helpers/components/tiles.js';
+import WEATHER_ICON_SET from '../../components/icons/data/sf-weather-icons.js';
 import {
   DailyForecast,
   HourlyForecast,
   SunEntity,
   WeatherEntity,
-} from '../../helpers/entities/weather.js';
-import {WEEK_DAYS} from '../../helpers/entities/weather_const.js';
-import {getIcon, getWeatherIcon} from '../../helpers/icons/icons.js';
-import WEATHER_ICON_SET from '../../helpers/icons/weather_iconset.js';
+} from '../../helpers/entities/weather/weather.js';
+import {WEEK_DAYS} from '../../helpers/entities/weather/weather_const.js';
+import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
+import {templateToString} from '../../helpers/utils/utils.js';
+import configMetadata from './config-metadata.js';
 import {
   CHART_BG_COLOR,
   CHART_BORDER_COLOR,
   PACKAGE,
   SENSORS_MAP,
 } from './const.js';
-import {SciFiWeatherEditor} from './editor.js';
 import style from './style.js';
 
-export class SciFiWeather extends LitElement {
+export class SciFiWeather extends SciFiBaseCard {
   static get styles() {
-    return [common_style, style];
+    return super.styles.concat([style]);
   }
 
+  _configMetadata = configMetadata;
   _hass; // private
   _chart;
   _chartDataKind;
@@ -56,44 +56,9 @@ export class SciFiWeather extends LitElement {
     }, 10000);
   }
 
-  __validateConfig(config) {
-    if (!config.weather_entity)
-      throw new Error('You need to define a weather entity');
-    if (!config.weather_entity.startsWith('weather.'))
-      throw new Error(config.weather_entity + 'is not a weather entity.');
-    if (!config.weather_daily_forecast_limit)
-      config.weather_daily_forecast_limit = 10; // max 15
-    if (config.weather_daily_forecast_limit > 15)
-      throw new Error('Daily forecast is limited to 15 days max');
-    if (!config.chart_first_kind_to_render)
-      config.chart_first_kind_to_render = 'temperature';
-    if (!Object.keys(SENSORS_MAP).includes(config.chart_first_kind_to_render))
-      throw new Error(
-        'Chart first kind to render must be "temperature", "precipitation" or "wind_speed"'
-      );
-    return config;
-  }
-
   setConfig(config) {
-    this._config = this.__validateConfig(JSON.parse(JSON.stringify(config)));
+    super.setConfig(config);
     this._chartDataKind = this._config.chart_first_kind_to_render;
-
-    // call set hass() to immediately adjust to a changed entity
-    // while editing the entity in the card editor
-    if (this._hass) {
-      this.hass = this._hass;
-    }
-  }
-
-  getCardSize() {
-    return 4;
-  }
-
-  getLayoutOptions() {
-    return {
-      grid_rows: 4,
-      grid_columns: 4,
-    };
   }
 
   set hass(hass) {
@@ -194,7 +159,7 @@ export class SciFiWeather extends LitElement {
       .map(
         (key) =>
           html`<div class="alert ${alert_states[this._alert.attributes[key]]}">
-            ${getIcon('mdi:alert')}
+            <sci-fi-icon icon="mdi:alert"></sci-fi-icon>
             <div>${key}</div>
           </div>`
       )}`;
@@ -262,8 +227,10 @@ export class SciFiWeather extends LitElement {
   __getDropdownMenu() {
     return html` <div class="dropdown">
       <button @click=${this.__toggleDropdown} class="dropdow-button">
-        ${getWeatherIcon(SENSORS_MAP[this._chartDataKind].dropdown.icon)}
-        ${getIcon('mdi:chevron-down')}
+        <sci-fi-weather-icon
+          icon="${SENSORS_MAP[this._chartDataKind].dropdown.icon}"
+        ></sci-fi-weather-icon>
+        <sci-fi-icon icon="mdi:chevron-down"></sci-fi-icon>
       </button>
       <div class="dropdown-content">
         ${Object.keys(SENSORS_MAP).map(
@@ -272,7 +239,9 @@ export class SciFiWeather extends LitElement {
               @click=${(e) => this.__selectChartDataKind(e, key)}
               class="dropdown-item"
             >
-              ${getWeatherIcon(SENSORS_MAP[key].dropdown.icon)}
+              <sci-fi-weather-icon
+                icon="${SENSORS_MAP[key].dropdown.icon}"
+              ></sci-fi-weather-icon>
               <div class="dropdown-item-label">
                 ${SENSORS_MAP[key].dropdown.label}
               </div>
@@ -285,7 +254,9 @@ export class SciFiWeather extends LitElement {
   __getChartTitle() {
     return html`
       <div class="title">
-        ${getWeatherIcon(SENSORS_MAP[this._chartDataKind].chartTitle.icon)}
+        <sci-fi-weather-icon
+          icon="${SENSORS_MAP[this._chartDataKind].chartTitle.icon}"
+        ></sci-fi-weather-icon>
         <div class="label">
           ${SENSORS_MAP[this._chartDataKind].chartTitle.label}
           (${this._weather.getUnit(this._chartDataKind)})
@@ -310,7 +281,9 @@ export class SciFiWeather extends LitElement {
   __renderTodaySensor(name, icon, value) {
     return html`<div class="sensor">
       <div class="label">${name}</div>
-      <div class="state">${getWeatherIcon(icon)}</div>
+      <div class="state">
+        <sci-fi-weather-icon icon="${icon}"></sci-fi-weather-icon>
+      </div>
       <div class="label">${value}</div>
     </div>`;
   }
@@ -354,8 +327,9 @@ export class SciFiWeather extends LitElement {
           chartArea: {top, left, right},
         } = chart;
         ctx.save();
+        const dataLength = data.datasets[0].weather.length;
         data.datasets[0].weather.map((iconName, idx) => {
-          if (idx % 2 === 0) {
+          if (dataLength < 10 || (dataLength >= 10 && idx % 2 === 0)) {
             const xPos = chart.getDatasetMeta(0).data[idx].x;
             const icon = WEATHER_ICON_SET[iconName]
               ? WEATHER_ICON_SET[iconName]
@@ -365,7 +339,8 @@ export class SciFiWeather extends LitElement {
               ctx.drawImage(image, xPos - 10, top - 25, 20, 20);
             };
             image.src =
-              'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(icon);
+              'data:image/svg+xml;charset=utf-8,' +
+              encodeURIComponent(templateToString(html`${icon}`));
           }
         });
       },
@@ -437,25 +412,8 @@ export class SciFiWeather extends LitElement {
   static getConfigElement() {
     return document.createElement(PACKAGE + '-editor');
   }
+
   static getStubConfig() {
-    return {
-      weather_entity: null,
-      weather_daily_forecast_limit: 10,
-      chart_first_kind_to_render: 'temperature',
-      alert: {},
-    };
+    return buildStubConfig(configMetadata);
   }
 }
-
-window.customElements.get(PACKAGE) ||
-  window.customElements.define(PACKAGE, SciFiWeather);
-
-window.customElements.get(PACKAGE + '-editor') ||
-  window.customElements.define(PACKAGE + '-editor', SciFiWeatherEditor);
-
-window.customCards = window.customCards || [];
-window.customCards.push({
-  type: PACKAGE,
-  name: 'Sci-fi weather card',
-  description: 'Render sci-fi weather card.',
-});

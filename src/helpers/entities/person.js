@@ -1,7 +1,6 @@
 import {LitElement, css, html} from 'lit';
 
-import common_style from '../common_style.js';
-import {getIcon} from '../icons/icons.js';
+import common_style from '../styles/common_style.js';
 
 const STATE_HOME = 'home';
 
@@ -33,10 +32,10 @@ export class SciFiPerson extends LitElement {
           text-align: center;
           align-content: end;
         }
-        .svg-container {
-          fill: var(--primary-light-color);
-          width: var(--icon-size-small);
-          height: var(--icon-size-small);
+        sci-fi-icon {
+          --icon-color: var(--primary-light-color);
+          --icon-width: var(--icon-size-small);
+          --icon-height: var(--icon-size-small);
         }
         img {
           width: auto;
@@ -67,11 +66,11 @@ export class SciFiPerson extends LitElement {
       <div class="avatar">
         <img src="${this.picture ? this.picture : ''}" />
         <div class="icon-container">
-          ${getIcon(
-            this.state == STATE_HOME
+          <sci-fi-icon
+            icon=${this.state == STATE_HOME
               ? 'mdi:home-outline'
-              : 'mdi:home-off-outline'
-          )}
+              : 'mdi:home-off-outline'}
+          ></sci-fi-icon>
         </div>
       </div>
     `;

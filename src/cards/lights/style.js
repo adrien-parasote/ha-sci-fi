@@ -27,43 +27,37 @@ export default css`
     flex-direction: row;
     column-gap: 5px;
     align-items: center;
+    padding-bottom: 5px;
   }
   .header .info .power {
     cursor: pointer;
   }
-  .header .info .power svg {
-    fill: var(--primary-light-color);
-    width: var(--icon-size-normal);
-    height: var(--icon-size-normal);
-  }
-  .header .info .power.off svg {
-    fill: var(--secondary-light-color);
+  .header .info .power.off sci-fi-icon {
+    --icon-color: var(--secondary-light-color);
   }
   .header .info .text {
     font-size: var(--font-size-normal);
     color: var(--primary-light-color);
     text-shadow: 0px 0px 5px var(--primary-light-color);
   }
-  .header .weather svg {
-    width: var(--icon-size-title);
-    height: var(--icon-size-title);
+  .header .weather {
+    display: flex;
   }
   /******** COMMON *********/
   .title .power {
     float: right;
     color: var(--primary-light-color);
   }
-  .title .power svg {
-    width: var(--icon-size-xsmall);
-    height: var(--icon-size-xsmall);
-    fill: var(--primary-light-color);
+  .title .power sci-fi-icon {
+    --icon-width: var(--icon-size-xsmall);
+    --icon-height: var(--icon-size-xsmall);
     cursor: pointer;
   }
   .title .power.off {
     color: var(--secondary-light-color);
   }
-  .title .power.off svg {
-    fill: var(--secondary-light-color);
+  .title .power.off sci-fi-icon {
+    --icon-color: var(--secondary-light-color);
   }
   /******** FLOORS *********/
   .floors {
@@ -77,18 +71,19 @@ export default css`
   .floors sci-fi-hexa-tile {
     --hexa-width: var(--default-hexa-width);
   }
-  .floors sci-fi-hexa-tile .item-icon svg {
-    width: var(--icon-size-title);
-    fill: var(--primary-light-color);
+  .floors sci-fi-hexa-tile .item-icon sci-fi-icon {
+    --icon-width: var(--icon-size-title);
+    --icon-height: var(--icon-size-title);
   }
-  .floors sci-fi-hexa-tile .item-icon.off svg {
-    fill: var(--secondary-bg-color);
+  .floors sci-fi-hexa-tile .item-icon.off sci-fi-icon {
+    --icon-color: var(--secondary-bg-color);
   }
   .floors sci-fi-hexa-tile.selected {
     --hexa-width: var(--selected-hexa-width);
   }
-  .floors sci-fi-hexa-tile.selected .item-icon svg {
-    width: var(--icon-size-large);
+  .floors sci-fi-hexa-tile.selected .item-icon sci-fi-icon {
+    --icon-width: var(--icon-size-large);
+    --icon-height: var(--icon-size-large);
   }
   /******** FLOOR CONTENT *********/
   .floor-content {
@@ -153,12 +148,12 @@ export default css`
   .areas .area-list .row sci-fi-hexa-tile {
     --hexa-width: var(--default-hexa-width);
   }
-  .areas .area-list .row sci-fi-hexa-tile .item-icon svg {
-    width: var(--icon-size-title);
-    fill: var(--primary-light-color);
+  .areas .area-list .row sci-fi-hexa-tile .item-icon sci-fi-icon {
+    --icon-width: var(--icon-size-title);
+    --icon-height: var(--icon-size-title);
   }
-  .areas .area-list .row sci-fi-hexa-tile .item-icon.off svg {
-    fill: var(--secondary-bg-color);
+  .areas .area-list .row sci-fi-hexa-tile .item-icon.off sci-fi-icon {
+    --icon-color: var(--secondary-bg-color);
   }
   /******** AREA CONTENT *********/
   .areas .area-content {
@@ -207,12 +202,10 @@ export default css`
     border-color: var(--secondary-bg-color);
     color: var(--secondary-light-color);
   }
-  .area-content .lights .light svg {
-    width: var(--icon-size-normal);
-    height: var(--icon-size-normal);
-    fill: var(--light-on-color);
+  .area-content .lights .light sci-fi-icon {
+    --icon-color: var(--light-on-color);
   }
-  .area-content .lights .light.off svg {
-    fill: var(--secondary-bg-color);
+  .area-content .lights .light.off sci-fi-icon {
+    --icon-color: var(--secondary-bg-color);
   }
 `;

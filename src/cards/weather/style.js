@@ -27,9 +27,9 @@ export default css`
     border-top: var(--border-width) solid var(--primary-bg-color);
     background-color: var(--primary-bg-alpha-color);
   }
-  .header .weather-icon svg {
-    width: var(--main-weather-icon-size);
-    height: var(--main-weather-icon-size);
+  .header .weather-icon sci-fi-weather-icon {
+    --weather-icon-width: var(--main-weather-icon-size);
+    --weather-icon-height: var(--main-weather-icon-size);
   }
   .header .weather-clock {
     display: flex;
@@ -64,10 +64,6 @@ export default css`
     flex-direction: column;
     text-align: center;
   }
-  .alerts .alert svg {
-    width: var(--icon-size-normal);
-    height: var(--icon-size-normal);
-  }
   .alerts .alert.yellow {
     color: var(--yellow);
   }
@@ -77,14 +73,14 @@ export default css`
   .alerts .alert.red {
     color: var(--red);
   }
-  .alerts .alert.yellow svg {
-    fill: var(--yellow);
+  .alerts .alert.yellow sci-fi-icon {
+    --icon-color: var(--yellow);
   }
-  .alerts .alert.orange svg {
-    fill: var(--orange);
+  .alerts .alert.orange sci-fi-icon {
+    --icon-color: var(--orange);
   }
-  .alerts .alert.red svg {
-    fill: var(--red);
+  .alerts .alert.red sci-fi-icon {
+    --icon-color: var(--red);
   }
 
   /******** TODAY SUMMARY *********/
@@ -103,10 +99,6 @@ export default css`
     align-items: center;
     min-width: 55px;
     padding: 10px;
-  }
-  .today-summary .sensor .state svg {
-    width: var(--icon-size-normal);
-    height: var(--icon-size-normal);
   }
   .today-summary div .label {
     color: var(--secondary-light-color);
@@ -132,9 +124,9 @@ export default css`
     flex: 1;
     flex-direction: row;
   }
-  .chart-container .chart-header .title svg {
-    width: var(--icon-size-title);
-    height: var(--icon-size-title);
+  .chart-container .chart-header .title sci-fi-weather-icon {
+    --weather-icon-width: var(--icon-size-title);
+    --weather-icon-height: var(--icon-size-title);
   }
   .chart-container .chart-header .title .label {
     align-self: center;
@@ -201,20 +193,18 @@ export default css`
     .dropdown-item:last-child {
     border: none;
   }
-  .chart-container .chart-header .dropdown .dropdown-content .dropdown-item svg,
-  .chart-container .chart-header .dropdown .dropdow-button svg {
-    width: var(--icon-size-title);
-    height: var(--icon-size-title);
-  }
   .chart-container
     .chart-header
     .dropdown
-    .dropdow-button
-    .svg-container:last-of-type
-    svg {
-    fill: var(--secondary-light-alpha-color);
-    width: var(--icon-size-normal);
-    height: var(--icon-size-normal);
+    .dropdown-content
+    .dropdown-item
+    sci-fi-weather-icon,
+  .chart-container .chart-header .dropdown .dropdow-button sci-fi-weather-icon {
+    --weather-icon-width: var(--icon-size-title);
+    --weather-icon-height: var(--icon-size-title);
+  }
+  .chart-container .chart-header .dropdown .dropdow-button sci-fi-icon {
+    --icon-color: var(--secondary-light-alpha-color);
   }
   /******** DAILY FORECAST *********/
   .days-forecast {
@@ -245,12 +235,9 @@ export default css`
   .days-forecast .content .weather.selected {
     background-color: var(--secondary-light-light-alpha-color);
   }
-  .days-forecast .content .weather .state .svg-container {
-    justify-self: center;
-  }
-  .days-forecast .content .weather .state svg {
-    width: var(--icon-size-title);
-    height: var(--icon-size-title);
+  .days-forecast .content .weather .state sci-fi-weather-icon {
+    --weather-icon-width: var(--icon-size-title);
+    --weather-icon-height: var(--icon-size-title);
   }
   .days-forecast .content .weather .label,
   .days-forecast .content .weather .temp {

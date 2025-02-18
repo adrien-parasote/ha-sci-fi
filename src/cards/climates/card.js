@@ -1,23 +1,20 @@
-import {LitElement, html, nothing} from 'lit';
+import {html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
-import common_style from '../../helpers/common_style.js';
-import '../../helpers/components/radiator.js';
-import '../../helpers/components/tiles.js';
-import '../../helpers/components/toast.js';
-import {ENTITY_KIND_CLIMATE} from '../../helpers/entities/climate_const.js';
+import {ENTITY_KIND_CLIMATE} from '../../helpers/entities/climate/climate_const.js';
 import {House} from '../../helpers/entities/house.js';
-import {Season} from '../../helpers/entities/sensor.js';
-import {getIcon} from '../../helpers/icons/icons.js';
+import {Season} from '../../helpers/entities/sensor/sensor.js';
+import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
+import configMetadata from './config-metadata.js';
 import {PACKAGE} from './const.js';
-import {SciFiClimatesEditor} from './editor.js';
 import style from './style.js';
 
-export class SciFiClimates extends LitElement {
+export class SciFiClimates extends SciFiBaseCard {
   static get styles() {
-    return [common_style, style];
+    return super.styles.concat([style]);
   }
 
+  _configMetadata = configMetadata;
   _hass; // private
   _season;
 
@@ -27,87 +24,6 @@ export class SciFiClimates extends LitElement {
       _house: {type: Object},
       _active_floor_id: {type: String}, // selected floor pointer
       _active_area_id: {type: String}, // selected area pointer
-    };
-  }
-
-  __validateConfig(config) {
-    if (!config.unit) config.unit = '°C';
-    if (!config.entities_to_exclude) config.entities_to_exclude = [];
-    if (!config.header) config.header = {display: false};
-    if (!config.header.display) config.header.display = false;
-    if (!config.header.icon_winter_state)
-      config.header.icon_winter_state = 'mdi:thermometer-chevron-up';
-    if (!config.header.message_winter_state)
-      config.header.message_winter_state = 'Winter is coming';
-    if (!config.header.icon_summer_state)
-      config.header.icon_summer_state = 'mdi:thermometer-chevron-down';
-    if (!config.header.message_summer_state)
-      config.header.message_summer_state = 'Summer time';
-
-    if (!config.state_icons) config.state_icons = {};
-    if (!config.state_icons.auto) config.state_icons.auto = 'sci:radiator-auto';
-    if (!config.state_icons.off) config.state_icons.off = 'sci:radiator-off';
-    if (!config.state_icons.heat) config.state_icons.heat = 'sci:radiator-heat';
-
-    if (!config.mode_icons) config.mode_icons = {};
-    if (!config.mode_icons.none)
-      config.mode_icons.none = 'mdi:circle-off-outline';
-    if (!config.mode_icons.frost_protection)
-      config.mode_icons.frost_protection = 'mdi:snowflake';
-    if (!config.mode_icons.eco) config.mode_icons.eco = 'mdi:leaf';
-    if (!config.mode_icons.comfort)
-      config.mode_icons.comfort = 'mdi:sun-thermometer-outline';
-    if (!config.mode_icons['comfort-1'])
-      config.mode_icons['comfort-1'] = 'mdi:sun-thermometer-outline';
-    if (!config.mode_icons['comfort-2'])
-      config.mode_icons['comfort-2'] = 'mdi:sun-thermometer-outline';
-    if (!config.mode_icons.auto)
-      config.mode_icons.auto = 'mdi:thermostat-box-auto';
-    if (!config.mode_icons.boost) config.mode_icons.boost = 'mdi:fire';
-    if (!config.mode_icons.external)
-      config.mode_icons.external = 'mdi:open-in-new';
-    if (!config.mode_icons.prog) config.mode_icons.prog = 'mdi:cogs';
-
-    if (!config.mode_colors) config.mode_colors = {};
-    if (!config.mode_colors.none) config.mode_colors.none = '#6c757d';
-    if (!config.mode_colors.frost_protection)
-      config.mode_colors.frost_protection = '#acd5f3';
-    if (!config.mode_colors.eco) config.mode_colors.eco = '#4fe38b';
-    if (!config.mode_colors.comfort) config.mode_colors.comfort = '#fdda0d';
-    if (!config.mode_colors['comfort-1'])
-      config.mode_colors['comfort-1'] = '#ffea00';
-    if (!config.mode_colors['comfort-2'])
-      config.mode_colors['comfort-2'] = '#ffff8f';
-    if (!config.mode_colors.auto) config.mode_colors.auto = '#69d4fb';
-    if (!config.mode_colors.boost) config.mode_colors.boost = '#ff7f50';
-    if (!config.mode_colors.external) config.mode_colors.external = '#6c757d';
-    if (!config.mode_colors.prog) config.mode_colors.prog = '#6c757d';
-
-    if (!config.state_colors) config.state_colors = {};
-    if (!config.state_colors.auto) config.state_colors.auto = '#69d4fb';
-    if (!config.state_colors.off) config.state_colors.off = '#6c757d';
-    if (!config.state_colors.heat) config.state_colors.heat = '#ff7f50';
-
-    return config;
-  }
-
-  setConfig(config) {
-    this._config = this.__validateConfig(JSON.parse(JSON.stringify(config)));
-    // call set hass() to immediately adjust to a changed entity
-    // while editing the entity in the card editor
-    if (this._hass) {
-      this.hass = this._hass;
-    }
-  }
-
-  getCardSize() {
-    return 4;
-  }
-
-  getLayoutOptions() {
-    return {
-      grid_rows: 4,
-      grid_columns: 4,
     };
   }
 
@@ -153,7 +69,7 @@ export class SciFiClimates extends LitElement {
   __displayHeader() {
     return html`
       <div class="info">
-        ${getIcon('mdi:home-thermometer-outline')}
+        <sci-fi-icon icon="mdi:home-thermometer-outline"></sci-fi-icon>
         <div class="text">
           ${this._house.getTemperature(this._config.entities_to_exclude)}${this
             ._config.unit}
@@ -161,7 +77,7 @@ export class SciFiClimates extends LitElement {
       </div>
       <div class="actions">${this.__displayActionHeader()}</div>
       <div class="season ${this._season ? this._season.color : ''}">
-        ${this._season ? this._season.state_icon : ''}
+        ${this._season ? this._season.state_icon : nothing}
       </div>
     `;
   }
@@ -176,7 +92,7 @@ export class SciFiClimates extends LitElement {
       ? this._config.header.icon_summer_state
       : this._config.header.icon_winter_state;
     return html`<div class="action" @click="${this.__globalOnOffClimates}">
-      ${getIcon(icon)}
+      <sci-fi-icon icon=${icon}></sci-fi-icon>
       <div>
         ${active
           ? this._config.header.message_summer_state
@@ -204,7 +120,9 @@ export class SciFiClimates extends LitElement {
           class="${this._active_floor_id == floor.id ? 'selected' : ''}"
           @click="${(e) => this.__onFloorSelect(e, floor)}"
         >
-          <div class="item-icon ${active}">${getIcon(floor.icon)}</div>
+          <div class="item-icon ${active}">
+            <sci-fi-icon icon=${floor.icon}></sci-fi-icon>
+          </div>
         </sci-fi-hexa-tile>`;
       });
   }
@@ -217,8 +135,8 @@ export class SciFiClimates extends LitElement {
     return html`
       <div class="title ${!temperature ? 'off' : 'on'}">${floor.name} -</div>
       <div class="temperature ${!temperature ? 'off' : 'on'}">
-        ${getIcon(icon)}
-        <div>${temperature}${this._config.unit}</div>
+        <sci-fi-icon icon=${icon}></sci-fi-icon>
+        <div>${label}</div>
       </div>
     `;
   }
@@ -265,7 +183,9 @@ export class SciFiClimates extends LitElement {
           : 'off'} ${this._active_area_id == area.id ? 'selected' : ''}"
         @click="${(e) => this.__onAreaSelect(e, area)}"
       >
-        <div class="item-icon">${getIcon(area.icon)}</div>
+        <div class="item-icon">
+          <sci-fi-icon icon=${area.icon}></sci-fi-icon>
+        </div>
       </sci-fi-hexa-tile>
     `;
   }
@@ -383,55 +303,6 @@ export class SciFiClimates extends LitElement {
   }
 
   static getStubConfig() {
-    return {
-      unit: '°C',
-      entities_to_exclude: [],
-      header: {
-        display: false,
-        icon_winter_state: 'mdi:thermometer-chevron-up',
-        message_winter_state: 'Winter is coming',
-        icon_summer_state: 'mdi:thermometer-chevron-down',
-        message_summer_state: 'Summer time',
-      },
-      state_icons: {
-        auto: 'sci:radiator-auto',
-        off: 'sci:radiator-off',
-        heat: 'sci:radiator-heat',
-      },
-      state_colors: {
-        auto: '#69d4fb',
-        off: '#6c757d',
-        heat: '#ff7f50',
-      },
-      mode_icons: {
-        frost_protection: 'mdi:snowflake',
-        eco: 'mdi:leaf',
-        comfort: 'mdi:sun-thermometer-outline',
-        'comfort-1': 'mdi:sun-thermometer-outline',
-        'comfort-2': 'mdi:sun-thermometer-outline',
-        boost: 'mdi:fire',
-      },
-      mode_colors: {
-        frost_protection: '#acd5f3',
-        eco: '#4fe38b',
-        comfort: '#fdda0d',
-        'comfort-1': '#ffea00',
-        'comfort-2': '#ffff8f',
-        boost: '#ff7f50',
-      },
-    };
+    return buildStubConfig(configMetadata);
   }
 }
-
-window.customElements.get(PACKAGE) ||
-  window.customElements.define(PACKAGE, SciFiClimates);
-
-window.customElements.get(PACKAGE + '-editor') ||
-  window.customElements.define(PACKAGE + '-editor', SciFiClimatesEditor);
-
-window.customCards = window.customCards || [];
-window.customCards.push({
-  type: PACKAGE,
-  name: 'Sci-fi Climates card',
-  description: 'Render sci-fi Climates card.',
-});

@@ -3,6 +3,7 @@ import {
   callService,
   createConnection,
   getAuth,
+  getConfig,
   getUser,
   subscribeEntities,
   subscribeServices,
@@ -161,10 +162,11 @@ window.buildHass = function () {
       type: 'config/area_registry/list',
     })
     .then(
-      (areas) => areas.forEach((area) => {
+      (areas) =>
+        areas.forEach((area) => {
           window.hass.areas[area.area_id] = area;
         }),
-        (err) => console.error('Failed to load areas', err)
+      (err) => console.error('Failed to load areas', err)
     );
   // Get Floors
   window.hass.connection
@@ -172,10 +174,11 @@ window.buildHass = function () {
       type: 'config/floor_registry/list',
     })
     .then(
-      (floors) => floors.forEach((floor) => {
+      (floors) =>
+        floors.forEach((floor) => {
           window.hass.floors[floor.floor_id] = floor;
         }),
-        (err) => console.error('Failed to load floors', err)
+      (err) => console.error('Failed to load floors', err)
     );
   // Get Devices
   window.hass.connection
@@ -183,10 +186,11 @@ window.buildHass = function () {
       type: 'config/device_registry/list',
     })
     .then(
-      (devices) => devices.forEach((device) => {
+      (devices) =>
+        devices.forEach((device) => {
           window.hass.devices[device.id] = device;
         }),
-        (err) => console.error('Failed to load devices', err)
+      (err) => console.error('Failed to load devices', err)
     );
   // Get entities
   window.hass.connection
@@ -194,11 +198,11 @@ window.buildHass = function () {
       type: 'config/entity_registry/list',
     })
     .then(
-      (entities) => entities.forEach((entitie) => {
+      (entities) =>
+        entities.forEach((entitie) => {
           window.hass.entities[entitie.entity_id] = entitie;
         }),
       (err) => console.error('Failed to load entities', err)
-
     );
   dispatchEvent(
     new CustomEvent('hass-created', {
@@ -207,6 +211,22 @@ window.buildHass = function () {
       composed: true,
     })
   );
+
+  getConfig(window.hass.connection).then(
+    (config) => {
+      window.hass.language = config.language;
+      window.hass.locale = {
+        language: config.language,
+        number_format: 'language',
+        time_format: 'language',
+        date_format: 'language',
+        time_zone: 'local',
+        first_weekday: 'language',
+      };
+    },
+    (err) => console.error('Failed to load config', err)
+  );
+
   // Subscribe to services (hass.services)
   window.hass.dev.setupServicesSubscription();
   // Subscribe to entities (hass.states)

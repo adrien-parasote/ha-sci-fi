@@ -4,8 +4,8 @@ import config_climates from '../config/config_climates.js';
 import config_hexa from '../config/config_hexa.js';
 import config_lights from '../config/config_lights.js';
 import config_stove from '../config/config_stove.js';
-import config_weather from '../config/config_weather.js';
 import config_vehicles from '../config/config_vehicles.js';
+import config_weather from '../config/config_weather.js';
 
 const MAP = {
   hexa: {

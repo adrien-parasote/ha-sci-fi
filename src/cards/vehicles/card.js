@@ -1,4 +1,5 @@
 import {html, nothing} from 'lit';
+
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
 import {PACKAGE} from './const.js';
@@ -31,12 +32,8 @@ export class SciFiVehicles extends SciFiBaseCard {
   render() {
     if (!this._hass || !this._config) return nothing;
     // Setup first time attribute
-    
-    return html`
-      <div class="container">
-        TODO Vehicles
-      </div>
-    `;
+
+    return html` <div class="container">TODO Vehicles</div> `;
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

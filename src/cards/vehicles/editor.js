@@ -3,7 +3,6 @@ import {html, nothing} from 'lit';
 import {SciFiBaseEditor} from '../../helpers/utils/base_editor.js';
 
 export class SciFiVehiclesEditor extends SciFiBaseEditor {
-
   static get properties() {
     return {
       _config: {type: Object},
@@ -24,10 +23,6 @@ export class SciFiVehiclesEditor extends SciFiBaseEditor {
 
   render() {
     if (!this._hass || !this._config) return nothing;
-    return html`
-      <div class="card card-corner">
-        TODO
-      </div>
-    `;
+    return html` <div class="card card-corner">TODO</div> `;
   }
 }

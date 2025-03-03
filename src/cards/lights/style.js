@@ -62,28 +62,6 @@ export default css`
   /******** FLOORS *********/
   .floors {
     display: flex;
-    flex-direction: row;
-    column-gap: 5px;
-    justify-content: center;
-    align-items: center;
-    margin-top: 10px;
-  }
-  .floors sci-fi-hexa-tile {
-    --hexa-width: var(--default-hexa-width);
-  }
-  .floors sci-fi-hexa-tile .item-icon sci-fi-icon {
-    --icon-width: var(--icon-size-title);
-    --icon-height: var(--icon-size-title);
-  }
-  .floors sci-fi-hexa-tile .item-icon.off sci-fi-icon {
-    --icon-color: var(--secondary-bg-color);
-  }
-  .floors sci-fi-hexa-tile.selected {
-    --hexa-width: var(--selected-hexa-width);
-  }
-  .floors sci-fi-hexa-tile.selected .item-icon sci-fi-icon {
-    --icon-width: var(--icon-size-large);
-    --icon-height: var(--icon-size-large);
   }
   /******** FLOOR CONTENT *********/
   .floor-content {

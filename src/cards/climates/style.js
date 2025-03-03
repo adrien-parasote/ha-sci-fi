@@ -74,28 +74,6 @@ export default css`
   /*********** FLOORS *************/
   .floors {
     display: flex;
-    flex-direction: row;
-    column-gap: 5px;
-    justify-content: center;
-    align-items: center;
-    margin: 10px 0;
-  }
-  .floors sci-fi-hexa-tile {
-    --hexa-width: var(--default-hexa-width);
-  }
-  .floors sci-fi-hexa-tile.selected {
-    --hexa-width: var(--selected-hexa-width);
-  }
-  .floors sci-fi-hexa-tile .item-icon sci-fi-icon {
-    --icon-width: var(--icon-size-title);
-    --icon-height: var(--icon-size-title);
-  }
-  .floors sci-fi-hexa-tile .item-icon.off sci-fi-icon {
-    --icon-color: var(--secondary-bg-color);
-  }
-  .floors sci-fi-hexa-tile.selected .item-icon sci-fi-icon {
-    --icon-width: var(--icon-size-large);
-    --icon-height: var(--icon-size-large);
   }
   /*********** FLOOR CONTENT *************/
   .floor-content {
@@ -141,28 +119,10 @@ export default css`
   }
   .areas .area-list {
     display: flex;
-    flex-direction: row;
-    justify-content: center;
-    column-gap: 5px;
-    align-items: center;
-    margin: 10px 0;
   }
-  .areas .area-list .col {
-    display: flex;
-    flex-direction: column;
-  }
-  .areas .area-list .col sci-fi-hexa-tile {
-    --hexa-width: var(--default-hexa-width);
-  }
-  .areas .area-list .col sci-fi-hexa-tile.selected {
-    --hexa-width: var(--medium-hexa-width);
-  }
-  .areas .area-list .col sci-fi-hexa-tile .item-icon sci-fi-icon {
-    --icon-width: var(--icon-size-title);
-    --icon-height: var(--icon-size-title);
-  }
-  .areas .area-list .col sci-fi-hexa-tile .item-icon.off sci-fi-icon {
-    --icon-color: var(--secondary-bg-color);
+  .areas .area-list sci-fi-hexa-row {
+    --hexa-row-selected-width: var(--medium-hexa-width);
+    --hexa-row-icon-selected-height: var(--icon-size-title);
   }
   /******** AREA CONTENT *********/
   .areas .area-content {

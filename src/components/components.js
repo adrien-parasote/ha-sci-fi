@@ -3,6 +3,7 @@ import './icons/icons.js';
 import './inputs/inputs.js';
 import './sf-accordion.js';
 import './sf-circle_progress_bar.js';
+import './sf-hexa-row.js';
 import './sf-radiator.js';
 import './sf-stack_bar.js';
 import './sf-stove.js';

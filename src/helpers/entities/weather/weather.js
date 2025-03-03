@@ -256,7 +256,7 @@ export class HourlyForecast {
       hour.setMonth(today.getMonth());
       hour.setFullYear(today.getFullYear());
 
-      if (hour < dawn || hour > dusk) state = 'night';
+      if (hour <= dawn || hour >= dusk) state = 'night';
     }
     return [this.condition, state].join('-');
   }

@@ -78,7 +78,7 @@ export class SciFiStove extends SciFiBaseCard {
       };
     });
     // Get current temp & associate with item id
-    const selected_item_id = this._stove.temperature - this._stove.min_temp;
+    const selected_item_id = Math.round(this._stove.current_temperature) - this._stove.min_temp;
     return html`
       <div class="bottom">
         ${this.__displayHvacButton()}

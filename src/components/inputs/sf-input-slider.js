@@ -81,7 +81,10 @@ export class SciFiSlider extends SciFiInput {
   }
 
   _changeValue(e) {
-    this.__dispatchEvent(e, parseFloat(this.shadowRoot.querySelector('input').value));
+    this.__dispatchEvent(
+      e,
+      parseFloat(this.shadowRoot.querySelector('input').value)
+    );
   }
 }
 

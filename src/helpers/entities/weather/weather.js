@@ -1,9 +1,9 @@
 import {html} from 'lit';
 
 import {isSameDay, pad} from '../../utils/utils.js';
+import {WeatherSensor} from '../sensor/sensor.js';
+import {WEATHER_EXTRA_SENSORS} from '../sensor/sensor_const.js';
 import {WEATHER_STATE_FR, WEEK_DAYS} from './weather_const.js';
-import { WeatherSensor } from '../sensor/sensor.js';
-import { WEATHER_EXTRA_SENSORS } from '../sensor/sensor_const.js';
 
 export class SunEntity {
   constructor(hass, sun_entity_id) {
@@ -91,11 +91,11 @@ export class WeatherEntity {
   __buildExtraSensors(hass) {
     const city = ['sensor', this.entity_id.split('.')[1]].join('.');
     let sensors = {};
-    Object.keys(WEATHER_EXTRA_SENSORS).map((sensorkey) => {      
+    Object.keys(WEATHER_EXTRA_SENSORS).map((sensorkey) => {
       sensors[sensorkey] = new WeatherSensor(
         [city, sensorkey].join('_'),
         hass,
-        sensorkey,
+        sensorkey
       );
     });
     return sensors;
@@ -219,7 +219,8 @@ export class HourlyForecast {
     const today = new Date();
     // Forecast if for today
     if (isSameDay(today, this.datetime)) {
-      if (this.datetime >= sun.next_dusk || this.datetime <= sun.next_dawn) state = 'night';
+      if (this.datetime >= sun.next_dusk || this.datetime <= sun.next_dawn)
+        state = 'night';
     } else {
       // Forecast if for tomorrow
       // First reset dusk & dawn as of today

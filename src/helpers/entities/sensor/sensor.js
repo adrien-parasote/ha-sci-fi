@@ -1,6 +1,6 @@
 import {html} from 'lit';
 
-import {SEASON_ICONS} from './sensor_const.js';
+import {SEASON_ICONS, WEATHER_EXTRA_SENSORS} from './sensor_const.js';
 
 export class Sensor {
   constructor(id, hass) {
@@ -32,5 +32,18 @@ export class Season extends Sensor {
 
   get color() {
     return SEASON_ICONS[this.state].color;
+  }
+}
+
+export class WeatherSensor extends Sensor {
+  constructor(id, hass, key) {
+    super(id, hass);
+    this.key = key;
+    this.icon = WEATHER_EXTRA_SENSORS[key].icon;
+    this.name = WEATHER_EXTRA_SENSORS[key].name;
+  }
+
+  get value() {
+    return [this.state, this.unit_of_measurement].join(' ');
   }
 }

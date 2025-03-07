@@ -1,5 +1,6 @@
 import {html, nothing} from 'lit';
 
+import {Vehicle} from '../../helpers/entities/vehicle/vehicle.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
 import {PACKAGE} from './const.js';
@@ -16,6 +17,7 @@ export class SciFiVehicles extends SciFiBaseCard {
   static get properties() {
     return {
       _config: {type: Object},
+      _vehicles: {type: Array},
     };
   }
 
@@ -27,6 +29,14 @@ export class SciFiVehicles extends SciFiBaseCard {
     this._hass = hass;
 
     if (!this._config) return; // Can't assume setConfig is called before hass is set
+
+    if (!this._vehicles) {
+      // Build first rendering vehicles
+      this._vehicles = this._config.vehicles.map(
+        (config) => new Vehicle(hass, config)
+      );
+    }
+    console.log(this._vehicles);
   }
 
   render() {

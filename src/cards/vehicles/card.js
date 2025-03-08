@@ -18,6 +18,7 @@ export class SciFiVehicles extends SciFiBaseCard {
     return {
       _config: {type: Object},
       _vehicles: {type: Array},
+      _active_vehicle_id: {type: Number},
     };
   }
 
@@ -32,18 +33,55 @@ export class SciFiVehicles extends SciFiBaseCard {
 
     if (!this._vehicles) {
       // Build first rendering vehicles
+      this._active_vehicle_id = 0;
       this._vehicles = this._config.vehicles.map(
         (config) => new Vehicle(hass, config)
       );
+    } else {
+      // update
+      console.log('update vehicle');
+      const update = this._vehicles.map((vehicle) => vehicle.update(hass));
+      console.log(update);
     }
-    console.log(this._vehicles);
   }
 
   render() {
     if (!this._hass || !this._config) return nothing;
-    // Setup first time attribute
+    return html` <div class="container">${this.__displayHeader()}</div> `;
+  }
 
-    return html` <div class="container">TODO Vehicles</div> `;
+  __displayHeader() {
+    const multiple_vehicle = this._vehicles.length > 1;
+    console.log(multiple_vehicle);
+    return html`
+      <div class="header">
+        <div class="${multiple_vehicle ? 'show' : 'hide'}">
+          <sci-fi-button
+            icon="mdi:chevron-left"
+            @button-click=${this._nextCar}
+          ></sci-fi-button>
+        </div>
+        <div class="title">${this._vehicles[this._active_vehicle_id].name}</div>
+        <div class="${multiple_vehicle ? 'show' : 'hide'}">
+          <sci-fi-button
+            icon="mdi:chevron-right"
+            @button-click=${this._nextCar}
+          ></sci-fi-button>
+        </div>
+      </div>
+    `;
+  }
+
+  _nextCar(e) {
+    if (e.detail.element.icon == 'mdi:chevron-left') {
+      this._active_vehicle_id == 0
+        ? (this._active_vehicle_id = this._vehicles.length - 1)
+        : (this._active_vehicle_id -= 1);
+    } else {
+      this._active_vehicle_id == this._vehicles.length - 1
+        ? (this._active_vehicle_id = 0)
+        : (this._active_vehicle_id += 1);
+    }
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

@@ -1,3 +1,5 @@
+import {isEqual} from 'lodash-es';
+
 import {Sensor} from '../sensor/sensor';
 import {
   VEHICLE_CHARGE_STATES,
@@ -10,7 +12,6 @@ import {
   VEHICLE_PLUG_STATES_UNKNOWN,
   VEHICLE_SENSORS,
   VEHICLE_SENSOR_BATTERY_AUTONOMY,
-  VEHICLE_SENSOR_BATTERY_AVAILABLE_ENERGY,
   VEHICLE_SENSOR_BATTERY_LAST_ACTIVITY,
   VEHICLE_SENSOR_BATTERY_LEVEL,
   VEHICLE_SENSOR_CHARGE_STATE,
@@ -33,17 +34,25 @@ import {
 export class Vehicle {
   constructor(hass, config) {
     this.name = config.name;
-    this.sensors = this.__buildSensors(hass, config);
+    this._config = config;
+    this.sensors = this.__buildSensors(hass);
   }
 
-  __buildSensors(hass, config) {
+  __buildSensors(hass) {
     const sensors = {};
     VEHICLE_SENSORS.forEach((sensor_name) => {
-      sensors[sensor_name] = config[sensor_name]
-        ? new Sensor(config[sensor_name], hass)
+      sensors[sensor_name] = this._config[sensor_name]
+        ? new Sensor(this._config[sensor_name], hass)
         : null;
     });
     return sensors;
+  }
+
+  update(hass) {
+    const new_sensors = this.__buildSensors(hass);
+    if (isEqual(new_sensors, this.sensors)) return false;
+    this.sensors = new_sensors;
+    return true;
   }
 
   get charging() {

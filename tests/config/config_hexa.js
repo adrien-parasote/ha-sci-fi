@@ -20,8 +20,8 @@ export default {
     {
       standalone: true,
       entity: 'binary_sensor.captur_ii_en_charge',
-      active_icon: 'mdi:car-multiple',
-      inactive_icon: 'mdi:car-multiple',
+      active_icon: 'sci:landspeeder',
+      inactive_icon: 'sci:landspeeder',
       name: 'Cars',
       state_on: ['on'],
       state_error: null,

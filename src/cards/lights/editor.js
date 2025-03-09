@@ -146,7 +146,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
         label="First floor to render"
         value=${this._config.first_floor_to_render}
         element-id="first_floor_to_render"
-        items="${JSON.stringify(floors)}"
+        .items="${floors}"
         @select-item=${this.__update}
         @input-update=${this.__update}
       ></sci-fi-dropdown-entity-input>
@@ -156,7 +156,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
         ?disabled=${areas.length == 0}
         value=${this._config.first_area_to_render}
         element-id="first_area_to_render"
-        items="${JSON.stringify(areas)}"
+        .items="${areas}"
         @select-item=${this.__update}
         @input-update=${this.__update}
       ></sci-fi-dropdown-entity-input>
@@ -191,7 +191,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
           element-id="${entity_id}"
           kind="custom_entities"
           value="${entity_id}"
-          items="${JSON.stringify(this._lights_entities)}"
+          .items="${this._lights_entities}"
           @input-update=${this.__update}
         ></sci-fi-dropdown-entity-input>
         <sci-fi-button

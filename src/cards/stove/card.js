@@ -113,7 +113,7 @@ export class SciFiStove extends SciFiBaseCard {
           : 'mdi:information-off-outline'}
         title="preset"
         text=${this._stove.preset_mode}
-        items=${JSON.stringify(preset_items)}
+        .items=${preset_items}
         @button-select="${this.__select}"
       ></sci-fi-button-select-card>
     `;
@@ -137,7 +137,7 @@ export class SciFiStove extends SciFiBaseCard {
           : 'mdi:information-off-outline'}
         title="mode"
         text=${this._stove.state}
-        items=${JSON.stringify(hvac_items)}
+        .items=${hvac_items}
         @button-select="${this.__select}"
       ></sci-fi-button-select-card>
     `;

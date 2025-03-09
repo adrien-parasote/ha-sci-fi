@@ -45,7 +45,7 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
           element-id="weather_entity"
           kind="weather_entity"
           value="${this._config.weather_entity}"
-          items="${JSON.stringify(this._weather_entities)}"
+          .items="${this._weather_entities}"
           @input-update=${this.__update}
         ></sci-fi-dropdown-entity-input>
       </section>
@@ -82,7 +82,7 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
         value=${this._config.chart_first_kind_to_render}
         element-id="chart_first_kind_to_render"
         kind="chart"
-        items="${JSON.stringify(Object.keys(this._chart_data_kind))}"
+        .items="${Object.keys(this._chart_data_kind)}"
         @select-item=${this.__update}
         @input-update=${this.__update}
       ></sci-fi-dropdown-input>

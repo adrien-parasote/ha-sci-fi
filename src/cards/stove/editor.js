@@ -52,7 +52,7 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
           element-id="entity"
           kind="entity"
           value="${this._config.entity}"
-          items="${JSON.stringify(this._climates)}"
+          .items="${this._climates}"
           @input-update=${this.__update}
         ></sci-fi-dropdown-entity-input>
         <sci-fi-input

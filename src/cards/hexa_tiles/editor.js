@@ -96,7 +96,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         element-id="weather"
         kind="weather_entity"
         value="${this._config.weather.weather_entity}"
-        items="${JSON.stringify(this._entity_kind['weather'].flat())}"
+        .items="${this._entity_kind['weather'].flat()}"
         @input-update=${this.__update}
       ></sci-fi-dropdown-entity-input>
       <sci-fi-input
@@ -163,7 +163,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         element-id="${id}"
         kind="entity"
         value="${entity.entity}"
-        items="${JSON.stringify(Object.values(this._entity_kind).flat())}"
+        .items="${Object.values(this._entity_kind).flat()}"
         @input-update=${this.__update}
       ></sci-fi-dropdown-entity-input>
     `;
@@ -176,7 +176,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         value=${entity.entity_kind}
         element-id="${id}"
         kind="entity_kind"
-        items="${JSON.stringify(Object.keys(this._entity_kind))}"
+        .items="${Object.keys(this._entity_kind)}"
         @select-item=${this.__update}
         @input-update=${this.__update}
       ></sci-fi-dropdown-input>
@@ -184,8 +184,8 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         label="Entities to exclude (optionnal)"
         element-id="${id}"
         kind="entities_to_exclude"
-        values="${JSON.stringify(entity.entities_to_exclude)}"
-        items="${JSON.stringify(this._entity_kind[entity.entity_kind])}"
+        .values="${entity.entities_to_exclude}"
+        .items="${this._entity_kind[entity.entity_kind]}"
         ?disabled=${!entity.entity_kind}
         @input-update=${this.__update}
       ></sci-fi-dropdown-multi-entities-input>
@@ -235,7 +235,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
           label="State on (required)"
           element-id="${id}"
           kind="state_on"
-          values="${JSON.stringify(entity.state_on)}"
+          .values="${entity.state_on}"
           @input-update=${this.__update}
         ></sci-fi-chips-input>
         <sci-fi-input

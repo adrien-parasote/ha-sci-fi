@@ -125,8 +125,8 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
         label="Entities to exclude (optionnal)"
         element-id="entities_to_exclude"
         kind="entities_to_exclude"
-        values="${JSON.stringify(this._config.entities_to_exclude)}"
-        items="${JSON.stringify(this._climates)}"
+        .values="${this._config.entities_to_exclude}"
+        .items="${this._climates}"
         @input-update=${this.__update}
       ></sci-fi-dropdown-multi-entities-input>
     </section>`;

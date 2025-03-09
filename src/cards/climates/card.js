@@ -239,9 +239,9 @@ export class SciFiClimates extends SciFiBaseCard {
         html`<div class="climate">
           <sci-fi-radiator
             id="${climate.entity_id}"
-            climate-entity="${JSON.stringify(climate.renderAsEntity())}"
-            unit="${this._config.unit}"
-            styles="${JSON.stringify(styles)}"
+            .climateEntity="${climate.renderAsEntity()}"
+            .unit="${this._config.unit}"
+            .styles="${styles}"
             @change-preset-mode="${this._changePresetMode}"
             @change-hvac-mode="${this._changeHvacMode}"
             @change-temperature="${this._changeTemperature}"

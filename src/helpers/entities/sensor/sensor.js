@@ -47,3 +47,16 @@ export class WeatherSensor extends Sensor {
     return [this.state, this.unit_of_measurement].join(' ');
   }
 }
+
+export class TrackerSensor extends Sensor {
+  get value() {
+    return [this.state, this.unit_of_measurement].join(' ');
+  }
+
+  get gps() {
+    return {
+      latitude: parseFloat(this.attributes.latitude),
+      longitude: parseFloat(this.attributes.longitude),
+    };
+  }
+}

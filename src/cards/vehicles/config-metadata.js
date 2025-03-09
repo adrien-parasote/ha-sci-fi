@@ -66,10 +66,6 @@ export default {
         mandatory: true,
         type: 'string',
       },
-      battery_available_energy: {
-        mandatory: true,
-        type: 'string',
-      },
       charge_state: {
         mandatory: true,
         type: 'string',
@@ -83,10 +79,6 @@ export default {
         type: 'string',
       },
       fuel_quantity: {
-        mandatory: true,
-        type: 'string',
-      },
-      battery_temperature: {
         mandatory: true,
         type: 'string',
       },

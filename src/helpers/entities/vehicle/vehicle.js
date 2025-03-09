@@ -1,6 +1,6 @@
 import {isEqual} from 'lodash-es';
 
-import {Sensor} from '../sensor/sensor';
+import {Sensor, TrackerSensor} from '../sensor/sensor';
 import {
   VEHICLE_CHARGE_STATES,
   VEHICLE_CHARGE_STATES_UNAVAILABLE,
@@ -41,9 +41,14 @@ export class Vehicle {
   __buildSensors(hass) {
     const sensors = {};
     VEHICLE_SENSORS.forEach((sensor_name) => {
-      sensors[sensor_name] = this._config[sensor_name]
-        ? new Sensor(this._config[sensor_name], hass)
-        : null;
+      if (!this._config[sensor_name]) {
+        sensors[sensor_name] = null;
+      } else {
+        sensors[sensor_name] =
+          this._config[sensor_name].split('.')[0] == 'device_tracker'
+            ? new TrackerSensor(this._config[sensor_name], hass)
+            : new Sensor(this._config[sensor_name], hass);
+      }
     });
     return sensors;
   }
@@ -119,6 +124,12 @@ export class Vehicle {
     return !this.sensors[VEHICLE_SENSOR_LOCATION]
       ? null
       : this.sensors[VEHICLE_SENSOR_LOCATION].value;
+  }
+
+  get location_gps() {
+    return !this.sensors[VEHICLE_SENSOR_LOCATION]
+      ? null
+      : this.sensors[VEHICLE_SENSOR_LOCATION].gps;
   }
 
   get location_last_activity() {

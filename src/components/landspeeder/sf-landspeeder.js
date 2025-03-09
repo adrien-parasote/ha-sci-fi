@@ -1,7 +1,8 @@
 import {LitElement, css, html, nothing} from 'lit';
 
-import common_style from '../helpers/styles/common_style.js';
-import {defineCustomElement} from '../helpers/utils/import.js';
+import common_style from '../../helpers/styles/common_style.js';
+import {defineCustomElement} from '../../helpers/utils/import.js';
+import top_speeder from './data/top.js';
 
 class SciFiLandspeeder extends LitElement {
   static get styles() {
@@ -10,6 +11,11 @@ class SciFiLandspeeder extends LitElement {
       css`
         :host {
           display: flex;
+          height: 100%;
+        }
+        .content {
+          width: 250px;
+          margin: auto;
         }
       `,
     ];
@@ -28,7 +34,7 @@ class SciFiLandspeeder extends LitElement {
 
   render() {
     if (!this.vehicle) nothing;
-    return html` TODO ${this.vehicle.name}`;
+    return html`<div class="content">${top_speeder}</div>`;
   }
 }
 

@@ -1,5 +1,27 @@
 # Changelog
 
+# [v0.6.0](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.6.0) - 2025-mm-dd
+
+## 🆕 What's New
+
+**Max Q**: adding vehicle card 🚗
+
+## 🆙  What's Changed
+
+🖼️ Sci-Fi icons
+- Adding new icon: landspeeder
+
+## 🐛 Fixes
+- Technical: 
+  - Fix editor card input slider value issue => int to float
+  - Fix stack bar rendering when low data value
+- Weather icon: 
+  - Fix icon selection when hour is equal dusk or dawn
+  - Fix icon selection when same day & hour is before or after dusk or dawn
+- Stove card: Temperature selection doesn't display properly
+
+<br>
+
 # [v0.5.4](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.5.4) - 2025-02-18
 
 ## 🆙  What's Changed

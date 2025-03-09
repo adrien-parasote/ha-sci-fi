@@ -47,7 +47,11 @@ export class SciFiVehicles extends SciFiBaseCard {
 
   render() {
     if (!this._hass || !this._config) return nothing;
-    return html` <div class="container">${this.__displayHeader()}</div> `;
+    return html`
+      <div class="container">
+        ${this.__displayHeader()} ${this.__displayLandspeeder()}
+      </div>
+    `;
   }
 
   __displayHeader() {
@@ -82,6 +86,12 @@ export class SciFiVehicles extends SciFiBaseCard {
         ? (this._active_vehicle_id = 0)
         : (this._active_vehicle_id += 1);
     }
+  }
+
+  __displayLandspeeder() {
+    return html`<sci-fi-landspeeder
+      .vehicle=${this._vehicles[this._active_vehicle_id]}
+    ></sci-fi-landspeeder>`;
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

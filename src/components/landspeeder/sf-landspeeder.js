@@ -2,6 +2,7 @@ import {LitElement, css, html, nothing} from 'lit';
 
 import common_style from '../../helpers/styles/common_style.js';
 import {defineCustomElement} from '../../helpers/utils/import.js';
+import {pad} from '../../helpers/utils/utils.js';
 import top_speeder from './data/top.js';
 
 class SciFiLandspeeder extends LitElement {
@@ -56,11 +57,17 @@ class SciFiLandspeeder extends LitElement {
           color: var(--primary-light-color);
           text-align: center;
         }
+
+        .component .sub-info {
+          color: var(--secondary-bg-color);
+          font-size: var(--font-size-xsmall);
+        }
         .component .location {
           display: flex;
           column-gap: 5px;
           justify-content: center;
           flex-direction: row;
+          text-transform: capitalize;
         }
         .component .location sci-fi-button {
           --primary-icon-color: var(--primary-light-color);
@@ -106,12 +113,19 @@ class SciFiLandspeeder extends LitElement {
             @button-click=${this._openLocation}
           ></sci-fi-button>
         </div>
-        <div>${this.vehicle.location_last_activity}</div>
+        <div class="sub-info">${this.__displayDate(this.vehicle.location_last_activity)}</div>
       </div>
       <div class="component">
         <sci-fi-icon icon="mdi:counter"></sci-fi-icon>
         <div>${this.vehicle.mileage}</div>
       </div>`;
+  }
+
+  __displayDate(d) {
+    return [
+      [pad(d.getDate()), pad(d.getMonth()), d.getFullYear()].join('/'),
+      [pad(d.getHours()), pad(d.getMinutes()), pad(d.getSeconds())].join(':'),
+    ].join(' ');
   }
 
   _openLocation(e) {

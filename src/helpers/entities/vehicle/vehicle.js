@@ -123,7 +123,7 @@ export class Vehicle {
   get location() {
     return !this.sensors[VEHICLE_SENSOR_LOCATION]
       ? null
-      : this.sensors[VEHICLE_SENSOR_LOCATION].value;
+      : this.sensors[VEHICLE_SENSOR_LOCATION].value.split('_').join(' ');
   }
 
   get location_gps() {

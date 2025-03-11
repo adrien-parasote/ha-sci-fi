@@ -4,10 +4,6 @@ import {Sensor, TrackerSensor} from '../sensor/sensor';
 import {
   VEHICLE_CHARGE_STATES,
   VEHICLE_CHARGE_STATES_UNAVAILABLE,
-  VEHICLE_DOOR_CLOSE,
-  VEHICLE_DOOR_OPEN,
-  VEHICLE_LOCKED,
-  VEHICLE_OPEN,
   VEHICLE_PLUG_STATES,
   VEHICLE_PLUG_STATES_UNKNOWN,
   VEHICLE_SENSORS,
@@ -25,10 +21,13 @@ import {
   VEHICLE_SENSOR_LOCATION_LAST_ACTIVITY,
   VEHICLE_SENSOR_LOCK_STATUS,
   VEHICLE_SENSOR_MILEAGE,
+  VEHICLE_SENSOR_ON_STATE,
+  VEHICLE_SENSOR_OPEN_STATE,
   VEHICLE_SENSOR_PASSENGER_DOOR_STATUS,
   VEHICLE_SENSOR_PLUGGED_IN,
   VEHICLE_SENSOR_PLUG_STATE,
   VEHICLE_SENSOR_REAR_RIGHT_DOOR_STATUS,
+  VEHICLE_SENSOR_UNAVAILABLE_STATE,
 } from './vehicle_const';
 
 export class Vehicle {
@@ -62,67 +61,71 @@ export class Vehicle {
 
   get charging() {
     return this.sensors[VEHICLE_SENSOR_CHARGING]
-      ? this.sensors[VEHICLE_SENSOR_CHARGING] == 'on'
-      : false;
+      ? false
+      : [VEHICLE_SENSOR_UNAVAILABLE_STATE, VEHICLE_SENSOR_OPEN_STATE].includes(
+          this.sensors[VEHICLE_SENSOR_CHARGING].state
+        );
   }
 
   get rear_left_door() {
     return !this.sensors[VEHICLE_SENSOR_REAR_RIGHT_DOOR_STATUS]
-      ? VEHICLE_DOOR_CLOSE
-      : this.sensors[VEHICLE_SENSOR_REAR_RIGHT_DOOR_STATUS] == 'on'
-        ? VEHICLE_DOOR_OPEN
-        : VEHICLE_DOOR_CLOSE;
+      ? false
+      : [VEHICLE_SENSOR_UNAVAILABLE_STATE, VEHICLE_SENSOR_OPEN_STATE].includes(
+          this.sensors[VEHICLE_SENSOR_REAR_RIGHT_DOOR_STATUS].state
+        );
   }
 
   get rear_right_door() {
     return !this.sensors[VEHICLE_SENSOR_REAR_RIGHT_DOOR_STATUS]
-      ? VEHICLE_DOOR_CLOSE
-      : this.sensors[VEHICLE_SENSOR_REAR_RIGHT_DOOR_STATUS] == 'on'
-        ? VEHICLE_DOOR_OPEN
-        : VEHICLE_DOOR_CLOSE;
+      ? false
+      : [VEHICLE_SENSOR_UNAVAILABLE_STATE, VEHICLE_SENSOR_OPEN_STATE].includes(
+          this.sensors[VEHICLE_SENSOR_REAR_RIGHT_DOOR_STATUS].state
+        );
   }
 
   get driver_door_status() {
     return !this.sensors[VEHICLE_SENSOR_DRIVER_DOOR_STATUS]
-      ? VEHICLE_DOOR_CLOSE
-      : this.sensors[VEHICLE_SENSOR_DRIVER_DOOR_STATUS] == 'on'
-        ? VEHICLE_DOOR_OPEN
-        : VEHICLE_DOOR_CLOSE;
+      ? false
+      : [VEHICLE_SENSOR_UNAVAILABLE_STATE, VEHICLE_SENSOR_OPEN_STATE].includes(
+          this.sensors[VEHICLE_SENSOR_DRIVER_DOOR_STATUS].state
+        );
   }
 
   get passenger_door_status() {
     return !this.sensors[VEHICLE_SENSOR_PASSENGER_DOOR_STATUS]
-      ? VEHICLE_DOOR_CLOSE
-      : this.sensors[VEHICLE_SENSOR_PASSENGER_DOOR_STATUS] == 'on'
-        ? VEHICLE_DOOR_OPEN
-        : VEHICLE_DOOR_CLOSE;
+      ? false
+      : [VEHICLE_SENSOR_UNAVAILABLE_STATE, VEHICLE_SENSOR_OPEN_STATE].includes(
+          this.sensors[VEHICLE_SENSOR_PASSENGER_DOOR_STATUS].state
+        );
   }
 
   get plugged_in() {
-    return this.sensors[VEHICLE_SENSOR_PLUGGED_IN]
-      ? this.sensors[VEHICLE_SENSOR_PLUGGED_IN] == 'on'
-      : false;
+    return !this.sensors[VEHICLE_SENSOR_PLUGGED_IN]
+      ? false
+      : [VEHICLE_SENSOR_UNAVAILABLE_STATE, VEHICLE_SENSOR_ON_STATE].includes(
+          this.sensors[VEHICLE_SENSOR_PLUGGED_IN].state
+        );
   }
 
   get lock_status() {
     return !this.sensors[VEHICLE_SENSOR_LOCK_STATUS]
-      ? VEHICLE_LOCKED
-      : this.sensors[VEHICLE_SENSOR_LOCK_STATUS] == 'on'
-        ? VEHICLE_OPEN
-        : VEHICLE_LOCKED;
+      ? false
+      : [VEHICLE_SENSOR_UNAVAILABLE_STATE, VEHICLE_SENSOR_ON_STATE].includes(
+          this.sensors[VEHICLE_SENSOR_LOCK_STATUS].state
+        );
   }
 
   get hatch_status() {
     return !this.sensors[VEHICLE_SENSOR_HATCH_STATUS]
-      ? VEHICLE_DOOR_CLOSE
-      : this.sensors[VEHICLE_SENSOR_HATCH_STATUS] == 'on'
-        ? VEHICLE_DOOR_OPEN
-        : VEHICLE_DOOR_CLOSE;
+      ? false
+      : [VEHICLE_SENSOR_UNAVAILABLE_STATE, VEHICLE_SENSOR_ON_STATE].includes(
+          this.sensors[VEHICLE_SENSOR_HATCH_STATUS].state
+        );
   }
 
   get location() {
     return !this.sensors[VEHICLE_SENSOR_LOCATION]
-      ? null
+      ? 'Undefined'
       : this.sensors[VEHICLE_SENSOR_LOCATION].value.split('_').join(' ');
   }
 

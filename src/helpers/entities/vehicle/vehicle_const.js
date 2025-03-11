@@ -45,10 +45,11 @@ export const VEHICLE_SENSORS = [
   VEHICLE_SENSOR_CHARGING_REMAINING_TIME,
 ];
 
-export const VEHICLE_DOOR_OPEN = 'open';
-export const VEHICLE_DOOR_CLOSE = 'close';
-export const VEHICLE_LOCKED = 'locked';
-export const VEHICLE_OPEN = 'open';
+export const VEHICLE_SENSOR_ON_STATE = 'on';
+export const VEHICLE_SENSOR_OPEN_STATE = 'open';
+export const VEHICLE_SENSOR_CLOSE_STATE = 'close';
+export const VEHICLE_SENSOR_LOCKED_STATE = 'locked';
+export const VEHICLE_SENSOR_UNAVAILABLE_STATE = 'unavailable';
 
 export const VEHICLE_CHARGE_STATES_NOT_IN_CHARGE = 'not_in_charge';
 export const VEHICLE_CHARGE_STATES_WAITING_PLANNED_CHARGE =

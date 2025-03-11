@@ -1,4 +1,4 @@
-import {LitElement, css, html, nothing} from 'lit';
+import {LitElement, html, nothing} from 'lit';
 
 import common_style from '../../helpers/styles/common_style.js';
 import {defineCustomElement} from '../../helpers/utils/import.js';

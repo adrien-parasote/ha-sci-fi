@@ -1,5 +1,20 @@
 import {LitElement, html, nothing} from 'lit';
 
+import {
+  VEHICLE_CHARGE_STATES_CHARGE_ENDED,
+  VEHICLE_CHARGE_STATES_CHARGE_ERROR,
+  VEHICLE_CHARGE_STATES_CHARGE_IN_PROGRESS,
+  VEHICLE_CHARGE_STATES_ENERGY_FLAP_OPENED,
+  VEHICLE_CHARGE_STATES_NOT_IN_CHARGE,
+  VEHICLE_CHARGE_STATES_UNAVAILABLE,
+  VEHICLE_CHARGE_STATES_WAITING_CURRENT_CHARGE,
+  VEHICLE_CHARGE_STATES_WAITING_PLANNED_CHARGE,
+  VEHICLE_PLUG_STATES_ERROR,
+  VEHICLE_PLUG_STATES_PLUGGED,
+  VEHICLE_PLUG_STATES_PLUGGED_WAITING_FOR_CHARGE,
+  VEHICLE_PLUG_STATES_UNKNOWN,
+  VEHICLE_PLUG_STATES_UNPLUGGED,
+} from '../../helpers/entities/vehicle/vehicle_const.js';
 import common_style from '../../helpers/styles/common_style.js';
 import {defineCustomElement} from '../../helpers/utils/import.js';
 import {pad} from '../../helpers/utils/utils.js';
@@ -68,6 +83,8 @@ class SciFiLandspeeder extends LitElement {
   }
 
   _openLocation(e) {
+    if (this.vehicle.location_gps.latitude == null) return;
+
     // OPEN DEVICE DEFAULT MAP TO FIND YOUR VEHICLE
     if (
       /* if we're on iOS, open in Apple Maps */
@@ -79,8 +96,7 @@ class SciFiLandspeeder extends LitElement {
         'maps://maps.google.com/maps?daddr=' +
           this.vehicle.location_gps.latitude +
           ',' +
-          this.vehicle.location_gps.longitude +
-          '&amp;ll='
+          this.vehicle.location_gps.longitude
       );
     } else {
       /* else use Google */
@@ -88,8 +104,7 @@ class SciFiLandspeeder extends LitElement {
         'https://maps.google.com/maps?daddr=' +
           this.vehicle.location_gps.latitude +
           ',' +
-          this.vehicle.location_gps.longitude +
-          '&amp;ll='
+          this.vehicle.location_gps.longitude
       );
     }
   }
@@ -100,24 +115,13 @@ class SciFiLandspeeder extends LitElement {
       rear_right_door_status: 'binary_sensor.captur_ii_porte_arriere_droite',
       driver_door_status: 'binary_sensor.captur_ii_porte_conducteur',
       passenger_door_status: 'binary_sensor.captur_ii_porte_passager',
-
-      charging: 'binary_sensor.captur_ii_en_charge',
-      plugged_in: 'binary_sensor.captur_ii_prise',
-      hatch_status: 'binary_sensor.captur_ii_trappe',
-
-      charge_state: 'sensor.captur_ii_etat_de_charge',
-      plug_state: 'sensor.captur_ii_etat_du_branchement',
-      charging_remaining_time: 'sensor.captur_ii_temps_de_charge_restant',
-
-      battery_autonomy: 'sensor.captur_ii_autonomie_de_la_batterie',
-      battery_level: 'sensor.captur_ii_batterie',
-      battery_last_activity:
-        'sensor.captur_ii_derniere_activite_de_la_batterie',
-
 */
 
     return html`
-      <div class="middle">${this.__displayLock()}${this.__displayFuel()}</div>
+      <div class="middle">
+        ${this.__displayLock()} ${this.__displayFuel()}
+        ${this.__displayBattery()} ${this.__displayCharging()}
+      </div>
     `;
   }
 
@@ -125,19 +129,21 @@ class SciFiLandspeeder extends LitElement {
     return html`
       <div class="lock">
         <div class="${this.vehicle.lock_status ? 'green' : 'orange'}">
-          <div class="circle"></div>
-          <div class="h-path"></div>
           <sci-fi-icon
             icon="${this.vehicle.lock_status
               ? 'mdi:lock-check-outline'
               : 'mdi:lock-open-alert-outline'}"
           ></sci-fi-icon>
+          <div class="h-path"></div>
+          <div class="circle"></div>
         </div>
       </div>
     `;
   }
 
   __displayFuel() {
+    if (!this.vehicle.fuel_autonomy || !this.vehicle.fuel_quantity)
+      return nothing;
     return html`
       <div class="fuel">
         <div>
@@ -158,8 +164,123 @@ class SciFiLandspeeder extends LitElement {
     `;
   }
 
+  __displayBattery() {
+    if (!this.vehicle.battery_autonomy || !this.vehicle.battery_level)
+      return nothing;
+    const battery_level =
+      Math.round(this.vehicle.raw_battery_level / 10, 0) * 10;
+    return html`
+      <div class="battery ${this.__getBatteryLevelColor(battery_level)}">
+        <div>
+          <div class="circle"></div>
+          <div class="h-path"></div>
+          <div class="components">
+            <div class="component">
+              <sci-fi-icon icon="mdi:ev-station"></sci-fi-icon>
+              <div>${this.vehicle.battery_autonomy}</div>
+            </div>
+            <div class="component">
+              <sci-fi-icon
+                icon="${this.__getBatteryLevelIcon(battery_level)}"
+              ></sci-fi-icon>
+              <div>${this.vehicle.battery_level}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  __getBatteryLevelColor(battery_level) {
+    let res = 'green';
+    if (battery_level <= 50) res = 'orange';
+    if (battery_level <= 20) res = 'red';
+    return res;
+  }
+
+  __getBatteryLevelIcon(battery_level) {
+    if (!this.vehicle.charging) {
+      return battery_level == 100
+        ? 'mdi:battery'
+        : battery_level == 0
+          ? 'mdi:battery-outline'
+          : 'mdi:battery-' + battery_level;
+    } else {
+      return battery_level <= 10
+        ? 'mdi:battery-charging-10'
+        : 'mdi:battery-charging-' + battery_level;
+    }
+  }
+
+  __displayCharging() {
+    if (this.vehicle.charging == null || !this.vehicle.charge_state)
+      return nothing;
+    return html`
+      <div class="charging ${this.__getChargingState()}">
+        <div>
+          <div class="circle"></div>
+          <div class="h-path"></div>
+          <div class="components">
+            <div class="component">
+              <sci-fi-icon icon="${this.__getChargeStateIcon()}"></sci-fi-icon>
+              <div>${this.vehicle.charge_state}</div>
+            </div>
+            <div class="component">
+              <sci-fi-icon icon="${this.__getPlugStateIcon()}"></sci-fi-icon>
+              <div>${this.vehicle.plug_state}</div>
+            </div>
+            ${this.__displayRemainingChargingTime()}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  __getChargingState() {
+    if (
+      this.vehicle.raw_charge_state == VEHICLE_CHARGE_STATES_CHARGE_ERROR ||
+      this.vehicle.raw_plug_state == VEHICLE_PLUG_STATES_ERROR
+    )
+      return 'error';
+    return this.vehicle.charging ? 'on' : 'off';
+  }
+
+  __displayRemainingChargingTime() {
+    if (!this.vehicle.charging) return nothing;
+    return html`<div class="component">
+      <sci-fi-icon icon="mdi:update"></sci-fi-icon>
+      <div>${this.vehicle.charging_remaining_time}</div>
+    </div> `;
+  }
+
+  __getChargeStateIcon() {
+    const states = {};
+    states[VEHICLE_CHARGE_STATES_NOT_IN_CHARGE] = 'mdi:battery-off';
+    states[VEHICLE_CHARGE_STATES_WAITING_PLANNED_CHARGE] = 'mdi:battery-clock';
+    states[VEHICLE_CHARGE_STATES_WAITING_CURRENT_CHARGE] = 'mdi:battery-clock';
+    states[VEHICLE_CHARGE_STATES_CHARGE_IN_PROGRESS] =
+      'mdi:battery-charging-medium';
+    states[VEHICLE_CHARGE_STATES_CHARGE_ENDED] = 'mdi:battery-check';
+    states[VEHICLE_CHARGE_STATES_CHARGE_ERROR] = 'mdi:battery-alert-variant';
+    states[VEHICLE_CHARGE_STATES_ENERGY_FLAP_OPENED] = 'mdi:battery-unknown';
+    states[VEHICLE_CHARGE_STATES_UNAVAILABLE] = 'mdi:battery-unknown';
+    return states[this.vehicle.raw_charge_state];
+  }
+
+  __getPlugStateIcon() {
+    const states = {};
+    states[VEHICLE_PLUG_STATES_UNPLUGGED] = 'sci:landspeeder-plugged';
+    states[VEHICLE_PLUG_STATES_PLUGGED] = 'sci:landspeeder-plugged-off';
+    states[VEHICLE_PLUG_STATES_PLUGGED_WAITING_FOR_CHARGE] =
+      'sci:landspeeder-plugged-clock';
+    states[VEHICLE_PLUG_STATES_ERROR] = 'sci:landspeeder-error-plug';
+    states[VEHICLE_PLUG_STATES_UNKNOWN] = 'sci:landspeeder-unknown-plug';
+    return states[this.vehicle.raw_plug_state];
+  }
+
   __displayBottom() {
-    return html`ACTIONS`;
+    // TODO Actions
+    return nothing;
   }
 
   __displaySpeeder() {

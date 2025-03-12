@@ -10,7 +10,7 @@ export default {
         type: 'string',
       },
       charging: {
-        mandatory: true,
+        mandatory: false,
         type: 'string',
       },
       rear_right_door_status: {
@@ -19,71 +19,59 @@ export default {
         default: '',
       },
       rear_left_door_status: {
-        mandatory: true,
+        mandatory: false,
         type: 'string',
       },
       driver_door_status: {
-        mandatory: true,
+        mandatory: false,
         type: 'string',
       },
       passenger_door_status: {
-        mandatory: true,
-        type: 'string',
-      },
-      plugged_in: {
-        mandatory: true,
+        mandatory: false,
         type: 'string',
       },
       lock_status: {
-        mandatory: true,
-        type: 'string',
-      },
-      hatch_status: {
-        mandatory: true,
+        mandatory: false,
         type: 'string',
       },
       location: {
-        mandatory: true,
+        mandatory: false,
         type: 'string',
       },
       battery_autonomy: {
-        mandatory: true,
+        mandatory: false,
         type: 'string',
       },
       fuel_autonomy: {
-        mandatory: true,
+        mandatory: false,
         type: 'string',
       },
       battery_level: {
-        mandatory: true,
-        type: 'string',
-      },
-      battery_last_activity: {
-        mandatory: true,
+        mandatory: false,
         type: 'string',
       },
       location_last_activity: {
-        mandatory: true,
+        mandatory: false,
         type: 'string',
       },
       charge_state: {
-        mandatory: true,
+        mandatory: false,
         type: 'string',
       },
       plug_state: {
-        mandatory: true,
+        mandatory: false,
         type: 'string',
       },
       mileage: {
-        mandatory: true,
+        mandatory: false,
         type: 'string',
       },
       fuel_quantity: {
-        mandatory: true,
+        mandatory: false,
         type: 'string',
       },
       charging_remaining_time: {
-        mandatory: true,
+        mandatory: false,
         type: 'string',
       },
     },

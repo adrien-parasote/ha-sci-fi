@@ -8,7 +8,6 @@ import {
   VEHICLE_PLUG_STATES_UNKNOWN,
   VEHICLE_SENSORS,
   VEHICLE_SENSOR_BATTERY_AUTONOMY,
-  VEHICLE_SENSOR_BATTERY_LAST_ACTIVITY,
   VEHICLE_SENSOR_BATTERY_LEVEL,
   VEHICLE_SENSOR_CHARGE_STATE,
   VEHICLE_SENSOR_CHARGING,
@@ -16,7 +15,6 @@ import {
   VEHICLE_SENSOR_DRIVER_DOOR_STATUS,
   VEHICLE_SENSOR_FUEL_AUTONOMY,
   VEHICLE_SENSOR_FUEL_QUANTITY,
-  VEHICLE_SENSOR_HATCH_STATUS,
   VEHICLE_SENSOR_LOCATION,
   VEHICLE_SENSOR_LOCATION_LAST_ACTIVITY,
   VEHICLE_SENSOR_LOCK_STATUS,
@@ -24,7 +22,6 @@ import {
   VEHICLE_SENSOR_ON_STATE,
   VEHICLE_SENSOR_OPEN_STATE,
   VEHICLE_SENSOR_PASSENGER_DOOR_STATUS,
-  VEHICLE_SENSOR_PLUGGED_IN,
   VEHICLE_SENSOR_PLUG_STATE,
   VEHICLE_SENSOR_REAR_RIGHT_DOOR_STATUS,
   VEHICLE_SENSOR_UNAVAILABLE_STATE,
@@ -99,14 +96,6 @@ export class Vehicle {
         );
   }
 
-  get plugged_in() {
-    return !this.sensors[VEHICLE_SENSOR_PLUGGED_IN]
-      ? false
-      : [VEHICLE_SENSOR_UNAVAILABLE_STATE, VEHICLE_SENSOR_ON_STATE].includes(
-          this.sensors[VEHICLE_SENSOR_PLUGGED_IN].state
-        );
-  }
-
   get lock_status() {
     return !this.sensors[VEHICLE_SENSOR_LOCK_STATUS]
       ? false
@@ -115,17 +104,9 @@ export class Vehicle {
         );
   }
 
-  get hatch_status() {
-    return !this.sensors[VEHICLE_SENSOR_HATCH_STATUS]
-      ? false
-      : [VEHICLE_SENSOR_UNAVAILABLE_STATE, VEHICLE_SENSOR_ON_STATE].includes(
-          this.sensors[VEHICLE_SENSOR_HATCH_STATUS].state
-        );
-  }
-
   get location() {
     return !this.sensors[VEHICLE_SENSOR_LOCATION]
-      ? 'Undefined'
+      ? VEHICLE_SENSOR_UNAVAILABLE_STATE
       : this.sensors[VEHICLE_SENSOR_LOCATION].value.split('_').join(' ');
   }
 
@@ -143,7 +124,7 @@ export class Vehicle {
 
   get mileage() {
     return !this.sensors[VEHICLE_SENSOR_MILEAGE]
-      ? null
+      ? VEHICLE_SENSOR_UNAVAILABLE_STATE
       : [
           this.sensors[VEHICLE_SENSOR_MILEAGE].value,
           this.sensors[VEHICLE_SENSOR_MILEAGE].unit_of_measurement,
@@ -158,10 +139,22 @@ export class Vehicle {
     ];
   }
 
+  get raw_charge_state() {
+    return !this.sensors[VEHICLE_SENSOR_CHARGE_STATE]
+      ? VEHICLE_CHARGE_STATES_UNAVAILABLE
+      : this.sensors[VEHICLE_SENSOR_CHARGE_STATE].value;
+  }
+
   get plug_state() {
     if (!this.sensors[VEHICLE_SENSOR_PLUG_STATE])
       return VEHICLE_PLUG_STATES[VEHICLE_PLUG_STATES_UNKNOWN];
     return VEHICLE_PLUG_STATES[this.sensors[VEHICLE_SENSOR_PLUG_STATE].value];
+  }
+
+  get raw_plug_state() {
+    return !this.sensors[VEHICLE_SENSOR_PLUG_STATE]
+      ? VEHICLE_PLUG_STATES_UNKNOWN
+      : this.sensors[VEHICLE_SENSOR_PLUG_STATE].value;
   }
 
   get battery_autonomy() {
@@ -191,6 +184,12 @@ export class Vehicle {
         ].join(' ');
   }
 
+  get raw_battery_level() {
+    return !this.sensors[VEHICLE_SENSOR_BATTERY_LEVEL]
+      ? null
+      : this.sensors[VEHICLE_SENSOR_BATTERY_LEVEL].value;
+  }
+
   get fuel_quantity() {
     return !this.sensors[VEHICLE_SENSOR_FUEL_QUANTITY]
       ? null
@@ -208,11 +207,5 @@ export class Vehicle {
           this.sensors[VEHICLE_SENSOR_CHARGING_REMAINING_TIME]
             .unit_of_measurement,
         ].join(' ');
-  }
-
-  get battery_last_activity() {
-    return !this.sensors[VEHICLE_SENSOR_BATTERY_LAST_ACTIVITY]
-      ? null
-      : new Date(this.sensors[VEHICLE_SENSOR_BATTERY_LAST_ACTIVITY].value);
   }
 }

@@ -8,7 +8,7 @@ Object.keys(mdi).forEach((k) => {
     .substring(3, k.length)
     .split(/(?=[A-Z])/)
     .map((v) => v.toLowerCase().split(/(?=[0-9])/))
-    .map((v) => v.length == 1 ? v[0] : v.splice(0,1)+"-"+v.join(''))
+    .map((v) => (v.length == 1 ? v[0] : v.splice(0, 1) + '-' + v.join('')))
     .join('-');
   icons.push({name: ha_name, path: mdi[k]});
 });

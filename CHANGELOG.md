@@ -9,7 +9,7 @@
 ## 🆙  What's Changed
 
 🖼️ Sci-Fi icons
-- Adding new icon: landspeeder
+- Adding new icons: landspeeder & landspeeder pluggin (see readme section)
 
 ## 🐛 Fixes
 - Technical: 

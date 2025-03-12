@@ -43,7 +43,6 @@ export default css`
   .top {
     height: calc(var(--top-height) - 10px);
     padding: 10px;
-    border-bottom: var(--border-width) solid var(--primary-bg-color);
     align-items: center;
   }
   sci-fi-icon {
@@ -202,8 +201,10 @@ export default css`
     width: 34px;
   }
   .bottom {
-    border: 1px solid red;
     height: calc(var(--bottom-height) - 30px);
-    padding: 10px;
+    padding-bottom: 20px;
+    column-gap: 10px;
+    align-items: end;
+    justify-content: center;
   }
 `;

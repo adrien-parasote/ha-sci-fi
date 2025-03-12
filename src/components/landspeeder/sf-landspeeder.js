@@ -279,8 +279,14 @@ class SciFiLandspeeder extends LitElement {
   }
 
   __displayBottom() {
-    // TODO Actions
-    return nothing;
+    // TODO link Actions
+    // TODO disable start / stop function plug status
+    // Render actions optionnal in config
+    return html`
+      <sci-fi-button-card icon="mdi:ev-station" title="Charging" text="Start" ></sci-fi-button-card>
+      <sci-fi-button-card icon="mdi:ev-station" title="Charging" text="Stop" ></sci-fi-button-card>
+      <sci-fi-button-card icon="mdi:air-conditioner" title="Air-cond" text="Start" ></sci-fi-button-card>
+    `;
   }
 
   __displaySpeeder() {

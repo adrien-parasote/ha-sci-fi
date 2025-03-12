@@ -907,5 +907,8 @@ To complete HA icon set, sci-fi package onboard the following icons :
 | Radiator off | sci:radiator-off | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_off.svg" alt="Radiator off"  height="25"/> |
 | Sleeping vaccum | sci:vacuum-sleep | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/sleeping_vacuum.svg" alt="Sleeping vaccum"  height="25"/> |
 | Landspeeder | sci:landspeeder | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder.svg" alt="Landspeeder"  height="25"/> |
-
-
+| Landspeeder plugged| sci:landspeeder-plugged | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-plugged.svg" alt="Landspeeder plugged"  height="25"/> |
+| Landspeeder plugged off| sci:landspeeder-plugged-off | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-plugged-off.svg" alt="Landspeeder plugged off"  height="25"/> |
+| Landspeeder unknown plug| sci:landspeeder-unknown-plug | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-unknown-plug.svg" alt="Landspeeder unknown plug"  height="25"/> |
+| Landspeeder error plug| sci:landspeeder-error-plug | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-error-plug.svg" alt="Landspeeder error plug"  height="25"/> |
+| Landspeeder plugged clock| sci:landspeeder-plugged-clock | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-plugged-clock.svg" alt="Landspeeder plugged clock"  height="25"/> |

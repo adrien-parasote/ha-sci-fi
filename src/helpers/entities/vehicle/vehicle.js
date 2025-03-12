@@ -12,7 +12,6 @@ import {
   VEHICLE_SENSOR_CHARGE_STATE,
   VEHICLE_SENSOR_CHARGING,
   VEHICLE_SENSOR_CHARGING_REMAINING_TIME,
-  VEHICLE_SENSOR_DRIVER_DOOR_STATUS,
   VEHICLE_SENSOR_FUEL_AUTONOMY,
   VEHICLE_SENSOR_FUEL_QUANTITY,
   VEHICLE_SENSOR_LOCATION,
@@ -21,9 +20,7 @@ import {
   VEHICLE_SENSOR_MILEAGE,
   VEHICLE_SENSOR_ON_STATE,
   VEHICLE_SENSOR_OPEN_STATE,
-  VEHICLE_SENSOR_PASSENGER_DOOR_STATUS,
   VEHICLE_SENSOR_PLUG_STATE,
-  VEHICLE_SENSOR_REAR_RIGHT_DOOR_STATUS,
   VEHICLE_SENSOR_UNAVAILABLE_STATE,
 } from './vehicle_const';
 
@@ -61,38 +58,6 @@ export class Vehicle {
       ? false
       : [VEHICLE_SENSOR_UNAVAILABLE_STATE, VEHICLE_SENSOR_OPEN_STATE].includes(
           this.sensors[VEHICLE_SENSOR_CHARGING].state
-        );
-  }
-
-  get rear_left_door() {
-    return !this.sensors[VEHICLE_SENSOR_REAR_RIGHT_DOOR_STATUS]
-      ? false
-      : [VEHICLE_SENSOR_UNAVAILABLE_STATE, VEHICLE_SENSOR_OPEN_STATE].includes(
-          this.sensors[VEHICLE_SENSOR_REAR_RIGHT_DOOR_STATUS].state
-        );
-  }
-
-  get rear_right_door() {
-    return !this.sensors[VEHICLE_SENSOR_REAR_RIGHT_DOOR_STATUS]
-      ? false
-      : [VEHICLE_SENSOR_UNAVAILABLE_STATE, VEHICLE_SENSOR_OPEN_STATE].includes(
-          this.sensors[VEHICLE_SENSOR_REAR_RIGHT_DOOR_STATUS].state
-        );
-  }
-
-  get driver_door_status() {
-    return !this.sensors[VEHICLE_SENSOR_DRIVER_DOOR_STATUS]
-      ? false
-      : [VEHICLE_SENSOR_UNAVAILABLE_STATE, VEHICLE_SENSOR_OPEN_STATE].includes(
-          this.sensors[VEHICLE_SENSOR_DRIVER_DOOR_STATUS].state
-        );
-  }
-
-  get passenger_door_status() {
-    return !this.sensors[VEHICLE_SENSOR_PASSENGER_DOOR_STATUS]
-      ? false
-      : [VEHICLE_SENSOR_UNAVAILABLE_STATE, VEHICLE_SENSOR_OPEN_STATE].includes(
-          this.sensors[VEHICLE_SENSOR_PASSENGER_DOOR_STATUS].state
         );
   }
 

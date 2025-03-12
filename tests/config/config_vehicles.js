@@ -6,10 +6,6 @@ export default {
       location: 'device_tracker.captur_ii_emplacement',
       location_last_activity:
         'sensor.captur_ii_derniere_activite_de_localisation',
-      rear_left_door_status: 'binary_sensor.captur_ii_porte_arriere_gauche',
-      rear_right_door_status: 'binary_sensor.captur_ii_porte_arriere_droite',
-      driver_door_status: 'binary_sensor.captur_ii_porte_conducteur',
-      passenger_door_status: 'binary_sensor.captur_ii_porte_passager',
       lock_status: 'binary_sensor.captur_ii_serrure',
       charging: 'binary_sensor.captur_ii_en_charge',
       plugged_in: 'binary_sensor.captur_ii_prise',
@@ -27,10 +23,6 @@ export default {
       location: 'device_tracker.captur_ii_emplacement',
       location_last_activity:
         'sensor.captur_ii_derniere_activite_de_localisation',
-      rear_left_door_status: 'binary_sensor.captur_ii_porte_arriere_gauche',
-      rear_right_door_status: 'binary_sensor.captur_ii_porte_arriere_droite',
-      driver_door_status: 'binary_sensor.captur_ii_porte_conducteur',
-      passenger_door_status: 'binary_sensor.captur_ii_porte_passager',
       lock_status: 'binary_sensor.captur_ii_serrure',
       charging: 'binary_sensor.captur_ii_en_charge',
       plugged_in: 'binary_sensor.captur_ii_prise',

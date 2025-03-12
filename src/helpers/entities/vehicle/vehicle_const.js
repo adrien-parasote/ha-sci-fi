@@ -1,8 +1,4 @@
 export const VEHICLE_SENSOR_CHARGING = 'charging';
-export const VEHICLE_SENSOR_REAR_RIGHT_DOOR_STATUS = 'rear_right_door_status';
-export const VEHICLE_SENSOR_REAR_LEFT_DOOR_STATUS = 'rear_left_door_status';
-export const VEHICLE_SENSOR_DRIVER_DOOR_STATUS = 'driver_door_status';
-export const VEHICLE_SENSOR_PASSENGER_DOOR_STATUS = 'passenger_door_status';
 export const VEHICLE_SENSOR_LOCK_STATUS = 'lock_status';
 export const VEHICLE_SENSOR_BATTERY_AUTONOMY = 'battery_autonomy';
 export const VEHICLE_SENSOR_FUEL_AUTONOMY = 'fuel_autonomy';
@@ -20,10 +16,6 @@ export const VEHICLE_SENSOR_CHARGING_REMAINING_TIME = 'charging_remaining_time';
 
 export const VEHICLE_SENSORS = [
   VEHICLE_SENSOR_CHARGING,
-  VEHICLE_SENSOR_REAR_RIGHT_DOOR_STATUS,
-  VEHICLE_SENSOR_REAR_LEFT_DOOR_STATUS,
-  VEHICLE_SENSOR_DRIVER_DOOR_STATUS,
-  VEHICLE_SENSOR_PASSENGER_DOOR_STATUS,
   VEHICLE_SENSOR_LOCK_STATUS,
   VEHICLE_SENSOR_BATTERY_AUTONOMY,
   VEHICLE_SENSOR_FUEL_AUTONOMY,
@@ -41,8 +33,6 @@ export const VEHICLE_SENSORS = [
 
 export const VEHICLE_SENSOR_ON_STATE = 'on';
 export const VEHICLE_SENSOR_OPEN_STATE = 'open';
-export const VEHICLE_SENSOR_CLOSE_STATE = 'close';
-export const VEHICLE_SENSOR_LOCKED_STATE = 'locked';
 export const VEHICLE_SENSOR_UNAVAILABLE_STATE = 'unavailable';
 
 export const VEHICLE_CHARGE_STATES_NOT_IN_CHARGE = 'not_in_charge';

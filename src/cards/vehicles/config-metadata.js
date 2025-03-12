@@ -13,23 +13,6 @@ export default {
         mandatory: false,
         type: 'string',
       },
-      rear_right_door_status: {
-        mandatory: false,
-        type: 'string',
-        default: '',
-      },
-      rear_left_door_status: {
-        mandatory: false,
-        type: 'string',
-      },
-      driver_door_status: {
-        mandatory: false,
-        type: 'string',
-      },
-      passenger_door_status: {
-        mandatory: false,
-        type: 'string',
-      },
       lock_status: {
         mandatory: false,
         type: 'string',

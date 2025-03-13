@@ -16,23 +16,35 @@ export class SciFiCardButton extends SciFiButton {
             --primary-icon-color,
             var(--primary-light-color)
           );
+          --btn-icon-size: var(--icon-size, var(--icon-size-small));
           --btn-space: var(--btn-padding, 10px);
+          --btn-font-weight: var(--font-weight, bold);
+          --btn-font-size: var(--font-size, var(--font-size-small));
+          --btn-border: var(
+            --border,
+            var(--border-width) solid var(--primary-bg-color)
+          );
+          --btn-min-width: var(--min-width, 90px);
+          --btn-label-text-alignment: var(--text-align, start);
         }
         .btn {
           display: flex;
           flex-direction: row;
-          font-weight: bold;
-          border: var(--border-width) solid var(--primary-bg-color);
+          font-weight: var(--btn-font-weight);
+          border: var(--btn-border);
           border-radius: var(--border-radius);
-          font-size: var(--font-size-small);
+          font-size: var(--btn-font-size);
           padding: var(--btn-space);
           align-items: center;
           text-transform: capitalize;
-          min-width: 90px;
+          min-width: var(--btn-min-width);
           height: fit-content;
           justify-content: left;
           column-gap: 10px;
           cursor: pointer;
+        }
+        .btn.col {
+          flex-direction: column;
         }
         .btn:hover {
           background-color: var(--secondary-light-light-alpha-color);
@@ -43,6 +55,7 @@ export class SciFiCardButton extends SciFiButton {
           flex-direction: column;
           row-gap: 5px;
           color: var(--label-text-color);
+          text-align: var(--btn-label-text-alignment);
         }
         .btn .label div:first-of-type {
           font-size: var(--font-size-xsmall);
@@ -51,8 +64,8 @@ export class SciFiCardButton extends SciFiButton {
         }
         .btn sci-fi-icon {
           --icon-color: var(--btn-icon-color);
-          --icon-width: var(--icon-size-small);
-          --icon-height: var(--icon-size-small);
+          --icon-width: var(--btn-icon-size);
+          --icon-height: var(--btn-icon-size);
         }
       `,
     ];
@@ -63,6 +76,7 @@ export class SciFiCardButton extends SciFiButton {
       icon: {type: String},
       title: {type: String},
       text: {type: String},
+      noTitle: {type: Boolean, attribute: 'no-title'},
     };
   }
 
@@ -71,6 +85,7 @@ export class SciFiCardButton extends SciFiButton {
     this.icon = this.icon ? this.icon : '';
     this.title = this.title ? this.title : '';
     this.text = this.text ? this.text : '';
+    this.noTitle = this.noTitle ? this.noTitle : false;
   }
 
   render() {
@@ -79,14 +94,21 @@ export class SciFiCardButton extends SciFiButton {
 
   displayBtn() {
     return html`
-      <div class="btn" @click="${this.click}">
+      <div class="btn ${this.noTitle ? 'col' : ''}" @click="${this.click}">
         <sci-fi-icon icon=${this.icon}></sci-fi-icon>
-        <div class="label">
-          <div>${this.title}</div>
-          <div>${this.text}</div>
-        </div>
+        ${this.__displayLabel()}
       </div>
     `;
+  }
+
+  __displayLabel() {
+    if (this.noTitle) {
+      return html`<div class="label">${this.text}</div>`;
+    }
+    return html`<div class="label">
+      <div>${this.title}</div>
+      <div>${this.text}</div>
+    </div>`;
   }
 }
 

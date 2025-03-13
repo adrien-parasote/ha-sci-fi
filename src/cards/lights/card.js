@@ -81,14 +81,11 @@ export class SciFiLights extends SciFiBaseCard {
   __displayHeader() {
     return html`
       <div class="info">
-        <div
-          class="power ${this._house.isActive(ENTITY_KIND_LIGHT)
-            ? 'on'
-            : 'off'}"
-          @click="${this.__turnOnOffHouse}"
-        >
-          <sci-fi-icon icon="mdi:power-standby"></sci-fi-icon>
-        </div>
+        <sci-fi-button
+          icon="mdi:power-standby"
+          class="${this._house.isActive(ENTITY_KIND_LIGHT) ? 'off' : 'on'}"
+          @button-click="${this.__turnOnOffHouse}"
+        ></sci-fi-button>
         <div class="text">${this._config.header}</div>
       </div>
       <div class="weather">${this.__displaySun()}</div>
@@ -227,12 +224,11 @@ export class SciFiLights extends SciFiBaseCard {
   }
 
   __displayPowerBtn(element, active) {
-    return html`<div
-      class="power ${active}"
-      @click="${(e) => this.__onPowerBtnClick(e, element)}"
-    >
-      <sci-fi-icon icon="mdi:power-standby"></sci-fi-icon>
-    </div>`;
+    return html`<sci-fi-button
+      icon="mdi:power-standby"
+      class="${active}"
+      @button-click="${(e) => this.__onPowerBtnClick(e, element)}"
+    ></sci-fi-button>`;
   }
 
   __displayAreaLights(area) {
@@ -240,15 +236,13 @@ export class SciFiLights extends SciFiBaseCard {
       ${area.getEntitiesByKind(ENTITY_KIND_LIGHT).map((light) => {
         const custom = this._config.custom_entities[light.entity_id];
         return html`
-          <div
-            class="light ${light.state}"
-            @click="${(e) => this.__onLightClick(e, light)}"
-          >
-            ${this.__getLightIcon(light, custom)}
-            <div>
-              ${custom && custom.name ? custom.name : light.friendly_name}
-            </div>
-          </div>
+          <sci-fi-button-card
+            class="${light.state}"
+            no-title
+            icon="${this.__getLightIcon(light, custom)}"
+            text="${custom && custom.name ? custom.name : light.friendly_name}"
+            @button-click="${(e) => this.__onLightClick(e, light)}"
+          ></sci-fi-button-card>
         `;
       })}
     </div>`;
@@ -267,7 +261,7 @@ export class SciFiLights extends SciFiBaseCard {
           ? custom.icon_off
           : this._config.default_icon_off;
     }
-    return html`<sci-fi-icon icon=${icon}></sci-fi-icon>`;
+    return icon;
   }
 
   __onFloorSelect(e) {

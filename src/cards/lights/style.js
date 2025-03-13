@@ -29,35 +29,24 @@ export default css`
     align-items: center;
     padding-bottom: 5px;
   }
-  .header .info .power {
-    cursor: pointer;
-  }
-  .header .info .power.off sci-fi-icon {
-    --icon-color: var(--secondary-light-color);
-  }
   .header .info .text {
     font-size: var(--font-size-normal);
     color: var(--primary-light-color);
     text-shadow: 0px 0px 5px var(--primary-light-color);
   }
+  .header .info sci-fi-button.on {
+    --primary-icon-color: var(--secondary-bg-color);
+  }
   .header .weather {
     display: flex;
   }
   /******** COMMON *********/
-  .title .power {
+  .title sci-fi-button {
     float: right;
-    color: var(--primary-light-color);
+    --btn-icon-size: var(--icon-size-xsmall);
   }
-  .title .power sci-fi-icon {
-    --icon-width: var(--icon-size-xsmall);
-    --icon-height: var(--icon-size-xsmall);
-    cursor: pointer;
-  }
-  .title .power.off {
-    color: var(--secondary-light-color);
-  }
-  .title .power.off sci-fi-icon {
-    --icon-color: var(--secondary-light-color);
+  .title sci-fi-button.on {
+    --primary-icon-color: var(--secondary-bg-color);
   }
   /******** FLOORS *********/
   .floors {
@@ -162,28 +151,21 @@ export default css`
     padding: 10px 0;
     justify-content: center;
     width: 100%;
-  }
-  .area-content .lights .light {
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    text-align: center;
-    font-size: var(--font-size-small);
-    padding: 5px;
-    border-radius: var(--border-radius);
-    border: var(--border-width) solid var(--primary-light-color);
   }
-  .area-content .lights .light:hover {
-    cursor: pointer;
+  .area-content .lights sci-fi-button-card {
+    --font-weight: normal;
+    --label-color: var(--primary-light-color);
+    --border: var(--border-width) solid var(--primary-light-color);
+    --btn-icon-size: var(--icon-size-normal);
+    --padding: 5px;
+    --primary-icon-color: var(--light-on-color);
+    --min-width: 40px;
+    --text-align: center;
   }
-  .area-content .lights .light.off {
-    border-color: var(--secondary-bg-color);
-    color: var(--secondary-light-color);
-  }
-  .area-content .lights .light sci-fi-icon {
-    --icon-color: var(--light-on-color);
-  }
-  .area-content .lights .light.off sci-fi-icon {
-    --icon-color: var(--secondary-bg-color);
+  .area-content .lights sci-fi-button-card.off {
+    --label-color: var(--secondary-light-color);
+    --border: var(--border-width) solid var(--secondary-bg-color);
+    --primary-icon-color: var(--secondary-bg-color);
   }
 `;

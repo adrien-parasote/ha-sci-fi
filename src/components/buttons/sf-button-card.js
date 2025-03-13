@@ -74,6 +74,10 @@ export class SciFiCardButton extends SciFiButton {
   }
 
   render() {
+    return this.displayBtn();
+  }
+
+  displayBtn() {
     return html`
       <div class="btn" @click="${this.click}">
         <sci-fi-icon icon=${this.icon}></sci-fi-icon>

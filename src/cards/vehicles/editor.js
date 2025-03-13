@@ -12,6 +12,7 @@ export class SciFiVehiclesEditor extends SciFiBaseEditor {
   set hass(hass) {
     this._hass = hass;
     if (!this._config) return;
+    // Object.values(window.hass.devices).filter((d) => d.manufacturer == "Renault").map((e) => { return {name: e.name_by_user, id:e.id}})
   }
 
   setConfig(config) {

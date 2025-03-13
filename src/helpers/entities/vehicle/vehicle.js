@@ -2,6 +2,9 @@ import {isEqual} from 'lodash-es';
 
 import {Sensor, TrackerSensor} from '../sensor/sensor';
 import {
+  HASS_RENAULT_SERVICE,
+  HASS_RENAULT_SERVICE_ACTION_START_AC,
+  HASS_RENAULT_SERVICE_ACTION_STOP_AC,
   VEHICLE_CHARGE_STATES,
   VEHICLE_CHARGE_STATES_UNAVAILABLE,
   VEHICLE_PLUG_STATES,
@@ -26,6 +29,7 @@ import {
 
 export class Vehicle {
   constructor(hass, config) {
+    this.id = config.id;
     this.name = config.name;
     this._config = config;
     this.sensors = this.__buildSensors(hass);
@@ -172,5 +176,26 @@ export class Vehicle {
           this.sensors[VEHICLE_SENSOR_CHARGING_REMAINING_TIME]
             .unit_of_measurement,
         ].join(' ');
+  }
+
+  startAc(hass, temperature) {
+    return hass.callService(
+      HASS_RENAULT_SERVICE,
+      HASS_RENAULT_SERVICE_ACTION_START_AC,
+      {
+        vehicle: this.id,
+        temperature: temperature,
+      }
+    );
+  }
+
+  stopAc(hass) {
+    return hass.callService(
+      HASS_RENAULT_SERVICE,
+      HASS_RENAULT_SERVICE_ACTION_STOP_AC,
+      {
+        vehicle: this.id,
+      }
+    );
   }
 }

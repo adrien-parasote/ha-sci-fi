@@ -15,19 +15,28 @@ class SciFiWheel extends LitElement {
             --text-font-color,
             var(--secondary-light-color)
           );
+          --wheel-text-size: var(--text-size, var(--font-size-normal));
           --container-padding: var(--padding, 10px);
+          --wheel-border: var(
+            --border,
+            var(--border-width) solid var(--primary-bg-color)
+          );
+          --wheel-row-gap: var(--row-gap, 10px);
         }
         .container {
           display: flex;
           flex-direction: column;
-          row-gap: 10px;
-          border: var(--border-width) solid var(--primary-bg-color);
+          row-gap: var(--wheel-row-gap);
+          border: var(--wheel-border);
           border-radius: var(--border-radius);
           padding: var(--container-padding);
+          justify-content: center;
+          min-width: 90px;
         }
         .text {
-          font-size: var(--font-size-normal);
+          font-size: var(--wheel-text-size);
           color: var(--wheel-text-color);
+          text-align: center;
         }
         .core {
           display: flex;
@@ -36,6 +45,7 @@ class SciFiWheel extends LitElement {
         }
         .core.inline {
           flex-direction: row;
+          justify-content: center;
         }
         .slider {
           display: flex;

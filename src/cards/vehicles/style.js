@@ -11,7 +11,6 @@ export default css`
     flex-direction: column;
     flex: 1;
   }
-  /*********** HEADER ***********/
   .header {
     display: flex;
     flex-direction: row;
@@ -24,5 +23,22 @@ export default css`
     flex: 1;
     align-content: center;
     color: var(--primary-light-color);
+  }
+  .actions {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    padding-bottom: 20px;
+    margin: auto;
+  }
+  .actions .ac {
+    display: flex;
+    flex-direction: row;
+    column-gap: 5px;
+  }
+  .actions .ac sci-fi-wheel {
+    --padding: 0 10px;
+    --wheel-row-gap: 2px;
+    --text-size: var(--font-size-xsmall);
   }
 `;

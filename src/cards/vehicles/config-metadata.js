@@ -5,6 +5,10 @@ export default {
     default: [],
     data_type: 'object',
     data: {
+      id: {
+        mandatory: true,
+        type: 'string',
+      },
       name: {
         mandatory: true,
         type: 'string',

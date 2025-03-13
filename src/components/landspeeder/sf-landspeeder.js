@@ -43,7 +43,6 @@ class SciFiLandspeeder extends LitElement {
       <div class="content">
         ${this.__displaySpeeder()} ${this.__displayTop()}
         ${this.__displayMiddle()}
-        <div class="bottom">${this.__displayBottom()}</div>
       </div>
     `;
   }
@@ -110,13 +109,6 @@ class SciFiLandspeeder extends LitElement {
   }
 
   __displayMiddle() {
-    /*
-      rear_left_door_status: 'binary_sensor.captur_ii_porte_arriere_gauche',
-      rear_right_door_status: 'binary_sensor.captur_ii_porte_arriere_droite',
-      driver_door_status: 'binary_sensor.captur_ii_porte_conducteur',
-      passenger_door_status: 'binary_sensor.captur_ii_porte_passager',
-*/
-
     return html`
       <div class="middle">
         ${this.__displayLock()} ${this.__displayFuel()}
@@ -276,17 +268,6 @@ class SciFiLandspeeder extends LitElement {
     states[VEHICLE_PLUG_STATES_ERROR] = 'sci:landspeeder-error-plug';
     states[VEHICLE_PLUG_STATES_UNKNOWN] = 'sci:landspeeder-unknown-plug';
     return states[this.vehicle.raw_plug_state];
-  }
-
-  __displayBottom() {
-    // TODO link Actions
-    // TODO disable start / stop function plug status
-    // Render actions optionnal in config
-    return html`
-      <sci-fi-button-card icon="mdi:ev-station" title="Charging" text="Start" ></sci-fi-button-card>
-      <sci-fi-button-card icon="mdi:ev-station" title="Charging" text="Stop" ></sci-fi-button-card>
-      <sci-fi-button-card icon="mdi:air-conditioner" title="Air-cond" text="Start" ></sci-fi-button-card>
-    `;
   }
 
   __displaySpeeder() {

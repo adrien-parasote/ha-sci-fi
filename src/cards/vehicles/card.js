@@ -13,12 +13,20 @@ export class SciFiVehicles extends SciFiBaseCard {
 
   _configMetadata = configMetadata;
   _hass; // private
+  _temperature_items = Array.from(Array(10).keys()).map((e, idx) => {
+    return {
+      id: idx,
+      text: [idx + 16, '°C'].join(' '),
+      value: idx + 16,
+    };
+  });
 
   static get properties() {
     return {
       _config: {type: Object},
       _vehicles: {type: Array},
       _active_vehicle_id: {type: Number},
+      _selected_temp_id: {type: Number},
     };
   }
 
@@ -30,7 +38,7 @@ export class SciFiVehicles extends SciFiBaseCard {
     this._hass = hass;
 
     if (!this._config) return; // Can't assume setConfig is called before hass is set
-
+    if (!this._selected_temp_id) this._selected_temp_id = 2; // First temperature selection = 18°C
     if (!this._vehicles) {
       // Build first rendering vehicles
       this._active_vehicle_id = 0;
@@ -39,9 +47,7 @@ export class SciFiVehicles extends SciFiBaseCard {
       );
     } else {
       // update
-      console.log('update vehicle');
       const update = this._vehicles.map((vehicle) => vehicle.update(hass));
-      console.log(update);
     }
   }
 
@@ -50,13 +56,14 @@ export class SciFiVehicles extends SciFiBaseCard {
     return html`
       <div class="container">
         ${this.__displayHeader()} ${this.__displayLandspeeder()}
+        ${this.__displayActions()}
       </div>
+      <sci-fi-toast></sci-fi-toast>
     `;
   }
 
   __displayHeader() {
     const multiple_vehicle = this._vehicles.length > 1;
-    console.log(multiple_vehicle);
     return html`
       <div class="header">
         <div class="${multiple_vehicle ? 'show' : 'hide'}">
@@ -92,6 +99,63 @@ export class SciFiVehicles extends SciFiBaseCard {
     return html`<sci-fi-landspeeder
       .vehicle=${this._vehicles[this._active_vehicle_id]}
     ></sci-fi-landspeeder>`;
+  }
+
+  __displayActions() {
+    return html`<div class="actions">
+      <div class="ac">
+        <sci-fi-wheel
+          in-line
+          .items=${this._temperature_items}
+          selected-id="${this._selected_temp_id}"
+          text="Temperature"
+          @wheel-change="${this.__selectTemperature}"
+        ></sci-fi-wheel>
+        <sci-fi-button-card
+          icon="mdi:play"
+          title="Air-cond"
+          text="Start"
+          @button-click="${this.__startAc}"
+        ></sci-fi-button-card>
+        <sci-fi-button-card
+          icon="mdi:stop"
+          title="Air-cond"
+          text="Stop"
+          @button-click="${this.__stoptAc}"
+        ></sci-fi-button-card>
+      </div>
+    </div> `;
+  }
+
+  __selectTemperature(e) {
+    this._selected_temp_id = e.detail.id;
+  }
+
+  __startAc(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this._vehicles[this._active_vehicle_id]
+      .startAc(
+        this._hass,
+        this._temperature_items[this._selected_temp_id].value
+      )
+      .then(
+        () => this.__toast(false),
+        (e) => this.__toast(true, e)
+      );
+  }
+  __stoptAc(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this._vehicles[this._active_vehicle_id].stopAc(this._hass).then(
+      () => this.__toast(false),
+      (e) => this.__toast(true, e)
+    );
+  }
+
+  __toast(error, e) {
+    const msg = error ? e.message : 'done';
+    this.shadowRoot.querySelector('sci-fi-toast').addMessage(msg, error);
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

@@ -2,6 +2,7 @@ export default {
   vehicles: [
     {
       name: 'Car N°1',
+      id: 'b35bbd24dc8783e010d0d9da45678554',
       mileage: 'sensor.captur_ii_kilometrage',
       location: 'device_tracker.captur_ii_emplacement',
       location_last_activity:
@@ -19,6 +20,7 @@ export default {
     },
     {
       name: 'Car N°2',
+      id: 'b35bbd24dc8783e010d0d9da45678554',
       mileage: 'sensor.captur_ii_kilometrage',
       location: 'device_tracker.captur_ii_emplacement',
       location_last_activity:

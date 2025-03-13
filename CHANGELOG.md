@@ -4,7 +4,7 @@
 
 ## 🆕 What's New
 
-**Max Q**: adding vehicle card 🚗
+**Max Q**: adding vehicle card 🚗 (Currently only for Renault vehicles)
 
 ## 🆙  What's Changed
 

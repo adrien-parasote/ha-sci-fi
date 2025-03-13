@@ -4,13 +4,12 @@ export default css`
   :host {
     display: flex;
     height: 100%;
+    font-size: var(--font-size-small);
+    padding-top: 5px;
+    padding-bottom: 5px;
     --speeder-width: 250px;
     --speeder-height: 493px;
-
-    --top-height: calc((100% - var(--speeder-height)) / 3);
-    --bottom-height: calc((100% - var(--speeder-height)) / 1.5);
-
-    font-size: var(--font-size-small);
+    --top-height: 50px;
   }
   .circle {
     border-color: none;
@@ -30,12 +29,11 @@ export default css`
     width: var(--speeder-width);
     height: var(--speeder-height);
     position: absolute;
-    top: calc(var(--top-height) + 10px);
+    top: calc(var(--top-height) + 20px);
     left: calc((100% - var(--speeder-width)) / 2);
   }
   .top,
-  .middle,
-  .bottom {
+  .middle {
     display: flex;
     flex-direction: row;
     position: relative;
@@ -199,12 +197,5 @@ export default css`
   }
   .middle .charging .h-path {
     width: 34px;
-  }
-  .bottom {
-    height: calc(var(--bottom-height) - 30px);
-    padding-bottom: 20px;
-    column-gap: 10px;
-    align-items: end;
-    justify-content: center;
   }
 `;

@@ -18,7 +18,7 @@
 - Weather icon: 
   - Fix icon selection when hour is equal dusk or dawn
   - Fix icon selection when same day & hour is before or after dusk or dawn
-- Stove card: Temperature selection doesn't display properly
+- Stove card: Fix temperature selection that doesn't display properly
 
 <br>
 

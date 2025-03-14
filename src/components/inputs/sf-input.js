@@ -136,6 +136,7 @@ export class SciFiInput extends LitElement {
   }
 
   __cleanInput(e) {
+    this.shadowRoot.querySelector('input').value = '';
     this.__dispatchEvent(e, '');
   }
 

@@ -81,14 +81,11 @@ export class SciFiLights extends SciFiBaseCard {
   __displayHeader() {
     return html`
       <div class="info">
-        <div
-          class="power ${this._house.isActive(ENTITY_KIND_LIGHT)
-            ? 'on'
-            : 'off'}"
-          @click="${this.__turnOnOffHouse}"
-        >
-          <sci-fi-icon icon="mdi:power-standby"></sci-fi-icon>
-        </div>
+        <sci-fi-button
+          icon="mdi:power-standby"
+          class="${this._house.isActive(ENTITY_KIND_LIGHT) ? 'off' : 'on'}"
+          @button-click="${this.__turnOnOffHouse}"
+        ></sci-fi-button>
         <div class="text">${this._config.header}</div>
       </div>
       <div class="weather">${this.__displaySun()}</div>
@@ -112,26 +109,22 @@ export class SciFiLights extends SciFiBaseCard {
   }
 
   __displayHouseFloors() {
-    return this._house
+    const cells = this._house
       .getFloorsOrderedByLevel()
       .filter((floor) => floor.hasEntityKind(ENTITY_KIND_LIGHT))
-      .map(
-        (floor) =>
-          html` <sci-fi-hexa-tile
-            active-tile
-            state="${this._active_floor_id == floor.id ? 'on' : 'off'}"
-            class="${this._active_floor_id == floor.id ? 'selected' : ''}"
-            @click="${(e) => this.__onFloorSelect(e, floor)}"
-          >
-            <div
-              class="item-icon ${floor.isActive(ENTITY_KIND_LIGHT)
-                ? 'on'
-                : 'off'}"
-            >
-              <sci-fi-icon icon=${floor.icon}></sci-fi-icon>
-            </div>
-          </sci-fi-hexa-tile>`
-      );
+      .map((floor) => {
+        return {
+          id: floor.id,
+          state: this._active_floor_id == floor.id ? 'on' : 'off',
+          selected: this._active_floor_id == floor.id,
+          active: floor.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off',
+          icon: floor.icon,
+        };
+      });
+    return html`<sci-fi-hexa-row
+      .cells=${cells}
+      @cell-selected="${this.__onFloorSelect}"
+    ></sci-fi-hexa-row>`;
   }
 
   __displayFloorInfo() {
@@ -231,12 +224,11 @@ export class SciFiLights extends SciFiBaseCard {
   }
 
   __displayPowerBtn(element, active) {
-    return html`<div
-      class="power ${active}"
-      @click="${(e) => this.__onPowerBtnClick(e, element)}"
-    >
-      <sci-fi-icon icon="mdi:power-standby"></sci-fi-icon>
-    </div>`;
+    return html`<sci-fi-button
+      icon="mdi:power-standby"
+      class="${active}"
+      @button-click="${(e) => this.__onPowerBtnClick(e, element)}"
+    ></sci-fi-button>`;
   }
 
   __displayAreaLights(area) {
@@ -244,15 +236,13 @@ export class SciFiLights extends SciFiBaseCard {
       ${area.getEntitiesByKind(ENTITY_KIND_LIGHT).map((light) => {
         const custom = this._config.custom_entities[light.entity_id];
         return html`
-          <div
-            class="light ${light.state}"
-            @click="${(e) => this.__onLightClick(e, light)}"
-          >
-            ${this.__getLightIcon(light, custom)}
-            <div>
-              ${custom && custom.name ? custom.name : light.friendly_name}
-            </div>
-          </div>
+          <sci-fi-button-card
+            class="${light.state}"
+            no-title
+            icon="${this.__getLightIcon(light, custom)}"
+            text="${custom && custom.name ? custom.name : light.friendly_name}"
+            @button-click="${(e) => this.__onLightClick(e, light)}"
+          ></sci-fi-button-card>
         `;
       })}
     </div>`;
@@ -271,15 +261,17 @@ export class SciFiLights extends SciFiBaseCard {
           ? custom.icon_off
           : this._config.default_icon_off;
     }
-    return html`<sci-fi-icon icon=${icon}></sci-fi-icon>`;
+    return icon;
   }
 
-  __onFloorSelect(e, floor) {
+  __onFloorSelect(e) {
     e.preventDefault();
     e.stopPropagation();
+    const cell_floor = e.detail.cell;
     // Update selected floor
-    this._active_floor_id = floor.id;
+    this._active_floor_id = cell_floor.id;
     // Select first area to render
+    const floor = this._house.getFloor(cell_floor.id);
     this._active_area_id = floor.getFirstArea(ENTITY_KIND_LIGHT).id;
   }
 

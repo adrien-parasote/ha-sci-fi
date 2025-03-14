@@ -132,7 +132,7 @@ class SciFiRadiator extends LitElement {
 
   static get properties() {
     return {
-      climateEntity: {type: Object, attribute: 'climate-entity'},
+      climateEntity: {type: Object},
       styles: {type: Object},
       unit: {type: String},
       excludedModes: {type: Array, attribute: 'excluded-modes'},
@@ -361,7 +361,7 @@ class SciFiRadiator extends LitElement {
         ]}
         title="preset"
         text=${this.climateEntity.attributes.preset_mode}
-        items=${JSON.stringify(this.__getPresetOptions())}
+        .items=${this.__getPresetOptions()}
         @button-select="${this.__select}"
         style="--primary-icon-color:${preset_color} --label-text-color: ${preset_color}"
       ></sci-fi-button-select-card>
@@ -371,7 +371,7 @@ class SciFiRadiator extends LitElement {
         icon=${this.styles.state.icons[this.climateEntity.state]}
         title="mode"
         text=${this.climateEntity.state}
-        items=${JSON.stringify(this.__getHvacOptions())}
+        .items=${this.__getHvacOptions()}
         @button-select="${this.__select}"
         style="--primary-icon-color:${hvac_color} --label-text-color: ${hvac_color}"
       ></sci-fi-button-select-card>

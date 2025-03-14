@@ -16,32 +16,6 @@ export const WEATHER_STATE_FR = {
   windy: 'Venteux',
   'windy-variant': 'Venteux variable',
 };
-export const EXTRA_SENSORS = {
-  cloud_cover: {
-    icon: 'cloudy',
-    name: 'Nuage',
-  },
-  daily_precipitation: {
-    icon: 'raindrop-measure',
-    name: 'Précipitation',
-  },
-  freeze_chance: {
-    icon: 'freeze',
-    name: 'Gel',
-  },
-  humidity: {
-    icon: 'humidity',
-    name: 'Humidité',
-  },
-  rain_chance: {
-    icon: 'rain',
-    name: 'Pluie',
-  },
-  snow_chance: {
-    icon: 'snow',
-    name: 'Neige',
-  },
-};
 
 export const WEEK_DAYS = [
   {

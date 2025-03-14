@@ -16,6 +16,7 @@ The aim is to have your phone as a single entry point an use it as a remote hous
     * 🌦️ [Sci-Fi Weather card](#weather_card)
     * 🌡️ [Sci-Fi Climates card](#climates_card)
     * 🪵🔥 [Sci-Fi Stove card](#stove_card)
+    * 🚗 [Sci-Fi Vehicles card](#vehicles_card)
 3. 🖼️ [Sci-Fi icon](#icon)
 
 # 🛠️ How to install ?<a name="how_to_install"></a>
@@ -882,6 +883,133 @@ Enjoy 🥳.
 
 <br>
 
+## 🚗 Sci-Fi Vehicles card <a name="vehicles_card"></a>
+
+> [!NOTE]
+> Card is based on [Renault integration](https://www.home-assistant.io/integrations/renault/) for HA
+
+### Description:
+
+Vehicle package card, display your vehicles and allow you to see informations & control it (only AC) in a more design way than HA basic one.
+
+### Card features:
+
+From top to bottom, display:
+- Vehicles list
+- Per vehicle:
+  - Location (optionnal)
+  - Mileage (optionnal)
+  - Charging - in case of EV (optionnal)
+  - Lock (optionnal)
+  - Fuel informations (optionnal)
+  - Battery informations - in case of EV  (optionnal)
+  - AC actions: temperature start/stop
+
+### Screenshots
+
+<details>
+<summary>Show</summary>
+
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/vehicle.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/vehicle_edit.jpeg" width="300">
+
+</details>
+
+### Configuration
+
+> [!TIP]
+> This card can be configure through the UI that allow use to use HA interface for the configuration.
+
+<details>
+
+<summary>YAML</summary>
+
+#### Minimal configuration
+
+```yaml
+type: custom:sci-fi-vehicles
+vehicles: 
+  - id: xxxx # replace with your vehicle device ID
+    name: My Car # replace with your vehicle device name
+```
+
+#### Full configuration
+
+```yaml
+type: custom:sci-fi-vehicles
+vehicles: 
+  - id: xxxx # replace with your vehicle device ID
+    name: My Car # replace with your vehicle device name
+    charging: binary_sensor.charging # replace with your vehicle charging binary sensor id
+    lock_status: binary_sensor.lock_status # replace with your vehicle lock status sensor id
+    location: device_tracker.location # replace with your vehicle location tracker sensor id
+    battery_autonomy: sensor.battery_autonomy # replace with your vehicle battery autonomy sensor id
+    fuel_autonomy: sensor.fuel_autonomy # replace with your vehicle fuel autonomy sensor id
+    battery_level: sensor.battery_level # replace with your vehicle battery level sensor id
+    location_last_activity: sensor.location_last_activity # replace with your vehicle location tracker last activity sensor id
+    charge_state: sensor.charge_state # replace with your vehicle battery charge state sensor id
+    plug_state: sensor.plug_state # replace with your vehicle plug state sensor id
+    mileage: sensor.mileage # replace with your vehicle mileage sensor id
+    fuel_quantity: sensor.fuel_quantity # replace with your vehicle fuel quantiy sensor id
+    charging_remaining_time: sensor.charging_remaining_time # replace with your vehicle charging remaining time sensor id
+```
+
+#### Options
+
+| Name | Type | Requirement | Description | Default   |
+| - | - | - | - | - |
+| type | String | **Required** | Card definition | `custom:sci-fi-vehicles`|
+| `vehicles` | List <Object> | **Required** | Vehicles' list that need to be displayed. See section describing vehicle bellow | `''` |
+
+**Example**
+```yaml
+type: custom:sci-fi-vehicles
+vehicles: 
+  - <vehicle>
+```
+
+<br>
+
+***`vehicle` config***
+
+| Name | Type | Requirement | Description | Default   |
+| - | - | - | - | - |
+| id | String | **Mandatory** | Vehicle device ID | `''` |
+| name | String | **Mandatory** | Vehicle friendly name | `''` |
+| location | String | **Optionnal** | Vehicle location tracker sensor id. If not provided, UI will display `unavailable` as state | `''` |
+| location_last_activity | String | **Optionnal** | Vehicle location tracker last activity sensor id. | `''` |
+| mileage | String | **Optionnal** | Vehicle mileage sensor id. If not provided, UI will display `unavailable` as state | `''` |
+| lock_status | String | **Optionnal** | Vehicle lock status sensor id. If not provided, UI will display `lock` as state | `''` |
+| fuel_quantity | String | **Optionnal** | Vehicle fuel quantiy sensor id. If not provided, UI will display `unavailable` as state | `''` |
+| fuel_autonomy | String | **Optionnal** | Vehicle fuel quantiy sensor id. If not provided, UI will display `unavailable` as state | `''` |
+| charging | String | **Optionnal** | Vehicle (EV) charging binary sensor id. If not provided, UI will not display charging information | `''` |
+| battery_level | String | **Optionnal** | Vehicle (EV) battery level sensor id. If not provided, UI will not display battery information | `''` |
+| battery_autonomy | String | **Optionnal** | Vehicle (EV) battery autonomy sensor id. If not provided, UI will not display battery information | `''` |
+| charge_state | String | **Optionnal** | Vehicle (EV) battery charge state sensor id. If not provided, UI will not display charging | `''` |
+| plug_state | String | **Optionnal** | Vehicle (EV) plug state sensor id. If not provided, UI will display `unavailable` as state | `''` |
+| charging_remaining_time | String | **Optionnal** | Vehicle (EV) charging remaining time sensor id. | `''` |
+
+**Example**
+```yaml
+vehicles:
+  - id: xxxx # replace with your vehicle device ID
+    name: My Car # replace with your vehicle device name
+    charging: binary_sensor.charging # replace with your vehicle charging binary sensor id
+    lock_status: binary_sensor.lock_status # replace with your vehicle lock status sensor id
+    location: device_tracker.location # replace with your vehicle location tracker sensor id
+    battery_autonomy: sensor.battery_autonomy # replace with your vehicle battery autonomy sensor id
+    fuel_autonomy: sensor.fuel_autonomy # replace with your vehicle fuel autonomy sensor id
+    battery_level: sensor.battery_level # replace with your vehicle battery level sensor id
+    location_last_activity: sensor.location_last_activity # replace with your vehicle location tracker last activity sensor id
+    charge_state: sensor.charge_state # replace with your vehicle battery charge state sensor id
+    plug_state: sensor.plug_state # replace with your vehicle plug state sensor id
+    mileage: sensor.mileage # replace with your vehicle mileage sensor id
+    fuel_quantity: sensor.fuel_quantity # replace with your vehicle fuel quantiy sensor id
+    charging_remaining_time: sensor.charging_remaining_time # replace with your vehicle charging remaining time sensor id
+```
+
+<br>
+
 # 🖼️ Sci-Fi icons <a name="icon"></a>
 
 To complete HA icon set, sci-fi package onboard the following icons : 
@@ -906,5 +1034,9 @@ To complete HA icon set, sci-fi package onboard the following icons :
 | Radiator heat | sci:radiator-heat | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_heat.svg" alt="Radiator heat"  height="25"/> |
 | Radiator off | sci:radiator-off | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_off.svg" alt="Radiator off"  height="25"/> |
 | Sleeping vaccum | sci:vacuum-sleep | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/sleeping_vacuum.svg" alt="Sleeping vaccum"  height="25"/> |
-
-
+| Landspeeder | sci:landspeeder | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder.svg" alt="Landspeeder"  height="25"/> |
+| Landspeeder plugged| sci:landspeeder-plugged | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-plugged.svg" alt="Landspeeder plugged"  height="25"/> |
+| Landspeeder plugged off| sci:landspeeder-plugged-off | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-plugged-off.svg" alt="Landspeeder plugged off"  height="25"/> |
+| Landspeeder unknown plug| sci:landspeeder-unknown-plug | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-unknown-plug.svg" alt="Landspeeder unknown plug"  height="25"/> |
+| Landspeeder error plug| sci:landspeeder-error-plug | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-error-plug.svg" alt="Landspeeder error plug"  height="25"/> |
+| Landspeeder plugged clock| sci:landspeeder-plugged-clock | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-plugged-clock.svg" alt="Landspeeder plugged clock"  height="25"/> |

@@ -40,3 +40,30 @@ SEASON_ICONS[SEASON_SPRING] = {icon: 'sci:spring', color: 'green'};
 SEASON_ICONS[SEASON_SUMMER] = {icon: 'sci:summer', color: 'yellow'};
 SEASON_ICONS[SEASON_AUTUMN] = {icon: 'sci:autumn', color: 'orange'};
 SEASON_ICONS[SEASON_WINTER] = {icon: 'sci:winter', color: 'blue'};
+
+export const WEATHER_EXTRA_SENSORS = {
+  cloud_cover: {
+    icon: 'cloudy',
+    name: 'Nuage',
+  },
+  daily_precipitation: {
+    icon: 'raindrop-measure',
+    name: 'Précipitation',
+  },
+  freeze_chance: {
+    icon: 'freeze',
+    name: 'Gel',
+  },
+  humidity: {
+    icon: 'humidity',
+    name: 'Humidité',
+  },
+  rain_chance: {
+    icon: 'rain',
+    name: 'Pluie',
+  },
+  snow_chance: {
+    icon: 'snow',
+    name: 'Neige',
+  },
+};

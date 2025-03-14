@@ -59,7 +59,8 @@ export class SciFiClimates extends SciFiBaseCard {
         <div class="floors">${this.__displayFloors()}</div>
         <div class="floor-content">${this.__displayFloorInfo()}</div>
         <div class="areas">
-          ${this.__displayAreas()} ${this.__displayAreaInfo()}
+          <div class="area-list">${this.__displayAreas()}</div>
+          ${this.__displayAreaInfo()}
         </div>
       </div>
       <sci-fi-toast></sci-fi-toast>
@@ -102,7 +103,7 @@ export class SciFiClimates extends SciFiBaseCard {
   }
 
   __displayFloors() {
-    return this._house
+    const cells = this._house
       .getFloorsOrderedByLevel()
       .filter((floor) =>
         floor.hasEntityKind(
@@ -111,20 +112,20 @@ export class SciFiClimates extends SciFiBaseCard {
         )
       )
       .map((floor) => {
-        const active = floor.getTemperature(this._config.entities_to_exclude)
-          ? 'on'
-          : 'off';
-        return html` <sci-fi-hexa-tile
-          active-tile
-          state="${this._active_floor_id == floor.id ? 'on' : 'off'}"
-          class="${this._active_floor_id == floor.id ? 'selected' : ''}"
-          @click="${(e) => this.__onFloorSelect(e, floor)}"
-        >
-          <div class="item-icon ${active}">
-            <sci-fi-icon icon=${floor.icon}></sci-fi-icon>
-          </div>
-        </sci-fi-hexa-tile>`;
+        return {
+          id: floor.id,
+          state: this._active_floor_id == floor.id ? 'on' : 'off',
+          selected: this._active_floor_id == floor.id,
+          active: floor.getTemperature(this._config.entities_to_exclude)
+            ? 'on'
+            : 'off',
+          icon: floor.icon,
+        };
       });
+    return html`<sci-fi-hexa-row
+      .cells=${cells}
+      @cell-selected="${this.__onFloorSelect}"
+    ></sci-fi-hexa-row>`;
   }
 
   __displayFloorInfo() {
@@ -141,12 +142,14 @@ export class SciFiClimates extends SciFiBaseCard {
     `;
   }
 
-  __onFloorSelect(e, floor) {
+  __onFloorSelect(e) {
     e.preventDefault();
     e.stopPropagation();
+    const cell_floor = e.detail.cell;
     // Update selected floor
-    this._active_floor_id = floor.id;
+    this._active_floor_id = cell_floor.id;
     // Select first area to render
+    const floor = this._house.getFloor(cell_floor.id);
     this._active_area_id = floor.getFirstArea(
       ENTITY_KIND_CLIMATE,
       this._config.entities_to_exclude
@@ -154,46 +157,40 @@ export class SciFiClimates extends SciFiBaseCard {
   }
 
   __displayAreas() {
-    return html`<div class="area-list">
-      ${this._house
-        .getFloor(this._active_floor_id)
-        .getAreas()
-        .filter((area) =>
-          area.hasEntityKind(
-            ENTITY_KIND_CLIMATE,
-            this._config.entities_to_exclude
-          )
-        )
-        .map(
-          (area) => html` <div class="col">${this.__displayArea(area)}</div>`
-        )}
-    </div>`;
-  }
-
-  __displayArea(area) {
-    return html`
-      <sci-fi-hexa-tile
-        active-tile
-        state="${this._active_area_id == area.id ? 'on' : 'off'}"
-        class="${area.isActive(
+    const cells = this._house
+      .getFloor(this._active_floor_id)
+      .getAreas()
+      .filter((area) =>
+        area.hasEntityKind(
           ENTITY_KIND_CLIMATE,
           this._config.entities_to_exclude
         )
-          ? 'on'
-          : 'off'} ${this._active_area_id == area.id ? 'selected' : ''}"
-        @click="${(e) => this.__onAreaSelect(e, area)}"
-      >
-        <div class="item-icon">
-          <sci-fi-icon icon=${area.icon}></sci-fi-icon>
-        </div>
-      </sci-fi-hexa-tile>
-    `;
+      )
+      .map((area) => {
+        return {
+          id: area.id,
+          state: this._active_area_id == area.id ? 'on' : 'off',
+          selected: this._active_area_id == area.id,
+          active: area.isActive(
+            ENTITY_KIND_CLIMATE,
+            this._config.entities_to_exclude
+          )
+            ? 'on'
+            : 'off',
+          icon: area.icon,
+        };
+      });
+    return html`<sci-fi-hexa-row
+      .cells=${cells}
+      @cell-selected="${this.__onAreaSelect}"
+    ></sci-fi-hexa-row>`;
   }
 
-  __onAreaSelect(e, area) {
+  __onAreaSelect(e) {
     e.preventDefault();
     e.stopPropagation();
-    this._active_area_id = area.id;
+    const cell_area = e.detail.cell;
+    this._active_area_id = cell_area.id;
   }
 
   __displayAreaInfo() {
@@ -242,9 +239,9 @@ export class SciFiClimates extends SciFiBaseCard {
         html`<div class="climate">
           <sci-fi-radiator
             id="${climate.entity_id}"
-            climate-entity="${JSON.stringify(climate.renderAsEntity())}"
-            unit="${this._config.unit}"
-            styles="${JSON.stringify(styles)}"
+            .climateEntity="${climate.renderAsEntity()}"
+            .unit="${this._config.unit}"
+            .styles="${styles}"
             @change-preset-mode="${this._changePresetMode}"
             @change-hvac-mode="${this._changeHvacMode}"
             @change-temperature="${this._changeTemperature}"

@@ -1,7 +1,9 @@
 import {html} from 'lit';
 
 import {isSameDay, pad} from '../../utils/utils.js';
-import {EXTRA_SENSORS, WEATHER_STATE_FR, WEEK_DAYS} from './weather_const.js';
+import {WeatherSensor} from '../sensor/sensor.js';
+import {WEATHER_EXTRA_SENSORS} from '../sensor/sensor_const.js';
+import {WEATHER_STATE_FR, WEEK_DAYS} from './weather_const.js';
 
 export class SunEntity {
   constructor(hass, sun_entity_id) {
@@ -89,12 +91,11 @@ export class WeatherEntity {
   __buildExtraSensors(hass) {
     const city = ['sensor', this.entity_id.split('.')[1]].join('.');
     let sensors = {};
-    Object.keys(EXTRA_SENSORS).map((sensorkey) => {
-      const entity = hass.states[[city, sensorkey].join('_')];
-      sensors[sensorkey] = new ExtraSensor(
-        sensorkey,
-        entity.state,
-        entity.attributes.unit_of_measurement
+    Object.keys(WEATHER_EXTRA_SENSORS).map((sensorkey) => {
+      sensors[sensorkey] = new WeatherSensor(
+        [city, sensorkey].join('_'),
+        hass,
+        sensorkey
       );
     });
     return sensors;
@@ -136,20 +137,6 @@ export class WeatherEntity {
 
   __getSensor(name) {
     return this.sensors[name];
-  }
-}
-
-class ExtraSensor {
-  constructor(key, state, unit_of_measurement) {
-    this.key = key;
-    this.state = state;
-    this.unit_of_measurement = unit_of_measurement;
-    this.icon = EXTRA_SENSORS[key].icon;
-    this.name = EXTRA_SENSORS[key].name;
-  }
-
-  get value() {
-    return [this.state, this.unit_of_measurement].join(' ');
   }
 }
 
@@ -232,13 +219,8 @@ export class HourlyForecast {
     const today = new Date();
     // Forecast if for today
     if (isSameDay(today, this.datetime)) {
-      if (isSameDay(sun.next_noon, this.datetime)) {
-        // Before noon & dawn
-        if (isSameDay(sun.next_dawn, this.datetime)) state = 'night';
-      } else {
-        // After noon & dusk
-        if (this.datetime > sun.next_dusk) state = 'night';
-      }
+      if (this.datetime >= sun.next_dusk || this.datetime <= sun.next_dawn)
+        state = 'night';
     } else {
       // Forecast if for tomorrow
       // First reset dusk & dawn as of today
@@ -256,7 +238,7 @@ export class HourlyForecast {
       hour.setMonth(today.getMonth());
       hour.setFullYear(today.getFullYear());
 
-      if (hour < dawn || hour > dusk) state = 'night';
+      if (hour <= dawn || hour >= dusk) state = 'night';
     }
     return [this.condition, state].join('-');
   }

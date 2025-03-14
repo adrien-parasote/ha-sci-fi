@@ -15,5 +15,5 @@ export default {
   },
   storage_counter: 'counter.pellet_stock',
   pellet_quantity_threshold: 0.4,
-  storage_counter_threshold: 0.07,
+  storage_counter_threshold: 0.1,
 };

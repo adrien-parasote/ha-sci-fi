@@ -1,13 +1,14 @@
 import * as mdi from '@mdi/js';
-import {createStore, setMany} from 'idb-keyval';
+import {createStore} from 'idb-keyval';
 import memoizeOne from 'memoize-one';
 
 let icons = [];
 Object.keys(mdi).forEach((k) => {
   const ha_name = k
     .substring(3, k.length)
-    .split(/(?=[A-Z0-9])/)
-    .map((v) => v.toLowerCase())
+    .split(/(?=[A-Z])/)
+    .map((v) => v.toLowerCase().split(/(?=[0-9])/))
+    .map((v) => (v.length == 1 ? v[0] : v.splice(0, 1) + '-' + v.join('')))
     .join('-');
   icons.push({name: ha_name, path: mdi[k]});
 });

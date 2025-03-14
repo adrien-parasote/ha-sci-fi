@@ -78,7 +78,8 @@ export class SciFiStove extends SciFiBaseCard {
       };
     });
     // Get current temp & associate with item id
-    const selected_item_id = this._stove.temperature - this._stove.min_temp;
+    const selected_item_id =
+      Math.round(this._stove.current_temperature) - this._stove.min_temp;
     return html`
       <div class="bottom">
         ${this.__displayHvacButton()}
@@ -112,7 +113,7 @@ export class SciFiStove extends SciFiBaseCard {
           : 'mdi:information-off-outline'}
         title="preset"
         text=${this._stove.preset_mode}
-        items=${JSON.stringify(preset_items)}
+        .items=${preset_items}
         @button-select="${this.__select}"
       ></sci-fi-button-select-card>
     `;
@@ -136,7 +137,7 @@ export class SciFiStove extends SciFiBaseCard {
           : 'mdi:information-off-outline'}
         title="mode"
         text=${this._stove.state}
-        items=${JSON.stringify(hvac_items)}
+        .items=${hvac_items}
         @button-select="${this.__select}"
       ></sci-fi-button-select-card>
     `;

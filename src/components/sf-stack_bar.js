@@ -65,7 +65,7 @@ class SciFiStackBar extends LitElement {
   }
 
   render() {
-    const warning = this.val / this.max < this.threshold;
+    const warning = this.val / this.max <= this.threshold;
     return html`
       <div class="container">
         <svg
@@ -88,7 +88,11 @@ class SciFiStackBar extends LitElement {
     const nb_colored = Math.floor((this.val * this._bar_number) / this.max);
     const rows = Array.from(Array(this._bar_number).keys());
     return svg`${rows.map((nb) => {
-      return this.__buildRow(nb, nb <= this._bar_number - nb_colored, warning);
+      return this.__buildRow(
+        nb,
+        nb <= this._bar_number - nb_colored - 1,
+        warning
+      );
     })}`;
   }
 

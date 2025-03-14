@@ -13,7 +13,7 @@ export class SciFiButton extends LitElement {
             --primary-icon-color,
             var(--primary-light-color)
           );
-
+          --btn-icon-size: var(--btn-size, var(--icon-size-normal));
           --btn-icon-disable-color: var(
             --disable-icon-color,
             var(--primary-dark-color)
@@ -39,6 +39,8 @@ export class SciFiButton extends LitElement {
         }
         .btn sci-fi-icon {
           --icon-color: var(--btn-icon-color);
+          --icon-width: var(--btn-icon-size);
+          --icon-height: var(--btn-icon-size);
           cursor: pointer;
         }
         .btn-border sci-fi-icon {

@@ -58,7 +58,7 @@ class SciFiLandspeeder extends LitElement {
             @button-click=${this._openLocation}
           ></sci-fi-button>
         </div>
-        ${this.__displayOpenMap()}
+        ${this.__displayLocationLastActivity()}
       </div>
       <div class="component">
         <sci-fi-icon icon="mdi:counter"></sci-fi-icon>
@@ -67,7 +67,7 @@ class SciFiLandspeeder extends LitElement {
     </div>`;
   }
 
-  __displayOpenMap() {
+  __displayLocationLastActivity() {
     if (!this.vehicle.location_last_activity) return nothing;
     return html` <div class="sub-info">
       ${this.__displayDate(this.vehicle.location_last_activity)}
@@ -134,8 +134,6 @@ class SciFiLandspeeder extends LitElement {
   }
 
   __displayFuel() {
-    if (!this.vehicle.fuel_autonomy || !this.vehicle.fuel_quantity)
-      return nothing;
     return html`
       <div class="fuel">
         <div>

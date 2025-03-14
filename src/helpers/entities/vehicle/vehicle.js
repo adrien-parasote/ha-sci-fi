@@ -137,7 +137,7 @@ export class Vehicle {
 
   get fuel_autonomy() {
     return !this.sensors[VEHICLE_SENSOR_FUEL_AUTONOMY]
-      ? null
+      ? VEHICLE_SENSOR_UNAVAILABLE_STATE
       : [
           this.sensors[VEHICLE_SENSOR_FUEL_AUTONOMY].value,
           this.sensors[VEHICLE_SENSOR_FUEL_AUTONOMY].unit_of_measurement,
@@ -161,7 +161,7 @@ export class Vehicle {
 
   get fuel_quantity() {
     return !this.sensors[VEHICLE_SENSOR_FUEL_QUANTITY]
-      ? null
+      ? VEHICLE_SENSOR_UNAVAILABLE_STATE
       : [
           this.sensors[VEHICLE_SENSOR_FUEL_QUANTITY].value,
           this.sensors[VEHICLE_SENSOR_FUEL_QUANTITY].unit_of_measurement,

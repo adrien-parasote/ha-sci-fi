@@ -5,6 +5,7 @@ export default css`
     background-color: black;
     height: 100%;
     width: 100%;
+    min-height: 732px;
   }
   .container {
     display: flex;

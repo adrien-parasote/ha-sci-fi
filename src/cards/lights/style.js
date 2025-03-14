@@ -162,6 +162,7 @@ export default css`
     --primary-icon-color: var(--light-on-color);
     --min-width: 40px;
     --text-align: center;
+    width: 40px;
   }
   .area-content .lights sci-fi-button-card.off {
     --label-color: var(--secondary-light-color);

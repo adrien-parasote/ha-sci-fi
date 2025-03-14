@@ -17,7 +17,7 @@ export class SciFiVehiclesEditor extends SciFiBaseEditor {
     this._hass = hass;
     if (!this._config) return;
     if (!this._vehiclesList)
-      this._vehiclesList = Object.values(window.hass.devices)
+      this._vehiclesList = Object.values(hass.devices)
         .filter((d) => d.manufacturer == MANUFACTURED)
         .map((e) => {
           return {
@@ -42,19 +42,7 @@ export class SciFiVehiclesEditor extends SciFiBaseEditor {
     return html`
       <div class="card card-corner">
         <div class="container">
-          ${this._config.vehicles.map(
-            (entity, id) =>
-              html`<sci-fi-accordion-card
-                element-id=${id}
-                title="${this.__getTitle(id)}"
-                icon="sci:landspeeder"
-                ?deletable=${this._config.vehicles.length > 1}
-                @accordion-delete=${this.__update}
-                ?open=${id == 0}
-              >
-                ${this.__renderVehicle(id, this._config.vehicles[id])}
-              </sci-fi-accordion-card>`
-          )}
+          ${this.__renderVehicles()}
           <sci-fi-button
             has-border
             icon="mdi:plus"
@@ -62,6 +50,25 @@ export class SciFiVehiclesEditor extends SciFiBaseEditor {
           ></sci-fi-button>
         </div>
       </div>
+    `;
+  }
+
+  __renderVehicles() {
+    if (this._config.vehicles.length == 0) return nothing;
+    return html`
+      ${this._config.vehicles.map(
+        (vehicle, id) =>
+          html`<sci-fi-accordion-card
+            element-id=${id}
+            title="${this.__getTitle(id)}"
+            icon="sci:landspeeder"
+            ?deletable=${this._config.vehicles.length > 1}
+            @accordion-delete=${this.__update}
+            ?open=${id == 0}
+          >
+            ${this.__renderVehicle(id, vehicle)}
+          </sci-fi-accordion-card>`
+      )}
     `;
   }
 
@@ -188,13 +195,14 @@ export class SciFiVehiclesEditor extends SciFiBaseEditor {
     `;
   }
 
-  __addElement() {
+  __addElement(e) {
+    let newConfig = this.__getNewConfig();
     const empty_vehicle = {};
     Object.keys(configMetadata.vehicles.data).forEach(
       (el) => (empty_vehicle[el] = '')
     );
-    this._config.vehicles.push(empty_vehicle);
-    this.requestUpdate();
+    newConfig.vehicles.push(empty_vehicle);
+    this.__dispatchChange(e, newConfig);
   }
 
   __update(e) {

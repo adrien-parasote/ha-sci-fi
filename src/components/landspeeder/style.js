@@ -74,7 +74,7 @@ export default css`
   }
   .middle .lock {
     position: absolute;
-    left: 65px;
+    left: calc(50% - 130px);
     top: 55%;
   }
   .middle .lock div,
@@ -127,7 +127,7 @@ export default css`
   .middle .fuel {
     position: absolute;
     top: 70%;
-    left: 25px;
+    left: calc(50% - 179px);
   }
   .middle .fuel .h-path,
   .middle .battery .h-path {
@@ -185,12 +185,12 @@ export default css`
   .middle .battery {
     position: absolute;
     top: 70%;
-    right: 25px;
+    left: calc(50% + 35px);
   }
   .middle .charging {
     position: absolute;
     top: 10px;
-    right: 25px;
+    left: 50%;
   }
   .middle .charging .components {
     width: 120px;

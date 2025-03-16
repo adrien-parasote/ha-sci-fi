@@ -1,5 +1,13 @@
 # Changelog
 
+# [v0.6.2](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.6.2) - 2025-03-16
+
+## 🆙  What's Changed
+
+💡 Ligths management card
+- Feature requests :[Lights card - Add option to exclude lights](https://github.com/adrien-parasote/ha-sci-fi/issues/31)
+
+
 # [v0.6.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.6.1) - 2025-03-16
 
 ## 🐛 Fixes

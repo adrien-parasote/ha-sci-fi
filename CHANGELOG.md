@@ -3,7 +3,8 @@
 # [v0.6.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.6.1) - 2025-03-16
 
 ## 🐛 Fixes
-- Lights card: Fixe floor active / inactive icon color
+- Lights card: Fix floor active / inactive icon color
+- Weather icon: Fix n/a & snowy-rainy-day svg
 
 # [v0.6.0](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.6.0) - 2025-03-14
 

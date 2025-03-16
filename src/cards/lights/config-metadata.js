@@ -24,6 +24,11 @@ export default {
     type: 'string',
     default: null,
   },
+  ignored_entities: {
+    type: 'array',
+    default: [],
+    data_type: 'string',
+  },
   custom_entities: {
     type: 'object',
     default: [],

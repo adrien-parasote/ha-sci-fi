@@ -178,9 +178,12 @@ export class House {
     );
   }
 
-  turnOnOffLight(hass) {
+  turnOnOffLight(hass, entities_to_exclude = []) {
     const active = this.isActive(ENTITY_KIND_LIGHT);
-    const entities_id = this.getEntitiesByKind(ENTITY_KIND_LIGHT)
+    const entities_id = this.getEntitiesByKind(
+      ENTITY_KIND_LIGHT,
+      entities_to_exclude
+    )
       .filter((entity) => entity.active == active)
       .map((entity) => entity.entity_id);
     return hass.callService(
@@ -402,13 +405,16 @@ export class Area {
   callService(hass, entity_kind, entities_to_exclude = []) {
     // TODO : change - only used for light
     if (entity_kind == ENTITY_KIND_LIGHT) {
-      return this.__turnOnOffLight(hass);
+      return this.__turnOnOffLight(hass, entities_to_exclude);
     }
   }
 
-  __turnOnOffLight(hass) {
-    const active = this.isActive(ENTITY_KIND_LIGHT);
-    const entities_id = this.getEntitiesByKind(ENTITY_KIND_LIGHT)
+  __turnOnOffLight(hass, entities_to_exclude) {
+    const active = this.isActive(ENTITY_KIND_LIGHT, entities_to_exclude);
+    const entities_id = this.getEntitiesByKind(
+      ENTITY_KIND_LIGHT,
+      entities_to_exclude
+    )
       .filter((entity) => entity.active == active)
       .map((entity) => entity.entity_id);
     return hass.callService(

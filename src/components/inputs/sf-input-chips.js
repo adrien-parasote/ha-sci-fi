@@ -27,11 +27,12 @@ export class SciFiChipsInput extends SciFiInput {
           color: white;
           border-radius: 15px;
           margin: 0 3px;
-          padding: 4px 5px 5px 10px;
           font-size: var(--font-size-small);
+          max-width: 70px;
+          display: flex;
+          padding: 3px;
         }
         li .delete {
-          margin-left: 5px;
           padding: 2px 4px;
           border-radius: 50%;
           font-size: var(--font-size-xsmall);
@@ -41,6 +42,10 @@ export class SciFiChipsInput extends SciFiInput {
           color: var(--primary-light-color);
           background: var(--secondary-light-alpha-color);
           cursor: pointer;
+        }
+        li .chip-text {
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       `,
     ]);
@@ -88,10 +93,10 @@ export class SciFiChipsInput extends SciFiInput {
     return this.values.map(
       (v, id) =>
         html`<li>
-          <span>${v}</span
-          ><span class="delete" @click="${(e) => this.__removeChip(e, id)}"
+          <span class="delete" @click="${(e) => this.__removeChip(e, id)}"
             >X</span
           >
+          <span class="chip-text">${v}</span>
         </li>`
     );
   }

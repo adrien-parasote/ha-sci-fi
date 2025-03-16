@@ -261,7 +261,7 @@ Lights package card, allowing you to dynamically manage your home lights by auto
 
 ### Card features:
 
-Allow to deal with lights entities, grouping them per floors/areas.
+Allow to deal with lights entities, grouping them per floors/areas. By default all HA `light` entities are rendered, but you can manually exclude some of them.
 - Display house global turn on / off lights button
 - Display house's floors linked with lights entities
 - Display per floor:
@@ -280,7 +280,6 @@ Allow to deal with lights entities, grouping them per floors/areas.
 
 > [!NOTE]
 > If Home Assistant `Sun` entity is available, day phase will be displayed on top of the card (dawn, dusk, day, rising, seting)
-
 
 ### Screenshots
 
@@ -317,6 +316,9 @@ default_icon_on: mdi:lightbulb-on-outline
 default_icon_off: mdi:lightbulb-outline
 first_floor_to_render: floor_1 # replace with your prefered floor ID
 first_area_to_render: area_1_floor_1 # replace with your prefered area ID from floor ID
+ignored_entities: 
+  - light.ignored_light_1
+  - light.ignored_light_2
 custom_entities:
   light.light_id_1:
     name: "Christmas tree"
@@ -338,6 +340,8 @@ custom_entities:
 | default_icon_off | String | **Optionnal** | State off card icon | `mdi:lightbulb-outline`|
 | first_floor_to_render | String | **Optional** | Floor you want to see when card is first rendered |  | 
 | first_area_to_render | Object | **Optional** | Area from `first_floor_to_render` floor you want to see when card is first rendered |  | 
+| ignored_entities | List | **Optional** | Entities' ID to by ignored from rendering |  | 
+| custom_entities | List | **Optional** | Entities' list of object `id` based to be customized. See section bellow |  | 
 
 **Example**
 ```yaml

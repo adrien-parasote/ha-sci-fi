@@ -4,6 +4,10 @@ export default {
   default_icon_off: 'mdi:lightbulb-outline',
   first_floor_to_render: 'rdc',
   first_area_to_render: 'chambre',
+  ignored_entities: [
+    'light.la_boite_a_cha_day_ambient_colour',
+    'light.la_boite_a_cha_night_ambient_colour',
+  ],
   custom_entities: {
     'light.nous_salon': {
       name: 'Sapin',

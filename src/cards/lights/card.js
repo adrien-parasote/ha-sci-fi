@@ -54,11 +54,15 @@ export class SciFiLights extends SciFiBaseCard {
     if (!this._hass || !this._config) return nothing;
     // Setup first time attribute
     if (!this._active_floor_id)
-      this._active_floor_id = this._house.getDefaultFloor(ENTITY_KIND_LIGHT).id;
+      this._active_floor_id = this._house.getDefaultFloor(
+        ENTITY_KIND_LIGHT,
+        this._config.ignored_entities
+      ).id;
     if (!this._active_area_id)
       this._active_area_id = this._house.getDefaultArea(
         this._active_floor_id,
-        ENTITY_KIND_LIGHT
+        ENTITY_KIND_LIGHT,
+        this._config.ignored_entities
       ).id;
 
     const max_areas = Math.max.apply(
@@ -83,7 +87,12 @@ export class SciFiLights extends SciFiBaseCard {
       <div class="info">
         <sci-fi-button
           icon="mdi:power-standby"
-          class="${this._house.isActive(ENTITY_KIND_LIGHT) ? 'off' : 'on'}"
+          class="${this._house.isActive(
+            ENTITY_KIND_LIGHT,
+            this._config.ignored_entities
+          )
+            ? 'off'
+            : 'on'}"
           @button-click="${this.__turnOnOffHouse}"
         ></sci-fi-button>
         <div class="text">${this._config.header}</div>
@@ -102,7 +111,7 @@ export class SciFiLights extends SciFiBaseCard {
   __turnOnOffHouse(e) {
     e.preventDefault();
     e.stopPropagation();
-    this._house.turnOnOffLight(this._hass).then(
+    this._house.turnOnOffLight(this._hass, this._config.ignored_entities).then(
       () => this.__toast(false),
       (e) => this.__toast(true, e)
     );
@@ -111,13 +120,20 @@ export class SciFiLights extends SciFiBaseCard {
   __displayHouseFloors() {
     const cells = this._house
       .getFloorsOrderedByLevel()
-      .filter((floor) => floor.hasEntityKind(ENTITY_KIND_LIGHT))
+      .filter((floor) =>
+        floor.hasEntityKind(ENTITY_KIND_LIGHT, this._config.ignored_entities)
+      )
       .map((floor) => {
         return {
           id: floor.id,
           state: this._active_floor_id == floor.id ? 'on' : 'off',
           selected: this._active_floor_id == floor.id,
-          active: floor.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off',
+          active: floor.isActive(
+            ENTITY_KIND_LIGHT,
+            this._config.ignored_entities
+          )
+            ? 'on'
+            : 'off',
           icon: floor.icon,
         };
       });
@@ -129,16 +145,19 @@ export class SciFiLights extends SciFiBaseCard {
 
   __displayFloorInfo() {
     const floor = this._house.getFloor(this._active_floor_id);
-    const entities = floor.getEntitiesByKind(ENTITY_KIND_LIGHT);
-    return html` <div
-      class="info ${floor.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}"
-    >
+    const entities = floor.getEntitiesByKind(
+      ENTITY_KIND_LIGHT,
+      this._config.ignored_entities
+    );
+    const isActiveFloor = floor.isActive(
+      ENTITY_KIND_LIGHT,
+      this._config.ignored_entities
+    )
+      ? 'on'
+      : 'off';
+    return html` <div class="info ${isActiveFloor}">
       <div class="title">
-        ${floor.name}
-        ${this.__displayPowerBtn(
-          floor,
-          floor.isActive(ENTITY_KIND_LIGHT) ? 'off' : 'on'
-        )}
+        ${floor.name} ${this.__displayPowerBtn(floor, isActiveFloor)}
       </div>
       <div class="floor-lights">
         ${this.__displayOnLights(
@@ -164,9 +183,16 @@ export class SciFiLights extends SciFiBaseCard {
       ${this._house
         .getFloor(this._active_floor_id)
         .getAreas()
-        .filter((area) => area.hasEntityKind(ENTITY_KIND_LIGHT))
+        .filter((area) =>
+          area.hasEntityKind(ENTITY_KIND_LIGHT, this._config.ignored_entities)
+        )
         .map((area, idx) => {
-          const area_state = area.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off';
+          const area_state = area.isActive(
+            ENTITY_KIND_LIGHT,
+            this._config.ignored_entities
+          )
+            ? 'on'
+            : 'off';
           return html` <div
             class="row"
             style="margin-left: calc(var(--default-hexa-width) / 2 * ${idx %
@@ -191,16 +217,20 @@ export class SciFiLights extends SciFiBaseCard {
   }
 
   __displayArea(area) {
+    const isActiveArea = area.isActive(
+      ENTITY_KIND_LIGHT,
+      this._config.ignored_entities
+    )
+      ? 'on'
+      : 'off';
     return html`
       <sci-fi-hexa-tile
         active-tile
         state="${area.id == this._active_area_id ? 'on' : 'off'}"
-        class="${area.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}"
+        class="${isActiveArea}"
         @click="${(e) => this.__onAreaSelect(e, area)}"
       >
-        <div
-          class="item-icon ${area.isActive(ENTITY_KIND_LIGHT) ? 'on' : 'off'}"
-        >
+        <div class="item-icon ${isActiveArea}">
           <sci-fi-icon icon=${area.icon}></sci-fi-icon>
         </div>
       </sci-fi-hexa-tile>
@@ -212,7 +242,10 @@ export class SciFiLights extends SciFiBaseCard {
       this._active_floor_id,
       this._active_area_id
     );
-    const active = area.isActive(ENTITY_KIND_LIGHT);
+    const active = area.isActive(
+      ENTITY_KIND_LIGHT,
+      this._config.ignored_entities
+    );
     return html`
       <div class="card-corner area-content ${active ? 'on' : 'off'}">
         <div class="title">
@@ -233,18 +266,22 @@ export class SciFiLights extends SciFiBaseCard {
 
   __displayAreaLights(area) {
     return html` <div class="lights">
-      ${area.getEntitiesByKind(ENTITY_KIND_LIGHT).map((light) => {
-        const custom = this._config.custom_entities[light.entity_id];
-        return html`
-          <sci-fi-button-card
-            class="${light.state}"
-            no-title
-            icon="${this.__getLightIcon(light, custom)}"
-            text="${custom && custom.name ? custom.name : light.friendly_name}"
-            @button-click="${(e) => this.__onLightClick(e, light)}"
-          ></sci-fi-button-card>
-        `;
-      })}
+      ${area
+        .getEntitiesByKind(ENTITY_KIND_LIGHT, this._config.ignored_entities)
+        .map((light) => {
+          const custom = this._config.custom_entities[light.entity_id];
+          return html`
+            <sci-fi-button-card
+              class="${light.state}"
+              no-title
+              icon="${this.__getLightIcon(light, custom)}"
+              text="${custom && custom.name
+                ? custom.name
+                : light.friendly_name}"
+              @button-click="${(e) => this.__onLightClick(e, light)}"
+            ></sci-fi-button-card>
+          `;
+        })}
     </div>`;
   }
 
@@ -272,7 +309,10 @@ export class SciFiLights extends SciFiBaseCard {
     this._active_floor_id = cell_floor.id;
     // Select first area to render
     const floor = this._house.getFloor(cell_floor.id);
-    this._active_area_id = floor.getFirstArea(ENTITY_KIND_LIGHT).id;
+    this._active_area_id = floor.getFirstArea(
+      ENTITY_KIND_LIGHT,
+      this._config.ignored_entities
+    ).id;
   }
 
   __onAreaSelect(e, area) {
@@ -284,10 +324,12 @@ export class SciFiLights extends SciFiBaseCard {
   __onPowerBtnClick(e, element) {
     e.preventDefault();
     e.stopPropagation();
-    element.callService(this._hass, ENTITY_KIND_LIGHT).then(
-      () => this.__toast(false),
-      (e) => this.__toast(true, e)
-    );
+    element
+      .callService(this._hass, ENTITY_KIND_LIGHT, this._config.ignored_entities)
+      .then(
+        () => this.__toast(false),
+        (e) => this.__toast(true, e)
+      );
   }
 
   __onLightClick(e, light) {

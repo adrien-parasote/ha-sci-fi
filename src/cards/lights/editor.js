@@ -53,6 +53,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
         <div class="container ${!this._edit}">
           ${this.__renderHeader()} ${this.__renderSectionDefaultIcon()}
           ${this.__renderSectionFloorAreaSelection()}
+          ${this.__renderSectionExcludeEntities()}
           ${this.__renderSectionCustomEntities()}
         </div>
         <div class="editor ${this._edit}">${this.__renderEntityCustom()}</div>
@@ -161,6 +162,23 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
         @input-update=${this.__update}
       ></sci-fi-dropdown-entity-input>
     </section>`;
+  }
+
+  __renderSectionExcludeEntities() {
+    return html`<section>
+      <h1>
+        <span><sci-fi-icon icon="mdi:eye-remove-outline"></sci-fi-icon></span
+        >Entities to ignore (optionnal)
+      </h1>
+      <sci-fi-dropdown-multi-entities-input
+        label="Entity id"
+        element-id="ignored_entities"
+        kind="ignored_entities"
+        .values="${this._config.ignored_entities}"
+        .items="${this._lights_entities}"
+        @input-update=${this.__update}
+      ></sci-fi-dropdown-multi-entities-input>
+    </section> `;
   }
 
   __renderSectionCustomEntities() {
@@ -285,6 +303,12 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
         break;
       case 'first_area_to_render':
         newConfig[e.detail.id] = e.detail.value;
+        break;
+      case 'ignored_entities':
+        if (e.detail.type == 'update')
+          newConfig[e.detail.id].push(e.detail.value);
+        if (e.detail.type == 'remove')
+          newConfig[e.detail.id].splice(e.detail.value, 1);
         break;
       case 'default_icons':
         newConfig[e.detail.kind] = e.detail.value;

@@ -25,6 +25,7 @@ export default {
     default: null,
   },
   ignored_entities: {
+    mandatory: false,
     type: 'array',
     default: [],
     data_type: 'string',

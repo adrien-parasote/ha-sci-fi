@@ -79,7 +79,7 @@ class SciFiHexaRow extends LitElement {
         class="${cell.selected ? 'selected' : ''}"
         @click="${(e) => this.__onCellSelect(cell)}"
       >
-        <div class="item-icon ${cell.active ? 'on' : 'off'}">
+        <div class="item-icon ${cell.active}">
           <sci-fi-icon icon=${cell.icon}></sci-fi-icon>
         </div>
       </sci-fi-hexa-tile>`;

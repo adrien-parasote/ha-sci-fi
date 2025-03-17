@@ -4,8 +4,12 @@ export class Person {
     this.id = conUser.entity_id;
     this.state = conUser.state;
     this.attributes = conUser.attributes;
+    // Connected user language preferences
     this.language = hass.language;
     this.locale = hass.locale;
+    // HA Config
+    this.currency = hass.config.currency
+    this.unit_system = hass.config.unit_system
   }
 
   __getConnectedUser(hass) {
@@ -30,5 +34,11 @@ export class Person {
     return this.locale.date_format == 'language'
       ? this.language
       : this.locale.date_format;
+  }
+
+  get number_format() {
+    return this.locale.number_format == 'language'
+      ? this.language
+      : this.locale.number_format;
   }
 }

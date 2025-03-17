@@ -536,6 +536,9 @@ Allow to deal with climates entities, grouping them per floors/areas.
 > [!NOTE]
 > If Home Assistant `Season` type `Meteorological` sensor is available, season icon (winter, spring, summer & autumn) will be displayed on top right of the card.
 
+> [!NOTE]
+> Card temperature unit is based on you HA system configuration.
+
 ### Screenshots
 
 <details>
@@ -574,7 +577,6 @@ header:
   message_winter_state: Winter is coming
   icon_summer_state: mdi:thermometer-chevron-down
   message_summer_state: Summer time
-unit: "°C"
 entities_to_exclude:
   - climate.excluded_1
 state_icons:
@@ -607,7 +609,6 @@ mode_colors:
 | - | - | - | - | - |
 | type | String | **Required** | Card definition | `custom:sci-fi-climates`| 
 | `header` | Object | **Optionnal** | Header card options  |  |
-| unit | String | **Optionnal** | Climate temperature unit  | °C |
 | entities_to_exclude | List[String] | **Optional** | Entities' id list to exclude from tracking. Example: `climate.excluded_1`, `climate.excluded_1`  | `[]`|
 | `state_icons` | Object | **Optionnal** | Icons for each climate states  |  |
 | `state_colors` | Object | **Optionnal** | Color for each climate states  |  |
@@ -619,7 +620,6 @@ mode_colors:
 type: custom:sci-fi-climates
 header:
   ... # see header configuration bellow
-unit: "°C"
 entities_to_exclude:
   - climate.excluded_1
   - climate.excluded_2
@@ -969,7 +969,7 @@ vehicles:
 ```yaml
 type: custom:sci-fi-vehicles
 vehicles: 
-  - <vehicle>
+  ... # see vehicle configuration bellow
 ```
 
 <br>

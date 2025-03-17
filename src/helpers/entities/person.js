@@ -7,9 +7,6 @@ export class Person {
     // Connected user language preferences
     this.language = hass.language;
     this.locale = hass.locale;
-    // HA Config
-    this.currency = hass.config.currency
-    this.unit_system = hass.config.unit_system
   }
 
   __getConnectedUser(hass) {

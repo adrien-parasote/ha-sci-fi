@@ -215,6 +215,7 @@ window.buildHass = function () {
   getConfig(window.hass.connection).then(
     (config) => {
       window.hass.config = config;
+      // Mock
       window.hass.language = config.language;
       window.hass.locale = {
         language: config.language,

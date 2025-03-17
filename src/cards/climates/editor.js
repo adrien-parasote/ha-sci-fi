@@ -113,14 +113,6 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
         <span><sci-fi-icon icon="mdi:tune-vertical-variant"></sci-fi-icon></span
         >Settings (optionnal)
       </h1>
-      <sci-fi-input
-        icon="mdi:thermometer"
-        label="Unit (optionnal)"
-        value=${this._config.unit}
-        element-id="unit"
-        kind="unit"
-        @input-update=${this.__update}
-      ></sci-fi-input>
       <sci-fi-dropdown-multi-entities-input
         label="Entities to exclude (optionnal)"
         element-id="entities_to_exclude"

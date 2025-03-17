@@ -1,12 +1,15 @@
 # Changelog
 
-## 🆕 What's New
+## 🆕 What's Changed
 
 🚗 Vehicles card
 - Do not display `<` & `>` icon when only one vehicle is configured
 
 🦾 Technical
 - Date rendering is now based on user preferences defined in HA local (date_format)
+
+🌡️ Climate card
+- Displaying temperature unit based on your HA system configuration
 
 # [v0.6.2](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.6.2) - 2025-03-16
 

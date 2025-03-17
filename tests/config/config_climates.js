@@ -1,5 +1,4 @@
 export default {
-  unit: '°C',
   entities_to_exclude: ['climate.clou'],
   header: {
     display: true,

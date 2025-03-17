@@ -17,6 +17,7 @@ export class SciFiClimates extends SciFiBaseCard {
   _configMetadata = configMetadata;
   _hass; // private
   _season;
+  _temp_unit;
 
   static get properties() {
     return {
@@ -31,6 +32,7 @@ export class SciFiClimates extends SciFiBaseCard {
     this._hass = hass;
     if (!this._config) return; // Can't assume setConfig is called before hass is set
 
+    if (!this._temp_unit) this._temp_unit = hass.config.unit_system.temperature; // Gather HA temperature unit only once
     if (!this._season && hass.states['sensor.season'])
       this._season = new Season('sensor.season', hass);
     // Build house
@@ -73,7 +75,7 @@ export class SciFiClimates extends SciFiBaseCard {
         <sci-fi-icon icon="mdi:home-thermometer-outline"></sci-fi-icon>
         <div class="text">
           ${this._house.getTemperature(this._config.entities_to_exclude)}${this
-            ._config.unit}
+            ._temp_unit}
         </div>
       </div>
       <div class="actions">${this.__displayActionHeader()}</div>
@@ -132,7 +134,7 @@ export class SciFiClimates extends SciFiBaseCard {
     const floor = this._house.getFloor(this._active_floor_id);
     const temperature = floor.getTemperature(this._config.entities_to_exclude);
     const icon = temperature ? 'mdi:thermometer' : 'mdi:thermometer-off';
-    const label = temperature ? temperature + this._config.unit : 'Off';
+    const label = temperature ? temperature + this._temp_unit : 'Off';
     return html`
       <div class="title ${!temperature ? 'off' : 'on'}">${floor.name} -</div>
       <div class="temperature ${!temperature ? 'off' : 'on'}">
@@ -240,7 +242,7 @@ export class SciFiClimates extends SciFiBaseCard {
           <sci-fi-radiator
             id="${climate.entity_id}"
             .climateEntity="${climate.renderAsEntity()}"
-            .unit="${this._config.unit}"
+            .unit="${this._temp_unit}"
             .styles="${styles}"
             @change-preset-mode="${this._changePresetMode}"
             @change-hvac-mode="${this._changeHvacMode}"

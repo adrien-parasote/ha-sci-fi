@@ -63,9 +63,20 @@ class SciFiLandspeeder extends LitElement {
       </div>
       <div class="component">
         <sci-fi-icon icon="mdi:counter"></sci-fi-icon>
-        <div>${this.vehicle.mileage}</div>
+        <div>${this.__getMileage()}</div>
       </div>
     </div>`;
+  }
+
+  __getMileage() {
+    if (this.vehicle.hasMileage())
+      return [
+        new Intl.NumberFormat(this.user.number_format).format(
+          this.vehicle.raw_mileage
+        ),
+        this.vehicle.mileage_unit,
+      ].join(' ');
+    return this.vehicle.raw_mileage;
   }
 
   __displayLocationLastActivity() {

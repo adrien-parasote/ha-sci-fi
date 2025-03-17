@@ -91,13 +91,20 @@ export class Vehicle {
       : new Date(this.sensors[VEHICLE_SENSOR_LOCATION_LAST_ACTIVITY].value);
   }
 
-  get mileage() {
+  hasMileage() {
+    return !this.sensors[VEHICLE_SENSOR_MILEAGE] ? false : true;
+  }
+
+  get raw_mileage() {
     return !this.sensors[VEHICLE_SENSOR_MILEAGE]
       ? VEHICLE_SENSOR_UNAVAILABLE_STATE
-      : [
-          this.sensors[VEHICLE_SENSOR_MILEAGE].value,
-          this.sensors[VEHICLE_SENSOR_MILEAGE].unit_of_measurement,
-        ].join(' ');
+      : this.sensors[VEHICLE_SENSOR_MILEAGE].value;
+  }
+
+  get mileage_unit() {
+    return !this.sensors[VEHICLE_SENSOR_MILEAGE]
+      ? ''
+      : this.sensors[VEHICLE_SENSOR_MILEAGE].unit_of_measurement;
   }
 
   get charge_state() {

@@ -737,6 +737,10 @@ From top to bottom, display:
   - Energy consumed / rendered & fan speed
 - Stove actions: mode, temperature and preset
 
+
+> [!NOTE]
+> Card temperature & pressure unit are based on you HA system configuration.
+
 ### Screenshots
 
 <details>
@@ -772,7 +776,6 @@ entity: climate.my_stove # replace with your stove's entity id
 ```yaml
 type: custom:sci-fi-stove
 entity: climate.my_stove # replace with your stove's entity id
-unit: "°C"
 sensors:
   sensor_actual_power: sensor.my_stove_actual_power # replace with your stove's render power sensor id
   sensor_power: sensor.my_stove_power # replace with your stove's power consumer sensor id
@@ -793,7 +796,6 @@ storage_counter_threshold: 0.07
 | - | - | - | - | - |
 | type | String | **Required** | Card definition | `custom:sci-fi-stove`|
 | entity | String | **Required** | Stove climate entity ID | `''` |
-| unit | String | **Optionnal** | Climate temperature unit  | °C |
 | `sensors` | Object | **Optional** | Section describing stove additional sensors |  | 
 | pellet_quantity_threshold | Float | **Optional** | Threshold for internal stove pellet quantity (for displaying graphical alert)</br> Must be between 0 (0%) & 1 (100%) | `0.5` | 
 | storage_counter | String | **Optional** | Stove pellet bags sensor counter ID | `''` | 
@@ -803,7 +805,6 @@ storage_counter_threshold: 0.07
 ```yaml
 type: custom:sci-fi-hexa-tiles
 entity: climate.my_stove # replace with your stove's entity id
-unit: "°C"
 sensors:
   ... # see sensor configuration bellow
 pellet_quantity_threshold: 0.4

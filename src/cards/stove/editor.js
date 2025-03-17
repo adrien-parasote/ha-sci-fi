@@ -55,13 +55,6 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
           .items="${this._climates}"
           @input-update=${this.__update}
         ></sci-fi-dropdown-entity-input>
-        <sci-fi-input
-          label="Unit (optionnal)"
-          value=${this._config.unit}
-          element-id="unit"
-          kind="unit"
-          @input-update=${this.__update}
-        ></sci-fi-input>
       </section>
     `;
   }

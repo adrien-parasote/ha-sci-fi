@@ -4,11 +4,6 @@ export default {
     type: 'string',
     default: '',
   },
-  unit: {
-    mandatory: false,
-    type: 'string',
-    default: '°C',
-  },
   sensors: {
     mandatory: false,
     type: 'object',

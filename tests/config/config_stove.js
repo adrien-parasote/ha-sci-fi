@@ -1,6 +1,5 @@
 export default {
   entity: 'climate.clou',
-  unit: '°C',
   sensors: {
     sensor_actual_power: 'sensor.clou_actual_power',
     sensor_combustion_chamber_temperature:

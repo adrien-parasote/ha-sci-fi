@@ -22,6 +22,8 @@ export class SciFiStove extends SciFiBaseCard {
 
   _configMetadata = configMetadata;
   _hass; // private
+  _temp_unit;
+  _pressure_unit;
 
   static get properties() {
     return {
@@ -49,6 +51,10 @@ export class SciFiStove extends SciFiBaseCard {
       !isEqual(stove_entity.renderAsEntity(), this._stove.renderAsEntity())
     )
       this._stove = stove_entity;
+
+    if (!this._temp_unit) this._temp_unit = hass.config.unit_system.temperature; // Gather HA temperature unit only once
+    if (!this._pressure_unit)
+      this._pressure_unit = hass.config.unit_system.pressure; // Gather HA pressure unit only once
   }
 
   render() {
@@ -73,7 +79,7 @@ export class SciFiStove extends SciFiBaseCard {
     ).map((e, idx) => {
       return {
         id: idx,
-        text: [idx + this._stove.min_temp, this._config.unit].join(''),
+        text: [idx + this._stove.min_temp, this._temp_unit].join(''),
         value: idx + this._stove.min_temp,
       };
     });
@@ -168,14 +174,18 @@ export class SciFiStove extends SciFiBaseCard {
             ${this.__displayTemperature(
               'External',
               this._stove.current_temperature,
-              this._config.unit
+              this._temp_unit
             )}
             ${this.__displayTemperature(
               'Internal',
               this._stove.combustion_chamber_temperature.value,
-              this._config.unit
+              this._temp_unit
             )}
-            ${this.__displayPressure('Pressure', this._stove.pressure.value)}
+            ${this.__displayPressure(
+              'Pressure',
+              this._stove.pressure.value,
+              this._pressure_unit
+            )}
           </div>
         </div>
         <div class="e top-path">
@@ -289,13 +299,13 @@ export class SciFiStove extends SciFiBaseCard {
     </div>`;
   }
 
-  __displayPressure(text, pressure) {
+  __displayPressure(text, pressure, unit) {
     if (!pressure) return nothing;
     return html`
       <div class="temperature ${pressure == '0' ? 'off' : ''}">
         <sci-fi-icon icon="mdi:gauge"></sci-fi-icon>
         <div class="label">${text}:</div>
-        <div>${pressure}</div>
+        <div>${pressure}${unit}</div>
       </div>
     `;
   }

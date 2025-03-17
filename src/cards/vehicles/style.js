@@ -20,6 +20,9 @@ export default css`
     padding: 10px;
     background-color: var(--primary-bg-alpha-color);
   }
+  .header .hide {
+    display: none;
+  }
   .header .title {
     flex: 1;
     align-content: center;

@@ -51,6 +51,7 @@ export class SciFiDropdownMultiEntitiesInput extends SciFiDropdownEntityInput {
           margin: 3px;
           font-size: var(--font-size-small);
           max-width: 70px;
+          min-width: 40px;
           display: flex;
           padding: 3px;
         }

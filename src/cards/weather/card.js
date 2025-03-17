@@ -88,7 +88,8 @@ export class SciFiWeather extends SciFiBaseCard {
     const unsub = hass.connection.subscribeMessage(
       (event) => {
         this._weather_daily_forecast = event.forecast.map(
-          (value) => new DailyForecast(value, this.temperature_unit)
+          (value) =>
+            new DailyForecast(value, this._weather.getUnit('temperature'))
         );
         unsub.then((unsub) => unsub());
       },
@@ -104,7 +105,8 @@ export class SciFiWeather extends SciFiBaseCard {
     const unsub = hass.connection.subscribeMessage(
       (event) => {
         this._weather_hourly_forecast = event.forecast.map(
-          (value) => new HourlyForecast(value, this.temperature_unit)
+          (value) =>
+            new HourlyForecast(value, this._weather.getUnit('temperature'))
         );
         unsub.then((unsub) => unsub());
         // draw chart

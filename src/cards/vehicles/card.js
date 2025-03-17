@@ -14,13 +14,7 @@ export class SciFiVehicles extends SciFiBaseCard {
 
   _configMetadata = configMetadata;
   _hass; // private
-  _temperature_items = Array.from(Array(10).keys()).map((e, idx) => {
-    return {
-      id: idx,
-      text: [idx + 16, '°C'].join(' '),
-      value: idx + 16,
-    };
-  });
+  _temperature_items;
   _user;
 
   static get properties() {
@@ -52,6 +46,14 @@ export class SciFiVehicles extends SciFiBaseCard {
       const update = this._vehicles.map((vehicle) => vehicle.update(hass));
     }
     if (!this._user) this._user = new Person(hass); // Only once
+    if (!this._temperature_items)
+      this._temperature_items = Array.from(Array(10).keys()).map((e, idx) => {
+        return {
+          id: idx,
+          text: [idx + 16, hass.config.unit_system.temperature].join(' '),
+          value: idx + 16,
+        };
+      });
   }
 
   render() {

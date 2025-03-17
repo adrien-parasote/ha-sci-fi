@@ -5,6 +5,9 @@
 🚗 Vehicles card
 - Do not display `<` & `>` icon when only one vehicle is configured
 
+🦾 Technical
+- Date rendering is now based on user preferences defined in HA local (date_format)
+
 # [v0.6.2](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.6.2) - 2025-03-16
 
 ## 🆙  What's Changed

@@ -3,13 +3,13 @@ import {html, nothing, svg} from 'lit';
 import {isEqual} from 'lodash-es';
 
 import WEATHER_ICON_SET from '../../components/icons/data/sf-weather-icons.js';
+import {Person} from '../../helpers/entities/person.js';
 import {
   DailyForecast,
   HourlyForecast,
   SunEntity,
   WeatherEntity,
 } from '../../helpers/entities/weather/weather.js';
-import {WEEK_DAYS} from '../../helpers/entities/weather/weather_const.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import {templateToString} from '../../helpers/utils/utils.js';
 import configMetadata from './config-metadata.js';
@@ -33,6 +33,7 @@ export class SciFiWeather extends SciFiBaseCard {
   _daily_subscribed;
   _hourly_subscribed;
   _day_selected = 0;
+  _user;
 
   static get properties() {
     return {
@@ -80,6 +81,7 @@ export class SciFiWeather extends SciFiBaseCard {
         if (!this._alert && !isEqual(alert, this.alert)) this._alert = alert;
       }
     }
+    if (!this._user) this._user = new Person(hass); // Only once
   }
 
   __getDaysForecasts(hass) {
@@ -167,28 +169,23 @@ export class SciFiWeather extends SciFiBaseCard {
 
   __getHour() {
     const options = {
-      minimumIntegerDigits: 2,
-      useGrouping: false,
+      timeStyle: 'short',
     };
-    return [
-      this._date.getHours().toLocaleString('fr-FR', options),
-      this._date.getMinutes().toLocaleString('fr-FR', options),
-    ].join(':');
+    return new Intl.DateTimeFormat(this._user.date_format, options).format(
+      this._date
+    );
   }
 
   __getDate() {
     const options = {
-      minimumIntegerDigits: 2,
-      useGrouping: false,
+      weekday: 'short',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
     };
-    return [
-      [WEEK_DAYS[this._date.getDay()].short, ','].join(''),
-      [
-        this._date.getDate().toLocaleString('fr-FR', options),
-        (this._date.getMonth() + 1).toLocaleString('fr-FR', options),
-        this._date.getFullYear().toLocaleString('fr-FR', options),
-      ].join('.'),
-    ].join(' ');
+    return new Intl.DateTimeFormat(this._user.date_format, options).format(
+      this._date
+    );
   }
 
   __renderDays() {
@@ -201,7 +198,7 @@ export class SciFiWeather extends SciFiBaseCard {
             class="weather ${this._day_selected == idx ? 'selected' : ''}"
             @click="${(e) => this.__selectDay(idx)}"
           >
-            ${daily_forecast.render(true)}
+            ${daily_forecast.render(this._user)}
           </div>`;
         })}
     </div>`;
@@ -372,7 +369,7 @@ export class SciFiWeather extends SciFiBaseCard {
       .filter((hour) => hour.isPartOfDay(forecastDate))
       .map((hourly) => {
         datasets[0].data.push({
-          x: hourly.hours,
+          x: hourly.getHours(this._user),
           y: hourly.getKindValue(this._chartDataKind),
         });
         datasets[0].weather.push(hourly.getIconName(this._sun));

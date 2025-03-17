@@ -1,5 +1,6 @@
 import {html, nothing} from 'lit';
 
+import {Person} from '../../helpers/entities/person.js';
 import {Vehicle} from '../../helpers/entities/vehicle/vehicle.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
@@ -20,6 +21,7 @@ export class SciFiVehicles extends SciFiBaseCard {
       value: idx + 16,
     };
   });
+  _user;
 
   static get properties() {
     return {
@@ -49,6 +51,7 @@ export class SciFiVehicles extends SciFiBaseCard {
       // update
       const update = this._vehicles.map((vehicle) => vehicle.update(hass));
     }
+    if (!this._user) this._user = new Person(hass); // Only once
   }
 
   render() {
@@ -98,6 +101,7 @@ export class SciFiVehicles extends SciFiBaseCard {
   __displayLandspeeder() {
     return html`<sci-fi-landspeeder
       .vehicle=${this._vehicles[this._active_vehicle_id]}
+      .user=${this._user}
     ></sci-fi-landspeeder>`;
   }
 

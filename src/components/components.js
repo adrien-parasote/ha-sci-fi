@@ -5,6 +5,7 @@ import './landspeeder/sf-landspeeder.js';
 import './sf-accordion.js';
 import './sf-circle_progress_bar.js';
 import './sf-hexa-row.js';
+import './sf-person.js';
 import './sf-radiator.js';
 import './sf-stack_bar.js';
 import './sf-stove.js';

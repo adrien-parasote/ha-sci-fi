@@ -17,7 +17,6 @@ import {
 } from '../../helpers/entities/vehicle/vehicle_const.js';
 import common_style from '../../helpers/styles/common_style.js';
 import {defineCustomElement} from '../../helpers/utils/import.js';
-import {pad} from '../../helpers/utils/utils.js';
 import top_speeder from './data/top.js';
 import style from './style.js';
 
@@ -29,11 +28,13 @@ class SciFiLandspeeder extends LitElement {
   static get properties() {
     return {
       vehicle: {type: Object},
+      user: {type: Object},
     };
   }
 
   constructor() {
     super();
+    this.user = this.user ? this.user : null;
     this.vehicle = this.vehicle ? this.vehicle : null;
   }
 
@@ -69,16 +70,17 @@ class SciFiLandspeeder extends LitElement {
 
   __displayLocationLastActivity() {
     if (!this.vehicle.location_last_activity) return nothing;
-    return html` <div class="sub-info">
-      ${this.__displayDate(this.vehicle.location_last_activity)}
-    </div>`;
+    return html` <div class="sub-info">${this.__displayDate()}</div>`;
   }
 
-  __displayDate(d) {
-    return [
-      [pad(d.getDate()), pad(d.getMonth()), d.getFullYear()].join('/'),
-      [pad(d.getHours()), pad(d.getMinutes()), pad(d.getSeconds())].join(':'),
-    ].join(' ');
+  __displayDate() {
+    const options = {
+      timeStyle: 'medium',
+      dateStyle: 'short',
+    };
+    return new Intl.DateTimeFormat(this.user.date_format, options).format(
+      this.vehicle.location_last_activity
+    );
   }
 
   _openLocation(e) {

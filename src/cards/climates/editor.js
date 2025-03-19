@@ -1,3 +1,4 @@
+import {msg} from '@lit/localize';
 import {html, nothing} from 'lit';
 
 import {
@@ -30,7 +31,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
   }
 
   set hass(hass) {
-    this._hass = hass;
+    super.hass = hass;
     // initialized entity kind list
     if (hass.states) {
       if (!this._climates || this._climates.length == 0)
@@ -60,10 +61,10 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
     return html` <section>
       <h1>
         <span><sci-fi-icon icon="mdi:page-layout-header"></sci-fi-icon></span
-        >Header (optionnal)
+        >${msg('Header (optionnal)')}
       </h1>
       <sci-fi-toggle
-        label="Display global turn on/off button ?"
+        label="${msg('Display global turn on/off button ?')}"
         element-id="header_display"
         ?checked=${this._config.header.display}
         @toggle-change=${this.__update}

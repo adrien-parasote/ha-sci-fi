@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+<file target-language="fr" source-language="en" original="lit-localize-inputs" datatype="plaintext">
+<body>
+<trans-unit id="s0660856f8ffe4e23">
+  <source>Header (optionnal)</source>
+  <target>En-tête (optionnel)</target>
+</trans-unit>
+<trans-unit id="scc594028a264d2d3">
+  <source>Display global turn on/off button ?</source>
+  <target>Affichage du bouton marche/arrêt général ?</target>
+</trans-unit>
+</body>
+</file>
+</xliff>

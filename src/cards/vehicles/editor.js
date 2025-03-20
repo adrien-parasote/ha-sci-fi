@@ -29,7 +29,7 @@ export class SciFiVehiclesEditor extends SciFiBaseEditor {
           };
         });
   }
-  
+
   render() {
     if (!this._hass || !this._config || !this._vehiclesList) return nothing;
     return html`

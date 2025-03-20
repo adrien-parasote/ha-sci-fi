@@ -55,7 +55,9 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         </h1>
         <sci-fi-input
           icon="mdi:cursor-text"
-          label="${this.getLabel('input-message-text')} ${this.getLabel('text-optionnal')}"
+          label="${this.getLabel('input-message-text')} ${this.getLabel(
+            'text-optionnal'
+          )}"
           value=${this._config.header_message}
           element-id="header_message"
           kind=""
@@ -88,7 +90,9 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   __renderWeatherEntities() {
     return html`
       <sci-fi-dropdown-entity-input
-        label="${this.getLabel('input-weather-entity')} ${this.getLabel('text-required')}"
+        label="${this.getLabel('input-weather-entity')} ${this.getLabel(
+          'text-required'
+        )}"
         element-id="weather"
         kind="weather_entity"
         value="${this._config.weather.weather_entity}"
@@ -97,7 +101,9 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
       ></sci-fi-dropdown-entity-input>
       <sci-fi-input
         icon="mdi:link-edit"
-        label="${this.getLabel('input-link')} ${this.getLabel('text-optionnal')}"
+        label="${this.getLabel('input-link')} ${this.getLabel(
+          'text-optionnal'
+        )}"
         value=${this._config.weather.link}
         element-id="weather"
         kind="link"
@@ -155,7 +161,9 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   __renderStandAlone(id, entity) {
     return html`
       <sci-fi-dropdown-entity-input
-        label="${this.getLabel('section-title-entity')} ${this.getLabel('text-required')}"
+        label="${this.getLabel('section-title-entity')} ${this.getLabel(
+          'text-required'
+        )}"
         element-id="${id}"
         kind="entity"
         value="${entity.entity}"
@@ -168,7 +176,9 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   __renderKind(id, entity) {
     return html`
       <sci-fi-dropdown-input
-        label="${this.getLabel('input-entity-kind')} ${this.getLabel('text-required')}"
+        label="${this.getLabel('input-entity-kind')} ${this.getLabel(
+          'text-required'
+        )}"
         value=${entity.entity_kind}
         element-id="${id}"
         kind="entity_kind"
@@ -177,7 +187,9 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         @input-update=${this.__update}
       ></sci-fi-dropdown-input>
       <sci-fi-dropdown-multi-entities-input
-        label="${this.getLabel('input-entities-to-exclude')} ${this.getLabel('text-optionnal')}"
+        label="${this.getLabel('input-entities-to-exclude')} ${this.getLabel(
+          'text-optionnal'
+        )}"
         element-id="${id}"
         kind="entities_to_exclude"
         .values="${entity.entities_to_exclude}"
@@ -195,14 +207,18 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         >${this.getLabel('section-title-appearance')}
       </h1>
       <sci-fi-input
-        label="${this.getLabel('input-name')} ${this.getLabel('text-optionnal')}"
+        label="${this.getLabel('input-name')} ${this.getLabel(
+          'text-optionnal'
+        )}"
         value=${entity.name}
         element-id="${id}"
         kind="name"
         @input-update=${this.__update}
       ></sci-fi-input>
       <sci-fi-dropdown-icon-input
-        label="${this.getLabel('input-active-icon')} ${this.getLabel('text-optionnal')}"
+        label="${this.getLabel('input-active-icon')} ${this.getLabel(
+          'text-optionnal'
+        )}"
         element-id="${id}"
         kind="active_icon"
         icon=${entity.active_icon}
@@ -210,7 +226,9 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         @input-update=${this.__update}
       ></sci-fi-dropdown-icon-input>
       <sci-fi-dropdown-icon-input
-        label="${this.getLabel('input-inactive-icon')} ${this.getLabel('text-optionnal')}"
+        label="${this.getLabel('input-inactive-icon')} ${this.getLabel(
+          'text-optionnal'
+        )}"
         element-id="${id}"
         kind="inactive_icon"
         icon=${entity.inactive_icon}
@@ -228,7 +246,9 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
           >${this.getLabel('section-title-technical')}
         </h1>
         <sci-fi-chips-input
-          label="${this.getLabel('input-states-on')} ${this.getLabel('text-required')}"
+          label="${this.getLabel('input-states-on')} ${this.getLabel(
+            'text-required'
+          )}"
           element-id="${id}"
           kind="state_on"
           .values="${entity.state_on}"
@@ -236,7 +256,9 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         ></sci-fi-chips-input>
         <sci-fi-input
           icon="mdi:alert-circle"
-          label="${this.getLabel('input-state-error')} ${this.getLabel('text-optionnal')}"
+          label="${this.getLabel('input-state-error')} ${this.getLabel(
+            'text-optionnal'
+          )}"
           element-id="${id}"
           kind="state_error"
           @input-update=${this.__update}
@@ -244,7 +266,9 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         ></sci-fi-input>
         <sci-fi-input
           icon="mdi:link-edit"
-          label="${this.getLabel('input-link')} ${this.getLabel('text-optionnal')}"
+          label="${this.getLabel('input-link')} ${this.getLabel(
+            'text-optionnal'
+          )}"
           element-id="${id}"
           kind="link"
           @input-update=${this.__update}

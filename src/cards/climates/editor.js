@@ -71,7 +71,9 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
       <sci-fi-input
         class="${!this._config.header.display ? 'hide' : 'show'}"
         icon="mdi:cursor-text"
-        label="${this.getLabel('input-message-header-section-winter')} ${this.getLabel('text-optionnal')}"
+        label="${this.getLabel(
+          'input-message-header-section-winter'
+        )} ${this.getLabel('text-optionnal')}"
         value=${this._config.header.message_winter_state}
         element-id="header"
         kind="message_winter_state"
@@ -79,7 +81,9 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
       ></sci-fi-input>
       <sci-fi-dropdown-icon-input
         class="${!this._config.header.display ? 'hide' : ''}"
-        label="${this.getLabel('input-icon-header-section-winter')} ${this.getLabel('text-optionnal')}"
+        label="${this.getLabel(
+          'input-icon-header-section-winter'
+        )} ${this.getLabel('text-optionnal')}"
         element-id="header"
         kind="icon_winter_state"
         icon=${this._config.header.icon_winter_state}
@@ -89,7 +93,9 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
       <sci-fi-input
         class="${!this._config.header.display ? 'hide' : ''}"
         icon="mdi:cursor-text"
-        label="${this.getLabel('input-message-header-section-summer')} ${this.getLabel('text-optionnal')}"
+        label="${this.getLabel(
+          'input-message-header-section-summer'
+        )} ${this.getLabel('text-optionnal')}"
         value=${this._config.header.message_summer_state}
         element-id="header"
         kind="message_summer_state"
@@ -97,7 +103,9 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
       ></sci-fi-input>
       <sci-fi-dropdown-icon-input
         class="${!this._config.header.display ? 'hide' : ''}"
-        label="${this.getLabel('input-icon-header-section-summer')} ${this.getLabel('text-optionnal')}"
+        label="${this.getLabel(
+          'input-icon-header-section-summer'
+        )} ${this.getLabel('text-optionnal')}"
         element-id="header"
         kind="icon_summer_state"
         icon=${this._config.header.icon_summer_state}
@@ -114,7 +122,9 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
         >${this.getLabel('section-title-settings')}
       </h1>
       <sci-fi-dropdown-multi-entities-input
-        label="${this.getLabel('input-entities-to-exclude')} ${this.getLabel('text-optionnal')}"
+        label="${this.getLabel('input-entities-to-exclude')} ${this.getLabel(
+          'text-optionnal'
+        )}"
         element-id="entities_to_exclude"
         kind="entities_to_exclude"
         .values="${this._config.entities_to_exclude}"
@@ -129,7 +139,10 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
       state: {
         icon: 'mdi:state-machine',
         data: [STATE_CLIMATE_HEAT, STATE_CLIMATE_OFF, STATE_CLIMATE_AUTO],
-        title: this.getLabel('section-title-state')+" "+this.getLabel('text-required'),
+        title:
+          this.getLabel('section-title-state') +
+          ' ' +
+          this.getLabel('text-required'),
       },
       mode: {
         icon: 'mdi:auto-mode',
@@ -141,7 +154,10 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
           HASS_CLIMATE_PRESET_MODE_COMFORT_2,
           HASS_CLIMATE_PRESET_MODE_BOOST,
         ],
-        title: this.getLabel('section-title-mode')+" "+this.getLabel('text-required'),
+        title:
+          this.getLabel('section-title-mode') +
+          ' ' +
+          this.getLabel('text-required'),
       },
     };
     return html` <sci-fi-accordion-card
@@ -166,7 +182,9 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
     return html`
       <div class="state-mode-row">
         <sci-fi-input
-          label="${this.getLabel('input-icon-' + state)} ${this.getLabel('text-required')}"
+          label="${this.getLabel('input-icon-' + state)} ${this.getLabel(
+            'text-required'
+          )}"
           value=${data[kind].icon}
           icon=${data[kind].icon}
           disabled
@@ -214,7 +232,9 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
         >
       </div>
       <sci-fi-dropdown-icon-input
-        label="${this.getLabel('input-icon-' + state)} ${this.getLabel('text-required')}"
+        label="${this.getLabel('input-icon-' + state)} ${this.getLabel(
+          'text-required'
+        )}"
         element-id="${kind == 'state' ? 'state_icons' : 'mode_icons'}"
         kind="${state}"
         icon=${icon}
@@ -223,7 +243,9 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
         style="--input-icon-color:${color};"
       ></sci-fi-dropdown-icon-input>
       <sci-fi-color-picker
-        label="${this.getLabel('input-color-' + state)} ${this.getLabel('text-required')}"
+        label="${this.getLabel('input-color-' + state)} ${this.getLabel(
+          'text-required'
+        )}"
         element-id="${kind == 'state' ? 'state_colors' : 'mode_colors'}"
         kind="${state}"
         icon="mdi:format-color-fill"

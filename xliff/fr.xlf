@@ -442,6 +442,46 @@
   <source>First data targeted on the chart</source>
   <target>Premières données affichées sur le graphique</target>
 </trans-unit>
+<trans-unit id="sad3e3c8146fc920f">
+  <source>Status</source>
+  <target>État</target>
+</trans-unit>
+<trans-unit id="s84fcddede27b8e2a">
+  <source>External</source>
+  <target>Externe</target>
+</trans-unit>
+<trans-unit id="se2d65e13768468e0">
+  <source>Internal</source>
+  <target>Interne</target>
+</trans-unit>
+<trans-unit id="scb5c70c571dcc182">
+  <source>Pressure</source>
+  <target>Pression</target>
+</trans-unit>
+<trans-unit id="s7a1aac1836d2d16d">
+  <source>Render</source>
+  <target>Rendu</target>
+</trans-unit>
+<trans-unit id="sbc11f135e19c8941">
+  <source>Consume</source>
+  <target>Consommé</target>
+</trans-unit>
+<trans-unit id="s0a5a8f277fb09f89">
+  <source>Fan speed</source>
+  <target>Vitesse du ventilateur</target>
+</trans-unit>
+<trans-unit id="sa1ffc85bb55b75c2">
+  <source>Time to Service</source>
+  <target>Délais avant révision</target>
+</trans-unit>
+<trans-unit id="s04e13613e8f15f55">
+  <source>Stock</source>
+  <target>Stock</target>
+</trans-unit>
+<trans-unit id="s67326397a256c6b5">
+  <source>Temperature</source>
+  <target>Température</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

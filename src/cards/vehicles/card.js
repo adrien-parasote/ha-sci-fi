@@ -13,7 +13,6 @@ export class SciFiVehicles extends SciFiBaseCard {
   }
 
   _configMetadata = configMetadata;
-  _hass; // private
   _temperature_items;
   _user;
 
@@ -26,13 +25,8 @@ export class SciFiVehicles extends SciFiBaseCard {
     };
   }
 
-  setConfig(config) {
-    super.setConfig(config);
-  }
-
   set hass(hass) {
-    this._hass = hass;
-
+    super.hass = hass;
     if (!this._config) return; // Can't assume setConfig is called before hass is set
     if (!this._selected_temp_id) this._selected_temp_id = 2; // First temperature selection = 18°C
     if (!this._vehicles) {

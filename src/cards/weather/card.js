@@ -27,7 +27,6 @@ export class SciFiWeather extends SciFiBaseCard {
   }
 
   _configMetadata = configMetadata;
-  _hass; // private
   _chart;
   _chartDataKind;
   _daily_subscribed;
@@ -63,7 +62,7 @@ export class SciFiWeather extends SciFiBaseCard {
   }
 
   set hass(hass) {
-    this._hass = hass;
+    super.hass = hass;
     if (!this._config) return; // Can't assume setConfig is called before hass is set
 
     // Get Weather and sun entity once (no need to track change)

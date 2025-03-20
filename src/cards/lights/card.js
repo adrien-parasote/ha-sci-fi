@@ -19,7 +19,6 @@ export class SciFiLights extends SciFiBaseCard {
   }
 
   _configMetadata = configMetadata;
-  _hass; // private
   _sun;
 
   static get properties() {
@@ -38,8 +37,7 @@ export class SciFiLights extends SciFiBaseCard {
   }
 
   set hass(hass) {
-    this._hass = hass;
-
+    super.hass = hass;
     if (!this._config) return; // Can't assume setConfig is called before hass is set
 
     if (!this._sun && hass.states['sun.sun'])

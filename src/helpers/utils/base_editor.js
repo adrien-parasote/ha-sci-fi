@@ -71,6 +71,8 @@ export class SciFiBaseEditor extends LitElement {
       'section-title-state': msg('State'),
       'section-title-mode': msg('Mode'),
       'section-title-weather': msg('Weather'),
+      'section-title-chart': msg('Chart'),
+      'section-title-alert': msg('Alert'),
       'section-title-tile': msg('Tile'),
       'section-title-technical': msg('Technical'),
       'section-title-home-selection': msg('Display selection'),
@@ -159,6 +161,12 @@ export class SciFiBaseEditor extends LitElement {
       'input-stove-time-to-service': msg('Stove time to service'),
       'input-pellet-quantity': msg('Stove pellet quantity'),
       'input-pellet-quantity-threshold': msg('Pellet quantity threshold'),
+      'input-daily-forecast-number': msg('Forecast number of days'),
+      'input-chart-first-focus-data': msg('First data targeted on the chart'),
+      'input-alert-green': msg('Green state'),
+      'input-alert-yellow': msg('Yellow state'),
+      'input-alert-orange': msg('Orange state'),
+      'input-alert-red': msg('Red state'),
     };
     return key in labels ? labels[key] : '';
   }

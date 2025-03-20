@@ -124,7 +124,7 @@
 </trans-unit>
 <trans-unit id="s996ae393268186da">
   <source>Standalone entity?</source>
-  <target>Entité autonome ?</target>
+  <target>Entité unique ?</target>
 </trans-unit>
 <trans-unit id="sef49aec68fd1dc66">
   <source>Name</source>
@@ -409,6 +409,38 @@
 <trans-unit id="sc6f05c4e424acc23">
   <source>Pellet quantity threshold</source>
   <target>Seuil de quantité de pellets</target>
+</trans-unit>
+<trans-unit id="s66f26fdcbe2101eb">
+  <source>Chart</source>
+  <target>Graphique</target>
+</trans-unit>
+<trans-unit id="sf1ec4acb8d744ed9">
+  <source>Alert</source>
+  <target>Alerte</target>
+</trans-unit>
+<trans-unit id="s480263258f53e669">
+  <source>Green state</source>
+  <target>Alert verte</target>
+</trans-unit>
+<trans-unit id="s8c33dad42583704c">
+  <source>Yellow state</source>
+  <target>Alerte jaune</target>
+</trans-unit>
+<trans-unit id="sce0f69d2bb7b6842">
+  <source>Orange state</source>
+  <target>Alerte orange</target>
+</trans-unit>
+<trans-unit id="s0da556f559cc9549">
+  <source>Red state</source>
+  <target>Alerte rouge</target>
+</trans-unit>
+<trans-unit id="s7b02d3a7b64946b9">
+  <source>Forecast number of days</source>
+  <target>Nombre de jours prévisionnel</target>
+</trans-unit>
+<trans-unit id="sa180cfb8f2635d99">
+  <source>First data targeted on the chart</source>
+  <target>Premières données affichées sur le graphique</target>
 </trans-unit>
 </body>
 </file>

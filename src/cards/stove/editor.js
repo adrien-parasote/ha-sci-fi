@@ -18,7 +18,7 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
   }
 
   set hass(hass) {
-    this._hass = hass;
+    super.hass = hass;
     // Filter climates entity
     this._climates = Object.values(hass.states).filter((e) =>
       e.entity_id.startsWith('climate')

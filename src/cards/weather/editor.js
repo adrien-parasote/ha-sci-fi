@@ -12,7 +12,7 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
   };
 
   set hass(hass) {
-    this._hass = hass;
+    super.hass = hass;
     // Setup entities for display
     if (!this._weather_entities_id)
       this._weather_entities = Object.keys(hass.states)

@@ -42,6 +42,9 @@ export class SciFiBaseEditor extends LitElement {
 
   setConfig(config) {
     this._config = config;
+    if (this._hass) {
+      this.hass = this._hass;
+    }
   }
 
   __getNewConfig() {

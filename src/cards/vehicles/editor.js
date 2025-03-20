@@ -14,7 +14,7 @@ export class SciFiVehiclesEditor extends SciFiBaseEditor {
   }
 
   set hass(hass) {
-    this._hass = hass;
+    super.hass = hass;
     if (!this._config) return;
     if (!this._vehiclesList)
       this._vehiclesList = Object.values(hass.devices)
@@ -29,14 +29,7 @@ export class SciFiVehiclesEditor extends SciFiBaseEditor {
           };
         });
   }
-
-  setConfig(config) {
-    this._config = config;
-    if (this._hass) {
-      this.hass = this._hass;
-    }
-  }
-
+  
   render() {
     if (!this._hass || !this._config || !this._vehiclesList) return nothing;
     return html`

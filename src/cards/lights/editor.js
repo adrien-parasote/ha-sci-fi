@@ -20,7 +20,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
   _edit = false;
 
   set hass(hass) {
-    this._hass = hass;
+    super.hass = hass;
     if (!this._config) return;
     // Setup only once for editor
     if (!this._house) {
@@ -36,13 +36,6 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
 
     if (this._house && !this._config.first_floor_to_render) {
       this.__setupDefault();
-    }
-  }
-
-  setConfig(config) {
-    this._config = config;
-    if (this._hass) {
-      this.hass = this._hass;
     }
   }
 

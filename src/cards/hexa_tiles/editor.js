@@ -16,7 +16,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   }; // basic config to add for new element
 
   set hass(hass) {
-    this._hass = hass;
+    super.hass = hass;
     // initialized entity kind list
     if (hass.states) {
       if (!this._entity_kind || this._entity_kind.length == 0)
@@ -32,10 +32,6 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
     } else {
       this._entity_kind = [];
     }
-  }
-
-  setConfig(config) {
-    this._config = config;
   }
 
   render() {

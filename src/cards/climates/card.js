@@ -29,7 +29,7 @@ export class SciFiClimates extends SciFiBaseCard {
   }
 
   set hass(hass) {
-    this._hass = hass;
+    super.hass = hass;
     if (!this._config) return; // Can't assume setConfig is called before hass is set
 
     if (!this._temp_unit) this._temp_unit = hass.config.unit_system.temperature; // Gather HA temperature unit only once

@@ -23,6 +23,57 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
   _climates; // Privates
   _edit = false;
 
+  getLabel(key) {
+    const labels = {
+      'header-section-title': msg('Header (optionnal)'),
+      'header-section-switch-title': msg('Display global turn on/off button ?'),
+      'header-section-winter-input-message': msg(
+        'Winter period message (optionnal)'
+      ),
+      'header-section-winter-input-icon': msg('Winter period icon (optionnal)'),
+      'header-section-summer-input-message': msg(
+        'Summer period message (optionnal)'
+      ),
+      'header-section-summer-input-icon': msg('Summer period icon (optionnal)'),
+      'settings-section-title': msg('Settings (optionnal)'),
+      'input-entities-to-exclude': msg('Entities to exclude (optionnal)'),
+      'state-section-title': msg('State (optionnal)'),
+      'mode-section-title': msg('Mode (optionnal)'),
+      'edit-section-state-auto-title': msg('Edit State heat'),
+      'edit-section-state-off-title': msg('Edit State off'),
+      'edit-section-state-heat-title': msg('Edit State auto'),
+      'edit-section-mode-frost_protection-title': msg(
+        'Edit Mode frost protection'
+      ),
+      'edit-section-mode-eco-title': msg('Edit Mode eco protection'),
+      'edit-section-mode-comfort-title': msg('Edit Mode comfort'),
+      'edit-section-mode-comfort-1-title': msg('Edit Mode comfort-1'),
+      'edit-section-mode-comfort-2-title': msg('Edit Mode comfort-2'),
+      'edit-section-mode-boost-title': msg('Edit Mode boost'),
+      'input-icon-auto': msg('Icon auto (optionnal)'),
+      'input-icon-off': msg('Icon off (optionnal)'),
+      'input-icon-heat': msg('Icon heat (optionnal)'),
+      'input-icon-frost_protection': msg('Icon frost protection (optionnal)'),
+      'input-icon-eco': msg('Icon eco protection (optionnal)'),
+      'input-icon-comfort': msg('Icon comfort (optionnal)'),
+      'input-icon-comfort-1': msg('Icon comfort-1 (optionnal)'),
+      'input-icon-comfort-2': msg('Icon comfort-2 (optionnal)'),
+      'input-icon-boost': msg('Icon boost (optionnal)'),
+      'input-color-auto': msg('Auto icon color (optionnal)'),
+      'input-color-off': msg('Off icon color (optionnal)'),
+      'input-color-heat': msg('Heat icon color (optionnal)'),
+      'input-color-frost_protection': msg(
+        'Frost protection icon color (optionnal)'
+      ),
+      'input-color-eco': msg('Eco icon color (optionnal)'),
+      'input-color-comfort': msg('Comfort icon color (optionnal)'),
+      'input-color-comfort-1': msg('Comfort-1 icon color (optionnal)'),
+      'input-color-comfort-2': msg('Comfort-2 icon color (optionnal)'),
+      'input-color-boost': msg('Boost icon color (optionnal)'),
+    };
+    return key in labels ? labels[key] : '';
+  }
+
   static get properties() {
     return {
       _config: {type: Object},
@@ -61,10 +112,10 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
     return html` <section>
       <h1>
         <span><sci-fi-icon icon="mdi:page-layout-header"></sci-fi-icon></span
-        >${msg('Header (optionnal)')}
+        >${this.getLabel('header-section-title')}
       </h1>
       <sci-fi-toggle
-        label="${msg('Display global turn on/off button ?')}"
+        label="${this.getLabel('header-section-switch-title')}"
         element-id="header_display"
         ?checked=${this._config.header.display}
         @toggle-change=${this.__update}
@@ -72,7 +123,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
       <sci-fi-input
         class="${!this._config.header.display ? 'hide' : 'show'}"
         icon="mdi:cursor-text"
-        label="Winter period message (optionnal)"
+        label="${this.getLabel('header-section-winter-input-message')}"
         value=${this._config.header.message_winter_state}
         element-id="header"
         kind="message_winter_state"
@@ -80,7 +131,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
       ></sci-fi-input>
       <sci-fi-dropdown-icon-input
         class="${!this._config.header.display ? 'hide' : ''}"
-        label="Winter period icon (optionnal)"
+        label="${this.getLabel('header-section-winter-input-icon')}"
         element-id="header"
         kind="icon_winter_state"
         icon=${this._config.header.icon_winter_state}
@@ -90,7 +141,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
       <sci-fi-input
         class="${!this._config.header.display ? 'hide' : ''}"
         icon="mdi:cursor-text"
-        label="Summer period message (optionnal)"
+        label="${this.getLabel('header-section-summer-input-message')}"
         value=${this._config.header.message_summer_state}
         element-id="header"
         kind="message_summer_state"
@@ -98,7 +149,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
       ></sci-fi-input>
       <sci-fi-dropdown-icon-input
         class="${!this._config.header.display ? 'hide' : ''}"
-        label="Summer period icon (optionnal)"
+        label="${this.getLabel('header-section-summer-input-icon')}"
         element-id="header"
         kind="icon_summer_state"
         icon=${this._config.header.icon_summer_state}
@@ -112,10 +163,10 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
     return html` <section>
       <h1>
         <span><sci-fi-icon icon="mdi:tune-vertical-variant"></sci-fi-icon></span
-        >Settings (optionnal)
+        >${this.getLabel('settings-section-title')}
       </h1>
       <sci-fi-dropdown-multi-entities-input
-        label="Entities to exclude (optionnal)"
+        label="${this.getLabel('input-entities-to-exclude')}"
         element-id="entities_to_exclude"
         kind="entities_to_exclude"
         .values="${this._config.entities_to_exclude}"
@@ -125,48 +176,53 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
     </section>`;
   }
 
-  __capitalizeFirstLetter(val) {
-    return String(val).charAt(0).toUpperCase() + String(val).slice(1);
-  }
-
   __renderStatesModeAppearance(kind) {
-    const icon = kind == 'state' ? 'mdi:state-machine' : 'mdi:auto-mode';
-    const data =
-      kind == 'state'
-        ? [STATE_CLIMATE_HEAT, STATE_CLIMATE_OFF, STATE_CLIMATE_AUTO]
-        : [
-            HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION,
-            HASS_CLIMATE_PRESET_MODE_ECO,
-            HASS_CLIMATE_PRESET_MODE_COMFORT,
-            HASS_CLIMATE_PRESET_MODE_COMFORT_1,
-            HASS_CLIMATE_PRESET_MODE_COMFORT_2,
-            HASS_CLIMATE_PRESET_MODE_BOOST,
-          ];
+    const data = {
+      state: {
+        icon: 'mdi:state-machine',
+        data: [STATE_CLIMATE_HEAT, STATE_CLIMATE_OFF, STATE_CLIMATE_AUTO],
+        title: this.getLabel('state-section-title'),
+      },
+      mode: {
+        icon: 'mdi:auto-mode',
+        data: [
+          HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION,
+          HASS_CLIMATE_PRESET_MODE_ECO,
+          HASS_CLIMATE_PRESET_MODE_COMFORT,
+          HASS_CLIMATE_PRESET_MODE_COMFORT_1,
+          HASS_CLIMATE_PRESET_MODE_COMFORT_2,
+          HASS_CLIMATE_PRESET_MODE_BOOST,
+        ],
+        title: this.getLabel('mode-section-title'),
+      },
+    };
     return html` <sci-fi-accordion-card
-      title="${kind} (optionnal)"
-      icon="${icon}"
+      title="${data[kind].title}"
+      icon="${data[kind].icon}"
     >
-      ${data.map((d) => this.__renderStateModeRow(kind, d))}
+      ${data[kind].data.map((d) => this.__renderStateModeRow(kind, d))}
     </sci-fi-accordion-card>`;
   }
 
   __renderStateModeRow(kind, state) {
-    const icon =
-      kind == 'state'
-        ? this._config.state_icons[state]
-        : this._config.mode_icons[state];
-    const color =
-      kind == 'state'
-        ? this._config.state_colors[state]
-        : this._config.mode_colors[state];
+    const data = {
+      state: {
+        icon: this._config.state_icons[state],
+        color: this._config.state_colors[state],
+      },
+      mode: {
+        icon: this._config.mode_icons[state],
+        color: this._config.mode_colors[state],
+      },
+    };
     return html`
       <div class="state-mode-row">
         <sci-fi-input
-          label="Icon ${state.replace('_', ' ')} (optionnal)"
-          value=${icon}
-          icon=${icon}
+          label="${this.getLabel('input-icon-' + state)}"
+          value=${data[kind].icon}
+          icon=${data[kind].icon}
           disabled
-          style="--input-icon-color:${color};"
+          style="--input-icon-color:${data[kind].color};"
         ></sci-fi-input>
         <sci-fi-button
           icon="sci:edit"
@@ -187,15 +243,16 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
   __renderCustomization() {
     if (!this._custom_info) return nothing;
     const state = this._custom_info.state;
-    const icon =
-      this._custom_info.kind == 'state'
-        ? this._config.state_icons[state]
-        : this._config.mode_icons[state];
-    const color =
-      this._custom_info.kind == 'state'
-        ? this._config.state_colors[state]
-        : this._config.mode_colors[state];
-
+    const kind = this._custom_info.kind;
+    let icon;
+    let color;
+    if (kind == 'state') {
+      icon = this._config.state_icons[state];
+      color = this._config.state_colors[state];
+    } else {
+      icon = this._config.mode_icons[state];
+      color = this._config.mode_colors[state];
+    }
     return html`
       <div class="head">
         <sci-fi-button
@@ -203,28 +260,24 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
           @button-click=${this.__endCustomization}
         ></sci-fi-button>
         <span
-          >Edit ${this.__capitalizeFirstLetter(this._custom_info.kind)}
-          ${state.replace('_', ' ')}</span
+          >${this.getLabel(
+            ['edit-section', kind, state, 'title'].join('-')
+          )}</span
         >
       </div>
       <sci-fi-dropdown-icon-input
-        label="${this._custom_info.state.replace('_', ' ')} icon (optionnal)"
-        element-id="${this._custom_info.kind == 'state'
-          ? 'state_icons'
-          : 'mode_icons'}"
-        kind="${this._custom_info.state}"
+        label="${this.getLabel('input-icon-' + state)}"
+        element-id="${kind == 'state' ? 'state_icons' : 'mode_icons'}"
+        kind="${state}"
         icon=${icon}
         value=${icon}
         @input-update=${this.__update}
         style="--input-icon-color:${color};"
       ></sci-fi-dropdown-icon-input>
-
       <sci-fi-color-picker
-        label="${this._custom_info.state.replace('_', ' ')} color (optionnal)"
-        element-id="${this._custom_info.kind == 'state'
-          ? 'state_colors'
-          : 'mode_colors'}"
-        kind="${this._custom_info.state}"
+        label="${this.getLabel('input-color-' + state)}"
+        element-id="${kind == 'state' ? 'state_colors' : 'mode_colors'}"
+        kind="${state}"
         icon="mdi:format-color-fill"
         value=${color}
         @input-update=${this.__update}

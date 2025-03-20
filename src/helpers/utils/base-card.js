@@ -1,6 +1,8 @@
+import {updateWhenLocaleChanges} from '@lit/localize';
 import {LitElement} from 'lit';
 
 import common_style from '../styles/common_style.js';
+import {getLocale, setLocale} from './../../locales/localization.js';
 
 const checkKey = function (config, key, metadata) {
   // Test mandatory field
@@ -61,6 +63,11 @@ export const buildStubConfig = function (configMetadata) {
 };
 
 export class SciFiBaseCard extends LitElement {
+  constructor() {
+    super();
+    updateWhenLocaleChanges(this);
+  }
+
   static get styles() {
     return [common_style];
   }
@@ -71,11 +78,24 @@ export class SciFiBaseCard extends LitElement {
     };
   }
 
-  _configMetadata = null;
+  _configMetadata = {};
   _hass; // private
+
+  get hass() {
+    return this._hass;
+  }
 
   set hass(hass) {
     this._hass = hass;
+    if (hass.language != getLocale()) {
+      (async () => {
+        try {
+          await setLocale(hass.language);
+        } catch (e) {
+          console.error(`Error loading locale ${hass.language}: ${e.message}`);
+        }
+      })();
+    }
   }
 
   __validateConfig(config, configMetadata) {

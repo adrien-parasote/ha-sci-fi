@@ -18,6 +18,7 @@ The aim is to have your phone as a single entry point an use it as a remote hous
     * 🪵🔥 [Sci-Fi Stove card](#stove_card)
     * 🚗 [Sci-Fi Vehicles card](#vehicles_card)
 3. 🖼️ [Sci-Fi icon](#icon)
+4. 👽 [Sci-Fi language](#lang)
 
 # 🛠️ How to install ?<a name="how_to_install"></a>
 
@@ -1045,3 +1046,26 @@ To complete HA icon set, sci-fi package onboard the following icons :
 | Landspeeder unknown plug| sci:landspeeder-unknown-plug | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-unknown-plug.svg" alt="Landspeeder unknown plug"  height="25"/> |
 | Landspeeder error plug| sci:landspeeder-error-plug | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-error-plug.svg" alt="Landspeeder error plug"  height="25"/> |
 | Landspeeder plugged clock| sci:landspeeder-plugged-clock | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-plugged-clock.svg" alt="Landspeeder plugged clock"  height="25"/> |
+
+<br>
+
+# 👽 Sci-Fi language <a name="lang"></a>
+
+Package is designed for multi language.
+Current available languages:
+- 💂 english 
+- 🥖 french 
+
+## How to help/contribute?
+
+You want to add a new language (or fix already available one) ? <br>
+This project translation mechanism is based on [Lit library feature](https://lit.dev/docs/localization/overview/), so you just need to follow the offical rules to update or create new language files.
+
+If you don't want to fork the repository and just create/update the translation, please follow those steps:
+1. Download [fr.xlf](https://raw.githubusercontent.com/adrien-parasote/ha-sci-fi/refs/heads/main/xliff/fr.xlf) file.
+2. **In case of new language** - Rename if following the [BCP 47 language tag standard](https://www.w3.org/International/articles/language-tags/index.en).
+3. **In case of new language** - Change html attribute `target-language="fr"` from the balise `<file>` with your language code.
+4. Update all `<target>` balises with your translation.
+
+Then just create a pull request [here](https://github.com/adrien-parasote/ha-sci-fi/pulls).
+

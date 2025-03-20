@@ -1,5 +1,14 @@
 # Changelog
 
+# [v0.7.0](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.7.2) - 2025-xx-xx
+
+## 🆕 What's New
+
+**First Stage separation**: Package is now ready for multi language 👽🔊.
+Current available languages:
+- 💂 english 
+- 🥖 french 
+
 ## 🆕 What's Changed
 
 🚗 Vehicles card
@@ -22,7 +31,7 @@
 ## 🆙  What's Changed
 
 💡 Ligths management card
-- Feature requests :[Lights card - Add option to exclude lights](https://github.com/adrien-parasote/ha-sci-fi/issues/31)
+- Feature requests:[Lights card - Add option to exclude lights](https://github.com/adrien-parasote/ha-sci-fi/issues/31)
 
 
 # [v0.6.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.6.1) - 2025-03-16

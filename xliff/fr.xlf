@@ -482,6 +482,70 @@
   <source>Temperature</source>
   <target>Température</target>
 </trans-unit>
+<trans-unit id="s402d1bcc7e6f9d6e">
+  <source>home</source>
+  <target>maison</target>
+</trans-unit>
+<trans-unit id="s6c25b06437b433b1">
+  <source>not home</source>
+  <target>extérieur</target>
+</trans-unit>
+<trans-unit id="s833996a486514c49">
+  <source>unavailable</source>
+  <target>indisponible</target>
+</trans-unit>
+<trans-unit id="s2e2d63eb23e92aa3">
+  <source>Not in charge</source>
+  <target>Pas en charge</target>
+</trans-unit>
+<trans-unit id="sf6aaa53ca5bb5b7f">
+  <source>Waiting for planned charge</source>
+  <target>En attente de la charge prévue</target>
+</trans-unit>
+<trans-unit id="s6feb93edd6958c8e">
+  <source>Waiting for current charge</source>
+  <target>En attente de charge actuelle</target>
+</trans-unit>
+<trans-unit id="s7d7ca36ecef354a5">
+  <source>In progress</source>
+  <target>En cours</target>
+</trans-unit>
+<trans-unit id="sf113fa256db9617b">
+  <source>Ended</source>
+  <target>Terminé</target>
+</trans-unit>
+<trans-unit id="s5f343a43e7ea9f91">
+  <source>Error</source>
+  <target>Erreur</target>
+</trans-unit>
+<trans-unit id="s42edb88477699c63">
+  <source>Flap opened</source>
+  <target>Trappe à carburant ouverte</target>
+</trans-unit>
+<trans-unit id="sc2c1e58748f73de6">
+  <source>Unplugged</source>
+  <target>Débranché</target>
+</trans-unit>
+<trans-unit id="s9f3b354f4ea959ab">
+  <source>Plugged</source>
+  <target>Branché</target>
+</trans-unit>
+<trans-unit id="s81db64e61d58e991">
+  <source>Waiting for charge</source>
+  <target>En attente de chargement</target>
+</trans-unit>
+<trans-unit id="se25db8feb9dcef42">
+  <source>Air-cond</source>
+  <target>Air-cond</target>
+</trans-unit>
+<trans-unit id="sae1c7f13b7c0c47f">
+  <source>Start</source>
+  <target>Start</target>
+</trans-unit>
+<trans-unit id="sd9ad53251f2330a5">
+  <source>Stop</source>
+  <target>Stop</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

@@ -50,7 +50,9 @@ export class WeatherSensor extends Sensor {
 
 export class TrackerSensor extends Sensor {
   get value() {
-    return [this.state, this.unit_of_measurement].join(' ');
+    if (this.unit_of_measurement)
+      return [this.state, this.unit_of_measurement].join(' ');
+    return this.state;
   }
 
   get gps() {

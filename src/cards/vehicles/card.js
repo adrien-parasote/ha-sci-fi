@@ -1,3 +1,4 @@
+import {msg} from '@lit/localize';
 import {html, nothing} from 'lit';
 
 import {Person} from '../../helpers/entities/person.js';
@@ -108,19 +109,19 @@ export class SciFiVehicles extends SciFiBaseCard {
           in-line
           .items=${this._temperature_items}
           selected-id="${this._selected_temp_id}"
-          text="Temperature"
+          text="${msg('Temperature')}"
           @wheel-change="${this.__selectTemperature}"
         ></sci-fi-wheel>
         <sci-fi-button-card
           icon="mdi:play"
-          title="Air-cond"
-          text="Start"
+          title="${msg('Air-cond')}"
+          text="${msg('Start')}"
           @button-click="${this.__startAc}"
         ></sci-fi-button-card>
         <sci-fi-button-card
           icon="mdi:stop"
-          title="Air-cond"
-          text="Stop"
+          title="${msg('Air-cond')}"
+          text="${msg('Stop')}"
           @button-click="${this.__stoptAc}"
         ></sci-fi-button-card>
       </div>

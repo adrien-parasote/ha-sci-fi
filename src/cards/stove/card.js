@@ -204,7 +204,7 @@ export class SciFiStove extends SciFiBaseCard {
           </div>
           <div class="temperatures">
             ${this.__displayTimeToService()}
-            ${this.__displayStatus(msg('Status'), msg(this._stove.status))}
+            ${this.__displayStatus(msg('Status'), this._stove.status)}
             ${this.__displayTemperature(
               msg('External'),
               this._stove.current_temperature,

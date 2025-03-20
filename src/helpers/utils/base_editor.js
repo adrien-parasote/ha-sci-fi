@@ -67,6 +67,7 @@ export class SciFiBaseEditor extends LitElement {
     const labels = {
       'section-title-header': msg('Header'),
       'section-title-settings': msg('Settings'),
+      'section-title-vehicle': msg('Vehicle'),
       'section-title-state': msg('State'),
       'section-title-mode': msg('Mode'),
       'section-title-weather': msg('Weather'),
@@ -76,6 +77,7 @@ export class SciFiBaseEditor extends LitElement {
       'section-title-appearance': msg('Appearance'),
       'section-title-entity': msg('Entity'),
       'section-title-entity-light-custom': msg('Light entities customization'),
+      'section-title-sensor': msg('Sensors'),
 
       'text-optionnal': msg('(optionnal)'),
       'text-required': msg('(required)'),
@@ -133,6 +135,17 @@ export class SciFiBaseEditor extends LitElement {
       'input-entity-kind': msg('Entity kind'),
       'input-floor-id': msg('First floor to render'),
       'input-area-id': msg('First area to render'),
+      'input-location': msg('Location'),
+      'input-location-last-activity': msg('Location last activity'),
+      'input-mileage': msg('Mileage'),
+      'input-lock-status': msg('Lock status'),
+      'input-fuel-autonomy': msg('Fuel autonomy'),
+      'input-fuel-quantity': msg('Fuel quantity'),
+      'input-battery-autonomy': msg('Battery autonomy'),
+      'input-battery-level': msg('Battery level'),
+      'input-charging-state': msg('Charging'),
+      'input-plug-state': msg('Plug state'),
+      'input-remainting-charging-time': msg('Remaining charging time'),
     };
     return key in labels ? labels[key] : '';
   }

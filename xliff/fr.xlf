@@ -306,6 +306,58 @@
   <source>First area to render</source>
   <target>Première pièce de l'étage à afficher</target>
 </trans-unit>
+<trans-unit id="se06ad64a9de6df0f">
+  <source>Vehicle</source>
+  <target>Véhicule</target>
+</trans-unit>
+<trans-unit id="sa20c185606f42958">
+  <source>Sensors</source>
+  <target>Capteurs</target>
+</trans-unit>
+<trans-unit id="see2fcaedf9743ec6">
+  <source>Location</source>
+  <target>Localisation</target>
+</trans-unit>
+<trans-unit id="s807e362e9dc8cbef">
+  <source>Location last activity</source>
+  <target>Dernière activité de localisation</target>
+</trans-unit>
+<trans-unit id="sfb44c671d9b9ac33">
+  <source>Mileage</source>
+  <target>Kilométrage</target>
+</trans-unit>
+<trans-unit id="s82c71a5986948a28">
+  <source>Lock status</source>
+  <target>Statut du verrouillage</target>
+</trans-unit>
+<trans-unit id="s7d75073d3dd3edb9">
+  <source>Fuel autonomy</source>
+  <target>Autonomie en carburant</target>
+</trans-unit>
+<trans-unit id="s5a0b7879d5920086">
+  <source>Fuel quantity</source>
+  <target>Quantité de carburant</target>
+</trans-unit>
+<trans-unit id="sffb149ace1105624">
+  <source>Battery autonomy</source>
+  <target>Autonomie de la batterie</target>
+</trans-unit>
+<trans-unit id="s80b6ca7f5b5dbb48">
+  <source>Battery level</source>
+  <target>Niveau de la batterie</target>
+</trans-unit>
+<trans-unit id="s77a0727520efc502">
+  <source>Charging</source>
+  <target>État de la charge</target>
+</trans-unit>
+<trans-unit id="s27e515ed8b8eb9bc">
+  <source>Plug state</source>
+  <target>État de la prise de charge</target>
+</trans-unit>
+<trans-unit id="sc4e9d9e64887f82b">
+  <source>Remaining charging time</source>
+  <target>Temps de charge restant</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

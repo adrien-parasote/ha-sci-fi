@@ -2,153 +2,41 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
 <file target-language="fr" source-language="en" original="lit-localize-inputs" datatype="plaintext">
 <body>
-<trans-unit id="s0660856f8ffe4e23">
-  <source>Header (optionnal)</source>
-  <target>En-tête (optionnel)</target>
-</trans-unit>
 <trans-unit id="scc594028a264d2d3">
   <source>Display global turn on/off button ?</source>
   <target>Affichage du bouton marche/arrêt général ?</target>
 </trans-unit>
-<trans-unit id="s5932c1ff3a214f09">
-  <source>Winter period message (optionnal)</source>
-  <target>Message période hivernale (optionnel)</target>
-</trans-unit>
-<trans-unit id="s1c92696849b12ca9">
-  <source>Winter period icon (optionnal)</source>
-  <target>Icône période hivernale (optionnel)</target>
-</trans-unit>
-<trans-unit id="s1545e1a6d8442e51">
-  <source>Summer period message (optionnal)</source>
-  <target>Message période estival (optionnel)</target>
-</trans-unit>
-<trans-unit id="s0940a1e58551c1a1">
-  <source>Summer period icon (optionnal)</source>
-  <target>Icône période estival (optionnel)</target>
-</trans-unit>
-<trans-unit id="s6cb9a6343be3714b">
-  <source>Settings (optionnal)</source>
-  <target>Paramètres (optionnel)</target>
-</trans-unit>
-<trans-unit id="sf000c1ef521977b6">
-  <source>Entities to exclude (optionnal)</source>
-  <target>Entités à exclure (optionnel)</target>
-</trans-unit>
-<trans-unit id="sc8e4f6b7064cbe79">
-  <source>State (optionnal)</source>
-  <target>État (optionnel)</target>
-</trans-unit>
-<trans-unit id="sba1141f55430e065">
-  <source>Mode (optionnal)</source>
-  <target>Mode (optionnel)</target>
-</trans-unit>
-<trans-unit id="sdc26783b05ed76f0">
-  <source>Icon auto (optionnal)</source>
-  <target>Icône auto (optionnel)</target>
-</trans-unit>
-<trans-unit id="sf53f416b3706dcde">
-  <source>Icon off (optionnal)</source>
-  <target>Icône éteind (optionnel)</target>
-</trans-unit>
-<trans-unit id="s30a39cdfaea2e3d5">
-  <source>Icon heat (optionnal)</source>
-  <target>Icône chauffe (optionnel)</target>
-</trans-unit>
-<trans-unit id="s372bdb3e4751fb06">
-  <source>Icon frost protection (optionnal)</source>
-  <target>Icône hors gel (optionnel)</target>
-</trans-unit>
-<trans-unit id="sb72611eb3de07c27">
-  <source>Icon eco protection (optionnal)</source>
-  <target>Icône éco (optionnel)</target>
-</trans-unit>
-<trans-unit id="see1c7e9789f18c37">
-  <source>Icon comfort (optionnal)</source>
-  <target>Icône confort (optionnel)</target>
-</trans-unit>
-<trans-unit id="s72e5c504efef5c31">
-  <source>Icon comfort-1 (optionnal)</source>
-  <target>Icône confort-1 (optionnel)</target>
-</trans-unit>
-<trans-unit id="s66e6bc5d83a43054">
-  <source>Icon comfort-2 (optionnal)</source>
-  <target>Icône confort-2 (optionnel)</target>
-</trans-unit>
-<trans-unit id="s63300b0ade5952e4">
-  <source>Icon boost (optionnal)</source>
-  <target>Icône booster (optionnel)</target>
-</trans-unit>
 <trans-unit id="s934e2b78bbe5b4ee">
   <source>Edit State heat</source>
-  <target>Édition de l'état chauffe (optionnel)</target>
+  <target>Édition de l'état chauffe</target>
 </trans-unit>
 <trans-unit id="sb7b074ab844ba741">
   <source>Edit State off</source>
-  <target>Édition de l'état éteind (optionnel)</target>
+  <target>Édition de l'état éteind</target>
 </trans-unit>
 <trans-unit id="sd68096c54241294b">
   <source>Edit State auto</source>
-  <target>Édition de l'état auto (optionnel)</target>
+  <target>Édition de l'état auto</target>
 </trans-unit>
 <trans-unit id="saea04aa463411709">
   <source>Edit Mode frost protection</source>
-  <target>Édition du mode hors gel (optionnel)</target>
-</trans-unit>
-<trans-unit id="s7704f04c70471fc8">
-  <source>Edit Mode eco protection</source>
-  <target>Édition du mode éco (optionnel)</target>
+  <target>Édition du mode hors gel</target>
 </trans-unit>
 <trans-unit id="s795e94ad936eda68">
   <source>Edit Mode comfort</source>
-  <target>Édition du mode confort (optionnel)</target>
+  <target>Édition du mode confort</target>
 </trans-unit>
 <trans-unit id="s311d2d659cd5d0ca">
   <source>Edit Mode comfort-1</source>
-  <target>Édition du mode confort-1 (optionnel)</target>
+  <target>Édition du mode confort-1</target>
 </trans-unit>
 <trans-unit id="s311d2c659cd5cf17">
   <source>Edit Mode comfort-2</source>
-  <target>Édition du mode confort-2 (optionnel)</target>
+  <target>Édition du mode confort-2</target>
 </trans-unit>
 <trans-unit id="s2507833772d440bf">
   <source>Edit Mode boost</source>
-  <target>Édition du mode booster (optionnel)</target>
-</trans-unit>
-<trans-unit id="se0dd064b4aff54f3">
-  <source>Auto icon color (optionnal)</source>
-  <target>Couleur de l'icône auto (optionnel)</target>
-</trans-unit>
-<trans-unit id="s575de9081cd3d797">
-  <source>Off icon color (optionnal)</source>
-  <target>Couleur de l'icône éteind (optionnel)</target>
-</trans-unit>
-<trans-unit id="sfe6597a28c826bec">
-  <source>Heat icon color (optionnal)</source>
-  <target>Couleur de l'icône chauffe (optionnel)</target>
-</trans-unit>
-<trans-unit id="saea15a791006ff5d">
-  <source>Frost protection icon color (optionnal)</source>
-  <target>Couleur de l'icône hors gel (optionnel)</target>
-</trans-unit>
-<trans-unit id="s29b0f3604732f8ac">
-  <source>Comfort icon color (optionnal)</source>
-  <target>Couleur de l'icône confort (optionnel)</target>
-</trans-unit>
-<trans-unit id="s5495fbdd8b7fc362">
-  <source>Comfort-1 icon color (optionnal)</source>
-  <target>Couleur de l'icône confort-1 (optionnel)</target>
-</trans-unit>
-<trans-unit id="s70361defec07fe0d">
-  <source>Comfort-2 icon color (optionnal)</source>
-  <target>Couleur de l'icône confort-2 (optionnel)</target>
-</trans-unit>
-<trans-unit id="sea8850a9e9769e11">
-  <source>Boost icon color (optionnal)</source>
-  <target>Couleur de l'icône booster (optionnel)</target>
-</trans-unit>
-<trans-unit id="s01e615a2cfce9b5f">
-  <source>Eco icon color (optionnal)</source>
-  <target>Couleur de l'icône éco (optionnel)</target>
+  <target>Édition du mode booster</target>
 </trans-unit>
 <trans-unit id="s72cc88b5db5d9e9e">
   <source>preset</source>
@@ -222,10 +110,6 @@
   <source>Message</source>
   <target>Message</target>
 </trans-unit>
-<trans-unit id="sbb687bce599d3d22">
-  <source>Weather entity (required)</source>
-  <target>Entité météo (requis)</target>
-</trans-unit>
 <trans-unit id="s48de9afb300c4089">
   <source>Tile</source>
   <target>Tuile</target>
@@ -238,41 +122,189 @@
   <source>Appearance</source>
   <target>Apparence</target>
 </trans-unit>
-<trans-unit id="sae9aec7f2f01d446">
-  <source>Entity (required)</source>
-  <target>Entité (requis)</target>
-</trans-unit>
 <trans-unit id="s996ae393268186da">
   <source>Standalone entity?</source>
   <target>Entité autonome ?</target>
-</trans-unit>
-<trans-unit id="s5f163503fe55dcc8">
-  <source>Entity kind (required)</source>
-  <target>Type d'entité (requis)</target>
-</trans-unit>
-<trans-unit id="s4fe6ab22891dabe2">
-  <source>Link (optionnal)</source>
-  <target>Lien (optionnel)</target>
 </trans-unit>
 <trans-unit id="sef49aec68fd1dc66">
   <source>Name</source>
   <target>Nom</target>
 </trans-unit>
-<trans-unit id="s735b66e614ed6fc0">
-  <source>Active icon (required)</source>
-  <target>Icône active (requis)</target>
+<trans-unit id="s75d83fc3f0cfab40">
+  <source>Header</source>
+  <target>En-tête</target>
 </trans-unit>
-<trans-unit id="s41d46027dd82b107">
-  <source>Inactive icon (required)</source>
-  <target>Icône inactive (requise)</target>
+<trans-unit id="s9d8b8aa2b404c2c8">
+  <source>Settings</source>
+  <target>Paramètres</target>
 </trans-unit>
-<trans-unit id="s6d082f1373992660">
-  <source>States on (required)</source>
-  <target>États actifs (requis)</target>
+<trans-unit id="sae239213b7c70376">
+  <source>State</source>
+  <target>État</target>
 </trans-unit>
-<trans-unit id="s84c9ef7c44fc8f47">
-  <source>Error state (optionnal)</source>
-  <target>État d'erreur (optionnel)</target>
+<trans-unit id="s37cbecaec58e2192">
+  <source>Mode</source>
+  <target>Mode</target>
+</trans-unit>
+<trans-unit id="se34eae7e253df7db">
+  <source>Display selection</source>
+  <target>Sélection d'affichage</target>
+</trans-unit>
+<trans-unit id="s757a4c2248c0b9da">
+  <source>Entity</source>
+  <target>Entité</target>
+</trans-unit>
+<trans-unit id="s684dca431e5c2bb3">
+  <source>Light entities customization</source>
+  <target>Personnalisation des entités lumineuses</target>
+</trans-unit>
+<trans-unit id="s71ffa90354548e20">
+  <source>(optionnal)</source>
+  <target>(optionnel)</target>
+</trans-unit>
+<trans-unit id="s2976eabb2709bf61">
+  <source>(required)</source>
+  <target>(requis)</target>
+</trans-unit>
+<trans-unit id="s64ef2a6c2dd1d3d1">
+  <source>Edit</source>
+  <target>Édition</target>
+</trans-unit>
+<trans-unit id="s357d3cdfe4a91b6d">
+  <source>Edit Mode eco</source>
+  <target>Édition du mode éco</target>
+</trans-unit>
+<trans-unit id="s95fb728df9eb38c6">
+  <source>Winter period message</source>
+  <target>Message période hivernale</target>
+</trans-unit>
+<trans-unit id="s995445b762ed5fe6">
+  <source>Winter period icon</source>
+  <target>Icône période hivernale</target>
+</trans-unit>
+<trans-unit id="s0ad61806ef0c0e4e">
+  <source>Summer period message</source>
+  <target>Message période estival</target>
+</trans-unit>
+<trans-unit id="s42159a8784b2051e">
+  <source>Summer period icon</source>
+  <target>Icône période estival</target>
+</trans-unit>
+<trans-unit id="sd3b1a666f0d90f6d">
+  <source>Entities to exclude</source>
+  <target>Entités à exclure</target>
+</trans-unit>
+<trans-unit id="s0af171dd0f9880f7">
+  <source>Icon auto</source>
+  <target>Icône auto</target>
+</trans-unit>
+<trans-unit id="s13e8edf04d948175">
+  <source>Icon off</source>
+  <target>Icône arrêt</target>
+</trans-unit>
+<trans-unit id="s1b9ed7186023d342">
+  <source>Icon heat</source>
+  <target>Icône chauffe</target>
+</trans-unit>
+<trans-unit id="s3779530343dcdd3d">
+  <source>Icon frost protection</source>
+  <target>Icône hors gel</target>
+</trans-unit>
+<trans-unit id="sbd473af01c8286d1">
+  <source>Icon eco</source>
+  <target>Icône éco</target>
+</trans-unit>
+<trans-unit id="s7748391176344684">
+  <source>Icon comfort</source>
+  <target>Icône confort</target>
+</trans-unit>
+<trans-unit id="s3f70d104d6590f2e">
+  <source>Icon comfort-1</source>
+  <target>Icône confort-1</target>
+</trans-unit>
+<trans-unit id="s3f70d004d6590d7b">
+  <source>Icon comfort-2</source>
+  <target>Icône confort-2</target>
+</trans-unit>
+<trans-unit id="s29b4552f4d313ecb">
+  <source>Icon boost</source>
+  <target>Icône boster</target>
+</trans-unit>
+<trans-unit id="s1c78dc6ef6845c50">
+  <source>Auto icon color</source>
+  <target>Couleur icône auto</target>
+</trans-unit>
+<trans-unit id="sebfea2c429b1bde4">
+  <source>Off icon color</source>
+  <target>Couleur icône arrêt</target>
+</trans-unit>
+<trans-unit id="s2827fde4bed42293">
+  <source>Heat icon color</source>
+  <target>Couleur icône chauffe</target>
+</trans-unit>
+<trans-unit id="sf942fb9e0006820a">
+  <source>Frost protection icon color</source>
+  <target>Couleur icône hors gel</target>
+</trans-unit>
+<trans-unit id="s37bef54594d9572c">
+  <source>Eco icon color</source>
+  <target>Couleur icône éco</target>
+</trans-unit>
+<trans-unit id="se9f8d8092bc345d3">
+  <source>Comfort icon color</source>
+  <target>Couleur icône comfort</target>
+</trans-unit>
+<trans-unit id="s19bc9091f7df5769">
+  <source>Comfort-1 icon color</source>
+  <target>Couleur icône comfort-1</target>
+</trans-unit>
+<trans-unit id="s304c8d3b7a46a5fa">
+  <source>Comfort-2 icon color</source>
+  <target>Couleur icône comfort-2</target>
+</trans-unit>
+<trans-unit id="s820c24928e06eb8e">
+  <source>Boost icon color</source>
+  <target>Couleur icône booster</target>
+</trans-unit>
+<trans-unit id="s1bc156256736f73e">
+  <source>Weather entity</source>
+  <target>Entité météo</target>
+</trans-unit>
+<trans-unit id="s3cf89cb47fdde7e9">
+  <source>Link</source>
+  <target>Lien</target>
+</trans-unit>
+<trans-unit id="s6f13732715f31178">
+  <source>Active icon</source>
+  <target>Icône active</target>
+</trans-unit>
+<trans-unit id="s80a1a6e5a5a54cf9">
+  <source>Inactive icon</source>
+  <target>Icône inactive</target>
+</trans-unit>
+<trans-unit id="s0ac4337fedc3fa98">
+  <source>States on</source>
+  <target>États actifs</target>
+</trans-unit>
+<trans-unit id="s46a0b95a78e298d4">
+  <source>Error state</source>
+  <target>État d'erreur</target>
+</trans-unit>
+<trans-unit id="s3b2df7e589676d93">
+  <source>Entity id</source>
+  <target>Identifiant de l'entité</target>
+</trans-unit>
+<trans-unit id="s3fca3a57cdacb060">
+  <source>Entity kind</source>
+  <target>Type d'entité</target>
+</trans-unit>
+<trans-unit id="s77d1875a34921bd4">
+  <source>First floor to render</source>
+  <target>Premier étage à afficher</target>
+</trans-unit>
+<trans-unit id="s2350e551d4efd065">
+  <source>First area to render</source>
+  <target>Première pièce de l'étage à afficher</target>
 </trans-unit>
 </body>
 </file>

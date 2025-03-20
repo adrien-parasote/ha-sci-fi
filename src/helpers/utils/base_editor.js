@@ -78,6 +78,7 @@ export class SciFiBaseEditor extends LitElement {
       'section-title-entity': msg('Entity'),
       'section-title-entity-light-custom': msg('Light entities customization'),
       'section-title-sensor': msg('Sensors'),
+      'section-title-storage': msg('Storage'),
 
       'text-optionnal': msg('(optionnal)'),
       'text-required': msg('(required)'),
@@ -146,6 +147,18 @@ export class SciFiBaseEditor extends LitElement {
       'input-charging-state': msg('Charging'),
       'input-plug-state': msg('Plug state'),
       'input-remainting-charging-time': msg('Remaining charging time'),
+      'input-storage-counter': msg('Storage counter'),
+      'input-threshold': msg('Threshold'),
+      'input-stove-combustion-chamber': msg('Stove combustion chamber'),
+      'input-room-temperature': msg('Room temperature'),
+      'input-stove-pressure': msg('Stove pressure'),
+      'input-stove-fan-speed': msg('Stove fans speed'),
+      'input-stove-power-rendered': msg('Stove power rendered'),
+      'input-stove-power-consume': msg('Stove power consumed'),
+      'input-stove-status': msg('Stove status'),
+      'input-stove-time-to-service': msg('Stove time to service'),
+      'input-pellet-quantity': msg('Stove pellet quantity'),
+      'input-pellet-quantity-threshold': msg('Pellet quantity threshold'),
     };
     return key in labels ? labels[key] : '';
   }

@@ -42,13 +42,16 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
       <section>
         <h1>
           <span
-            ><sci-fi-icon icon="mdi:tune-vertical-variant"></sci-fi-icon
-          ></span>
-          General
+            ><sci-fi-icon
+              icon="mdi:selection-ellipse-arrow-inside"
+            ></sci-fi-icon></span
+          >${this.getLabel('section-title-entity')}
         </h1>
         <sci-fi-dropdown-entity-input
           icon="sci:stove"
-          label="Stove entity (required)"
+          label="${this.getLabel('input-entity-id')} ${this.getLabel(
+            'text-required'
+          )}"
           element-id="entity"
           kind="entity"
           value="${this._config.entity}"
@@ -61,19 +64,25 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
 
   __renderStorage() {
     return html` <sci-fi-accordion-card
-      title="Storage (optionnal)"
+      title="${this.getLabel('section-title-storage')} ${this.getLabel(
+        'text-optionnal'
+      )}"
       icon="mdi:store-settings-outline"
     >
       <sci-fi-input
         icon="mdi:database"
-        label="Storage counter (optionnal)"
+        label="${this.getLabel('input-storage-counter')} ${this.getLabel(
+          'text-optionnal'
+        )}"
         value=${this._config.storage_counter}
         element-id="storage_counter"
         kind="storage_counter"
         @input-update=${this.__update}
       ></sci-fi-input>
       <sci-fi-slider
-        label="Threshold % (optionnal)"
+        label="${this.getLabel('input-threshold')} % ${this.getLabel(
+          'text-optionnal'
+        )}"
         icon="mdi:counter"
         element-id="storage_counter_threshold"
         kind="storage_counter_threshold"
@@ -88,12 +97,16 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
 
   __renderSensors() {
     return html` <sci-fi-accordion-card
-      title="Sensors (optionnal)"
+      title="${this.getLabel('section-title-sensor')} ${this.getLabel(
+        'text-optionnal'
+      )}"
       icon="mdi:cog-transfer-outline"
     >
       <sci-fi-input
         icon="mdi:thermometer"
-        label="Stove combustion chamber (optionnal)"
+        label="${this.getLabel(
+          'input-stove-combustion-chamber'
+        )} ${this.getLabel('text-optionnal')}"
         value=${this._config.sensors.sensor_combustion_chamber_temperature}
         element-id="sensors"
         kind="sensor_combustion_chamber_temperature"
@@ -101,7 +114,9 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
       ></sci-fi-input>
       <sci-fi-input
         icon="mdi:home-thermometer-outline"
-        label="Room temperature (optionnal)"
+        label="${this.getLabel('input-room-temperature')} ${this.getLabel(
+          'text-optionnal'
+        )}"
         value=${this._config.sensors.sensor_inside_temperature}
         element-id="sensors"
         kind="sensor_inside_temperature"
@@ -110,7 +125,9 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
 
       <sci-fi-input
         icon="mdi:gauge"
-        label="Stove pressure (optionnal)"
+        label="${this.getLabel('input-stove-pressure')} ${this.getLabel(
+          'text-optionnal'
+        )}"
         value=${this._config.sensors.sensor_pressure}
         element-id="sensors"
         kind="sensor_pressure"
@@ -118,7 +135,9 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
       ></sci-fi-input>
       <sci-fi-input
         icon="mdi:speedometer"
-        label="Stove fans speed (optionnal)"
+        label="${this.getLabel('input-stove-fan-speed')} ${this.getLabel(
+          'text-optionnal'
+        )}"
         value=${this._config.sensors.sensor_fan_speed}
         element-id="sensors"
         kind="sensor_fan_speed"
@@ -127,7 +146,9 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
 
       <sci-fi-input
         icon="mdi:lightning-bolt"
-        label="Stove power rendered (optionnal)"
+        label="${this.getLabel('input-stove-power-rendered')} ${this.getLabel(
+          'text-optionnal'
+        )}"
         value=${this._config.sensors.clou_actual_power}
         element-id="sensors"
         kind="sensor_actual_power"
@@ -135,7 +156,9 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
       ></sci-fi-input>
       <sci-fi-input
         icon="mdi:lightning-bolt"
-        label="Stove power consumed (optionnal)"
+        label="${this.getLabel('input-stove-power-consume')} ${this.getLabel(
+          'text-optionnal'
+        )}"
         value=${this._config.sensors.sensor_power}
         element-id="sensors"
         kind="sensor_power"
@@ -144,7 +167,9 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
 
       <sci-fi-input
         icon="mdi:state-machine"
-        label="Stove status (optionnal)"
+        label="${this.getLabel('input-stove-status')} ${this.getLabel(
+          'text-optionnal'
+        )}"
         value=${this._config.sensors.sensor_status}
         element-id="sensors"
         kind="sensor_status"
@@ -153,7 +178,9 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
 
       <sci-fi-input
         icon="mdi:timeline-clock-outline"
-        label="Stove time to service (optionnal)"
+        label="${this.getLabel('input-stove-time-to-service')} ${this.getLabel(
+          'text-optionnal'
+        )}"
         value=${this._config.sensors.sensor_time_to_service}
         element-id="sensors"
         kind="sensor_time_to_service"
@@ -162,14 +189,18 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
 
       <sci-fi-input
         icon="mdi:battery-unknown"
-        label="Stove pellet quantity (optionnal)"
+        label="${this.getLabel('input-pellet-quantity')} ${this.getLabel(
+          'text-optionnal'
+        )}"
         value=${this._config.sensors.sensor_pellet_quantity}
         element-id="sensors"
         kind="sensor_pellet_quantity"
         @input-update=${this.__update}
       ></sci-fi-input>
       <sci-fi-slider
-        label="Pellet quantity threshold % (optionnal)"
+        label="${this.getLabel(
+          'input-pellet-quantity-threshold'
+        )} % ${this.getLabel('text-optionnal')}"
         icon="mdi:counter"
         element-id="pellet_quantity_threshold"
         kind="pellet_quantity_threshold"

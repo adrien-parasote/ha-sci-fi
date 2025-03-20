@@ -358,6 +358,58 @@
   <source>Remaining charging time</source>
   <target>Temps de charge restant</target>
 </trans-unit>
+<trans-unit id="sf49525241bba3b06">
+  <source>Storage</source>
+  <target>Stockage</target>
+</trans-unit>
+<trans-unit id="s6d7faef159f60232">
+  <source>Storage counter</source>
+  <target>Compteur de stock</target>
+</trans-unit>
+<trans-unit id="se19cc57dd8675498">
+  <source>Threshold</source>
+  <target>Seuil</target>
+</trans-unit>
+<trans-unit id="s6b3d933b6d71023f">
+  <source>Stove combustion chamber</source>
+  <target>Chambre de combustion du poêle</target>
+</trans-unit>
+<trans-unit id="s7936d654d0c471e4">
+  <source>Room temperature</source>
+  <target>Température de la pièce</target>
+</trans-unit>
+<trans-unit id="s86a7cb33c6fb6439">
+  <source>Stove pressure</source>
+  <target>Pression du poêle</target>
+</trans-unit>
+<trans-unit id="sb4d2057561cf5a9f">
+  <source>Stove fans speed</source>
+  <target>Vitesse des ventilateurs de poêle</target>
+</trans-unit>
+<trans-unit id="s959e09dc82865024">
+  <source>Stove power rendered</source>
+  <target>Puissance rendu du poêle</target>
+</trans-unit>
+<trans-unit id="s57d9a94354d2f90f">
+  <source>Stove power consumed</source>
+  <target>Puissance consommée du poêle</target>
+</trans-unit>
+<trans-unit id="scc96e0d47d8f1e48">
+  <source>Stove status</source>
+  <target>État du poêle</target>
+</trans-unit>
+<trans-unit id="sed30d6455e071b47">
+  <source>Stove time to service</source>
+  <target>Temps avant révision du poêle</target>
+</trans-unit>
+<trans-unit id="s3a67d6079a13cd49">
+  <source>Stove pellet quantity</source>
+  <target>Quantité de granulés de poêle</target>
+</trans-unit>
+<trans-unit id="sc6f05c4e424acc23">
+  <source>Pellet quantity threshold</source>
+  <target>Seuil de quantité de pellets</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

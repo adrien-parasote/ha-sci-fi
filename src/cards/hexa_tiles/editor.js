@@ -51,11 +51,11 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
       <section>
         <h1>
           <span><sci-fi-icon icon="mdi:page-layout-header"></sci-fi-icon></span>
-          Header
+          ${this.getLabel('header-section-title')}
         </h1>
         <sci-fi-input
           icon="mdi:cursor-text"
-          label="Message"
+          label="${this.getLabel('input-message-text')}"
           value=${this._config.header_message}
           element-id="header_message"
           kind=""
@@ -70,10 +70,10 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
       <section>
         <h1>
           <span><sci-fi-icon icon="mdi:theme-light-dark"></sci-fi-icon></span>
-          Weather
+          ${this.getLabel('weather-section-title')}
         </h1>
         <sci-fi-toggle
-          label="Add weather tile ?"
+          label="${this.getLabel('weather-section-switch-title')}"
           element-id="weather"
           ?checked=${this._config.weather.activate}
           @toggle-change=${this.__toggle}
@@ -88,7 +88,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   __renderWeatherEntities() {
     return html`
       <sci-fi-dropdown-entity-input
-        label="Weather entity (required)"
+        label="${this.getLabel('input-weather-entity')}"
         element-id="weather"
         kind="weather_entity"
         value="${this._config.weather.weather_entity}"
@@ -97,7 +97,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
       ></sci-fi-dropdown-entity-input>
       <sci-fi-input
         icon="mdi:link-edit"
-        label="Link"
+        label="${this.getLabel('input-link')}"
         value=${this._config.weather.link}
         element-id="weather"
         kind="link"
@@ -112,7 +112,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         (entity, id) =>
           html`<sci-fi-accordion-card
             element-id=${id}
-            title="Tile ${id + 1}"
+            title="${this.getLabel('tile-section-title')} ${id + 1}"
             icon="mdi:hexagon-slice-6"
             ?deletable=${this._config.tiles.length > 1}
             @accordion-delete=${this.__update}
@@ -138,10 +138,10 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
           ><sci-fi-icon
             icon="mdi:selection-ellipse-arrow-inside"
           ></sci-fi-icon></span
-        >Entity (required)
+        >${this.getLabel('entity-section-title')}
       </h1>
       <sci-fi-toggle
-        label="Standalone entity?"
+        label="${this.getLabel('entity-section-standalone-title')}"
         element-id="${id}"
         ?checked=${entity.standalone}
         @toggle-change=${this.__toggle}
@@ -155,7 +155,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   __renderStandAlone(id, entity) {
     return html`
       <sci-fi-dropdown-entity-input
-        label="Entity (required)"
+        label="${this.getLabel('entity-section-title')}"
         element-id="${id}"
         kind="entity"
         value="${entity.entity}"
@@ -168,7 +168,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   __renderKind(id, entity) {
     return html`
       <sci-fi-dropdown-input
-        label="Entity kind (required)"
+        label="${this.getLabel('input-entity-kind')}"
         value=${entity.entity_kind}
         element-id="${id}"
         kind="entity_kind"
@@ -177,7 +177,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         @input-update=${this.__update}
       ></sci-fi-dropdown-input>
       <sci-fi-dropdown-multi-entities-input
-        label="Entities to exclude (optionnal)"
+        label="${this.getLabel('input-entities-to-exclude')}"
         element-id="${id}"
         kind="entities_to_exclude"
         .values="${entity.entities_to_exclude}"
@@ -192,17 +192,17 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
     return html` <section>
       <h1>
         <span><sci-fi-icon icon="mdi:palette-outline"></sci-fi-icon></span
-        >Appearance
+        >${this.getLabel('appearance-section-title')}
       </h1>
       <sci-fi-input
-        label="Name"
+        label="${this.getLabel('input-name')}"
         value=${entity.name}
         element-id="${id}"
         kind="name"
         @input-update=${this.__update}
       ></sci-fi-input>
       <sci-fi-dropdown-icon-input
-        label="Active icon (required)"
+        label="${this.getLabel('input-active-icon')}"
         element-id="${id}"
         kind="active_icon"
         icon=${entity.active_icon}
@@ -210,7 +210,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         @input-update=${this.__update}
       ></sci-fi-dropdown-icon-input>
       <sci-fi-dropdown-icon-input
-        label="Inactive icon (required)"
+        label="${this.getLabel('input-inactive-icon')}"
         element-id="${id}"
         kind="inactive_icon"
         icon=${entity.inactive_icon}
@@ -225,10 +225,10 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
       <section>
         <h1>
           <span><sci-fi-icon icon="mdi:cog-outline"></sci-fi-icon></span
-          >Technical
+          >${this.getLabel('technical-section-title')}
         </h1>
         <sci-fi-chips-input
-          label="State on (required)"
+          label="${this.getLabel('input-states-on')}"
           element-id="${id}"
           kind="state_on"
           .values="${entity.state_on}"
@@ -236,7 +236,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         ></sci-fi-chips-input>
         <sci-fi-input
           icon="mdi:alert-circle"
-          label="Error state (optionnal)"
+          label="${this.getLabel('input-state-error')}"
           element-id="${id}"
           kind="state_error"
           @input-update=${this.__update}
@@ -244,7 +244,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         ></sci-fi-input>
         <sci-fi-input
           icon="mdi:link-edit"
-          label="Link (optionnal)"
+          label="${this.getLabel('input-link')}"
           element-id="${id}"
           kind="link"
           @input-update=${this.__update}

@@ -16,7 +16,7 @@
     "git-commit": "git add --all && git commit -m 'Prepare release'",
     "prepare-release": "npm run update-local && npm run build-release && npm run git-commit && git push",
     "localize-extract": "lit-localize extract",
-    "localize-build": "lit-localize build"
+    "localize-build": "lit-localize build && npm run format"
   },
   "keywords": [],
   "devDependencies": {

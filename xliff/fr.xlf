@@ -210,6 +210,70 @@
   <source>prog</source>
   <target>prog</target>
 </trans-unit>
+<trans-unit id="s5dbcade048df45b3">
+  <source>Weather</source>
+  <target>Météo</target>
+</trans-unit>
+<trans-unit id="s6dbee4e83cbac6e9">
+  <source>Add weather tile ?</source>
+  <target>Ajout d'une tuile météo ?</target>
+</trans-unit>
+<trans-unit id="s79e8cc71a5975b04">
+  <source>Message</source>
+  <target>Message</target>
+</trans-unit>
+<trans-unit id="sbb687bce599d3d22">
+  <source>Weather entity (required)</source>
+  <target>Entité météo (requis)</target>
+</trans-unit>
+<trans-unit id="s48de9afb300c4089">
+  <source>Tile</source>
+  <target>Tuile</target>
+</trans-unit>
+<trans-unit id="s8a6a9ed357b7c5a8">
+  <source>Technical</source>
+  <target>Technique</target>
+</trans-unit>
+<trans-unit id="sf0e261e04eda82ff">
+  <source>Appearance</source>
+  <target>Apparence</target>
+</trans-unit>
+<trans-unit id="sae9aec7f2f01d446">
+  <source>Entity (required)</source>
+  <target>Entité (requis)</target>
+</trans-unit>
+<trans-unit id="s996ae393268186da">
+  <source>Standalone entity?</source>
+  <target>Entité autonome ?</target>
+</trans-unit>
+<trans-unit id="s5f163503fe55dcc8">
+  <source>Entity kind (required)</source>
+  <target>Type d'entité (requis)</target>
+</trans-unit>
+<trans-unit id="s4fe6ab22891dabe2">
+  <source>Link (optionnal)</source>
+  <target>Lien (optionnel)</target>
+</trans-unit>
+<trans-unit id="sef49aec68fd1dc66">
+  <source>Name</source>
+  <target>Nom</target>
+</trans-unit>
+<trans-unit id="s735b66e614ed6fc0">
+  <source>Active icon (required)</source>
+  <target>Icône active (requis)</target>
+</trans-unit>
+<trans-unit id="s41d46027dd82b107">
+  <source>Inactive icon (required)</source>
+  <target>Icône inactive (requise)</target>
+</trans-unit>
+<trans-unit id="s6d082f1373992660">
+  <source>States on (required)</source>
+  <target>États actifs (requis)</target>
+</trans-unit>
+<trans-unit id="s84c9ef7c44fc8f47">
+  <source>Error state (optionnal)</source>
+  <target>État d'erreur (optionnel)</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

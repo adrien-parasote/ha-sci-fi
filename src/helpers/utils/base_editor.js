@@ -76,9 +76,18 @@ export class SciFiBaseEditor extends LitElement {
       ),
       'header-section-summer-input-icon': msg('Summer period icon (optionnal)'),
       'settings-section-title': msg('Settings (optionnal)'),
-      'input-entities-to-exclude': msg('Entities to exclude (optionnal)'),
       'state-section-title': msg('State (optionnal)'),
       'mode-section-title': msg('Mode (optionnal)'),
+      'weather-section-title': msg('Weather'),
+      'weather-section-switch-title': msg('Add weather tile ?'),
+      'tile-section-title': msg('Tile'),
+      'technical-section-title': msg('Technical'),
+
+      'appearance-section-title': msg('Appearance'),
+      'entity-section-title': msg('Entity (required)'),
+      'entity-section-standalone-title': msg('Standalone entity?'),
+      'input-entity-kind': msg('Entity kind (required)'),
+
       'edit-section-state-auto-title': msg('Edit State heat'),
       'edit-section-state-off-title': msg('Edit State off'),
       'edit-section-state-heat-title': msg('Edit State auto'),
@@ -90,6 +99,8 @@ export class SciFiBaseEditor extends LitElement {
       'edit-section-mode-comfort-1-title': msg('Edit Mode comfort-1'),
       'edit-section-mode-comfort-2-title': msg('Edit Mode comfort-2'),
       'edit-section-mode-boost-title': msg('Edit Mode boost'),
+
+      'input-entities-to-exclude': msg('Entities to exclude (optionnal)'),
       'input-icon-auto': msg('Icon auto (optionnal)'),
       'input-icon-off': msg('Icon off (optionnal)'),
       'input-icon-heat': msg('Icon heat (optionnal)'),
@@ -110,6 +121,15 @@ export class SciFiBaseEditor extends LitElement {
       'input-color-comfort-1': msg('Comfort-1 icon color (optionnal)'),
       'input-color-comfort-2': msg('Comfort-2 icon color (optionnal)'),
       'input-color-boost': msg('Boost icon color (optionnal)'),
+      'input-message-text': msg('Message'),
+      'input-weather-entity': msg('Weather entity (required)'),
+      'input-link': msg('Link (optionnal)'),
+      'input-name': msg('Name'),
+      'input-active-icon': msg('Active icon (required)'),
+      'input-inactive-icon': msg('Inactive icon (required)'),
+
+      'input-states-on': msg('States on (required)'),
+      'input-state-error': msg('Error state (optionnal)'),
     };
     return key in labels ? labels[key] : '';
   }

@@ -924,8 +924,6 @@ From top to bottom, display:
 > [!TIP]
 > This card can be configure through the UI that allow use to use HA interface for the configuration.
 
-<details>
-
 <summary>YAML</summary>
 
 #### Minimal configuration

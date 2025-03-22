@@ -1013,6 +1013,7 @@ vehicles:
     fuel_quantity: sensor.fuel_quantity # replace with your vehicle fuel quantiy sensor id
     charging_remaining_time: sensor.charging_remaining_time # replace with your vehicle charging remaining time sensor id
 ```
+</details>
 
 <br>
 

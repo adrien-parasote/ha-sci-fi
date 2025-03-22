@@ -151,13 +151,14 @@ export class SciFiWeather extends SciFiBaseCard {
       sunny: msg('Sunny'),
       windy: msg('Windy'),
       'windy-variant': msg('Variable winds'),
-
       temp: msg('Temperature'),
       forecasted_temp: msg('Forecasted temperatures'),
       precipitation: msg('Precipitation'),
       forecasted_precipitation: msg('Forecasted precipitation'),
       wind_speed: msg('Wind speeds'),
       forecasted_wind_speed: msg('Forecasted wind speeds'),
+      cloud: msg('Cloud'),
+      frozen: msg('Frozen'),
     };
     return key in labels ? labels[key] : key;
   }
@@ -296,20 +297,20 @@ export class SciFiWeather extends SciFiBaseCard {
 
   __renderTodaySummary() {
     const sensors = [
-      this._weather.cloud_cover,
-      this._weather.daily_precipitation,
-      this._weather.rain_chance,
-      this._weather.freeze_chance,
-      this._weather.snow_chance,
+      [this._weather.cloud_cover, 'cloud'],
+      [this._weather.daily_precipitation, 'precipitation'],
+      [this._weather.rain_chance, 'rainy'],
+      [this._weather.freeze_chance, 'frozen'],
+      [this._weather.snow_chance, 'snowy'],
     ].map((sensor) =>
-      this.__renderTodaySensor(sensor.name, sensor.icon, sensor.value)
+      this.__renderTodaySensor(sensor[1], sensor[0].icon, sensor[0].value)
     );
     return html`${sensors}`;
   }
 
   __renderTodaySensor(name, icon, value) {
     return html`<div class="sensor">
-      <div class="label">${name}</div>
+      <div class="label">${this.__getlabels(name)}</div>
       <div class="state">
         <sci-fi-weather-icon icon="${icon}"></sci-fi-weather-icon>
       </div>

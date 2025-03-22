@@ -648,11 +648,19 @@
 </trans-unit>
 <trans-unit id="sb232b02074d3cca9">
   <source>Wind speeds</source>
-  <source>Vitesse du vent</source>
+  <target>Vitesse du vent</target>
 </trans-unit>
 <trans-unit id="s7fddbda45cacb27b">
   <source>Forecasted wind speeds</source>
-  <source>Vitesse du vent prévisionnelle</source>
+  <target>Vitesse du vent prévisionnelle</target>
+</trans-unit>
+<trans-unit id="s5e7b43fb85d0175e">
+  <source>Cloud</source>
+  <target>Nuage</target>
+</trans-unit>
+<trans-unit id="s2aea659650e99803">
+  <source>Frozen</source>
+  <target>Gel</target>
 </trans-unit>
 </body>
 </file>

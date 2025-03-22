@@ -12,7 +12,7 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
   };
 
   set hass(hass) {
-    this._hass = hass;
+    super.hass = hass;
     // Setup entities for display
     if (!this._weather_entities_id)
       this._weather_entities = Object.keys(hass.states)
@@ -37,10 +37,13 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
       <section>
         <h1>
           <span><sci-fi-icon icon="mdi:theme-light-dark"></sci-fi-icon></span
-          >Weather entity (required)
+          >${this.getLabel('section-title-weather')}
+          ${this.getLabel('text-required')}
         </h1>
         <sci-fi-dropdown-entity-input
-          label="City weather entity (required)"
+          label="${this.getLabel('input-weather-entity')} ${this.getLabel(
+            'text-required'
+          )}"
           icon="mdi:city"
           element-id="weather_entity"
           kind="weather_entity"
@@ -55,11 +58,14 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
   __renderSectionDisplay() {
     return html` <section>
       <h1>
-        <span><sci-fi-icon icon="mdi:cog-outline"></sci-fi-icon></span>Technical
-        (optionnal)
+        <span><sci-fi-icon icon="mdi:cog-outline"></sci-fi-icon></span
+        >${this.getLabel('section-title-technical')}
+        ${this.getLabel('text-optionnal')}
       </h1>
       <sci-fi-slider
-        label="Daily forecast number (optionnal)"
+        label="${this.getLabel('input-daily-forecast-number')} ${this.getLabel(
+          'text-optionnal'
+        )}"
         icon="mdi:counter"
         element-id="weather_daily_forecast_limit"
         kind="weather_daily_forecast_limit"
@@ -75,10 +81,13 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
     return html` <section>
       <h1>
         <span><sci-fi-icon icon="mdi:chart-bell-curve"></sci-fi-icon></span
-        >Chart (optionnal)
+        >${this.getLabel('section-title-chart')}
+        ${this.getLabel('text-optionnal')}
       </h1>
       <sci-fi-dropdown-input
-        label="Chart first focused data (required)"
+        label="${this.getLabel('input-chart-first-focus-data')} ${this.getLabel(
+          'text-required'
+        )}"
         value=${this._config.chart_first_kind_to_render}
         element-id="chart_first_kind_to_render"
         kind="chart"
@@ -112,39 +121,40 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
         : '';
     return html` <section>
       <h1>
-        <span><sci-fi-icon icon="mdi:alert"></sci-fi-icon></span>Alert
-        (optionnal)
+        <span><sci-fi-icon icon="mdi:alert"></sci-fi-icon></span
+        >${this.getLabel('section-title-alert')}
+        ${this.getLabel('text-optionnal')}
       </h1>
       <sci-fi-input
-        label="Entity id"
+        label="${this.getLabel('input-entity-id')}"
         value=${entity_id}
         element-id="entity_id"
         kind="alert"
         @input-update=${this.__update}
       ></sci-fi-input>
       <sci-fi-input
-        label="Green state"
+        label="${this.getLabel('input-alert-green')}"
         value=${state_green}
         element-id="state_green"
         kind="alert"
         @input-update=${this.__update}
       ></sci-fi-input>
       <sci-fi-input
-        label="Yellow state"
+        label="${this.getLabel('input-alert-yellow')}"
         value=${state_yellow}
         element-id="state_yellow"
         kind="alert"
         @input-update=${this.__update}
       ></sci-fi-input>
       <sci-fi-input
-        label="Orange state"
+        label="${this.getLabel('input-alert-orange')}"
         value=${state_orange}
         element-id="state_orange"
         kind="alert"
         @input-update=${this.__update}
       ></sci-fi-input>
       <sci-fi-input
-        label="Red state"
+        label="${this.getLabel('input-alert-red')}"
         value=${state_red}
         element-id="state_red"
         kind="alert"

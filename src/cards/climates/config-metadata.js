@@ -1,9 +1,4 @@
 export default {
-  unit: {
-    mandatory: false,
-    type: 'string',
-    default: '°C',
-  },
   entities_to_exclude: {
     mandatory: false,
     type: 'array',

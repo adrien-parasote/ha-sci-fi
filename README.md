@@ -18,6 +18,7 @@ The aim is to have your phone as a single entry point an use it as a remote hous
     * 🪵🔥 [Sci-Fi Stove card](#stove_card)
     * 🚗 [Sci-Fi Vehicles card](#vehicles_card)
 3. 🖼️ [Sci-Fi icon](#icon)
+4. 👽 [Sci-Fi language](#lang)
 
 # 🛠️ How to install ?<a name="how_to_install"></a>
 
@@ -536,6 +537,9 @@ Allow to deal with climates entities, grouping them per floors/areas.
 > [!NOTE]
 > If Home Assistant `Season` type `Meteorological` sensor is available, season icon (winter, spring, summer & autumn) will be displayed on top right of the card.
 
+> [!NOTE]
+> Card temperature unit is based on you HA system configuration.
+
 ### Screenshots
 
 <details>
@@ -574,7 +578,6 @@ header:
   message_winter_state: Winter is coming
   icon_summer_state: mdi:thermometer-chevron-down
   message_summer_state: Summer time
-unit: "°C"
 entities_to_exclude:
   - climate.excluded_1
 state_icons:
@@ -607,7 +610,6 @@ mode_colors:
 | - | - | - | - | - |
 | type | String | **Required** | Card definition | `custom:sci-fi-climates`| 
 | `header` | Object | **Optionnal** | Header card options  |  |
-| unit | String | **Optionnal** | Climate temperature unit  | °C |
 | entities_to_exclude | List[String] | **Optional** | Entities' id list to exclude from tracking. Example: `climate.excluded_1`, `climate.excluded_1`  | `[]`|
 | `state_icons` | Object | **Optionnal** | Icons for each climate states  |  |
 | `state_colors` | Object | **Optionnal** | Color for each climate states  |  |
@@ -619,7 +621,6 @@ mode_colors:
 type: custom:sci-fi-climates
 header:
   ... # see header configuration bellow
-unit: "°C"
 entities_to_exclude:
   - climate.excluded_1
   - climate.excluded_2
@@ -737,6 +738,10 @@ From top to bottom, display:
   - Energy consumed / rendered & fan speed
 - Stove actions: mode, temperature and preset
 
+
+> [!NOTE]
+> Card temperature & pressure unit are based on you HA system configuration.
+
 ### Screenshots
 
 <details>
@@ -772,7 +777,6 @@ entity: climate.my_stove # replace with your stove's entity id
 ```yaml
 type: custom:sci-fi-stove
 entity: climate.my_stove # replace with your stove's entity id
-unit: "°C"
 sensors:
   sensor_actual_power: sensor.my_stove_actual_power # replace with your stove's render power sensor id
   sensor_power: sensor.my_stove_power # replace with your stove's power consumer sensor id
@@ -793,7 +797,6 @@ storage_counter_threshold: 0.07
 | - | - | - | - | - |
 | type | String | **Required** | Card definition | `custom:sci-fi-stove`|
 | entity | String | **Required** | Stove climate entity ID | `''` |
-| unit | String | **Optionnal** | Climate temperature unit  | °C |
 | `sensors` | Object | **Optional** | Section describing stove additional sensors |  | 
 | pellet_quantity_threshold | Float | **Optional** | Threshold for internal stove pellet quantity (for displaying graphical alert)</br> Must be between 0 (0%) & 1 (100%) | `0.5` | 
 | storage_counter | String | **Optional** | Stove pellet bags sensor counter ID | `''` | 
@@ -803,7 +806,6 @@ storage_counter_threshold: 0.07
 ```yaml
 type: custom:sci-fi-hexa-tiles
 entity: climate.my_stove # replace with your stove's entity id
-unit: "°C"
 sensors:
   ... # see sensor configuration bellow
 pellet_quantity_threshold: 0.4
@@ -967,7 +969,7 @@ vehicles:
 ```yaml
 type: custom:sci-fi-vehicles
 vehicles: 
-  - <vehicle>
+  ... # see vehicle configuration bellow
 ```
 
 <br>
@@ -1009,6 +1011,7 @@ vehicles:
     fuel_quantity: sensor.fuel_quantity # replace with your vehicle fuel quantiy sensor id
     charging_remaining_time: sensor.charging_remaining_time # replace with your vehicle charging remaining time sensor id
 ```
+</details>
 
 <br>
 
@@ -1042,3 +1045,25 @@ To complete HA icon set, sci-fi package onboard the following icons :
 | Landspeeder unknown plug| sci:landspeeder-unknown-plug | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-unknown-plug.svg" alt="Landspeeder unknown plug"  height="25"/> |
 | Landspeeder error plug| sci:landspeeder-error-plug | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-error-plug.svg" alt="Landspeeder error plug"  height="25"/> |
 | Landspeeder plugged clock| sci:landspeeder-plugged-clock | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-plugged-clock.svg" alt="Landspeeder plugged clock"  height="25"/> |
+
+<br>
+
+# 👽 Sci-Fi language <a name="lang"></a>
+
+Package is designed for multi language.
+Current available languages:
+- 💂 english 
+- 🥖 french 
+
+## How to help/contribute?
+
+You want to add a new language (or fix already available one) ? <br>
+This project translation mechanism is based on [Lit library feature](https://lit.dev/docs/localization/overview/), so you just need to follow the offical rules to update or create new language files.
+
+If you don't want to fork the repository and just create/update the translation, please follow those steps:
+1. Download [fr.xlf](https://raw.githubusercontent.com/adrien-parasote/ha-sci-fi/refs/heads/main/xliff/fr.xlf) file.
+2. **In case of new language** - Rename if following the [BCP 47 language tag standard](https://www.w3.org/International/articles/language-tags/index.en).
+3. **In case of new language** - Change html attribute `target-language="fr"` from the balise `<file>` with your language code.
+4. Update all `<target>` balises with your translation.
+
+Then just create a pull request [here](https://github.com/adrien-parasote/ha-sci-fi/pulls).

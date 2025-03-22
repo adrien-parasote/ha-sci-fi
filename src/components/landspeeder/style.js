@@ -193,7 +193,11 @@ export default css`
     left: 50%;
   }
   .middle .charging .components {
-    width: 120px;
+    min-width: 120px;
+    max-width: 130px;
+  }
+  .middle .charging .components .component {
+    text-align: start;
   }
   .middle .charging .h-path {
     width: 34px;

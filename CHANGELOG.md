@@ -1,16 +1,37 @@
 # Changelog
 
+# [v0.7.0](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.7.2) - 2025-03-22
+
 ## 🆕 What's New
+
+**First Stage separation**: Package is now ready for multi language 👽🔊.
+Current available languages:
+- 💂 english 
+- 🥖 french 
+
+## 🆕 What's Changed
 
 🚗 Vehicles card
 - Do not display `<` & `>` icon when only one vehicle is configured
+
+🦾 Technical
+- Date rendering is now based on user preferences defined in HA local (date_format)
+
+🌡️ Climate card
+- Displaying temperature unit based on your HA system configuration
+
+🪵🔥 Stove card
+- Displaying temperature/pressure unit based on your HA system configuration
+
+## 🐛 Fixes
+- Weather card: Fix no rendering temperature unit per days
 
 # [v0.6.2](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.6.2) - 2025-03-16
 
 ## 🆙  What's Changed
 
 💡 Ligths management card
-- Feature requests :[Lights card - Add option to exclude lights](https://github.com/adrien-parasote/ha-sci-fi/issues/31)
+- Feature requests:[Lights card - Add option to exclude lights](https://github.com/adrien-parasote/ha-sci-fi/issues/31)
 
 
 # [v0.6.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.6.1) - 2025-03-16

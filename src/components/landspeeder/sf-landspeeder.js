@@ -1,3 +1,4 @@
+import {msg, updateWhenLocaleChanges} from '@lit/localize';
 import {LitElement, html, nothing} from 'lit';
 
 import {
@@ -17,7 +18,6 @@ import {
 } from '../../helpers/entities/vehicle/vehicle_const.js';
 import common_style from '../../helpers/styles/common_style.js';
 import {defineCustomElement} from '../../helpers/utils/import.js';
-import {pad} from '../../helpers/utils/utils.js';
 import top_speeder from './data/top.js';
 import style from './style.js';
 
@@ -29,12 +29,15 @@ class SciFiLandspeeder extends LitElement {
   static get properties() {
     return {
       vehicle: {type: Object},
+      user: {type: Object},
     };
   }
 
   constructor() {
     super();
+    this.user = this.user ? this.user : null;
     this.vehicle = this.vehicle ? this.vehicle : null;
+    updateWhenLocaleChanges(this);
   }
 
   render() {
@@ -47,12 +50,37 @@ class SciFiLandspeeder extends LitElement {
     `;
   }
 
+  __getLabel(key) {
+    const labels = {
+      home: msg('home'),
+      not_home: msg('not home'),
+      unavailable: msg('unavailable'),
+    };
+    labels[VEHICLE_CHARGE_STATES_NOT_IN_CHARGE] = msg('Not in charge');
+    labels[VEHICLE_CHARGE_STATES_WAITING_PLANNED_CHARGE] = msg(
+      'Waiting for planned charge'
+    );
+    labels[VEHICLE_CHARGE_STATES_WAITING_CURRENT_CHARGE] = msg(
+      'Waiting for current charge'
+    );
+    labels[VEHICLE_CHARGE_STATES_CHARGE_IN_PROGRESS] = msg('In progress');
+    labels[VEHICLE_CHARGE_STATES_CHARGE_ENDED] = msg('Ended');
+    labels[VEHICLE_CHARGE_STATES_CHARGE_ERROR] = msg('Error');
+    labels[VEHICLE_CHARGE_STATES_ENERGY_FLAP_OPENED] = msg('Flap opened');
+    labels[VEHICLE_PLUG_STATES_UNPLUGGED] = msg('Unplugged');
+    labels[VEHICLE_PLUG_STATES_PLUGGED] = msg('Plugged');
+    labels[VEHICLE_PLUG_STATES_PLUGGED_WAITING_FOR_CHARGE] =
+      msg('Waiting for charge');
+    labels[VEHICLE_PLUG_STATES_ERROR] = msg('Error');
+    return key in labels ? labels[key] : key;
+  }
+
   __displayTop() {
     return html`<div class="top">
       <div class="component">
         <sci-fi-icon icon="mdi:map-marker"></sci-fi-icon>
         <div class="location">
-          <div>${this.vehicle.location}</div>
+          <div>${this.__getLabel(this.vehicle.location)}</div>
           <sci-fi-button
             icon="mdi:open-in-new"
             @button-click=${this._openLocation}
@@ -62,23 +90,35 @@ class SciFiLandspeeder extends LitElement {
       </div>
       <div class="component">
         <sci-fi-icon icon="mdi:counter"></sci-fi-icon>
-        <div>${this.vehicle.mileage}</div>
+        <div>${this.__getMileage()}</div>
       </div>
     </div>`;
   }
 
-  __displayLocationLastActivity() {
-    if (!this.vehicle.location_last_activity) return nothing;
-    return html` <div class="sub-info">
-      ${this.__displayDate(this.vehicle.location_last_activity)}
-    </div>`;
+  __getMileage() {
+    if (this.vehicle.hasMileage())
+      return [
+        new Intl.NumberFormat(this.user.number_format).format(
+          this.vehicle.raw_mileage
+        ),
+        this.vehicle.mileage_unit,
+      ].join(' ');
+    return this.vehicle.raw_mileage;
   }
 
-  __displayDate(d) {
-    return [
-      [pad(d.getDate()), pad(d.getMonth()), d.getFullYear()].join('/'),
-      [pad(d.getHours()), pad(d.getMinutes()), pad(d.getSeconds())].join(':'),
-    ].join(' ');
+  __displayLocationLastActivity() {
+    if (!this.vehicle.location_last_activity) return nothing;
+    return html` <div class="sub-info">${this.__displayDate()}</div>`;
+  }
+
+  __displayDate() {
+    const options = {
+      timeStyle: 'medium',
+      dateStyle: 'short',
+    };
+    return new Intl.DateTimeFormat(this.user.date_format, options).format(
+      this.vehicle.location_last_activity
+    );
   }
 
   _openLocation(e) {
@@ -213,11 +253,11 @@ class SciFiLandspeeder extends LitElement {
           <div class="components">
             <div class="component">
               <sci-fi-icon icon="${this.__getChargeStateIcon()}"></sci-fi-icon>
-              <div>${this.vehicle.charge_state}</div>
+              <div>${this.__getLabel(this.vehicle.charge_state)}</div>
             </div>
             <div class="component">
               <sci-fi-icon icon="${this.__getPlugStateIcon()}"></sci-fi-icon>
-              <div>${this.vehicle.plug_state}</div>
+              <div>${this.__getLabel(this.vehicle.plug_state)}</div>
             </div>
             ${this.__displayRemainingChargingTime()}
           </div>
@@ -228,8 +268,8 @@ class SciFiLandspeeder extends LitElement {
 
   __getChargingState() {
     if (
-      this.vehicle.raw_charge_state == VEHICLE_CHARGE_STATES_CHARGE_ERROR ||
-      this.vehicle.raw_plug_state == VEHICLE_PLUG_STATES_ERROR
+      this.vehicle.charge_state == VEHICLE_CHARGE_STATES_CHARGE_ERROR ||
+      this.vehicle.plug_state == VEHICLE_PLUG_STATES_ERROR
     )
       return 'error';
     return this.vehicle.charging ? 'on' : 'off';
@@ -254,7 +294,7 @@ class SciFiLandspeeder extends LitElement {
     states[VEHICLE_CHARGE_STATES_CHARGE_ERROR] = 'mdi:battery-alert-variant';
     states[VEHICLE_CHARGE_STATES_ENERGY_FLAP_OPENED] = 'mdi:battery-unknown';
     states[VEHICLE_CHARGE_STATES_UNAVAILABLE] = 'mdi:battery-unknown';
-    return states[this.vehicle.raw_charge_state];
+    return states[this.vehicle.charge_state];
   }
 
   __getPlugStateIcon() {
@@ -265,7 +305,7 @@ class SciFiLandspeeder extends LitElement {
       'sci:landspeeder-plugged-clock';
     states[VEHICLE_PLUG_STATES_ERROR] = 'sci:landspeeder-error-plug';
     states[VEHICLE_PLUG_STATES_UNKNOWN] = 'sci:landspeeder-unknown-plug';
-    return states[this.vehicle.raw_plug_state];
+    return states[this.vehicle.plug_state];
   }
 
   __displaySpeeder() {

@@ -1,5 +1,7 @@
+import {msg} from '@lit/localize';
 import {html, nothing} from 'lit';
 
+import {Person} from '../../helpers/entities/person.js';
 import {Vehicle} from '../../helpers/entities/vehicle/vehicle.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
@@ -12,14 +14,8 @@ export class SciFiVehicles extends SciFiBaseCard {
   }
 
   _configMetadata = configMetadata;
-  _hass; // private
-  _temperature_items = Array.from(Array(10).keys()).map((e, idx) => {
-    return {
-      id: idx,
-      text: [idx + 16, '°C'].join(' '),
-      value: idx + 16,
-    };
-  });
+  _temperature_items;
+  _user;
 
   static get properties() {
     return {
@@ -30,13 +26,8 @@ export class SciFiVehicles extends SciFiBaseCard {
     };
   }
 
-  setConfig(config) {
-    super.setConfig(config);
-  }
-
   set hass(hass) {
-    this._hass = hass;
-
+    super.hass = hass;
     if (!this._config) return; // Can't assume setConfig is called before hass is set
     if (!this._selected_temp_id) this._selected_temp_id = 2; // First temperature selection = 18°C
     if (!this._vehicles) {
@@ -49,6 +40,15 @@ export class SciFiVehicles extends SciFiBaseCard {
       // update
       const update = this._vehicles.map((vehicle) => vehicle.update(hass));
     }
+    if (!this._user) this._user = new Person(hass); // Only once
+    if (!this._temperature_items)
+      this._temperature_items = Array.from(Array(10).keys()).map((e, idx) => {
+        return {
+          id: idx,
+          text: [idx + 16, hass.config.unit_system.temperature].join(' '),
+          value: idx + 16,
+        };
+      });
   }
 
   render() {
@@ -98,6 +98,7 @@ export class SciFiVehicles extends SciFiBaseCard {
   __displayLandspeeder() {
     return html`<sci-fi-landspeeder
       .vehicle=${this._vehicles[this._active_vehicle_id]}
+      .user=${this._user}
     ></sci-fi-landspeeder>`;
   }
 
@@ -108,19 +109,19 @@ export class SciFiVehicles extends SciFiBaseCard {
           in-line
           .items=${this._temperature_items}
           selected-id="${this._selected_temp_id}"
-          text="Temperature"
+          text="${msg('Temperature')}"
           @wheel-change="${this.__selectTemperature}"
         ></sci-fi-wheel>
         <sci-fi-button-card
           icon="mdi:play"
-          title="Air-cond"
-          text="Start"
+          title="${msg('Air-cond')}"
+          text="${msg('Start')}"
           @button-click="${this.__startAc}"
         ></sci-fi-button-card>
         <sci-fi-button-card
           icon="mdi:stop"
-          title="Air-cond"
-          text="Stop"
+          title="${msg('Air-cond')}"
+          text="${msg('Stop')}"
           @button-click="${this.__stoptAc}"
         ></sci-fi-button-card>
       </div>

@@ -1,15 +1,16 @@
+import {msg} from '@lit/localize';
 import Chart from 'chart.js/auto';
 import {html, nothing, svg} from 'lit';
 import {isEqual} from 'lodash-es';
 
 import WEATHER_ICON_SET from '../../components/icons/data/sf-weather-icons.js';
+import {Person} from '../../helpers/entities/person.js';
 import {
   DailyForecast,
   HourlyForecast,
   SunEntity,
   WeatherEntity,
-} from '../../helpers/entities/weather/weather.js';
-import {WEEK_DAYS} from '../../helpers/entities/weather/weather_const.js';
+} from '../../helpers/entities/weather.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import {templateToString} from '../../helpers/utils/utils.js';
 import configMetadata from './config-metadata.js';
@@ -27,12 +28,12 @@ export class SciFiWeather extends SciFiBaseCard {
   }
 
   _configMetadata = configMetadata;
-  _hass; // private
   _chart;
   _chartDataKind;
   _daily_subscribed;
   _hourly_subscribed;
   _day_selected = 0;
+  _user;
 
   static get properties() {
     return {
@@ -62,7 +63,7 @@ export class SciFiWeather extends SciFiBaseCard {
   }
 
   set hass(hass) {
-    this._hass = hass;
+    super.hass = hass;
     if (!this._config) return; // Can't assume setConfig is called before hass is set
 
     // Get Weather and sun entity once (no need to track change)
@@ -80,13 +81,15 @@ export class SciFiWeather extends SciFiBaseCard {
         if (!this._alert && !isEqual(alert, this.alert)) this._alert = alert;
       }
     }
+    if (!this._user) this._user = new Person(hass); // Only once
   }
 
   __getDaysForecasts(hass) {
     const unsub = hass.connection.subscribeMessage(
       (event) => {
         this._weather_daily_forecast = event.forecast.map(
-          (value) => new DailyForecast(value, this.temperature_unit)
+          (value) =>
+            new DailyForecast(value, this._weather.getUnit('temperature'))
         );
         unsub.then((unsub) => unsub());
       },
@@ -102,7 +105,8 @@ export class SciFiWeather extends SciFiBaseCard {
     const unsub = hass.connection.subscribeMessage(
       (event) => {
         this._weather_hourly_forecast = event.forecast.map(
-          (value) => new HourlyForecast(value, this.temperature_unit)
+          (value) =>
+            new HourlyForecast(value, this._weather.getUnit('temperature'))
         );
         unsub.then((unsub) => unsub());
         // draw chart
@@ -129,6 +133,36 @@ export class SciFiWeather extends SciFiBaseCard {
     `;
   }
 
+  __getlabels(key) {
+    const labels = {
+      clear: msg('Clear sky'),
+      'clear-night': msg('Clear night'),
+      cloudy: msg('Cloudy'),
+      exceptional: msg('Exceptional'),
+      fog: msg('Fog'),
+      hail: msg('Risk of hail'),
+      lightning: msg('Thunderstorms'),
+      'lightning-rainy': msg('Lightning rainy'),
+      partlycloudy: msg('Sunshine'),
+      pouring: msg('Heavy rain'),
+      rainy: msg('Rain'),
+      snowy: msg('Snow'),
+      'snowy-rainy': msg('Freezing rain'),
+      sunny: msg('Sunny'),
+      windy: msg('Windy'),
+      'windy-variant': msg('Variable winds'),
+      temp: msg('Temperature'),
+      forecasted_temp: msg('Forecasted temperatures'),
+      precipitation: msg('Precipitation'),
+      forecasted_precipitation: msg('Forecasted precipitation'),
+      wind_speed: msg('Wind speeds'),
+      forecasted_wind_speed: msg('Forecasted wind speeds'),
+      cloud: msg('Cloud'),
+      frozen: msg('Frozen'),
+    };
+    return key in labels ? labels[key] : key;
+  }
+
   __renderHeader() {
     return html`
       <div class="weather-icon">
@@ -136,7 +170,8 @@ export class SciFiWeather extends SciFiBaseCard {
       </div>
       <div class="weather-clock">
         <div class="state">
-          ${this._weather.weatherName}, ${this._weather.temperatureUnit}
+          ${this.__getlabels(this._weather.state)},
+          ${this._weather.temperatureUnit}
         </div>
         <div class="hour">${this.__getHour()}</div>
         <div class="date">${this.__getDate()}</div>
@@ -167,28 +202,23 @@ export class SciFiWeather extends SciFiBaseCard {
 
   __getHour() {
     const options = {
-      minimumIntegerDigits: 2,
-      useGrouping: false,
+      timeStyle: 'short',
     };
-    return [
-      this._date.getHours().toLocaleString('fr-FR', options),
-      this._date.getMinutes().toLocaleString('fr-FR', options),
-    ].join(':');
+    return new Intl.DateTimeFormat(this._user.date_format, options).format(
+      this._date
+    );
   }
 
   __getDate() {
     const options = {
-      minimumIntegerDigits: 2,
-      useGrouping: false,
+      weekday: 'short',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
     };
-    return [
-      [WEEK_DAYS[this._date.getDay()].short, ','].join(''),
-      [
-        this._date.getDate().toLocaleString('fr-FR', options),
-        (this._date.getMonth() + 1).toLocaleString('fr-FR', options),
-        this._date.getFullYear().toLocaleString('fr-FR', options),
-      ].join('.'),
-    ].join(' ');
+    return new Intl.DateTimeFormat(this._user.date_format, options).format(
+      this._date
+    );
   }
 
   __renderDays() {
@@ -201,7 +231,7 @@ export class SciFiWeather extends SciFiBaseCard {
             class="weather ${this._day_selected == idx ? 'selected' : ''}"
             @click="${(e) => this.__selectDay(idx)}"
           >
-            ${daily_forecast.render(true)}
+            ${daily_forecast.render(this._user)}
           </div>`;
         })}
     </div>`;
@@ -243,7 +273,7 @@ export class SciFiWeather extends SciFiBaseCard {
                 icon="${SENSORS_MAP[key].dropdown.icon}"
               ></sci-fi-weather-icon>
               <div class="dropdown-item-label">
-                ${SENSORS_MAP[key].dropdown.label}
+                ${this.__getlabels(SENSORS_MAP[key].dropdown.label)}
               </div>
             </div>`
         )}
@@ -258,7 +288,7 @@ export class SciFiWeather extends SciFiBaseCard {
           icon="${SENSORS_MAP[this._chartDataKind].chartTitle.icon}"
         ></sci-fi-weather-icon>
         <div class="label">
-          ${SENSORS_MAP[this._chartDataKind].chartTitle.label}
+          ${this.__getlabels(SENSORS_MAP[this._chartDataKind].chartTitle.label)}
           (${this._weather.getUnit(this._chartDataKind)})
         </div>
       </div>
@@ -267,20 +297,20 @@ export class SciFiWeather extends SciFiBaseCard {
 
   __renderTodaySummary() {
     const sensors = [
-      this._weather.cloud_cover,
-      this._weather.daily_precipitation,
-      this._weather.rain_chance,
-      this._weather.freeze_chance,
-      this._weather.snow_chance,
+      [this._weather.cloud_cover, 'cloud'],
+      [this._weather.daily_precipitation, 'precipitation'],
+      [this._weather.rain_chance, 'rainy'],
+      [this._weather.freeze_chance, 'frozen'],
+      [this._weather.snow_chance, 'snowy'],
     ].map((sensor) =>
-      this.__renderTodaySensor(sensor.name, sensor.icon, sensor.value)
+      this.__renderTodaySensor(sensor[1], sensor[0].icon, sensor[0].value)
     );
     return html`${sensors}`;
   }
 
   __renderTodaySensor(name, icon, value) {
     return html`<div class="sensor">
-      <div class="label">${name}</div>
+      <div class="label">${this.__getlabels(name)}</div>
       <div class="state">
         <sci-fi-weather-icon icon="${icon}"></sci-fi-weather-icon>
       </div>
@@ -372,7 +402,7 @@ export class SciFiWeather extends SciFiBaseCard {
       .filter((hour) => hour.isPartOfDay(forecastDate))
       .map((hourly) => {
         datasets[0].data.push({
-          x: hourly.hours,
+          x: hourly.getHours(this._user),
           y: hourly.getKindValue(this._chartDataKind),
         });
         datasets[0].weather.push(hourly.getIconName(this._sun));

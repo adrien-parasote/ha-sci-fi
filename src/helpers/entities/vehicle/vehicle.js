@@ -5,9 +5,7 @@ import {
   HASS_RENAULT_SERVICE,
   HASS_RENAULT_SERVICE_ACTION_START_AC,
   HASS_RENAULT_SERVICE_ACTION_STOP_AC,
-  VEHICLE_CHARGE_STATES,
   VEHICLE_CHARGE_STATES_UNAVAILABLE,
-  VEHICLE_PLUG_STATES,
   VEHICLE_PLUG_STATES_UNKNOWN,
   VEHICLE_SENSORS,
   VEHICLE_SENSOR_BATTERY_AUTONOMY,
@@ -76,7 +74,7 @@ export class Vehicle {
   get location() {
     return !this.sensors[VEHICLE_SENSOR_LOCATION]
       ? VEHICLE_SENSOR_UNAVAILABLE_STATE
-      : this.sensors[VEHICLE_SENSOR_LOCATION].value.split('_').join(' ');
+      : this.sensors[VEHICLE_SENSOR_LOCATION].value;
   }
 
   get location_gps() {
@@ -91,36 +89,29 @@ export class Vehicle {
       : new Date(this.sensors[VEHICLE_SENSOR_LOCATION_LAST_ACTIVITY].value);
   }
 
-  get mileage() {
+  hasMileage() {
+    return !this.sensors[VEHICLE_SENSOR_MILEAGE] ? false : true;
+  }
+
+  get raw_mileage() {
     return !this.sensors[VEHICLE_SENSOR_MILEAGE]
       ? VEHICLE_SENSOR_UNAVAILABLE_STATE
-      : [
-          this.sensors[VEHICLE_SENSOR_MILEAGE].value,
-          this.sensors[VEHICLE_SENSOR_MILEAGE].unit_of_measurement,
-        ].join(' ');
+      : this.sensors[VEHICLE_SENSOR_MILEAGE].value;
+  }
+
+  get mileage_unit() {
+    return !this.sensors[VEHICLE_SENSOR_MILEAGE]
+      ? ''
+      : this.sensors[VEHICLE_SENSOR_MILEAGE].unit_of_measurement;
   }
 
   get charge_state() {
-    if (!this.sensors[VEHICLE_SENSOR_CHARGE_STATE])
-      return VEHICLE_CHARGE_STATES[VEHICLE_CHARGE_STATES_UNAVAILABLE];
-    return VEHICLE_CHARGE_STATES[
-      this.sensors[VEHICLE_SENSOR_CHARGE_STATE].value
-    ];
-  }
-
-  get raw_charge_state() {
     return !this.sensors[VEHICLE_SENSOR_CHARGE_STATE]
       ? VEHICLE_CHARGE_STATES_UNAVAILABLE
       : this.sensors[VEHICLE_SENSOR_CHARGE_STATE].value;
   }
 
   get plug_state() {
-    if (!this.sensors[VEHICLE_SENSOR_PLUG_STATE])
-      return VEHICLE_PLUG_STATES[VEHICLE_PLUG_STATES_UNKNOWN];
-    return VEHICLE_PLUG_STATES[this.sensors[VEHICLE_SENSOR_PLUG_STATE].value];
-  }
-
-  get raw_plug_state() {
     return !this.sensors[VEHICLE_SENSOR_PLUG_STATE]
       ? VEHICLE_PLUG_STATES_UNKNOWN
       : this.sensors[VEHICLE_SENSOR_PLUG_STATE].value;

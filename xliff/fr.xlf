@@ -1,0 +1,667 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+<file target-language="fr" source-language="en" original="lit-localize-inputs" datatype="plaintext">
+<body>
+<trans-unit id="scc594028a264d2d3">
+  <source>Display global turn on/off button ?</source>
+  <target>Affichage du bouton marche/arrêt général ?</target>
+</trans-unit>
+<trans-unit id="s934e2b78bbe5b4ee">
+  <source>Edit State heat</source>
+  <target>Édition de l'état chauffe</target>
+</trans-unit>
+<trans-unit id="sb7b074ab844ba741">
+  <source>Edit State off</source>
+  <target>Édition de l'état éteind</target>
+</trans-unit>
+<trans-unit id="sd68096c54241294b">
+  <source>Edit State auto</source>
+  <target>Édition de l'état auto</target>
+</trans-unit>
+<trans-unit id="saea04aa463411709">
+  <source>Edit Mode frost protection</source>
+  <target>Édition du mode hors gel</target>
+</trans-unit>
+<trans-unit id="s795e94ad936eda68">
+  <source>Edit Mode comfort</source>
+  <target>Édition du mode confort</target>
+</trans-unit>
+<trans-unit id="s311d2d659cd5d0ca">
+  <source>Edit Mode comfort-1</source>
+  <target>Édition du mode confort-1</target>
+</trans-unit>
+<trans-unit id="s311d2c659cd5cf17">
+  <source>Edit Mode comfort-2</source>
+  <target>Édition du mode confort-2</target>
+</trans-unit>
+<trans-unit id="s2507833772d440bf">
+  <source>Edit Mode boost</source>
+  <target>Édition du mode booster</target>
+</trans-unit>
+<trans-unit id="s72cc88b5db5d9e9e">
+  <source>preset</source>
+  <target>préréglage</target>
+</trans-unit>
+<trans-unit id="s0d3deba2c41dadb2">
+  <source>mode</source>
+  <target>mode</target>
+</trans-unit>
+<trans-unit id="s0a8f02cc5f99f0d3">
+  <source>heat</source>
+  <target>chauffe</target>
+</trans-unit>
+<trans-unit id="s0bc60e911959a7fc">
+  <source>cool</source>
+  <target>refroidit</target>
+</trans-unit>
+<trans-unit id="s1a249b1921e2bdea">
+  <source>off</source>
+  <target>éteind</target>
+</trans-unit>
+<trans-unit id="s5dc77784260a7236">
+  <source>auto</source>
+  <target>auto</target>
+</trans-unit>
+<trans-unit id="s3da2ccd7c832fe08">
+  <source>frost protection</source>
+  <target>hors gel</target>
+</trans-unit>
+<trans-unit id="sc2ca1a18f032a7e2">
+  <source>eco</source>
+  <target>éco</target>
+</trans-unit>
+<trans-unit id="s876819f3dc3d9993">
+  <source>comfort</source>
+  <target>confort</target>
+</trans-unit>
+<trans-unit id="s8b12e1d418ad3651">
+  <source>comfort-1</source>
+  <target>confort-1</target>
+</trans-unit>
+<trans-unit id="s8b12ded418ad3138">
+  <source>comfort-2</source>
+  <target>confort-2</target>
+</trans-unit>
+<trans-unit id="s585dfbb29d3568cc">
+  <source>boost</source>
+  <target>booster</target>
+</trans-unit>
+<trans-unit id="s3c0d17bad169557b">
+  <source>none</source>
+  <target>aucun</target>
+</trans-unit>
+<trans-unit id="sd5cfc0c67729664a">
+  <source>external</source>
+  <target>externe</target>
+</trans-unit>
+<trans-unit id="s85729f0e3537c32d">
+  <source>prog</source>
+  <target>prog</target>
+</trans-unit>
+<trans-unit id="s5dbcade048df45b3">
+  <source>Weather</source>
+  <target>Météo</target>
+</trans-unit>
+<trans-unit id="s6dbee4e83cbac6e9">
+  <source>Add weather tile ?</source>
+  <target>Ajout d'une tuile météo ?</target>
+</trans-unit>
+<trans-unit id="s79e8cc71a5975b04">
+  <source>Message</source>
+  <target>Message</target>
+</trans-unit>
+<trans-unit id="s48de9afb300c4089">
+  <source>Tile</source>
+  <target>Tuile</target>
+</trans-unit>
+<trans-unit id="s8a6a9ed357b7c5a8">
+  <source>Technical</source>
+  <target>Technique</target>
+</trans-unit>
+<trans-unit id="sf0e261e04eda82ff">
+  <source>Appearance</source>
+  <target>Apparence</target>
+</trans-unit>
+<trans-unit id="s996ae393268186da">
+  <source>Standalone entity?</source>
+  <target>Entité unique ?</target>
+</trans-unit>
+<trans-unit id="sef49aec68fd1dc66">
+  <source>Name</source>
+  <target>Nom</target>
+</trans-unit>
+<trans-unit id="s75d83fc3f0cfab40">
+  <source>Header</source>
+  <target>En-tête</target>
+</trans-unit>
+<trans-unit id="s9d8b8aa2b404c2c8">
+  <source>Settings</source>
+  <target>Paramètres</target>
+</trans-unit>
+<trans-unit id="sae239213b7c70376">
+  <source>State</source>
+  <target>État</target>
+</trans-unit>
+<trans-unit id="s37cbecaec58e2192">
+  <source>Mode</source>
+  <target>Mode</target>
+</trans-unit>
+<trans-unit id="se34eae7e253df7db">
+  <source>Display selection</source>
+  <target>Sélection d'affichage</target>
+</trans-unit>
+<trans-unit id="s757a4c2248c0b9da">
+  <source>Entity</source>
+  <target>Entité</target>
+</trans-unit>
+<trans-unit id="s684dca431e5c2bb3">
+  <source>Light entities customization</source>
+  <target>Personnalisation des entités lumineuses</target>
+</trans-unit>
+<trans-unit id="s71ffa90354548e20">
+  <source>(optionnal)</source>
+  <target>(optionnel)</target>
+</trans-unit>
+<trans-unit id="s2976eabb2709bf61">
+  <source>(required)</source>
+  <target>(requis)</target>
+</trans-unit>
+<trans-unit id="s64ef2a6c2dd1d3d1">
+  <source>Edit</source>
+  <target>Édition</target>
+</trans-unit>
+<trans-unit id="s357d3cdfe4a91b6d">
+  <source>Edit Mode eco</source>
+  <target>Édition du mode éco</target>
+</trans-unit>
+<trans-unit id="s95fb728df9eb38c6">
+  <source>Winter period message</source>
+  <target>Message période hivernale</target>
+</trans-unit>
+<trans-unit id="s995445b762ed5fe6">
+  <source>Winter period icon</source>
+  <target>Icône période hivernale</target>
+</trans-unit>
+<trans-unit id="s0ad61806ef0c0e4e">
+  <source>Summer period message</source>
+  <target>Message période estival</target>
+</trans-unit>
+<trans-unit id="s42159a8784b2051e">
+  <source>Summer period icon</source>
+  <target>Icône période estival</target>
+</trans-unit>
+<trans-unit id="sd3b1a666f0d90f6d">
+  <source>Entities to exclude</source>
+  <target>Entités à exclure</target>
+</trans-unit>
+<trans-unit id="s0af171dd0f9880f7">
+  <source>Icon auto</source>
+  <target>Icône auto</target>
+</trans-unit>
+<trans-unit id="s13e8edf04d948175">
+  <source>Icon off</source>
+  <target>Icône arrêt</target>
+</trans-unit>
+<trans-unit id="s1b9ed7186023d342">
+  <source>Icon heat</source>
+  <target>Icône chauffe</target>
+</trans-unit>
+<trans-unit id="s3779530343dcdd3d">
+  <source>Icon frost protection</source>
+  <target>Icône hors gel</target>
+</trans-unit>
+<trans-unit id="sbd473af01c8286d1">
+  <source>Icon eco</source>
+  <target>Icône éco</target>
+</trans-unit>
+<trans-unit id="s7748391176344684">
+  <source>Icon comfort</source>
+  <target>Icône confort</target>
+</trans-unit>
+<trans-unit id="s3f70d104d6590f2e">
+  <source>Icon comfort-1</source>
+  <target>Icône confort-1</target>
+</trans-unit>
+<trans-unit id="s3f70d004d6590d7b">
+  <source>Icon comfort-2</source>
+  <target>Icône confort-2</target>
+</trans-unit>
+<trans-unit id="s29b4552f4d313ecb">
+  <source>Icon boost</source>
+  <target>Icône boster</target>
+</trans-unit>
+<trans-unit id="s1c78dc6ef6845c50">
+  <source>Auto icon color</source>
+  <target>Couleur icône auto</target>
+</trans-unit>
+<trans-unit id="sebfea2c429b1bde4">
+  <source>Off icon color</source>
+  <target>Couleur icône arrêt</target>
+</trans-unit>
+<trans-unit id="s2827fde4bed42293">
+  <source>Heat icon color</source>
+  <target>Couleur icône chauffe</target>
+</trans-unit>
+<trans-unit id="sf942fb9e0006820a">
+  <source>Frost protection icon color</source>
+  <target>Couleur icône hors gel</target>
+</trans-unit>
+<trans-unit id="s37bef54594d9572c">
+  <source>Eco icon color</source>
+  <target>Couleur icône éco</target>
+</trans-unit>
+<trans-unit id="se9f8d8092bc345d3">
+  <source>Comfort icon color</source>
+  <target>Couleur icône comfort</target>
+</trans-unit>
+<trans-unit id="s19bc9091f7df5769">
+  <source>Comfort-1 icon color</source>
+  <target>Couleur icône comfort-1</target>
+</trans-unit>
+<trans-unit id="s304c8d3b7a46a5fa">
+  <source>Comfort-2 icon color</source>
+  <target>Couleur icône comfort-2</target>
+</trans-unit>
+<trans-unit id="s820c24928e06eb8e">
+  <source>Boost icon color</source>
+  <target>Couleur icône booster</target>
+</trans-unit>
+<trans-unit id="s1bc156256736f73e">
+  <source>Weather entity</source>
+  <target>Entité météo</target>
+</trans-unit>
+<trans-unit id="s3cf89cb47fdde7e9">
+  <source>Link</source>
+  <target>Lien</target>
+</trans-unit>
+<trans-unit id="s6f13732715f31178">
+  <source>Active icon</source>
+  <target>Icône active</target>
+</trans-unit>
+<trans-unit id="s80a1a6e5a5a54cf9">
+  <source>Inactive icon</source>
+  <target>Icône inactive</target>
+</trans-unit>
+<trans-unit id="s0ac4337fedc3fa98">
+  <source>States on</source>
+  <target>États actifs</target>
+</trans-unit>
+<trans-unit id="s46a0b95a78e298d4">
+  <source>Error state</source>
+  <target>État d'erreur</target>
+</trans-unit>
+<trans-unit id="s3b2df7e589676d93">
+  <source>Entity id</source>
+  <target>Identifiant de l'entité</target>
+</trans-unit>
+<trans-unit id="s3fca3a57cdacb060">
+  <source>Entity kind</source>
+  <target>Type d'entité</target>
+</trans-unit>
+<trans-unit id="s77d1875a34921bd4">
+  <source>First floor to render</source>
+  <target>Premier étage à afficher</target>
+</trans-unit>
+<trans-unit id="s2350e551d4efd065">
+  <source>First area to render</source>
+  <target>Première pièce de l'étage à afficher</target>
+</trans-unit>
+<trans-unit id="se06ad64a9de6df0f">
+  <source>Vehicle</source>
+  <target>Véhicule</target>
+</trans-unit>
+<trans-unit id="sa20c185606f42958">
+  <source>Sensors</source>
+  <target>Capteurs</target>
+</trans-unit>
+<trans-unit id="see2fcaedf9743ec6">
+  <source>Location</source>
+  <target>Localisation</target>
+</trans-unit>
+<trans-unit id="s807e362e9dc8cbef">
+  <source>Location last activity</source>
+  <target>Dernière activité de localisation</target>
+</trans-unit>
+<trans-unit id="sfb44c671d9b9ac33">
+  <source>Mileage</source>
+  <target>Kilométrage</target>
+</trans-unit>
+<trans-unit id="s82c71a5986948a28">
+  <source>Lock status</source>
+  <target>Statut du verrouillage</target>
+</trans-unit>
+<trans-unit id="s7d75073d3dd3edb9">
+  <source>Fuel autonomy</source>
+  <target>Autonomie en carburant</target>
+</trans-unit>
+<trans-unit id="s5a0b7879d5920086">
+  <source>Fuel quantity</source>
+  <target>Quantité de carburant</target>
+</trans-unit>
+<trans-unit id="sffb149ace1105624">
+  <source>Battery autonomy</source>
+  <target>Autonomie de la batterie</target>
+</trans-unit>
+<trans-unit id="s80b6ca7f5b5dbb48">
+  <source>Battery level</source>
+  <target>Niveau de la batterie</target>
+</trans-unit>
+<trans-unit id="s77a0727520efc502">
+  <source>Charging</source>
+  <target>État de la charge</target>
+</trans-unit>
+<trans-unit id="s27e515ed8b8eb9bc">
+  <source>Plug state</source>
+  <target>État de la prise de charge</target>
+</trans-unit>
+<trans-unit id="sc4e9d9e64887f82b">
+  <source>Remaining charging time</source>
+  <target>Temps de charge restant</target>
+</trans-unit>
+<trans-unit id="sf49525241bba3b06">
+  <source>Storage</source>
+  <target>Stockage</target>
+</trans-unit>
+<trans-unit id="s6d7faef159f60232">
+  <source>Storage counter</source>
+  <target>Compteur de stock</target>
+</trans-unit>
+<trans-unit id="se19cc57dd8675498">
+  <source>Threshold</source>
+  <target>Seuil</target>
+</trans-unit>
+<trans-unit id="s6b3d933b6d71023f">
+  <source>Stove combustion chamber</source>
+  <target>Chambre de combustion du poêle</target>
+</trans-unit>
+<trans-unit id="s7936d654d0c471e4">
+  <source>Room temperature</source>
+  <target>Température de la pièce</target>
+</trans-unit>
+<trans-unit id="s86a7cb33c6fb6439">
+  <source>Stove pressure</source>
+  <target>Pression du poêle</target>
+</trans-unit>
+<trans-unit id="sb4d2057561cf5a9f">
+  <source>Stove fans speed</source>
+  <target>Vitesse des ventilateurs de poêle</target>
+</trans-unit>
+<trans-unit id="s959e09dc82865024">
+  <source>Stove power rendered</source>
+  <target>Puissance rendu du poêle</target>
+</trans-unit>
+<trans-unit id="s57d9a94354d2f90f">
+  <source>Stove power consumed</source>
+  <target>Puissance consommée du poêle</target>
+</trans-unit>
+<trans-unit id="scc96e0d47d8f1e48">
+  <source>Stove status</source>
+  <target>État du poêle</target>
+</trans-unit>
+<trans-unit id="sed30d6455e071b47">
+  <source>Stove time to service</source>
+  <target>Temps avant révision du poêle</target>
+</trans-unit>
+<trans-unit id="s3a67d6079a13cd49">
+  <source>Stove pellet quantity</source>
+  <target>Quantité de granulés de poêle</target>
+</trans-unit>
+<trans-unit id="sc6f05c4e424acc23">
+  <source>Pellet quantity threshold</source>
+  <target>Seuil de quantité de pellets</target>
+</trans-unit>
+<trans-unit id="s66f26fdcbe2101eb">
+  <source>Chart</source>
+  <target>Graphique</target>
+</trans-unit>
+<trans-unit id="sf1ec4acb8d744ed9">
+  <source>Alert</source>
+  <target>Alerte</target>
+</trans-unit>
+<trans-unit id="s480263258f53e669">
+  <source>Green state</source>
+  <target>Alert verte</target>
+</trans-unit>
+<trans-unit id="s8c33dad42583704c">
+  <source>Yellow state</source>
+  <target>Alerte jaune</target>
+</trans-unit>
+<trans-unit id="sce0f69d2bb7b6842">
+  <source>Orange state</source>
+  <target>Alerte orange</target>
+</trans-unit>
+<trans-unit id="s0da556f559cc9549">
+  <source>Red state</source>
+  <target>Alerte rouge</target>
+</trans-unit>
+<trans-unit id="s7b02d3a7b64946b9">
+  <source>Forecast number of days</source>
+  <target>Nombre de jours prévisionnel</target>
+</trans-unit>
+<trans-unit id="sa180cfb8f2635d99">
+  <source>First data targeted on the chart</source>
+  <target>Premières données affichées sur le graphique</target>
+</trans-unit>
+<trans-unit id="sad3e3c8146fc920f">
+  <source>Status</source>
+  <target>État</target>
+</trans-unit>
+<trans-unit id="s84fcddede27b8e2a">
+  <source>External</source>
+  <target>Externe</target>
+</trans-unit>
+<trans-unit id="se2d65e13768468e0">
+  <source>Internal</source>
+  <target>Interne</target>
+</trans-unit>
+<trans-unit id="scb5c70c571dcc182">
+  <source>Pressure</source>
+  <target>Pression</target>
+</trans-unit>
+<trans-unit id="s7a1aac1836d2d16d">
+  <source>Render</source>
+  <target>Rendu</target>
+</trans-unit>
+<trans-unit id="sbc11f135e19c8941">
+  <source>Consume</source>
+  <target>Consommé</target>
+</trans-unit>
+<trans-unit id="s0a5a8f277fb09f89">
+  <source>Fan speed</source>
+  <target>Vitesse du ventilateur</target>
+</trans-unit>
+<trans-unit id="sa1ffc85bb55b75c2">
+  <source>Time to Service</source>
+  <target>Délais avant révision</target>
+</trans-unit>
+<trans-unit id="s04e13613e8f15f55">
+  <source>Stock</source>
+  <target>Stock</target>
+</trans-unit>
+<trans-unit id="s67326397a256c6b5">
+  <source>Temperature</source>
+  <target>Température</target>
+</trans-unit>
+<trans-unit id="s402d1bcc7e6f9d6e">
+  <source>home</source>
+  <target>maison</target>
+</trans-unit>
+<trans-unit id="s6c25b06437b433b1">
+  <source>not home</source>
+  <target>extérieur</target>
+</trans-unit>
+<trans-unit id="s833996a486514c49">
+  <source>unavailable</source>
+  <target>indisponible</target>
+</trans-unit>
+<trans-unit id="s2e2d63eb23e92aa3">
+  <source>Not in charge</source>
+  <target>Pas en charge</target>
+</trans-unit>
+<trans-unit id="sf6aaa53ca5bb5b7f">
+  <source>Waiting for planned charge</source>
+  <target>En attente de la charge prévue</target>
+</trans-unit>
+<trans-unit id="s6feb93edd6958c8e">
+  <source>Waiting for current charge</source>
+  <target>En attente de charge actuelle</target>
+</trans-unit>
+<trans-unit id="s7d7ca36ecef354a5">
+  <source>In progress</source>
+  <target>En cours</target>
+</trans-unit>
+<trans-unit id="sf113fa256db9617b">
+  <source>Ended</source>
+  <target>Terminé</target>
+</trans-unit>
+<trans-unit id="s5f343a43e7ea9f91">
+  <source>Error</source>
+  <target>Erreur</target>
+</trans-unit>
+<trans-unit id="s42edb88477699c63">
+  <source>Flap opened</source>
+  <target>Trappe à carburant ouverte</target>
+</trans-unit>
+<trans-unit id="sc2c1e58748f73de6">
+  <source>Unplugged</source>
+  <target>Débranché</target>
+</trans-unit>
+<trans-unit id="s9f3b354f4ea959ab">
+  <source>Plugged</source>
+  <target>Branché</target>
+</trans-unit>
+<trans-unit id="s81db64e61d58e991">
+  <source>Waiting for charge</source>
+  <target>En attente de chargement</target>
+</trans-unit>
+<trans-unit id="se25db8feb9dcef42">
+  <source>Air-cond</source>
+  <target>Air-cond</target>
+</trans-unit>
+<trans-unit id="sae1c7f13b7c0c47f">
+  <source>Start</source>
+  <target>Start</target>
+</trans-unit>
+<trans-unit id="sd9ad53251f2330a5">
+  <source>Stop</source>
+  <target>Stop</target>
+</trans-unit>
+<trans-unit id="s73f0c943f298c6e6">
+  <source>ignition</source>
+  <target>allumage</target>
+</trans-unit>
+<trans-unit id="saa4529ab4c14268a">
+  <source>combustion</source>
+  <target>combustion</target>
+</trans-unit>
+<trans-unit id="s26315c976ecf1dfc">
+  <source>cooling</source>
+  <target>refroidissement</target>
+</trans-unit>
+<trans-unit id="s498865c7bd1f3959">
+  <source>unknown</source>
+  <target>inconnu</target>
+</trans-unit>
+<trans-unit id="s9ddf2cc619400949">
+  <source>pre-heating</source>
+  <target>préchauffage</target>
+</trans-unit>
+<trans-unit id="sf22207baa99a54c6">
+  <source>pre-combustion</source>
+  <target>précombustion</target>
+</trans-unit>
+<trans-unit id="s079ecf8df23a0daf">
+  <source>Clear sky</source>
+  <target>Ciel dégagé</target>
+</trans-unit>
+<trans-unit id="s8d4b3eb18c9a5388">
+  <source>Clear night</source>
+  <target>Nuit claire</target>
+</trans-unit>
+<trans-unit id="s5b8bab6460975745">
+  <source>Cloudy</source>
+  <target>Nuageux</target>
+</trans-unit>
+<trans-unit id="s671e6a65b2a45a5b">
+  <source>Exceptional</source>
+  <target>Exceptionnel</target>
+</trans-unit>
+<trans-unit id="sf2bb8d199c92d43f">
+  <source>Fog</source>
+  <target>Brouillard</target>
+</trans-unit>
+<trans-unit id="sfcb8f68fb0d89d5f">
+  <source>Risk of hail</source>
+  <target>Risque de grèle</target>
+</trans-unit>
+<trans-unit id="s159994586ab69913">
+  <source>Thunderstorms</source>
+  <target>Orages</target>
+</trans-unit>
+<trans-unit id="s7fb3f42e7dac28c0">
+  <source>Sunshine</source>
+  <target>Eclaircies</target>
+</trans-unit>
+<trans-unit id="s385fbf7e52385aae">
+  <source>Heavy rain</source>
+  <target>Pluie forte</target>
+</trans-unit>
+<trans-unit id="s984afe2bd363c533">
+  <source>Rain</source>
+  <target>Pluie</target>
+</trans-unit>
+<trans-unit id="s8300b224ee074d12">
+  <source>Snow</source>
+  <target>Neige</target>
+</trans-unit>
+<trans-unit id="sd8b57a87d52d6ded">
+  <source>Freezing rain</source>
+  <target>Pluie verglaçante</target>
+</trans-unit>
+<trans-unit id="s4f676d1aecd06b8c">
+  <source>Sunny</source>
+  <target>Ensoleillé</target>
+</trans-unit>
+<trans-unit id="sbfa2d1f49dbae97a">
+  <source>Windy</source>
+  <target>Venteux</target>
+</trans-unit>
+<trans-unit id="s293aaf12547441ce">
+  <source>Variable winds</source>
+  <target>Venteux variable</target>
+</trans-unit>
+<trans-unit id="s825b2844b8bfcefc">
+  <source>Lightning rainy</source>
+  <target>Orages et pluie</target>
+</trans-unit>
+<trans-unit id="s31ae72339af83374">
+  <source>Forecasted temperatures</source>
+  <target>Températures prévisionnelles</target>
+</trans-unit>
+<trans-unit id="sf4ffc9723091ab50">
+  <source>Precipitation</source>
+  <target>Précipitations</target>
+</trans-unit>
+<trans-unit id="s406cb503fbb65a22">
+  <source>Forecasted precipitation</source>
+  <target>Précipitations prévisionnelles</target>
+</trans-unit>
+<trans-unit id="sb232b02074d3cca9">
+  <source>Wind speeds</source>
+  <target>Vitesse du vent</target>
+</trans-unit>
+<trans-unit id="s7fddbda45cacb27b">
+  <source>Forecasted wind speeds</source>
+  <target>Vitesse du vent prévisionnelle</target>
+</trans-unit>
+<trans-unit id="s5e7b43fb85d0175e">
+  <source>Cloud</source>
+  <target>Nuage</target>
+</trans-unit>
+<trans-unit id="s2aea659650e99803">
+  <source>Frozen</source>
+  <target>Gel</target>
+</trans-unit>
+</body>
+</file>
+</xliff>

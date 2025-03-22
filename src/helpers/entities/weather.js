@@ -1,9 +1,8 @@
 import {html} from 'lit';
 
-import {isSameDay, pad} from '../../utils/utils.js';
-import {WeatherSensor} from '../sensor/sensor.js';
-import {WEATHER_EXTRA_SENSORS} from '../sensor/sensor_const.js';
-import {WEATHER_STATE_FR, WEEK_DAYS} from './weather_const.js';
+import {isSameDay} from '../utils/utils.js';
+import {WeatherSensor} from './sensor/sensor.js';
+import {WEATHER_EXTRA_SENSORS} from './sensor/sensor_const.js';
 
 export class SunEntity {
   constructor(hass, sun_entity_id) {
@@ -111,10 +110,6 @@ export class WeatherEntity {
     return [this.temperature, this.temperature_unit].join('');
   }
 
-  get weatherName() {
-    return WEATHER_STATE_FR[this.state];
-  }
-
   get daily_precipitation() {
     return this.__getSensor('daily_precipitation');
   }
@@ -169,17 +164,22 @@ export class DailyForecast {
     ></sci-fi-weather-icon>`;
   }
 
-  render(day = true) {
+  render(user, day = true) {
     return html`
-      <div class="label">${this.__getDay()}</div>
+      <div class="label">${this.__getDay(user)}</div>
       <div class="state">${this.getWeatherIcon(day)}</div>
       <div class="temp">${this.templow}${this.temperature_unit}</div>
       <div class="temp hight">${this.temperature}${this.temperature_unit}</div>
     `;
   }
 
-  __getDay() {
-    return WEEK_DAYS[this.datetime.getDay()].short;
+  __getDay(user) {
+    const options = {
+      weekday: 'short',
+    };
+    return new Intl.DateTimeFormat(user.date_format, options).format(
+      this.datetime
+    );
   }
 }
 
@@ -252,12 +252,13 @@ export class HourlyForecast {
     return date;
   }
 
-  get hours() {
-    return [pad(this.datetime.getHours()), 'h'].join(' ');
-  }
-
-  __getDay() {
-    return WEEK_DAYS[this.datetime.getDay()].short;
+  getHours(user) {
+    const options = {
+      hour: '2-digit',
+    };
+    return new Intl.DateTimeFormat(user.date_format, options).format(
+      this.datetime
+    );
   }
 
   isPartOfDay(date) {

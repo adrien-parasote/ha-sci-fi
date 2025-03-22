@@ -1,7 +1,7 @@
 import {html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
-import '../../helpers/entities/person.js';
+import {Person} from '../../helpers/entities/person.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
 import {LANDSCAPE_DISPLAY, PACKAGE, PORTRAIT_DISPLAY} from './const.js';
@@ -14,12 +14,12 @@ export class SciFiHexaTiles extends SciFiBaseCard {
 
   _configMetadata = configMetadata;
   _display; // private
+  _user;
 
   static get properties() {
     return {
       _config: {type: Object},
       _entities: {type: Array},
-      _user: {type: Object},
       _weather: {type: Object},
     };
   }
@@ -50,7 +50,7 @@ export class SciFiHexaTiles extends SciFiBaseCard {
   }
 
   set hass(hass) {
-    this._hass = hass;
+    super.hass = hass;
     if (!this._config) return; // Can't assume setConfig is called before hass is set
 
     // Extract entity for kind part
@@ -58,11 +58,9 @@ export class SciFiHexaTiles extends SciFiBaseCard {
     if (!this._entities || !isEqual(updatedEntity, this._entities)) {
       this._entities = updatedEntity;
     }
-    // Extract person info
-    const updatedUser = this._getConnectedUser();
-    if (!this._user || !isEqual(updatedUser, this._user)) {
-      this._user = updatedUser;
-    }
+    // Extract person info only once
+    if (!this._user) this._user = new Person(hass);
+
     // Extract weather info if needed
     if (this._config.weather.activate) {
       const updatedWeather = this._getWeather();
@@ -81,16 +79,6 @@ export class SciFiHexaTiles extends SciFiBaseCard {
       name: weather_entity.attributes.friendly_name,
       day: sun_entity.state == 'above_horizon',
     };
-  }
-
-  _getConnectedUser() {
-    return Object.keys(this._hass.states)
-      .filter((key) => key.startsWith('person.'))
-      .reduce((cur, key) => {
-        return this._hass.states[key].attributes.user_id == this._hass.user.id
-          ? this._hass.states[key]
-          : cur;
-      }, {});
   }
 
   __extractEntity() {
@@ -147,13 +135,13 @@ export class SciFiHexaTiles extends SciFiBaseCard {
       <div class="container">
         <div class="header">
           <sci-fi-person
-            entity-id="${this._user.entity_id}"
+            entity-id="${this._user.id}"
             state="${this._user.state}"
-            picture="${this._user.attributes.entity_picture}"
+            picture="${this._user.entity_picture}"
           ></sci-fi-person>
           <div class="info">
             <div class="message">${this._config.header_message}</div>
-            <div class="name">${this._user.attributes.friendly_name}</div>
+            <div class="name">${this._user.friendly_name}</div>
           </div>
         </div>
         ${matrix.map(

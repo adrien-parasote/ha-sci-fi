@@ -20,7 +20,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
   _edit = false;
 
   set hass(hass) {
-    this._hass = hass;
+    super.hass = hass;
     if (!this._config) return;
     // Setup only once for editor
     if (!this._house) {
@@ -36,13 +36,6 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
 
     if (this._house && !this._config.first_floor_to_render) {
       this.__setupDefault();
-    }
-  }
-
-  setConfig(config) {
-    this._config = config;
-    if (this._hass) {
-      this.hass = this._hass;
     }
   }
 
@@ -66,14 +59,16 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
       <section>
         <h1>
           <span><sci-fi-icon icon="mdi:page-layout-header"></sci-fi-icon></span>
-          Header
+          ${this.getLabel('section-title-header')}
         </h1>
         <sci-fi-input
           icon="mdi:cursor-text"
-          label="Header card message"
+          label="${this.getLabel('input-message-text')} ${this.getLabel(
+            'text-optionnal'
+          )}"
           value=${this._config.header}
-          element-id="header"
-          kind="header"
+          element-id="header_message"
+          kind="header_message"
           @input-update=${this.__update}
         ></sci-fi-input>
       </section>
@@ -102,12 +97,13 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
   __renderSectionDefaultIcon() {
     return html` <section>
       <h1>
-        <span
-          ><sci-fi-icon icon="mdi:home-lightbulb-outline"></sci-fi-icon></span
-        >Lights appearance
+        <span><sci-fi-icon icon="mdi:palette-outline"></sci-fi-icon></span
+        >${this.getLabel('section-title-appearance')}
       </h1>
       <sci-fi-dropdown-icon-input
-        label="Active icon (required)"
+        label="${this.getLabel('input-active-icon')} ${this.getLabel(
+          'text-required'
+        )}"
         element-id="default_icons"
         kind="default_icon_on"
         icon=${this._config.default_icon_on}
@@ -115,7 +111,9 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
         @input-update=${this.__update}
       ></sci-fi-dropdown-icon-input>
       <sci-fi-dropdown-icon-input
-        label="Inactive icon (required)"
+        label="${this.getLabel('input-inactive-icon')} ${this.getLabel(
+          'text-required'
+        )}"
         element-id="default_icons"
         kind="default_icon_off"
         icon=${this._config.default_icon_off}
@@ -140,11 +138,13 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
     return html` <section>
       <h1>
         <span><sci-fi-icon icon="mdi:home-search-outline"></sci-fi-icon></span
-        >Display selection
+        >${this.getLabel('section-title-home-selection')}
       </h1>
       <sci-fi-dropdown-entity-input
         icon="mdi:floor-plan"
-        label="First floor to render"
+        label="${this.getLabel('input-floor-id')} ${this.getLabel(
+          'text-optionnal'
+        )}"
         value=${this._config.first_floor_to_render}
         element-id="first_floor_to_render"
         .items="${floors}"
@@ -153,7 +153,9 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
       ></sci-fi-dropdown-entity-input>
       <sci-fi-dropdown-entity-input
         icon="mdi:texture-box"
-        label="First area to render"
+        label="${this.getLabel('input-area-id')} ${this.getLabel(
+          'text-optionnal'
+        )}"
         ?disabled=${areas.length == 0}
         value=${this._config.first_area_to_render}
         element-id="first_area_to_render"
@@ -168,10 +170,12 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
     return html`<section>
       <h1>
         <span><sci-fi-icon icon="mdi:eye-remove-outline"></sci-fi-icon></span
-        >Entities to ignore (optionnal)
+        >${this.getLabel('input-entities-to-exclude')}
       </h1>
       <sci-fi-dropdown-multi-entities-input
-        label="Entity id"
+        label="${this.getLabel('input-entity-id')} ${this.getLabel(
+          'text-optionnal'
+        )}"
         element-id="ignored_entities"
         kind="ignored_entities"
         .values="${this._config.ignored_entities}"
@@ -188,7 +192,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
           ><sci-fi-icon
             icon="mdi:selection-ellipse-arrow-inside"
           ></sci-fi-icon></span
-        >Light entities customization
+        >${this.getLabel('section-title-entity-light-custom')}
       </h1>
       ${Object.keys(this._config.custom_entities).map((entity_id) =>
         this.__renderCustomEntity(entity_id)
@@ -205,7 +209,9 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
     return html`
       <div class="entity-row">
         <sci-fi-dropdown-entity-input
-          label="Entity id (required)"
+          label="${this.getLabel('input-entity-id')} ${this.getLabel(
+            'text-required'
+          )}"
           element-id="${entity_id}"
           kind="custom_entities"
           value="${entity_id}"
@@ -235,18 +241,25 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
           icon="mdi:chevron-left"
           @button-click=${this.__endCustomEntity}
         ></sci-fi-button>
-        <span>Edit ${this._custom_entity_id}</span>
+        <span
+          >${this.getLabel('edit-section-title')}
+          ${this._custom_entity_id}</span
+        >
       </div>
       <sci-fi-input
         icon="mdi:cursor-text"
-        label="Custom name"
+        label="${this.getLabel('input-name')} ${this.getLabel(
+          'text-optionnal'
+        )}"
         value=${entity_info.name}
         element-id="${this._custom_entity_id}"
         kind="name"
         @input-update=${this.__update}
       ></sci-fi-input>
       <sci-fi-dropdown-icon-input
-        label="Custom active icon"
+        label="${this.getLabel('input-active-icon')} ${this.getLabel(
+          'text-optionnal'
+        )}"
         element-id="${this._custom_entity_id}"
         kind="icon_on"
         icon=${entity_info.icon_on}
@@ -254,7 +267,9 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
         @input-update=${this.__update}
       ></sci-fi-dropdown-icon-input>
       <sci-fi-dropdown-icon-input
-        label="Custom inactive icon"
+        label="${this.getLabel('input-inactive-icon')} ${this.getLabel(
+          'text-optionnal'
+        )}"
         element-id="${this._custom_entity_id}"
         kind="icon_off"
         icon=${entity_info.icon_off}
@@ -294,7 +309,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
   __update(e) {
     let newConfig = this.__getNewConfig();
     switch (e.detail.id) {
-      case 'header':
+      case 'header_message':
         newConfig[e.detail.id] = e.detail.value;
         break;
       case 'first_floor_to_render':

@@ -1,5 +1,5 @@
 {
-  "version": "0.6.2",
+  "version": "0.7.0",
   "description": "Sci-fi cards for HA dashboard",
   "main": "src/sci-fi.js",
   "type": "module",
@@ -14,10 +14,13 @@
     "update-local": "npm --allow-same-version=true --no-git-tag-version version $npm_config_ver",
     "build-release": "npm run format && npm run prepare-env && rollup -c && npm run clean-up",
     "git-commit": "git add --all && git commit -m 'Prepare release'",
-    "prepare-release": "npm run update-local && npm run build-release && npm run git-commit && git push"
+    "prepare-release": "npm run update-local && npm run build-release && npm run git-commit && git push",
+    "localize-extract": "lit-localize extract",
+    "localize-build": "lit-localize build && npm run format"
   },
   "keywords": [],
   "devDependencies": {
+    "@lit/localize-tools": "0.8.0",
     "@mdi/js": "7.4.47",
     "@rollup/plugin-json": "6.1.0",
     "@rollup/plugin-node-resolve": "15.3.0",
@@ -31,6 +34,7 @@
     "yaml": "2.7.0"
   },
   "dependencies": {
+    "@lit/localize": "0.12.2",
     "@lit/task": "1.0.2",
     "chart.js": "4.4.7",
     "home-assistant-js-websocket": "9.4.0",

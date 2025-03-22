@@ -1,8 +1,34 @@
+import {msg} from '@lit/localize';
 import {html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
 import {StoveEntity} from '../../helpers/entities/climate/climate.js';
-import {STATE_CLIMATE_OFF} from '../../helpers/entities/climate/climate_const.js';
+import {
+  HASS_CLIMATE_PRESET_MODE_AUTO,
+  HASS_CLIMATE_PRESET_MODE_BOOST,
+  HASS_CLIMATE_PRESET_MODE_COMFORT,
+  HASS_CLIMATE_PRESET_MODE_COMFORT_1,
+  HASS_CLIMATE_PRESET_MODE_COMFORT_2,
+  HASS_CLIMATE_PRESET_MODE_ECO,
+  HASS_CLIMATE_PRESET_MODE_EXTERNAL,
+  HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION,
+  HASS_CLIMATE_PRESET_MODE_NONE,
+  HASS_CLIMATE_PRESET_MODE_PROG,
+  STATE_CLIMATE_AUTO,
+  STATE_CLIMATE_COOL,
+  STATE_CLIMATE_HEAT,
+  STATE_CLIMATE_OFF,
+} from '../../helpers/entities/climate/climate_const.js';
+import {
+  STOVE_SENSOR_STATUS_COMBUSTION,
+  STOVE_SENSOR_STATUS_COOLING,
+  STOVE_SENSOR_STATUS_ECO,
+  STOVE_SENSOR_STATUS_IGNITION,
+  STOVE_SENSOR_STATUS_OFF,
+  STOVE_SENSOR_STATUS_PRE_COMBUSTION,
+  STOVE_SENSOR_STATUS_PRE_HEATING,
+  STOVE_SENSOR_STATUS_UNKNOWN,
+} from '../../helpers/entities/sensor/sensor_const.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
 import {
@@ -21,7 +47,8 @@ export class SciFiStove extends SciFiBaseCard {
   _configMetadata = configMetadata;
 
   _configMetadata = configMetadata;
-  _hass; // private
+  _temp_unit;
+  _pressure_unit;
 
   static get properties() {
     return {
@@ -32,7 +59,7 @@ export class SciFiStove extends SciFiBaseCard {
   }
 
   set hass(hass) {
-    this._hass = hass;
+    super.hass = hass;
     if (!this._config) return; // Can't assume setConfig is called before hass is set
     // Get stove entity
     const stove_entity = new StoveEntity(
@@ -49,6 +76,10 @@ export class SciFiStove extends SciFiBaseCard {
       !isEqual(stove_entity.renderAsEntity(), this._stove.renderAsEntity())
     )
       this._stove = stove_entity;
+
+    if (!this._temp_unit) this._temp_unit = hass.config.unit_system.temperature; // Gather HA temperature unit only once
+    if (!this._pressure_unit)
+      this._pressure_unit = hass.config.unit_system.pressure; // Gather HA pressure unit only once
   }
 
   render() {
@@ -73,7 +104,7 @@ export class SciFiStove extends SciFiBaseCard {
     ).map((e, idx) => {
       return {
         id: idx,
-        text: [idx + this._stove.min_temp, this._config.unit].join(''),
+        text: [idx + this._stove.min_temp, this._temp_unit].join(''),
         value: idx + this._stove.min_temp,
       };
     });
@@ -86,13 +117,32 @@ export class SciFiStove extends SciFiBaseCard {
         <sci-fi-wheel
           .items=${items}
           selected-id="${selected_item_id}"
-          text="Temperature"
+          text="${msg('Temperature')}"
           @wheel-change="${this.__select}"
           ?disable=${[STATE_CLIMATE_OFF].includes(this._stove.state)}
         ></sci-fi-wheel>
         ${this.__displayPresetButton()}
       </div>
     `;
+  }
+
+  __getClimateLabel(key) {
+    const labels = {};
+    labels[STATE_CLIMATE_HEAT] = msg('heat');
+    labels[STATE_CLIMATE_COOL] = msg('cool');
+    labels[STATE_CLIMATE_OFF] = msg('off');
+    labels[STATE_CLIMATE_AUTO] = msg('auto');
+    labels[HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION] = msg('frost protection');
+    labels[HASS_CLIMATE_PRESET_MODE_ECO] = msg('eco');
+    labels[HASS_CLIMATE_PRESET_MODE_COMFORT] = msg('comfort');
+    labels[HASS_CLIMATE_PRESET_MODE_COMFORT_1] = msg('comfort-1');
+    labels[HASS_CLIMATE_PRESET_MODE_COMFORT_2] = msg('comfort-2');
+    labels[HASS_CLIMATE_PRESET_MODE_BOOST] = msg('boost');
+    labels[HASS_CLIMATE_PRESET_MODE_NONE] = msg('none');
+    labels[HASS_CLIMATE_PRESET_MODE_EXTERNAL] = msg('external');
+    labels[HASS_CLIMATE_PRESET_MODE_PROG] = msg('prog');
+    labels[HASS_CLIMATE_PRESET_MODE_AUTO] = msg('auto');
+    return key in labels ? labels[key] : key;
   }
 
   __displayPresetButton() {
@@ -103,7 +153,7 @@ export class SciFiStove extends SciFiBaseCard {
         icon: PRESET_MODES_ICONS[mode]
           ? PRESET_MODES_ICONS[mode]
           : 'mdi:information-off-outline',
-        text: mode,
+        text: this.__getClimateLabel(mode),
       };
     });
     return html`
@@ -111,8 +161,8 @@ export class SciFiStove extends SciFiBaseCard {
         icon=${PRESET_MODES_ICONS[this._stove.preset_mode]
           ? PRESET_MODES_ICONS[this._stove.preset_mode]
           : 'mdi:information-off-outline'}
-        title="preset"
-        text=${this._stove.preset_mode}
+        title="${msg('preset')}"
+        text=${this.__getClimateLabel(this._stove.preset_mode)}
         .items=${preset_items}
         @button-select="${this.__select}"
       ></sci-fi-button-select-card>
@@ -127,7 +177,7 @@ export class SciFiStove extends SciFiBaseCard {
         icon: HVAC_MODES_ICONS[mode]
           ? HVAC_MODES_ICONS[mode]
           : 'mdi:information-off-outline',
-        text: mode,
+        text: this.__getClimateLabel(mode),
       };
     });
     return html`
@@ -135,8 +185,8 @@ export class SciFiStove extends SciFiBaseCard {
         icon=${HVAC_MODES_ICONS[this._stove.state]
           ? HVAC_MODES_ICONS[this._stove.state]
           : 'mdi:information-off-outline'}
-        title="mode"
-        text=${this._stove.state}
+        title="${msg('mode')}"
+        text=${this.__getClimateLabel(this._stove.state)}
         .items=${hvac_items}
         @button-select="${this.__select}"
       ></sci-fi-button-select-card>
@@ -164,18 +214,22 @@ export class SciFiStove extends SciFiBaseCard {
           </div>
           <div class="temperatures">
             ${this.__displayTimeToService()}
-            ${this.__displayStatus('Status', this._stove.status)}
+            ${this.__displayStatus(msg('Status'), this._stove.status)}
             ${this.__displayTemperature(
-              'External',
+              msg('External'),
               this._stove.current_temperature,
-              this._config.unit
+              this._temp_unit
             )}
             ${this.__displayTemperature(
-              'Internal',
+              msg('Internal'),
               this._stove.combustion_chamber_temperature.value,
-              this._config.unit
+              this._temp_unit
             )}
-            ${this.__displayPressure('Pressure', this._stove.pressure.value)}
+            ${this.__displayPressure(
+              msg('Pressure'),
+              this._stove.pressure.value,
+              this._pressure_unit
+            )}
           </div>
         </div>
         <div class="e top-path">
@@ -186,17 +240,17 @@ export class SciFiStove extends SciFiBaseCard {
           </div>
           <div class="powers">
             ${this.__displayPower(
-              'Render',
+              msg('Render'),
               this._stove.actual_power.value,
               this._stove.actual_power.unit_of_measurement
             )}
             ${this.__displayPower(
-              'Consume',
+              msg('Consume'),
               this._stove.power.value,
               this._stove.power.unit_of_measurement
             )}
             ${this.__displayFan(
-              'Fan speed',
+              msg('Fan speed'),
               this._stove.fan_speed.value,
               this._stove.fan_speed.unit_of_measurement
             )}
@@ -216,7 +270,7 @@ export class SciFiStove extends SciFiBaseCard {
     return html`
       <div class="temperature ${state}">
         <sci-fi-icon icon="mdi:timeline-clock-outline"></sci-fi-icon>
-        <div class="label">Time to Service:</div>
+        <div class="label">${msg('Time to Service')}:</div>
         <div>${hours}${this._stove.time_to_service.unit_of_measurement}</div>
       </div>
     `;
@@ -234,10 +288,10 @@ export class SciFiStove extends SciFiBaseCard {
   __displayPelletQuantity() {
     const sensor_pellet_quantity = this._stove.pellet_quantity;
     if (!sensor_pellet_quantity.value)
-      return this.__noQuantity('Fuel quantity');
+      return this.__noQuantity(msg('Fuel quantity'));
     return html`
       <sci-fi-circle-progress-bar
-        text="Fuel quantity"
+        text="${msg('Fuel quantity')}"
         val=${sensor_pellet_quantity.value}
         threshold=${this._config.pellet_quantity_threshold}
       ></sci-fi-circle-progress-bar>
@@ -246,16 +300,29 @@ export class SciFiStove extends SciFiBaseCard {
 
   __displayPelletStock() {
     const storage = this._stove.storage;
-    if (!storage) return this.__noQuantity('Stock');
+    if (!storage) return this.__noQuantity(msg('Stock'));
     return html`
       <sci-fi-stack-bar
-        text="Stock"
+        text="${msg('Stock')}"
         val=${storage.value}
         minimum=${storage.minimum}
         maximum=${storage.maximum}
         threshold=${this._config.storage_counter_threshold}
       ></sci-fi-stack-bar>
     `;
+  }
+
+  __getStatusText(status) {
+    const labels = {};
+    labels[STOVE_SENSOR_STATUS_OFF] = msg('off');
+    labels[STOVE_SENSOR_STATUS_PRE_HEATING] = msg('pre-heating');
+    labels[STOVE_SENSOR_STATUS_IGNITION] = msg('ignition');
+    labels[STOVE_SENSOR_STATUS_COMBUSTION] = msg('combustion');
+    labels[STOVE_SENSOR_STATUS_PRE_COMBUSTION] = msg('pre-combustion');
+    labels[STOVE_SENSOR_STATUS_ECO] = msg('eco');
+    labels[STOVE_SENSOR_STATUS_COOLING] = msg('cooling');
+    labels[STOVE_SENSOR_STATUS_UNKNOWN] = msg('unknown');
+    return status in labels ? labels[status] : status.replace('_', ' ');
   }
 
   __displayStatus(text, status) {
@@ -273,7 +340,7 @@ export class SciFiStove extends SciFiBaseCard {
         ></sci-fi-icon>
 
         <div class="label">${text}:</div>
-        <div>${status.replace('_', ' ')}</div>
+        <div>${this.__getStatusText(status)}</div>
       </div>
     `;
   }
@@ -289,13 +356,13 @@ export class SciFiStove extends SciFiBaseCard {
     </div>`;
   }
 
-  __displayPressure(text, pressure) {
+  __displayPressure(text, pressure, unit) {
     if (!pressure) return nothing;
     return html`
       <div class="temperature ${pressure == '0' ? 'off' : ''}">
         <sci-fi-icon icon="mdi:gauge"></sci-fi-icon>
         <div class="label">${text}:</div>
-        <div>${pressure}</div>
+        <div>${pressure}${unit}</div>
       </div>
     `;
   }

@@ -1,15 +1,21 @@
+import {msg} from '@lit/localize';
 import {LitElement, css, html, nothing} from 'lit';
 
 import {
   HASS_CLIMATE_HVAC_MODE_OFF,
   HASS_CLIMATE_PRESET_MODE_AUTO,
+  HASS_CLIMATE_PRESET_MODE_BOOST,
   HASS_CLIMATE_PRESET_MODE_COMFORT,
+  HASS_CLIMATE_PRESET_MODE_COMFORT_1,
+  HASS_CLIMATE_PRESET_MODE_COMFORT_2,
   HASS_CLIMATE_PRESET_MODE_ECO,
   HASS_CLIMATE_PRESET_MODE_EXTERNAL,
   HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION,
   HASS_CLIMATE_PRESET_MODE_NONE,
   HASS_CLIMATE_PRESET_MODE_PROG,
   STATE_CLIMATE_AUTO,
+  STATE_CLIMATE_COOL,
+  STATE_CLIMATE_HEAT,
   STATE_CLIMATE_OFF,
 } from '../helpers/entities/climate/climate_const.js';
 import common_style from '../helpers/styles/common_style.js';
@@ -349,6 +355,25 @@ class SciFiRadiator extends LitElement {
     </div>`;
   }
 
+  __getLabel(key) {
+    const labels = {};
+    labels[STATE_CLIMATE_HEAT] = msg('heat');
+    labels[STATE_CLIMATE_COOL] = msg('cool');
+    labels[STATE_CLIMATE_OFF] = msg('off');
+    labels[STATE_CLIMATE_AUTO] = msg('auto');
+    labels[HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION] = msg('frost protection');
+    labels[HASS_CLIMATE_PRESET_MODE_ECO] = msg('eco');
+    labels[HASS_CLIMATE_PRESET_MODE_COMFORT] = msg('comfort');
+    labels[HASS_CLIMATE_PRESET_MODE_COMFORT_1] = msg('comfort-1');
+    labels[HASS_CLIMATE_PRESET_MODE_COMFORT_2] = msg('comfort-2');
+    labels[HASS_CLIMATE_PRESET_MODE_BOOST] = msg('boost');
+    labels[HASS_CLIMATE_PRESET_MODE_NONE] = msg('none');
+    labels[HASS_CLIMATE_PRESET_MODE_EXTERNAL] = msg('external');
+    labels[HASS_CLIMATE_PRESET_MODE_PROG] = msg('prog');
+    labels[HASS_CLIMATE_PRESET_MODE_AUTO] = msg('auto');
+    return key in labels ? labels[key] : key;
+  }
+
   __displayRight() {
     const preset_color =
       this.styles.mode.colors[this.climateEntity.attributes.preset_mode] + ';'; // Force ; here to avoid issue when minify
@@ -359,8 +384,8 @@ class SciFiRadiator extends LitElement {
         icon=${this.styles.mode.icons[
           this.climateEntity.attributes.preset_mode
         ]}
-        title="preset"
-        text=${this.climateEntity.attributes.preset_mode}
+        title="${msg('preset')}"
+        text="${this.__getLabel(this.climateEntity.attributes.preset_mode)}"
         .items=${this.__getPresetOptions()}
         @button-select="${this.__select}"
         style="--primary-icon-color:${preset_color} --label-text-color: ${preset_color}"
@@ -369,8 +394,8 @@ class SciFiRadiator extends LitElement {
       <sci-fi-button-select-card
         position="left"
         icon=${this.styles.state.icons[this.climateEntity.state]}
-        title="mode"
-        text=${this.climateEntity.state}
+        title="${msg('mode')}"
+        text="${this.__getLabel(this.climateEntity.state)}"
         .items=${this.__getHvacOptions()}
         @button-select="${this.__select}"
         style="--primary-icon-color:${hvac_color} --label-text-color: ${hvac_color}"
@@ -405,7 +430,7 @@ class SciFiRadiator extends LitElement {
           icon: this.styles.mode.icons[mode]
             ? this.styles.mode.icons[mode]
             : 'mdi:information-off-outline',
-          text: mode.replace('_', ' '),
+          text: this.__getLabel(mode),
         };
       });
   }
@@ -421,7 +446,7 @@ class SciFiRadiator extends LitElement {
           icon: this.styles.state.icons[hvac_mode]
             ? this.styles.state.icons[hvac_mode]
             : 'mdi:information-off-outline',
-          text: hvac_mode.replace('_', ' '),
+          text: this.__getLabel(hvac_mode),
         };
       });
   }

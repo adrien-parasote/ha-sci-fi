@@ -7,7 +7,7 @@ import {
   ENTITY_KIND_LIGHT,
   STATE_LIGHT_ON,
 } from '../../helpers/entities/light/light_const.js';
-import {SunEntity} from '../../helpers/entities/weather/weather.js';
+import {SunEntity} from '../../helpers/entities/weather.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
 import {PACKAGE} from './const.js';
@@ -19,7 +19,6 @@ export class SciFiLights extends SciFiBaseCard {
   }
 
   _configMetadata = configMetadata;
-  _hass; // private
   _sun;
 
   static get properties() {
@@ -38,8 +37,7 @@ export class SciFiLights extends SciFiBaseCard {
   }
 
   set hass(hass) {
-    this._hass = hass;
-
+    super.hass = hass;
     if (!this._config) return; // Can't assume setConfig is called before hass is set
 
     if (!this._sun && hass.states['sun.sun'])

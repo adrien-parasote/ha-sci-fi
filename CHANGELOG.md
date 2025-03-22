@@ -1,6 +1,6 @@
 # Changelog
 
-# [v0.7.0](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.7.2) - 2025-xx-xx
+# [v0.7.0](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.7.2) - 2025-03-22
 
 ## 🆕 What's New
 

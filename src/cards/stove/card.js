@@ -19,6 +19,16 @@ import {
   STATE_CLIMATE_HEAT,
   STATE_CLIMATE_OFF,
 } from '../../helpers/entities/climate/climate_const.js';
+import {
+  STOVE_SENSOR_STATUS_COMBUSTION,
+  STOVE_SENSOR_STATUS_COOLING,
+  STOVE_SENSOR_STATUS_ECO,
+  STOVE_SENSOR_STATUS_IGNITION,
+  STOVE_SENSOR_STATUS_OFF,
+  STOVE_SENSOR_STATUS_PRE_COMBUSTION,
+  STOVE_SENSOR_STATUS_PRE_HEATING,
+  STOVE_SENSOR_STATUS_UNKNOWN,
+} from '../../helpers/entities/sensor/sensor_const.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
 import {
@@ -302,6 +312,19 @@ export class SciFiStove extends SciFiBaseCard {
     `;
   }
 
+  __getStatusText(status) {
+    const labels = {};
+    labels[STOVE_SENSOR_STATUS_OFF] = msg('off');
+    labels[STOVE_SENSOR_STATUS_PRE_HEATING] = msg('pre-heating');
+    labels[STOVE_SENSOR_STATUS_IGNITION] = msg('ignition');
+    labels[STOVE_SENSOR_STATUS_COMBUSTION] = msg('combustion');
+    labels[STOVE_SENSOR_STATUS_PRE_COMBUSTION] = msg('pre-combustion');
+    labels[STOVE_SENSOR_STATUS_ECO] = msg('eco');
+    labels[STOVE_SENSOR_STATUS_COOLING] = msg('cooling');
+    labels[STOVE_SENSOR_STATUS_UNKNOWN] = msg('unknown');
+    return status in labels ? labels[status] : status.replace('_', ' ');
+  }
+
   __displayStatus(text, status) {
     if (!status) return this.__displayStatus(text, 'N/A');
     return html`
@@ -317,7 +340,7 @@ export class SciFiStove extends SciFiBaseCard {
         ></sci-fi-icon>
 
         <div class="label">${text}:</div>
-        <div>${status.replace('_', ' ')}</div>
+        <div>${this.__getStatusText(status)}</div>
       </div>
     `;
   }

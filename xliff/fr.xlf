@@ -546,6 +546,30 @@
   <source>Stop</source>
   <target>Stop</target>
 </trans-unit>
+<trans-unit id="s73f0c943f298c6e6">
+  <source>ignition</source>
+  <target>allumage</target>
+</trans-unit>
+<trans-unit id="saa4529ab4c14268a">
+  <source>combustion</source>
+  <target>combustion</target>
+</trans-unit>
+<trans-unit id="s26315c976ecf1dfc">
+  <source>cooling</source>
+  <target>refroidissement</target>
+</trans-unit>
+<trans-unit id="s498865c7bd1f3959">
+  <source>unknown</source>
+  <target>inconnu</target>
+</trans-unit>
+<trans-unit id="s9ddf2cc619400949">
+  <source>pre-heating</source>
+  <target>préchauffage</target>
+</trans-unit>
+<trans-unit id="sf22207baa99a54c6">
+  <source>pre-combustion</source>
+  <target>précombustion</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

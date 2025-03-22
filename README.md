@@ -926,8 +926,6 @@ From top to bottom, display:
 > [!TIP]
 > This card can be configure through the UI that allow use to use HA interface for the configuration.
 
-<details>
-
 <summary>YAML</summary>
 
 #### Minimal configuration
@@ -1069,4 +1067,3 @@ If you don't want to fork the repository and just create/update the translation,
 4. Update all `<target>` balises with your translation.
 
 Then just create a pull request [here](https://github.com/adrien-parasote/ha-sci-fi/pulls).
-

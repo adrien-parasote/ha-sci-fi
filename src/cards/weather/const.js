@@ -7,11 +7,11 @@ export const CHART_BORDER_COLOR = 'rgb(102, 156, 210)';
 export const SENSORS_MAP = {
   temperature: {
     dropdown: {
-      label: 'Température',
+      label: 'temp',
       icon: 'thermometer-glass',
     },
     chartTitle: {
-      label: 'Températures prévisionnelles',
+      label: 'forecasted_temp',
       icon: 'thermometer',
     },
     chartDataKind: 'line',
@@ -25,11 +25,11 @@ export const SENSORS_MAP = {
   },
   precipitation: {
     dropdown: {
-      label: 'Précipitations',
+      label: 'precipitation',
       icon: 'raindrop-measure',
     },
     chartTitle: {
-      label: 'Précipitations prévisionnelles',
+      label: 'forecasted_precipitation',
       icon: 'raindrops',
     },
     chartDataKind: 'bar',
@@ -43,11 +43,11 @@ export const SENSORS_MAP = {
   },
   wind_speed: {
     dropdown: {
-      label: 'Vitesses du vent',
+      label: 'wind_speed',
       icon: 'windy-day',
     },
     chartTitle: {
-      label: 'Vitesses du vent prévisionnelles',
+      label: 'forecasted_wind_speed',
       icon: 'windsock',
     },
     chartDataKind: 'line',

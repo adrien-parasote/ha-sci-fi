@@ -570,6 +570,90 @@
   <source>pre-combustion</source>
   <target>précombustion</target>
 </trans-unit>
+<trans-unit id="s079ecf8df23a0daf">
+  <source>Clear sky</source>
+  <target>Ciel dégagé</target>
+</trans-unit>
+<trans-unit id="s8d4b3eb18c9a5388">
+  <source>Clear night</source>
+  <target>Nuit claire</target>
+</trans-unit>
+<trans-unit id="s5b8bab6460975745">
+  <source>Cloudy</source>
+  <target>Nuageux</target>
+</trans-unit>
+<trans-unit id="s671e6a65b2a45a5b">
+  <source>Exceptional</source>
+  <target>Exceptionnel</target>
+</trans-unit>
+<trans-unit id="sf2bb8d199c92d43f">
+  <source>Fog</source>
+  <target>Brouillard</target>
+</trans-unit>
+<trans-unit id="sfcb8f68fb0d89d5f">
+  <source>Risk of hail</source>
+  <target>Risque de grèle</target>
+</trans-unit>
+<trans-unit id="s159994586ab69913">
+  <source>Thunderstorms</source>
+  <target>Orages</target>
+</trans-unit>
+<trans-unit id="s7fb3f42e7dac28c0">
+  <source>Sunshine</source>
+  <target>Eclaircies</target>
+</trans-unit>
+<trans-unit id="s385fbf7e52385aae">
+  <source>Heavy rain</source>
+  <target>Pluie forte</target>
+</trans-unit>
+<trans-unit id="s984afe2bd363c533">
+  <source>Rain</source>
+  <target>Pluie</target>
+</trans-unit>
+<trans-unit id="s8300b224ee074d12">
+  <source>Snow</source>
+  <target>Neige</target>
+</trans-unit>
+<trans-unit id="sd8b57a87d52d6ded">
+  <source>Freezing rain</source>
+  <target>Pluie verglaçante</target>
+</trans-unit>
+<trans-unit id="s4f676d1aecd06b8c">
+  <source>Sunny</source>
+  <target>Ensoleillé</target>
+</trans-unit>
+<trans-unit id="sbfa2d1f49dbae97a">
+  <source>Windy</source>
+  <target>Venteux</target>
+</trans-unit>
+<trans-unit id="s293aaf12547441ce">
+  <source>Variable winds</source>
+  <target>Venteux variable</target>
+</trans-unit>
+<trans-unit id="s825b2844b8bfcefc">
+  <source>Lightning rainy</source>
+  <target>Orages et pluie</target>
+</trans-unit>
+<trans-unit id="s31ae72339af83374">
+  <source>Forecasted temperatures</source>
+  <target>Températures prévisionnelles</target>
+</trans-unit>
+<trans-unit id="sf4ffc9723091ab50">
+  <source>Precipitation</source>
+  <target>Précipitations</target>
+</trans-unit>
+<trans-unit id="s406cb503fbb65a22">
+  <source>Forecasted precipitation</source>
+  <target>Précipitations prévisionnelles</target>
+</trans-unit>
+<trans-unit id="sb232b02074d3cca9">
+  <source>Wind speeds</source>
+  <source>Vitesse du vent</source>
+</trans-unit>
+<trans-unit id="s7fddbda45cacb27b">
+  <source>Forecasted wind speeds</source>
+  <source>Vitesse du vent prévisionnelle</source>
+</trans-unit>
 </body>
 </file>
 </xliff>

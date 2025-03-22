@@ -1,3 +1,4 @@
+import {msg} from '@lit/localize';
 import Chart from 'chart.js/auto';
 import {html, nothing, svg} from 'lit';
 import {isEqual} from 'lodash-es';
@@ -9,7 +10,7 @@ import {
   HourlyForecast,
   SunEntity,
   WeatherEntity,
-} from '../../helpers/entities/weather/weather.js';
+} from '../../helpers/entities/weather.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import {templateToString} from '../../helpers/utils/utils.js';
 import configMetadata from './config-metadata.js';
@@ -132,6 +133,35 @@ export class SciFiWeather extends SciFiBaseCard {
     `;
   }
 
+  __getlabels(key) {
+    const labels = {
+      clear: msg('Clear sky'),
+      'clear-night': msg('Clear night'),
+      cloudy: msg('Cloudy'),
+      exceptional: msg('Exceptional'),
+      fog: msg('Fog'),
+      hail: msg('Risk of hail'),
+      lightning: msg('Thunderstorms'),
+      'lightning-rainy': msg('Lightning rainy'),
+      partlycloudy: msg('Sunshine'),
+      pouring: msg('Heavy rain'),
+      rainy: msg('Rain'),
+      snowy: msg('Snow'),
+      'snowy-rainy': msg('Freezing rain'),
+      sunny: msg('Sunny'),
+      windy: msg('Windy'),
+      'windy-variant': msg('Variable winds'),
+
+      temp: msg('Temperature'),
+      forecasted_temp: msg('Forecasted temperatures'),
+      precipitation: msg('Precipitation'),
+      forecasted_precipitation: msg('Forecasted precipitation'),
+      wind_speed: msg('Wind speeds'),
+      forecasted_wind_speed: msg('Forecasted wind speeds'),
+    };
+    return key in labels ? labels[key] : key;
+  }
+
   __renderHeader() {
     return html`
       <div class="weather-icon">
@@ -139,7 +169,8 @@ export class SciFiWeather extends SciFiBaseCard {
       </div>
       <div class="weather-clock">
         <div class="state">
-          ${this._weather.weatherName}, ${this._weather.temperatureUnit}
+          ${this.__getlabels(this._weather.state)},
+          ${this._weather.temperatureUnit}
         </div>
         <div class="hour">${this.__getHour()}</div>
         <div class="date">${this.__getDate()}</div>
@@ -241,7 +272,7 @@ export class SciFiWeather extends SciFiBaseCard {
                 icon="${SENSORS_MAP[key].dropdown.icon}"
               ></sci-fi-weather-icon>
               <div class="dropdown-item-label">
-                ${SENSORS_MAP[key].dropdown.label}
+                ${this.__getlabels(SENSORS_MAP[key].dropdown.label)}
               </div>
             </div>`
         )}
@@ -256,7 +287,7 @@ export class SciFiWeather extends SciFiBaseCard {
           icon="${SENSORS_MAP[this._chartDataKind].chartTitle.icon}"
         ></sci-fi-weather-icon>
         <div class="label">
-          ${SENSORS_MAP[this._chartDataKind].chartTitle.label}
+          ${this.__getlabels(SENSORS_MAP[this._chartDataKind].chartTitle.label)}
           (${this._weather.getUnit(this._chartDataKind)})
         </div>
       </div>

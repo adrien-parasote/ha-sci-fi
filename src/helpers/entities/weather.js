@@ -1,9 +1,8 @@
 import {html} from 'lit';
 
-import {isSameDay} from '../../utils/utils.js';
-import {WeatherSensor} from '../sensor/sensor.js';
-import {WEATHER_EXTRA_SENSORS} from '../sensor/sensor_const.js';
-import {WEATHER_STATE_FR} from './weather_const.js';
+import {isSameDay} from '../utils/utils.js';
+import {WeatherSensor} from './sensor/sensor.js';
+import {WEATHER_EXTRA_SENSORS} from './sensor/sensor_const.js';
 
 export class SunEntity {
   constructor(hass, sun_entity_id) {
@@ -109,10 +108,6 @@ export class WeatherEntity {
 
   get temperatureUnit() {
     return [this.temperature, this.temperature_unit].join('');
-  }
-
-  get weatherName() {
-    return WEATHER_STATE_FR[this.state];
   }
 
   get daily_precipitation() {

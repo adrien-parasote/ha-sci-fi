@@ -1,6 +1,13 @@
 # Changelog
 
-# [v0.7.0](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.7.2) - 2025-03-22
+# [v0.7.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.7.1) - 2025-03-23
+
+## 🐛 Fixes
+- Vehicle card: 
+  - fix plugged/unplugged icon isn't the right one displayed
+  - fix charging method returned value
+
+# [v0.7.0](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.7.0) - 2025-03-22
 
 ## 🆕 What's New
 

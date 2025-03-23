@@ -299,8 +299,8 @@ class SciFiLandspeeder extends LitElement {
 
   __getPlugStateIcon() {
     const states = {};
-    states[VEHICLE_PLUG_STATES_UNPLUGGED] = 'sci:landspeeder-plugged';
-    states[VEHICLE_PLUG_STATES_PLUGGED] = 'sci:landspeeder-plugged-off';
+    states[VEHICLE_PLUG_STATES_UNPLUGGED] = 'sci:landspeeder-plugged-off';
+    states[VEHICLE_PLUG_STATES_PLUGGED] = 'sci:landspeeder-plugged';
     states[VEHICLE_PLUG_STATES_PLUGGED_WAITING_FOR_CHARGE] =
       'sci:landspeeder-plugged-clock';
     states[VEHICLE_PLUG_STATES_ERROR] = 'sci:landspeeder-error-plug';

@@ -56,9 +56,9 @@ export class Vehicle {
   }
 
   get charging() {
-    return this.sensors[VEHICLE_SENSOR_CHARGING]
+    return !this.sensors[VEHICLE_SENSOR_CHARGING]
       ? false
-      : [VEHICLE_SENSOR_UNAVAILABLE_STATE, VEHICLE_SENSOR_OPEN_STATE].includes(
+      : [VEHICLE_SENSOR_UNAVAILABLE_STATE, VEHICLE_SENSOR_ON_STATE].includes(
           this.sensors[VEHICLE_SENSOR_CHARGING].state
         );
   }

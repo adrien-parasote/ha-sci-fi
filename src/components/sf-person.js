@@ -58,7 +58,9 @@ export class SciFiPerson extends LitElement {
   render() {
     return html`
       <div class="avatar">
-        <img src="${this.user.picture ? this.user.picture : ''}" />
+        <img
+          src="${this.user.entity_picture ? this.user.entity_picture : ''}"
+        />
         <div class="icon-container">
           <sci-fi-icon icon=${this.user.state_icon}></sci-fi-icon>
         </div>

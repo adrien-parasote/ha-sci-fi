@@ -2,7 +2,7 @@ import {ZoneSensor} from './sensor/sensor.js';
 
 export class Zones {
   constructor(hass) {
-    this.zones = Object.keys(window.hass.states)
+    this.zones = Object.keys(hass.states)
       .filter((s) => s.startsWith('zone.'))
       .map((id) => new ZoneSensor(id, hass));
   }

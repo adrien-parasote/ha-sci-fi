@@ -1,5 +1,10 @@
 # Changelog
 
+# [v0.7.2](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.7.2) - 2025-03-26
+
+## 🆕 What's Changed
+- Hexa card: use HA defined zone to display user location icon
+
 # [v0.7.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.7.1) - 2025-03-23
 
 ## 🐛 Fixes

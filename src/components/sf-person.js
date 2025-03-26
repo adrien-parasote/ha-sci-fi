@@ -2,8 +2,6 @@ import {LitElement, css, html} from 'lit';
 
 import common_style from '../helpers/styles/common_style.js';
 
-const STATE_HOME = 'home';
-
 export class SciFiPerson extends LitElement {
   static get styles() {
     return [
@@ -48,29 +46,21 @@ export class SciFiPerson extends LitElement {
 
   static get properties() {
     return {
-      entityId: {type: String, attribute: 'entity-id'},
-      state: {type: String},
-      picture: {type: String},
+      user: {type: Object},
     };
   }
 
   constructor() {
     super();
-    this.entityId = this.entityId ? this.entityId : null;
-    this.state = this.state ? this.state : STATE_HOME;
-    this.picture = this.picture ? this.picture : null;
+    this.user = this.user ? this.user : null;
   }
 
   render() {
     return html`
       <div class="avatar">
-        <img src="${this.picture ? this.picture : ''}" />
+        <img src="${this.user.picture ? this.user.picture : ''}" />
         <div class="icon-container">
-          <sci-fi-icon
-            icon=${this.state == STATE_HOME
-              ? 'mdi:home-outline'
-              : 'mdi:home-off-outline'}
-          ></sci-fi-icon>
+          <sci-fi-icon icon=${this.user.state_icon}></sci-fi-icon>
         </div>
       </div>
     `;

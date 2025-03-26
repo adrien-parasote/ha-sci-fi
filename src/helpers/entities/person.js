@@ -1,3 +1,5 @@
+import {Zones} from './zone';
+
 export class Person {
   constructor(hass) {
     const conUser = this.__getConnectedUser(hass);
@@ -7,6 +9,8 @@ export class Person {
     // Connected user language preferences
     this.language = hass.language;
     this.locale = hass.locale;
+    // Associate zone entity to display better user's location
+    this.zones = new Zones(hass);
   }
 
   __getConnectedUser(hass) {
@@ -17,6 +21,11 @@ export class Person {
           ? hass.states[key]
           : cur;
       }, {});
+  }
+
+  get state_icon() {
+    const zone = this.zones.get_associated_zones(this.id);
+    return zone.length == 0 ? 'mdi:home-off-outline' : zone[0].icon;
   }
 
   get entity_picture() {

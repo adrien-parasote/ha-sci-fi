@@ -62,3 +62,13 @@ export class TrackerSensor extends Sensor {
     };
   }
 }
+
+export class ZoneSensor extends Sensor {
+  has_user(user_id) {
+    return this.attributes.persons.includes(user_id);
+  }
+
+  get icon() {
+    return this.attributes.icon;
+  }
+}

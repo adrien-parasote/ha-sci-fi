@@ -80,10 +80,13 @@ Two modes are available:
 
 ### Card features:
 
-- Show current connected person with a custom optional welcome message
+- Show current connected person with 
+  - a photo from HA user profil
+  - user's location based on HA defined Zone. If user isn't in any defined zone, `mdi:home-off-outline` icon is displayed
+  - a custom optional welcome message
 - Weather (optional) tile: special weather tile based on following entities:
-    - `sun.sun` 
-    - `weather.<my_city>`
+  - `sun.sun` 
+  - `weather.<my_city>`
 - Custom tiles rendering status (standalone or kind)
 
 > [!CAUTION]

@@ -58,8 +58,11 @@ export class SciFiHexaTiles extends SciFiBaseCard {
     if (!this._entities || !isEqual(updatedEntity, this._entities)) {
       this._entities = updatedEntity;
     }
-    // Extract person info only once
-    if (!this._user) this._user = new Person(hass);
+    // Extract person entity
+    const user = new Person(hass);
+    if (!this._user || !isEqual(user, this._user)) {
+      this._user = user;
+    }
 
     // Extract weather info if needed
     if (this._config.weather.activate) {
@@ -134,11 +137,7 @@ export class SciFiHexaTiles extends SciFiBaseCard {
     return html`
       <div class="container">
         <div class="header">
-          <sci-fi-person
-            entity-id="${this._user.id}"
-            state="${this._user.state}"
-            picture="${this._user.entity_picture}"
-          ></sci-fi-person>
+          <sci-fi-person .user="${this._user}"></sci-fi-person>
           <div class="info">
             <div class="message">${this._config.header_message}</div>
             <div class="name">${this._user.friendly_name}</div>

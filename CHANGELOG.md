@@ -1,5 +1,9 @@
 # Changelog
 
+## 🐛 Fixes
+- [Climate card - Wrong floor color](https://github.com/adrien-parasote/ha-sci-fi/issues/35)
+
+
 # [v0.7.3](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.7.3) - 2025-03-26
 
 ## 🐛 Fixes

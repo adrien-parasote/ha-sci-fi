@@ -22,7 +22,24 @@ window.hass = {
   devices: {},
   entities: {},
   callService: hassCallService,
+  callApi: hassCallApi,
+  callWS: hassCallWs,
 };
+
+async function hassCallApi(method, path) {
+  const url = `${window.hass.auth.data.hassUrl}/api/${path}`;
+  return await fetch(url, {
+    method,
+    headers: {
+      Authorization: 'Bearer ' + window.hass.auth.accessToken,
+      'content-type': 'application/json',
+    },
+  }).then((e) => e.json());
+}
+
+async function hassCallWs(msg) {
+  return await window.hass.connection.sendMessagePromise(msg);
+}
 
 async function hassCallService(service, serviceData, target) {
   await callService(window.hass.connection, service, serviceData, target).then(

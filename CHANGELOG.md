@@ -1,5 +1,13 @@
 # Changelog
 
+
+# [v0.8.0](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.8.0) - 2025-MM-DD
+
+
+## 🐛 Fixes
+- Weather Card: fix wrong hourly forecast icon for current day
+
+
 # [v0.7.3](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.7.3) - 2025-03-26
 
 ## 🐛 Fixes

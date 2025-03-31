@@ -14,6 +14,7 @@ import {
 } from '../sensor/sensor_const.js';
 import {
   ENTITY_KIND_CLIMATE,
+  HASS_CLIMATE_PRESET_MODE_FROST,
   HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION,
   HASS_CLIMATE_SERVICE,
   HASS_CLIMATE_SERVICE_SET_HVAC_MODE,
@@ -29,6 +30,8 @@ export class ClimateEntity {
   static kind = ENTITY_KIND_CLIMATE;
 
   constructor(entity, device) {
+    console.log(entity.attributes.friendly_name, entity);
+
     this.entity_id = entity.entity_id ? entity.entity_id : null;
     this.state = entity.state ? entity.state : STATE_CLIMATE_OFF;
 
@@ -77,7 +80,10 @@ export class ClimateEntity {
     return (
       STATE_CLIMATE_HEAT == this.state ||
       (STATE_CLIMATE_AUTO == this.state &&
-        this.preset_mode != HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION)
+        ![
+          HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION,
+          HASS_CLIMATE_PRESET_MODE_FROST,
+        ].includes(this.preset_mode))
     );
   }
 

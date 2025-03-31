@@ -10,6 +10,7 @@ import {
   HASS_CLIMATE_PRESET_MODE_COMFORT_2,
   HASS_CLIMATE_PRESET_MODE_ECO,
   HASS_CLIMATE_PRESET_MODE_EXTERNAL,
+  HASS_CLIMATE_PRESET_MODE_FROST,
   HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION,
   HASS_CLIMATE_PRESET_MODE_NONE,
   HASS_CLIMATE_PRESET_MODE_PROG,
@@ -54,6 +55,7 @@ class SciFiRadiator extends LitElement {
           display: flex;
           flex-direction: column;
           justify-content: center;
+          max-width: 120px;
         }
         .content .right sci-fi-button-select-card {
           --title-color: var(--secondary-bg-color);
@@ -362,6 +364,7 @@ class SciFiRadiator extends LitElement {
     labels[STATE_CLIMATE_OFF] = msg('off');
     labels[STATE_CLIMATE_AUTO] = msg('auto');
     labels[HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION] = msg('frost protection');
+    labels[HASS_CLIMATE_PRESET_MODE_FROST] = msg('frost protection');
     labels[HASS_CLIMATE_PRESET_MODE_ECO] = msg('eco');
     labels[HASS_CLIMATE_PRESET_MODE_COMFORT] = msg('comfort');
     labels[HASS_CLIMATE_PRESET_MODE_COMFORT_1] = msg('comfort-1');
@@ -408,8 +411,10 @@ class SciFiRadiator extends LitElement {
       .filter((m) => {
         if (this.climateEntity.state == STATE_CLIMATE_AUTO) {
           if (
-            this.climateEntity.attributes.preset_mode !=
-            HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION
+            ![
+              HASS_CLIMATE_PRESET_MODE_FROST,
+              HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION,
+            ].includes(this.climateEntity.attributes.preset_mode)
           )
             return m == HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION;
           return [
@@ -423,13 +428,19 @@ class SciFiRadiator extends LitElement {
         );
       })
       .map((mode) => {
+        let icon = 'mdi:information-off-outline';
+        if (this.styles.mode.icons[mode]) icon = this.styles.mode.icons[mode];
+        if (
+          mode == HASS_CLIMATE_PRESET_MODE_FROST &&
+          this.styles.mode.icons[HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION]
+        )
+          icon =
+            this.styles.mode.icons[HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION];
         return {
           value: mode,
           action: 'preset',
           color: this.styles.mode.colors[mode],
-          icon: this.styles.mode.icons[mode]
-            ? this.styles.mode.icons[mode]
-            : 'mdi:information-off-outline',
+          icon: icon,
           text: this.__getLabel(mode),
         };
       });

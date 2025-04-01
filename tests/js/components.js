@@ -3,6 +3,7 @@ import {stringify} from 'yaml';
 import config_climates from '../config/config_climates.js';
 import config_hexa from '../config/config_hexa.js';
 import config_lights from '../config/config_lights.js';
+import config_plugs from '../config/config_plugs.js';
 import config_stove from '../config/config_stove.js';
 import config_vehicles from '../config/config_vehicles.js';
 import config_weather from '../config/config_weather.js';
@@ -23,6 +24,10 @@ const MAP = {
   climate: {
     config: config_climates,
     element: window.customElements.get('sci-fi-climates'),
+  },
+  plugs: {
+    config: config_plugs,
+    element: window.customElements.get('sci-fi-plugs'),
   },
   stove: {
     config: config_stove,

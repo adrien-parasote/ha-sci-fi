@@ -1,6 +1,5 @@
 # Changelog
 
-
 # [v0.8.0](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.8.0) - 2025-MM-DD
 
 ## 🆕 What's New
@@ -14,7 +13,7 @@
 
 ## 🐛 Fixes
 - Weather Card: fix wrong hourly forecast icon for current day
-
+- Climate card: [Climate card - Wrong floor color](https://github.com/adrien-parasote/ha-sci-fi/issues/35)
 
 # [v0.7.3](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.7.3) - 2025-03-26
 

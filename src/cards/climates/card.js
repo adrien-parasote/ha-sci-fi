@@ -118,7 +118,10 @@ export class SciFiClimates extends SciFiBaseCard {
           id: floor.id,
           state: this._active_floor_id == floor.id ? 'on' : 'off',
           selected: this._active_floor_id == floor.id,
-          active: floor.getTemperature(this._config.entities_to_exclude)
+          active: floor.isActive(
+            ENTITY_KIND_CLIMATE,
+            this._config.entities_to_exclude
+          )
             ? 'on'
             : 'off',
           icon: floor.icon,

@@ -244,7 +244,6 @@ export class HourlyForecast {
 
       if (hour <= dawn || hour >= dusk) state = 'night';
     }
-    console.log([this.condition, state].join('-'));
     return [this.condition, state].join('-');
   }
 

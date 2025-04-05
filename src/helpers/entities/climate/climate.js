@@ -30,11 +30,8 @@ export class ClimateEntity {
   static kind = ENTITY_KIND_CLIMATE;
 
   constructor(entity, device) {
-    console.log(entity.attributes.friendly_name, entity);
-
     this.entity_id = entity.entity_id ? entity.entity_id : null;
     this.state = entity.state ? entity.state : STATE_CLIMATE_OFF;
-
     this.hvac_modes = entity.attributes.hvac_modes
       ? entity.attributes.hvac_modes
       : null;

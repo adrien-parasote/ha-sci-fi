@@ -81,6 +81,7 @@ export class SciFiBaseEditor extends LitElement {
       'section-title-entity-light-custom': msg('Light entities customization'),
       'section-title-sensor': msg('Sensors'),
       'section-title-storage': msg('Storage'),
+      'section-title-plug': msg('Plugs'),
 
       'text-optionnal': msg('(optionnal)'),
       'text-required': msg('(required)'),
@@ -167,6 +168,7 @@ export class SciFiBaseEditor extends LitElement {
       'input-alert-yellow': msg('Yellow state'),
       'input-alert-orange': msg('Orange state'),
       'input-alert-red': msg('Red state'),
+      'input-device': msg('Device'),
     };
     return key in labels ? labels[key] : '';
   }

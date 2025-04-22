@@ -662,6 +662,14 @@
   <source>Frozen</source>
   <target>Gel</target>
 </trans-unit>
+<trans-unit id="s0b0a02a4470de153">
+  <source>Device</source>
+  <target>Appareil</target>
+</trans-unit>
+<trans-unit id="saadb07af64e1c79e">
+  <source>Plugs</source>
+  <target>Prises</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

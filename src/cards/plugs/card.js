@@ -36,7 +36,7 @@ export class SciFiPlugs extends SciFiBaseCard {
           device.name,
           device.active_icon,
           device.inactive_icon,
-          device.diagnostic,
+          device.power_sensor,
           device.other_sensors
         )
     );
@@ -76,7 +76,14 @@ export class SciFiPlugs extends SciFiBaseCard {
 
   __displayPlug(plug) {
     console.log(plug);
-    return html`<div class="content"></div>`;
+    return html`<div class="content">
+      <div>Power</div>
+      <div>Energy</div>
+
+
+
+
+    </div>`;
   }
 
   __displayFooter() {

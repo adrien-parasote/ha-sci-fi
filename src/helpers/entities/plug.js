@@ -11,7 +11,7 @@ export class Plug {
     name,
     active_icon,
     inactive_icon,
-    diagnostic,
+    power_sensor,
     other_sensors
   ) {
     this.device = new Device(hass, device_id);
@@ -20,13 +20,8 @@ export class Plug {
     this.entity_id = entity_id;
     this.state = hass.states[entity_id].state;
     this.name = name;
-    this.power_sensor =
-      diagnostic.power && hass.states[diagnostic.power]
-        ? new Sensor(diagnostic.power, hass)
-        : null;
-    this.energy_sensor =
-      diagnostic.energy && hass.states[diagnostic.energy]
-        ? new Sensor(diagnostic.energy, hass)
+    this.power_sensor = power_sensor && hass.states[power_sensor]
+        ? new Sensor(power_sensor, hass)
         : null;
   }
 

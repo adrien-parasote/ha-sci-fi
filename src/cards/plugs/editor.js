@@ -203,26 +203,13 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
           ${this.getLabel('section-title-energy')}
         </h1>
         <sci-fi-dropdown-entity-input
-          icon="mdi:lightning-bolt"
-          label="${this.getLabel('input-energy')} ${this.getLabel(
-            'text-optionnal'
-          )}"
-          element-id="diagnostic"
-          kind="energy"
-          .items="${items}"
-          value="${device.diagnostic.energy}"
-          ?disabled=${device.device_id == null}
-          @input-update=${this.__update}
-        ></sci-fi-dropdown-entity-input>
-        <sci-fi-dropdown-entity-input
           icon="mdi:flash"
           label="${this.getLabel('input-power')} ${this.getLabel(
             'text-optionnal'
           )}"
-          element-id="diagnostic"
-          kind="power"
+          element-id="power_sensor"
           .items="${items}"
-          value="${device.diagnostic.power}"
+          value="${device.power_sensor}"
           ?disabled=${device.device_id == null}
           @input-update=${this.__update}
         ></sci-fi-dropdown-entity-input>
@@ -310,10 +297,7 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
       active_icon: 'mdi:power-plug-outline',
       inactive_icon: 'mdi:power-plug-off-outline',
       name: null,
-      diagnostic: {
-        power: null,
-        energy: null,
-      },
+      power_sensor: null,
       others: {},
     };
   }

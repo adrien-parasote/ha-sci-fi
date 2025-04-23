@@ -30,22 +30,10 @@ export default {
         type: 'string',
         default: '',
       },
-      diagnostic: {
-        mandatory: true,
-        type: 'object',
-        default: {},
-        data: {
-          power: {
-            mandatory: false,
-            type: 'string',
-            default: '',
-          },
-          energy: {
-            mandatory: false,
-            type: 'string',
-            default: '',
-          },
-        },
+      power_sensor:  {
+        mandatory: false,
+        type: 'string',
+        default: '',
       },
     },
   },

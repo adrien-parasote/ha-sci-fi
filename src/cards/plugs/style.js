@@ -44,7 +44,6 @@ export default css`
     font-size: var(--font-size-small);
     color: var(--secondary-bg-color);;
   }
-
   .footer {
     display: flex;
     flex-direction: row;
@@ -80,10 +79,8 @@ export default css`
   .content {
     display: flex;
     flex: 1;
-    padding: 10px;
+    padding: 10px;    
+    flex-direction: column;
   }
-  .content .info {
-    display: flex;
-    flex-direction: row;
-  }
+  
 `;

@@ -6,20 +6,14 @@ export default {
       active_icon: 'mdi:washing-machine',
       inactive_icon: 'mdi:washing-machine-off',
       name: 'Washing machine',
-      diagnostic: {
-        power: 'sensor.nous_lave_linge_power',
-        energy: 'sensor.nous_lave_linge_energy',
-      },
+      power_sensor: 'sensor.nous_lave_linge_power',
       others: {},
     },
     {
       device_id: 'a041422639f495ca70ed05e3a74ff183',
       entity_id: 'switch.mureva_evlink',
       name: 'EV plug',
-      diagnostic: {
-        power: 'sensor.mureva_evlink_power_corrected',
-        energy: 'sensor.mureva_evlink_energy_corrected',
-      },
+      power_sensor: 'sensor.mureva_evlink_power_corrected',
       others: {},
     },
   ],

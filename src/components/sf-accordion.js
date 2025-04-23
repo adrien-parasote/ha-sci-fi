@@ -37,7 +37,7 @@ export class SciFiAccordionCard extends LitElement {
           transition: all 0.35s;
         }
         .content > div {
-          padding: 10px;
+          padding: 10px 10px 30px 10px;
           margin: 0;
           display: flex;
           flex-direction: column;

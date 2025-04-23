@@ -6,6 +6,7 @@
 
 export const templates = {
   s04e13613e8f15f55: `Stock`,
+  s053eb89714fe5c46: `Puissance`,
   s079ecf8df23a0daf: `Ciel dégagé`,
   s0a5a8f277fb09f89: `Vitesse du ventilateur`,
   s0a8f02cc5f99f0d3: `chauffe`,
@@ -90,6 +91,7 @@ export const templates = {
   s795e94ad936eda68: `Édition du mode confort`,
   s79e8cc71a5975b04: `Message`,
   s7a1aac1836d2d16d: `Rendu`,
+  s7ae5963112a50472: `Autres`,
   s7b02d3a7b64946b9: `Nombre de jours prévisionnel`,
   s7d75073d3dd3edb9: `Autonomie en carburant`,
   s7d7ca36ecef354a5: `En cours`,
@@ -131,6 +133,7 @@ export const templates = {
   sae1c7f13b7c0c47f: `Start`,
   sae239213b7c70376: `État`,
   saea04aa463411709: `Édition du mode hors gel`,
+  sb21717f2b8f8b667: `Surveillance`,
   sb232b02074d3cca9: `Vitesse du vent`,
   sb4d2057561cf5a9f: `Vitesse des ventilateurs de poêle`,
   sb7b074ab844ba741: `Édition de l'état éteind`,
@@ -150,6 +153,7 @@ export const templates = {
   sd68096c54241294b: `Édition de l'état auto`,
   sd8b57a87d52d6ded: `Pluie verglaçante`,
   sd9ad53251f2330a5: `Stop`,
+  sdb6622a51b2a94f5: `Énergie`,
   se06ad64a9de6df0f: `Véhicule`,
   se19cc57dd8675498: `Seuil`,
   se25db8feb9dcef42: `Air-cond`,

@@ -670,6 +670,22 @@
   <source>Plugs</source>
   <target>Prises</target>
 </trans-unit>
+<trans-unit id="sdb6622a51b2a94f5">
+  <source>Energy</source>
+  <target>Énergie</target>
+</trans-unit>
+<trans-unit id="s7ae5963112a50472">
+  <source>Others</source>
+  <target>Autres</target>
+</trans-unit>
+<trans-unit id="sb21717f2b8f8b667">
+  <source>Monitoring</source>
+  <target>Surveillance</target>
+</trans-unit>
+<trans-unit id="s053eb89714fe5c46">
+  <source>Power</source>
+  <target>Puissance</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

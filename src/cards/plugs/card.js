@@ -1,3 +1,4 @@
+import {msg} from '@lit/localize';
 import {html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
@@ -58,14 +59,24 @@ export class SciFiPlugs extends SciFiBaseCard {
   }
 
   __displayHeader(plug) {
+    const area = plug.area;
     return html`<div class="header">
-      <sci-fi-icon icon=${plug.icon}></sci-fi-icon>
-      <div>${plug.name}</div>
+      <sci-fi-icon
+        icon=${area ? area.icon : 'mdi:help'}
+        class="${plug.state}"
+      ></sci-fi-icon>
+      <div class="info">
+        <div class="title" class="${plug.state}">${plug.name}</div>
+        <div class="sub-title">
+          ${plug.model} ${msg('by')} ${plug.manufacturer}
+        </div>
+      </div>
     </div>`;
   }
 
   __displayPlug(plug) {
-    return html`<div class="content">CONTENT</div>`;
+    console.log(plug);
+    return html`<div class="content"></div>`;
   }
 
   __displayFooter() {

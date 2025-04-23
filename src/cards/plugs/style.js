@@ -6,6 +6,7 @@ export default css`
     height: 100%;
     width: 100%;
     background-color: black;
+    --tile-width: 60px;
   }
   .container {
     display: flex;
@@ -15,16 +16,35 @@ export default css`
   .header {
     display: flex;
     flex-direction: row;
-    text-align: center;
     border-bottom: var(--border-width) solid var(--primary-bg-color);
     padding: 10px;
     background-color: var(--primary-bg-alpha-color);
-    column-gap: 5px;
+    column-gap: 10px;
     align-items: center;
     justify-content: center;
-    font-size: var(--font-size-title);
+    font-size: var(--font-size-normal);
+    color: var(--primary-light-alpha-color);
+    min-height: 45px;
+  }
+  .header sci-fi-icon.on {
+    --icon--color: var(--primary-light-color);
+  }
+  .header sci-fi-icon {
+    --icon--color: var(--primary-light-alpha-color);
+  }
+  .header .on {
     color: var(--primary-light-color);
   }
+  .header .info {
+    display: flex;
+    flex-direction: column;
+    flex:1
+  }
+  .header .info .sub-title {
+    font-size: var(--font-size-small);
+    color: var(--secondary-bg-color);;
+  }
+
   .footer {
     display: flex;
     flex-direction: row;
@@ -61,5 +81,9 @@ export default css`
     display: flex;
     flex: 1;
     padding: 10px;
+  }
+  .content .info {
+    display: flex;
+    flex-direction: row;
   }
 `;

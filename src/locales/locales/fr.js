@@ -8,6 +8,7 @@ export const templates = {
   s04e13613e8f15f55: `Stock`,
   s053eb89714fe5c46: `Puissance`,
   s079ecf8df23a0daf: `Ciel dégagé`,
+  s08a64b07b54df8d4: `par`,
   s0a5a8f277fb09f89: `Vitesse du ventilateur`,
   s0a8f02cc5f99f0d3: `chauffe`,
   s0ac4337fedc3fa98: `États actifs`,

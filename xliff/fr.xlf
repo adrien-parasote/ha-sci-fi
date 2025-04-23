@@ -686,6 +686,10 @@
   <source>Power</source>
   <target>Puissance</target>
 </trans-unit>
+<trans-unit id="s08a64b07b54df8d4">
+  <source>by</source>
+  <target>par</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

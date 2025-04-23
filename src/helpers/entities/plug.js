@@ -35,4 +35,15 @@ export class Plug {
       ? this._active_icon
       : this._inactive_icon;
   }
+
+  get area() {
+    return this.device.area;
+  }
+
+  get manufacturer() {
+    return this.device.manufacturer;
+  }
+  get model() {
+    return this.device.model;
+  }
 }

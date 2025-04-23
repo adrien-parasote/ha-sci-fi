@@ -1,5 +1,7 @@
 import {html, nothing} from 'lit';
+import {isEqual} from 'lodash-es';
 
+import {Plug} from '../../helpers/entities/plug.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
 import {PACKAGE} from './const.js';
@@ -17,22 +19,92 @@ export class SciFiPlugs extends SciFiBaseCard {
     return {
       _config: {type: Object},
       _plugs: {type: Array},
+      _selected_plug_id: {type: Number},
     };
   }
 
   set hass(hass) {
     super.hass = hass;
     if (!this._config) return; // Can't assume setConfig is called before hass is set
-
-    console.log(this._config)
+    const plugs = this._config.devices.map(
+      (device) =>
+        new Plug(
+          this._hass,
+          device.device_id,
+          device.entity_id,
+          device.name,
+          device.active_icon,
+          device.inactive_icon,
+          device.diagnostic,
+          device.other_sensors
+        )
+    );
+    if (!this._plugs || !isEqual(plugs, this._plugs)) {
+      this._plugs = plugs;
+      if (!this._selected_plug_id) this._selected_plug_id = 0;
+    }
   }
 
   render() {
     if (!this._hass || !this._config) return nothing;
+    const plug = this._plugs[this._selected_plug_id];
     return html`
-      <div class="container">TODO</div>
+      <div class="container">
+        ${this.__displayHeader(plug)} ${this.__displayPlug(plug)}
+        ${this.__displayFooter()}
+      </div>
       <sci-fi-toast></sci-fi-toast>
     `;
+  }
+
+  __displayHeader(plug) {
+    return html`<div class="header">
+      <sci-fi-icon icon=${plug.icon}></sci-fi-icon>
+      <div>${plug.name}</div>
+    </div>`;
+  }
+
+  __displayPlug(plug) {
+    return html`<div class="content">CONTENT</div>`;
+  }
+
+  __displayFooter() {
+    const multiple_plugs = this._plugs.length > 1;
+
+    return html`<div class="footer">
+      <div class="${multiple_plugs ? 'show' : 'hide'}">
+        <sci-fi-button
+          icon="mdi:chevron-left"
+          @button-click=${this._next}
+        ></sci-fi-button>
+      </div>
+      <div class="number">
+        ${this._plugs.map(
+          (d, i) =>
+            html`<div
+              class="${i == this._selected_plug_id ? 'active' : ''}"
+            ></div>`
+        )}
+      </div>
+      <div class="${multiple_plugs ? 'show' : 'hide'}">
+        <sci-fi-button
+          icon="mdi:chevron-right"
+          @button-click=${this._next}
+        ></sci-fi-button>
+      </div>
+    </div>`;
+  }
+
+  _next(e) {
+    if (e.detail.element.icon == 'mdi:chevron-left') {
+      this._selected_plug_id == 0
+        ? (this._selected_plug_id = this._plugs.length - 1)
+        : (this._selected_plug_id -= 1);
+    } else {
+      this._selected_plug_id == this._plugs.length - 1
+        ? (this._selected_plug_id = 0)
+        : (this._selected_plug_id += 1);
+    }
   }
 
   __toast(error, e) {

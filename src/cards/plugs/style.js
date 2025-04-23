@@ -12,4 +12,54 @@ export default css`
     flex-direction: column;
     width: 100%;
   }
+  .header {
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+    border-bottom: var(--border-width) solid var(--primary-bg-color);
+    padding: 10px;
+    background-color: var(--primary-bg-alpha-color);
+    column-gap: 5px;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-title);
+    color: var(--primary-light-color);
+  }
+  .footer {
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+    border-top: var(--border-width) solid var(--primary-bg-color);
+    padding: 10px;
+    background-color: var(--primary-bg-alpha-color);
+    column-gap: 5px;
+    align-items: center;
+    justify-content: center;
+  }
+  .footer .hide {
+    display: none;
+  }
+  .footer .number {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    column-gap: 10px;
+    flex: 1;
+  }
+  .footer .number > div {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background-color: var(--primary-light-alpha-color);
+    text-decoration: none;
+    border-radius: 50%;
+  }
+  .footer .number > div.active {
+    background-color: var(--primary-light-color);
+  }
+  .content {
+    display: flex;
+    flex: 1;
+    padding: 10px;
+  }
 `;

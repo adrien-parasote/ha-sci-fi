@@ -20,7 +20,8 @@ export class Plug {
     this.entity_id = entity_id;
     this.state = hass.states[entity_id].state;
     this.name = name;
-    this.power_sensor = power_sensor && hass.states[power_sensor]
+    this.power_sensor =
+      power_sensor && hass.states[power_sensor]
         ? new Sensor(power_sensor, hass)
         : null;
   }

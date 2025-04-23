@@ -77,12 +77,11 @@ export class SciFiPlugs extends SciFiBaseCard {
   __displayPlug(plug) {
     console.log(plug);
     return html`<div class="content">
-      <div>Power</div>
-      <div>Energy</div>
-
-
-
-
+      <div class="power">Power</div>
+      <div class="image">IMAGE</div>
+      <div>Child lock</div>
+      <div>Power outage memory</div>
+      <div>Others</div>
     </div>`;
   }
 

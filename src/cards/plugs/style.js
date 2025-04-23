@@ -38,11 +38,11 @@ export default css`
   .header .info {
     display: flex;
     flex-direction: column;
-    flex:1
+    flex: 1;
   }
   .header .info .sub-title {
     font-size: var(--font-size-small);
-    color: var(--secondary-bg-color);;
+    color: var(--secondary-bg-color);
   }
   .footer {
     display: flex;
@@ -79,8 +79,7 @@ export default css`
   .content {
     display: flex;
     flex: 1;
-    padding: 10px;    
+    padding: 10px;
     flex-direction: column;
   }
-  
 `;

@@ -30,7 +30,7 @@ export default {
         type: 'string',
         default: '',
       },
-      power_sensor:  {
+      power_sensor: {
         mandatory: false,
         type: 'string',
         default: '',

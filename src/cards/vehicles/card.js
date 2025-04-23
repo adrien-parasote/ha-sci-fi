@@ -69,21 +69,21 @@ export class SciFiVehicles extends SciFiBaseCard {
         <div class="${multiple_vehicle ? 'show' : 'hide'}">
           <sci-fi-button
             icon="mdi:chevron-left"
-            @button-click=${this._nextCar}
+            @button-click=${this._next}
           ></sci-fi-button>
         </div>
         <div class="title">${this._vehicles[this._active_vehicle_id].name}</div>
         <div class="${multiple_vehicle ? 'show' : 'hide'}">
           <sci-fi-button
             icon="mdi:chevron-right"
-            @button-click=${this._nextCar}
+            @button-click=${this._next}
           ></sci-fi-button>
         </div>
       </div>
     `;
   }
 
-  _nextCar(e) {
+  _next(e) {
     if (e.detail.element.icon == 'mdi:chevron-left') {
       this._active_vehicle_id == 0
         ? (this._active_vehicle_id = this._vehicles.length - 1)

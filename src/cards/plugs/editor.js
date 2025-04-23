@@ -57,7 +57,7 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
       <div class="head">
         <sci-fi-button
           icon="mdi:chevron-left"
-          @button-click=${this.__editDevice}
+          @button-click=${(e) => this.__editDevice(null)}
         ></sci-fi-button>
         <span>${device.name ? device.name : ''}</span>
       </div>
@@ -283,7 +283,6 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
   }
 
   __deleteDevice(e, id) {
-    console.log(id);
     let newConfig = this.__getNewConfig();
     newConfig.devices.splice(id, 1);
     this.__dispatchChange(e, newConfig);
@@ -293,7 +292,7 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
     this._edit = !this._edit;
     this._current_device_id = id;
     this._setup_device_entities(
-      this._config.devices[this._current_device_id].device_id
+      id ? this._config.devices[this._current_device_id].device_id : id
     );
   }
 

@@ -18,17 +18,17 @@ export default {
       active_icon: {
         mandatory: false,
         type: 'string',
-        default: "mdi:power-plug-outline",
+        default: 'mdi:power-plug-outline',
       },
       inactive_icon: {
         mandatory: false,
         type: 'string',
-        default: "mdi:power-plug-off-outline",
+        default: 'mdi:power-plug-off-outline',
       },
       name: {
         mandatory: false,
         type: 'string',
-        default: "",
+        default: '',
       },
       diagnostic: {
         mandatory: true,
@@ -45,8 +45,8 @@ export default {
             type: 'string',
             default: '',
           },
-        }
-      }
+        },
+      },
     },
   },
 };

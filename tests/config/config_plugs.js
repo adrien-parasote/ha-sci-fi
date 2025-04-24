@@ -16,5 +16,12 @@ export default {
       power_sensor: 'sensor.mureva_evlink_power_corrected',
       others: {},
     },
+    {
+      device_id: 'f5d95ce6628b0ce1de0e1f97bda58ce7',
+      entity_id: 'switch.nous_seche_linge',
+      name: 'Dry machine',
+      power_sensor: 'sensor.nous_seche_linge_power',
+      others: {},
+    },
   ],
 };

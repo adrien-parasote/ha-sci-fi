@@ -23,17 +23,18 @@ export default css`
     align-items: center;
     justify-content: center;
     font-size: var(--font-size-normal);
-    color: var(--primary-light-alpha-color);
+    color: var(--secondary-light-alpha-color);
     min-height: 45px;
   }
   .header sci-fi-icon.on {
-    --icon--color: var(--primary-light-color);
+    --icon--color: var(--secondary-light-color);
   }
+
   .header sci-fi-icon {
-    --icon--color: var(--primary-light-alpha-color);
+    --icon--color: var(--secondary-light-alpha-color);
   }
   .header .on {
-    color: var(--primary-light-color);
+    color: var(--secondary-light-color);
   }
   .header .info {
     display: flex;
@@ -79,7 +80,12 @@ export default css`
   .content {
     display: flex;
     flex: 1;
+    flex-direction: column;
+  }
+  .content .info {
     padding: 10px;
+    display: flex;
+    flex: 1;
     flex-direction: column;
   }
 `;

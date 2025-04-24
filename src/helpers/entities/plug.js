@@ -14,6 +14,7 @@ export class Plug {
     power_sensor,
     other_sensors
   ) {
+    this._hass = hass;
     this.device = new Device(hass, device_id);
     this._active_icon = active_icon;
     this._inactive_icon = inactive_icon;
@@ -41,5 +42,33 @@ export class Plug {
   }
   get model() {
     return this.device.model;
+  }
+
+  async getPowerHistory() {
+    return this._hass.callApi(
+      'GET',
+      'history/period/' +
+        this.__getNow() +
+        '?minimal_response=true&no_attributes=true&significant_changes_only=true&filter_entity_id=' +
+        this.power_sensor.id
+    );
+  }
+
+  __getNow() {
+    const d = new Date();
+    return (
+      [
+        d.getFullYear(),
+        ('0' + (d.getMonth() + 1)).slice(-2),
+        ('0' + (d.getDate() - 1)).slice(-2),
+      ].join('-') +
+      'T' +
+      [
+        ('0' + d.getHours()).slice(-2),
+        ('0' + d.getMinutes()).slice(-2),
+        ('0' + d.getSeconds()).slice(-2),
+      ].join(':') +
+      '+00:00'
+    );
   }
 }

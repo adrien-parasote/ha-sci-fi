@@ -77,22 +77,19 @@ function connected() {
 }
 
 function getAuthOptions() {
-  const storeAuth = true;
-  const authOptions = storeAuth
-    ? {
-        async loadTokens() {
-          try {
-            return JSON.parse(localStorage.hassTokens);
-          } catch (err) {
-            return undefined;
-          }
-        },
-        saveTokens: (tokens) => {
-          localStorage.hassTokens = JSON.stringify(tokens);
-        },
+  return {
+    async loadTokens() {
+      try {
+        return JSON.parse(localStorage.hassTokens);
+      } catch (err) {
+        console.error(err);
+        return undefined;
       }
-    : {};
-  return authOptions;
+    },
+    saveTokens: (tokens) => {
+      localStorage.hassTokens = JSON.stringify(tokens);
+    },
+  };
 }
 
 (async () => {
@@ -221,13 +218,6 @@ window.buildHass = function () {
         }),
       (err) => console.error('Failed to load entities', err)
     );
-  dispatchEvent(
-    new CustomEvent('hass-created', {
-      detail: 'create',
-      bubbles: true,
-      composed: true,
-    })
-  );
 
   getConfig(window.hass.connection).then(
     (config) => {
@@ -242,6 +232,13 @@ window.buildHass = function () {
         time_zone: 'local',
         first_weekday: 'language',
       };
+      dispatchEvent(
+        new CustomEvent('hass-changed', {
+          detail: 'config',
+          bubbles: true,
+          composed: true,
+        })
+      );
     },
     (err) => console.error('Failed to load config', err)
   );

@@ -40,9 +40,10 @@ const MAP = {
 };
 
 let content = null;
-let hassRdy = false;
 let srvRdy = false;
 let statesRdy = false;
+let configRdy = false;
+let firstRender = true;
 
 function renderYaml(json) {
   document.getElementById('yaml').innerHTML = stringify(json);
@@ -84,15 +85,46 @@ function cleanContent() {
   content = null;
 }
 
-window.addEventListener('hass-created', (e) => {
-  hassRdy = true;
-});
+function buildUI() {
+  const select = document.getElementById('components');
+  let param = new URLSearchParams(window.location.search).get('component');
+  param = param && Object.keys(MAP).includes(param) ? param : 'hexa';
+  Object.keys(MAP)
+    .sort()
+    .forEach((key) => {
+      const option = document.createElement('option');
+      option.value = key;
+      option.innerHTML = key;
+      if (param == key) option.selected = true;
+      select.appendChild(option);
+    });
+
+  renderElement();
+
+  select.addEventListener('change', function () {
+    const query = ['component', this.value].join('=');
+    var searchParams = new URLSearchParams(window.location.search);
+    searchParams.set('component', this.value);
+    window.history.pushState(
+      null,
+      '',
+      [window.location.pathname, '?', searchParams.toString()].join('')
+    );
+    cleanContent();
+    renderElement();
+  });
+}
 
 window.addEventListener('hass-changed', (e) => {
   if (e.detail == 'services') srvRdy = true;
   if (e.detail == 'states') statesRdy = true;
-  if (srvRdy && statesRdy) {
-    renderElement();
+  if (e.detail == 'config') configRdy = true;
+  if (srvRdy && statesRdy && configRdy) {
+    if (firstRender) {
+      buildUI();
+    } else {
+      renderElement();
+    }
   }
 });
 
@@ -106,31 +138,3 @@ window.addEventListener('config-changed', (e) => {
   // Display yaml
   renderYaml(e.detail.config);
 });
-
-(() => {
-  const select = document.getElementById('components');
-  let param = new URLSearchParams(window.location.search).get('component');
-  param = param && Object.keys(MAP).includes(param) ? param : 'hexa';
-  Object.keys(MAP)
-    .sort()
-    .forEach((key) => {
-      const option = document.createElement('option');
-      option.value = key;
-      option.innerHTML = key;
-      if (param == key) option.selected = true;
-      select.appendChild(option);
-    });
-  select.addEventListener('change', function () {
-    const query = ['component', this.value].join('=');
-    var searchParams = new URLSearchParams(window.location.search);
-    searchParams.set('component', this.value);
-    window.history.pushState(
-      null,
-      '',
-      [window.location.pathname, '?', searchParams.toString()].join('')
-    );
-    cleanContent();
-    renderElement();
-  });
-  renderElement();
-})();

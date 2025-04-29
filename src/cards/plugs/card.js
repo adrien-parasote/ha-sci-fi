@@ -4,7 +4,7 @@ import {html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
 import {Person} from '../../helpers/entities/person.js';
-import {Plug} from '../../helpers/entities/plug.js';
+import {Plug} from '../../helpers/entities/plug/plug.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
 import {CHART_BG_COLOR, CHART_BORDER_COLOR, PACKAGE} from './const.js';
@@ -291,12 +291,15 @@ export class SciFiPlugs extends SciFiBaseCard {
   }
 
   _turnOnOff(plug) {
-    console.log(plug);
+    plug.callService().then(
+      () => this.__toast(false),
+      (e) => this.__toast(true, e)
+    )
   }
 
   __toast(error, e) {
-    const msg = error ? e.message : 'done';
-    this.shadowRoot.querySelector('sci-fi-toast').addMessage(msg, error);
+    const txt = error ? e.message : msg('done');
+    this.shadowRoot.querySelector('sci-fi-toast').addMessage(txt, error);
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

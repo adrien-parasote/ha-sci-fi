@@ -1,7 +1,6 @@
-import {Device} from './device';
-import {Sensor} from './sensor/sensor';
-
-const PLUG_STATE_ON = 'on';
+import {Device} from '../device';
+import {Sensor} from '../sensor/sensor';
+import { HASS_PLUG_SERVICE, HASS_PLUG_SERVICE_ACTION_TURN_OFF, HASS_PLUG_SERVICE_ACTION_TURN_ON, PLUG_STATE_ON } from './plug_const';
 
 export class Plug {
   constructor(
@@ -76,6 +75,18 @@ export class Plug {
         ('0' + d.getSeconds()).slice(-2),
       ].join(':') +
       '+00:00'
+    );
+  }
+
+  callService() {
+    return this._hass.callService(
+      HASS_PLUG_SERVICE,
+      this.active
+        ? HASS_PLUG_SERVICE_ACTION_TURN_OFF
+        : HASS_PLUG_SERVICE_ACTION_TURN_ON,
+      {
+        entity_id: [this.entity_id],
+      }
     );
   }
 }

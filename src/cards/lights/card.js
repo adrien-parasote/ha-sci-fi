@@ -1,3 +1,4 @@
+import {msg} from '@lit/localize';
 import {html, nothing} from 'lit';
 import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 import {isEqual} from 'lodash-es';
@@ -12,7 +13,6 @@ import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
 import {PACKAGE} from './const.js';
 import style from './style.js';
-import { msg } from '@lit/localize';
 
 export class SciFiLights extends SciFiBaseCard {
   static get styles() {

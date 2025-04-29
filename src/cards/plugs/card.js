@@ -208,7 +208,13 @@ export class SciFiPlugs extends SciFiBaseCard {
         plugins: {
           title: {display: false},
           legend: {display: false},
-          tooltip: {enabled: false},
+          tooltip: {
+            enabled: true,
+            callbacks: {
+              title: (items) =>  msg('Power') + ' ('+ items[0].label +')',
+              label: (context) =>  context.raw + this._plugs[this._selected_plug_id].power_unit_of_measurement
+            }
+          },
         },
       },
     });
@@ -220,7 +226,6 @@ export class SciFiPlugs extends SciFiBaseCard {
       datasets: datasets,
     };
     this._chart.update();
-    //this.requestUpdate();
   }
 
   __displayFooter() {

@@ -27,6 +27,10 @@ export class Plug {
         : null;
   }
 
+  get power_unit_of_measurement(){
+    return this.power_sensor ? this.power_sensor.unit_of_measurement : '';
+  }
+
   get icon() {
     return this.state == PLUG_STATE_ON
       ? this._active_icon
@@ -40,6 +44,7 @@ export class Plug {
   get manufacturer() {
     return this.device.manufacturer;
   }
+
   get model() {
     return this.device.model;
   }
@@ -49,7 +54,7 @@ export class Plug {
       'GET',
       'history/period/' +
         this.__getNow() +
-        '?minimal_response=true&no_attributes=true&significant_changes_only=true&filter_entity_id=' +
+        '?minimal_response=true&no_attributes=true&significant_changes_only=false&filter_entity_id=' +
         this.power_sensor.id
     );
   }

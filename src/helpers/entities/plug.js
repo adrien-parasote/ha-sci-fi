@@ -27,14 +27,16 @@ export class Plug {
         : null;
   }
 
-  get power_unit_of_measurement(){
+  get power_unit_of_measurement() {
     return this.power_sensor ? this.power_sensor.unit_of_measurement : '';
   }
 
+  get active() {
+    return this.state == PLUG_STATE_ON;
+  }
+
   get icon() {
-    return this.state == PLUG_STATE_ON
-      ? this._active_icon
-      : this._inactive_icon;
+    return this.active ? this._active_icon : this._inactive_icon;
   }
 
   get area() {

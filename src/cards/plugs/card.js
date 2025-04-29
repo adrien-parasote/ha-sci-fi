@@ -84,12 +84,34 @@ export class SciFiPlugs extends SciFiBaseCard {
     this.__loadPowerChart(plug);
     return html`<div class="content">
       <div class="info">
-        <div class="image">IMAGE</div>
+        ${this.__displayImage(plug)}
         <div>Child lock</div>
         <div>Power outage memory</div>
         <div>Others</div>
       </div>
       <div class="chart-container"></div>
+    </div>`;
+  }
+
+  __displayImage(plug) {
+    return html`<div class="image" @click="${(e) => this._turnOnOff(plug)}">
+      <div class="cirle-container">
+        <div class="circle"></div>
+      </div>
+      <div class="icon-container">
+        <div class="icon">
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+        </div>
+        <sci-fi-icon
+          icon="${plug.icon}"
+          class="${plug.active ? 'on' : 'off'}"
+        ></sci-fi-icon>
+      </div>
+      <div class="cirle-container ${plug.active ? 'on' : 'off'}">
+        <div class="circle"></div>
+      </div>
     </div>`;
   }
 
@@ -211,9 +233,11 @@ export class SciFiPlugs extends SciFiBaseCard {
           tooltip: {
             enabled: true,
             callbacks: {
-              title: (items) =>  msg('Power') + ' ('+ items[0].label +')',
-              label: (context) =>  context.raw + this._plugs[this._selected_plug_id].power_unit_of_measurement
-            }
+              title: (items) => msg('Power') + ' (' + items[0].label + ')',
+              label: (context) =>
+                context.raw +
+                this._plugs[this._selected_plug_id].power_unit_of_measurement,
+            },
           },
         },
       },
@@ -264,6 +288,10 @@ export class SciFiPlugs extends SciFiBaseCard {
         ? (this._selected_plug_id = 0)
         : (this._selected_plug_id += 1);
     }
+  }
+
+  _turnOnOff(plug) {
+    console.log(plug);
   }
 
   __toast(error, e) {

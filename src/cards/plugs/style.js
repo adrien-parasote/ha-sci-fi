@@ -88,4 +88,91 @@ export default css`
     flex: 1;
     flex-direction: column;
   }
+  .content .info .image {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 10px;
+  }
+  .content .info .image .icon-container {
+    border: calc(var(--border-width) * 2) solid var(--secondary-bg-color);
+    padding: 5px;
+    display: flex;
+    border-radius: var(--border-radius);
+    position: relative;
+    cursor: pointer;
+  }
+  .content .info .image .icon-container .icon {
+    width: 70px;
+    height: 70px;
+    align-content: center;
+    position: relative;
+    border: calc(var(--border-width) * 2) solid var(--secondary-bg-color);
+    border-radius: 50%;
+  }
+  .content .info .image .icon-container .icon .circle {
+    position: absolute;
+    background-color: var(--secondary-bg-color);
+  }
+  .content .info .image .icon-container .icon .circle:first-child {
+    top: 13px;
+    left: calc(50% - 4px);
+  }
+  .content .info .image .icon-container .icon .circle:nth-child(2) {
+    top: calc(50% - 4px);
+    left: 13px;
+  }
+  .content .info .image .icon-container .icon .circle:nth-child(3) {
+    top: calc(50% - 4px);
+    right: 13px;
+  }
+  .content .info .image .icon-container sci-fi-icon {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
+  .content .info .image .icon-container sci-fi-icon.off {
+    --icon--color: var(--secondary-light-color);
+  }
+  .content .info .image .cirle-container {
+    flex: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: var(--border-width) solid var(--secondary-bg-color);
+  }
+  .content .info .image .cirle-container .circle {
+    position: absolute;
+    left: -5px;
+    animation: 3s linear 1s infinite running move;
+  }
+  .content .info .image .cirle-container.off .circle {
+    animation: none;
+    display: none;
+  }
+  @keyframes move {
+    0% {
+      margin-left: 0%;
+      opacity: 1;
+    }
+    60% {
+      opacity: 0.9;
+    }
+    70% {
+      opacity: 0.8;
+    }
+    80% {
+      margin-left: 100%;
+      opacity: 0.75;
+    }
+    90% {
+      margin-left: 100%;
+      opacity: 0.33;
+    }
+    100% {
+      margin-left: 100%;
+      opacity: 0;
+    }
+  }
 `;

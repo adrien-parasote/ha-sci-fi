@@ -139,7 +139,7 @@ export class SciFiPlugs extends SciFiBaseCard {
       d.setSeconds(0);
       d.setMilliseconds(0);
       // Get value
-      const value = isNaN(parseInt(el.state)) ? 0 : parseInt(el.state);
+      const value = isNaN(parseFloat(el.state)) ? 0.00 : parseFloat(el.state).toFixed(2);
       // Select max
       if (!(d in res)) {
         res[d] = value;
@@ -263,10 +263,9 @@ export class SciFiPlugs extends SciFiBaseCard {
       </div>
       <div class="number">
         ${this._plugs.map(
-          (d, i) =>
-            html`<div
-              class="${i == this._selected_plug_id ? 'active' : ''}"
-            ></div>`
+          (p, i) =>
+            html`
+            <sci-fi-icon icon="${p.icon}" class="${i == this._selected_plug_id ? 'active' : ''}"></sci-fi-icon>`
         )}
       </div>
       <div class="${multiple_plugs ? 'show' : 'hide'}">

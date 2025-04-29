@@ -66,16 +66,16 @@ export default css`
     column-gap: 10px;
     flex: 1;
   }
-  .footer .number > div {
-    content: '';
-    width: 10px;
-    height: 10px;
-    background-color: var(--primary-light-alpha-color);
-    text-decoration: none;
-    border-radius: 50%;
+  .footer .number > sci-fi-icon {
+    align-items: center;
+    --icon-width:var(--icon-size-small);
+    --icon-height: var(--icon-size-small);
+    --icon-color: var(--secondary-light-color);
   }
-  .footer .number > div.active {
-    background-color: var(--primary-light-color);
+  .footer .number > sci-fi-icon.active {
+    --icon-width:var(--icon-size-normal);
+    --icon-height: var(--icon-size-normal);
+    --icon-color: var(--primary-light-color);
   }
   .content {
     display: flex;

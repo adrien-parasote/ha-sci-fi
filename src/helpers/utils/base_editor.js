@@ -52,8 +52,8 @@ export class SciFiBaseEditor extends LitElement {
   }
 
   __dispatchChange(e, newConfig) {
-    e.preventDefault();
-    e.stopPropagation();
+    if (e.preventDefault) e.preventDefault();
+    if (e.stopPropagation) e.stopPropagation();
     this.dispatchEvent(
       new CustomEvent('config-changed', {
         detail: {config: newConfig},
@@ -85,6 +85,7 @@ export class SciFiBaseEditor extends LitElement {
       'section-title-energy': msg('Energy'),
       'section-title-other': msg('Others'),
       'section-title-monitoring': msg('Monitoring'),
+      'section-title-config': msg('Configuration'),
 
       'text-optionnal': msg('(optionnal)'),
       'text-required': msg('(required)'),
@@ -93,6 +94,7 @@ export class SciFiBaseEditor extends LitElement {
       ),
       'text-switch-hexa-add-weather-tile': msg('Add weather tile ?'),
       'text-switch-hexa-standalone': msg('Standalone entity?'),
+      'text-child-lock': msg('Child lock?'),
 
       'edit-section-title': msg('Edit'),
       'edit-section-state-auto-title': msg('Edit State heat'),

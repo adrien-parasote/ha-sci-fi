@@ -186,8 +186,11 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
   }
 
   __renderMonitoring(device) {
-    const items = this._device_entities.filter(
+    const sensors = this._device_entities.filter(
       (e) => e.entity_id.split('.')[0] == 'sensor'
+    );
+    const lock = this._device_entities.filter(
+      (e) => e.entity_id.split('.')[0] == 'lock'
     );
     return html` <sci-fi-accordion-card
       title="${this.getLabel('section-title-monitoring')} ${this.getLabel(
@@ -208,8 +211,26 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
             'text-optionnal'
           )}"
           element-id="power_sensor"
-          .items="${items}"
+          .items="${sensors}"
           value="${device.power_sensor}"
+          ?disabled=${device.device_id == null}
+          @input-update=${this.__update}
+        ></sci-fi-dropdown-entity-input>
+      </section>
+
+      <section class="configuration">
+        <h1>
+          <span><sci-fi-icon icon="mdi:cog-outline"></sci-fi-icon></span>
+          ${this.getLabel('section-title-config')}
+        </h1>
+        <sci-fi-dropdown-entity-input
+          icon="mdi:lock-open-variant"
+          label="${this.getLabel('text-child-lock')} ${this.getLabel(
+            'text-optionnal'
+          )}"
+          element-id="child_lock_sensor"
+          .items="${lock}"
+          value="${device.child_lock_sensor}"
           ?disabled=${device.device_id == null}
           @input-update=${this.__update}
         ></sci-fi-dropdown-entity-input>
@@ -298,6 +319,7 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
       inactive_icon: 'mdi:power-plug-off-outline',
       name: null,
       power_sensor: null,
+      child_lock_sensor: null,
       others: {},
     };
   }

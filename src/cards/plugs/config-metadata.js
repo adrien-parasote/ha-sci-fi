@@ -35,6 +35,11 @@ export default {
         type: 'string',
         default: '',
       },
+      child_lock_sensor: {
+        mandatory: false,
+        type: 'string',
+        default: '',
+      },
     },
   },
 };

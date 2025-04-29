@@ -1,6 +1,11 @@
 import {Device} from '../device';
 import {Sensor} from '../sensor/sensor';
-import { HASS_PLUG_SERVICE, HASS_PLUG_SERVICE_ACTION_TURN_OFF, HASS_PLUG_SERVICE_ACTION_TURN_ON, PLUG_STATE_ON } from './plug_const';
+import {
+  HASS_PLUG_SERVICE,
+  HASS_PLUG_SERVICE_ACTION_TURN_OFF,
+  HASS_PLUG_SERVICE_ACTION_TURN_ON,
+  PLUG_STATE_ON,
+} from './plug_const';
 
 export class Plug {
   constructor(

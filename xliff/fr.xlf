@@ -694,6 +694,14 @@
   <source>done</source>
   <target>ok</target>
 </trans-unit>
+<trans-unit id="sf9b1c0661a02d9f9">
+  <source>Configuration</source>
+  <target>Configuration</target>
+</trans-unit>
+<trans-unit id="sabe42f7fd37556dd">
+  <source>Child lock?</source>
+  <target>Sécurité enfants</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

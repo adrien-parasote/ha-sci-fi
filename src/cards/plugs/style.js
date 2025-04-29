@@ -68,12 +68,12 @@ export default css`
   }
   .footer .number > sci-fi-icon {
     align-items: center;
-    --icon-width:var(--icon-size-small);
+    --icon-width: var(--icon-size-small);
     --icon-height: var(--icon-size-small);
     --icon-color: var(--secondary-light-color);
   }
   .footer .number > sci-fi-icon.active {
-    --icon-width:var(--icon-size-normal);
+    --icon-width: var(--icon-size-normal);
     --icon-height: var(--icon-size-normal);
     --icon-color: var(--primary-light-color);
   }

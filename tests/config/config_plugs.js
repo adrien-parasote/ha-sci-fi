@@ -7,6 +7,7 @@ export default {
       inactive_icon: 'mdi:washing-machine-off',
       name: 'Washing machine',
       power_sensor: 'sensor.nous_lave_linge_power',
+      child_lock_sensor: 'lock.nous_lave_linge_child_lock',
       others: {},
     },
     {

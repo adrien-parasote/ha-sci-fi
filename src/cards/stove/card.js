@@ -437,8 +437,8 @@ export class SciFiStove extends SciFiBaseCard {
   }
 
   __toast(error, e) {
-    const msg = error ? e.message : 'done';
-    this.shadowRoot.querySelector('sci-fi-toast').addMessage(msg, error);
+    const txt = error ? e.message : msg('done');
+    this.shadowRoot.querySelector('sci-fi-toast').addMessage(txt, error);
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

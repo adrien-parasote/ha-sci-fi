@@ -690,6 +690,10 @@
   <source>by</source>
   <target>par</target>
 </trans-unit>
+<trans-unit id="sdc51fb6761fd6e91">
+  <source>done</source>
+  <target>ok</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

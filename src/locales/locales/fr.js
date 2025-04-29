@@ -155,6 +155,7 @@ export const templates = {
   sd8b57a87d52d6ded: `Pluie verglaçante`,
   sd9ad53251f2330a5: `Stop`,
   sdb6622a51b2a94f5: `Énergie`,
+  sdc51fb6761fd6e91: `ok`,
   se06ad64a9de6df0f: `Véhicule`,
   se19cc57dd8675498: `Seuil`,
   se25db8feb9dcef42: `Air-cond`,

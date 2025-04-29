@@ -12,6 +12,7 @@ import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
 import {PACKAGE} from './const.js';
 import style from './style.js';
+import { msg } from '@lit/localize';
 
 export class SciFiLights extends SciFiBaseCard {
   static get styles() {
@@ -340,8 +341,8 @@ export class SciFiLights extends SciFiBaseCard {
   }
 
   __toast(error, e) {
-    const msg = error ? e.message : 'done';
-    this.shadowRoot.querySelector('sci-fi-toast').addMessage(msg, error);
+    const txt = error ? e.message : msg('done');
+    this.shadowRoot.querySelector('sci-fi-toast').addMessage(txt, error);
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

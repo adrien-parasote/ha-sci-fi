@@ -18,12 +18,12 @@ export default {
       active_icon: {
         mandatory: false,
         type: 'string',
-        default: 'mdi:power-plug-outline',
+        default: 'mdi:power-socket-fr',
       },
       inactive_icon: {
         mandatory: false,
         type: 'string',
-        default: 'mdi:power-plug-off-outline',
+        default: 'sci:power-socket-fr-off',
       },
       name: {
         mandatory: false,

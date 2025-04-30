@@ -11,6 +11,10 @@
 🌡️ Climate card
 - Update preset mode list to map `frost` state from [Versatile Thermostat](https://github.com/jmcollin78/versatile_thermostat) entity
 
+
+🖼️ Sci-Fi icons
+- Adding new icons: power-socket-fr-off (see readme section)
+
 ## 🐛 Fixes
 - Weather Card: fix wrong hourly forecast icon for current day
 - Climate card: [Climate card - Wrong floor color](https://github.com/adrien-parasote/ha-sci-fi/issues/35)

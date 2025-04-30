@@ -1048,6 +1048,7 @@ To complete HA icon set, sci-fi package onboard the following icons :
 | Landspeeder unknown plug| sci:landspeeder-unknown-plug | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-unknown-plug.svg" alt="Landspeeder unknown plug"  height="25"/> |
 | Landspeeder error plug| sci:landspeeder-error-plug | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-error-plug.svg" alt="Landspeeder error plug"  height="25"/> |
 | Landspeeder plugged clock| sci:landspeeder-plugged-clock | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-plugged-clock.svg" alt="Landspeeder plugged clock"  height="25"/> |
+| Power socket fr off | sci:power-socket-fr-off | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/power-socket-fr-off.svg" alt="Power socket fr off "  height="25"/> |
 
 <br>
 

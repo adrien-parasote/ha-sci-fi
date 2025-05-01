@@ -63,7 +63,7 @@ export class SciFiCardButton extends SciFiButton {
           color: var(--title-text-color);
         }
         .btn .label-alone {
-          margin-top:5px;
+          margin-top: 5px;
         }
         .btn sci-fi-icon {
           --icon-color: var(--btn-icon-color);

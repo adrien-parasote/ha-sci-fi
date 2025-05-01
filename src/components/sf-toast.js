@@ -97,9 +97,12 @@ class SciFiToast extends LitElement {
     const toast = document.createElement('div');
     const duration = 3000;
     // Auto remove toast
-    const autoRemoveId = setTimeout(function () {
-      main.removeChild(toast);
-    }, duration + error? 5000 : 2000);
+    const autoRemoveId = setTimeout(
+      function () {
+        main.removeChild(toast);
+      },
+      duration + error ? 5000 : 2000
+    );
     // Remove toast when clicked
     toast.onclick = function (e) {
       if (e.target.closest('.toast_close')) {
@@ -114,10 +117,14 @@ class SciFiToast extends LitElement {
     render(
       html`
         <div class="toast_icon">
-          <sci-fi-icon icon="${error ? 'mdi:alert-circle' : 'mdi:check-circle'}"></sci-fi-icon>
+          <sci-fi-icon
+            icon="${error ? 'mdi:alert-circle' : 'mdi:check-circle'}"
+          ></sci-fi-icon>
         </div>
         <div class="toast_body">${message}</div>
-        <div class="toast_close"><sci-fi-icon icon='mdi:close'></sci-fi-icon></div>
+        <div class="toast_close">
+          <sci-fi-icon icon="mdi:close"></sci-fi-icon>
+        </div>
       `,
       toast
     );

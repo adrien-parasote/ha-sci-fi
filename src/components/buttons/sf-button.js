@@ -84,15 +84,15 @@ export class SciFiButton extends LitElement {
 
   displayBtn() {
     return html`
-    <div
-      class="btn ${this.hasBorder ? 'btn-border' : ''} ${this.rounded ? 'btn-rounded' : ''} ${this.disabled
-        ? 'disabled'
-        : ''}"
-      @click="${this.click}"
-    >
-      <sci-fi-icon icon=${this.icon}></sci-fi-icon>
-    </div>
-  `;
+      <div
+        class="btn ${this.hasBorder ? 'btn-border' : ''} ${this.rounded
+          ? 'btn-rounded'
+          : ''} ${this.disabled ? 'disabled' : ''}"
+        @click="${this.click}"
+      >
+        <sci-fi-icon icon=${this.icon}></sci-fi-icon>
+      </div>
+    `;
   }
 
   click(e) {

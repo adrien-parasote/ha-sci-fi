@@ -1,5 +1,5 @@
 import {Device} from '../device';
-import {Sensor} from '../sensor/sensor';
+import {LockSensor, Sensor} from '../sensor/sensor';
 import {
   HASS_PLUG_SERVICE,
   HASS_PLUG_SERVICE_ACTION_TURN_OFF,
@@ -16,6 +16,7 @@ export class Plug {
     active_icon,
     inactive_icon,
     power_sensor,
+    child_lock_sensor,
     other_sensors
   ) {
     this._hass = hass;
@@ -25,6 +26,10 @@ export class Plug {
     this.entity_id = entity_id;
     this.state = hass.states[entity_id].state;
     this.name = name;
+    this.child_lock_sensor =
+      child_lock_sensor && hass.states[child_lock_sensor]
+        ? new LockSensor(child_lock_sensor, hass)
+        : null;
     this.power_sensor =
       power_sensor && hass.states[power_sensor]
         ? new Sensor(power_sensor, hass)
@@ -59,19 +64,20 @@ export class Plug {
     return this._hass.callApi(
       'GET',
       'history/period/' +
-        this.__getNow() +
+        this.__getYesterday() +
         '?minimal_response=true&no_attributes=true&significant_changes_only=false&filter_entity_id=' +
         this.power_sensor.id
     );
   }
 
-  __getNow() {
+  __getYesterday() {
     const d = new Date();
+    d.setDate(d.getDate() - 1);
     return (
       [
         d.getFullYear(),
         ('0' + (d.getMonth() + 1)).slice(-2),
-        ('0' + (d.getDate() - 1)).slice(-2),
+        ('0' + d.getDate()).slice(-2),
       ].join('-') +
       'T' +
       [
@@ -93,5 +99,10 @@ export class Plug {
         entity_id: [this.entity_id],
       }
     );
+  }
+
+  turnOnOffChildLock() {
+    if (!this.child_lock_sensor) return;
+    return this.child_lock_sensor.callService(this._hass);
   }
 }

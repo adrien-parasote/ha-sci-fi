@@ -8,6 +8,30 @@ export default css`
     background-color: black;
     --tile-width: 60px;
   }
+  section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  section h1 {
+    font-size: var(--font-size-normal);
+    border-bottom: var(--border-width) solid var(--primary-bg-color);
+    margin: 10px 0 5px 0;
+    padding-bottom: 5px;
+    text-transform: capitalize;
+    font-weight: 400;
+    color: var(--secondary-light-color);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  section h1 sci-fi-icon {
+    --icon-width: var(--icon-size-small);
+    --icon-height: var(--icon-size-small);
+    --icon-color: var(--secondary-light-color);
+    margin-right: 10px;
+  }
   .container {
     display: flex;
     flex-direction: column;
@@ -174,5 +198,21 @@ export default css`
       margin-left: 100%;
       opacity: 0;
     }
+  }
+  .content .info section sci-fi-button-card {
+    --font-weight: normal;
+    --label-color: var(--primary-light-color);
+    --border: var(--border-width) solid var(--primary-light-color);
+    --btn-icon-size: var(--icon-size-normal);
+    --padding: 5px;
+    --primary-icon-color: var(--light-on-color);
+    --min-width: 40px;
+    --text-align: center;
+    width: 40px;
+  }
+  .content .info section sci-fi-button-card.off {
+    --label-color: var(--secondary-bg-color);
+    --border: var(--border-width) solid var(--secondary-bg-color);
+    --primary-icon-color: var(--secondary-bg-color);
   }
 `;

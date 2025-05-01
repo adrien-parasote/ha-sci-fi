@@ -41,6 +41,7 @@ export class SciFiPlugs extends SciFiBaseCard {
           device.active_icon,
           device.inactive_icon,
           device.power_sensor,
+          device.child_lock_sensor,
           device.other_sensors
         )
     );
@@ -84,13 +85,46 @@ export class SciFiPlugs extends SciFiBaseCard {
     this.__loadPowerChart(plug);
     return html`<div class="content">
       <div class="info">
-        ${this.__displayImage(plug)}
-        <div>Child lock</div>
-        <div>Power outage memory</div>
+        ${this.__displayImage(plug)} ${this.__displayConfig(plug)}
         <div>Others</div>
       </div>
       <div class="chart-container"></div>
     </div>`;
+  }
+
+  __displayConfig(plug) {
+    return html`
+      <section>
+        <h1>
+          <span><sci-fi-icon icon="mdi:cog-outline"></sci-fi-icon></span>
+          ${msg('Configuration')}
+        </h1>
+        ${this.__childLock(plug)}
+
+        <div>Power outage memory</div>
+      </section>
+    `;
+  }
+
+  __childLock(plug) {
+    let disabled = false;
+    let icon = null;
+    if (plug.child_lock_sensor == null) {
+      disabled = true;
+      icon = 'sci:lock-unknow';
+    } else {
+      icon = plug.child_lock_sensor.icon;
+    }
+    return html`
+      <sci-fi-button-card
+        class="${disabled ? 'off' : 'on'}"
+        icon=${icon}
+        no-title
+        text=${msg('Child lock?')}
+        ?disabled=${disabled}
+        @button-click="${(e) => this._turnOnOffChildLock(plug)}"
+      ></sci-fi-button-card>
+    `;
   }
 
   __displayImage(plug) {
@@ -116,17 +150,22 @@ export class SciFiPlugs extends SciFiBaseCard {
   }
 
   __loadPowerChart(plug) {
+    // TODO SETUP LOADER + REVIEW IN CASE OF EVERYTHING IS 0
+
     // Request
-    plug.getPowerHistory().then((data) => {
-      const history = this.__parseHistory(data[0]);
-      const datasets = this.__buildChartDatasets(Object.values(history));
-      const labels = this.__buildChartLabel(Object.keys(history));
-      if (!this._chart) {
-        this.__drawChart(datasets, labels);
-      } else {
-        this.__updateChart(datasets, labels);
-      }
-    });
+    plug.getPowerHistory().then(
+      (data) => {
+        const history = this.__parseHistory(data[0]);
+        const datasets = this.__buildChartDatasets(Object.values(history));
+        const labels = this.__buildChartLabel(Object.keys(history));
+        if (!this._chart) {
+          this.__drawChart(datasets, labels);
+        } else {
+          this.__updateChart(datasets, labels);
+        }
+      },
+      (e) => this.__toast(true, e)
+    );
   }
 
   __parseHistory(data) {
@@ -300,8 +339,15 @@ export class SciFiPlugs extends SciFiBaseCard {
     );
   }
 
+  _turnOnOffChildLock(plug) {
+    plug.turnOnOffChildLock().then(
+      () => this.__toast(false),
+      (e) => this.__toast(true, e)
+    );
+  }
+
   __toast(error, e) {
-    const txt = error ? e.message : msg('done');
+    const txt = error ? (e.message ? e.message : e) : msg('done');
     this.shadowRoot.querySelector('sci-fi-toast').addMessage(txt, error);
   }
 

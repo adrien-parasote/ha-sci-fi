@@ -1,6 +1,13 @@
 import {html} from 'lit';
 
-import {SEASON_ICONS, WEATHER_EXTRA_SENSORS} from './sensor_const.js';
+import {
+  HASS_LOCK_SERVICE,
+  HASS_LOCK_SERVICE_ACTION_TURN_OFF,
+  HASS_LOCK_SERVICE_ACTION_TURN_ON,
+  LOCK_SENSOR_STATE_UNLOCK,
+  SEASON_ICONS,
+  WEATHER_EXTRA_SENSORS,
+} from './sensor_const.js';
 
 export class Sensor {
   constructor(id, hass) {
@@ -20,6 +27,26 @@ export class Sensor {
   get value() {
     if (this.unit_of_measurement) return parseFloat(this.state);
     return this.state;
+  }
+}
+
+export class LockSensor extends Sensor {
+  get icon() {
+    return this.state == LOCK_SENSOR_STATE_UNLOCK
+      ? 'mdi:lock-open-variant'
+      : 'mdi:lock';
+  }
+
+  callService(hass) {
+    return hass.callService(
+      HASS_LOCK_SERVICE,
+      this.state == LOCK_SENSOR_STATE_UNLOCK
+        ? HASS_LOCK_SERVICE_ACTION_TURN_ON
+        : HASS_LOCK_SERVICE_ACTION_TURN_OFF,
+      {
+        entity_id: [this.id],
+      }
+    );
   }
 }
 

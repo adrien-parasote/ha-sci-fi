@@ -13,7 +13,9 @@
 
 
 🖼️ Sci-Fi icons
-- Adding new icons: power-socket-fr-off (see readme section)
+- Adding new icons (see readme section): 
+  - power-socket-fr-off
+  - lock-unknow
 
 ## 🐛 Fixes
 - Weather Card: fix wrong hourly forecast icon for current day

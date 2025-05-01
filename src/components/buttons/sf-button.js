@@ -14,8 +14,8 @@ export class SciFiButton extends LitElement {
             var(--primary-light-color)
           );
           --btn-icon-size: var(--btn-size, var(--icon-size-normal));
-          --btn-icon-disable-color: var(
-            --disable-icon-color,
+          --btn-icon-disabled-color: var(
+            --disabled-icon-color,
             var(--primary-dark-color)
           );
         }
@@ -37,6 +37,9 @@ export class SciFiButton extends LitElement {
           fill: var(--primary-light-color);
           padding: 5px;
         }
+        .btn-rounded {
+          border: 50%;
+        }
         .btn sci-fi-icon {
           --icon-color: var(--btn-icon-color);
           --icon-width: var(--btn-icon-size);
@@ -47,8 +50,8 @@ export class SciFiButton extends LitElement {
           --icon-width: var(--icon-size-small);
           --icon-height: var(--icon-size-small);
         }
-        .btn.disable sci-fi-icon {
-          --icon-color: var(--btn-icon-disable-color);
+        .btn.disabled sci-fi-icon {
+          --icon-color: var(--btn-icon-disabled-color);
           cursor: unset;
         }
         .btn-border:hover {
@@ -62,7 +65,8 @@ export class SciFiButton extends LitElement {
     return {
       hasBorder: {type: Boolean, attribute: 'has-border'},
       icon: {type: String},
-      disable: {type: Boolean},
+      disabled: {type: Boolean},
+      rounded: {type: Boolean},
     };
   }
 
@@ -70,24 +74,29 @@ export class SciFiButton extends LitElement {
     super();
     this.hasBorder = this.hasBorder ? this.hasBorder : false;
     this.icon = this.icon ? this.icon : '';
-    this.disable = this.disable ? this.disable : false;
+    this.disabled = this.disabled ? this.disabled : false;
+    this.rounded = this.rounded ? this.rounded : false;
   }
 
   render() {
+    return this.displayBtn();
+  }
+
+  displayBtn() {
     return html`
-      <div
-        class="btn ${this.hasBorder ? 'btn-border' : ''} ${this.disable
-          ? 'disable'
-          : ''}"
-        @click="${this.click}"
-      >
-        <sci-fi-icon icon=${this.icon}></sci-fi-icon>
-      </div>
-    `;
+    <div
+      class="btn ${this.hasBorder ? 'btn-border' : ''} ${this.rounded ? 'btn-rounded' : ''} ${this.disabled
+        ? 'disabled'
+        : ''}"
+      @click="${this.click}"
+    >
+      <sci-fi-icon icon=${this.icon}></sci-fi-icon>
+    </div>
+  `;
   }
 
   click(e) {
-    if (this.disable) return;
+    if (this.disabled) return;
     e.preventDefault();
     e.stopPropagation();
     this.dispatchEvent(

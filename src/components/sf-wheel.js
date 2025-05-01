@@ -60,7 +60,7 @@ class SciFiWheel extends LitElement {
           font-weight: bold;
           align-items: center;
         }
-        .slider .slider-item.disable {
+        .slider .slider-item.disabled {
           color: var(--secondary-bg-color);
         }
         .slider .slider-item.hide {
@@ -85,7 +85,7 @@ class SciFiWheel extends LitElement {
       selectedId: {type: String, attribute: 'selected-id'},
       text: {type: String},
       inLine: {type: Boolean, attribute: 'in-line'},
-      disable: {type: Boolean},
+      disabled: {type: Boolean},
     };
   }
 
@@ -95,7 +95,7 @@ class SciFiWheel extends LitElement {
     this.selectedId = this.selectedId ? this.selectedId : null;
     this.text = this.text ? this.text : null;
     this.inLine = this.inLine ? this.inLine : false;
-    this.disable = this.disable ? this.disable : false;
+    this.disabled = this.disabled ? this.disabled : false;
   }
 
   render() {
@@ -106,7 +106,7 @@ class SciFiWheel extends LitElement {
             class="up"
             icon="mdi:menu-up-outline"
             @button-click=${(e) => this.__click(e, 'up')}
-            ?disable=${this.disable}
+            ?disabled=${this.disabled}
           ></sci-fi-button>
           <div class="slider" @click="${(e) => this.__click(e, null)}">
             ${this.__buildSliderContent()}
@@ -115,7 +115,7 @@ class SciFiWheel extends LitElement {
             class="down"
             icon="mdi:menu-down-outline"
             @button-click=${(e) => this.__click(e, 'down')}
-            ?disable=${this.disable}
+            ?disabled=${this.disabled}
           ></sci-fi-button>
         </div>
         ${this.__displayText()}
@@ -138,7 +138,7 @@ class SciFiWheel extends LitElement {
         <div
           class="slider-item ${el.id == this.selectedId
             ? 'show'
-            : 'hide'} ${this.disable ? 'disable' : ''}"
+            : 'hide'} ${this.disabled ? 'disabled' : ''}"
         >
           ${this.__renderIcon(el.icon)}
           <div>${el.text}</div>

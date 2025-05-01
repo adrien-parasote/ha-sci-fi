@@ -96,9 +96,9 @@ class SciFiStackBar extends LitElement {
     })}`;
   }
 
-  __buildRow(nb, disable, warning) {
+  __buildRow(nb, disabled, warning) {
     const yPos = 5 + nb * 10;
-    const cls = disable ? 'dark' : warning ? 'warning' : 'light';
+    const cls = disabled ? 'dark' : warning ? 'warning' : 'light';
     return svg`
     <path d="M 5 ${yPos} L 95 ${yPos}" class="path ${cls}"/>
     `;

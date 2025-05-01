@@ -322,7 +322,7 @@ class SciFiRadiator extends LitElement {
           selected-id="${this.climateEntity.attributes.temperature -
           this.climateEntity.attributes.min_temp}"
           @wheel-change="${this.__select}"
-          ?disable=${[STATE_CLIMATE_AUTO, STATE_CLIMATE_OFF].includes(
+          ?disabled=${[STATE_CLIMATE_AUTO, STATE_CLIMATE_OFF].includes(
             this.climateEntity.state
           )}
           in-line

@@ -186,12 +186,25 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
   }
 
   __renderMonitoring(device) {
-    const sensors = this._device_entities.filter(
-      (e) => e.entity_id.split('.')[0] == 'sensor'
-    );
-    const lock = this._device_entities.filter(
-      (e) => e.entity_id.split('.')[0] == 'lock'
-    );
+    const sensors = [];
+    const lock = [];
+    const select = [];
+    this._device_entities.forEach((e) => {
+      switch (e.entity_id.split('.')[0]) {
+        case 'sensor':
+          sensors.push(e);
+          break;
+        case 'lock':
+          lock.push(e);
+          break;
+        case 'select':
+          select.push(e);
+          break;
+        default:
+          break;
+      }
+    });
+
     return html` <sci-fi-accordion-card
       title="${this.getLabel('section-title-monitoring')} ${this.getLabel(
         'text-optionnal'
@@ -231,6 +244,17 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
           element-id="child_lock_sensor"
           .items="${lock}"
           value="${device.child_lock_sensor}"
+          ?disabled=${device.device_id == null}
+          @input-update=${this.__update}
+        ></sci-fi-dropdown-entity-input>
+        <sci-fi-dropdown-entity-input
+          icon="mdi:power-settings"
+          label="${this.getLabel('text-power-outage-memory')}? ${this.getLabel(
+            'text-optionnal'
+          )}"
+          element-id="power_outage_memory_select"
+          .items="${select}"
+          value="${device.power_outage_memory_select}"
           ?disabled=${device.device_id == null}
           @input-update=${this.__update}
         ></sci-fi-dropdown-entity-input>

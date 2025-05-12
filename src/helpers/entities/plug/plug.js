@@ -1,5 +1,5 @@
 import {Device} from '../device';
-import {LockSensor, Sensor} from '../sensor/sensor';
+import {LockSensor, SelectSensor, Sensor} from '../sensor/sensor';
 import {
   HASS_PLUG_SERVICE,
   HASS_PLUG_SERVICE_ACTION_TURN_OFF,
@@ -17,6 +17,7 @@ export class Plug {
     inactive_icon,
     power_sensor,
     child_lock_sensor,
+    power_outage_memory_select,
     other_sensors
   ) {
     this._hass = hass;
@@ -33,6 +34,10 @@ export class Plug {
     this.power_sensor =
       power_sensor && hass.states[power_sensor]
         ? new Sensor(power_sensor, hass)
+        : null;
+    this.power_outage_memory_sensor =
+      power_outage_memory_select && hass.states[power_outage_memory_select]
+        ? new SelectSensor(power_outage_memory_select, hass)
         : null;
   }
 
@@ -104,5 +109,10 @@ export class Plug {
   turnOnOffChildLock() {
     if (!this.child_lock_sensor) return;
     return this.child_lock_sensor.callService(this._hass);
+  }
+
+  updatePowerOutageMemoryState(newState) {
+    if (!this.power_outage_memory_sensor) return;
+    return this.power_outage_memory_sensor.callService(this._hass, newState);
   }
 }

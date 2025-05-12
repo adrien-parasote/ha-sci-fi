@@ -199,20 +199,51 @@ export default css`
       opacity: 0;
     }
   }
-  .content .info section sci-fi-button-card {
+
+  .content .info section .plug-config {
+    display: flex;
+    flex-direction: row;
+    column-gap: 10px;
+    justify-content: center;
+    align-items: center;
+  }
+  .content .info section .plug-config sci-fi-button-card {
     --font-weight: normal;
     --label-color: var(--primary-light-color);
     --border: var(--border-width) solid var(--primary-light-color);
     --btn-icon-size: var(--icon-size-normal);
     --padding: 5px;
-    --primary-icon-color: var(--light-on-color);
+    --primary-icon-color: var(--primary-light-color);
     --min-width: 40px;
     --text-align: center;
-    width: 40px;
+    height: 100%;
   }
-  .content .info section sci-fi-button-card.off {
+  .content .info section .plug-config sci-fi-button-card.off {
     --label-color: var(--secondary-bg-color);
     --border: var(--border-width) solid var(--secondary-bg-color);
     --primary-icon-color: var(--secondary-bg-color);
+  }
+  .content .info section .plug-config .outage-memory {
+    border: var(--border-width) solid var(--primary-light-color);
+    border-radius: var(--border-radius);
+    padding: 5px;
+  }
+  .content .info section .plug-config .outage-memory.off {
+    border: var(--border-width) solid var(--secondary-bg-color);
+  }
+  .content .info section .plug-config .outage-memory sci-fi-dropdown-input {
+    --input-background-color: none;
+    --input-icon-color: var(--primary-light-color);
+    --input-label-text-color: var(--secondary-light-color);
+    --input-label-active-text-color: var(--secondary-light-color);
+    --input-text-color: var(--secondary-light-color);
+  }
+
+  .content .info section .plug-config .outage-memory.off sci-fi-dropdown-input {
+    --input-icon-color: var(--secondary-bg-color);
+    --input-disabled-text-color: var(--secondary-bg-color);
+    --input-label-text-color: var(--secondary-bg-color);
+    --input-label-active-text-color: var(--secondary-bg-color);
+    --input-drop-icon-color: var(--secondary-bg-color);
   }
 `;

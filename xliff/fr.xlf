@@ -702,6 +702,10 @@
   <source>Child lock?</source>
   <target>Sécurité enfants</target>
 </trans-unit>
+<trans-unit id="s1e0251d3c7b5ec14">
+  <source>Power outage memory</source>
+  <target>État mémoire en cas de panne de courant</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

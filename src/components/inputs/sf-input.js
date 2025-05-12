@@ -11,6 +11,23 @@ export class SciFiInput extends LitElement {
         :host {
           --input-icon--color: var(--input-icon-color, white);
           color: var(--secondary-light-color);
+          --background-color: var(
+            --input-background-color,
+            var(--primary-bg-color)
+          );
+          --disabled-text-color: var(
+            --input-disabled-text-color,
+            var(--secondary-light-color)
+          );
+          --label-text-color: var(
+            --input-label-text-color,
+            var(--secondary-light-color)
+          );
+          --label-active-text-color: var(
+            --input-label-active-text-color,
+            var(--primary-light-color)
+          );
+          --input--color: var(--input-text-color, white);
         }
         input::placeholder {
           opacity: 0;
@@ -23,7 +40,7 @@ export class SciFiInput extends LitElement {
           border-top-left-radius: var(--border-radius);
           border-top-right-radius: var(--border-radius);
           padding: 0 16px;
-          background: var(--primary-bg-color);
+          background: var(--background-color);
           height: 58px;
         }
         .container:focus-within {
@@ -42,7 +59,7 @@ export class SciFiInput extends LitElement {
         .input-group label {
           position: absolute;
           pointer-events: none;
-          color: var(--secondary-light-color);
+          color: var(--label-text-color);
           font-size: var(--font-size-small);
           top: 38%;
           padding-inline: 0.3em;
@@ -58,15 +75,15 @@ export class SciFiInput extends LitElement {
           background: none;
           font-size: var(--font-size-normal);
           caret-color: var(--primary-light-color);
-          color: white;
+          color: var(--input--color);
         }
         .input-group input:disabled {
-          color: var(--secondary-light-color);
+          color: var(--disabled-text-color);
         }
         .input-group input:focus + label,
         .input-group input:not(:placeholder-shown) + label {
-          transform: translateY(-106%) scale(0.75);
-          color: var(--primary-light-color);
+          transform: translateY(-95%) scale(0.75);
+          color: var(--label-active-text-color);
         }
         .input-group .remove {
           position: absolute;
@@ -89,6 +106,7 @@ export class SciFiInput extends LitElement {
   static get properties() {
     return {
       elementId: {type: String, attribute: 'element-id'},
+      noCloseBox: {type: Boolean, attribute: 'no-close-box'},
       kind: {type: String},
       label: {type: String},
       icon: {type: String},
@@ -105,6 +123,7 @@ export class SciFiInput extends LitElement {
     this.label = this.label ? this.label : '';
     this.value = this.value ? this.value : null;
     this.disabled = this.disabled ? this.disabled : false;
+    this.noCloseBox = this.noCloseBox ? this.noCloseBox : false;
   }
 
   renderIcon(icon) {
@@ -125,7 +144,7 @@ export class SciFiInput extends LitElement {
             @focusout=${this.__focusOut}
           />
           <label for="name">${this.label}</label>
-          ${this.value && !this.disabled
+          ${this.value && !this.disabled && !this.noCloseBox
             ? html`<span class="remove" @click="${this.__cleanInput}"
                 ><sci-fi-icon icon="mdi:close"></sci-fi-icon
               ></span>`

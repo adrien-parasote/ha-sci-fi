@@ -8,6 +8,7 @@ export default {
       name: 'Washing machine',
       power_sensor: 'sensor.nous_lave_linge_power',
       child_lock_sensor: 'lock.nous_lave_linge_child_lock',
+      power_outage_memory_select: 'select.nous_lave_linge_power_outage_memory',
       others: {},
     },
     {

@@ -10,6 +10,10 @@ export class SciFiDropdownInput extends SciFiInput {
         :host {
           position: relative;
           --secondary-light-alpha-color: rgba(102, 156, 210, 0.2);
+          --drop-icon-color: var(
+            --input-drop-icon-color,
+            var(--secondary-light-color)
+          );
         }
         .container:after {
           content: '❯';
@@ -20,6 +24,7 @@ export class SciFiDropdownInput extends SciFiInput {
           transform: rotate(90deg);
           transition: all 0.35s;
           margin-left: 5px;
+          color: var(--drop-icon-color);
         }
         .container.open:after {
           transform: rotate(270deg);
@@ -56,6 +61,7 @@ export class SciFiDropdownInput extends SciFiInput {
   static get properties() {
     let p = super.properties;
     p['items'] = {type: Array};
+    p['disabledFilter'] = {type: Boolean, attribute: 'disabled-filter'};
     return p;
   }
 
@@ -65,11 +71,16 @@ export class SciFiDropdownInput extends SciFiInput {
   constructor() {
     super();
     this.items = this.items ? this.items : [];
+    this.disabledFilter = this.disabledFilter ? this.disabledFilter : false;
   }
 
   set items(items) {
     this._items = items;
-    this.__filter_items = JSON.parse(JSON.stringify(items));
+    if (this.disabledFilter) {
+      this.__filter_items = JSON.parse(JSON.stringify(this._items));
+    } else {
+      this.__filter_items = JSON.parse(JSON.stringify(items));
+    }
   }
 
   render() {
@@ -87,7 +98,7 @@ export class SciFiDropdownInput extends SciFiInput {
             @keyup=${this.__filterKeyUp}
           />
           <label for="name">${this.label}</label>
-          ${this.value
+          ${this.value && !this.disabled && !this.noCloseBox
             ? html`<span class="remove" @click="${this.__cleanInput}"
                 ><sci-fi-icon icon="mdi:close"></sci-fi-icon
               ></span>`
@@ -105,9 +116,13 @@ export class SciFiDropdownInput extends SciFiInput {
       this.__filter_items = JSON.parse(JSON.stringify(this._items));
       return;
     }
-    this.__filter_items = this._items.filter((item) => {
-      return item.toUpperCase().includes(value.toUpperCase());
-    });
+    if (this.disabledFilter) {
+      this.__filter_items = JSON.parse(JSON.stringify(this._items));
+    } else {
+      this.__filter_items = this._items.filter((item) => {
+        return item.toUpperCase().includes(value.toUpperCase());
+      });
+    }
   }
 
   __filterKeyUp(e) {

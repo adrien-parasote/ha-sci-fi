@@ -40,6 +40,11 @@ export default {
         type: 'string',
         default: '',
       },
+      power_outage_memory_select: {
+        mandatory: false,
+        type: 'string',
+        default: '',
+      },
     },
   },
 };

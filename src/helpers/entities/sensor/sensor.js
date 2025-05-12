@@ -4,6 +4,8 @@ import {
   HASS_LOCK_SERVICE,
   HASS_LOCK_SERVICE_ACTION_TURN_OFF,
   HASS_LOCK_SERVICE_ACTION_TURN_ON,
+  HASS_SELECT_SERVICE,
+  HASS_SELECT_SERVICE_OPTION,
   LOCK_SENSOR_STATE_UNLOCK,
   SEASON_ICONS,
   WEATHER_EXTRA_SENSORS,
@@ -47,6 +49,19 @@ export class LockSensor extends Sensor {
         entity_id: [this.id],
       }
     );
+  }
+}
+
+export class SelectSensor extends Sensor {
+  get options() {
+    return this.attributes.options;
+  }
+
+  callService(hass, value) {
+    return hass.callService(HASS_SELECT_SERVICE, HASS_SELECT_SERVICE_OPTION, {
+      option: value,
+      entity_id: [this.id],
+    });
   }
 }
 

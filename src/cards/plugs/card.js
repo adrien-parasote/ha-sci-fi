@@ -42,6 +42,7 @@ export class SciFiPlugs extends SciFiBaseCard {
           device.inactive_icon,
           device.power_sensor,
           device.child_lock_sensor,
+          device.power_outage_memory_select,
           device.other_sensors
         )
     );
@@ -99,9 +100,9 @@ export class SciFiPlugs extends SciFiBaseCard {
           <span><sci-fi-icon icon="mdi:cog-outline"></sci-fi-icon></span>
           ${msg('Configuration')}
         </h1>
-        ${this.__childLock(plug)}
-
-        <div>Power outage memory</div>
+        <div class="plug-config">
+          ${this.__childLock(plug)} ${this.__powerOutageMemory(plug)}
+        </div>
       </section>
     `;
   }
@@ -124,6 +125,25 @@ export class SciFiPlugs extends SciFiBaseCard {
         ?disabled=${disabled}
         @button-click="${(e) => this._turnOnOffChildLock(plug)}"
       ></sci-fi-button-card>
+    `;
+  }
+
+  __powerOutageMemory(plug) {
+    const sensor = plug.power_outage_memory_sensor;
+    return html`
+      <div class="outage-memory ${sensor == null ? 'off' : ''}">
+        <sci-fi-dropdown-input
+          icon="mdi:power-settings"
+          label="${msg('Power outage memory')}"
+          value=${sensor == null ? null : sensor.value}
+          disabled-filter
+          no-close-box
+          ?disabled=${sensor == null}
+          .items="${sensor == null ? [] : sensor.options}"
+          @input-update=${(e) =>
+            this._updatePowerOutageMemoryState(plug, e.detail.value)}
+        ></sci-fi-dropdown-input>
+      </div>
     `;
   }
 
@@ -150,7 +170,7 @@ export class SciFiPlugs extends SciFiBaseCard {
   }
 
   __loadPowerChart(plug) {
-    // TODO SETUP LOADER + REVIEW IN CASE OF EVERYTHING IS 0
+    // TODO SETUP LOADER + REVIEW IN CASE OF EVERYTHING IS 0 + REVIEW WHEN ONLY THINGS IN THE PAST
 
     // Request
     plug.getPowerHistory().then(
@@ -344,6 +364,16 @@ export class SciFiPlugs extends SciFiBaseCard {
       () => this.__toast(false),
       (e) => this.__toast(true, e)
     );
+  }
+
+  _updatePowerOutageMemoryState(plug, newValue) {
+    // Update only when needed
+    if (newValue != plug.power_outage_memory_sensor.value) {
+      plug.updatePowerOutageMemoryState(newValue).then(
+        () => this.__toast(false),
+        (e) => this.__toast(true, e)
+      );
+    }
   }
 
   __toast(error, e) {

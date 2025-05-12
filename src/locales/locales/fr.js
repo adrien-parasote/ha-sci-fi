@@ -25,6 +25,7 @@ export const templates = {
   s1b9ed7186023d342: `Icône chauffe`,
   s1bc156256736f73e: `Entité météo`,
   s1c78dc6ef6845c50: `Couleur icône auto`,
+  s1e0251d3c7b5ec14: `État mémoire en cas de panne de courant`,
   s2350e551d4efd065: `Première pièce de l'étage à afficher`,
   s2507833772d440bf: `Édition du mode booster`,
   s26315c976ecf1dfc: `refroidissement`,

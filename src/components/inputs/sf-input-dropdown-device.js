@@ -38,12 +38,16 @@ export class SciFiDropdownDeviceInput extends SciFiDropdownEntityInput {
       this.__filter_items = [];
       return;
     }
-    this.__filter_items = this._items.filter((device) => {
-      return (
-        device.name.toUpperCase().includes(value.toUpperCase()) ||
-        device.name_by_user.toUpperCase().includes(value.toUpperCase())
-      );
-    });
+    if (this.disabledFilter) {
+      this.__filter_items = JSON.parse(JSON.stringify(this._items));
+    } else {
+      this.__filter_items = this._items.filter((device) => {
+        return (
+          device.name.toUpperCase().includes(value.toUpperCase()) ||
+          device.name_by_user.toUpperCase().includes(value.toUpperCase())
+        );
+      });
+    }
   }
 
   __renderItem(item) {

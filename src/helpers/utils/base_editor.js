@@ -96,6 +96,7 @@ export class SciFiBaseEditor extends LitElement {
       'text-switch-hexa-standalone': msg('Standalone entity?'),
       'text-child-lock': msg('Child lock?'),
       'text-power-outage-memory': msg('Power outage memory'),
+      'text-other-sensor': msg('Others sensors'),
 
       'edit-section-title': msg('Edit'),
       'edit-section-state-auto-title': msg('Edit State heat'),

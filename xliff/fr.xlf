@@ -706,6 +706,14 @@
   <source>Power outage memory</source>
   <target>État mémoire en cas de panne de courant</target>
 </trans-unit>
+<trans-unit id="sc61da33dadfc2963">
+  <source>Other information</source>
+  <target>Autre information</target>
+</trans-unit>
+<trans-unit id="s8720a94461718849">
+  <source>Others sensors</source>
+  <target>Autres capteurs</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

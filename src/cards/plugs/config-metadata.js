@@ -45,6 +45,11 @@ export default {
         type: 'string',
         default: '',
       },
+      other: {
+        type: 'array',
+        default: [],
+        data_type: 'string',
+      },
     },
   },
 };

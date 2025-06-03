@@ -246,4 +246,29 @@ export default css`
     --input-label-active-text-color: var(--secondary-bg-color);
     --input-drop-icon-color: var(--secondary-bg-color);
   }
+  .content .info section .others {
+    align-self: center;
+  }
+  .content .info section .others .other {
+    display: inline-block;
+    width: 150px;
+    margin: 0 10px;
+  }
+  .content .info section .others .other .sensor {
+    display: flex;
+    flex-direction: row;
+    column-gap: 5px;
+  }
+  .content .info section .others .other .sensor > div {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .content .info section .others .other .sensor .label {
+    font-size: var(--font-size-xsmall);
+    color: var(--secondary-light-color);
+  }
+  .content .info section .others .other .sensor .value {
+    color: var(--primary-light-color);
+  }
 `;

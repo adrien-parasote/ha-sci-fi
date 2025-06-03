@@ -30,6 +30,10 @@ export class Sensor {
     if (this.unit_of_measurement) return parseFloat(this.state);
     return this.state;
   }
+
+  get icon() {
+    return this.attributes.icon ? this.attributes.icon : '';
+  }
 }
 
 export class LockSensor extends Sensor {

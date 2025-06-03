@@ -263,11 +263,46 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
       <section>
         <h1>
           <span><sci-fi-icon icon="mdi:state-machine"></sci-fi-icon></span>
-          ${this.getLabel('section-title-other')}
+          <span class="section-title"
+            >${this.getLabel('section-title-other')}</span
+          >
+          <sci-fi-button
+            has-border
+            icon="mdi:plus"
+            ?disabled="${device.device_id == null}"
+            @button-click=${this.__addOtherSensors}
+          ></sci-fi-button>
         </h1>
-        todo
+        <div class="additional-sensors">
+          ${this.__renderOtherSensors(device)}
+        </div>
       </section>
     </sci-fi-accordion-card>`;
+  }
+
+  __renderOtherSensors(device) {
+    if (device.device_id == null) return nothing;
+    return device.others.map((sensor, idx) => {
+      return html`
+        <div class="sensor-row">
+          <sci-fi-dropdown-entity-input
+            label="${this.getLabel('text-other-sensor')}? ${this.getLabel(
+              'text-optionnal'
+            )}"
+            element-id="others"
+            value=${sensor}
+            kind=${idx}
+            .items="${this._device_entities}"
+            @input-update=${this.__update}
+          ></sci-fi-dropdown-entity-input>
+          <sci-fi-button
+            icon="mdi:delete-outline"
+            @button-click="${(e) => this.__removeOtherSensors(e, idx)}"
+          >
+          </sci-fi-button>
+        </div>
+      `;
+    });
   }
 
   __renderDevicesSelection() {
@@ -344,8 +379,20 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
       name: null,
       power_sensor: null,
       child_lock_sensor: null,
-      others: {},
+      others: [],
     };
+  }
+
+  __addOtherSensors(e) {
+    let newConfig = this.__getNewConfig();
+    newConfig.devices[this._current_device_id]['others'].push('');
+    this.__dispatchChange(e, newConfig);
+  }
+
+  __removeOtherSensors(e, idx) {
+    let newConfig = this.__getNewConfig();
+    newConfig.devices[this._current_device_id]['others'].splice(idx, 1);
+    this.__dispatchChange(e, newConfig);
   }
 
   __update(e) {

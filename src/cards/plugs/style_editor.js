@@ -34,4 +34,23 @@ export default css`
   .entity-row sci-fi-button {
     align-self: center;
   }
+  section h1 .section-title {
+    flex: 1;
+  }
+  .additional-sensors {
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+  }
+  .additional-sensors .sensor-row {
+    display: flex;
+    flex-direction: row;
+    column-gap: 5px;
+  }
+  .additional-sensors .sensor-row sci-fi-dropdown-entity-input {
+    flex: 1;
+  }
+  .additional-sensors .sensor-row sci-fi-button {
+    align-self: center;
+  }
 `;

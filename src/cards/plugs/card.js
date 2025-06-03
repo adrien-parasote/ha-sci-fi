@@ -43,7 +43,7 @@ export class SciFiPlugs extends SciFiBaseCard {
           device.power_sensor,
           device.child_lock_sensor,
           device.power_outage_memory_select,
-          device.other_sensors
+          device.others
         )
     );
     if (!this._plugs || !isEqual(plugs, this._plugs)) {
@@ -87,10 +87,37 @@ export class SciFiPlugs extends SciFiBaseCard {
     return html`<div class="content">
       <div class="info">
         ${this.__displayImage(plug)} ${this.__displayConfig(plug)}
-        <div>Others</div>
+        ${this.__displayOthers(plug)}
       </div>
       <div class="chart-container"></div>
     </div>`;
+  }
+
+  __displayOthers(plug) {
+    return html`
+      <section>
+        <h1>
+          <span><sci-fi-icon icon="mdi:cog-outline"></sci-fi-icon></span>
+          ${msg('Other information')}
+        </h1>
+        <div class="others">
+          ${plug.other_sensors.map(
+            (sensor) =>
+              html` <div class="other">
+                <div class="sensor">
+                  <sci-fi-icon icon="${sensor.icon}"></sci-fi-icon>
+                  <div>
+                    <div class="label">${sensor.friendly_name}</div>
+                    <div class="value">
+                      ${sensor.value} ${sensor.unit_of_measurement}
+                    </div>
+                  </div>
+                </div>
+              </div>`
+          )}
+        </div>
+      </section>
+    `;
   }
 
   __displayConfig(plug) {

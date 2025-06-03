@@ -39,6 +39,17 @@ export class Plug {
       power_outage_memory_select && hass.states[power_outage_memory_select]
         ? new SelectSensor(power_outage_memory_select, hass)
         : null;
+
+    this.other_sensors = this.__buildOtherSensors(other_sensors);
+  }
+
+  __buildOtherSensors(other_sensors) {
+    if (!other_sensors) return [];
+    const sensors = [];
+    other_sensors.forEach((name) => {
+      if (hass.states[name]) sensors.push(new Sensor(name, hass));
+    });
+    return sensors;
   }
 
   get power_unit_of_measurement() {

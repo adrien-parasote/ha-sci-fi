@@ -714,6 +714,14 @@
   <source>Others sensors</source>
   <target>Autres capteurs</target>
 </trans-unit>
+<trans-unit id="seb281829bce1d970">
+  <source>Cannot found switch entity in device: </source>
+  <target>Impossible de trouver l'entité "switch" dans l'appareil:</target>
+</trans-unit>
+<trans-unit id="s15b0d3bf0d4cf5b4">
+  <source>. Please select a plug device.</source>
+  <target>. Veuillez sélectionner un appareil de type prise.</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

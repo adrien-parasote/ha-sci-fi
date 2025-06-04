@@ -1,4 +1,6 @@
+import {msg} from '@lit/localize';
 import {html, nothing} from 'lit';
+import object from 'lodash-es/object.js';
 
 import {SciFiBaseEditor} from '../../helpers/utils/base_editor.js';
 import style from './style_editor.js';
@@ -45,264 +47,9 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
         </div>
         <div class="editor ${this._edit}">${this.__renderDevicesEdition()}</div>
       </div>
+
+      <sci-fi-toast></sci-fi-toast>
     `;
-  }
-
-  __renderDevicesEdition() {
-    if (this._current_device_id == null) return nothing;
-    const device = this._config.devices[this._current_device_id];
-    this._setup_device_entities(device.device_id);
-
-    return html`
-      <div class="head">
-        <sci-fi-button
-          icon="mdi:chevron-left"
-          @button-click=${(e) => this.__editDevice(null)}
-        ></sci-fi-button>
-        <span>${device.name ? device.name : ''}</span>
-      </div>
-
-      ${this.__renderGeneral(device)} ${this.__renderAppearance(device)}
-      ${this.__renderMonitoring(device)}
-    `;
-  }
-
-  __renderGeneral(device) {
-    const switch_entities = this._device_entities.filter(
-      (e) => e.entity_id.split('.')[0] == 'switch'
-    );
-    return html`
-      <sci-fi-accordion-card
-        title="${this.getLabel('section-title-entity')} ${this.getLabel(
-          'text-required'
-        )}"
-        icon="mdi:selection-ellipse-arrow-inside"
-        open
-      >
-        <sci-fi-dropdown-device-input
-          icon="mdi:devices"
-          label="${this.getLabel('input-device')} ${this.getLabel(
-            'text-required'
-          )}"
-          id="${parseInt(this._current_device_id)}"
-          value="${device.name}"
-          .items="${this._devices}"
-          @input-update=${this.__deviceSelection}
-        ></sci-fi-dropdown-device-input>
-        <sci-fi-dropdown-entity-input
-          icon="mdi:power-plug-outline"
-          label="${this.getLabel('input-entity-id')} ${this.getLabel(
-            'text-required'
-          )}"
-          element-id="entity_id"
-          .items="${switch_entities}"
-          value="${device.entity_id}"
-          ?disabled=${device.device_id == null}
-          @input-update=${this.__update}
-        ></sci-fi-dropdown-entity-input>
-      </sci-fi-accordion-card>
-    `;
-  }
-
-  _setup_device_entities(device_id) {
-    this._device_entities =
-      device_id == null
-        ? []
-        : Object.values(this._hass.entities)
-            .filter((e) => e.device_id == device_id)
-            .map((e) => {
-              return {
-                category: e.entity_category,
-                entity_id: e.entity_id,
-                attributes: {
-                  friendly_name: e.name,
-                  icon: e.icon,
-                },
-              };
-            });
-  }
-
-  __deviceSelection(e) {
-    const device = e.detail.value;
-    this._setup_device_entities(device.id);
-    let newConfig = this.__getNewConfig();
-    newConfig.devices[this._current_device_id].device_id = device.id;
-    newConfig.devices[this._current_device_id].name = device.name_by_user
-      ? device.name_by_user
-      : device.name;
-    // Select first switch found
-    const switch_entities = this._device_entities.filter(
-      (e) => e.entity_id.split('.')[0] == 'switch'
-    );
-    if (switch_entities.length > 0) {
-      newConfig.devices[this._current_device_id].entity_id =
-        switch_entities[0].entity_id;
-    }
-    this.__dispatchChange(e, newConfig);
-  }
-
-  __renderAppearance(device) {
-    const active_icon = device.active_icon ? device.active_icon : null;
-    const inactive_icon = device.inactive_icon ? device.inactive_icon : null;
-    return html` <sci-fi-accordion-card
-      title="${this.getLabel('section-title-appearance')} ${this.getLabel(
-        'text-optionnal'
-      )}"
-      icon="mdi:palette-outline"
-    >
-      <sci-fi-input
-        label="${this.getLabel('input-name')} ${this.getLabel(
-          'text-optionnal'
-        )}"
-        element-id="name"
-        icon="mdi:cursor-text"
-        value=${device.name}
-        @input-update=${this.__update}
-        ?disabled=${device.device_id == null}
-      ></sci-fi-input>
-
-      <sci-fi-dropdown-icon-input
-        label="${this.getLabel('input-active-icon')} ${this.getLabel(
-          'text-optionnal'
-        )}"
-        element-id="active_icon"
-        icon=${active_icon}
-        value=${active_icon}
-        @input-update=${this.__update}
-        ?disabled=${device.device_id == null}
-      ></sci-fi-dropdown-icon-input>
-
-      <sci-fi-dropdown-icon-input
-        label="${this.getLabel('input-inactive-icon')} ${this.getLabel(
-          'text-optionnal'
-        )}"
-        element-id="inactive_icon"
-        icon=${inactive_icon}
-        value=${inactive_icon}
-        @input-update=${this.__update}
-        ?disabled=${device.device_id == null}
-      ></sci-fi-dropdown-icon-input>
-    </sci-fi-accordion-card>`;
-  }
-
-  __renderMonitoring(device) {
-    const sensors = [];
-    const lock = [];
-    const select = [];
-    this._device_entities.forEach((e) => {
-      switch (e.entity_id.split('.')[0]) {
-        case 'sensor':
-          sensors.push(e);
-          break;
-        case 'lock':
-          lock.push(e);
-          break;
-        case 'select':
-          select.push(e);
-          break;
-        default:
-          break;
-      }
-    });
-
-    return html` <sci-fi-accordion-card
-      title="${this.getLabel('section-title-monitoring')} ${this.getLabel(
-        'text-optionnal'
-      )}"
-      icon="mdi:chart-scatter-plot-hexbin"
-    >
-      <section>
-        <h1>
-          <span
-            ><sci-fi-icon icon="mdi:home-lightning-bolt-outline"></sci-fi-icon
-          ></span>
-          ${this.getLabel('section-title-energy')}
-        </h1>
-        <sci-fi-dropdown-entity-input
-          icon="mdi:flash"
-          label="${this.getLabel('input-power')} ${this.getLabel(
-            'text-optionnal'
-          )}"
-          element-id="power_sensor"
-          .items="${sensors}"
-          value="${device.power_sensor}"
-          ?disabled=${device.device_id == null}
-          @input-update=${this.__update}
-        ></sci-fi-dropdown-entity-input>
-      </section>
-
-      <section class="configuration">
-        <h1>
-          <span><sci-fi-icon icon="mdi:cog-outline"></sci-fi-icon></span>
-          ${this.getLabel('section-title-config')}
-        </h1>
-        <sci-fi-dropdown-entity-input
-          icon="mdi:lock-open-variant"
-          label="${this.getLabel('text-child-lock')} ${this.getLabel(
-            'text-optionnal'
-          )}"
-          element-id="child_lock_sensor"
-          .items="${lock}"
-          value="${device.child_lock_sensor}"
-          ?disabled=${device.device_id == null}
-          @input-update=${this.__update}
-        ></sci-fi-dropdown-entity-input>
-        <sci-fi-dropdown-entity-input
-          icon="mdi:power-settings"
-          label="${this.getLabel('text-power-outage-memory')}? ${this.getLabel(
-            'text-optionnal'
-          )}"
-          element-id="power_outage_memory_select"
-          .items="${select}"
-          value="${device.power_outage_memory_select}"
-          ?disabled=${device.device_id == null}
-          @input-update=${this.__update}
-        ></sci-fi-dropdown-entity-input>
-      </section>
-
-      <section>
-        <h1>
-          <span><sci-fi-icon icon="mdi:state-machine"></sci-fi-icon></span>
-          <span class="section-title"
-            >${this.getLabel('section-title-other')}</span
-          >
-          <sci-fi-button
-            has-border
-            icon="mdi:plus"
-            ?disabled="${device.device_id == null}"
-            @button-click=${this.__addOtherSensors}
-          ></sci-fi-button>
-        </h1>
-        <div class="additional-sensors">
-          ${this.__renderOtherSensors(device)}
-        </div>
-      </section>
-    </sci-fi-accordion-card>`;
-  }
-
-  __renderOtherSensors(device) {
-    if (device.device_id == null) return nothing;
-    return device.others.map((sensor, idx) => {
-      return html`
-        <div class="sensor-row">
-          <sci-fi-dropdown-entity-input
-            label="${this.getLabel('text-other-sensor')}? ${this.getLabel(
-              'text-optionnal'
-            )}"
-            element-id="others"
-            value=${sensor}
-            kind=${idx}
-            .items="${this._device_entities}"
-            @input-update=${this.__update}
-          ></sci-fi-dropdown-entity-input>
-          <sci-fi-button
-            icon="mdi:delete-outline"
-            @button-click="${(e) => this.__removeOtherSensors(e, idx)}"
-          >
-          </sci-fi-button>
-        </div>
-      `;
-    });
   }
 
   __renderDevicesSelection() {
@@ -355,14 +102,6 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
     this.__dispatchChange(e, newConfig);
   }
 
-  __editDevice(id = null) {
-    this._edit = !this._edit;
-    this._current_device_id = id;
-    this._setup_device_entities(
-      id ? this._config.devices[this._current_device_id].device_id : id
-    );
-  }
-
   __addElement() {
     this._edit = !this._edit;
     this._config.devices.push(this.__createEmptyDeviceConfig());
@@ -377,21 +116,233 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
       active_icon: 'mdi:power-plug-outline',
       inactive_icon: 'mdi:power-plug-off-outline',
       name: null,
-      power_sensor: null,
-      child_lock_sensor: null,
-      others: [],
+      sensors: {},
     };
   }
 
-  __addOtherSensors(e) {
+  _setup_device_entities(device_id) {
+    this._device_entities =
+      device_id == null
+        ? []
+        : Object.values(this._hass.entities)
+            .filter((e) => e.device_id == device_id)
+            .map((e) => {
+              return {
+                category: e.entity_category,
+                entity_id: e.entity_id,
+                attributes: {
+                  friendly_name: e.name,
+                  icon: e.icon,
+                },
+              };
+            });
+  }
+
+  __renderDevicesEdition() {
+    if (this._current_device_id == null) return nothing;
+    const device = this._config.devices[this._current_device_id];
+    this._setup_device_entities(device.device_id);
+
+    return html`
+      <div class="head">
+        <sci-fi-button
+          icon="mdi:chevron-left"
+          @button-click=${(e) => this.__editDevice(null)}
+        ></sci-fi-button>
+        <span>${device.name ? device.name : ''}</span>
+      </div>
+      ${this.__renderGeneral(device)} ${this.__renderAppearance(device)}
+      ${this.__renderSensors(device)}
+    `;
+  }
+
+  __editDevice(id = null) {
+    this._edit = !this._edit;
+    this._current_device_id = id;
+    this._setup_device_entities(
+      id ? this._config.devices[this._current_device_id].device_id : id
+    );
+  }
+
+  __renderGeneral(device) {
+    return html`
+      <section>
+        <h1>
+          <span><sci-fi-icon icon="mdi:page-layout-header"></sci-fi-icon></span>
+          ${this.getLabel('section-title-device')}
+          ${this.getLabel('text-required')}
+        </h1>
+
+        <sci-fi-dropdown-device-input
+          icon="mdi:devices"
+          label="${this.getLabel('input-device')} ${this.getLabel(
+            'text-required'
+          )}"
+          id="${parseInt(this._current_device_id)}"
+          value="${device.name}"
+          .items="${this._devices}"
+          @input-update=${this.__deviceSelection}
+        ></sci-fi-dropdown-device-input>
+      </section>
+    `;
+  }
+
+  __deviceSelection(e) {
+    const device = e.detail.value;
+    this._setup_device_entities(device.id);
     let newConfig = this.__getNewConfig();
-    newConfig.devices[this._current_device_id]['others'].push('');
+    newConfig.devices[this._current_device_id].device_id = device.id;
+    newConfig.devices[this._current_device_id].name = device.name_by_user
+      ? device.name_by_user
+      : device.name;
+    // Select first switch found
+    const switch_entities = this._device_entities.filter(
+      (e) => e.entity_id.split('.')[0] == 'switch'
+    );
+    if (switch_entities.length > 0) {
+      const entity_id = switch_entities[0].entity_id;
+      newConfig.devices[this._current_device_id].entity_id = entity_id;
+      const sensors = {};
+      this._device_entities
+        .filter((e) => e.entity_id != entity_id)
+        .forEach((e) => {
+          // Select only entity with states
+          const entity = this._hass.states[e.entity_id];
+          if (entity) {
+            sensors[e.entity_id] = {
+              show: false,
+              name: entity.attributes.friendly_name,
+              icon: entity.attributes.icon,
+              power: false,
+            };
+          }
+        });
+      newConfig.devices[this._current_device_id].sensors = sensors;
+      this.__dispatchChange(e, newConfig);
+    } else {
+      this.__toast(newConfig.devices[this._current_device_id].name);
+    }
+  }
+
+  __renderAppearance(device) {
+    const active_icon = device.active_icon ? device.active_icon : null;
+    const inactive_icon = device.inactive_icon ? device.inactive_icon : null;
+    return html` <sci-fi-accordion-card
+      title="${this.getLabel('section-title-appearance')} ${this.getLabel(
+        'text-optionnal'
+      )}"
+      icon="mdi:palette-outline"
+    >
+      <sci-fi-input
+        label="${this.getLabel('input-name')} ${this.getLabel(
+          'text-optionnal'
+        )}"
+        element-id="name"
+        icon="mdi:cursor-text"
+        value=${device.name}
+        @input-update=${this.__update}
+        ?disabled=${device.device_id == null}
+      ></sci-fi-input>
+      <sci-fi-dropdown-icon-input
+        label="${this.getLabel('input-active-icon')} ${this.getLabel(
+          'text-optionnal'
+        )}"
+        element-id="active_icon"
+        icon=${active_icon}
+        value=${active_icon}
+        @input-update=${this.__update}
+        ?disabled=${device.device_id == null}
+      ></sci-fi-dropdown-icon-input>
+
+      <sci-fi-dropdown-icon-input
+        label="${this.getLabel('input-inactive-icon')} ${this.getLabel(
+          'text-optionnal'
+        )}"
+        element-id="inactive_icon"
+        icon=${inactive_icon}
+        value=${inactive_icon}
+        @input-update=${this.__update}
+        ?disabled=${device.device_id == null}
+      ></sci-fi-dropdown-icon-input>
+    </sci-fi-accordion-card>`;
+  }
+
+  __renderSensors(device) {
+    return html` <sci-fi-accordion-card
+      title="${this.getLabel('section-title-sensor')} ${this.getLabel(
+        'text-optionnal'
+      )}"
+      icon="mdi:cog-transfer-outline"
+    >
+      <div class="sensors">
+        ${Object.keys(device.sensors).map((sensor_id) => {
+          const sensor = device.sensors[sensor_id];
+          return html`
+            <div class="sensor">
+              <sci-fi-input
+                label="${sensor_id}"
+                element-id="${sensor_id}"
+                kind="name"
+                icon="${sensor.icon}"
+                value=${sensor.name}
+                @input-update=${this.__updateSensor}
+                ?disabled=${device.device_id == null}
+              ></sci-fi-input>
+              <sci-fi-button
+                icon="${sensor.power ? 'mdi:flash' : 'mdi:flash-outline'}"
+                @button-click="${(e) =>
+                  this.__updatePowerVisibility(e, sensor_id, 'power')}"
+                class="${sensor.power ? 'on' : 'off'}"
+              ></sci-fi-button>
+              <sci-fi-button
+                icon="${sensor.show
+                  ? 'mdi:eye-outline'
+                  : 'mdi:eye-off-outline'}"
+                @button-click="${(e) =>
+                  this.__updatePowerVisibility(e, sensor_id, 'show')}"
+                class="${sensor.show ? 'on' : 'off'}"
+              ></sci-fi-button>
+            </div>
+          `;
+        })}
+      </div>
+    </sci-fi-accordion-card>`;
+  }
+
+  __updatePowerVisibility(e, sensor_id, kind) {
+    let newConfig = this.__getNewConfig();
+    if (
+      kind == 'power' &&
+      !newConfig.devices[this._current_device_id].sensors[sensor_id][kind]
+    ) {
+      object
+        .keys(newConfig.devices[this._current_device_id].sensors)
+        .map(
+          (sensor_id) =>
+            (newConfig.devices[this._current_device_id].sensors[sensor_id][
+              kind
+            ] = false)
+        );
+      newConfig.devices[this._current_device_id].sensors[sensor_id]['show'] =
+        false;
+    }
+    if (
+      kind == 'show' &&
+      newConfig.devices[this._current_device_id].sensors[sensor_id]['power']
+    ) {
+      newConfig.devices[this._current_device_id].sensors[sensor_id]['power'] =
+        false;
+    }
+    newConfig.devices[this._current_device_id].sensors[sensor_id][kind] =
+      !newConfig.devices[this._current_device_id].sensors[sensor_id][kind];
     this.__dispatchChange(e, newConfig);
   }
 
-  __removeOtherSensors(e, idx) {
+  __updateSensor(e) {
+    const data = e.detail;
     let newConfig = this.__getNewConfig();
-    newConfig.devices[this._current_device_id]['others'].splice(idx, 1);
+    newConfig.devices[this._current_device_id].sensors[data.id][data.kind] =
+      data.value;
     this.__dispatchChange(e, newConfig);
   }
 
@@ -405,5 +356,13 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
         data.value;
     }
     this.__dispatchChange(e, newConfig);
+  }
+
+  __toast(device) {
+    const txt =
+      msg('Cannot found switch entity in device: ') +
+      device +
+      msg('. Please select a plug device.');
+    this.shadowRoot.querySelector('sci-fi-toast').addMessage(txt, true);
   }
 }

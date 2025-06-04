@@ -34,23 +34,20 @@ export default css`
   .entity-row sci-fi-button {
     align-self: center;
   }
-  section h1 .section-title {
-    flex: 1;
-  }
-  .additional-sensors {
+  .editor .sensors {
     display: flex;
     flex-direction: column;
     row-gap: 10px;
   }
-  .additional-sensors .sensor-row {
+  .editor .sensors .sensor {
     display: flex;
     flex-direction: row;
-    column-gap: 5px;
+    column-gap: 10px;
   }
-  .additional-sensors .sensor-row sci-fi-dropdown-entity-input {
+  .editor .sensors .sensor sci-fi-input {
     flex: 1;
   }
-  .additional-sensors .sensor-row sci-fi-button {
-    align-self: center;
+  .editor .sensors .sensor sci-fi-button.off {
+    --primary-icon-color: var(--secondary-light-color);
   }
 `;

@@ -30,25 +30,35 @@ export default {
         type: 'string',
         default: '',
       },
-      power_sensor: {
-        mandatory: false,
-        type: 'string',
-        default: '',
-      },
-      child_lock_sensor: {
-        mandatory: false,
-        type: 'string',
-        default: '',
-      },
-      power_outage_memory_select: {
-        mandatory: false,
-        type: 'string',
-        default: '',
-      },
-      other: {
-        type: 'array',
+
+      sensors: {
+        type: 'object',
         default: [],
-        data_type: 'string',
+        data_type: 'object',
+        data: {
+          '*eid*': {
+            mandatory: true,
+            type: 'object',
+            default: {},
+            data: {
+              name: {
+                mandatory: false,
+                type: 'string',
+                default: '',
+              },
+              show: {
+                mandatory: false,
+                type: 'boolean',
+                default: false,
+              },
+              power: {
+                mandatory: false,
+                type: 'boolean',
+                default: false,
+              },
+            },
+          },
+        },
       },
     },
   },

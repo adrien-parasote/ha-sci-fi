@@ -121,10 +121,4 @@ export class Plug {
       }
     );
   }
-  /*
-  updatePowerOutageMemoryState(newState) {
-    if (!this.power_outage_memory_sensor) return;
-    return this.power_outage_memory_sensor.callService(this._hass, newState);
-  }
-    */
 }

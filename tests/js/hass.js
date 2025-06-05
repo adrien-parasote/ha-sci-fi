@@ -223,9 +223,9 @@ window.buildHass = function () {
     (config) => {
       window.hass.config = config;
       // Mock
-      window.hass.language = config.language;
+      window.hass.language = 'en'; //config.language;
       window.hass.locale = {
-        language: config.language,
+        language: 'en' /*config.language,*/,
         number_format: 'language',
         time_format: 'language',
         date_format: 'language',

@@ -57,7 +57,8 @@ export class SciFiPlugs extends SciFiBaseCard {
   }
 
   render() {
-    if (!this._hass || !this._config) return nothing;
+    if (!this._hass || !this._config || !this._plugs[this._selected_plug_id])
+      return nothing;
     const plug = this._plugs[this._selected_plug_id];
     return html`
       <div class="container">

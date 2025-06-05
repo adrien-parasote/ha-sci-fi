@@ -15,7 +15,6 @@ export default {
         'select.nous_paillette_charlotte_power_outage_memory': {
           show: true,
           name: 'Power outage memory',
-          icon: 'mdi:power-settings',
           power: false,
         },
         'select.nous_paillette_charlotte_indicator_mode': {
@@ -45,7 +44,7 @@ export default {
         },
         'light.nous_paillette_charlotte': {
           show: true,
-          name: 'Nous Paillette Charlotte',
+          name: 'Light',
           power: false,
         },
       },
@@ -65,7 +64,6 @@ export default {
         'select.nous_lave_linge_power_outage_memory': {
           show: true,
           name: 'Power outage memory',
-          icon: 'mdi:power-settings',
           power: false,
         },
         'select.nous_lave_linge_indicator_mode': {
@@ -96,7 +94,6 @@ export default {
         'binary_sensor.cycle_lave_linge': {
           show: true,
           name: 'Cycle',
-          icon: 'mdi:stop',
           power: false,
         },
       },
@@ -111,7 +108,6 @@ export default {
         'select.mureva_evlink_power_on_behavior': {
           show: true,
           name: 'Power-on behavior',
-          icon: 'mdi:power-settings',
           power: false,
         },
         'sensor.mureva_evlink_power': {

@@ -18,6 +18,10 @@ export class Sensor {
     this.attributes = hass.states[id].attributes;
   }
 
+  set friendly_name(name) {
+    this.attributes.friendly_name = name;
+  }
+
   get friendly_name() {
     return this.attributes.friendly_name;
   }
@@ -112,9 +116,5 @@ export class TrackerSensor extends Sensor {
 export class ZoneSensor extends Sensor {
   has_user(user_id) {
     return this.attributes.persons.includes(user_id);
-  }
-
-  get icon() {
-    return this.attributes.icon;
   }
 }

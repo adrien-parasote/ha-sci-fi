@@ -15,10 +15,7 @@ export class Plug {
     name,
     active_icon,
     inactive_icon,
-    power_sensor,
-    child_lock_sensor,
-    power_outage_memory_select,
-    other_sensors
+    sensors
   ) {
     this._hass = hass;
     this.device = new Device(hass, device_id);
@@ -27,29 +24,37 @@ export class Plug {
     this.entity_id = entity_id;
     this.state = hass.states[entity_id].state;
     this.name = name;
-    this.child_lock_sensor =
-      child_lock_sensor && hass.states[child_lock_sensor]
-        ? new LockSensor(child_lock_sensor, hass)
-        : null;
-    this.power_sensor =
-      power_sensor && hass.states[power_sensor]
-        ? new Sensor(power_sensor, hass)
-        : null;
-    this.power_outage_memory_sensor =
-      power_outage_memory_select && hass.states[power_outage_memory_select]
-        ? new SelectSensor(power_outage_memory_select, hass)
-        : null;
-
-    this.other_sensors = this.__buildOtherSensors(other_sensors);
+    this.__buildSensors(sensors);
   }
 
-  __buildOtherSensors(other_sensors) {
-    if (!other_sensors) return [];
-    const sensors = [];
-    other_sensors.forEach((name) => {
-      if (hass.states[name]) sensors.push(new Sensor(name, hass));
+  __buildSensors(config) {
+    this.sensors = [];
+    this.power = null;
+    if (!config) return;
+
+    config.forEach((sensor_conf) => {
+      if (this._hass.states[sensor_conf.id]) {
+        let sensor = null;
+        switch (sensor_conf.id.split('.')[0]) {
+          case 'select':
+            sensor = new SelectSensor(sensor_conf.id, this._hass);
+            break;
+          case 'lock':
+            sensor = new LockSensor(sensor_conf.id, this._hass);
+            break;
+          default:
+            sensor = new Sensor(sensor_conf.id, this._hass);
+            break;
+        }
+        // Update name
+        sensor.friendly_name = sensor_conf.name;
+        if (sensor_conf.power) {
+          this.power = sensor;
+        } else {
+          this.sensors.push(sensor);
+        }
+      }
     });
-    return sensors;
   }
 
   get power_unit_of_measurement() {
@@ -82,7 +87,7 @@ export class Plug {
       'history/period/' +
         this.__getYesterday() +
         '?minimal_response=true&no_attributes=true&significant_changes_only=false&filter_entity_id=' +
-        this.power_sensor.id
+        this.power.id
     );
   }
 
@@ -116,14 +121,10 @@ export class Plug {
       }
     );
   }
-
-  turnOnOffChildLock() {
-    if (!this.child_lock_sensor) return;
-    return this.child_lock_sensor.callService(this._hass);
-  }
-
+  /*
   updatePowerOutageMemoryState(newState) {
     if (!this.power_outage_memory_sensor) return;
     return this.power_outage_memory_sensor.callService(this._hass, newState);
   }
+    */
 }

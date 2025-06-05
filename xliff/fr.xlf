@@ -706,10 +706,6 @@
   <source>Power outage memory</source>
   <target>État mémoire en cas de panne de courant</target>
 </trans-unit>
-<trans-unit id="sc61da33dadfc2963">
-  <source>Other information</source>
-  <target>Autre information</target>
-</trans-unit>
 <trans-unit id="s8720a94461718849">
   <source>Others sensors</source>
   <target>Autres capteurs</target>
@@ -721,6 +717,10 @@
 <trans-unit id="s15b0d3bf0d4cf5b4">
   <source>. Please select a plug device.</source>
   <target>. Veuillez sélectionner un appareil de type prise.</target>
+</trans-unit>
+<trans-unit id="sf8d35f62241a0434">
+  <source>No power data to display</source>
+  <target>Aucune donnée d'alimentation à afficher</target>
 </trans-unit>
 </body>
 </file>

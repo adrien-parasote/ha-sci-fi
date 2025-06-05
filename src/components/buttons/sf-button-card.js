@@ -26,6 +26,7 @@ export class SciFiCardButton extends SciFiButton {
           );
           --btn-min-width: var(--min-width, 90px);
           --btn-label-text-alignment: var(--text-align, start);
+          --label-alone: var(--margin-top-label-alone, 5px);
         }
         .btn {
           display: flex;
@@ -62,7 +63,7 @@ export class SciFiCardButton extends SciFiButton {
           color: var(--title-text-color);
         }
         .btn .label-alone {
-          margin-top: 5px;
+          margin-top: var(--label-alone);
         }
         .btn sci-fi-icon {
           --icon-color: var(--btn-icon-color);

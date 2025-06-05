@@ -5,6 +5,10 @@ import {isEqual} from 'lodash-es';
 
 import {Person} from '../../helpers/entities/person.js';
 import {Plug} from '../../helpers/entities/plug/plug.js';
+import {
+  LockSensor,
+  SelectSensor,
+} from '../../helpers/entities/sensor/sensor.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
 import configMetadata from './config-metadata.js';
 import {CHART_BG_COLOR, CHART_BORDER_COLOR, PACKAGE} from './const.js';
@@ -40,17 +44,15 @@ export class SciFiPlugs extends SciFiBaseCard {
           device.name,
           device.active_icon,
           device.inactive_icon,
-          device.power_sensor,
-          device.child_lock_sensor,
-          device.power_outage_memory_select,
-          device.others
+          Object.keys(device.sensors)
+            .filter((id) => device.sensors[id].show || device.sensors[id].power)
+            .map((id) => Object.assign({}, {id: id}, device.sensors[id]))
         )
     );
     if (!this._plugs || !isEqual(plugs, this._plugs)) {
       this._plugs = plugs;
       if (!this._selected_plug_id) this._selected_plug_id = 0;
     }
-
     if (!this._user) this._user = new Person(hass); // Only once
   }
 
@@ -83,95 +85,15 @@ export class SciFiPlugs extends SciFiBaseCard {
   }
 
   __displayPlug(plug) {
-    this.__loadPowerChart(plug);
+    // In case of no power sensor supply
+    if (plug.power != null) this.__loadPowerChart(plug);
     return html`<div class="content">
       <div class="info">
-        ${this.__displayImage(plug)} ${this.__displayConfig(plug)}
-        ${this.__displayOthers(plug)}
+        ${this.__displayImage(plug)} ${this.__displaySensors(plug)}
       </div>
+      <div class="msg-container"></div>
       <div class="chart-container"></div>
     </div>`;
-  }
-
-  __displayOthers(plug) {
-    return html`
-      <section>
-        <h1>
-          <span><sci-fi-icon icon="mdi:cog-outline"></sci-fi-icon></span>
-          ${msg('Other information')}
-        </h1>
-        <div class="others">
-          ${plug.other_sensors.map(
-            (sensor) =>
-              html` <div class="other">
-                <div class="sensor">
-                  <sci-fi-icon icon="${sensor.icon}"></sci-fi-icon>
-                  <div>
-                    <div class="label">${sensor.friendly_name}</div>
-                    <div class="value">
-                      ${sensor.value} ${sensor.unit_of_measurement}
-                    </div>
-                  </div>
-                </div>
-              </div>`
-          )}
-        </div>
-      </section>
-    `;
-  }
-
-  __displayConfig(plug) {
-    return html`
-      <section>
-        <h1>
-          <span><sci-fi-icon icon="mdi:cog-outline"></sci-fi-icon></span>
-          ${msg('Configuration')}
-        </h1>
-        <div class="plug-config">
-          ${this.__childLock(plug)} ${this.__powerOutageMemory(plug)}
-        </div>
-      </section>
-    `;
-  }
-
-  __childLock(plug) {
-    let disabled = false;
-    let icon = null;
-    if (plug.child_lock_sensor == null) {
-      disabled = true;
-      icon = 'sci:lock-unknow';
-    } else {
-      icon = plug.child_lock_sensor.icon;
-    }
-    return html`
-      <sci-fi-button-card
-        class="${disabled ? 'off' : 'on'}"
-        icon=${icon}
-        no-title
-        text=${msg('Child lock?')}
-        ?disabled=${disabled}
-        @button-click="${(e) => this._turnOnOffChildLock(plug)}"
-      ></sci-fi-button-card>
-    `;
-  }
-
-  __powerOutageMemory(plug) {
-    const sensor = plug.power_outage_memory_sensor;
-    return html`
-      <div class="outage-memory ${sensor == null ? 'off' : ''}">
-        <sci-fi-dropdown-input
-          icon="mdi:power-settings"
-          label="${msg('Power outage memory')}"
-          value=${sensor == null ? null : sensor.value}
-          disabled-filter
-          no-close-box
-          ?disabled=${sensor == null}
-          .items="${sensor == null ? [] : sensor.options}"
-          @input-update=${(e) =>
-            this._updatePowerOutageMemoryState(plug, e.detail.value)}
-        ></sci-fi-dropdown-input>
-      </div>
-    `;
   }
 
   __displayImage(plug) {
@@ -196,13 +118,87 @@ export class SciFiPlugs extends SciFiBaseCard {
     </div>`;
   }
 
-  __loadPowerChart(plug) {
-    // TODO SETUP LOADER + REVIEW IN CASE OF EVERYTHING IS 0 + REVIEW WHEN ONLY THINGS IN THE PAST
+  __displaySensors(plug) {
+    return html`<div class="sensors">
+      ${plug.sensors
+        .sort((s1, s2) => {
+          if (s1.id < s2.id) return -1;
+          if (s1.id > s2.id) return 1;
+          return 0;
+        })
+        .map((s) => {
+          return html`<div class="sensor">${this.__displaySensor(s)}</div>`;
+        })}
+    </div>`;
+  }
 
+  __displaySensor(sensor) {
+    if (sensor instanceof LockSensor) return this.__displayLockBtn(sensor);
+    if (sensor instanceof SelectSensor) return this.__displaySelectBtn(sensor);
+    return html`
+      <sci-fi-icon icon="${sensor.icon}"></sci-fi-icon>
+      <div class="name">${sensor.friendly_name}</div>
+      <div class="value">${sensor.value} ${sensor.unit_of_measurement}</div>
+    `;
+  }
+
+  __displayLockBtn(sensor) {
+    return html` <sci-fi-icon icon="${sensor.icon}"></sci-fi-icon>
+      <div class="name">${sensor.friendly_name}</div>
+      <div class="value">
+        <sci-fi-button-card
+          no-title
+          text=${sensor.value.toUpperCase()}
+          @button-click="${(e) => this._turnOnOffChildLock(sensor)}"
+        ></sci-fi-button-card>
+      </div>`;
+  }
+
+  __displaySelectBtn(sensor) {
+    return html` <sci-fi-dropdown-input
+      icon="${sensor.icon}"
+      label="${sensor.friendly_name}"
+      value=${sensor.value}
+      no-close-box
+      disabled-filter
+      .items="${sensor.options}"
+      @input-update=${(e) => this._updateSelectState(e, sensor)}
+    ></sci-fi-dropdown-input>`;
+  }
+
+  _updateSelectState(e, sensor) {
+    sensor.callService(this._hass, e.detail.value).then(
+      () => this.__toast(false, msg('done')),
+      (e) => this.__toast(true, e)
+    );
+  }
+
+  _turnOnOffChildLock(sensor) {
+    sensor.callService(this._hass).then(
+      () => this.__toast(false, msg('done')),
+      (e) => this.__toast(true, e)
+    );
+  }
+
+  __loadPowerChart(plug) {
     // Request
     plug.getPowerHistory().then(
       (data) => {
         const history = this.__parseHistory(data[0]);
+        if (
+          Object.keys(history).length == 1 &&
+          Object.values(history)[0] == 0
+        ) {
+          this.shadowRoot.querySelector('.msg-container').textContent = msg(
+            'No power data to display'
+          );
+          this.shadowRoot.querySelector('.chart-container').style.display =
+            'none';
+        } else {
+          this.shadowRoot.querySelector('.msg-container').textContent = '';
+          this.shadowRoot.querySelector('.chart-container').style.display =
+            'block';
+        }
         const datasets = this.__buildChartDatasets(Object.values(history));
         const labels = this.__buildChartLabel(Object.keys(history));
         if (!this._chart) {
@@ -227,7 +223,7 @@ export class SciFiPlugs extends SciFiBaseCard {
       // Get value
       const value = isNaN(parseFloat(el.state))
         ? 0.0
-        : parseFloat(el.state).toFixed(2);
+        : parseFloat(parseFloat(el.state).toFixed(2));
       // Select max
       if (!(d in res)) {
         res[d] = value;
@@ -386,25 +382,8 @@ export class SciFiPlugs extends SciFiBaseCard {
     );
   }
 
-  _turnOnOffChildLock(plug) {
-    plug.turnOnOffChildLock().then(
-      () => this.__toast(false),
-      (e) => this.__toast(true, e)
-    );
-  }
-
-  _updatePowerOutageMemoryState(plug, newValue) {
-    // Update only when needed
-    if (newValue != plug.power_outage_memory_sensor.value) {
-      plug.updatePowerOutageMemoryState(newValue).then(
-        () => this.__toast(false),
-        (e) => this.__toast(true, e)
-      );
-    }
-  }
-
   __toast(error, e) {
-    const txt = error ? (e.message ? e.message : e) : msg('done');
+    const txt = error ? (e.message ? e.message : e) : e;
     this.shadowRoot.querySelector('sci-fi-toast').addMessage(txt, error);
   }
 

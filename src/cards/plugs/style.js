@@ -106,6 +106,12 @@ export default css`
     flex: 1;
     flex-direction: column;
   }
+  .content .msg-container {
+    text-align: center;
+    min-height: 30px;
+    align-content: center;
+    color: var(--secondary-light-color);
+  }
   .content .info {
     padding: 10px;
     display: flex;
@@ -116,7 +122,7 @@ export default css`
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-top: 10px;
+    margin: 10px 0;
   }
   .content .info .image .icon-container {
     border: calc(var(--border-width) * 2) solid var(--secondary-bg-color);
@@ -199,76 +205,36 @@ export default css`
       opacity: 0;
     }
   }
-
-  .content .info section .plug-config {
+  .content .info .sensors {
     display: flex;
-    flex-direction: row;
-    column-gap: 10px;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    row-gap: 15px;
   }
-  .content .info section .plug-config sci-fi-button-card {
-    --font-weight: normal;
-    --label-color: var(--primary-light-color);
-    --border: var(--border-width) solid var(--primary-light-color);
-    --btn-icon-size: var(--icon-size-normal);
-    --padding: 5px;
-    --primary-icon-color: var(--primary-light-color);
-    --min-width: 40px;
-    --text-align: center;
-    height: 100%;
-  }
-  .content .info section .plug-config sci-fi-button-card.off {
-    --label-color: var(--secondary-bg-color);
-    --border: var(--border-width) solid var(--secondary-bg-color);
-    --primary-icon-color: var(--secondary-bg-color);
-  }
-  .content .info section .plug-config .outage-memory {
-    border: var(--border-width) solid var(--primary-light-color);
-    border-radius: var(--border-radius);
-    padding: 5px;
-  }
-  .content .info section .plug-config .outage-memory.off {
-    border: var(--border-width) solid var(--secondary-bg-color);
-  }
-  .content .info section .plug-config .outage-memory sci-fi-dropdown-input {
-    --input-background-color: none;
-    --input-icon-color: var(--primary-light-color);
-    --input-label-text-color: var(--secondary-light-color);
-    --input-label-active-text-color: var(--secondary-light-color);
-    --input-text-color: var(--secondary-light-color);
-  }
-
-  .content .info section .plug-config .outage-memory.off sci-fi-dropdown-input {
-    --input-icon-color: var(--secondary-bg-color);
-    --input-disabled-text-color: var(--secondary-bg-color);
-    --input-label-text-color: var(--secondary-bg-color);
-    --input-label-active-text-color: var(--secondary-bg-color);
-    --input-drop-icon-color: var(--secondary-bg-color);
-  }
-  .content .info section .others {
-    align-self: center;
-  }
-  .content .info section .others .other {
-    display: inline-block;
-    width: 150px;
-    margin: 0 10px;
-  }
-  .content .info section .others .other .sensor {
+  .content .info .sensors .sensor {
     display: flex;
     flex-direction: row;
     column-gap: 5px;
+    min-height: 25px;
+    align-items: center;
   }
-  .content .info section .others .other .sensor > div {
-    display: flex;
-    flex-direction: column;
+  .content .info .sensors .sensor sci-fi-dropdown-input {
     flex: 1;
   }
-  .content .info section .others .other .sensor .label {
-    font-size: var(--font-size-xsmall);
-    color: var(--secondary-light-color);
+  .content .info .sensors .sensor .name {
+    flex: 1;
+    margin-left: 10px;
+    align-content: center;
   }
-  .content .info section .others .other .sensor .value {
+  .content .info .sensors .sensor .value {
     color: var(--primary-light-color);
+    text-transform: uppercase;
+    align-content: center;
+    font-weight: bold;
+  }
+  .content .info .sensors .sensor .value sci-fi-button-card {
+    --btn-padding: 5px;
+    --margin-top-label-alone: 0;
+    --border: none;
+    --label-color: var(--primary-light-color);
   }
 `;

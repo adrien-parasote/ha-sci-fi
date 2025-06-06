@@ -23,6 +23,7 @@ export class SciFiPlugs extends SciFiBaseCard {
   _hass; // private
   _chart;
   _user;
+  _chart_generation; // use to store if chart is generated or not for the plug
 
   static get properties() {
     return {
@@ -49,6 +50,10 @@ export class SciFiPlugs extends SciFiBaseCard {
             .map((id) => Object.assign({}, {id: id}, device.sensors[id]))
         )
     );
+    if (!this._plugs) {
+      // Initialization
+      this._chart_generation = plugs.map((p) => false);
+    }
     if (!this._plugs || !isEqual(plugs, this._plugs)) {
       this._plugs = plugs;
       if (!this._selected_plug_id) this._selected_plug_id = 0;
@@ -183,33 +188,49 @@ export class SciFiPlugs extends SciFiBaseCard {
 
   __loadPowerChart(plug) {
     // Request
-    plug.getPowerHistory().then(
-      (data) => {
-        const history = this.__parseHistory(data[0]);
-        if (
-          Object.keys(history).length == 1 &&
-          Object.values(history)[0] == 0
-        ) {
-          this.shadowRoot.querySelector('.msg-container').textContent = msg(
-            'No power data to display'
-          );
-          this.shadowRoot.querySelector('.chart-container').style.display =
-            'none';
-        } else {
-          this.shadowRoot.querySelector('.msg-container').textContent = '';
-          this.shadowRoot.querySelector('.chart-container').style.display =
-            'block';
-        }
-        const datasets = this.__buildChartDatasets(Object.values(history));
-        const labels = this.__buildChartLabel(Object.keys(history));
-        if (!this._chart) {
-          this.__drawChart(datasets, labels);
-        } else {
-          this.__updateChart(datasets, labels);
-        }
-      },
-      (e) => this.__toast(true, e)
-    );
+    if (this._chart_generation[this._selected_plug_id]) {
+      const datasets = this._chart_generation[this._selected_plug_id].datasets;
+      const labels = this._chart_generation[this._selected_plug_id].labels;
+      if (!this._chart) {
+        this.__drawChart(datasets, labels);
+      } else {
+        this.__updateChart(datasets, labels);
+      }
+      return;
+    } else {
+      plug.getPowerHistory().then(
+        (data) => {
+          const history = this.__parseHistory(data[0]);
+          if (
+            Object.keys(history).length == 0 ||
+            (Object.keys(history).length == 1 && Object.values(history)[0] == 0)
+          ) {
+            this.shadowRoot.querySelector('.msg-container').textContent = msg(
+              'No power data to display'
+            );
+            this.shadowRoot.querySelector('.chart-container').style.display =
+              'none';
+          } else {
+            this.shadowRoot.querySelector('.msg-container').textContent = '';
+            this.shadowRoot.querySelector('.chart-container').style.display =
+              'block';
+          }
+          const datasets = this.__buildChartDatasets(Object.values(history));
+          const labels = this.__buildChartLabel(Object.keys(history));
+          // store the generation
+          this._chart_generation[this._selected_plug_id] = {
+            datasets: datasets,
+            labels: labels,
+          };
+          if (!this._chart) {
+            this.__drawChart(datasets, labels);
+          } else {
+            this.__updateChart(datasets, labels);
+          }
+        },
+        (e) => this.__toast(true, e)
+      );
+    }
   }
 
   __parseHistory(data) {
@@ -253,7 +274,7 @@ export class SciFiPlugs extends SciFiBaseCard {
     return data.map((l) => {
       const d = new Date(l);
       if (d.getHours() == 0 && d.getMinutes() == 0) return this.__getDay(d);
-      return this.__getHour(d);
+      return this.__getDay(d) + '-' + this.__getHour(d);
     });
   }
 
@@ -303,7 +324,9 @@ export class SciFiPlugs extends SciFiBaseCard {
             ticks: {
               align: 'start',
               callback: function (val, index, values) {
-                return index % 30 === 0 ? this.getLabelForValue(val) : null;
+                return index % Math.floor(this.max / 3) === 0
+                  ? this.getLabelForValue(val)
+                  : null;
               },
               color: 'rgb(102, 156, 210)',
               font: {

@@ -102,11 +102,13 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
     this.__dispatchChange(e, newConfig);
   }
 
-  __addElement() {
+  __addElement(e) {
     this._edit = !this._edit;
-    this._config.devices.push(this.__createEmptyDeviceConfig());
-    this._current_device_id = this._config.devices.length - 1;
+    let newConfig = this.__getNewConfig();
+    newConfig.devices.push(this.__createEmptyDeviceConfig());
+    this._current_device_id = newConfig.devices.length - 1;
     this._setup_device_entities();
+    this.__dispatchChange(e, newConfig);
   }
 
   __createEmptyDeviceConfig() {

@@ -401,7 +401,7 @@ export class SciFiPlugs extends SciFiBaseCard {
 
   _turnOnOff(plug) {
     plug.callService().then(
-      () => this.__toast(false),
+      () => this.__toast(false, msg('done')),
       (e) => this.__toast(true, e)
     );
   }

@@ -44,9 +44,13 @@ export class SciFiDropdownIconInput extends SciFiDropdownInput {
       this.__filter_items = [];
       return;
     }
-    this.__filter_items = this._items.filter((item) => {
-      return item.name.toUpperCase().includes(value.toUpperCase());
-    });
+    if (this.disabledFilter) {
+      this.__filter_items = JSON.parse(JSON.stringify(this._items));
+    } else {
+      this.__filter_items = this._items.filter((item) => {
+        return item.name.toUpperCase().includes(value.toUpperCase());
+      });
+    }
   }
 
   __renderItem(item) {

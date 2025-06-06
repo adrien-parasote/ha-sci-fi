@@ -126,7 +126,7 @@ export class SciFiBaseCard extends LitElement {
             });
           }
           if (metadata.data_type == 'object') {
-            cfg[key].map((element) =>
+            cfg[key] = cfg[key].map((element) =>
               this.__validateConfig(element, metadata.data)
             );
           }

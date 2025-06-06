@@ -22,7 +22,24 @@ window.hass = {
   devices: {},
   entities: {},
   callService: hassCallService,
+  callApi: hassCallApi,
+  callWS: hassCallWs,
 };
+
+async function hassCallApi(method, path) {
+  const url = `${window.hass.auth.data.hassUrl}/api/${path}`;
+  return await fetch(url, {
+    method,
+    headers: {
+      Authorization: 'Bearer ' + window.hass.auth.accessToken,
+      'content-type': 'application/json',
+    },
+  }).then((e) => e.json());
+}
+
+async function hassCallWs(msg) {
+  return await window.hass.connection.sendMessagePromise(msg);
+}
 
 async function hassCallService(service, serviceData, target) {
   await callService(window.hass.connection, service, serviceData, target).then(
@@ -60,22 +77,19 @@ function connected() {
 }
 
 function getAuthOptions() {
-  const storeAuth = true;
-  const authOptions = storeAuth
-    ? {
-        async loadTokens() {
-          try {
-            return JSON.parse(localStorage.hassTokens);
-          } catch (err) {
-            return undefined;
-          }
-        },
-        saveTokens: (tokens) => {
-          localStorage.hassTokens = JSON.stringify(tokens);
-        },
+  return {
+    async loadTokens() {
+      try {
+        return JSON.parse(localStorage.hassTokens);
+      } catch (err) {
+        console.error(err);
+        return undefined;
       }
-    : {};
-  return authOptions;
+    },
+    saveTokens: (tokens) => {
+      localStorage.hassTokens = JSON.stringify(tokens);
+    },
+  };
 }
 
 (async () => {
@@ -204,27 +218,27 @@ window.buildHass = function () {
         }),
       (err) => console.error('Failed to load entities', err)
     );
-  dispatchEvent(
-    new CustomEvent('hass-created', {
-      detail: 'create',
-      bubbles: true,
-      composed: true,
-    })
-  );
 
   getConfig(window.hass.connection).then(
     (config) => {
       window.hass.config = config;
       // Mock
-      window.hass.language = config.language;
+      window.hass.language = 'en'; //config.language;
       window.hass.locale = {
-        language: config.language,
+        language: 'en' /*config.language,*/,
         number_format: 'language',
         time_format: 'language',
         date_format: 'language',
         time_zone: 'local',
         first_weekday: 'language',
       };
+      dispatchEvent(
+        new CustomEvent('hass-changed', {
+          detail: 'config',
+          bubbles: true,
+          composed: true,
+        })
+      );
     },
     (err) => console.error('Failed to load config', err)
   );

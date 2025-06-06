@@ -17,6 +17,9 @@ export class SciFiToggleSwitch extends LitElement {
         .title {
           font-size: var(--font-size-normal);
         }
+        .title.hide {
+          display: none;
+        }
         .switch {
           position: relative;
           display: inline-block;
@@ -73,6 +76,7 @@ export class SciFiToggleSwitch extends LitElement {
       elementId: {type: String, attribute: 'element-id'},
       label: {type: String},
       checked: {type: Boolean},
+      disabled: {type: Boolean},
     };
   }
 
@@ -81,16 +85,20 @@ export class SciFiToggleSwitch extends LitElement {
     this.elementId = this.elementId ? this.elementId : 'in';
     this.label = this.label ? this.label : '';
     this.checked = this.checked ? this.checked : false;
+    this.disabled = this.disabled ? this.disabled : false;
   }
 
   render() {
     return html`
       <div class="container">
-        <div class="title">${this.label}</div>
+        <div class="title ${this.label == '' ? 'hide' : 'show'}">
+          ${this.label}
+        </div>
         <label class="switch">
           <input
             type="checkbox"
             ?checked=${this.checked}
+            ?disabled=${this.disabled}
             @change="${this.__toggle}"
           />
           <span class="slider"></span>

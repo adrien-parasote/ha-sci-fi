@@ -26,6 +26,7 @@ export class SciFiCardButton extends SciFiButton {
           );
           --btn-min-width: var(--min-width, 90px);
           --btn-label-text-alignment: var(--text-align, start);
+          --label-alone: var(--margin-top-label-alone, 5px);
         }
         .btn {
           display: flex;
@@ -38,7 +39,6 @@ export class SciFiCardButton extends SciFiButton {
           align-items: center;
           text-transform: capitalize;
           min-width: var(--btn-min-width);
-          height: fit-content;
           justify-content: left;
           column-gap: 10px;
           cursor: pointer;
@@ -62,6 +62,9 @@ export class SciFiCardButton extends SciFiButton {
           font-weight: normal;
           color: var(--title-text-color);
         }
+        .btn .label-alone {
+          margin-top: var(--label-alone);
+        }
         .btn sci-fi-icon {
           --icon-color: var(--btn-icon-color);
           --icon-width: var(--btn-icon-size);
@@ -72,24 +75,18 @@ export class SciFiCardButton extends SciFiButton {
   }
 
   static get properties() {
-    return {
-      icon: {type: String},
-      title: {type: String},
-      text: {type: String},
-      noTitle: {type: Boolean, attribute: 'no-title'},
-    };
+    let p = super.properties;
+    p['title'] = {type: String};
+    p['text'] = {type: String};
+    p['noTitle'] = {type: Boolean, attribute: 'no-title'};
+    return p;
   }
 
   constructor() {
     super();
-    this.icon = this.icon ? this.icon : '';
     this.title = this.title ? this.title : '';
     this.text = this.text ? this.text : '';
     this.noTitle = this.noTitle ? this.noTitle : false;
-  }
-
-  render() {
-    return this.displayBtn();
   }
 
   displayBtn() {
@@ -103,7 +100,7 @@ export class SciFiCardButton extends SciFiButton {
 
   __displayLabel() {
     if (this.noTitle) {
-      return html`<div class="label">${this.text}</div>`;
+      return html`<div class="label label-alone">${this.text}</div>`;
     }
     return html`<div class="label">
       <div>${this.title}</div>

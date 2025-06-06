@@ -1,3 +1,4 @@
+import {msg} from '@lit/localize';
 import {html, nothing} from 'lit';
 import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 import {isEqual} from 'lodash-es';
@@ -340,8 +341,8 @@ export class SciFiLights extends SciFiBaseCard {
   }
 
   __toast(error, e) {
-    const msg = error ? e.message : 'done';
-    this.shadowRoot.querySelector('sci-fi-toast').addMessage(msg, error);
+    const txt = error ? e.message : msg('done');
+    this.shadowRoot.querySelector('sci-fi-toast').addMessage(txt, error);
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

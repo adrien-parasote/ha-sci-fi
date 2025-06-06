@@ -1,3 +1,4 @@
+import {msg} from '@lit/localize';
 import {html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
@@ -118,7 +119,10 @@ export class SciFiClimates extends SciFiBaseCard {
           id: floor.id,
           state: this._active_floor_id == floor.id ? 'on' : 'off',
           selected: this._active_floor_id == floor.id,
-          active: floor.getTemperature(this._config.entities_to_exclude)
+          active: floor.isActive(
+            ENTITY_KIND_CLIMATE,
+            this._config.entities_to_exclude
+          )
             ? 'on'
             : 'off',
           icon: floor.icon,
@@ -292,8 +296,8 @@ export class SciFiClimates extends SciFiBaseCard {
   }
 
   __toast(error, e) {
-    const msg = error ? e.message : 'done';
-    this.shadowRoot.querySelector('sci-fi-toast').addMessage(msg, error);
+    const txt = error ? e.message : msg('done');
+    this.shadowRoot.querySelector('sci-fi-toast').addMessage(txt, error);
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

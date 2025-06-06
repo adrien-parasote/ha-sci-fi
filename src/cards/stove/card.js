@@ -119,7 +119,7 @@ export class SciFiStove extends SciFiBaseCard {
           selected-id="${selected_item_id}"
           text="${msg('Temperature')}"
           @wheel-change="${this.__select}"
-          ?disable=${[STATE_CLIMATE_OFF].includes(this._stove.state)}
+          ?disabled=${[STATE_CLIMATE_OFF].includes(this._stove.state)}
         ></sci-fi-wheel>
         ${this.__displayPresetButton()}
       </div>
@@ -437,8 +437,8 @@ export class SciFiStove extends SciFiBaseCard {
   }
 
   __toast(error, e) {
-    const msg = error ? e.message : 'done';
-    this.shadowRoot.querySelector('sci-fi-toast').addMessage(msg, error);
+    const txt = error ? e.message : msg('done');
+    this.shadowRoot.querySelector('sci-fi-toast').addMessage(txt, error);
   }
 
   /**** DEFINE CARD EDITOR ELEMENTS ****/

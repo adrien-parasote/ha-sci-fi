@@ -52,8 +52,8 @@ export class SciFiBaseEditor extends LitElement {
   }
 
   __dispatchChange(e, newConfig) {
-    e.preventDefault();
-    e.stopPropagation();
+    if (e.preventDefault) e.preventDefault();
+    if (e.stopPropagation) e.stopPropagation();
     this.dispatchEvent(
       new CustomEvent('config-changed', {
         detail: {config: newConfig},
@@ -81,6 +81,12 @@ export class SciFiBaseEditor extends LitElement {
       'section-title-entity-light-custom': msg('Light entities customization'),
       'section-title-sensor': msg('Sensors'),
       'section-title-storage': msg('Storage'),
+      'section-title-plug': msg('Plugs'),
+      'section-title-energy': msg('Energy'),
+      'section-title-other': msg('Others'),
+      'section-title-monitoring': msg('Monitoring'),
+      'section-title-config': msg('Configuration'),
+      'section-title-device': msg('Device'),
 
       'text-optionnal': msg('(optionnal)'),
       'text-required': msg('(required)'),
@@ -89,6 +95,9 @@ export class SciFiBaseEditor extends LitElement {
       ),
       'text-switch-hexa-add-weather-tile': msg('Add weather tile ?'),
       'text-switch-hexa-standalone': msg('Standalone entity?'),
+      'text-child-lock': msg('Child lock?'),
+      'text-power-outage-memory': msg('Power outage memory'),
+      'text-other-sensor': msg('Others sensors'),
 
       'edit-section-title': msg('Edit'),
       'edit-section-state-auto-title': msg('Edit State heat'),
@@ -167,6 +176,9 @@ export class SciFiBaseEditor extends LitElement {
       'input-alert-yellow': msg('Yellow state'),
       'input-alert-orange': msg('Orange state'),
       'input-alert-red': msg('Red state'),
+      'input-device': msg('Device'),
+      'input-energy': msg('Energy'),
+      'input-power': msg('Power'),
     };
     return key in labels ? labels[key] : '';
   }

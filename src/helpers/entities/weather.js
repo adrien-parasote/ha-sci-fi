@@ -219,7 +219,11 @@ export class HourlyForecast {
     const today = new Date();
     // Forecast if for today
     if (isSameDay(today, this.datetime)) {
-      if (this.datetime >= sun.next_dusk || this.datetime <= sun.next_dawn)
+      if (
+        this.datetime >= sun.next_dusk ||
+        (this.datetime <= sun.next_dawn,
+        isSameDay(this.datetime, sun.next_dawn))
+      )
         state = 'night';
     } else {
       // Forecast if for tomorrow

@@ -1,9 +1,9 @@
 import {css, html} from 'lit';
 
 import {defineCustomElement} from '../../helpers/utils/import.js';
-import {SciFiDropdownInput} from './sf-input-dropdown.js';
+import {SciFiDropdownEntityInput} from './sf-input-dropdown-entity.js';
 
-export class SciFiDropdownEntityInput extends SciFiDropdownInput {
+export class SciFiDropdownDeviceInput extends SciFiDropdownEntityInput {
   static get styles() {
     return super.styles.concat([
       css`
@@ -41,34 +41,38 @@ export class SciFiDropdownEntityInput extends SciFiDropdownInput {
     if (this.disabledFilter) {
       this.__filter_items = JSON.parse(JSON.stringify(this._items));
     } else {
-      this.__filter_items = this._items.filter((entity) => {
-        return entity.entity_id.toUpperCase().includes(value.toUpperCase());
+      this.__filter_items = this._items.filter((device) => {
+        return (
+          device.name.toUpperCase().includes(value.toUpperCase()) ||
+          device.name_by_user.toUpperCase().includes(value.toUpperCase())
+        );
       });
     }
   }
 
   __renderItem(item) {
-    const iconName = item.attributes.icon
-      ? item.attributes.icon
-      : 'mdi:information-off-outline';
     return html`<div
       class="dropdown-item"
-      @click="${(e) => this.__selectedItem(e, item.entity_id)}"
+      @click="${(e) => this.__selectedItem(e, item)}"
     >
-      <sci-fi-icon icon=${iconName}></sci-fi-icon>
+      <sci-fi-icon icon="mdi:information-off-outline"></sci-fi-icon>
       <div class="info">
-        <div class="name">${item.attributes.friendly_name}</div>
-        <div class="element_id">${item.entity_id}</div>
+        <div class="name">
+          ${item.name_by_user ? item.name_by_user : item.name}
+        </div>
+        <div class="element_id">${item.id}</div>
       </div>
     </div>`;
   }
 
   __selectedItem(e, item) {
     this.__dispatchEvent(e, item);
-    this.shadowRoot.querySelector('input').value = item;
+    this.shadowRoot.querySelector('input').value = item.name_by_user
+      ? item.name_by_user
+      : item.name;
     this.shadowRoot.querySelector('.container').classList.toggle('open');
     this.shadowRoot.querySelector('.dropdown-menu').classList.toggle('open');
   }
 }
 
-defineCustomElement('sci-fi-dropdown-entity-input', SciFiDropdownEntityInput);
+defineCustomElement('sci-fi-dropdown-device-input', SciFiDropdownDeviceInput);

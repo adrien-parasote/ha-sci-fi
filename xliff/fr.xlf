@@ -662,6 +662,66 @@
   <source>Frozen</source>
   <target>Gel</target>
 </trans-unit>
+<trans-unit id="s0b0a02a4470de153">
+  <source>Device</source>
+  <target>Appareil</target>
+</trans-unit>
+<trans-unit id="saadb07af64e1c79e">
+  <source>Plugs</source>
+  <target>Prises</target>
+</trans-unit>
+<trans-unit id="sdb6622a51b2a94f5">
+  <source>Energy</source>
+  <target>Énergie</target>
+</trans-unit>
+<trans-unit id="s7ae5963112a50472">
+  <source>Others</source>
+  <target>Autres</target>
+</trans-unit>
+<trans-unit id="sb21717f2b8f8b667">
+  <source>Monitoring</source>
+  <target>Surveillance</target>
+</trans-unit>
+<trans-unit id="s053eb89714fe5c46">
+  <source>Power</source>
+  <target>Puissance</target>
+</trans-unit>
+<trans-unit id="s08a64b07b54df8d4">
+  <source>by</source>
+  <target>par</target>
+</trans-unit>
+<trans-unit id="sdc51fb6761fd6e91">
+  <source>done</source>
+  <target>ok</target>
+</trans-unit>
+<trans-unit id="sf9b1c0661a02d9f9">
+  <source>Configuration</source>
+  <target>Configuration</target>
+</trans-unit>
+<trans-unit id="sabe42f7fd37556dd">
+  <source>Child lock?</source>
+  <target>Sécurité enfants</target>
+</trans-unit>
+<trans-unit id="s1e0251d3c7b5ec14">
+  <source>Power outage memory</source>
+  <target>État mémoire en cas de panne de courant</target>
+</trans-unit>
+<trans-unit id="s8720a94461718849">
+  <source>Others sensors</source>
+  <target>Autres capteurs</target>
+</trans-unit>
+<trans-unit id="seb281829bce1d970">
+  <source>Cannot found switch entity in device: </source>
+  <target>Impossible de trouver l'entité "switch" dans l'appareil:</target>
+</trans-unit>
+<trans-unit id="s15b0d3bf0d4cf5b4">
+  <source>. Please select a plug device.</source>
+  <target>. Veuillez sélectionner un appareil de type prise.</target>
+</trans-unit>
+<trans-unit id="sf8d35f62241a0434">
+  <source>No power data to display</source>
+  <target>Aucune donnée d'alimentation à afficher</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

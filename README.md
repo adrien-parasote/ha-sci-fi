@@ -17,6 +17,7 @@ The aim is to have your phone as a single entry point an use it as a remote hous
     * 🌡️ [Sci-Fi Climates card](#climates_card)
     * 🪵🔥 [Sci-Fi Stove card](#stove_card)
     * 🚗 [Sci-Fi Vehicles card](#vehicles_card)
+    * 🔌 [Sci-Fi Plugs card](#plugs_card)
 3. 🖼️ [Sci-Fi icon](#icon)
 4. 👽 [Sci-Fi language](#lang)
 
@@ -1018,6 +1019,139 @@ vehicles:
 
 <br>
 
+## 🔌 Sci-Fi Plugs card <a name="plugs_card"></a>
+
+### Description:
+
+Plug package card, display your controlled plug and allow you to see informations & control it in a more design way than HA basic one.
+
+### Card features:
+
+From top to bottom, display:
+- Header:
+  - Plug Area icon (base on your HA area configuration)
+  - Plug Name
+  - Plug device info: model & manufacturer
+- Per plug:
+  - Animated image to let you know if the plug is active or not
+  - Action (click on the image) to turn on/off your device
+  - Linked available sensor with icon, name and associated actions that you've configured in the card
+  - chart displaying the last day activity power of your plug if power sensor is provided.
+- Footer: plugs configured
+
+### Screenshots
+
+<details>
+<summary>Show</summary>
+
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/plug_1.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/plug_2.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/plug_edit_1.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/plug_edit_2.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/plug_edit_3.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/plug_edit_4.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/plug_edit_5.jpeg" width="300">
+
+</details>
+
+### Configuration
+
+> [!TIP]
+> This card can be configure through the UI that allow use to use HA interface for the configuration.
+
+<summary>YAML</summary>
+
+#### Minimal configuration
+
+```yaml
+type: custom:sci-fi-plugs
+devices:
+```
+
+#### Full configuration
+
+```yaml
+type: custom:sci-fi-plugs
+devices: # List of plug you want to follow with the card
+  - device_id: xxxx # replace with your plug device ID
+    entity_id: switch.xxxx # replace with your plug entity ID
+    active_icon: mdi:power-plug-outline
+    inactive_icon: mdi:power-plug-off-outline
+    name: My Plug # replace with your plug name
+    sensors: # replace with your plug sensors list
+      sensor_kind.sensor_number: # replace with your sensor ID ( can be number.sensor_xxx, select.sensor_xxx, sensor.sensor_xxx, lock.sensor_xxx, binary_sensor.sensor_xxx, ...)
+        show: false # False = will not be displayed on the card
+        name: Countdown # Custom sensor name
+        power: false # Is the sensor linked to your plug power
+```
+
+#### Options
+
+| Name | Type | Requirement | Description | Default   |
+| - | - | - | - | - |
+| type | String | **Required** | Card definition | `custom:sci-fi-plugs`|
+| `devices` | List <Object> | **Required** | Devices' list that you want to be displayed. See section describing devices bellow | `''` |
+
+**Example**
+```yaml
+type: custom:sci-fi-plugs
+devices: 
+  ... # see devices configuration bellow
+```
+
+<br>
+
+***`devices` config***
+
+| Name | Type | Requirement | Description | Default   |
+| - | - | - | - | - |
+| device_id | String | **Mandatory** | Plug device ID | `''` |
+| entity_id | String | **Mandatory** | Plug switch entity ID | `''` |
+| active_icon | String | **Optionnal** | Plug active icon | `'mdi:power-socket-fr'` |
+| inactive_icon | String | **Optionnal** | Plug inactive icon | `'mdi:power-socket-fr-off'` |
+| name | String | **Optionnal** | Plug friendly name | `''` |
+| `sensors` | List <Object> | **Optionnal** | Sensors' list of object `id` based linked to your plug. See section describing sensors bellow | `''` |
+
+
+**Example**
+```yaml
+devices: # List of plug you want to follow with the card
+  - device_id: xxxx # replace with your plug device ID
+    entity_id: switch.xxxx # replace with your plug entity ID
+    active_icon: mdi:power-plug-outline
+    inactive_icon: mdi:power-plug-off-outline
+    name: My Plug # replace with your plug name
+    sensors: # replace with your plug sensors list
+      ... # see sensors configuration bellow
+```
+</details>
+
+<br>
+
+***`sensors` config***
+
+Each `sensors` entries must be a sensor entity ID. Then for each, options are:
+
+| Name | Type | Requirement | Description | Default   |
+| - | - | - | - | - |
+| show | Boolean | **Mandatory** | True: sensor will be displayed, False no | `false` |
+| name | String | **Optionnal** | Custom sensor name | `''` |
+| power | Boolean | **Mandatory** | True: power sensor linked to your plug, False no | `false` |
+
+**Example**
+```yaml
+sensor_kind.sensor_number: # replace with your sensor ID ( can be number.sensor_xxx, select.sensor_xxx, sensor.sensor_xxx, lock.sensor_xxx, binary_sensor.sensor_xxx, ...)
+  show: false # 
+  name: Countdown # Custom sensor name
+  icon: mdi:ray-vertex # Custom sensor icon
+  power: false # Is the sensor linked to your plug power
+```
+
+</details>
+
+<br>
+
+
 # 🖼️ Sci-Fi icons <a name="icon"></a>
 
 To complete HA icon set, sci-fi package onboard the following icons : 
@@ -1048,6 +1182,10 @@ To complete HA icon set, sci-fi package onboard the following icons :
 | Landspeeder unknown plug| sci:landspeeder-unknown-plug | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-unknown-plug.svg" alt="Landspeeder unknown plug"  height="25"/> |
 | Landspeeder error plug| sci:landspeeder-error-plug | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-error-plug.svg" alt="Landspeeder error plug"  height="25"/> |
 | Landspeeder plugged clock| sci:landspeeder-plugged-clock | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-plugged-clock.svg" alt="Landspeeder plugged clock"  height="25"/> |
+| Power socket fr off | sci:power-socket-fr-off | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/power-socket-fr-off.svg" alt="Power socket fr off"  height="25"/> |
+| Lock unknow | sci:lock-unknow | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/lock-unknow.svg" alt="Lock unknow"  height="25"/> |
+
+
 
 <br>
 

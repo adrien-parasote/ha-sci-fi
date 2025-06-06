@@ -11,6 +11,7 @@ export const STATE_CLIMATE_OFF = 'off';
 export const STATE_CLIMATE_AUTO = 'auto';
 
 export const HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION = 'frost_protection';
+export const HASS_CLIMATE_PRESET_MODE_FROST = 'frost';
 export const HASS_CLIMATE_PRESET_MODE_ECO = 'eco';
 export const HASS_CLIMATE_PRESET_MODE_COMFORT = 'comfort';
 export const HASS_CLIMATE_PRESET_MODE_COMFORT_1 = 'comfort-1';

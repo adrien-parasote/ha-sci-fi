@@ -67,3 +67,11 @@ export const WEATHER_EXTRA_SENSORS = {
     name: 'Neige',
   },
 };
+
+export const LOCK_SENSOR_STATE_UNLOCK = 'unlocked';
+export const LOCK_SENSOR_STATE_LOCK = 'locked';
+export const HASS_LOCK_SERVICE = 'lock';
+export const HASS_LOCK_SERVICE_ACTION_TURN_OFF = 'unlock';
+export const HASS_LOCK_SERVICE_ACTION_TURN_ON = 'lock';
+export const HASS_SELECT_SERVICE = 'select';
+export const HASS_SELECT_SERVICE_OPTION = 'select_option';

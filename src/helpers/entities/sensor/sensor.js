@@ -89,8 +89,14 @@ export class WeatherSensor extends Sensor {
   constructor(id, hass, key) {
     super(id, hass);
     this.key = key;
-    this.icon = WEATHER_EXTRA_SENSORS[key].icon;
+    this.attributes = {
+      icon: WEATHER_EXTRA_SENSORS[key].icon,
+    };
     this.name = WEATHER_EXTRA_SENSORS[key].name;
+  }
+
+  set icon(icon) {
+    this.icon = icon;
   }
 
   get value() {

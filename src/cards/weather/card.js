@@ -1,6 +1,6 @@
 import {msg} from '@lit/localize';
 import Chart from 'chart.js/auto';
-import {html, nothing, svg} from 'lit';
+import {html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
 import WEATHER_ICON_SET from '../../components/icons/data/sf-weather-icons.js';
@@ -296,6 +296,7 @@ export class SciFiWeather extends SciFiBaseCard {
   }
 
   __renderTodaySummary() {
+    console.log(this._weather);
     const sensors = [
       [this._weather.cloud_cover, 'cloud'],
       [this._weather.daily_precipitation, 'precipitation'],

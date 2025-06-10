@@ -1,19 +1,16 @@
 import {html, nothing} from 'lit';
 
+import {User} from '../../helpers/entities/person.js';
 import {SciFiBaseEditor} from '../../helpers/utils/base_editor.js';
+import editor_style from './style_editor.js';
 
 export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   _entity_kind; // list from hass
-  _empty_tile_config = {
-    entity_kind: 'light',
-    entities_to_exclude: [],
-    active_icon: 'mdi:lightbulb-on-outline',
-    inactive_icon: 'mdi:lightbulb-outline',
-    name: 'Lights',
-    state_on: ['on'],
-    state_error: null,
-    link: null,
-  }; // basic config to add for new element
+  _people;
+
+  static get styles() {
+    return super.styles.concat([editor_style]);
+  }
 
   set hass(hass) {
     super.hass = hass;
@@ -29,6 +26,13 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
           }
           return cur;
         }, {});
+
+      if (!this._people) {
+        // Init once
+        this._people = Object.keys(hass.states)
+          .filter((id) => id.startsWith('person.'))
+          .map((id) => new User(id, hass));
+      }
     } else {
       this._entity_kind = [];
     }
@@ -127,6 +131,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
             ${this.__renderEntity(id, entity)}
             ${this.__renderAppearance(id, entity)}
             ${this.__renderTechnical(id, entity)}
+            ${this.__renderVisibility(id, entity)}
           </sci-fi-accordion-card>`
       )}
       <sci-fi-button
@@ -278,6 +283,59 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
     `;
   }
 
+  __renderVisibility(id, entity) {
+    return html`
+      <section>
+        <h1>
+          <span><sci-fi-icon icon="mdi:eye-outline"></sci-fi-icon></span
+          >${this.getLabel('section-title-visibility')}
+        </h1>
+        <div class="people">
+          ${this._people.map((user) => {
+            return html`
+              <div class="people-row">
+                <sci-fi-person .user="${user}"></sci-fi-person>
+                <div>${user.friendly_name}</div>
+                <sci-fi-button
+                  icon="${this._isVisible(entity, user)
+                    ? 'mdi:eye-outline'
+                    : 'mdi:eye-off-outline'}"
+                  @button-click="${(e) =>
+                    this.__updateVisibility(e, id, user.id)}"
+                ></sci-fi-button>
+              </div>
+            `;
+          })}
+        </div>
+      </section>
+    `;
+  }
+
+  _isVisible(entity, user) {
+    // Manage version update
+    if (entity.visibility == null || entity.visibility.length == 0)
+      return false;
+    return entity.visibility.includes(user.id);
+  }
+
+  __updateVisibility(e, id, user_id) {
+    let newConfig = this.__getNewConfig();
+    // Manage version update
+    if (newConfig.tiles[id].visibility == null)
+      newConfig.tiles[id].visibility = [];
+
+    if (newConfig.tiles[id].visibility.includes(user_id)) {
+      // remove user
+      newConfig.tiles[id].visibility = newConfig.tiles[id].visibility.filter(
+        (e) => e !== user_id
+      );
+    } else {
+      // Add user
+      newConfig.tiles[id].visibility.push(user_id);
+    }
+    this.__dispatchChange(e, newConfig);
+  }
+
   __toggle(e) {
     if (e.detail.id == 'weather') {
       e.detail['kind'] = 'activate';
@@ -289,9 +347,23 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
     this.__update(e);
   }
 
+  __getEmptyConfig() {
+    return {
+      entity_kind: 'light',
+      entities_to_exclude: [],
+      active_icon: 'mdi:lightbulb-on-outline',
+      inactive_icon: 'mdi:lightbulb-outline',
+      name: 'Lights',
+      state_on: ['on'],
+      state_error: null,
+      link: null,
+      visibility: [],
+    };
+  }
+
   __addElement(e) {
     let newConfig = this.__getNewConfig();
-    newConfig.tiles.push(this._empty_tile_config);
+    newConfig.tiles.push(this.__getEmptyConfig());
     this.__dispatchChange(e, newConfig);
   }
 

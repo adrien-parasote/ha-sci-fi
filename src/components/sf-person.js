@@ -1,4 +1,4 @@
-import {LitElement, css, html} from 'lit';
+import {LitElement, css, html, nothing} from 'lit';
 
 import common_style from '../helpers/styles/common_style.js';
 
@@ -18,6 +18,15 @@ export class SciFiPerson extends LitElement {
           width: var(--custom-avatar-size, var(--icon-size-title));
           height: var(--custom-avatar-size, var(--icon-size-title));
           position: relative;
+        }
+        .no-picture {
+          width: 100%;
+          height: 100%;
+          text-align: center;
+          align-content: center;
+          font-weight: bold;
+          color: var(--primary-light-color);
+          font-size: var(--font-size-normal);
         }
         .icon-container {
           background-color: var(--secondary-light-color-opacity);
@@ -47,23 +56,37 @@ export class SciFiPerson extends LitElement {
   static get properties() {
     return {
       user: {type: Object},
+      displayState: {type: Boolean, attribute: 'display-state'},
     };
   }
 
   constructor() {
     super();
     this.user = this.user ? this.user : null;
+    this.displayState = this.displayState ? this.displayState : false;
   }
 
   render() {
     return html`
       <div class="avatar">
-        <img
-          src="${this.user.entity_picture ? this.user.entity_picture : ''}"
-        />
-        <div class="icon-container">
-          <sci-fi-icon icon=${this.user.state_icon}></sci-fi-icon>
-        </div>
+        ${this.__displayPicture()} ${this.__displayState()}
+      </div>
+    `;
+  }
+
+  __displayPicture() {
+    if (this.user.entity_picture)
+      return html`<img src="${this.user.entity_picture}" />`;
+    return html`<div class="no-picture">
+      ${this.user.friendly_name[0].toUpperCase()}
+    </div>`;
+  }
+
+  __displayState() {
+    if (!this.displayState) return nothing;
+    return html`
+      <div class="icon-container">
+        <sci-fi-icon icon=${this.user.state_icon}></sci-fi-icon>
       </div>
     `;
   }

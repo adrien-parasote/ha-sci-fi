@@ -53,15 +53,16 @@ export class SciFiHexaTiles extends SciFiBaseCard {
     super.hass = hass;
     if (!this._config) return; // Can't assume setConfig is called before hass is set
 
-    // Extract entity for kind part
-    const updatedEntity = this.__extractEntity();
-    if (!this._entities || !isEqual(updatedEntity, this._entities)) {
-      this._entities = updatedEntity;
-    }
     // Extract person entity
     const user = new Person(hass);
     if (!this._user || !isEqual(user, this._user)) {
       this._user = user;
+    }
+
+    // Extract entity for kind part
+    const updatedEntity = this.__extractEntity();
+    if (!this._entities || !isEqual(updatedEntity, this._entities)) {
+      this._entities = updatedEntity;
     }
 
     // Extract weather info if needed
@@ -85,27 +86,29 @@ export class SciFiHexaTiles extends SciFiBaseCard {
   }
 
   __extractEntity() {
-    return this._config.tiles.map((c) => {
-      const states = !c.standalone
-        ? this.__extractHassKindState(
-            c.entity_kind,
-            c.entities_to_exclude || []
-          )
-        : [this._hass.states[c.entity].state];
+    return this._config.tiles
+      .filter((t) => t.visibility.includes(this._user.id))
+      .map((c) => {
+        const states = !c.standalone
+          ? this.__extractHassKindState(
+              c.entity_kind,
+              c.entities_to_exclude || []
+            )
+          : [this._hass.states[c.entity].state];
 
-      const state = this.__getEntityGlobalState(
-        states,
-        c.state_on,
-        c.state_error
-      );
+        const state = this.__getEntityGlobalState(
+          states,
+          c.state_on,
+          c.state_error
+        );
 
-      return {
-        link: c.link,
-        state: state,
-        icon: state == 'on' ? c.active_icon : c.inactive_icon,
-        title: c.name,
-      };
-    });
+        return {
+          link: c.link,
+          state: state,
+          icon: state == 'on' ? c.active_icon : c.inactive_icon,
+          title: c.name,
+        };
+      });
   }
 
   __extractHassKindState(kind, exclusion) {
@@ -137,7 +140,7 @@ export class SciFiHexaTiles extends SciFiBaseCard {
     return html`
       <div class="container">
         <div class="header">
-          <sci-fi-person .user="${this._user}"></sci-fi-person>
+          <sci-fi-person .user="${this._user}" display-state></sci-fi-person>
           <div class="info">
             <div class="message">${this._config.header_message}</div>
             <div class="name">${this._user.friendly_name}</div>

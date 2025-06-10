@@ -48,3 +48,21 @@ export class Person {
       : this.locale.number_format;
   }
 }
+
+export class User {
+  constructor(id, hass) {
+    this.id = id;
+    this.state = hass.states[id].state;
+    this.attributes = hass.states[id].attributes;
+  }
+
+  get entity_picture() {
+    return this.attributes.entity_picture
+      ? this.attributes.entity_picture
+      : null;
+  }
+
+  get friendly_name() {
+    return this.attributes.friendly_name;
+  }
+}

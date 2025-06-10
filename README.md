@@ -79,6 +79,8 @@ Two modes are available:
 1. Kind (ex: light): parse you HA entities to give you a global state (ex: on - if at least one light is on - else off)
 2. Standalone: display only 1 entity state
 
+On top, you can configure your card with visibility option, allowing you to display tiles only for some people at your home.
+
 ### Card features:
 
 - Show current connected person with 
@@ -101,6 +103,7 @@ Two modes are available:
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/hexa.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/hexa_edit_1.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/hexa_edit_2.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/hexa_edit_3.jpeg" width="300">
 
 </details>
 
@@ -141,6 +144,8 @@ tiles:
       - "on"
     state_error: ""
     link: lights_home # replace with your light page link
+    visibility: 
+      - person.user_1 # replace with your list of allowed users
   - standalone: true
     active_icon: mdi:robot-vacuum
     inactive_icon: sci:vacuum-sleep
@@ -151,6 +156,8 @@ tiles:
     state_error: error
     link: Vacuum_home # replace with your vaccum page link
     entity: vacuum.dobby
+    visibility: 
+      - person.user_1 # replace with your list of allowed users
 ```
 
 #### Options
@@ -209,6 +216,7 @@ weather:
 | state_on | List[String] | **Required** | Active states value list to match. *Notice: all other states are consider as inactive* | |
 | state_error | String | **Optional** | Error state value to match | |
 | link | String | **Optional** | Link you want to follow when tile is tapped  | `''` |
+| visibility |  List[String] | **Optional** | Person' id list to allow viewing the tile. Example: `person.user_1`, `person.user_2`  | `[]` |
 
 **Example**
 ```yaml
@@ -225,6 +233,8 @@ tiles:
       - "on"
   state_error: ""
   link: lights # replace with your light page link
+  visibility: 
+      - person.user_1  # replace with your person entity
 ```
 
 ***Tiles[standalone=true] config***
@@ -238,6 +248,7 @@ tiles:
 | state_on | List[String] | **Required** | List of active states values to match. Notice: all other states are consider as inactive | |
 | state_error | String | **Optional** | Error state value to match | |
 | link | String | **Optional** | Link you want to follow when tile is tapped  | `''` |
+| visibility |  List[String] | **Optional** | Person' id list to allow viewing the tile. Example: `person.user_1`, `person.user_2`  | `[]` |
 
 **Example**
 ```yaml
@@ -252,6 +263,8 @@ tiles:
   state_error: error
   link: Vacuum_home # replace with your vaccum page link
   entity: vacuum.dobby
+  visibility: 
+      - person.user_1  # replace with your person entity
 ```
 
 </details>

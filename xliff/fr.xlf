@@ -722,6 +722,10 @@
   <source>No power data to display</source>
   <target>Aucune donnée d'alimentation à afficher</target>
 </trans-unit>
+<trans-unit id="s1219d97b49650c05">
+  <source>Visibility</source>
+  <target>Visibilité</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

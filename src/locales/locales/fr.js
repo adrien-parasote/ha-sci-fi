@@ -18,6 +18,7 @@ export const templates = {
   s0bc60e911959a7fc: `refroidit`,
   s0d3deba2c41dadb2: `mode`,
   s0da556f559cc9549: `Alerte rouge`,
+  s1219d97b49650c05: `Visibilité`,
   s13e8edf04d948175: `Icône arrêt`,
   s159994586ab69913: `Orages`,
   s15b0d3bf0d4cf5b4: `. Veuillez sélectionner un appareil de type prise.`,

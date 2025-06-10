@@ -87,6 +87,7 @@ export class SciFiBaseEditor extends LitElement {
       'section-title-monitoring': msg('Monitoring'),
       'section-title-config': msg('Configuration'),
       'section-title-device': msg('Device'),
+      'section-title-visibility': msg('Visibility'),
 
       'text-optionnal': msg('(optionnal)'),
       'text-required': msg('(required)'),

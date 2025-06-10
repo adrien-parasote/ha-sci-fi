@@ -84,6 +84,12 @@ export default {
         type: 'string',
         default: '',
       },
+      visibility: {
+        mandatory: false,
+        type: 'array',
+        default: [],
+        data_type: 'string',
+      },
     },
   },
 };

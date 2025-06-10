@@ -1,6 +1,6 @@
 # Changelog
 
-# [v0.8.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.8.1) - 2025-mm-dd
+# [v0.8.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.8.1) - 2025-06-10
 
 ## 🆕 What's New
 
@@ -11,8 +11,12 @@
 
 ⬡ Hexa card
 
-Tiles configuration need to be updated to select user visibility option : by default nobody can view tiles.
-Please refer to readme to see how you need to update your component configuration.
+Tiles configuration need to be updated to select user visibility option : by default nobody can view tiles. 
+What need to be done ? 
+- Go to your dashboard and edit Hexa Tiles component
+- For each tiles you've defined, go to visibility part and setup the visibility
+
+Please refer to readme [Hexa Tiles section](https://github.com/adrien-parasote/ha-sci-fi?tab=readme-ov-file#hexa_tiles) if needed.
    
 ## 🐛 Fixes
 - [Weathee card - measure unit missing](https://github.com/adrien-parasote/ha-sci-fi/issues/39)

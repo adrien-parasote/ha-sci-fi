@@ -90,16 +90,14 @@ export default css`
     column-gap: 10px;
     flex: 1;
   }
-  .footer .number > sci-fi-icon {
+  .footer .number > sci-fi-button {
     align-items: center;
-    --icon-width: var(--icon-size-small);
-    --icon-height: var(--icon-size-small);
-    --icon-color: var(--secondary-light-color);
+    --btn-size: var(--icon-size-small);
+    --primary-icon-color: var(--secondary-light-color);
   }
-  .footer .number > sci-fi-icon.active {
-    --icon-width: var(--icon-size-normal);
-    --icon-height: var(--icon-size-normal);
-    --icon-color: var(--primary-light-color);
+  .footer .number > sci-fi-button.active {
+    --btn-size: var(--icon-size-normal);
+    --primary-icon-color: var(--primary-light-color);
   }
   .content {
     display: flex;

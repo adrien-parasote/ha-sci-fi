@@ -372,10 +372,11 @@ export class SciFiPlugs extends SciFiBaseCard {
       <div class="number">
         ${this._plugs.map(
           (p, i) =>
-            html` <sci-fi-icon
+            html` <sci-fi-button
               icon="${p.icon}"
               class="${i == this._selected_plug_id ? 'active' : ''}"
-            ></sci-fi-icon>`
+              @button-click=${(e) => this._plugSelect(i)}
+            ></sci-fi-button>`
         )}
       </div>
       <div class="${multiple_plugs ? 'show' : 'hide'}">
@@ -385,6 +386,10 @@ export class SciFiPlugs extends SciFiBaseCard {
         ></sci-fi-button>
       </div>
     </div>`;
+  }
+
+  _plugSelect(i) {
+    this._selected_plug_id = i;
   }
 
   _next(e) {

@@ -1050,7 +1050,7 @@ From top to bottom, display:
   - Action (click on the image) to turn on/off your device
   - Linked available sensor with icon, name and associated actions that you've configured in the card
   - chart displaying the last day activity power of your plug if power sensor is provided.
-- Footer: plugs configured
+- Footer: plugs configured list linked to actions to view plug info in the card.
 
 ### Screenshots
 

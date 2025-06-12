@@ -1,5 +1,12 @@
 # Changelog
 
+# [v0.8.2](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.8.2) - 2025-06-12
+
+## 🆕 What's New
+
+🔌 Plug card
+- Add selection when plug icon is tapped at bottom of the card
+
 # [v0.8.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.8.1) - 2025-06-10
 
 ## 🆕 What's New

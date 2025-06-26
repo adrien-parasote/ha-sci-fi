@@ -803,6 +803,7 @@ sensors:
   sensor_status: binary_sensor.my_stove_status # replace with your stove's state sensor id
   sensor_fan_speed: sensor.my_stove_fan_speed # replace with your stove's fan speed sensor id
   sensor_pressure: sensor.my_stove_pressure # replace with your stove's pressure sensor id
+  sensor_time_to_service: sensor.my_stove_time_to_service  # replace with your stove's time to service sensor id
 pellet_quantity_threshold: 0.4
 storage_counter: counter.pellet_stock # replace with your pellet bags sensor counter id
 storage_counter_threshold: 0.07
@@ -844,6 +845,7 @@ storage_counter_threshold: 0.07
 | sensor_status | String | **Optional** | Stove states sensor ID | `''` |
 | sensor_fan_speed | String | **Optional** | Stove fan speed sensor ID | `''` |
 | sensor_pressure | String | **Optional** | Stove pressure sensor ID | `''` |
+| sensor_time_to_service | String | **Optional** | Stove time to service sensor ID | `''` |
 
 **Example**
 ```yaml
@@ -856,6 +858,7 @@ sensors:
   sensor_status: binary_sensor.my_stove_status # replace with your stove's state sensor id
   sensor_fan_speed: sensor.my_stove_fan_speed # replace with your stove's fan speed sensor id
   sensor_pressure: sensor.my_stove_pressure # replace with your stove's pressure sensor id
+  sensor_time_to_service: sensor.my_stove_time_to_service  # replace with your stove's time to service sensor id
 ```
 <br>
 

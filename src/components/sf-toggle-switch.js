@@ -13,9 +13,11 @@ export class SciFiToggleSwitch extends LitElement {
           flex-direction: row;
           column-gap: 10px;
           align-items: center;
+          width: 100%;
         }
         .title {
           font-size: var(--font-size-normal);
+          flex: 1;
         }
         .title.hide {
           display: none;
@@ -77,6 +79,7 @@ export class SciFiToggleSwitch extends LitElement {
       label: {type: String},
       checked: {type: Boolean},
       disabled: {type: Boolean},
+      icon: {type: String},
     };
   }
 
@@ -86,11 +89,13 @@ export class SciFiToggleSwitch extends LitElement {
     this.label = this.label ? this.label : '';
     this.checked = this.checked ? this.checked : false;
     this.disabled = this.disabled ? this.disabled : false;
+    this.icon = this.icon ? this.icon : null;
   }
 
   render() {
     return html`
       <div class="container">
+        ${this.__renderIcon()}
         <div class="title ${this.label == '' ? 'hide' : 'show'}">
           ${this.label}
         </div>
@@ -107,6 +112,10 @@ export class SciFiToggleSwitch extends LitElement {
     `;
   }
 
+  __renderIcon() {
+    if (!this.icon) return html``;
+    return html`<sci-fi-icon icon="${this.icon}"></sci-fi-icon>`;
+  }
   __toggle(e) {
     e.preventDefault();
     e.stopPropagation();

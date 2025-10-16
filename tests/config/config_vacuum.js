@@ -18,17 +18,27 @@ export default {
       {
         name: 'Kitchen',
         icon: 'mdi:silverware-fork-knife',
-        segments: [2],
+        segments: [16],
       },
       {
         name: 'Entry',
         icon: 'mdi:door',
-        segments: [1],
+        segments: [18],
       },
       {
-        name: 'Daily',
-        icon: 'mdi:broom',
-        segments: [1, 2],
+        name: 'Corridor',
+        icon: 'mdi:shoe-formal',
+        segments: [17],
+      },
+      {
+        name: 'Living room',
+        icon: 'mdi:door',
+        segments: [19],
+      },
+      {
+        name: 'Parent bedroom',
+        icon: 'mdi:bed-double-outline',
+        segments: [20],
       },
     ],
   },

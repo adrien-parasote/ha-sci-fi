@@ -98,18 +98,33 @@ export class VacuumEntity {
         fan_speed: this.fan_speed,
         friendly_name: this.friendly_name,
         icon: this.icon,
+        last_map_update: this.camera
+          ? this.camera.attributes.last_successful_update_timestamp
+          : null,
       },
       state: this.state,
     };
   }
 
-  activateShortcut(id) {
+  callService(id, is_shortcut = false) {
+    return is_shortcut
+      ? this._callShortcutService(id)
+      : this._callDefaultService(id);
+  }
+
+  _callShortcutService(id) {
     const shortcuts = this.shortcuts[id];
     if (!shortcuts.segments)
       throw new Error('Segment list for ' + shortcuts.name + 'is empty');
     return this._hass.callService(this._service, this._service_action, {
       entity_id: [this.entity_id],
       segments: shortcuts.segments,
+    });
+  }
+
+  _callDefaultService(id) {
+    return this._hass.callService('vacuum', id, {
+      entity_id: this.entity_id,
     });
   }
 }

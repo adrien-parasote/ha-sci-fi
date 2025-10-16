@@ -1,3 +1,4 @@
+import {msg} from '@lit/localize';
 import {html, nothing} from 'lit';
 import {isEqual} from 'lodash-es';
 
@@ -67,7 +68,6 @@ export class SciFiVacuum extends SciFiBaseCard {
   }
 
   __renderMap() {
-    console.log(this._vacuum.camera);
     if (!this._vacuum.camera)
       return html`<div class="map">
         <div class="map-content">No camera defined</div>
@@ -110,20 +110,10 @@ export class SciFiVacuum extends SciFiBaseCard {
       return html`
         <sci-fi-button
           icon="${a.icon}"
-          @button-click="${(e) => this._runAction(a.key)}"
+          @button-click="${(e) => this._runAction(a.key, false)}"
         ></sci-fi-button>
       `;
     });
-  }
-
-  _runAction(id) {
-    // TODO : to build
-    console.log(id);
-    /*
-    this._vacuum.activateShortcut(id).then(
-      () => this.__toast(false),
-      (e) => this.__toast(true, e)
-    );*/
   }
 
   __renderShortcuts() {
@@ -133,15 +123,14 @@ export class SciFiVacuum extends SciFiBaseCard {
       return html`
         <sci-fi-button
           icon="${s.icon}"
-          @button-click="${(e) => this._runShortcut(id)}"
+          @button-click="${(e) => this._runAction(id, true)}"
         ></sci-fi-button>
       `;
     });
   }
 
-  _runShortcut(id) {
-    // TODO : to check
-    this._vacuum.activateShortcut(id).then(
+  _runAction(id, is_shortcut) {
+    this._vacuum.callService(id, is_shortcut).then(
       () => this.__toast(false),
       (e) => this.__toast(true, e)
     );

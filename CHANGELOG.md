@@ -1,5 +1,11 @@
 # Changelog
 
+# [v0.9.0](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.9.0) - 2025-10-16
+
+## 🆕 What's New
+
+**Orbital Checkouts**: adding vaccum 🖲 card.
+
 # [v0.8.2](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.8.2) - 2025-06-12
 
 ## 🆕 What's New

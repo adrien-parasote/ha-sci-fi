@@ -18,6 +18,7 @@ The aim is to have your phone as a single entry point an use it as a remote hous
     * 🪵🔥 [Sci-Fi Stove card](#stove_card)
     * 🚗 [Sci-Fi Vehicles card](#vehicles_card)
     * 🔌 [Sci-Fi Plugs card](#plugs_card)
+    * 🖲 [Sci-Fi Vacuum card](#vacuum_card)
 3. 🖼️ [Sci-Fi icon](#icon)
 4. 👽 [Sci-Fi language](#lang)
 
@@ -998,8 +999,8 @@ vehicles:
 
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
-| id | String | **Mandatory** | Vehicle device ID | `''` |
-| name | String | **Mandatory** | Vehicle friendly name | `''` |
+| id | String | **Required** | Vehicle device ID | `''` |
+| name | String | **Required** | Vehicle friendly name | `''` |
 | location | String | **Optionnal** | Vehicle location tracker sensor id. If not provided, UI will display `unavailable` as state | `''` |
 | location_last_activity | String | **Optionnal** | Vehicle location tracker last activity sensor id. | `''` |
 | mileage | String | **Optionnal** | Vehicle mileage sensor id. If not provided, UI will display `unavailable` as state | `''` |
@@ -1121,8 +1122,8 @@ devices:
 
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
-| device_id | String | **Mandatory** | Plug device ID | `''` |
-| entity_id | String | **Mandatory** | Plug switch entity ID | `''` |
+| device_id | String | **Required** | Plug device ID | `''` |
+| entity_id | String | **Required** | Plug switch entity ID | `''` |
 | active_icon | String | **Optionnal** | Plug active icon | `'mdi:power-socket-fr'` |
 | inactive_icon | String | **Optionnal** | Plug inactive icon | `'mdi:power-socket-fr-off'` |
 | name | String | **Optionnal** | Plug friendly name | `''` |
@@ -1150,9 +1151,9 @@ Each `sensors` entries must be a sensor entity ID. Then for each, options are:
 
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
-| show | Boolean | **Mandatory** | True: sensor will be displayed, False no | `false` |
+| show | Boolean | **Required** | True: sensor will be displayed, False no | `false` |
 | name | String | **Optionnal** | Custom sensor name | `''` |
-| power | Boolean | **Mandatory** | True: power sensor linked to your plug, False no | `false` |
+| power | Boolean | **Required** | True: power sensor linked to your plug, False no | `false` |
 
 **Example**
 ```yaml
@@ -1163,6 +1164,156 @@ sensor_kind.sensor_number: # replace with your sensor ID ( can be number.sensor_
   power: false # Is the sensor linked to your plug power
 ```
 
+</details>
+
+<br>
+
+
+## 🖲 Sci-Fi Vacuum card <a name="vacuum_card"></a>
+
+### Description:
+
+Vacuum package card, display your vacuum and allow you to see informations & control it in one place.
+
+### Card features:
+
+From top to bottom, display:
+- Fan & battery power
+- Animation from vacuum state
+- Sensor info (optionnal):
+  - Current clean area
+  - Current clean duration
+  - Last clean area
+  - Last clean duration
+- Cleaner live map (if sensor camera is provided)
+- Actions (optionnal): start, stop, pause, return to base
+- Custom shortcut (optionnal) allowing you to specify one or multiple segment cleaning
+
+### Screenshots
+
+<details>
+<summary>Show</summary>
+
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/vacuum.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/vacuum_edit_1.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/vacuum_edit_2.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/vacuum_edit_3.jpeg" width="300">
+
+</details>
+
+### Configuration
+
+> [!TIP]
+> This card can be configure through the UI that allow use to use HA interface for the configuration.
+
+<summary>YAML</summary>
+
+#### Minimal configuration
+
+```yaml
+type: custom:sci-fi-vacuum
+entity: xxxx # replace with your vacuum entity ID
+```
+
+#### Full configuration
+
+```yaml
+type: custom:sci-fi-vacuum
+entity: xxxx # replace with your vacuum entity ID
+start: true # true to show the action in the bar else false
+pause: true # true to show the action in the bar else false
+stop: true # true to show the action in the bar else false
+return_to_base: true # true to show the action in the bar else false
+sensors:
+  current_clean_area: sensor.current_clean_area # replace with your vacuum sensor ID
+  current_clean_duration: sensor.current_clean_duration # replace with your vacuum sensor ID
+  last_clean_area: sensor.last_clean_area # replace with your vacuum sensor ID
+  last_clean_duration: sensor.last_clean_duration # replace with your vacuum sensor ID
+  camera: camera.live_map # replace with your vacuum camera ID
+shortcuts:
+  service: custom_service.call_segment # replace with your vacuum custom service to call segment cleaning
+  description:
+    - name: A shortcut name
+      icon: mdi:silverware-fork-knife
+      segments:
+        - 1
+        - 2
+    ...  
+```
+
+#### Options
+
+| Name | Type | Requirement | Description | Default   |
+| - | - | - | - | - |
+| type | String | **Required** | Card definition | `custom:sci-fi-vacuum`|
+| entity | String | **Required** | Your vacuum entity id | `''` |
+| start | Boolean | **Optionnal** | Show or not the action | `true`|
+| stop | Boolean | **Optionnal** | Show or not the action | `true`|
+| pause | Boolean | **Optionnal** | Show or not the action | `true`|
+| return_to_base | Boolean | **Optionnal** | Show or not the action | `true`|
+| `sensors` | Object | **Optionnal** | Vacuum sensors that need to be displayed. See section describing sensors bellow | `''` |
+| `shortcuts` | Object | **Optionnal** | Shortcuts actions list to help cleaning part of your room. See section describing shortcuts bellow | `''` |
+
+**Example**
+```yaml
+type: custom:sci-fi-vacuum
+entity: xxxx # replace with your vacuum entity ID
+start: true # true to show the action in the bar else false
+pause: true # true to show the action in the bar else false
+stop: true # true to show the action in the bar else false
+return_to_base: true # true to show the action in the bar else false
+sensors:
+  ... # see sensors configuration bellow
+shortcuts:
+  ... # see shortcuts configuration bellow
+```
+
+<br>
+
+***`sensors` config***
+
+| Name | Type | Requirement | Description | Default   |
+| - | - | - | - | - |
+| current_clean_area | String | **Optionnal** | Sensor linked to current clean area data | `''` |
+| current_clean_duration | String | **Optionnal** | Sensor linked to current clean area duration data | `''` |
+| last_clean_area | String | **Optionnal** | Sensor linked to last clean area data | `''` |
+| last_clean_duration | String | **Optionnal** | Sensor linked to last clean area duration data | `''` |
+| camera | String | **Optionnal** | Sensor linked to your vacuum camera | `''` |
+
+**Example**
+```yaml
+sensors:
+  current_clean_area: sensor.current_clean_area # replace with your vacuum sensor ID
+  current_clean_duration: sensor.current_clean_duration # replace with your vacuum sensor ID
+  last_clean_area: sensor.last_clean_area # replace with your vacuum sensor ID
+  last_clean_duration: sensor.last_clean_duration # replace with your vacuum sensor ID
+  camera: camera.live_map # replace with your vacuum camera ID
+```
+</details>
+
+<br>
+
+***`shortcuts` config***
+
+| Name | Type | Requirement | Description | Default   |
+| - | - | - | - | - |
+| service | String | **Required** | Mandatory if you are using shortcut. Vacuum service to be called for segment cleaning | `''` |
+| description.name | String | **Optionnal** | Shortcut name | `''` |
+| description.icon | String | **Optionnal** | Shortcut icon | `mdi:broom` |
+| segments | List<Number> | **Optionnal** | List of segment to clean | `''` |
+
+**Example**
+```yaml
+shortcuts:
+  service: custom_service.call_segment # replace with your vacuum custom service to call segment cleaning
+  description:
+    - name: A shortcut name
+      icon: mdi:silverware-fork-knife
+      segments:
+        - 1
+        - 2
+    ...  
+```
 </details>
 
 <br>
@@ -1192,6 +1343,7 @@ To complete HA icon set, sci-fi package onboard the following icons :
 | Radiator heat | sci:radiator-heat | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_heat.svg" alt="Radiator heat"  height="25"/> |
 | Radiator off | sci:radiator-off | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_off.svg" alt="Radiator off"  height="25"/> |
 | Sleeping vaccum | sci:vacuum-sleep | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/sleeping_vacuum.svg" alt="Sleeping vaccum"  height="25"/> |
+| Docked vaccum | sci:vacuum-docked | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/docked_vacuum.svg" alt="Docked vaccum"  height="25"/> |
 | Landspeeder | sci:landspeeder | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder.svg" alt="Landspeeder"  height="25"/> |
 | Landspeeder plugged| sci:landspeeder-plugged | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-plugged.svg" alt="Landspeeder plugged"  height="25"/> |
 | Landspeeder plugged off| sci:landspeeder-plugged-off | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-plugged-off.svg" alt="Landspeeder plugged off"  height="25"/> |

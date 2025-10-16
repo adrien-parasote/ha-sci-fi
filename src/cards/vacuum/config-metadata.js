@@ -5,32 +5,32 @@ export default {
     default: '',
   },
   start: {
-    mandatory: true,
+    mandatory: false,
     type: 'Boolean',
     default: true,
   },
   pause: {
-    mandatory: true,
+    mandatory: false,
     type: 'Boolean',
     default: true,
   },
   stop: {
-    mandatory: true,
+    mandatory: false,
     type: 'Boolean',
     default: true,
   },
   return_to_base: {
-    mandatory: true,
+    mandatory: false,
     type: 'Boolean',
     default: true,
   },
   set_fan_speed: {
-    mandatory: true,
+    mandatory: false,
     type: 'Boolean',
     default: true,
   },
   sensors: {
-    mandatory: true,
+    mandatory: false,
     type: 'object',
     default: {},
     data: {
@@ -67,12 +67,12 @@ export default {
     default: {},
     data: {
       service: {
-        mandatory: true,
+        mandatory: false,
         type: 'string',
         default: null,
       },
       description: {
-        mandatory: true,
+        mandatory: false,
         type: 'array',
         default: [],
         data_type: 'object',

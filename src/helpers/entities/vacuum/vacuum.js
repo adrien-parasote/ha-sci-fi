@@ -21,8 +21,12 @@ export class VacuumEntity {
     this.friendly_name = entity.attributes.friendly_name;
 
     this._sensors = config.sensors;
-    this._service = config.shortcuts.service.split('.')[0];
-    this._service_action = config.shortcuts.service.split('.')[1];
+    this._service = config.shortcuts.service
+      ? config.shortcuts.service.split('.')[0]
+      : null;
+    this._service_action = config.shortcuts.service
+      ? config.shortcuts.service.split('.')[1]
+      : null;
     this.shortcuts = config.shortcuts.description;
     this._actions = {};
     this._actions[VACUUM_ACTION_START] = config.start;

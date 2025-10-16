@@ -95,7 +95,6 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
       pause: 'mdi:pause-circle-outline',
       stop: 'mdi:stop-circle-outline',
       return_to_base: 'mdi:home-import-outline',
-      set_fan_speed: 'mdi:fan',
     };
     return html`
       <sci-fi-accordion-card

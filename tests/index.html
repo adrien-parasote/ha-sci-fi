@@ -59,18 +59,8 @@
         display: flex;
         flex-direction: column;
         row-gap: 10px;
-      }
-      #content .config {
-        color: white;
-        text-align: right;
-        margin-right: 7px;
-      }
-      #content div:last-child {
         height: 100vh;
-        display: flex;
         align-self: center;
-        flex-direction: row;
-        column-gap: 10px;
       }
       #phone {
         display: flex;
@@ -109,27 +99,13 @@
           <select id="components"></select>
         </div>
         <label for="editor">Editor mode</label>
-        <input
-          type="checkbox"
-          id="editor"
-          onchange="editorMode(this)"
-          checked
-        />
+        <input type="checkbox" id="editor" onchange="editorMode(this)" />
+        <label for="defaultConfig">Use default config?</label>
+        <input type="checkbox" id="defaultConfig" onchange="editorMode(this)" />
       </div>
       <div id="content">
-        <div class="config">
-          <label for="defaultConfig">Use default config?</label>
-          <input
-            type="checkbox"
-            id="defaultConfig"
-            onchange="editorMode(this)"
-            checked
-          />
-        </div>
-        <div>
-          <div id="phone"></div>
-          <textarea id="yaml" class="hide"></textarea>
-        </div>
+        <div id="phone"></div>
+        <textarea id="yaml" class="hide"></textarea>
       </div>
     </div>
     <script type="module" src="../src/sci-fi.js"></script>

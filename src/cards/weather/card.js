@@ -296,7 +296,6 @@ export class SciFiWeather extends SciFiBaseCard {
   }
 
   __renderTodaySummary() {
-    console.log(this._weather);
     const sensors = [
       [this._weather.cloud_cover, 'cloud'],
       [this._weather.daily_precipitation, 'precipitation'],

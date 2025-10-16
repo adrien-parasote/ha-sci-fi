@@ -5,6 +5,7 @@ import config_hexa from '../config/config_hexa.js';
 import config_lights from '../config/config_lights.js';
 import config_plugs from '../config/config_plugs.js';
 import config_stove from '../config/config_stove.js';
+import config_vacuum from '../config/config_vacuum.js';
 import config_vehicles from '../config/config_vehicles.js';
 import config_weather from '../config/config_weather.js';
 
@@ -37,6 +38,10 @@ const MAP = {
     config: config_vehicles,
     element: window.customElements.get('sci-fi-vehicles'),
   },
+  vacuum: {
+    config: config_vacuum,
+    element: window.customElements.get('sci-fi-vacuum'),
+  },
 };
 
 let content = null;
@@ -60,7 +65,9 @@ function renderElement() {
     const editor = MAP[component_name].element.getConfigElement();
 
     if (document.getElementById('editor').checked) {
-      const config = MAP[component_name].element.getStubConfig();
+      const config = document.getElementById('defaultConfig').checked
+        ? MAP[component_name].config
+        : MAP[component_name].element.getStubConfig();
       editor.setConfig(config);
       editor.hass = window.hass;
       content = document.getElementById('phone').appendChild(editor);

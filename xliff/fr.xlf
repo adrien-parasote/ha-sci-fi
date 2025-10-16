@@ -726,6 +726,74 @@
   <source>Visibility</source>
   <target>Visibilité</target>
 </trans-unit>
+<trans-unit id="s4ddace054ce4ce18">
+  <source>Current clean area</source>
+  <target>Zone actuelle de ménage</target>
+</trans-unit>
+<trans-unit id="s6d3b06545e069731">
+  <source>Current clean duration</source>
+  <target>Temps actuelle de ménage</target>
+</trans-unit>
+<trans-unit id="s8e7d9b3270e423e9">
+  <source>Last clean area</source>
+  <target>Dernière zone de ménage</target>
+</trans-unit>
+<trans-unit id="s4159338f5e20baf0">
+  <source>Last clean duration</source>
+  <target>Dernier temps de ménage</target>
+</trans-unit>
+<trans-unit id="sd73aab0808de3d73">
+  <source>Default actions display</source>
+  <target>Affichage des actions par défaut</target>
+</trans-unit>
+<trans-unit id="s40e8787f7d7156a1">
+  <source>Custom actions</source>
+  <target>Actions personnalisées</target>
+</trans-unit>
+<trans-unit id="s0bdca49248ba4820">
+  <source>Shortcuts</source>
+  <target>Raccourcis</target>
+</trans-unit>
+<trans-unit id="se68f81f234173daf">
+  <source>Segments</source>
+  <target>Segments</target>
+</trans-unit>
+<trans-unit id="s9b302e813c8d78c0">
+  <source>Start?</source>
+  <target>Start?</target>
+</trans-unit>
+<trans-unit id="s95bc5022b2703216">
+  <source>Pause?</source>
+  <target>Pause?</target>
+</trans-unit>
+<trans-unit id="s04b4e213e8cb95ae">
+  <source>Stop?</source>
+  <target>Stop?</target>
+</trans-unit>
+<trans-unit id="se4740c1c4c70ccfa">
+  <source>Return to base?</source>
+  <target>Retour à la base?</target>
+</trans-unit>
+<trans-unit id="s2f4b44954b8bab46">
+  <source>Set fan speed?</source>
+  <target>Gestion puissance aspiration?</target>
+</trans-unit>
+<trans-unit id="s068d4dd16d9106d0">
+  <source>Icon</source>
+  <target>Icône</target>
+</trans-unit>
+<trans-unit id="s724d719a5601e36f">
+  <source>Service to call</source>
+  <target>Service à appeler</target>
+</trans-unit>
+<trans-unit id="saba5ffa9753b7e66">
+  <source>Segment</source>
+  <target>Segment</target>
+</trans-unit>
+<trans-unit id="s54d1b2a64667e32e">
+  <source>Camera</source>
+  <target>Caméra</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

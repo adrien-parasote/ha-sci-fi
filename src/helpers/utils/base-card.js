@@ -6,8 +6,14 @@ import {getLocale, setLocale} from './../../locales/localization.js';
 
 const checkKey = function (config, key, metadata) {
   // Test mandatory field
-  if (metadata.mandatory && !config[key])
+  if (
+    metadata.mandatory &&
+    ((metadata.type != 'Boolean' && !config[key]) ||
+      (metadata.type == 'Boolean' &&
+        (config[key] == null || config[key] == undefined)))
+  )
     throw new Error('Missing ' + key + ' mandatory config parameter.');
+
   // Default value if needed
   if (!metadata.mandatory && !config[key]) config[key] = metadata.default;
   return config;

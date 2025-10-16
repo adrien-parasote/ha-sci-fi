@@ -88,6 +88,10 @@ export class SciFiBaseEditor extends LitElement {
       'section-title-config': msg('Configuration'),
       'section-title-device': msg('Device'),
       'section-title-visibility': msg('Visibility'),
+      'section-title-default-actions': msg('Default actions display'),
+      'section-title-custom-actions': msg('Custom actions'),
+      'section-title-shortcuts': msg('Shortcuts'),
+      'section-title-segments': msg('Segments'),
 
       'text-optionnal': msg('(optionnal)'),
       'text-required': msg('(required)'),
@@ -96,6 +100,13 @@ export class SciFiBaseEditor extends LitElement {
       ),
       'text-switch-hexa-add-weather-tile': msg('Add weather tile ?'),
       'text-switch-hexa-standalone': msg('Standalone entity?'),
+
+      'text-switch-action-start': msg('Start?'),
+      'text-switch-action-pause': msg('Pause?'),
+      'text-switch-action-stop': msg('Stop?'),
+      'text-switch-action-return-to-base': msg('Return to base?'),
+      'text-switch-action-set-fan-speed': msg('Set fan speed?'),
+
       'text-child-lock': msg('Child lock?'),
       'text-power-outage-memory': msg('Power outage memory'),
       'text-other-sensor': msg('Others sensors'),
@@ -118,6 +129,7 @@ export class SciFiBaseEditor extends LitElement {
       'input-message-header-section-summer': msg('Summer period message'),
       'input-icon-header-section-summer': msg('Summer period icon'),
       'input-entities-to-exclude': msg('Entities to exclude'),
+      'input-icon': msg('Icon'),
       'input-icon-auto': msg('Icon auto'),
       'input-icon-off': msg('Icon off'),
       'input-icon-heat': msg('Icon heat'),
@@ -180,6 +192,13 @@ export class SciFiBaseEditor extends LitElement {
       'input-device': msg('Device'),
       'input-energy': msg('Energy'),
       'input-power': msg('Power'),
+      'input-camera': msg('Camera'),
+      'input-service': msg('Service to call'),
+      'input-segment': msg('Segment'),
+      'input-current-clean-area': msg('Current clean area'),
+      'input-current-clean-duration': msg('Current clean duration'),
+      'input-last-clean-area': msg('Last clean area'),
+      'input-last-clean-duration': msg('Last clean duration'),
     };
     return key in labels ? labels[key] : '';
   }

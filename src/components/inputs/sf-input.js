@@ -112,6 +112,7 @@ export class SciFiInput extends LitElement {
       icon: {type: String},
       value: {type: String},
       disabled: {type: Boolean},
+      type: {type: String},
     };
   }
 
@@ -124,6 +125,7 @@ export class SciFiInput extends LitElement {
     this.value = this.value ? this.value : null;
     this.disabled = this.disabled ? this.disabled : false;
     this.noCloseBox = this.noCloseBox ? this.noCloseBox : false;
+    this.type = this.type ? this.type : 'text';
   }
 
   renderIcon(icon) {
@@ -137,7 +139,7 @@ export class SciFiInput extends LitElement {
         <div class="icon">${this.renderIcon(this.icon)}</div>
         <div class="input-group">
           <input
-            type="text"
+            type=${this.type}
             placeholder="Name"
             value=${this.value}
             ?disabled=${this.disabled}

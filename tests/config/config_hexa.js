@@ -48,7 +48,7 @@ export default {
       name: 'Dobby',
       state_on: ['cleaning', 'returning'],
       state_error: 'error',
-      link: '#',
+      link: '?component=vacuum',
       visibility: ['person.adrien'],
     },
     {

@@ -56,11 +56,10 @@
         margin-right: 20px;
       }
       #content {
-        height: 100vh;
-        align-self: center;
         display: flex;
         flex-direction: row;
-        column-gap: 10px;
+        height: 100vh;
+        align-self: center;
       }
       #phone {
         display: flex;
@@ -100,6 +99,8 @@
         </div>
         <label for="editor">Editor mode</label>
         <input type="checkbox" id="editor" onchange="editorMode(this)" />
+        <label for="defaultConfig">Use default config?</label>
+        <input type="checkbox" id="defaultConfig" onchange="editorMode(this)" />
       </div>
       <div id="content">
         <div id="phone"></div>

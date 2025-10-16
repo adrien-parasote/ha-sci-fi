@@ -72,10 +72,15 @@ export class SciFiVacuum extends SciFiBaseCard {
       return html`<div class="map">
         <div class="map-content">No camera defined</div>
       </div>`;
+    console.log(this._vacuum.camera);
     return html`<div class="map">
-      <div class="map-content">
-        <img scr="${this._vacuum.camera.attributes.entity_picture}" />
-      </div>
+      <img
+        class="image"
+        src="${location.protocol +
+        '//' +
+        location.host +
+        this._vacuum.camera.attributes.entity_picture}"
+      />
     </div>`;
   }
 

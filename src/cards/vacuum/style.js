@@ -96,12 +96,15 @@ export default css`
     display: flex;
     flex: 1;
     padding: 15px;
+    justify-content: center;
   }
 
-  .map .map-content {
+  .map .image {
     border: var(--border-width) solid var(--secondary-bg-color);
     border-radius: var(--corner-size);
-    width: 100%;
+    width: auto;
+    height: 100%;
+    overflow: hidden;
   }
 
   /*********** INFO *************/

@@ -98,9 +98,7 @@ export class VacuumEntity {
         fan_speed: this.fan_speed,
         friendly_name: this.friendly_name,
         icon: this.icon,
-        last_map_update: this.camera
-          ? this.camera.attributes.last_successful_update_timestamp
-          : null,
+        map_url: this.camera ? this.camera.attributes.entity_picture : null,
       },
       state: this.state,
     };

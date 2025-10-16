@@ -34,6 +34,11 @@ export default {
     type: 'object',
     default: {},
     data: {
+      camera: {
+        mandatory: false,
+        type: 'string',
+        default: '',
+      },
       current_clean_area: {
         mandatory: false,
         type: 'string',

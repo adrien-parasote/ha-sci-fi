@@ -192,6 +192,7 @@ export class SciFiBaseEditor extends LitElement {
       'input-device': msg('Device'),
       'input-energy': msg('Energy'),
       'input-power': msg('Power'),
+      'input-camera': msg('Camera'),
       'input-service': msg('Service to call'),
       'input-segment': msg('Segment'),
       'input-current-clean-area': msg('Current clean area'),

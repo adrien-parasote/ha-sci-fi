@@ -790,6 +790,10 @@
   <source>Segment</source>
   <target>Segment</target>
 </trans-unit>
+<trans-unit id="s54d1b2a64667e32e">
+  <source>Camera</source>
+  <target>Caméra</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

@@ -28,8 +28,14 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
       );
     if (this._config.entity) {
       this._sensors = Object.values(hass.entities)
-        .filter((e) =>
-          e.entity_id.startsWith('sensor.' + this._config.entity.split('.')[1])
+        .filter(
+          (e) =>
+            e.entity_id.startsWith(
+              'sensor.' + this._config.entity.split('.')[1]
+            ) ||
+            e.entity_id.startsWith(
+              'camera.' + this._config.entity.split('.')[1]
+            )
         )
         .map((e) => {
           return {
@@ -66,6 +72,7 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
               icon="mdi:selection-ellipse-arrow-inside"
             ></sci-fi-icon></span
           >${this.getLabel('section-title-entity')}
+          ${this.getLabel('text-required')}
         </h1>
         <sci-fi-dropdown-entity-input
           icon="mdi:robot-vacuum"
@@ -91,15 +98,12 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
       set_fan_speed: 'mdi:fan',
     };
     return html`
-      <section>
-        <h1>
-          <span
-            ><sci-fi-icon
-              icon="mdi:selection-ellipse-arrow-inside"
-            ></sci-fi-icon></span
-          >${this.getLabel('section-title-default-actions')}
-          ${this.getLabel('text-required')}
-        </h1>
+      <sci-fi-accordion-card
+        title="${this.getLabel(
+          'section-title-default-actions'
+        )} ${this.getLabel('text-required')}"
+        icon="mdi:gesture-tap-button"
+      >
         ${Object.keys(actions).map((a) => {
           return html`
             <sci-fi-toggle
@@ -114,7 +118,7 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
             ></sci-fi-toggle>
           `;
         })}
-      </section>
+      </sci-fi-accordion-card>
     `;
   }
 
@@ -324,24 +328,27 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
         'text-optionnal'
       )}"
       icon="mdi:cog-transfer-outline"
-    >
-        ${Object.keys(newConfig.sensors).map((config_sensor_id) => {
-          const sensor_id = newConfig.sensors[config_sensor_id];
-          return html`
-            <sci-fi-dropdown-entity-input
-              icon="mdi:leak"
-              label="${this.getLabel(
-                'input-' + config_sensor_id.replaceAll('_', '-')
-              )}  ${this.getLabel('text-optionnal')}"
-              element-id="sensors"
-              kind="${config_sensor_id}"
-              value=${sensor_id}
-              .items="${this._sensors}"
-              @input-update=${this.__update}
-              ?disabled=${this._config.entity == null}
-            ></sci-fi-dropdown-entity-input>
-          `;
-        })}
+    >        ${Object.keys(newConfig.sensors).map((config_sensor_id) => {
+      const sensor_id = newConfig.sensors[config_sensor_id];
+      return html`
+        <sci-fi-dropdown-entity-input
+          icon="${config_sensor_id == 'camera'
+            ? 'mdi:video-outline'
+            : 'mdi:leak'}"
+          label="${this.getLabel(
+            'input-' + config_sensor_id.replaceAll('_', '-')
+          )}  ${this.getLabel('text-optionnal')}"
+          element-id="sensors"
+          kind="${config_sensor_id}"
+          value=${sensor_id}
+          .items="${this._sensors}"
+          @input-update=${this.__update}
+          ?disabled=${this._config.entity == null}
+        ></sci-fi-dropdown-entity-input>
+      `;
+    })}
+
+
       </div>
     </sci-fi-accordion-card>`;
   }
@@ -353,6 +360,7 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
       'current_clean_duration',
       'last_clean_area',
       'last_clean_duration',
+      'camera',
     ].forEach((id) => {
       if (!config.sensors[id]) config.sensors[id] = '';
     });

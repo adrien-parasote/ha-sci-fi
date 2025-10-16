@@ -5,6 +5,7 @@ export default {
     current_clean_duration: 'sensor.dobby_current_clean_duration',
     last_clean_area: 'sensor.dobby_last_clean_area',
     last_clean_duration: 'sensor.dobby_last_clean_duration',
+    camera: 'camera.dobby_live_map',
   },
   start: true,
   pause: false,

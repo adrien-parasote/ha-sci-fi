@@ -794,6 +794,10 @@
   <source>Camera</source>
   <target>Caméra</target>
 </trans-unit>
+<trans-unit id="s57a172ce127a124d">
+  <source>Weather alert entity id</source>
+  <target>Entité alerte météo</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

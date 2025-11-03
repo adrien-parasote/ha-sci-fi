@@ -24,6 +24,31 @@ export default {
         type: 'string',
         default: '',
       },
+      weather_alert_entity: {
+        mandatory: false,
+        type: 'string',
+        default: null,
+      },
+      state_green: {
+        mandatory: false,
+        type: 'string',
+        default: null,
+      },
+      state_yellow: {
+        mandatory: false,
+        type: 'string',
+        default: null,
+      },
+      state_orange: {
+        mandatory: false,
+        type: 'string',
+        default: null,
+      },
+      state_red: {
+        mandatory: false,
+        type: 'string',
+        default: null,
+      },
     },
   },
   tiles: {

@@ -20,14 +20,13 @@ class SciFiHexaTile extends LitElement {
       common_style,
       css`
         :host {
-          --border: var(--hexa-border, var(--secondary-light-alpha-color));
-          --background: var(--hexa-background, var(--primary-bg-color));
+          --custom-border: var(--hexa-border);
         }
         .hexa {
           width: var(--hexa-width);
         }
         .hexa svg .background {
-          fill: var(--background);
+          fill: var(--primary-bg-color);
           stroke-width: 4px;
           stroke: var(--secondary-bg-color);
           stroke-opacity: 0.8;
@@ -35,7 +34,7 @@ class SciFiHexaTile extends LitElement {
         }
         .hexa svg .border {
           fill: var(--primary-bg-color);
-          stroke: var(--border);
+          stroke: var(--custom-border, var(--secondary-light-alpha-color));
           stroke-width: 5px;
           stroke-linejoin: round;
         }
@@ -53,14 +52,15 @@ class SciFiHexaTile extends LitElement {
           text-align: center;
         }
         .item-on svg .border {
-          stroke: var(--primary-light-color);
+          stroke: var(--custom-border, var(--primary-light-color));
         }
         .item-on .item-content {
-          color: var(--primary-light-color);
-          text-shadow: 0px 0px 5px var(--secondary-light-color);
+          color: var(--custom-border, var(--primary-light-color));
+          text-shadow: 0px 0px 5px
+            var(--custom-border, var(--secondary-light-color));
         }
         .item-off .item-content {
-          color: var(--secondary-bg-color);
+          color: var(--custom-border, var(--secondary-bg-color));
           text-shadow: none;
         }
         .item-error svg .border {

@@ -72,4 +72,22 @@ export default css`
   .container .hexa-row sci-fi-hexa-tile[active-tile].state-error sci-fi-icon {
     --icon-color: var(--primary-error-color);
   }
+  #weather-tile[state='off'].yellow {
+    --hexa-border: var(--primary-warning-alpha-color);
+  }
+  #weather-tile.yellow {
+    --hexa-border: var(--primary-warning-color);
+  }
+  #weather-tile[state='off'].orange {
+    --hexa-border: var(--primary-error-alpha-color);
+  }
+  #weather-tile.orange {
+    --hexa-border: var(--primary-error-color);
+  }
+  #weather-tile[state='off'].red {
+    --hexa-border: var(--primary-emergency-alpha-color);
+  }
+  #weather-tile.red {
+    --hexa-border: var(--primary-emergency-color);
+  }
 `;

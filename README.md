@@ -91,6 +91,7 @@ On top, you can configure your card with visibility option, allowing you to disp
 - Weather (optional) tile: special weather tile based on following entities:
   - `sun.sun` 
   - `weather.<my_city>`
+  - `sensor.<weather_alert_my_city>`
 - Custom tiles rendering status (standalone or kind)
 
 > [!CAUTION]
@@ -132,6 +133,11 @@ weather:
   activate: true
   weather_entity: weather.home  # replace with your weather providers's entity id
   link: weather_home  # replace with your weather page link
+  weather_alert_entity: sensor.weather_alert # replace with your weather alert providers's entity id
+  state_green: Green # replace with your weather alert providers's green state
+  state_yellow: Yellow # replace with your weather alert providers's yellow state
+  state_orange: Orange # replace with your weather alert providers's orange state
+  state_red: Red # replace with your weather alert providers's red state
 tiles:
   - standalone: false
     entity_kind: light
@@ -189,6 +195,11 @@ tiles:
 | activate | Boolean | **Optional** | Flag to activate or not weather special tiles | `false` |
 | weather_entity | String | **Required** (if weather.activate = true) | Your provider weather entity id  |  |
 | link | String | **Optional** | Link you want to follow when tile is tapped  | `''` |
+| weather_alert_entity | String | **Optional** | Your provider weather alert entity id  | `''` |
+| state_green | String | **Optional** | Green state alert (i.e.: no alert) | `''` |
+| state_yellow | String | **Optional** | Yellow state alert  | `''` |
+| state_orange | String | **Optional** | Orange state alert | `''` |
+| state_red | String | **Optional** | Red state alert   | `''` |
 
 **Example**
 ```yaml
@@ -196,6 +207,11 @@ weather:
   activate: true
   weather_entity: weather.home  # replace with your weather providers's entity id
   link: weather_home  # replace with your weather page link
+  weather_alert_entity: sensor.weather_alert # replace with your weather alert providers's entity id
+  state_green: Green # replace with your weather alert providers's green state
+  state_yellow: Yellow # replace with your weather alert providers's yellow state
+  state_orange: Orange # replace with your weather alert providers's orange state
+  state_red: Red # replace with your weather alert providers's red state
 ```
 <br>
 

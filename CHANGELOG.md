@@ -1,5 +1,10 @@
 # Changelog
 
+# [v0.9.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.9.1) - YYYY-MM-DD
+
+## 💫 Enhancement
+- [Vacuum card - action and shortcuts icons size](https://github.com/adrien-parasote/ha-sci-fi/issues/44)
+
 # [v0.9.0](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.9.0) - 2025-10-16
 
 ## 🆕 What's New
@@ -44,7 +49,6 @@ Please refer to readme [Hexa Tiles section](https://github.com/adrien-parasote/h
 
 🌡️ Climate card
 - Update preset mode list to map `frost` state from [Versatile Thermostat](https://github.com/jmcollin78/versatile_thermostat) entity
-
 
 🖼️ Sci-Fi icons
 - Adding new icons (see readme section): 

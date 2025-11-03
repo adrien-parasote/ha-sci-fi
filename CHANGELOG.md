@@ -1,5 +1,10 @@
 # Changelog
 
+# [v0.9.2](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.9.2) - 2025-11-03
+
+## 🐛 Fixes
+- Hexa tiles: fix alert sensor & values saving method in editor card
+
 # [v0.9.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.9.1) - 2025-11-03
 
 ## 🆕 What's New

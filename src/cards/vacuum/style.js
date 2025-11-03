@@ -150,7 +150,7 @@ export default css`
     display: flex;
     flex-direction: row;
     column-gap: 5px;
-    padding: 10px;
+    padding: 10px 10px 15px 10px;
     border-top: var(--border-width) solid var(--secondary-bg-color);
     background-color: var(--primary-bg-alpha-color);
     justify-content: center;
@@ -167,5 +167,9 @@ export default css`
   }
   .actions .shortcuts {
     justify-content: right;
+  }
+  .actions .default sci-fi-button,
+  .actions .shortcuts sci-fi-button {
+    --btn-size: var(--icon-size-subtitle);
   }
 `;

@@ -1,6 +1,6 @@
 # Changelog
 
-# [v0.9.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.9.1) - YYYY-MM-DD
+# [v0.9.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.9.1) - 2025-11-03
 
 ## 💫 Enhancement
 - [Vacuum card - action and shortcuts icons size](https://github.com/adrien-parasote/ha-sci-fi/issues/44)

@@ -12,6 +12,8 @@ export default css`
     --secondary-light-alpha-color: rgba(102, 156, 210, 0.5);
     --secondary-light-light-alpha-color: rgba(102, 156, 210, 0.2);
 
+    --primary-warning-color: rgb(255, 215, 0);
+    --primary-warning-alpha-color: rgba(255, 215, 0, 0.5);
     --primary-error-color: rgb(250, 146, 29);
     --primary-error-alpha-color: rgba(250, 146, 29, 0.9);
     --primary-error-light-alpha-color: rgba(250, 146, 29, 0.3);

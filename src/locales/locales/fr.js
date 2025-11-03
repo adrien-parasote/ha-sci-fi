@@ -72,6 +72,7 @@ export const templates = {
   s4ddace054ce4ce18: `Zone actuelle de ménage`,
   s4f676d1aecd06b8c: `Ensoleillé`,
   s54d1b2a64667e32e: `Caméra`,
+  s57a172ce127a124d: `Entité alerte météo`,
   s57d9a94354d2f90f: `Puissance consommée du poêle`,
   s585dfbb29d3568cc: `booster`,
   s5a0b7879d5920086: `Quantité de carburant`,

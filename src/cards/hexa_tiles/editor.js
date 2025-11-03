@@ -121,40 +121,40 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
       <sci-fi-input
         label="${this.getLabel('input-weather-alert-entity-id')}"
         value=${this._config.weather.weather_alert_entity}
-        element-id="weather_alert_entity"
-        kind="weather_entity"
+        element-id="weather"
+        kind="weather_alert_entity"
         @input-update=${this.__update}
         icon="mdi:weather-sunny-alert"
       ></sci-fi-input>
       <sci-fi-input
         label="${this.getLabel('input-alert-green')}"
         value=${this._config.weather.state_green}
-        element-id="state_green"
-        kind="weather_entity"
+        element-id="weather"
+        kind="state_green"
         icon="mdi:state-machine"
         @input-update=${this.__update}
       ></sci-fi-input>
       <sci-fi-input
         label="${this.getLabel('input-alert-yellow')}"
         value=${this._config.weather.state_yellow}
-        element-id="state_yellow"
-        kind="weather_entity"
+        element-id="weather"
+        kind="state_yellow"
         icon="mdi:state-machine"
         @input-update=${this.__update}
       ></sci-fi-input>
       <sci-fi-input
         label="${this.getLabel('input-alert-orange')}"
         value=${this._config.weather.state_orange}
-        element-id="state_orange"
-        kind="weather_entity"
+        element-id="weather"
+        kind="state_orange"
         icon="mdi:state-machine"
         @input-update=${this.__update}
       ></sci-fi-input>
       <sci-fi-input
         label="${this.getLabel('input-alert-red')}"
         value=${this._config.weather.state_red}
-        element-id="state_red"
-        kind="weather_entity"
+        element-id="weather"
+        kind="state_red"
         icon="mdi:state-machine"
         @input-update=${this.__update}
       ></sci-fi-input>

@@ -4,6 +4,11 @@ export default {
     activate: true,
     weather_entity: 'weather.la_chapelle_sur_erdre',
     link: '?component=weather',
+    weather_alert_entity: 'sensor.44_weather_alert',
+    state_green: 'Vert',
+    state_yellow: 'Jaune',
+    state_orange: 'Orange',
+    state_red: 'Rouge',
   },
   tiles: [
     {

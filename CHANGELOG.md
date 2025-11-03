@@ -2,6 +2,11 @@
 
 # [v0.9.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.9.1) - 2025-11-03
 
+## 🆕 What's New
+
+⬡ Hexa card
+- [Hexa tiles - Weather color update](https://github.com/adrien-parasote/ha-sci-fi/issues/13)
+
 ## 💫 Enhancement
 - [Vacuum card - action and shortcuts icons size](https://github.com/adrien-parasote/ha-sci-fi/issues/44)
 

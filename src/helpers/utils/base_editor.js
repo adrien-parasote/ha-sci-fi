@@ -130,6 +130,7 @@ export class SciFiBaseEditor extends LitElement {
       'input-icon-header-section-summer': msg('Summer period icon'),
       'input-entities-to-exclude': msg('Entities to exclude'),
       'input-icon': msg('Icon'),
+      'input-weather-alert-entity-id': msg('Weather alert entity id'),
       'input-icon-auto': msg('Icon auto'),
       'input-icon-off': msg('Icon off'),
       'input-icon-heat': msg('Icon heat'),

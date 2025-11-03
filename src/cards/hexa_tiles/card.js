@@ -78,10 +78,28 @@ export class SciFiHexaTiles extends SciFiBaseCard {
     const sun_entity = this._hass.states['sun.sun'];
     const weather_entity =
       this._hass.states[this._config.weather.weather_entity];
+    const weather_alert_state = this._config.weather.weather_alert_entity
+      ? this._hass.states[this._config.weather.weather_alert_entity]
+        ? this._hass.states[this._config.weather.weather_alert_entity].state
+        : null
+      : null;
+
+    //Define state if possible
+    let alert = null;
+    if (weather_alert_state) {
+      const alert_extract = [
+        'state_green',
+        'state_yellow',
+        'state_orange',
+        'state_red',
+      ].filter((state) => this._config.weather[state] == weather_alert_state);
+      alert = alert_extract.length > 0 ? alert_extract[0].split('_')[1] : null;
+    }
     return {
       state: weather_entity.state,
       name: weather_entity.attributes.friendly_name,
       day: sun_entity.state == 'above_horizon',
+      alert: alert,
     };
   }
 
@@ -202,13 +220,14 @@ export class SciFiHexaTiles extends SciFiBaseCard {
 
   __getWeatherTile() {
     const state = this._weather.day ? 'on' : 'off';
+    const alert = this._weather.alert ? this._weather.alert : '';
     return html`
       <a href="${this._config.weather.link}">
         <sci-fi-hexa-tile
           id="weather-tile"
           active-tile
           state=${state}
-          class="state-${state}"
+          class="state-${state} ${alert}"
         >
           <div class="item-icon">
             <sci-fi-weather-icon

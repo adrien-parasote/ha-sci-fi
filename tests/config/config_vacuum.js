@@ -1,11 +1,9 @@
 export default {
   entity: 'vacuum.dobby',
   sensors: {
-    current_clean_area: 'sensor.dobby_current_clean_area',
-    current_clean_duration: 'sensor.dobby_current_clean_duration',
-    last_clean_area: 'sensor.dobby_last_clean_area',
-    last_clean_duration: 'sensor.dobby_last_clean_duration',
-    camera: 'camera.dobby_live_map',
+    current_clean_area: 'sensor.s7_surface_de_nettoyage',
+    current_clean_duration: 'sensor.s7_duree_de_nettoyage',
+    camera: 'image.s7_map_0',
   },
   start: true,
   pause: false,

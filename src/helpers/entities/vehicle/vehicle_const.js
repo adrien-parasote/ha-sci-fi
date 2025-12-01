@@ -52,6 +52,7 @@ export const VEHICLE_PLUG_STATES_PLUGGED_WAITING_FOR_CHARGE =
   'plugged_waiting_for_charge';
 export const VEHICLE_PLUG_STATES_ERROR = 'plug_error';
 export const VEHICLE_PLUG_STATES_UNKNOWN = 'plug_unknown';
+export const VEHICLE_PLUG_UNAVAILABLE = 'unavailable';
 
 export const HASS_RENAULT_SERVICE = 'renault';
 export const HASS_RENAULT_SERVICE_ACTION_START_AC = 'ac_start';

@@ -8,6 +8,8 @@ import {
   HASS_SELECT_SERVICE_OPTION,
   LOCK_SENSOR_STATE_UNLOCK,
   SEASON_ICONS,
+  STATE_UNAVAILABLE,
+  STATE_UNKNOW,
   WEATHER_EXTRA_SENSORS,
 } from './sensor_const.js';
 
@@ -37,6 +39,10 @@ export class Sensor {
 
   get icon() {
     return this.attributes.icon ? this.attributes.icon : '';
+  }
+
+  is_unavailable() {
+    return [STATE_UNAVAILABLE, STATE_UNKNOW].includes(this.state);
   }
 }
 
@@ -120,5 +126,16 @@ export class TrackerSensor extends Sensor {
 export class ZoneSensor extends Sensor {
   has_user(user_id) {
     return this.attributes.persons.includes(user_id);
+  }
+}
+
+export class TimestampSensor extends Sensor {
+  get_date(date_format) {
+    if (this.state == STATE_UNAVAILABLE) return '';
+    const options = {
+      timeStyle: 'medium',
+      dateStyle: 'short',
+    };
+    return new Intl.DateTimeFormat(date_format, options).format(this.state);
   }
 }

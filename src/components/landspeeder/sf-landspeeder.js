@@ -15,6 +15,7 @@ import {
   VEHICLE_PLUG_STATES_PLUGGED_WAITING_FOR_CHARGE,
   VEHICLE_PLUG_STATES_UNKNOWN,
   VEHICLE_PLUG_STATES_UNPLUGGED,
+  VEHICLE_PLUG_UNAVAILABLE,
 } from '../../helpers/entities/vehicle/vehicle_const.js';
 import common_style from '../../helpers/styles/common_style.js';
 import {defineCustomElement} from '../../helpers/utils/import.js';
@@ -112,13 +113,7 @@ class SciFiLandspeeder extends LitElement {
   }
 
   __displayDate() {
-    const options = {
-      timeStyle: 'medium',
-      dateStyle: 'short',
-    };
-    return new Intl.DateTimeFormat(this.user.date_format, options).format(
-      this.vehicle.location_last_activity
-    );
+    return this.vehicle.location_last_activity.date(this.user.date_format);
   }
 
   _openLocation(e) {
@@ -279,7 +274,11 @@ class SciFiLandspeeder extends LitElement {
     if (!this.vehicle.charging) return nothing;
     return html`<div class="component">
       <sci-fi-icon icon="mdi:update"></sci-fi-icon>
-      <div>${this.vehicle.charging_remaining_time}</div>
+      <div>
+        ${this.vehicle.charging_remaining_time
+          ? this.vehicle.charging_remaining_time
+          : VEHICLE_CHARGE_STATES_UNAVAILABLE}
+      </div>
     </div> `;
   }
 
@@ -305,6 +304,7 @@ class SciFiLandspeeder extends LitElement {
       'sci:landspeeder-plugged-clock';
     states[VEHICLE_PLUG_STATES_ERROR] = 'sci:landspeeder-error-plug';
     states[VEHICLE_PLUG_STATES_UNKNOWN] = 'sci:landspeeder-unknown-plug';
+    states[VEHICLE_PLUG_UNAVAILABLE] = 'sci:landspeeder-unknown-plug';
     return states[this.vehicle.plug_state];
   }
 

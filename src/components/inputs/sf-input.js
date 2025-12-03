@@ -141,7 +141,7 @@ export class SciFiInput extends LitElement {
           <input
             type=${this.type}
             placeholder="Name"
-            value=${this.value}
+            .value="${this.value}"
             ?disabled=${this.disabled}
             @focusout=${this.__focusOut}
           />

@@ -139,3 +139,10 @@ export class TimestampSensor extends Sensor {
     return new Intl.DateTimeFormat(date_format, options).format(this.state);
   }
 }
+
+export class BatterySensor extends Sensor {
+  get icon() {
+    var lvl = this.value < 10 ? 10 : Math.floor(this.value / 10) * 10;
+    return (lvl = 100 ? 'mdi:battery' : 'mdi:battery-' + lvl);
+  }
+}

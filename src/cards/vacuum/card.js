@@ -53,11 +53,29 @@ export class SciFiVacuum extends SciFiBaseCard {
       <div class="infoH">
         <sci-fi-icon icon="mdi:fan"></sci-fi-icon>
         <div>${this._vacuum.fan_speed}</div>
+
         <div class="spacer"></div>
-        <sci-fi-icon icon="${this._vacuum.battery_icon}"></sci-fi-icon>
-        <div>${this._vacuum.battery_level}%</div>
+        ${this._vacuum.mop_intensite ? this.__renderMopIntensite() : nothing}
+        <div class="spacer"></div>
+        ${this._vacuum.battery ? this.__renderBattery() : nothing}
       </div>
     </div>`;
+  }
+
+  __renderMopIntensite() {
+    return html`<sci-fi-icon
+        icon="${this._vacuum.mop_intensite.icon
+          ? this._vacuum.mop_intensite.icon
+          : 'mdi:water-opacity'}"
+      ></sci-fi-icon>
+      <div>${this._vacuum.mop_intensite.value}</div>`;
+  }
+
+  __renderBattery() {
+    return html`<sci-fi-icon icon="${this._vacuum.battery.icon}"></sci-fi-icon>
+      <div>
+        ${this._vacuum.battery.value}${this._vacuum.battery.unit_of_measurement}
+      </div>`;
   }
 
   __renderSubHeader() {
@@ -68,9 +86,9 @@ export class SciFiVacuum extends SciFiBaseCard {
   }
 
   __renderMap() {
-    if (!this._vacuum.camera)
+    if (!this._vacuum.map)
       return html`<div class="map">
-        <div class="map-content">No camera defined</div>
+        <div class="map-content">${msg('No map defined')}</div>
       </div>`;
     return html`<div class="map">
       <img
@@ -78,7 +96,7 @@ export class SciFiVacuum extends SciFiBaseCard {
         src="${location.protocol +
         '//' +
         location.host +
-        this._vacuum.camera.attributes.entity_picture}"
+        this._vacuum.map.attributes.entity_picture}"
       />
     </div>`;
   }

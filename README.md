@@ -1194,13 +1194,11 @@ Vacuum package card, display your vacuum and allow you to see informations & con
 ### Card features:
 
 From top to bottom, display:
-- Fan & battery power
+- Fan & Mop intensite battery power
 - Animation from vacuum state
 - Sensor info (optionnal):
   - Current clean area
   - Current clean duration
-  - Last clean area
-  - Last clean duration
 - Cleaner live map (if sensor camera is provided)
 - Actions (optionnal): start, stop, pause, return to base
 - Custom shortcut (optionnal) allowing you to specify one or multiple segment cleaning
@@ -1228,33 +1226,36 @@ From top to bottom, display:
 
 ```yaml
 type: custom:sci-fi-vacuum
-entity: xxxx # replace with your vacuum entity ID
+vacuums:
+  entity: xxxx # replace with your vacuum entity ID
 ```
 
 #### Full configuration
 
 ```yaml
 type: custom:sci-fi-vacuum
-entity: xxxx # replace with your vacuum entity ID
-start: true # true to show the action in the bar else false
-pause: true # true to show the action in the bar else false
-stop: true # true to show the action in the bar else false
-return_to_base: true # true to show the action in the bar else false
-sensors:
-  current_clean_area: sensor.current_clean_area # replace with your vacuum sensor ID
-  current_clean_duration: sensor.current_clean_duration # replace with your vacuum sensor ID
-  last_clean_area: sensor.last_clean_area # replace with your vacuum sensor ID
-  last_clean_duration: sensor.last_clean_duration # replace with your vacuum sensor ID
-  camera: camera.live_map # replace with your vacuum camera ID
-shortcuts:
-  service: custom_service.call_segment # replace with your vacuum custom service to call segment cleaning
-  description:
-    - name: A shortcut name
-      icon: mdi:silverware-fork-knife
-      segments:
-        - 1
-        - 2
-    ...  
+vacuums:
+  entity: xxxx # replace with your vacuum entity ID
+  start: true # true to show the action in the bar else false
+  pause: true # true to show the action in the bar else false
+  stop: true # true to show the action in the bar else false
+  return_to_base: true # true to show the action in the bar else false
+  sensors:
+    current_clean_area: sensor.current_clean_area # replace with your vacuum sensor ID
+    current_clean_duration: sensor.current_clean_duration # replace with your vacuum sensor ID
+    battery: sensor.battery # replace with your vacuum sensor ID
+    mop_intensite: sensor.mop_intensite # replace with your vacuum sensor ID
+    map: image.live_map # replace with your vacuum image ID
+  shortcuts:
+    service: custom_service.call_segment # replace with your vacuum custom service to call segment cleaning
+    command: command_params # replace with your vacuum custom command parameters when calling segment cleaning
+    description:
+      - name: A shortcut name
+        icon: mdi:silverware-fork-knife
+        segments:
+          - 1
+          - 2
+      ...  
 ```
 
 #### Options
@@ -1272,7 +1273,6 @@ shortcuts:
 
 **Example**
 ```yaml
-type: custom:sci-fi-vacuum
 entity: xxxx # replace with your vacuum entity ID
 start: true # true to show the action in the bar else false
 pause: true # true to show the action in the bar else false
@@ -1292,18 +1292,18 @@ shortcuts:
 | - | - | - | - | - |
 | current_clean_area | String | **Optionnal** | Sensor linked to current clean area data | `''` |
 | current_clean_duration | String | **Optionnal** | Sensor linked to current clean area duration data | `''` |
-| last_clean_area | String | **Optionnal** | Sensor linked to last clean area data | `''` |
-| last_clean_duration | String | **Optionnal** | Sensor linked to last clean area duration data | `''` |
-| camera | String | **Optionnal** | Sensor linked to your vacuum camera | `''` |
+| battery | String | **Optionnal** | Sensor linked to the vacuum battery | `''` |
+| mop_intensite | String | **Optionnal** | Sensor linked to the vacuum mop intensite | `''` |
+| map | String | **Optionnal** | Sensor linked to your vacuum map image | `''` |
 
 **Example**
 ```yaml
 sensors:
   current_clean_area: sensor.current_clean_area # replace with your vacuum sensor ID
   current_clean_duration: sensor.current_clean_duration # replace with your vacuum sensor ID
-  last_clean_area: sensor.last_clean_area # replace with your vacuum sensor ID
-  last_clean_duration: sensor.last_clean_duration # replace with your vacuum sensor ID
-  camera: camera.live_map # replace with your vacuum camera ID
+  battery: sensor.battery # replace with your vacuum sensor ID
+  mop_intensite: sensor.mop_intensite # replace with your vacuum sensor ID
+  map: image.live_map # replace with your vacuum image ID
 ```
 </details>
 
@@ -1314,6 +1314,7 @@ sensors:
 | Name | Type | Requirement | Description | Default   |
 | - | - | - | - | - |
 | service | String | **Required** | Mandatory if you are using shortcut. Vacuum service to be called for segment cleaning | `''` |
+| command | String | **Required** | Mandatory if you are using shortcut. Vacuum service command to be added to your service call | `''` |
 | description.name | String | **Optionnal** | Shortcut name | `''` |
 | description.icon | String | **Optionnal** | Shortcut icon | `mdi:broom` |
 | segments | List<Number> | **Optionnal** | List of segment to clean | `''` |
@@ -1322,6 +1323,7 @@ sensors:
 ```yaml
 shortcuts:
   service: custom_service.call_segment # replace with your vacuum custom service to call segment cleaning
+  command: command_params # replace with your vacuum custom command parameters when calling segment cleaning
   description:
     - name: A shortcut name
       icon: mdi:silverware-fork-knife

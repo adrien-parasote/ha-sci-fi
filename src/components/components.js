@@ -9,6 +9,7 @@ import './sf-person.js';
 import './sf-radiator.js';
 import './sf-stack_bar.js';
 import './sf-stove.js';
+import './sf-tabs.js';
 import './sf-tiles.js';
 import './sf-toast.js';
 import './sf-toggle-switch.js';

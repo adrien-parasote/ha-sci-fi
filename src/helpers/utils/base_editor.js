@@ -193,13 +193,16 @@ export class SciFiBaseEditor extends LitElement {
       'input-device': msg('Device'),
       'input-energy': msg('Energy'),
       'input-power': msg('Power'),
-      'input-camera': msg('Camera'),
+      'input-map': msg('Map'),
       'input-service': msg('Service to call'),
       'input-segment': msg('Segment'),
       'input-current-clean-area': msg('Current clean area'),
       'input-current-clean-duration': msg('Current clean duration'),
       'input-last-clean-area': msg('Last clean area'),
       'input-last-clean-duration': msg('Last clean duration'),
+      'input-battery': msg('Battery'),
+      'input-mop-intensite': msg('Mop intensite'),
+      'input-command': msg('Command'),
     };
     return key in labels ? labels[key] : '';
   }

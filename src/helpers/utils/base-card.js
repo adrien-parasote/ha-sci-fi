@@ -15,7 +15,8 @@ const checkKey = function (config, key, metadata) {
     throw new Error('Missing ' + key + ' mandatory config parameter.');
 
   // Default value if needed
-  if (!metadata.mandatory && !config[key]) config[key] = metadata.default;
+  if (!metadata.mandatory && metadata.type != 'Boolean' && !config[key])
+    config[key] = metadata.default;
   return config;
 };
 

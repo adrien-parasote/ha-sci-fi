@@ -1,5 +1,23 @@
 # Changelog
 
+# [v0.m.p](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.m.p) - YYYY-mm-dd
+
+## 🆕 What's New
+
+⬡ Vacuum card
+- Add custom command to send to vaccum.send_command
+
+## ❗Breaking change 
+
+⬡ Vacuum card
+
+Card configuration need to be updated due to several factors : allow to have multiple vacuum in same card, sensor deletion, update and addition:
+- `camera` sensor is renamed `Map`
+- `last_clean_area` & `last_clean_duration` are removed
+- Adding `battery` & `mop_intensite` sensors
+
+Easiest way to update is to save your current information and recreate the card from the UI.
+
 # [v0.9.2](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.9.2) - 2025-11-03
 
 ## 🐛 Fixes

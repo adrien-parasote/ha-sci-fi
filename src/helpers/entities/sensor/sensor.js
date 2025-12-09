@@ -33,7 +33,8 @@ export class Sensor {
   }
 
   get value() {
-    if (this.unit_of_measurement) return parseFloat(this.state);
+    if (this.unit_of_measurement && !isNaN(this.state))
+      return parseFloat(this.state);
     return this.state;
   }
 
@@ -137,5 +138,12 @@ export class TimestampSensor extends Sensor {
       dateStyle: 'short',
     };
     return new Intl.DateTimeFormat(date_format, options).format(this.state);
+  }
+}
+
+export class BatterySensor extends Sensor {
+  get icon() {
+    var lvl = this.value < 10 ? 10 : Math.floor(this.value / 10) * 10;
+    return (lvl = 100 ? 'mdi:battery' : 'mdi:battery-' + lvl);
   }
 }

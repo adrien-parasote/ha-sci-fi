@@ -4,9 +4,15 @@ import {SciFiBaseEditor} from '../../helpers/utils/base_editor.js';
 import editor_style from './style_editor.js';
 
 export class SciFiVacuumEditor extends SciFiBaseEditor {
-  _sensors;
   _vacuum_entities;
   _edit = false;
+  _sensors = {
+    battery: 'mdi:battery',
+    current_clean_area: 'mdi:leak',
+    current_clean_duration: 'mdi:leak',
+    map: 'mdi:floor-plan',
+    mop_intensite: 'mdi:water-opacity',
+  };
 
   static get styles() {
     return super.styles.concat([editor_style]);
@@ -16,6 +22,7 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
     return {
       _config: {type: Object},
       _shortcut_id: {type: String},
+      _active_vacuum: {type: Number},
     };
   }
 
@@ -26,41 +33,67 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
       this._vacuum_entities = Object.values(hass.states).filter((e) =>
         e.entity_id.startsWith('vacuum')
       );
-    if (this._config.entity) {
-      this._sensors = Object.values(hass.entities)
-        .filter(
-          (e) =>
-            e.entity_id.startsWith(
-              'sensor.' + this._config.entity.split('.')[1]
-            ) ||
-            e.entity_id.startsWith(
-              'camera.' + this._config.entity.split('.')[1]
-            )
-        )
-        .map((e) => {
-          return {
-            entity_id: e.entity_id,
-            attributes: {
-              friendly_name: e.original_name,
-            },
-          };
-        });
-    } else {
-      this._sensors = [];
-    }
+    if (!this._active_vacuum) this._active_vacuum = 0;
+  }
+
+  __emptyVacuum() {
+    return {
+      entity: null,
+      sensors: {
+        battery: null,
+        mop_intensite: null,
+        current_clean_area: null,
+        current_clean_duration: null,
+        map: null,
+      },
+      start: false,
+      pause: false,
+      stop: false,
+      return_to_base: false,
+      set_fan_speed: false,
+      shortcuts: {},
+    };
   }
 
   render() {
     if (!this._hass || !this._config || !this._vacuum_entities) return nothing;
     return html`
       <div class="card card-corner">
-        <div class="container ${!this._edit}">
-          ${this.__renderGeneral()} ${this.__renderDefaultActions()}
-          ${this.__shortcuts()} ${this.__renderSensors()}
-        </div>
-        <div class="editor ${this._edit}">${this.__renderShortcutCustom()}</div>
+        <sci-fi-tabs-card
+          count=${this._config.vacuums.length}
+          active=${this._active_vacuum}
+          @tab-add=${this.__addVacuum}
+          @tab-delete=${this.__deleteVacuum}
+          @tab-select=${this.__selectVacuum}
+        >
+          <div class="container ${!this._edit}">
+            ${this.__renderGeneral()} ${this.__renderDefaultActions()}
+            ${this.__shortcuts()} ${this.__renderSensors()}
+          </div>
+          <div class="editor ${this._edit}">
+            ${this.__renderShortcutCustom()}
+          </div>
+        </sci-fi-tabs-card>
       </div>
     `;
+  }
+
+  __deleteVacuum(e) {
+    let newConfig = this.__getNewConfig();
+    newConfig.vacuums.splice(e.detail.id, 1);
+    this._active_vacuum = 0;
+    this.__dispatchChange(e, newConfig);
+  }
+
+  __addVacuum(e) {
+    let newConfig = this.__getNewConfig();
+    newConfig.vacuums.push(this.__emptyVacuum());
+    this._active_vacuum += 1;
+    this.__dispatchChange(e, newConfig);
+  }
+
+  __selectVacuum(e) {
+    this._active_vacuum = e.detail.id;
   }
 
   __renderGeneral() {
@@ -81,7 +114,7 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
           )}"
           element-id="entity"
           kind="entity"
-          value="${this._config.entity}"
+          value="${this._config.vacuums[this._active_vacuum].entity}"
           .items="${this._vacuum_entities}"
           @input-update=${this.__update}
         ></sci-fi-dropdown-entity-input>
@@ -111,8 +144,9 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
               )}"
               icon="${actions[a]}"
               element-id="${a}"
-              ?checked=${this._config[a]}
-              ?disabled=${this._config.entity == null}
+              ?checked=${this._config.vacuums[this._active_vacuum][a]}
+              ?disabled=${this._config.vacuums[this._active_vacuum].entity ==
+              null}
               @toggle-change=${this.__update}
             ></sci-fi-toggle>
           `;
@@ -122,14 +156,19 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
   }
 
   __shortcuts() {
-    let service = this._config.shortcuts
-      ? this._config.shortcuts.service
-        ? this._config.shortcuts.service
+    let service = this._config.vacuums[this._active_vacuum].shortcuts
+      ? this._config.vacuums[this._active_vacuum].shortcuts.service
+        ? this._config.vacuums[this._active_vacuum].shortcuts.service
         : ''
       : '';
-    let shortcuts = this._config.shortcuts
-      ? this._config.shortcuts.description
-        ? this._config.shortcuts.description
+    let command = this._config.vacuums[this._active_vacuum].shortcuts
+      ? this._config.vacuums[this._active_vacuum].shortcuts.command
+        ? this._config.vacuums[this._active_vacuum].shortcuts.command
+        : ''
+      : '';
+    let shortcuts = this._config.vacuums[this._active_vacuum].shortcuts
+      ? this._config.vacuums[this._active_vacuum].shortcuts.description
+        ? this._config.vacuums[this._active_vacuum].shortcuts.description
         : []
       : [];
     return html`
@@ -143,12 +182,23 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
           label="${this.getLabel('input-service')} ${this.getLabel(
             'text-required'
           )}"
-          icon="mdi:api"
+          icon="mdi:send"
           value=${service}
           element-id="service"
           kind="service"
           @input-update=${this.__updateShortcuts}
-          ?disabled=${this._config.entity == null}
+          ?disabled=${this._config.vacuums[this._active_vacuum].entity == null}
+        ></sci-fi-input>
+        <sci-fi-input
+          label="${this.getLabel('input-command')} ${this.getLabel(
+            'text-required'
+          )}"
+          icon="mdi:api"
+          value=${command}
+          element-id="command"
+          kind="command"
+          @input-update=${this.__updateShortcuts}
+          ?disabled=${this._config.vacuums[this._active_vacuum].entity == null}
         ></sci-fi-input>
         <section>
           <h1>
@@ -169,13 +219,15 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
                   <sci-fi-button
                     icon="sci:edit"
                     @button-click="${(e) => this.__editShortcut(id)}"
-                    ?disabled=${this._config.entity == null}
+                    ?disabled=${this._config.vacuums[this._active_vacuum]
+                      .entity == null}
                   >
                   </sci-fi-button>
                   <sci-fi-button
                     icon="mdi:delete-outline"
                     @button-click="${(e) => this.__deleteShortcut(e, id)}"
-                    ?disabled=${this._config.entity == null}
+                    ?disabled=${this._config.vacuums[this._active_vacuum]
+                      .entity == null}
                   >
                   </sci-fi-button>
                 </div>
@@ -186,7 +238,8 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
             has-border
             icon="mdi:plus"
             @button-click=${this.__addShortcut}
-            ?disabled=${this._config.entity == null}
+            ?disabled=${this._config.vacuums[this._active_vacuum].entity ==
+            null}
           ></sci-fi-button>
         </section>
       </sci-fi-accordion-card>
@@ -195,7 +248,10 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
 
   __renderShortcutCustom() {
     if (!this._shortcut_id && this._shortcut_id != 0) return nothing;
-    const shortcut = this._config.shortcuts.description[this._shortcut_id];
+    const shortcut =
+      this._config.vacuums[this._active_vacuum].shortcuts.description[
+        this._shortcut_id
+      ];
     return html`
       <div class="head">
         <sci-fi-button
@@ -268,25 +324,38 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
 
   __updateSegment(e, id) {
     let newConfig = this.__getNewConfig();
-    newConfig.shortcuts.description[this._shortcut_id].segments[id] = parseInt(
-      e.detail.value
-    );
+    newConfig.vacuums[this._active_vacuum].shortcuts.description[
+      this._shortcut_id
+    ].segments[id] = parseInt(e.detail.value);
     this.__dispatchChange(e, newConfig);
   }
 
   __addSegment(e) {
     let newConfig = this.__getNewConfig();
-    if (!newConfig.shortcuts)
-      newConfig['shortcuts'] = {service: null, description: []};
-    if (!newConfig.shortcuts.description[this._shortcut_id].segments)
-      newConfig.shortcuts.description[this._shortcut_id]['segments'] = [];
-    newConfig.shortcuts.description[this._shortcut_id].segments.push(null);
+    if (!newConfig.vacuums[this._active_vacuum].shortcuts)
+      newConfig.vacuums[this._active_vacuum]['shortcuts'] = {
+        service: null,
+        description: [],
+      };
+    if (
+      !newConfig.vacuums[this._active_vacuum].shortcuts.description[
+        this._shortcut_id
+      ].segments
+    )
+      newConfig.vacuums[this._active_vacuum].shortcuts.description[
+        this._shortcut_id
+      ]['segments'] = [];
+    newConfig.vacuums[this._active_vacuum].shortcuts.description[
+      this._shortcut_id
+    ].segments.push(null);
     this.__dispatchChange(e, newConfig);
   }
 
   __deleteSegment(e) {
     let newConfig = this.__getNewConfig();
-    newConfig.shortcuts.description[this._shortcut_id].segments.splice(e, 1);
+    newConfig.vacuums[this._active_vacuum].shortcuts.description[
+      this._shortcut_id
+    ].segments.splice(e, 1);
     this.__dispatchChange(e, newConfig);
   }
 
@@ -297,7 +366,7 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
 
   __deleteShortcut(e) {
     let newConfig = this.__getNewConfig();
-    newConfig.shortcuts.description.splice(e, 1);
+    newConfig.vacuums[this._active_vacuum].shortcuts.description.splice(e, 1);
     this.__dispatchChange(e, newConfig);
   }
 
@@ -308,11 +377,14 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
 
   __addShortcut(e) {
     let newConfig = this.__getNewConfig();
-    if (!newConfig.shortcuts)
-      newConfig['shortcuts'] = {service: null, description: []};
-    if (!newConfig.shortcuts.description)
-      newConfig.shortcuts['description'] = [];
-    newConfig.shortcuts.description.push({
+    if (!newConfig.vacuums[this._active_vacuum].shortcuts)
+      newConfig.vacuums[this._active_vacuum]['shortcuts'] = {
+        service: null,
+        description: [],
+      };
+    if (!newConfig.vacuums[this._active_vacuum].shortcuts.description)
+      newConfig.vacuums[this._active_vacuum].shortcuts['description'] = [];
+    newConfig.vacuums[this._active_vacuum].shortcuts.description.push({
       name: '',
       icon: 'mdi:broom',
       segments: [],
@@ -327,55 +399,56 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
         'text-optionnal'
       )}"
       icon="mdi:cog-transfer-outline"
-    >        ${Object.keys(newConfig.sensors).map((config_sensor_id) => {
-      const sensor_id = newConfig.sensors[config_sensor_id];
-      return html`
-        <sci-fi-dropdown-entity-input
-          icon="${config_sensor_id == 'camera'
-            ? 'mdi:video-outline'
-            : 'mdi:leak'}"
-          label="${this.getLabel(
-            'input-' + config_sensor_id.replaceAll('_', '-')
-          )}  ${this.getLabel('text-optionnal')}"
-          element-id="sensors"
-          kind="${config_sensor_id}"
-          value=${sensor_id}
-          .items="${this._sensors}"
-          @input-update=${this.__update}
-          ?disabled=${this._config.entity == null}
-        ></sci-fi-dropdown-entity-input>
-      `;
-    })}
-
-
+    >        ${Object.keys(newConfig.vacuums[this._active_vacuum].sensors).map(
+      (config_sensor_id) => {
+        const sensor_id =
+          newConfig.vacuums[this._active_vacuum].sensors[config_sensor_id];
+        return html`
+          <sci-fi-input
+            icon="${this._sensors[config_sensor_id]}"
+            label="${this.getLabel(
+              'input-' + config_sensor_id.replaceAll('_', '-')
+            )}  ${this.getLabel('text-optionnal')}"
+            element-id="sensors"
+            kind="${config_sensor_id}"
+            value=${sensor_id}
+            @input-update=${this.__update}
+            ?disabled=${this._config.vacuums[this._active_vacuum].entity ==
+            null}
+          ></sci-fi-input>
+        `;
+      }
+    )}
       </div>
     </sci-fi-accordion-card>`;
   }
 
   __sensorsDefaultValues(config) {
-    if (!config.sensors) config['sensors'] = {};
-    [
-      'current_clean_area',
-      'current_clean_duration',
-      'last_clean_area',
-      'last_clean_duration',
-      'camera',
-    ].forEach((id) => {
-      if (!config.sensors[id]) config.sensors[id] = '';
+    if (!config.vacuums[this._active_vacuum].sensors)
+      config.vacuums[this._active_vacuum]['sensors'] = {};
+    Object.keys(this._sensors).forEach((id) => {
+      if (!config.vacuums[this._active_vacuum].sensors[id])
+        config.vacuums[this._active_vacuum].sensors[id] = '';
     });
     return config;
   }
 
   __updateShortcuts(e) {
     let newConfig = this.__getNewConfig();
-    if (!newConfig.shortcuts)
-      newConfig['shortcuts'] = {service: null, description: []};
+    if (!newConfig.vacuums[this._active_vacuum].shortcuts)
+      newConfig.vacuums[this._active_vacuum]['shortcuts'] = {
+        service: null,
+        description: [],
+      };
 
     if (e.detail.id == 'service') {
-      newConfig.shortcuts.service = e.detail.value;
+      newConfig.vacuums[this._active_vacuum].shortcuts.service = e.detail.value;
     } else if (e.detail.id == 'description') {
-      newConfig.shortcuts.description[this._shortcut_id][e.detail.kind] =
-        e.detail.value;
+      newConfig.vacuums[this._active_vacuum].shortcuts.description[
+        this._shortcut_id
+      ][e.detail.kind] = e.detail.value;
+    } else {
+      newConfig.vacuums[this._active_vacuum].shortcuts.command = e.detail.value;
     }
     this.__dispatchChange(e, newConfig);
   }
@@ -383,12 +456,14 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
   __update(e) {
     let newConfig = this.__getNewConfig();
     if (e.detail.kind == e.detail.id) {
-      newConfig[e.detail.id] = e.detail.value;
+      newConfig.vacuums[this._active_vacuum][e.detail.id] = e.detail.value;
     } else if (e.detail.id == 'sensors') {
-      if (!newConfig.sensors) config['sensors'] = {};
-      newConfig.sensors[e.detail.kind] = e.detail.value;
+      if (!newConfig.vacuums[this._active_vacuum].sensors)
+        config.vacuums[this._active_vacuum]['sensors'] = {};
+      newConfig.vacuums[this._active_vacuum].sensors[e.detail.kind] =
+        e.detail.value;
     } else {
-      newConfig[e.detail.id] = e.detail.value;
+      newConfig.vacuums[this._active_vacuum][e.detail.id] = e.detail.value;
     }
     this.__dispatchChange(e, newConfig);
   }

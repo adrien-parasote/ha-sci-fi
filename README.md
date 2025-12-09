@@ -1212,6 +1212,7 @@ From top to bottom, display:
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/vacuum_edit_1.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/vacuum_edit_2.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/vacuum_edit_3.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/vacuum_edit_4.jpeg" width="300">
 
 </details>
 

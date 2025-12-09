@@ -12,7 +12,7 @@ export default {
       start: true,
       pause: false,
       stop: true,
-      return_to_base: true,
+      return_to_base: false,
       shortcuts: {
         service: 'vacuum.send_command',
         command: 'app_segment_clean',

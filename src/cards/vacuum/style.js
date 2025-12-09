@@ -135,6 +135,7 @@ export default css`
     border-radius: var(--corner-size);
     width: auto;
     height: 100%;
+    max-width: 100%;
     overflow: hidden;
   }
 

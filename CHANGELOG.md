@@ -1,6 +1,11 @@
 # Changelog
 
-# [v0.9.4](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.9.3) - 2025-12-09
+# [v0.9.5](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.9.5) - 2025-12-09
+
+## 🐛 Fixes
+- Vacuum card: Fix max width for vacuum card
+
+# [v0.9.4](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.9.4) - 2025-12-09
 
 ## 🐛 Fixes
 - Vacuum card: [tech fix] change comparaison method from isEqualWith to isEqual to fix prod issue

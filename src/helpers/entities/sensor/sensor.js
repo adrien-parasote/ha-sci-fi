@@ -33,7 +33,8 @@ export class Sensor {
   }
 
   get value() {
-    if (this.unit_of_measurement) return parseFloat(this.state);
+    if (this.unit_of_measurement && !isNaN(this.state))
+      return parseFloat(this.state);
     return this.state;
   }
 

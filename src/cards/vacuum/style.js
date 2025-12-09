@@ -41,6 +41,37 @@ export default css`
   .header .infoH .spacer {
     width: 10px;
   }
+  /*********** DEVICES *************/
+  .devices {
+    display: flex;
+    flex-direction: row;
+    border-top: var(--border-width) solid var(--primary-bg-color);
+    background-color: var(--primary-bg-alpha-color);
+    padding: 10px;
+    color: var(--primary-light-color);
+    font-size: var(--font-size-normal);
+  }
+  .devices .number {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    column-gap: 10px;
+    align-items: center;
+    flex-grow: 1;
+  }
+
+  .devices .number > div {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background-color: var(--primary-light-alpha-color);
+    text-decoration: none;
+    border-radius: 50%;
+  }
+
+  .devices .number > div.active {
+    background-color: var(--primary-light-color);
+  }
 
   /*********** SUB HEADER *************/
   .sub-header {

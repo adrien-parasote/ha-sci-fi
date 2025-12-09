@@ -790,13 +790,29 @@
   <source>Segment</source>
   <target>Segment</target>
 </trans-unit>
-<trans-unit id="s54d1b2a64667e32e">
-  <source>Camera</source>
-  <target>Caméra</target>
-</trans-unit>
 <trans-unit id="s57a172ce127a124d">
   <source>Weather alert entity id</source>
   <target>Entité alerte météo</target>
+</trans-unit>
+<trans-unit id="s1e187919b52639f1">
+  <source>Map</source>
+  <target>Carte</target>
+</trans-unit>
+<trans-unit id="s2eda024d0ca3dbae">
+  <source>Battery</source>
+  <target>Batterie</target>
+</trans-unit>
+<trans-unit id="s1a214224375fce2e">
+  <source>Mop intensite</source>
+  <target>Intensité de la serpillère</target>
+</trans-unit>
+<trans-unit id="s8bea2885ff2d1272">
+  <source>Command</source>
+  <target>Commande</target>
+</trans-unit>
+<trans-unit id="sdd01b6d709491995">
+  <source>No map defined</source>
+  <target>Pas de carte définie</target>
 </trans-unit>
 </body>
 </file>

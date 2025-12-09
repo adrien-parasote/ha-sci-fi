@@ -41,8 +41,8 @@ async function hassCallWs(msg) {
   return await window.hass.connection.sendMessagePromise(msg);
 }
 
-async function hassCallService(service, serviceData, target) {
-  await callService(window.hass.connection, service, serviceData, target).then(
+async function hassCallService(domain, service, serviceData, target) {
+  await callService(window.hass.connection, domain, service, serviceData, target).then(
     () => {
       window.hass.dev.setupEntitiesSubscription();
     }

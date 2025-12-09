@@ -63,6 +63,7 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
           count=${this._config.vacuums.length}
           active=${this._active_vacuum}
           @tab-add=${this.__addVacuum}
+          @tab-delete=${this.__deleteVacuum}
           @tab-select=${this.__selectVacuum}
         >
           <div class="container ${!this._edit}">
@@ -75,6 +76,13 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
         </sci-fi-tabs-card>
       </div>
     `;
+  }
+
+  __deleteVacuum(e) {
+    let newConfig = this.__getNewConfig();
+    newConfig.vacuums.splice(e.detail.id, 1);
+    this._active_vacuum = 0;
+    this.__dispatchChange(e, newConfig);
   }
 
   __addVacuum(e) {
@@ -163,9 +171,6 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
         ? this._config.vacuums[this._active_vacuum].shortcuts.description
         : []
       : [];
-    console.log(service);
-    console.log(command);
-    console.log(shortcuts);
     return html`
       <sci-fi-accordion-card
         title="${this.getLabel('section-title-shortcuts')} ${this.getLabel(

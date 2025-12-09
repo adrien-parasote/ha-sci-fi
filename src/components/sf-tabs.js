@@ -1,4 +1,4 @@
-import {LitElement, css, html} from 'lit';
+import {LitElement, css, html, nothing} from 'lit';
 
 import common_style from '../helpers/styles/common_style.js';
 import {defineCustomElement} from '../helpers/utils/import.js';
@@ -41,6 +41,11 @@ export class SciFiTabsCard extends LitElement {
           border-color: var(--secondary-bg-color);
           padding: 10px;
         }
+        .actions {
+          display: flex;
+          flex-direction: row;
+          column-gap: 5px;
+        }
       `,
     ];
   }
@@ -49,13 +54,35 @@ export class SciFiTabsCard extends LitElement {
     return html`
       <div class="toolbar">
         <div class="group">${this.__renderTabsGroup()}</div>
-        <sci-fi-button
-          icon="mdi:plus"
-          @button-click=${this.__addTab}
-        ></sci-fi-button>
+        <div class="actions">
+          ${this.__renderDelete()}
+          <sci-fi-button
+            icon="mdi:plus"
+            @button-click=${this.__addTab}
+          ></sci-fi-button>
+        </div>
       </div>
       <div class="content"><slot></slot></div>
     `;
+  }
+  __renderDelete() {
+    if (this.count == 1) return nothing;
+    return html`<sci-fi-button
+      icon="mdi:delete-outline"
+      @button-click=${this.__removeTab}
+    ></sci-fi-button> `;
+  }
+
+  __removeTab(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.dispatchEvent(
+      new CustomEvent('tab-delete', {
+        bubbles: true,
+        composed: true,
+        detail: {id: this.active},
+      })
+    );
   }
 
   __renderTabsGroup() {

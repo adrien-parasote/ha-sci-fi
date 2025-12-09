@@ -1,6 +1,6 @@
 import {isEqual} from 'lodash-es';
 
-import {Sensor, TrackerSensor} from '../sensor/sensor';
+import {Sensor, TimestampSensor, TrackerSensor} from '../sensor/sensor';
 import {
   HASS_RENAULT_SERVICE,
   HASS_RENAULT_SERVICE_ACTION_START_AC,
@@ -20,7 +20,6 @@ import {
   VEHICLE_SENSOR_LOCK_STATUS,
   VEHICLE_SENSOR_MILEAGE,
   VEHICLE_SENSOR_ON_STATE,
-  VEHICLE_SENSOR_OPEN_STATE,
   VEHICLE_SENSOR_PLUG_STATE,
   VEHICLE_SENSOR_UNAVAILABLE_STATE,
 } from './vehicle_const';
@@ -39,10 +38,26 @@ export class Vehicle {
       if (!this._config[sensor_name]) {
         sensors[sensor_name] = null;
       } else {
-        sensors[sensor_name] =
-          this._config[sensor_name].split('.')[0] == 'device_tracker'
-            ? new TrackerSensor(this._config[sensor_name], hass)
-            : new Sensor(this._config[sensor_name], hass);
+        var cls = hass.states[this._config[sensor_name]].attributes.device_class
+          ? hass.states[this._config[sensor_name]].attributes.device_class
+          : this._config[sensor_name].split('.')[0];
+        switch (cls) {
+          case 'device_tracker':
+            sensors[sensor_name] = new TrackerSensor(
+              this._config[sensor_name],
+              hass
+            );
+            break;
+          case 'timestamp':
+            sensors[sensor_name] = new TimestampSensor(
+              this._config[sensor_name],
+              hass
+            );
+            break;
+          default:
+            sensors[sensor_name] = new Sensor(this._config[sensor_name], hass);
+            break;
+        }
       }
     });
     return sensors;
@@ -83,10 +98,10 @@ export class Vehicle {
       : this.sensors[VEHICLE_SENSOR_LOCATION].gps;
   }
 
-  get location_last_activity() {
-    return !this.sensors[VEHICLE_SENSOR_LOCATION_LAST_ACTIVITY]
-      ? null
-      : new Date(this.sensors[VEHICLE_SENSOR_LOCATION_LAST_ACTIVITY].value);
+  get_location_last_activity(date_format) {
+    return this.sensors[VEHICLE_SENSOR_LOCATION_LAST_ACTIVITY].get_date(
+      date_format
+    );
   }
 
   hasMileage() {
@@ -127,7 +142,8 @@ export class Vehicle {
   }
 
   get fuel_autonomy() {
-    return !this.sensors[VEHICLE_SENSOR_FUEL_AUTONOMY]
+    return !this.sensors[VEHICLE_SENSOR_FUEL_AUTONOMY] ||
+      this.sensors[VEHICLE_SENSOR_FUEL_AUTONOMY].is_unavailable()
       ? VEHICLE_SENSOR_UNAVAILABLE_STATE
       : [
           this.sensors[VEHICLE_SENSOR_FUEL_AUTONOMY].value,
@@ -136,7 +152,8 @@ export class Vehicle {
   }
 
   get battery_level() {
-    return !this.sensors[VEHICLE_SENSOR_BATTERY_LEVEL]
+    return !this.sensors[VEHICLE_SENSOR_BATTERY_LEVEL] ||
+      this.sensors[VEHICLE_SENSOR_BATTERY_LEVEL].is_unavailable()
       ? null
       : [
           this.sensors[VEHICLE_SENSOR_BATTERY_LEVEL].value,
@@ -151,7 +168,8 @@ export class Vehicle {
   }
 
   get fuel_quantity() {
-    return !this.sensors[VEHICLE_SENSOR_FUEL_QUANTITY]
+    return !this.sensors[VEHICLE_SENSOR_FUEL_QUANTITY] ||
+      this.sensors[VEHICLE_SENSOR_FUEL_QUANTITY].is_unavailable()
       ? VEHICLE_SENSOR_UNAVAILABLE_STATE
       : [
           this.sensors[VEHICLE_SENSOR_FUEL_QUANTITY].value,
@@ -160,7 +178,8 @@ export class Vehicle {
   }
 
   get charging_remaining_time() {
-    return !this.sensors[VEHICLE_SENSOR_CHARGING_REMAINING_TIME]
+    return !this.sensors[VEHICLE_SENSOR_CHARGING_REMAINING_TIME] ||
+      this.sensors[VEHICLE_SENSOR_CHARGING_REMAINING_TIME].is_unavailable()
       ? null
       : [
           this.sensors[VEHICLE_SENSOR_CHARGING_REMAINING_TIME].value,

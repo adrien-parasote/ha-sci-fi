@@ -75,3 +75,6 @@ export const HASS_LOCK_SERVICE_ACTION_TURN_OFF = 'unlock';
 export const HASS_LOCK_SERVICE_ACTION_TURN_ON = 'lock';
 export const HASS_SELECT_SERVICE = 'select';
 export const HASS_SELECT_SERVICE_OPTION = 'select_option';
+
+export const STATE_UNAVAILABLE = 'unavailable';
+export const STATE_UNKNOW = 'unknown';

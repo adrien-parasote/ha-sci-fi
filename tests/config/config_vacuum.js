@@ -12,8 +12,7 @@ export default {
       start: true,
       pause: false,
       stop: true,
-      return_to_base: true,
-      set_fan_speed: true,
+      return_to_base: false,
       shortcuts: {
         service: 'vacuum.send_command',
         command: 'app_segment_clean',
@@ -45,6 +44,20 @@ export default {
           },
         ],
       },
+    },
+    {
+      entity: 'vacuum.dobby',
+      sensors: {
+        battery: 'sensor.s7_batterie',
+        mop_intensite: 'select.s7_intensite_de_frottement',
+        current_clean_area: 'sensor.s7_surface_de_nettoyage',
+        current_clean_duration: 'sensor.s7_duree_de_nettoyage',
+        map: 'image.s7_map_0',
+      },
+      start: true,
+      pause: true,
+      stop: true,
+      return_to_base: true,
     },
   ],
 };

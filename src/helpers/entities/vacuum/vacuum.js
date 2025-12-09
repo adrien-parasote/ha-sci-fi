@@ -16,7 +16,7 @@ export class VacuumEntity {
     let entity = hass.states[config.entity];
     this.state = entity.state;
     this._sensors = config.sensors;
-    this.fan_speed = entity.attributes.fan_speed;
+    this._fan_speed = entity.attributes.fan_speed;
     this.friendly_name = entity.attributes.friendly_name;
 
     this._service = config.shortcuts.service
@@ -32,6 +32,14 @@ export class VacuumEntity {
     this._actions[VACUUM_ACTION_PAUSE] = config.pause;
     this._actions[VACUUM_ACTION_STOP] = config.stop;
     this._actions[VACUUM_ACTION_RETURN_TO_BASE] = config.return_to_base;
+  }
+
+  get fan_speed() {
+    return this._fan_speed ? this._fan_speed : null;
+  }
+
+  get name() {
+    return this.friendly_name ? this.friendly_name : this.entity_id;
   }
 
   get battery() {
@@ -93,12 +101,11 @@ export class VacuumEntity {
     return {
       entity_id: this.entity_id,
       attributes: {
-        battery_icon: this.battery_icon,
-        battery_level: this.battery_level,
-        fan_speed: this.fan_speed,
         friendly_name: this.friendly_name,
+        battery: this.battery,
+        fan_speed: this.fan_speed,
         icon: this.icon,
-        map_url: this.camera ? this.camera.attributes.entity_picture : null,
+        map_url: this.map,
       },
       state: this.state,
     };

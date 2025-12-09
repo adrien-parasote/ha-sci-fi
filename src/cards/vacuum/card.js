@@ -1,6 +1,6 @@
 import {msg} from '@lit/localize';
 import {html, nothing} from 'lit';
-import {isEqual} from 'lodash-es';
+import {isEqualWith} from 'lodash-es';
 
 import {VacuumEntity} from '../../helpers/entities/vacuum/vacuum.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
@@ -18,7 +18,8 @@ export class SciFiVacuum extends SciFiBaseCard {
   static get properties() {
     return {
       _config: {type: Object},
-      _vacuum: {type: Object},
+      _vacuums: {type: Array},
+      _vacuum_selected_id: {type: Number},
     };
   }
 
@@ -26,14 +27,20 @@ export class SciFiVacuum extends SciFiBaseCard {
     super.hass = hass;
     if (!this._config) return; // Can't assume setConfig is called before hass is set
 
-    // Get vacuum entity
-    const vacuum_entity = new VacuumEntity(hass, this._config);
-
+    // Get vacuums entities
+    const vacuum_entities = this._config.vacuums.map(
+      (conf) => new VacuumEntity(hass, conf)
+    );
+    function equalVacuums(v1, v2) {
+      return v1.renderAsEntity() == v2.renderAsEntity();
+    }
     if (
-      !this._vacuum ||
-      !isEqual(vacuum_entity.renderAsEntity(), this._vacuum.renderAsEntity())
-    )
-      this._vacuum = vacuum_entity;
+      !this._vacuums ||
+      !isEqualWith(vacuum_entities, this._vacuums, equalVacuums)
+    ) {
+      this._vacuums = vacuum_entities;
+      this._vacuum_selected_id = 0;
+    }
   }
 
   render() {
@@ -42,51 +49,88 @@ export class SciFiVacuum extends SciFiBaseCard {
       <div class="container">
         ${this.__renderHeader()}${this.__renderSubHeader()}
         ${this.__renderInfo()} ${this.__renderMap()} ${this.__renderActions()}
+        ${this.__renderDevices()}
       </div>
       <sci-fi-toast></sci-fi-toast>
     `;
   }
 
   __renderHeader() {
+    const vacuum = this._vacuums[this._vacuum_selected_id];
     return html`<div class="header">
-      <div class="name">${this._vacuum.friendly_name}</div>
+      <div class="name">${vacuum.name}</div>
       <div class="infoH">
         <sci-fi-icon icon="mdi:fan"></sci-fi-icon>
-        <div>${this._vacuum.fan_speed}</div>
+        <div>${vacuum.fan_speed}</div>
 
         <div class="spacer"></div>
-        ${this._vacuum.mop_intensite ? this.__renderMopIntensite() : nothing}
+        ${vacuum.mop_intensite ? this.__renderMopIntensite() : nothing}
         <div class="spacer"></div>
-        ${this._vacuum.battery ? this.__renderBattery() : nothing}
+        ${vacuum.battery ? this.__renderBattery() : nothing}
       </div>
     </div>`;
   }
 
   __renderMopIntensite() {
+    const vacuum = this._vacuums[this._vacuum_selected_id];
     return html`<sci-fi-icon
-        icon="${this._vacuum.mop_intensite.icon
-          ? this._vacuum.mop_intensite.icon
+        icon="${vacuum.mop_intensite.icon
+          ? vacuum.mop_intensite.icon
           : 'mdi:water-opacity'}"
       ></sci-fi-icon>
-      <div>${this._vacuum.mop_intensite.value}</div>`;
+      <div>${vacuum.mop_intensite.value}</div>`;
   }
 
   __renderBattery() {
-    return html`<sci-fi-icon icon="${this._vacuum.battery.icon}"></sci-fi-icon>
-      <div>
-        ${this._vacuum.battery.value}${this._vacuum.battery.unit_of_measurement}
-      </div>`;
+    const vacuum = this._vacuums[this._vacuum_selected_id];
+    return html`<sci-fi-icon icon="${vacuum.battery.icon}"></sci-fi-icon>
+      <div>${vacuum.battery.value}${vacuum.battery.unit_of_measurement}</div>`;
   }
 
   __renderSubHeader() {
+    const vacuum = this._vacuums[this._vacuum_selected_id];
     return html` <div class="sub-header">
-      <sci-fi-icon icon="${this._vacuum.icon}" class="${this._vacuum.activity}">
+      <sci-fi-icon icon="${vacuum.icon}" class="${vacuum.activity}">
       </sci-fi-icon>
     </div>`;
   }
 
+  __renderDevices() {
+    if (this._vacuums.length == 1) return nothing;
+    return html`<div class="devices">
+      <sci-fi-button
+        icon="mdi:chevron-left"
+        @button-click=${this._next}
+      ></sci-fi-button>
+      <div class="number">
+        ${this._vacuums.map((e, id) => {
+          return html`<div
+            class="${id == this._vacuum_selected_id ? 'active' : ''}"
+          ></div>`;
+        })}
+      </div>
+      <sci-fi-button
+        icon="mdi:chevron-right"
+        @button-click=${this._next}
+      ></sci-fi-button>
+    </div>`;
+  }
+
+  _next(e) {
+    if (e.detail.element.icon == 'mdi:chevron-left') {
+      this._vacuum_selected_id == 0
+        ? (this._vacuum_selected_id = this._vacuums.length - 1)
+        : (this._vacuum_selected_id -= 1);
+    } else {
+      this._vacuum_selected_id == this._vacuums.length - 1
+        ? (this._vacuum_selected_id = 0)
+        : (this._vacuum_selected_id += 1);
+    }
+  }
+
   __renderMap() {
-    if (!this._vacuum.map)
+    const vacuum = this._vacuums[this._vacuum_selected_id];
+    if (!vacuum.map)
       return html`<div class="map">
         <div class="map-content">${msg('No map defined')}</div>
       </div>`;
@@ -96,20 +140,20 @@ export class SciFiVacuum extends SciFiBaseCard {
         src="${location.protocol +
         '//' +
         location.host +
-        this._vacuum.map.attributes.entity_picture}"
+        vacuum.map.attributes.entity_picture}"
       />
     </div>`;
   }
 
   __renderInfo() {
-    const sensors = this._vacuum.sensors;
+    const sensors = this._vacuums[this._vacuum_selected_id].sensors;
     if (sensors.length == 0) return nothing;
     return html`<div class="info">
       ${sensors.map((s) => {
         return html`<div class="sensor">
           <div class="data">
             <sci-fi-icon icon="${s.icon}"> </sci-fi-icon>
-            <div class="value">${s.value.toFixed(2)}</div>
+            <div class="value">${s.value ? s.value.toFixed(2) : ''}</div>
             <div class="unit">${s.unit_of_measurement}</div>
           </div>
           <div class="name">${s.friendly_name}</div>
@@ -126,7 +170,7 @@ export class SciFiVacuum extends SciFiBaseCard {
   }
 
   __renderAction() {
-    const actions = this._vacuum.actions;
+    const actions = this._vacuums[this._vacuum_selected_id].actions;
     if (actions.length == 0) return nothing;
     return actions.map((a) => {
       return html`
@@ -139,7 +183,7 @@ export class SciFiVacuum extends SciFiBaseCard {
   }
 
   __renderShortcuts() {
-    const shortcuts = this._vacuum.shortcuts;
+    const shortcuts = this._vacuums[this._vacuum_selected_id].shortcuts;
     if (shortcuts.length == 0) return nothing;
     return shortcuts.map((s, id) => {
       return html`
@@ -152,7 +196,7 @@ export class SciFiVacuum extends SciFiBaseCard {
   }
 
   _runAction(id, is_shortcut) {
-    this._vacuum.callService(id, is_shortcut).then(
+    this._vacuums[this._vacuum_selected_id].callService(id, is_shortcut).then(
       () => this.__toast(false),
       (e) => this.__toast(true, e)
     );

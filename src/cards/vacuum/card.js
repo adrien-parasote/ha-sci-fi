@@ -157,7 +157,7 @@ export class SciFiVacuum extends SciFiBaseCard {
         return html`<div class="sensor">
           <div class="data">
             <sci-fi-icon icon="${s.icon}"> </sci-fi-icon>
-            <div class="value">${s.value ? s.value.toFixed(2) : ''}</div>
+            <div class="value">${s.value ? s.value : ''}</div>
             <div class="unit">${s.unit_of_measurement}</div>
           </div>
           <div class="name">${s.friendly_name}</div>
@@ -207,6 +207,7 @@ export class SciFiVacuum extends SciFiBaseCard {
   }
 
   __toast(error, e) {
+    console.log(e)
     const txt = error ? e.message : msg('done');
     this.shadowRoot.querySelector('sci-fi-toast').addMessage(txt, error);
   }

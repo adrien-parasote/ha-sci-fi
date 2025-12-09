@@ -125,10 +125,9 @@ export class VacuumEntity {
     if (!shortcuts.segments)
       throw new Error('Segment list for ' + shortcuts.name + 'is empty');
     return this._hass.callService(this._service, this._service_action, {
-      entity_id: [this.entity_id],
       command: this._command,
-      segments: shortcuts.segments,
-    });
+      params: [{segments: shortcuts.segments}],
+    }, {entity_id: this.entity_id});
   }
 
   _callDefaultService(id) {

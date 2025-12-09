@@ -1,6 +1,6 @@
 import {msg} from '@lit/localize';
 import {html, nothing} from 'lit';
-import {isEqualWith} from 'lodash-es';
+import {isEqual} from 'lodash-es';
 
 import {VacuumEntity} from '../../helpers/entities/vacuum/vacuum.js';
 import {SciFiBaseCard, buildStubConfig} from '../../helpers/utils/base-card.js';
@@ -31,16 +31,20 @@ export class SciFiVacuum extends SciFiBaseCard {
     const vacuum_entities = this._config.vacuums.map(
       (conf) => new VacuumEntity(hass, conf)
     );
-    function equalVacuums(v1, v2) {
-      return v1.renderAsEntity() == v2.renderAsEntity();
-    }
+
+    if (!this._vacuum_selected_id) this._vacuum_selected_id = 0;
     if (
       !this._vacuums ||
-      !isEqualWith(vacuum_entities, this._vacuums, equalVacuums)
-    ) {
+      !vacuum_entities
+        .map((v, id) => {
+          return isEqual(
+            v.renderAsEntity(),
+            this._vacuums[id].renderAsEntity()
+          );
+        })
+        .every((v) => v === true)
+    )
       this._vacuums = vacuum_entities;
-      this._vacuum_selected_id = 0;
-    }
   }
 
   render() {

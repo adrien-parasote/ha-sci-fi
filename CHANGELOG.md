@@ -1,10 +1,11 @@
 # Changelog
 
-# [v0.m.p](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.m.p) - YYYY-mm-dd
+# [v0.9.3](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.9.3) - 2025-12-09
 
 ## 🆕 What's New
 
 ⬡ Vacuum card
+- Multiple vacuum in same card
 - Add custom command to send to vaccum.send_command
 
 ## ❗Breaking change 
@@ -17,6 +18,10 @@ Card configuration need to be updated due to several factors : allow to have mul
 - Adding `battery` & `mop_intensite` sensors
 
 Easiest way to update is to save your current information and recreate the card from the UI.
+
+## 🐛 Fixes
+- [Car card - invalid time value](https://github.com/adrien-parasote/ha-sci-fi/issues/47)
+- [Hexa tiles - cannot be rendered if one composant is on error](https://github.com/adrien-parasote/ha-sci-fi/issues/48)
 
 # [v0.9.2](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.9.2) - 2025-11-03
 

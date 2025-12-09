@@ -107,42 +107,57 @@ export class SciFiHexaTiles extends SciFiBaseCard {
     return this._config.tiles
       .filter((t) => t.visibility.includes(this._user.id))
       .map((c) => {
-        const states = !c.standalone
-          ? this.__extractHassKindState(
-              c.entity_kind,
-              c.entities_to_exclude || []
-            )
-          : [this._hass.states[c.entity].state];
-
-        const state = this.__getEntityGlobalState(
-          states,
-          c.state_on,
-          c.state_error
-        );
+        // Get entities
+        var entities = this.__defineEntities(c);
+        // Check entities availability
+        var state = c.state_error;
+        var icon = 'mdi:alert-circle';
+        if (this.__entitiesAvailability(entities)) {
+          state = this.__getEntityGlobalState(
+            entities,
+            c.state_on,
+            c.state_error
+          );
+          icon = state == 'on' ? c.active_icon : c.inactive_icon;
+        }
 
         return {
           link: c.link,
           state: state,
-          icon: state == 'on' ? c.active_icon : c.inactive_icon,
+          icon: icon,
           title: c.name,
         };
       });
   }
 
-  __extractHassKindState(kind, exclusion) {
+  __defineEntities(c) {
+    if (c.standalone) return [c.entity];
     return Array.from(
       new Set(
         Object.keys(this._hass.states)
-          .filter((key) => key.startsWith(kind))
-          .filter((key) => !exclusion.includes(key))
-          .reduce((cur, key) => {
-            return cur.concat(this._hass.states[key].state);
-          }, [])
+          .filter((key) => key.startsWith(c.entity_kind))
+          .filter((key) => !c.entities_to_exclude.includes(key))
       )
     ).sort();
   }
 
-  __getEntityGlobalState(states, state_on, state_error = null) {
+  __entitiesAvailability(entities) {
+    if (entities.length == 0) return false;
+    const available = [
+      ...new Set(
+        entities.map((e) => {
+          return this._hass.states[e] != undefined;
+        })
+      ),
+    ];
+    return available.length > 1 ? false : available[0];
+  }
+
+  __getEntityGlobalState(entities, state_on, state_error = null) {
+    const states = entities.reduce((cur, key) => {
+      return cur.concat(this._hass.states[key].state);
+    }, []);
+
     if (state_error && states.includes(state_error)) {
       return 'error';
     } else {

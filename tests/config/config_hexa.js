@@ -14,7 +14,7 @@ export default {
     {
       standalone: false,
       entity_kind: 'light',
-      entities_to_exclude: [],
+      entities_to_exclude: ['light.ampoule_moes_toilette_bas'],
       active_icon: 'mdi:lightbulb-on-outline',
       inactive_icon: 'mdi:lightbulb-outline',
       name: 'Ligths',
@@ -47,7 +47,7 @@ export default {
     },
     {
       standalone: true,
-      entity: 'vacuum.dobby',
+      entity: 'vacuum.error',
       active_icon: 'mdi:robot-vacuum',
       inactive_icon: 'sci:vacuum-sleep',
       name: 'Dobby',

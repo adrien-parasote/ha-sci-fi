@@ -207,7 +207,6 @@ export class SciFiVacuum extends SciFiBaseCard {
   }
 
   __toast(error, e) {
-    console.log(e)
     const txt = error ? e.message : msg('done');
     this.shadowRoot.querySelector('sci-fi-toast').addMessage(txt, error);
   }

@@ -42,11 +42,15 @@ async function hassCallWs(msg) {
 }
 
 async function hassCallService(domain, service, serviceData, target) {
-  await callService(window.hass.connection, domain, service, serviceData, target).then(
-    () => {
-      window.hass.dev.setupEntitiesSubscription();
-    }
-  );
+  await callService(
+    window.hass.connection,
+    domain,
+    service,
+    serviceData,
+    target
+  ).then(() => {
+    window.hass.dev.setupEntitiesSubscription();
+  });
 }
 
 async function getConnection(auth) {

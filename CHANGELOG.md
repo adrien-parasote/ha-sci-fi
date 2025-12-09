@@ -1,5 +1,11 @@
 # Changelog
 
+# [v0.9.6](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.9.6) - 2025-12-09
+
+## 🐛 Fixes
+- Technical: update home-assistant-js-websocket dependency to last version
+- Vacuum card: Fix send command parameter issue when calling for specific segment(s)
+
 # [v0.9.5](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.9.5) - 2025-12-09
 
 ## 🐛 Fixes

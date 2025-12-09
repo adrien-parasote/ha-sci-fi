@@ -4,13 +4,13 @@
 
 ## 🆕 What's New
 
-⬡ Vacuum card
+🖲 Vacuum card
 - Multiple vacuum in same card
 - Add custom command to send to vaccum.send_command
 
 ## ❗Breaking change 
 
-⬡ Vacuum card
+🖲 Vacuum card
 
 Card configuration need to be updated due to several factors : allow to have multiple vacuum in same card, sensor deletion, update and addition:
 - `camera` sensor is renamed `Map`

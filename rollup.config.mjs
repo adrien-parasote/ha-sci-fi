@@ -1,35 +1,47 @@
-import json from '@rollup/plugin-json';
-import terser from '@rollup/plugin-terser';
+import typescript from '@rollup/plugin-typescript';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
-import minifyHTML from 'rollup-plugin-minify-html-literals';
+import terser from '@rollup/plugin-terser';
+
+const dev = process.env.NODE_ENV !== 'production';
 
 export default {
-	input: 'temp/sci-fi.js',
-	output: {
-		file: 'sci-fi.min.js',
-		name: 'version',
-		format: 'iife'
-	},
-	onwarn(warning) {
-		if (warning.code !== 'THIS_IS_UNDEFINED') {
-			console.error(`(!) ${warning.message}`);
-		}
-	},
-	plugins: [
-		replace({preventAssignment: false, 'Reflect.decorate': 'undefined'}),
-		resolve(),
-		json(),
-		minifyHTML.default(),
-		terser({
-			ecma: 2021,
-			module: true,
-			warnings: true,
-			mangle: {
-				properties: {
-				regex: /^__/,
-				},
-			},
-		})
-	]
+  input: 'src/sci-fi.ts',
+  output: {
+    file: 'dist/sci-fi.min.js',
+    format: 'iife',
+    name: 'SciFiCards',
+    sourcemap: dev,
+  },
+  plugins: [
+    replace({
+      preventAssignment: true,
+      values: {
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV ?? 'production'),
+        '__DEV__': String(dev),
+      },
+    }),
+    resolve({ browser: true }),
+    // HIGH-02: experimentalDecorators + useDefineForClassFields MUST be passed
+    // explicitly here — @rollup/plugin-typescript does NOT inherit them from
+    // tsconfig.json reliably. Without these, Lit @property/@state decorators
+    // are silently stripped and cards crash at runtime.
+    typescript({
+      tsconfig: './tsconfig.json',
+      sourceMap: dev,
+      inlineSources: dev,
+      compilerOptions: {
+        experimentalDecorators: true,
+        useDefineForClassFields: false,
+      },
+    }),
+    !dev && terser({
+      ecma: 2021,
+      module: true,
+      warnings: true,
+      mangle: {
+        properties: { regex: /^__/ },
+      },
+    }),
+  ].filter(Boolean),
 };

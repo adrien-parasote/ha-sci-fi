@@ -121,8 +121,8 @@ export class SciFiPlugsCard extends SciFiBaseCard {
           <span class="plug-name ${isOn ? 'sf-state-on' : 'sf-state-off'}">${name}</span>
           <sf-icon .icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
         </div>
-        ${power != null ? html`<div class="plug-power">${power} W</div>` : ''}
-        ${energy != null ? html`<div class="plug-energy">${energy} kWh</div>` : ''}
+        ${power !== null ? html`<div class="plug-power">${power} W</div>` : ''}
+        ${energy !== null ? html`<div class="plug-energy">${energy} kWh</div>` : ''}
         <button
           class="plug-btn"
           @click="${() => this._toggle(device.entity_id, isOn)}"
@@ -133,7 +133,7 @@ export class SciFiPlugsCard extends SciFiBaseCard {
   }
 
   private _toggle(entityId: string, currentlyOn: boolean): void {
-    this.hass.callService('switch', currentlyOn ? 'turn_off' : 'turn_on', {
+    void this.hass.callService('switch', currentlyOn ? 'turn_off' : 'turn_on', {
       entity_id: entityId,
     });
   }

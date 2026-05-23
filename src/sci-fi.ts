@@ -22,10 +22,7 @@ import './cards/vehicles/sci-fi-vehicles.js';
 
 // ── Card registry for Lovelace (required for card picker UI) ──────────────────
 
-interface LovelaceCardElement extends HTMLElement {
-  getCardSize?: () => number;
-  setConfig: (config: Record<string, unknown>) => void;
-}
+
 
 type CardRegistration = {
   name: string;
@@ -46,7 +43,7 @@ declare global {
   }
 }
 
-const CARD_REGISTRATIONS: ReadonlyArray<{ type: string } & CardRegistration> = [
+export const CARD_REGISTRATIONS: ReadonlyArray<{ type: string } & CardRegistration> = [
   {
     type: 'sci-fi-hexa-tiles',
     name: 'Sci-Fi Hexa Tiles',

@@ -15,7 +15,7 @@
 | F-BASE-03 | Reactivity and lifecycle hooks | ✅ `base-card.ts` |
 | F-BASE-04 | Sealed render wrapper pattern | ✅ `base-card.ts` |
 | F-BASE-05 | Shared common Lit CSS styles | ✅ `src/styles/common.ts` |
-| F-BASE-06 | Shared editor Lit CSS styles | ✅ `src/styles/editor.ts` |
+| F-BASE-06 | Shared editor Lit CSS styles | ✅ `` |
 
 ---
 

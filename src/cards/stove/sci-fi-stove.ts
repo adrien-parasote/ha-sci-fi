@@ -120,7 +120,7 @@ export class SciFiStoveCard extends SciFiBaseCard {
               </div>
             ` : ''}
 
-            ${pelletPct != null ? html`
+            ${pelletPct !== null ? html`
               <div class="sensor-tile">
                 <div class="sensor-value">${pelletPct}%</div>
                 <div class="sensor-label">Granulés</div>

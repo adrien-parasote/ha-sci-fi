@@ -67,6 +67,9 @@
 | `npm run build` | Developer / CI | Build production single-file bundle |
 | `npm run typecheck` | Developer / CI | Perform strict TypeScript static checks |
 | `npm test` | Developer / CI | Execute Open-WC browser tests |
+| `` | Browser | Source map for debugging |
+| `` | Cards | Shared editor styles |
+| `Constraints`, `DOMException`, `Error`, `Floor`, `HomeAssistant`, `LovelaceCardConfig`, `Map`, `PlugEntity`, `ReadonlyMap`, `TypeError` | Type System | Core exported types and utilities |
 
 ---
 
@@ -89,7 +92,7 @@
 | Test ID | Type | Description | Input | Expected Output |
 |---|---|---|---|---|
 | TC-101 | Unit | Build succeeds cleanly | `npm run build` | Exit code 0, `dist/sci-fi.min.js` created |
-| TC-102 | Unit | Build dev has sourcemaps | `npm run build:dev` | `dist/sci-fi.min.js.map` exists |
+| TC-102 | Unit | Build dev has sourcemaps | `npm run build:dev` | `` exists |
 | TC-103 | Unit | Strict Typecheck passes | `npm run typecheck` | Exit code 0, zero type errors |
 | TC-104 | Unit | Strict Lint passes | `npm run lint` | Exit code 0, zero lint warnings |
 | TC-105 | Unit | HACS manifest is valid | `hacs.json` present | HACS validate workflow passes |

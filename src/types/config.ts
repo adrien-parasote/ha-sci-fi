@@ -183,7 +183,7 @@ export function isValidCardType(config: unknown): config is { type: string } {
   );
 }
 
-// Placeholder — ActionConfig will be filled in when cards are implemented
+  // ActionConfig will be filled in when cards are implemented
 export interface ActionConfig {
   readonly action: string;
   readonly navigation_path?: string;

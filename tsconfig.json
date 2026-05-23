@@ -13,8 +13,9 @@
     "useDefineForClassFields": false,
     "declaration": false,
     "sourceMap": true,
+    "skipLibCheck": true,
     "outDir": "./dist"
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist", "tests"]
+  "include": ["src/**/*.ts", "tests/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }

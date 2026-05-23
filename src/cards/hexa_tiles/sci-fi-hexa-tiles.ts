@@ -128,7 +128,7 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     return html`
       <div class="hexa-tile" data-active="false" @click="${() => weather.link ? window.location.assign(weather.link) : undefined}">
         <sf-icon .icon="mdi:weather-cloudy" .connection="${this.hass.connection}"></sf-icon>
-        <span class="tile-label">${temp != null ? `${temp}°` : state.state}</span>
+        <span class="tile-label">${temp !== null ? `${temp}°` : state.state}</span>
       </div>
     `;
   }
@@ -188,7 +188,7 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     } else if (action.action === 'call-service' && action.service) {
       const [domain, service] = action.service.split('.');
       if (domain && service) {
-        this.hass.callService(domain, service, action.service_data ?? {});
+        void this.hass.callService(domain, service, action.service_data ?? {});
       }
     }
   }

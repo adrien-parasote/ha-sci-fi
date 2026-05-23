@@ -46,7 +46,7 @@ export abstract class SciFiBaseCard extends LitElement {
   // ─── Sealed render — subclasses MUST implement renderCard() ────────────────
 
   override render(): TemplateResult | typeof nothing {
-    if (!this.config) return nothing;
+    if (!this.config || !this.hass) return nothing;
     try {
       return this.renderCard();
     } catch (err) {

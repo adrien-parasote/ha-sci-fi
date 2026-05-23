@@ -121,6 +121,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
   }
 
   private _renderChart(): void {
+    if (!this.hass) return;
     const weatherEntity = this.hass.states[this.config.weather_entity_id];
     const forecast = (weatherEntity?.attributes['forecast'] as unknown[]) ?? [];
 
@@ -194,8 +195,8 @@ export class SciFiWeatherCard extends SciFiBaseCard {
               <div class="current-desc">${condition}</div>
             </div>
             <div class="current-details">
-              ${humidity != null ? html`<span>💧 ${humidity}%</span>` : ''}
-              ${wind != null ? html`<span>💨 ${wind} km/h</span>` : ''}
+              ${humidity !== null ? html`<span>💧 ${humidity}%</span>` : ''}
+              ${wind !== null ? html`<span>💨 ${wind} km/h</span>` : ''}
             </div>
           </div>
 
@@ -217,7 +218,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
                   <span>${dayName}</span>
                   <sf-icon .icon="${dIcon}" .connection="${this.hass.connection}"></sf-icon>
                   <span class="temp-hi">${hi}°</span>
-                  ${lo != null ? html`<span class="temp-lo">${lo}°</span>` : ''}
+                  ${lo !== null ? html`<span class="temp-lo">${lo}°</span>` : ''}
                 </div>
               `;
             })}

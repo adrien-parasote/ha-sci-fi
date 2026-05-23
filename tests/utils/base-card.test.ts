@@ -65,6 +65,7 @@ describe('SciFiBaseCard', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const card = new ThrowingCard();
     card.setConfig({ type: 'custom:throwing' });
+    card.hass = {} as any;
     // Should not throw — returns error card template
     expect(() => card.render()).not.toThrow();
     expect(card['_renderError']).toBe('Render failed deliberately');

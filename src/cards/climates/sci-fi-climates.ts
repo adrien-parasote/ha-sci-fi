@@ -4,7 +4,7 @@
  */
 
 import { html, css, type TemplateResult } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
+import { customElement } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
@@ -115,10 +115,10 @@ export class SciFiClimatesCard extends SciFiBaseCard {
         @click="${() => this._callToggle(entry.entity_id, state?.state ?? 'off')}"
       >
         <div class="climate-name">${name}</div>
-        <div class="climate-temp">${currentTemp != null ? `${currentTemp}°` : '--'}</div>
+        <div class="climate-temp">${currentTemp !== null ? `${currentTemp}°` : '--'}</div>
         <div class="climate-state ${active ? 'sf-state-on' : 'sf-state-off'}">
           ${state?.state ?? 'inconnu'}
-          ${targetTemp != null ? ` → ${targetTemp}°` : ''}
+          ${targetTemp !== null ? ` → ${targetTemp}°` : ''}
         </div>
       </div>
     `;
@@ -127,7 +127,7 @@ export class SciFiClimatesCard extends SciFiBaseCard {
   private _callToggle(entityId: string, currentState: string): void {
     const service = currentState === 'off' ? 'set_hvac_mode' : 'set_hvac_mode';
     const hvac_mode = currentState === 'off' ? 'heat' : 'off';
-    this.hass.callService('climate', service, { entity_id: entityId, hvac_mode });
+    void this.hass.callService('climate', service, { entity_id: entityId, hvac_mode });
   }
 
   static getConfigElement(): HTMLElement {

@@ -88,7 +88,7 @@ export class SfToggleSwitch extends LitElement {
         aria-checked="${this.checked}"
         aria-label="${this.label}"
         tabindex="0"
-        @click="${this._handleClick}"
+        @click="${() => this._handleClick()}"
         @keydown="${(e: KeyboardEvent) => e.key === ' ' || e.key === 'Enter' ? this._handleClick() : undefined}"
       >
         <div class="thumb"></div>

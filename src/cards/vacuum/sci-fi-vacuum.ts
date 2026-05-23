@@ -166,8 +166,8 @@ export class SciFiVacuumCard extends SciFiBaseCard {
             ${state}
           </div>
           <div class="sensors-row">
-            ${battery != null ? html`<span class="sensor-item">🔋 ${battery}%</span>` : ''}
-            ${area != null ? html`<span class="sensor-item">📐 ${area} m²</span>` : ''}
+            ${battery !== null ? html`<span class="sensor-item">🔋 ${battery}%</span>` : ''}
+            ${area !== null ? html`<span class="sensor-item">📐 ${area} m²</span>` : ''}
           </div>
         </div>
         ${mapUrl ? html`
@@ -192,11 +192,11 @@ export class SciFiVacuumCard extends SciFiBaseCard {
   }
 
   private _call(entityId: string, service: string): void {
-    this.hass.callService('vacuum', service, { entity_id: entityId });
+    void this.hass.callService('vacuum', service, { entity_id: entityId });
   }
 
   private _setFanSpeed(entityId: string, speed: string): void {
-    this.hass.callService('vacuum', 'set_fan_speed', { entity_id: entityId, fan_speed: speed });
+    void this.hass.callService('vacuum', 'set_fan_speed', { entity_id: entityId, fan_speed: speed });
   }
 
   static getConfigElement(): HTMLElement {

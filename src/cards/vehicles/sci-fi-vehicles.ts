@@ -113,7 +113,7 @@ export class SciFiVehiclesCard extends SciFiBaseCard {
       ? this.hass.states[v.location]?.state
       : null;
 
-    const batteryLevel = battery != null
+    const batteryLevel = battery !== null
       ? (battery >= 60 ? 'high' : battery >= 30 ? 'mid' : 'low')
       : 'mid';
 
@@ -128,25 +128,25 @@ export class SciFiVehiclesCard extends SciFiBaseCard {
         </div>
 
         <div class="vehicle-stats">
-          ${battery != null ? html`
+          ${battery !== null ? html`
             <div class="stat-item">
               <span class="stat-label">Batterie</span>
               <span class="stat-value">${battery}%</span>
             </div>
           ` : ''}
-          ${range != null ? html`
+          ${range !== null ? html`
             <div class="stat-item">
               <span class="stat-label">Autonomie</span>
               <span class="stat-value">${range} km</span>
             </div>
           ` : ''}
-          ${mileage != null ? html`
+          ${mileage !== null ? html`
             <div class="stat-item">
               <span class="stat-label">Kilométrage</span>
               <span class="stat-value">${mileage} km</span>
             </div>
           ` : ''}
-          ${location != null ? html`
+          ${location !== null ? html`
             <div class="stat-item">
               <span class="stat-label">Localisation</span>
               <span class="stat-value">${location}</span>
@@ -162,7 +162,7 @@ export class SciFiVehiclesCard extends SciFiBaseCard {
           ` : ''}
         </div>
 
-        ${battery != null ? html`
+        ${battery !== null ? html`
           <div class="battery-bar-bg">
             <div
               class="battery-bar-fill"

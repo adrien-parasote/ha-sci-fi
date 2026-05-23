@@ -4,3 +4,8 @@ node_modules
 notes.txt
 temp
 .vscode
+.sc-*
+.tdd_lock
+package-lock.json
+.agents/
+.specconformance

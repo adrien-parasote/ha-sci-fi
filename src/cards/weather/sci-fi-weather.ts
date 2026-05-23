@@ -189,7 +189,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
         ${this.config.header_message ? html`<div class="sf-header">${this.config.header_message}</div>` : ''}
         <div class="container">
           <div class="current">
-            <sf-icon icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
+            <sf-icon .icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
             <div>
               <div class="current-temp">${temp ?? '--'}°</div>
               <div class="current-desc">${condition}</div>
@@ -216,7 +216,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
               return html`
                 <div class="forecast-day">
                   <span>${dayName}</span>
-                  <sf-icon icon="${dIcon}" .connection="${this.hass.connection}"></sf-icon>
+                  <sf-icon .icon="${dIcon}" .connection="${this.hass.connection}"></sf-icon>
                   <span class="temp-hi">${hi}°</span>
                   ${lo !== null && lo !== undefined ? html`<span class="temp-lo">${lo}°</span>` : ''}
                 </div>

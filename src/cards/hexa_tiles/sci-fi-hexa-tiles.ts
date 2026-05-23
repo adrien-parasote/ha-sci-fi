@@ -126,8 +126,8 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     if (!state) return html``;
     const temp = state.attributes['temperature'] as number | undefined;
     return html`
-      <div class="hexa-tile" data-active="false" @click="${() => weather.link ? window.location.assign(weather.link) : undefined}">
-        <sf-icon icon="mdi:weather-cloudy" .connection="${this.hass.connection}"></sf-icon>
+      <div class="hexa-tile" data-active="false" @click="${() => weather.link ? this._navigate(weather.link) : undefined}">
+        <sf-icon .icon="mdi:weather-cloudy" .connection="${this.hass.connection}"></sf-icon>
         <span class="tile-label">${temp !== null && temp !== undefined ? `${temp}°` : state.state}</span>
       </div>
     `;
@@ -155,7 +155,7 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     const name = state.attributes.friendly_name ?? entityId;
     return html`
       <div class="hexa-tile" data-active="false">
-        <sf-icon icon="mdi:car" .connection="${this.hass.connection}"></sf-icon>
+        <sf-icon .icon="mdi:car" .connection="${this.hass.connection}"></sf-icon>
         <span class="tile-label">${name}</span>
       </div>
     `;
@@ -184,13 +184,24 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     const action = tile.tap_action;
     if (!action) return;
     if (action.action === 'navigate' && action.navigation_path) {
-      window.location.assign(action.navigation_path);
+      this._navigate(action.navigation_path);
     } else if (action.action === 'call-service' && action.service) {
       const [domain, service] = action.service.split('.');
       if (domain && service) {
         void this.hass.callService(domain, service, action.service_data ?? {});
       }
     }
+  }
+
+  /** HA-native navigation: internal paths use pushState + location-changed event.
+   *  External URLs (http/https) use window.open to avoid replacing the HA app. */
+  private _navigate(path: string): void {
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      window.open(path, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    window.history.pushState(null, '', path);
+    window.dispatchEvent(new CustomEvent('location-changed', { detail: { replace: false } }));
   }
 
   static getConfigElement(): HTMLElement {

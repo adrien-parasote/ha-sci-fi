@@ -5,7 +5,7 @@
  */
 
 import { html, css, type TemplateResult } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
+import { customElement } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
@@ -77,8 +77,6 @@ export class SciFiVehiclesCard extends SciFiBaseCard {
 
   declare config: SciFiVehiclesConfig;
 
-  @state() private _activeIndex = 0;
-
   protected override renderCard(): TemplateResult {
     const vehicles = this.config.vehicles;
     return html`
@@ -122,7 +120,7 @@ export class SciFiVehiclesCard extends SciFiBaseCard {
         <div class="vehicle-header">
           <span class="vehicle-name">${v.name}</span>
           <sf-icon
-            icon="${isCharging ? 'mdi:ev-station' : 'mdi:car-electric'}"
+            .icon="${isCharging ? 'mdi:ev-station' : 'mdi:car-electric'}"
             .connection="${this.hass.connection}"
           ></sf-icon>
         </div>

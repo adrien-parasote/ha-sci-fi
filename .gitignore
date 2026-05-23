@@ -10,3 +10,7 @@ package-lock.json
 .agents/
 .specconformance
 coverage/
+
+# Local secrets — never commit
+.env
+.env.local

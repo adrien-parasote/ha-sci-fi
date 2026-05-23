@@ -113,7 +113,7 @@ export class SciFiVehiclesCard extends SciFiBaseCard {
       ? this.hass.states[v.location]?.state
       : null;
 
-    const batteryLevel = battery !== null
+    const batteryLevel = battery !== null && battery !== undefined
       ? (battery >= 60 ? 'high' : battery >= 30 ? 'mid' : 'low')
       : 'mid';
 
@@ -122,37 +122,37 @@ export class SciFiVehiclesCard extends SciFiBaseCard {
         <div class="vehicle-header">
           <span class="vehicle-name">${v.name}</span>
           <sf-icon
-            .icon="${isCharging ? 'mdi:ev-station' : 'mdi:car-electric'}"
+            icon="${isCharging ? 'mdi:ev-station' : 'mdi:car-electric'}"
             .connection="${this.hass.connection}"
           ></sf-icon>
         </div>
 
         <div class="vehicle-stats">
-          ${battery !== null ? html`
+          ${battery !== null && battery !== undefined ? html`
             <div class="stat-item">
               <span class="stat-label">Batterie</span>
               <span class="stat-value">${battery}%</span>
             </div>
           ` : ''}
-          ${range !== null ? html`
+          ${range !== null && range !== undefined ? html`
             <div class="stat-item">
               <span class="stat-label">Autonomie</span>
               <span class="stat-value">${range} km</span>
             </div>
           ` : ''}
-          ${mileage !== null ? html`
+          ${mileage !== null && mileage !== undefined ? html`
             <div class="stat-item">
               <span class="stat-label">Kilométrage</span>
               <span class="stat-value">${mileage} km</span>
             </div>
           ` : ''}
-          ${location !== null ? html`
+          ${location !== null && location !== undefined ? html`
             <div class="stat-item">
               <span class="stat-label">Localisation</span>
               <span class="stat-value">${location}</span>
             </div>
           ` : ''}
-          ${isLocked !== null ? html`
+          ${isLocked !== null && isLocked !== undefined ? html`
             <div class="stat-item">
               <span class="stat-label">Verrouillage</span>
               <span class="stat-value ${isLocked ? 'sf-state-on' : 'sf-state-off'}">
@@ -162,7 +162,7 @@ export class SciFiVehiclesCard extends SciFiBaseCard {
           ` : ''}
         </div>
 
-        ${battery !== null ? html`
+        ${battery !== null && battery !== undefined ? html`
           <div class="battery-bar-bg">
             <div
               class="battery-bar-fill"

@@ -22,6 +22,12 @@ describe('climate selectors', () => {
     expect(climates[0]!.entity_id).to.equal('climate.salon');
   });
 
+  it('getClimateEntities returns empty array if no entities exist', () => {
+    const hass = makeMockHass();
+    delete (hass as unknown as any) /* eslint-disable-line @typescript-eslint/no-unsafe-argument */.entities; // simulate missing entities
+    expect(getClimateEntities(hass)).to.deep.equal([]);
+  });
+
   it('getClimateEntitiesExcluding filters out specified IDs', () => {
     const hass = makeMockHass({
       entities: {

@@ -1,4 +1,5 @@
-import { expect, describe, it, beforeEach } from 'vitest';
+/* eslint-disable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any */
+import { expect, describe, beforeEach, it } from 'vitest';
 import { resolveIcon, ICON_NOT_FOUND, clearMemCache } from '../../../src/components/sf-icon/icon-cache.js';
 
 describe('icon-cache', () => {
@@ -8,13 +9,13 @@ describe('icon-cache', () => {
 
   it('resolves icon via hass connection if not in cache', async () => {
     const mockConnection = {
-      sendMessagePromise: <T>(msg: any): Promise<T> => {
+      sendMessagePromise: async (msg: any) => {
         if (msg.type === 'frontend/get_icons' && msg.category === 'mdi') {
-          return { resources: { 'home': 'M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z' } } as any;
+          return { resources: { 'home': 'M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z' } };
         }
-        return {} as any;
+        return {};
       }
-    };
+    } as any;
 
     const path = await resolveIcon(mockConnection, 'mdi:home', 'home');
     expect(path).to.equal('M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z');
@@ -22,8 +23,8 @@ describe('icon-cache', () => {
 
   it('returns ICON_NOT_FOUND when icon is missing from registry', async () => {
     const mockConnection = {
-      sendMessagePromise: <T>(): Promise<T> => Promise.resolve({ resources: {} } as any),
-    };
+      sendMessagePromise: async () => ({ resources: {} })
+    } as any;
 
     const path = await resolveIcon(mockConnection, 'mdi:unknown', 'unknown');
     expect(path).to.equal(ICON_NOT_FOUND);

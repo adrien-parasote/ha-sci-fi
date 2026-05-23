@@ -9,3 +9,4 @@ temp
 package-lock.json
 .agents/
 .specconformance
+coverage/

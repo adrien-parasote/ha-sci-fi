@@ -31,6 +31,12 @@ describe('house selectors', () => {
       expect(floors[3]!.floor_id).to.equal('null2');
     });
 
+    it('getFloors returns empty array if no floors exist', () => {
+      const hass = makeMockHass();
+      delete (hass as unknown as any) /* eslint-disable-line @typescript-eslint/no-unsafe-argument */.floors; // simulate missing floors
+      expect(getFloors(hass)).to.deep.equal([]);
+    });
+
     it('getFloorById returns the correct floor', () => {
       const hass = makeMockHass();
       const floor = getFloorById(hass, 'ground');
@@ -55,6 +61,12 @@ describe('house selectors', () => {
       const hass = makeMockHass();
       const areas = getAreas(hass);
       expect(areas.length).to.be.greaterThan(0);
+    });
+
+    it('getAreas returns empty array if no areas exist', () => {
+      const hass = makeMockHass();
+      delete (hass as unknown as any) /* eslint-disable-line @typescript-eslint/no-unsafe-argument */.areas; // simulate missing areas
+      expect(getAreas(hass)).to.deep.equal([]);
     });
 
     it('getAreasByFloor returns areas matching floor_id', () => {
@@ -91,6 +103,12 @@ describe('house selectors', () => {
 
       const entities = getEntitiesByArea(hass, 'area1');
       expect(entities.length).to.equal(2);
+    });
+
+    it('getEntitiesByArea returns empty array if no entities exist', () => {
+      const hass = makeMockHass();
+      delete (hass as unknown as any) /* eslint-disable-line @typescript-eslint/no-unsafe-argument */.entities; // simulate missing entities
+      expect(getEntitiesByArea(hass, 'area1')).to.deep.equal([]);
     });
 
     it('getEntitiesByAreaAndDomain filters by domain and excludes disabled', () => {

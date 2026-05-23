@@ -40,9 +40,9 @@ export class SfIcon extends LitElement {
   @state()
   private _loading = false;
 
-  override async updated(changed: Map<string, unknown>): Promise<void> {
+  override willUpdate(changed: Map<string, unknown>): void {
     if (changed.has('icon') && this.icon) {
-      await this._resolveIcon();
+      void this._resolveIcon();
     }
   }
 

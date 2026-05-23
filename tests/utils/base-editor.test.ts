@@ -16,9 +16,9 @@ describe('base-editor', () => {
   it('initializes default config properties', async () => {
     const el = document.createElement('mock-editor') as MockEditor;
     document.body.appendChild(el);
-    expect((el as any).config).to.be.undefined;
+    expect((el as unknown as any) /* eslint-disable-line @typescript-eslint/no-unsafe-argument */.config).to.be.undefined;
     el.setConfig({ type: 'custom:mock' });
-    expect((el as any).config).to.deep.equal({ type: 'custom:mock' });
+    expect((el as unknown as any) /* eslint-disable-line @typescript-eslint/no-unsafe-argument */.config).to.deep.equal({ type: 'custom:mock' });
   });
 
   it('dispatches config-changed event on change', async () => {
@@ -34,7 +34,7 @@ describe('base-editor', () => {
       detailConfig = e.detail.config;
     });
 
-    (el as any)._dispatchConfigChanged({ type: 'custom:mock', title: 'New' });
+    (el as unknown as any) /* eslint-disable-line @typescript-eslint/no-unsafe-argument */._dispatchConfigChanged({ type: 'custom:mock', title: 'New' });
 
     expect(eventFired).to.be.true;
     expect(detailConfig.title).to.equal('New');

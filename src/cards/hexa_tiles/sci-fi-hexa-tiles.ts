@@ -127,8 +127,8 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     const temp = state.attributes['temperature'] as number | undefined;
     return html`
       <div class="hexa-tile" data-active="false" @click="${() => weather.link ? window.location.assign(weather.link) : undefined}">
-        <sf-icon .icon="mdi:weather-cloudy" .connection="${this.hass.connection}"></sf-icon>
-        <span class="tile-label">${temp !== null ? `${temp}°` : state.state}</span>
+        <sf-icon icon="mdi:weather-cloudy" .connection="${this.hass.connection}"></sf-icon>
+        <span class="tile-label">${temp !== null && temp !== undefined ? `${temp}°` : state.state}</span>
       </div>
     `;
   }
@@ -155,7 +155,7 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     const name = state.attributes.friendly_name ?? entityId;
     return html`
       <div class="hexa-tile" data-active="false">
-        <sf-icon .icon="mdi:car" .connection="${this.hass.connection}"></sf-icon>
+        <sf-icon icon="mdi:car" .connection="${this.hass.connection}"></sf-icon>
         <span class="tile-label">${name}</span>
       </div>
     `;

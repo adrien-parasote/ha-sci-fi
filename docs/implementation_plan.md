@@ -325,3 +325,36 @@ Merge v2 → main + tag v2.0.0
 
 Steps 1-3 sont bloquants pour tout le reste.
 Steps 4-5 peuvent se paralléliser par composant/carte une fois Step 3 terminé.
+
+---
+
+## Phase 6: 100% Test Coverage (Coverage Push)
+
+The current coverage is around **51%** (Line/Statement/Function) and **22%** (Branches). The missing coverage is entirely focused on the UI rendering (`render()` methods) and interactive branches of the Lit cards and components.
+
+### Proposed Changes
+
+#### [MODIFY] `tests/cards/**/*.test.ts`
+- Mock the Shadow DOM rendering lifecycle using `await element.updateComplete`.
+- Trigger simulated `click` events to test Home Assistant service calls (`hass.callService`).
+- Test various states (On, Off, Unavailable) by mocking different `hass` payload variants.
+- Ensure 100% line, branch, and function coverage for:
+  - `sci-fi-climates.ts`
+  - `sci-fi-hexa-tiles.ts`
+  - `sci-fi-lights.ts`
+  - `sci-fi-plugs.ts`
+  - `sci-fi-stove.ts`
+  - `sci-fi-vacuum.ts`
+  - `sci-fi-vehicles.ts`
+  - `sci-fi-weather.ts`
+
+#### [MODIFY] `tests/components/**/*.test.ts`
+- Complete tests for `sf-icon.ts` fallback rendering branches.
+- Complete tests for `icon-cache.ts` network failure / IDB failure states.
+
+#### [MODIFY] `tests/selectors/**/*.test.ts`
+- Exhaustively test edge cases for empty areas, floors with no areas, and disconnected entities in `house.ts` and `climate.ts`.
+
+### Verification Plan
+- Run `npm run test:coverage` and ensure the summary reports **100%** across Lines, Functions, Statements, and Branches.
+- Re-run `python3 verify.py .` to ensure the TDD gate sequence and Spec Conformance remain untouched and passing.

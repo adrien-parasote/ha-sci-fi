@@ -12,8 +12,8 @@
 |---|---|---|
 | F-INFRA-01 | TypeScript 5.x strict setup | ✅ `tsconfig.json` |
 | F-INFRA-02 | Rollup 4 build pipeline | ✅ `rollup.config.mjs` |
-| F-INFRA-03 | Automated dev server | ✅ `@web/dev-server` + watch |
-| F-INFRA-04 | Test runner automatisé | ✅ `@web/test-runner` |
+| F-INFRA-03 | Automated dev server | ✅ Vite dev server |
+| F-INFRA-04 | Test runner automatisé | ✅ `vitest` + `happy-dom` |
 | F-INFRA-05 | ESLint TypeScript strict | ✅ `.eslintrc.json` |
 | F-INFRA-06 | DevContainer HA dev instance | ✅ `.devcontainer/` |
 | F-INFRA-07 | GitHub Actions CI | ✅ `.github/workflows/ci.yml` |
@@ -27,7 +27,8 @@
 ./
 ├── tsconfig.json                   [NEW] TypeScript config
 ├── .eslintrc.json                  [NEW] ESLint config
-├── web-test-runner.config.mjs      [NEW] Test runner config
+├── vitest.config.ts                [NEW] Vitest runner config
+├── tests/setup.ts                  [NEW] Vitest global setup (mocks, silence warnings)
 ├── rollup.config.mjs               [MODIFY] Rollup 4 build config
 ├── package.json                    [MODIFY] dependency upgrades
 ├── hacs.json                       [MODIFY] HACS card integration metadata
@@ -45,7 +46,7 @@
 |---|---|---|---|
 | 1 | TypeScript 5.x is compatible with our dependencies | Low | → Run `npm info typescript` and `npm run typecheck` |
 | 2 | Rollup 4 builds standalone IIFE bundles | Medium | → Run `npm run build` and inspect `dist/sci-fi.min.js` |
-| 3 | `@web/test-runner` launches Chromium successfully | High | → Run `npm test` to verify Chromium executes the test suite |
+| 3 | `vitest` with `happy-dom` correctly simulates Home Assistant DOM | High | → Run `npm test` to verify DOM interacts correctly |
 
 ---
 
@@ -66,7 +67,7 @@
 |---|---|---|
 | `npm run build` | Developer / CI | Build production single-file bundle |
 | `npm run typecheck` | Developer / CI | Perform strict TypeScript static checks |
-| `npm test` | Developer / CI | Execute Open-WC browser tests |
+| `npm test` | Developer / CI | Execute Vitest happy-dom tests |
 | `` | Browser | Source map for debugging |
 | `` | Cards | Shared editor styles |
 | `Constraints`, `DOMException`, `Error`, `Floor`, `HomeAssistant`, `LovelaceCardConfig`, `Map`, `PlugEntity`, `ReadonlyMap`, `TypeError` | Type System | Core exported types and utilities |
@@ -79,8 +80,8 @@
 |---|---|---|---|
 | 1 | Hardcoded swap script | `npm run build` copies environment files | Use `@rollup/plugin-replace` for environment constants |
 | 2 | Permissive compiler | `"strict": false` | Set `"strict": true` in `tsconfig.json` |
-| 3 | EOL dev server | Using `es-dev-server` | Use `@web/dev-server` |
-| 4 | Untested deployment | Shipping without unit tests | Execute `@web/test-runner` in the build pipeline |
+| 3 | EOL dev server | Using `es-dev-server` | Use Vite dev server for local testing |
+| 4 | Untested deployment | Shipping without unit tests | Execute `vitest` in the build pipeline |
 | 5 | Silent compiler fail | Swallowing ts/eslint errors | Let Rollup exit with status code 1 on errors |
 | 6 | Missing Rollup decorator flags | `@rollup/plugin-typescript` with default options — silently strips Lit `@property`/`@state` decorators | Instantiate plugin with `compilerOptions: { experimentalDecorators: true, useDefineForClassFields: false }` — see HIGH-02 |
 | 7 | `output.format: 'es'` in Rollup | HA does not load ES modules directly from HACS resources | Always use `format: 'iife'` |
@@ -108,4 +109,4 @@
 |---|---|---|---|
 | TypeScript compilation error | Compiler stdout | Rollup aborts build immediately | Exit code 1, print detailed type error trace |
 | ESLint validation warning | Linter output | CI blocks pull requests | Reject commit, block merge until warnings resolved |
-| Browser test failure | Test runner stdout | Exit code 1 | CI fails, print spec trace in browser logs |
+| Browser test failure | Test runner stdout | Exit code 1 | CI fails, print spec trace in vitest logs |

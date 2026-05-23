@@ -73,10 +73,11 @@ export function makeMockHass(
     areas?: Record<string, HassArea>;
     entities?: Record<string, HassEntityEntry>;
     states?: Record<string, HassEntity>;
+    callService?: any;
   } = {}
 ): HomeAssistantExt {
-  const callService = () =>
-    Promise.resolve({} as Awaited<ReturnType<HomeAssistantExt['callService']>>);
+  const callService = overrides.callService ?? (() =>
+    Promise.resolve({} as Awaited<ReturnType<HomeAssistantExt['callService']>>));
 
   return {
     floors: overrides.floors ?? {

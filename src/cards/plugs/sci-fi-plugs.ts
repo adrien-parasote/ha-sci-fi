@@ -121,8 +121,8 @@ export class SciFiPlugsCard extends SciFiBaseCard {
           <span class="plug-name ${isOn ? 'sf-state-on' : 'sf-state-off'}">${name}</span>
           <sf-icon .icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
         </div>
-        ${power !== null ? html`<div class="plug-power">${power} W</div>` : ''}
-        ${energy !== null ? html`<div class="plug-energy">${energy} kWh</div>` : ''}
+        ${power !== null && power !== undefined ? html`<div class="plug-power">${power} W</div>` : ''}
+        ${energy !== null && energy !== undefined ? html`<div class="plug-energy">${energy} kWh</div>` : ''}
         <button
           class="plug-btn"
           @click="${() => this._toggle(device.entity_id, isOn)}"

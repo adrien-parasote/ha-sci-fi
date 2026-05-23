@@ -166,8 +166,8 @@ export class SciFiVacuumCard extends SciFiBaseCard {
             ${state}
           </div>
           <div class="sensors-row">
-            ${battery !== null ? html`<span class="sensor-item">🔋 ${battery}%</span>` : ''}
-            ${area !== null ? html`<span class="sensor-item">📐 ${area} m²</span>` : ''}
+            ${battery !== null && battery !== undefined ? html`<span class="sensor-item">🔋 ${battery}%</span>` : ''}
+            ${area !== null && area !== undefined ? html`<span class="sensor-item">📐 ${area} m²</span>` : ''}
           </div>
         </div>
         ${mapUrl ? html`

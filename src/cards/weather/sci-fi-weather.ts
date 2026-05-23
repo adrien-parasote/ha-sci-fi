@@ -5,7 +5,7 @@
  */
 
 import { html, css, type TemplateResult } from 'lit';
-import { customElement, state, query } from 'lit/decorators.js';
+import { customElement, query } from 'lit/decorators.js';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import type { SciFiWeatherConfig } from '../../types/config.js';
@@ -112,7 +112,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
   ];
 
   @query('#weather-chart') private _chartCanvas?: HTMLCanvasElement;
-  @state() private _chart?: Chart;
+  private _chart?: Chart;
 
   declare config: SciFiWeatherConfig;
 
@@ -189,14 +189,14 @@ export class SciFiWeatherCard extends SciFiBaseCard {
         ${this.config.header_message ? html`<div class="sf-header">${this.config.header_message}</div>` : ''}
         <div class="container">
           <div class="current">
-            <sf-icon .icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
+            <sf-icon icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
             <div>
               <div class="current-temp">${temp ?? '--'}°</div>
               <div class="current-desc">${condition}</div>
             </div>
             <div class="current-details">
-              ${humidity !== null ? html`<span>💧 ${humidity}%</span>` : ''}
-              ${wind !== null ? html`<span>💨 ${wind} km/h</span>` : ''}
+              ${humidity !== null && humidity !== undefined ? html`<span>💧 ${humidity}%</span>` : ''}
+              ${wind !== null && wind !== undefined ? html`<span>💨 ${wind} km/h</span>` : ''}
             </div>
           </div>
 
@@ -216,9 +216,9 @@ export class SciFiWeatherCard extends SciFiBaseCard {
               return html`
                 <div class="forecast-day">
                   <span>${dayName}</span>
-                  <sf-icon .icon="${dIcon}" .connection="${this.hass.connection}"></sf-icon>
+                  <sf-icon icon="${dIcon}" .connection="${this.hass.connection}"></sf-icon>
                   <span class="temp-hi">${hi}°</span>
-                  ${lo !== null ? html`<span class="temp-lo">${lo}°</span>` : ''}
+                  ${lo !== null && lo !== undefined ? html`<span class="temp-lo">${lo}°</span>` : ''}
                 </div>
               `;
             })}

@@ -1,0 +1,41 @@
+[constraints]
+min_quality = 0.60
+max_cycles = 0
+max_cc = 30
+max_fn_lines = 100
+no_god_files = true
+
+[[layers]]
+name = "cards"
+paths = ["src/cards/**"]
+order = 0
+
+[[layers]]
+name = "components"
+paths = ["src/components/**"]
+order = 1
+
+[[layers]]
+name = "selectors"
+paths = ["src/selectors/**"]
+order = 2
+
+[[layers]]
+name = "types"
+paths = ["src/types/**"]
+order = 3
+
+[[boundaries]]
+from = "src/components/**"
+to = "src/cards/**"
+reason = "Components must be reusable and not depend on specific cards"
+
+[[boundaries]]
+from = "src/selectors/**"
+to = "src/cards/**"
+reason = "Selectors are foundational logic and must not depend on UI cards"
+
+[[boundaries]]
+from = "src/selectors/**"
+to = "src/components/**"
+reason = "Selectors are foundational logic and must not depend on UI components"

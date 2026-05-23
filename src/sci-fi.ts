@@ -1,0 +1,113 @@
+/**
+ * sci-fi.ts — Entry point for sci-fi Lovelace cards v2
+ *
+ * Registers all 8 custom elements and declares the card types with Lovelace.
+ * Chart.js is tree-shaken via Rollup (HIGH-01 fix — no CDN, no runtime require).
+ * Locale is read from hass.locale on first render (MEDIUM-02 fix — no configureLocalization overhead).
+ */
+
+// ── Styles & Components ────────────────────────────────────────────────────────
+import './components/sf-icon/sf-icon.js';
+import './components/sf-toggle-switch/sf-toggle-switch.js';
+
+// ── Cards ─────────────────────────────────────────────────────────────────────
+import './cards/hexa_tiles/sci-fi-hexa-tiles.js';
+import './cards/lights/sci-fi-lights.js';
+import './cards/climates/sci-fi-climates.js';
+import './cards/plugs/sci-fi-plugs.js';
+import './cards/weather/sci-fi-weather.js';
+import './cards/stove/sci-fi-stove.js';
+import './cards/vacuum/sci-fi-vacuum.js';
+import './cards/vehicles/sci-fi-vehicles.js';
+
+// ── Card registry for Lovelace (required for card picker UI) ──────────────────
+
+
+
+type CardRegistration = {
+  name: string;
+  description: string;
+  preview: boolean;
+};
+
+// HA extends window.customCards at runtime for the card picker
+declare global {
+  interface Window {
+    customCards?: Array<{
+      type: string;
+      name: string;
+      description: string;
+      preview: boolean;
+      documentationURL?: string;
+    }>;
+  }
+}
+
+export const CARD_REGISTRATIONS: ReadonlyArray<{ type: string } & CardRegistration> = [
+  {
+    type: 'sci-fi-hexa-tiles',
+    name: 'Sci-Fi Hexa Tiles',
+    description: 'Hexagonal tiles for persons, vehicles, and custom entities',
+    preview: true,
+  },
+  {
+    type: 'sci-fi-lights',
+    name: 'Sci-Fi Lights',
+    description: 'Sci-fi lights management by floor and area',
+    preview: true,
+  },
+  {
+    type: 'sci-fi-climates',
+    name: 'Sci-Fi Climates',
+    description: 'Climate entity overview with temperature display',
+    preview: true,
+  },
+  {
+    type: 'sci-fi-plugs',
+    name: 'Sci-Fi Plugs',
+    description: 'Smart plug monitoring with power and energy sensors',
+    preview: true,
+  },
+  {
+    type: 'sci-fi-weather',
+    name: 'Sci-Fi Weather',
+    description: 'Weather card with forecast chart (Chart.js bundled)',
+    preview: true,
+  },
+  {
+    type: 'sci-fi-stove',
+    name: 'Sci-Fi Stove',
+    description: 'Pellet stove monitoring',
+    preview: true,
+  },
+  {
+    type: 'sci-fi-vacuum',
+    name: 'Sci-Fi Vacuum',
+    description: 'Robot vacuum control with map and sensors',
+    preview: true,
+  },
+  {
+    type: 'sci-fi-vehicles',
+    name: 'Sci-Fi Vehicles',
+    description: 'Electric vehicle monitoring',
+    preview: true,
+  },
+];
+
+// Register with HA card picker
+window.customCards = window.customCards ?? [];
+for (const card of CARD_REGISTRATIONS) {
+  window.customCards.push({
+    type: `custom:${card.type}`,
+    name: card.name,
+    description: card.description,
+    preview: card.preview,
+  });
+}
+
+// ── Version banner ─────────────────────────────────────────────────────────────
+console.info(
+  '%c SCI-FI CARDS %c v2.0.0 ',
+  'color: #00d2ff; font-weight: bold; background: #1a1a2e; padding: 4px 8px; border-radius: 4px 0 0 4px;',
+  'background: #00d2ff; color: #1a1a2e; font-weight: bold; padding: 4px 8px; border-radius: 0 4px 4px 0;'
+);

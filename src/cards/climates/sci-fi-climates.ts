@@ -125,9 +125,8 @@ export class SciFiClimatesCard extends SciFiBaseCard {
   }
 
   private _callToggle(entityId: string, currentState: string): void {
-    const service = currentState === 'off' ? 'set_hvac_mode' : 'set_hvac_mode';
     const hvac_mode = currentState === 'off' ? 'heat' : 'off';
-    void this.hass.callService('climate', service, { entity_id: entityId, hvac_mode });
+    void this.hass.callService('climate', 'set_hvac_mode', { entity_id: entityId, hvac_mode });
   }
 
   static getConfigElement(): HTMLElement {

@@ -11,8 +11,8 @@ A collection of custom Lovelace cards for a minimalist sci-fi dashboard in Home 
 The goal: a single phone entry point to control your entire home.
 
 > [!IMPORTANT]
-> **v2.0 — Full rewrite** (Lit 3 · TypeScript 5 · zero CDN · 137 tests).  
-> Upgrading from v1? See **[MIGRATION.md](./MIGRATION.md)** for breaking changes.
+> **v1.0 — Full rewrite** (Lit 3 · TypeScript 5 · zero CDN · 137 tests).  
+> Upgrading from v0.x? See **[MIGRATION.md](./MIGRATION.md)** for breaking changes.
 
 ---
 
@@ -40,7 +40,7 @@ The goal: a single phone entry point to control your entire home.
 1. Download [dist/sci-fi.min.js](https://raw.githubusercontent.com/adrien-parasote/ha-sci-fi/refs/heads/main/dist/sci-fi.min.js)
 2. Copy it into `<config>/www/ha-sci-fi/`
 3. In your dashboard: top-right icon → **Edit dashboard** → **Manage resources**
-4. **Add resource** → `/local/ha-sci-fi/sci-fi.min.js?v=2` → **JavaScript Module**
+4. **Add resource** → `/local/ha-sci-fi/sci-fi.min.js?v=1.0` → **JavaScript Module**
 5. Reload the page
 6. After any update, bump the `?v=` number to clear the cache
 

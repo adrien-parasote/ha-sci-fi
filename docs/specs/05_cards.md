@@ -82,6 +82,8 @@ src/cards/
 | 5 | Infinite re-renders | Modifying parameters in update | Perform updates strictly inside Lit lifecycle hooks |
 | 6 | Dynamic CDN load of Chart.js | `import('https://cdn.jsdelivr.net/npm/chart.js')` | Bundle Chart.js in the IIFE — never load from CDN (offline HA will crash) |
 | 7 | No Chart.js offline fallback | Canvas renders blank on offline HA | If Chart.js fails to init, render static CSS grid with temperature numbers |
+| 8 | `@state()` on never-written fields | `@state() private _activeIndex = 0` declared but never mutated | Remove `@state()` — unused reactive properties trigger unnecessary re-renders on every property update cycle |
+| 9 | `window.location.assign()` for HA navigation | `window.location.assign('/lovelace/home')` replaces the entire SPA | Use HA-native routing: `window.history.pushState(null, '', path)` + `window.dispatchEvent(new CustomEvent('location-changed', { detail: { replace: false } }))`. For external URLs use `window.open(url, '_blank', 'noopener,noreferrer')` |
 
 ---
 

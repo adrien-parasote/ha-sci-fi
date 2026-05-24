@@ -36,12 +36,19 @@ export class SciFiHexaTile extends LitElement {
         stroke: var(--custom-border);
         stroke-width: 5px;
         stroke-linejoin: round;
+        transition: stroke 0.15s, filter 0.15s;
       }
       .item {
         position: relative;
+        transition: transform 0.2s ease;
       }
       .item:hover {
         cursor: pointer;
+        transform: scale(1.08);
+      }
+      .item:hover svg .border {
+        stroke: var(--sf-primary, #00d2ff);
+        filter: drop-shadow(0 0 5px var(--sf-primary, #00d2ff));
       }
       .item .item-content {
         position: absolute;

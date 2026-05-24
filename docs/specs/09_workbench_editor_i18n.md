@@ -82,11 +82,13 @@ Every agent executing this specification must strictly adhere to the following b
 ### 1. Language Switcher (i18n)
 - **UI Element**: Add a sleek button group in the toolbar of `dev/workbench.html` to toggle between **EN** (English) and **FR** (French). Use the variables `--accent` and `--border` for glassmorphic visual highlighting of the active language.
 - **State Handling**: Maintain a global state variable `currentLanguage = 'fr'` (default).
+- **HA Config Language Synchronization**: When loading data from a connected live Home Assistant instance, auto-detect the configuration language (`config.language`). If it is `'fr'` or `'en'`, dynamically update `currentLanguage` to match, store it in `localStorage` under `wb-lang`, toggle active UI button states, and synchronize it to the `hass` object.
 - **HASS Sync**: Whenever `currentLanguage` changes:
   1. Rebuild or patch the `hass` object (both Mock HASS and Live HASS).
   2. Set `hass.language = currentLanguage` and `hass.locale.language = currentLanguage`.
   3. Propagate the updated `hass` object to both the active card element (`cardEl.hass = hass`) and the active editor element (`editorEl.hass = hass`).
   4. The card's native `hass` setter will automatically call `setLocale()`, reactively translating all text nodes via `@lit/localize` dynamic templates.
+
 
 ### 2. Work Mode Selector
 - **UI Element**: Add a toggle in the toolbar with two modes: **👁️ Visualisation (View)** and **✏️ Édition (Edit)**.

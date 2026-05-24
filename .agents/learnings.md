@@ -276,3 +276,20 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
   3. Extract the locale call into an injectable adapter (only if needed for multiple tests)
   For the error path coverage, approach (1) is sufficient: set `hass` to a language not in `targetLocales` and assert no uncaught exception.
 
+### L050: Dynamic Workbench Synchronization with HASS System Language
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi — dev/workbench.html dynamic language sync
+- **Evidence**: 1 file modified (`dev/workbench.html`). Auto-extracting `config.language` from connected HA instance, syncing `currentLanguage` in the toolbar, local storage, and updating the global `hass` object. Verified to immediately translate the workbench user interface and cards upon live connection.
+- **Pattern**: When designing developer workbenches or diagnostic simulators that connect to active platforms (like Home Assistant), avoid forcing developers to manually select language preferences to test localized layouts. Always extract the platform-level configuration parameters (`config.language`) directly from the active connection payload upon establishing connection and propagate it instantly to all mounted UI components and settings.
+
+### L051: Dynamic Localization of Platform-native Fallback Labels in Lit-based Components
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi — `src/cards/weather/sci-fi-weather.ts`, `src/cards/climates/sci-fi-climates.ts` translation fallback
+- **Evidence**: 2 source files modified (`sci-fi-weather.ts`, `sci-fi-climates.ts`). Wrapping weather description and default climate summer/winter labels inside `@lit/localize`'s `msg(...)`. All 215 tests passed.
+- **Pattern**: When using dynamic localization libraries (such as `@lit/localize`) in custom components, avoid leaving fallback labels, sensor descriptors, or weather states in raw English strings. Wrap all hardcoded fallback messages, static labels, and descriptive properties within the local translation function (`msg(...)`) to enable full multi-language support. Rename any local variable conflicts (e.g., conflicting local `msg` variable names) to ensure smooth transpilation.
+
+### L052: Synchronizing Chart timeline locale with the connected HASS locale
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi — `sci-fi-weather.ts` chart timelines
+- **Evidence**: Modified 1 file (`sci-fi-weather.ts`). Changed `Intl.DateTimeFormat(navigator.language, ...)` to `Intl.DateTimeFormat(this.hass?.locale?.language || navigator.language, ...)` for timeline chart labels, so the timeline language matches the active user language instead of the browser system language.
+- **Pattern**: When rendering timeline charts or dynamic graphical components inside localized dashboards, do not force `navigator.language` directly for formatting times, dates, or currencies. Instead, always prioritize the active system user locale (`this.hass?.locale?.language`) as the formatting locale to ensure the timeline matches the user's explicit language preference.

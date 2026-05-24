@@ -54,6 +54,7 @@ export class SciFiRadiator extends LitElement {
         display: flex;
         flex-direction: column;
         justify-content: center;
+        align-items: center;
         max-width: 120px;
       }
       .content .right sf-button-card-select {
@@ -97,6 +98,7 @@ export class SciFiRadiator extends LitElement {
         --text-font-color: rgba(255, 255, 255, 0.6);
         --sf-disabled-icon-color: rgba(255, 255, 255, 0.4);
         --padding: 5px;
+        --border: 1px solid var(--sf-primary);
       }
       .content .left .temperature {
         display: flex;
@@ -114,7 +116,7 @@ export class SciFiRadiator extends LitElement {
         text-shadow: 0px 0px 5px var(--sf-primary);
         width: 100%;
         height: fit-content;
-        border-bottom: 2px solid var(--sf-primary);
+        padding-bottom: 4px;
         margin-right: 10px;
       }
       .content .left .temperature .temperature-label .radical {
@@ -126,16 +128,18 @@ export class SciFiRadiator extends LitElement {
         font-size: 15px;
         justify-content: center;
       }
+      /* The display is positioned at bottom-left and includes boule + full-width line */
       .content .left .temperature .temperature-label .display {
         position: absolute;
         display: flex;
         flex-direction: row;
-        left: -45px;
-        bottom: -5px;
         align-items: center;
+        left: -45px;
+        bottom: -1px;
+        right: 0;
       }
       .content .left .temperature .temperature-label .display .h-path {
-        width: 35px;
+        flex: 1;
       }
     `,
   ];

@@ -22,7 +22,7 @@ export class SciFiWheel extends LitElement {
         --container-padding: var(--padding, 10px);
         --wheel-border: var(
           --border,
-          var(--sf-border-width, 1px) solid var(--sf-bg-primary)
+          var(--sf-border-width, 1px) solid var(--sf-border, rgba(224, 232, 255, 0.1))
         );
         --wheel-row-gap: var(--row-gap, 10px);
       }

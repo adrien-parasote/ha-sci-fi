@@ -19,7 +19,7 @@ export class SciFiCardButton extends SciFiButton {
         --btn-font-size: var(--font-size, var(--sf-text-sm, 12px));
         --btn-border: var(
           --border,
-          var(--sf-border-width, 1px) solid var(--sf-bg-primary)
+          var(--sf-border-width, 1px) solid var(--sf-border, rgba(224, 232, 255, 0.1))
         );
         --btn-min-width: var(--min-width, 90px);
         --btn-label-text-alignment: var(--text-align, start);

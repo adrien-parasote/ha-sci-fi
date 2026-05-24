@@ -57,7 +57,7 @@ export class SciFiRadiator extends LitElement {
         max-width: 120px;
       }
       .content .right sf-button-card-select {
-        --title-color: var(--sf-bg-secondary);
+        --title-color: rgba(255, 255, 255, 0.4);
         --btn-padding: 5px 5px 5px 10px;
       }
       .content .left {

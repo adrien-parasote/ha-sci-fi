@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 // @vitest-environment happy-dom
-import { expect, describe, it, afterEach, vi } from 'vitest';
+import { expect, describe, it, beforeEach, afterEach, vi } from 'vitest';
 
 import '../../../src/cards/hexa_tiles/sci-fi-hexa-tiles.js';
 import { SciFiHexaTilesCard } from '../../../src/cards/hexa_tiles/sci-fi-hexa-tiles.js';
@@ -18,9 +18,15 @@ describe('sci-fi-hexa-tiles', () => {
     expect(config.tiles).to.be.an('array');
   });
 
+  beforeEach(() => {
+    vi.stubGlobal('innerWidth', 375);
+    vi.stubGlobal('innerHeight', 812);
+  });
+
   afterEach(() => {
     document.body.replaceChildren();
     vi.resetAllMocks();
+    vi.unstubAllGlobals();
   });
 
   it('renders gracefully without hass', async () => {
@@ -107,20 +113,6 @@ describe('sci-fi-hexa-tiles', () => {
   });
 
   it('renders interlocking rows of 2 columns with left and right decorative half-hexagons', async () => {
-    // Force portrait mode
-    const matchMediaSpy = vi.spyOn(window, 'matchMedia').mockImplementation((query) => {
-      return {
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        dispatchEvent: vi.fn(),
-      } as any;
-    });
-
     const el = document.createElement('sci-fi-hexa-tiles') as SciFiHexaTilesCard;
     el.setConfig({
       type: 'custom:sci-fi-hexa-tiles',
@@ -168,8 +160,6 @@ describe('sci-fi-hexa-tiles', () => {
     expect(row2.querySelectorAll('.hexa-tile').length).to.equal(2);
     expect(row2.querySelector('.hexa-half.left')).not.to.be.null;
     expect(row2.querySelector('.hexa-half.right')).to.be.null;
-
-    matchMediaSpy.mockRestore();
   });
 
   it('renders weather tile with temperature and link navigation', async () => {

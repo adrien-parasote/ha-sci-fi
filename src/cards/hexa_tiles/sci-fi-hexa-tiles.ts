@@ -18,11 +18,10 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
   static override styles = [
     sciFiCommonStyles,
     css`
-      /* Card Background */
       ha-card {
         background: #000000 !important;
         border: none !important;
-        padding: var(--sf-spacing-md);
+        padding: var(--sf-spacing-md) 0;
         display: block;
         width: 100%;
         height: 100% !important;
@@ -38,14 +37,15 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
         width: 100%;
       }
 
-      /* ===== User Header ===== */
       .header {
         display: flex;
         flex-direction: row;
         column-gap: 16px;
         margin-bottom: var(--sf-spacing-md);
+        padding: 0 var(--sf-spacing-md);
         align-items: center;
         width: 100%;
+        box-sizing: border-box;
       }
       .avatar-container {
         position: relative;
@@ -116,10 +116,9 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
         display: inline-block;
       }
 
-      /* ===== Interlocking Hexagon Grid ===== */
       :host {
-        --tile-width: 120px;
-        --tile-height: 138px;
+        --tile-width: calc(100% / (var(--cols, 2) + 0.5));
+        --tile-height: calc(var(--tile-width) * 1.1547);
         display: block;
         height: 100%;
       }
@@ -251,7 +250,6 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
         color: rgba(224, 232, 255, 0.4);
       }
 
-      /* Weather alert band */
       .weather-alert {
         padding: var(--sf-spacing-sm);
         border-radius: var(--sf-radius-sm);
@@ -259,7 +257,7 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
         text-align: center;
         font-size: var(--sf-font-size-sm);
         font-weight: 600;
-        width: 100%;
+        width: calc(100% - 2 * var(--sf-spacing-md));
         box-sizing: border-box;
       }
       .weather-alert[data-level="green"] { background: rgba(0,255,157,0.1); color: #00ff9d; }
@@ -272,37 +270,43 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
   @state() private _cols = 2;
   @state() private _minRows = 5;
 
-  private _query = window.matchMedia('(orientation: landscape)');
-
   constructor() {
     super();
-    this._updateLayout(this._query.matches);
-    this._query.addEventListener('change', this._handleOrientationChange);
+    this._updateLayout();
     window.addEventListener('resize', this._handleResize);
   }
 
   override disconnectedCallback(): void {
-    this._query.removeEventListener('change', this._handleOrientationChange);
     window.removeEventListener('resize', this._handleResize);
     super.disconnectedCallback();
   }
 
-  private _handleOrientationChange = (e: MediaQueryListEvent): void => {
-    this._updateLayout(e.matches);
-  };
-
   private _handleResize = (): void => {
-    this._updateLayout(this._query.matches);
+    this._updateLayout();
+    this.requestUpdate();
   };
 
-  private _updateLayout(landscape: boolean): void {
-    if (landscape) {
-      this._cols = 4;
-      this._minRows = 2;
-    } else {
-      this._cols = 2;
-      this._minRows = 5;
+  private _updateLayout(): void {
+    const width = window.innerWidth;
+    // Calculate cols based on target width of 150px per hexagon
+    // Ensuring minimum 2 columns (for mobile)
+    const targetWidth = 150;
+    let cols = Math.floor(width / targetWidth - 0.5);
+    if (cols < 2) {
+      cols = 2;
     }
+    
+    // Calculate minRows to fill the screen height
+    const headerHeight = 120; // estimated header + margins + alerts
+    const tileWidth = width / (cols + 0.5);
+    const tileHeight = tileWidth * 1.1547;
+    const remainingHeight = window.innerHeight - headerHeight;
+    const rowStepHeight = tileHeight * 0.75;
+    
+    const rowsNeeded = Math.ceil((remainingHeight - tileHeight * 0.25) / rowStepHeight);
+    
+    this._cols = cols;
+    this._minRows = Math.max(rowsNeeded, cols === 2 ? 5 : 2);
   }
 
   declare config: SciFiHexaTilesConfig;
@@ -352,7 +356,7 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     }
 
     return html`
-      <ha-card>
+      <ha-card style="--cols: ${this._cols}">
         ${this._renderHeader(connectedPerson)}
         <div class="container">
           ${weather?.activate ? this._renderWeatherAlert(weather) : ''}

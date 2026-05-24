@@ -3,15 +3,17 @@
 [![HACS: Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
 [![Last commit](https://img.shields.io/github/last-commit/adrien-parasote/ha-sci-fi)](#)
 [![Current version](https://img.shields.io/github/v/release/adrien-parasote/ha-sci-fi)](https://github.com/adrien-parasote/ha-sci-fi/releases/latest)
-[![Tests](https://img.shields.io/badge/tests-137%20passing-brightgreen)](#)
+[![Tests](https://img.shields.io/badge/tests-215%20passing-brightgreen)](#)
+[![Coverage](https://img.shields.io/badge/coverage-93%25-brightgreen)](#)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](#)
 [![Lit](https://img.shields.io/badge/Lit-3.x-blueviolet)](#)
+[![i18n](https://img.shields.io/badge/i18n-FR%20%7C%20EN-informational)](#)
 
 A collection of custom Lovelace cards for a minimalist sci-fi dashboard in Home Assistant.  
 The goal: a single phone entry point to control your entire home.
 
 > [!IMPORTANT]
-> **v1.0 — Full rewrite** (Lit 3 · TypeScript 5 · zero CDN · 137 tests).  
+> **v1.0 — Full rewrite** (Lit 3 · TypeScript 5 · zero CDN · 215 tests · 93% coverage).  
 > Upgrading from v0.x? See **[MIGRATION.md](./MIGRATION.md)** for breaking changes.
 
 ---
@@ -65,7 +67,7 @@ The goal: a single phone entry point to control your entire home.
 
 ## 🖼️ Custom icons
 
-Icons are loaded via the HA native icon registry — **no CDN, works offline**.
+Animated and static icons loaded via the HA native icon registry — **no CDN, works offline**.
 
 | Name | HA string |
 |---|---|
@@ -88,16 +90,19 @@ Icons are loaded via the HA native icon registry — **no CDN, works offline**.
 | Landspeeder plugged | `sci:landspeeder-plugged` |
 | Lock unknown | `sci:lock-unknow` |
 
+**Weather animated icons** (used by Hexa-Tiles) are loaded via the `sci:` namespace and animate day/night states automatically.
+
 ---
 
 ## 🔧 Developer setup
 
 ```bash
 npm install          # install deps
-npm test             # run 137 tests (Vitest + happy-dom)
+npm test             # run 215 tests (Vitest + happy-dom)
 npm run typecheck    # TypeScript strict check
 npm run lint         # ESLint
 npm run build        # produce dist/sci-fi.min.js
+npm run test:coverage  # coverage report (target: ≥90%)
 ```
 
 Copy to HA after build:
@@ -108,7 +113,21 @@ cp dist/sci-fi.min.js /path/to/ha/config/www/ha-sci-fi/sci-fi.min.js
 
 Then bump the resource `?v=` number in HA dashboard settings and hard-reload.
 
-**DevContainer:** open in VS Code → *Reopen in Container* → HA dev instance starts automatically on port 8123.
+### Local workbench
+
+A local UI test environment is available **before** any production deployment:
+
+```bash
+npm run build
+npx serve . --listen 8888 --cors
+open http://localhost:8888/dev/workbench.html
+```
+
+The workbench features:
+- **8 card tabs** with realistic mock data (production YAML entity IDs)
+- **Mock mode** — pre-built scenarios per card (Dobby cleaning, EvLink charging, pellets low…)
+- **Live mode** — connects to a real HA instance via WebSocket (OAuth or Long-Lived Token)
+- Interactive log filters, keyword search, and copy button for debugging
 
 ---
 
@@ -116,9 +135,75 @@ Then bump the resource `?v=` number in HA dashboard settings and hard-reload.
 
 Available: 💂 English · 🥖 French
 
-To add a language, follow the [Lit localization guide](https://lit.dev/docs/localization/overview/):
+The i18n system uses [`@lit/localize`](https://lit.dev/docs/localization/overview/) in **runtime mode**:
+- Language is automatically detected from your HA `locale.language` setting
+- No page reload required — locale switches reactively when HA language changes
+- Source strings: English · Translations: `xliff/fr.xlf` + `src/locales/locales/fr.ts`
+
+To add a language:
 
 1. Download [xliff/fr.xlf](https://raw.githubusercontent.com/adrien-parasote/ha-sci-fi/refs/heads/main/xliff/fr.xlf)
 2. Rename to your [BCP 47 code](https://www.w3.org/International/articles/language-tags/index.en)
 3. Update `target-language` attribute and all `<target>` tags
-4. Open a [Pull Request](https://github.com/adrien-parasote/ha-sci-fi/pulls)
+4. Add your locale to `src/locales/locale-codes.ts` and `src/locales/localization.ts`
+5. Open a [Pull Request](https://github.com/adrien-parasote/ha-sci-fi/pulls)
+
+---
+
+## 📋 Changelog
+
+### v1.0.1 — 2026-05-24 *(work in progress)*
+
+#### ⬡ Hexa-Tiles — major overhaul
+- **Fully responsive checkerboard grid** — ResizeObserver replaces `window.innerWidth`; `--cols` CSS custom property set on `:host` for correct PC/tablet/phone interlocking alignment
+- **Animated weather icons** — custom `sci:` namespace animated SVGs replace MDI icons; day/night states animate automatically; city name displayed instead of temperature
+- **Tile aggregation** — tiles now group entities by `kind/group`; media player `playing` state supported
+- **Dynamic day/night active states** — sun tile highlights yellow during daytime
+- **Avatar status badge** — resized and repositioned; circle background removed
+- **Hover effects** — smooth scale + glow on hexagon hover (floor selectors and area tiles)
+
+#### 🌦️ Weather — full restoration
+- Legacy layout and Chart.js integration fully restored
+- Forecast WebSocket subscription reconnected
+- Background/border removed for seamless card integration
+- Solid fallback colors for HA legacy theme variables
+
+#### 🌡️ Climates — UI restoration
+- Full legacy sci-fi UI and radiator controls restored
+- Dropdown opens **downward** (`position=bottom`); anchored `right: 0` to prevent overflow
+- Wheel anchored to radiator white square; connector line aligned
+- Preset and HVAC mode buttons: spacing, borders, colors unified with lights card
+
+#### 💡 Lights
+- Robust floor/area validation — validates by ID existence, not light count (avoids false negatives on first HA load)
+- Hexagon hover: improved spacing and scale effect
+
+#### 🖼️ Custom icons
+- Custom animated SVGs and static icons restored and integrated via `sci:` namespace
+- Workbench mock `ha-icon` defined to support MDI rendering without WebSocket queries
+
+#### 🔧 sf-icon / icon-cache fixes
+- Hybrid native rendering strategy: delegates to `<ha-icon>` in production, avoiding deprecated `frontend/get_icons` WebSocket API
+- Race condition on startup resolved (connection property update now triggers icon re-fetch)
+- Concurrent fetch rate limiter fixed; `registryPromise` decoupled per connection object
+
+#### 🌐 i18n — restored
+- `@lit/localize` runtime i18n system re-integrated after refacto had removed it
+- `SciFiBaseCard` and `SciFiBaseEditor`: `hass` setter calls `setLocale()` when language changes; `updateWhenLocaleChanges(this)` in constructors
+- `sf-radiator`: all preset/HVAC mode labels (`heat`, `cool`, `comfort`, `eco`, `frost protection`…) now use `msg()` for reactive translation
+- Full FR translation map restored (`src/locales/locales/fr.ts` — 170+ entries)
+
+#### 🧪 Tests & coverage
+- **215 tests** (up from 137) — 93.03% statements, 97.86% functions, 95.02% lines
+- `base-editor` hass setter fully covered (was 63% → 100%)
+- `src/locales/` at 100% coverage
+
+#### 🛠️ Workbench improvements
+- Interactive log filters (level + keyword search)
+- Copy button for filtered log output
+- Hexa tile clicks switch the active workbench tab automatically
+- Phone height chain fixed so card fills the simulated screen
+
+---
+
+*Previous releases: see [GitHub Releases](https://github.com/adrien-parasote/ha-sci-fi/releases)*

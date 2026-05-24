@@ -48,6 +48,7 @@ export class SciFiRadiator extends LitElement {
         flex: 1;
         display: flex;
         flex-direction: row;
+        overflow: visible;
       }
       .content .right {
         padding: 25px 10px;
@@ -55,7 +56,9 @@ export class SciFiRadiator extends LitElement {
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        row-gap: 10px;
         max-width: 120px;
+        overflow: visible;
       }
       .content .right sf-button-card-select {
         --title-color: rgba(255, 255, 255, 0.4);
@@ -399,7 +402,6 @@ export class SciFiRadiator extends LitElement {
         @button-select="${this.__select}"
         style="--sf-primary-icon-color:${preset_color} --label-color: ${preset_color}"
       ></sf-button-card-select>
-      <div style="flex:1"></div>
       <sf-button-card-select
         position="left"
         .icon=${hvac_icon}

@@ -1,8 +1,9 @@
 # Spec 05 — Cards Rewrite (8 cartes)
 
 > Document Type: Implementation
-> Covers: Step 5 from [implementation_plan.md](../implementation_plan.md#L1)
-> Depends on: [Spec 01](./01_infrastructure.md#L1), [Spec 02](./02_domain_selectors.md#L1), [Spec 03](./03_base_classes.md#L1), [Spec 04](./04_components.md#L1)
+> Covers: Step 5 from [implementation_plan.md](../implementation_plan.md)
+> Depends on: [Spec 01](./01_infrastructure.md), [Spec 02](./02_domain_selectors.md), [Spec 03](./03_base_classes.md), [Spec 04](./04_components.md)
+> **ADR-005 : Zero breaking YAML changes — champs gelés, features gelées**
 
 ---
 
@@ -21,53 +22,464 @@
 
 ---
 
+## ⛔ YAML Config Contracts (ADR-005 — Source de vérité)
+
+> [!CAUTION]
+> Les noms de champs ci-dessous sont figés. Toute divergence dans `src/types/config.ts` ou dans le code des cartes est un bug bloquant.
+> Source primaire : `config-metadata.js` de chaque card en v0.9.6.
+> Source de vérification : `yaml backup/*.yaml` dans le workspace HA.
+
+---
+
+### sci-fi-hexa-tiles
+
+```typescript
+interface SciFiHexaTilesWeatherConfig {
+  readonly activate?: boolean;
+  readonly weather_entity: string;          // ← "weather_entity" (PAS weather_entity_id)
+  readonly weather_alert_entity?: string;   // ← "weather_alert_entity" (PAS weather_alert_entity_id)
+  readonly link?: string;
+  readonly state_green?: string;
+  readonly state_yellow?: string;
+  readonly state_orange?: string;
+  readonly state_red?: string;
+}
+
+interface SciFiHexaTileConfig {
+  readonly standalone?: boolean;
+  readonly entity?: string;                 // ← "entity" (PAS entity_id) — pour tiles standalone
+  readonly entity_kind?: string;            // type domaine (light, climate, vacuum...)
+  readonly entities_to_exclude?: readonly string[];
+  readonly active_icon?: string;
+  readonly inactive_icon?: string;
+  readonly name?: string;
+  readonly state_on?: readonly string[];    // états considérés actifs
+  readonly state_error?: string;
+  readonly link?: string;                   // navigation (ex: "lights")
+  readonly visibility?: readonly string[];  // person entity IDs
+}
+
+interface SciFiHexaTilesConfig {
+  readonly header_message?: string;
+  readonly weather?: SciFiHexaTilesWeatherConfig;
+  readonly tiles?: readonly SciFiHexaTileConfig[];
+}
+```
+
+**Exemple de config validée (backup production) :**
+```yaml
+type: custom:sci-fi-hexa-tiles
+header_message: "Hey, welcome back !"
+weather:
+  activate: true
+  weather_entity: weather.la_chapelle_sur_erdre
+  weather_alert_entity: sensor.44_weather_alert
+  link: weather
+  state_green: Vert
+tiles:
+  - standalone: true
+    entity: climate.clou
+    active_icon: sci:stove-heat
+    inactive_icon: sci:stove-off
+    name: Poêle
+    state_on: [cool, heat]
+    link: stove
+```
+
+---
+
+### sci-fi-lights
+
+```typescript
+interface SciFiEntityOverride {
+  readonly name?: string;
+  readonly icon_on?: string;
+  readonly icon_off?: string;
+}
+
+interface SciFiLightsConfig {
+  readonly header_message?: string;
+  readonly default_icon_on?: string;        // default: mdi:lightbulb-on-outline
+  readonly default_icon_off?: string;       // default: mdi:lightbulb-outline
+  readonly first_floor_to_render?: string;
+  readonly first_area_to_render?: string;
+  readonly ignored_entities?: readonly string[];              // ← "ignored_entities" (PAS ignored_entity_ids)
+  readonly custom_entities?: Readonly<Record<string, SciFiEntityOverride>>; // ← "custom_entities" (PAS entity_overrides)
+}
+```
+
+**Exemple :**
+```yaml
+type: custom:sci-fi-lights
+header_message: Lumières
+default_icon_on: mdi:lightbulb-on-outline
+ignored_entities:
+  - light.la_boite_a_cha_day_ambient_colour
+custom_entities:
+  light.nous_salon:
+    name: "Étoile"
+    icon_on: mdi:star
+    icon_off: mdi:star-outline
+```
+
+---
+
+### sci-fi-climates
+
+```typescript
+interface SciFiClimatesHeaderConfig {
+  readonly display?: boolean;
+  readonly icon_winter_state?: string;      // default: mdi:thermometer-chevron-up
+  readonly message_winter_state?: string;   // default: 'Winter is coming'
+  readonly icon_summer_state?: string;      // default: mdi:thermometer-chevron-down
+  readonly message_summer_state?: string;   // default: 'Summer time'
+}
+
+interface SciFiStateIconsConfig {
+  readonly auto?: string;   // default: sci:radiator-auto
+  readonly off?: string;    // default: sci:radiator-off
+  readonly heat?: string;   // default: sci:radiator-heat
+}
+
+interface SciFiStateColorsConfig {
+  readonly auto?: string;   // hex — default: #669cd2
+  readonly off?: string;    // hex — default: #6c757d
+  readonly heat?: string;   // hex — default: #ff7f50
+}
+
+interface SciFiModeIconsConfig {
+  readonly frost_protection?: string;
+  readonly eco?: string;
+  readonly comfort?: string;
+  readonly 'comfort-1'?: string;
+  readonly 'comfort-2'?: string;
+  readonly boost?: string;
+}
+
+interface SciFiModeColorsConfig {
+  readonly frost_protection?: string;
+  readonly eco?: string;
+  readonly comfort?: string;
+  readonly 'comfort-1'?: string;
+  readonly 'comfort-2'?: string;
+  readonly boost?: string;
+}
+
+interface SciFiClimatesConfig {
+  readonly entities_to_exclude?: readonly string[];   // ← "entities_to_exclude" (PAS excluded_entity_ids)
+  readonly header?: SciFiClimatesHeaderConfig;
+  readonly state_icons?: SciFiStateIconsConfig;       // ← NE PAS SUPPRIMER
+  readonly state_colors?: SciFiStateColorsConfig;     // ← NE PAS SUPPRIMER
+  readonly mode_icons?: SciFiModeIconsConfig;         // ← NE PAS SUPPRIMER
+  readonly mode_colors?: SciFiModeColorsConfig;       // ← NE PAS SUPPRIMER
+}
+```
+
+**Exemple :**
+```yaml
+type: custom:sci-fi-climates
+entities_to_exclude:
+  - climate.clou
+state_icons:
+  auto: sci:radiator-auto
+  heat: sci:radiator-heat
+state_colors:
+  heat: "#ff7f50"
+mode_icons:
+  eco: mdi:leaf
+  comfort: mdi:sun-thermometer-outline
+mode_colors:
+  eco: "#96d35f"
+  comfort: "#ffff8f"
+```
+
+---
+
+### sci-fi-plugs
+
+```typescript
+interface SciFiPlugSensorEntry {
+  readonly name?: string;
+  readonly show?: boolean;   // afficher dans UI ?
+  readonly power?: boolean;  // est-ce le capteur de puissance (pour graph) ?
+  readonly icon?: string;    // (optionnel — lu depuis state HA si absent)
+}
+
+interface SciFiPlugDevice {
+  readonly device_id: string;
+  readonly entity_id: string;
+  readonly name?: string;
+  readonly active_icon?: string;    // default: mdi:power-socket-fr
+  readonly inactive_icon?: string;  // default: sci:power-socket-fr-off
+  // sensors = DICT keyed par entity_id (PAS une liste, PAS {power: string, energy: string})
+  readonly sensors?: Readonly<Record<string, SciFiPlugSensorEntry>>;
+}
+
+interface SciFiPlugsConfig {
+  readonly devices?: readonly SciFiPlugDevice[];
+}
+```
+
+**Exemple :**
+```yaml
+type: custom:sci-fi-plugs
+devices:
+  - device_id: 31428114e049a5557c8a8a05e2b7f9bd
+    entity_id: switch.nous_ventilateur_leonard
+    active_icon: mdi:fan
+    inactive_icon: mdi:fan-off
+    name: Ventilateur Léonard
+    sensors:
+      sensor.nous_ventilateur_leonard_power:
+        show: false
+        power: true
+      sensor.nous_ventilateur_leonard_energy:
+        show: true
+        name: Énergie
+        icon: mdi:lightning-bolt
+        power: false
+      switch.nous_ventilateur_leonard_child_lock:
+        show: true
+        name: Child lock
+        icon: mdi:account-lock
+        power: false
+```
+
+---
+
+### sci-fi-weather
+
+```typescript
+interface SciFiWeatherAlertConfig {
+  readonly entity_id: string;
+  readonly state_green?: string;
+  readonly state_yellow?: string;
+  readonly state_orange?: string;
+  readonly state_red?: string;
+}
+
+interface SciFiWeatherConfig {
+  readonly weather_entity: string;                          // ← "weather_entity" (PAS weather_entity_id)
+  readonly weather_daily_forecast_limit?: number;           // range [0, 15], default: 10
+  readonly chart_first_kind_to_render?: 'temperature' | 'precipitation' | 'wind';
+  readonly alert?: SciFiWeatherAlertConfig;                 // ← NE PAS SUPPRIMER
+}
+```
+
+**Exemple :**
+```yaml
+type: custom:sci-fi-weather
+weather_entity: weather.la_chapelle_sur_erdre
+weather_daily_forecast_limit: 10
+alert:
+  entity_id: sensor.44_weather_alert
+  state_green: Vert
+  state_yellow: Jaune
+  state_orange: Orange
+  state_red: Rouge
+```
+
+---
+
+### sci-fi-stove
+
+```typescript
+interface SciFiStoveSensors {
+  readonly sensor_actual_power?: string;
+  readonly sensor_combustion_chamber_temperature?: string;
+  readonly sensor_inside_temperature?: string;        // ← NE PAS SUPPRIMER
+  readonly sensor_pellet_quantity?: string;
+  readonly sensor_power?: string;                     // ← NE PAS SUPPRIMER
+  readonly sensor_status?: string;                    // ← NE PAS SUPPRIMER
+  readonly sensor_fan_speed?: string;                 // ← NE PAS SUPPRIMER
+  readonly sensor_pressure?: string;                  // ← NE PAS SUPPRIMER
+  readonly sensor_time_to_service?: string;           // ← NE PAS SUPPRIMER
+}
+
+interface SciFiStoveConfig {
+  readonly entity: string;                            // ← "entity" (PAS entity_id)
+  readonly sensors?: SciFiStoveSensors;
+  readonly storage_counter?: string;                  // ← NE PAS SUPPRIMER
+  readonly pellet_quantity_threshold?: number;        // range [0,1] — NE PAS SUPPRIMER
+  readonly storage_counter_threshold?: number;        // range [0,1] — NE PAS SUPPRIMER
+}
+```
+
+**Exemple :**
+```yaml
+type: custom:sci-fi-stove
+entity: climate.clou
+sensors:
+  sensor_combustion_chamber_temperature: sensor.clou_combustion_chamber_temperature
+  sensor_inside_temperature: sensor.frient_smoke_detector_salon_temperature
+  sensor_fan_speed: sensor.clou_fan_speed
+  sensor_pressure: sensor.clou_pressure
+  sensor_actual_power: sensor.clou_power
+  sensor_power: sensor.smart_energy_monitor_poele_power
+  sensor_pellet_quantity: sensor.clou_pellet_quantity
+  sensor_time_to_service: sensor.clou_time_to_service
+  sensor_status: binary_sensor.clou_stove_status
+pellet_quantity_threshold: 0.3
+storage_counter_threshold: 0.1
+storage_counter: counter.pellet_stock
+```
+
+---
+
+### sci-fi-vacuum
+
+```typescript
+interface SciFiVacuumSensors {
+  readonly map?: string;
+  readonly battery?: string;
+  readonly mop_intensite?: string;           // ← "mop_intensite" (FR, PAS mop_intensity)
+  readonly current_clean_area?: string;
+  readonly current_clean_duration?: string;
+}
+
+interface SciFiVacuumShortcutDescription {
+  readonly icon?: string;
+  readonly name: string;
+  readonly segments: readonly number[];
+}
+
+interface SciFiVacuumShortcuts {
+  readonly service?: string;
+  readonly command?: string;
+  readonly description?: readonly SciFiVacuumShortcutDescription[];
+}
+
+interface SciFiVacuumEntry {
+  readonly entity: string;                   // ← "entity" (PAS entity_id)
+  readonly start?: boolean;
+  readonly pause?: boolean;
+  readonly stop?: boolean;
+  readonly return_to_base?: boolean;
+  readonly set_fan_speed?: boolean;
+  readonly sensors?: SciFiVacuumSensors;
+  readonly shortcuts?: SciFiVacuumShortcuts; // ← NE PAS SUPPRIMER
+}
+
+interface SciFiVacuumConfig {
+  readonly vacuums: readonly SciFiVacuumEntry[];
+}
+```
+
+**Exemple :**
+```yaml
+type: custom:sci-fi-vacuum
+vacuums:
+  - entity: vacuum.dobby
+    sensors:
+      battery: sensor.s7_batterie
+      mop_intensite: select.s7_intensite_de_frottement
+      current_clean_area: sensor.s7_surface_de_nettoyage
+      map: image.s7_map_0
+    start: true
+    pause: true
+    stop: true
+    return_to_base: true
+    shortcuts:
+      service: vacuum.send_command
+      command: app_segment_clean
+      description:
+        - name: Bureau
+          icon: mdi:desk-lamp
+          segments: [16]
+        - name: Charlotte
+          icon: mdi:teddy-bear
+          segments: [18]
+```
+
+---
+
+### sci-fi-vehicles
+
+```typescript
+interface SciFiVehicleEntry {
+  readonly id: string;
+  readonly name: string;
+  readonly charging?: string;
+  readonly lock_status?: string;
+  readonly location?: string;
+  readonly battery_autonomy?: string;         // ← NE PAS SUPPRIMER
+  readonly fuel_autonomy?: string;            // ← NE PAS SUPPRIMER
+  readonly battery_level?: string;
+  readonly location_last_activity?: string;   // ← NE PAS SUPPRIMER
+  readonly charge_state?: string;             // ← NE PAS SUPPRIMER
+  readonly plug_state?: string;               // ← NE PAS SUPPRIMER
+  readonly mileage?: string;
+  readonly fuel_quantity?: string;            // ← NE PAS SUPPRIMER
+  readonly charging_remaining_time?: string;  // ← NE PAS SUPPRIMER
+}
+
+interface SciFiVehiclesConfig {
+  readonly vehicles: readonly SciFiVehicleEntry[];
+}
+```
+
+**Exemple :**
+```yaml
+type: custom:sci-fi-vehicles
+vehicles:
+  - id: b35bbd24dc8783e010d0d9da45678554
+    name: Captur II
+    charging: binary_sensor.captur_ii_en_charge
+    lock_status: binary_sensor.captur_ii_serrure
+    location: device_tracker.captur_ii_emplacement
+    battery_autonomy: sensor.captur_ii_autonomie_de_la_batterie
+    fuel_autonomy: sensor.captur_ii_autonomie_en_carburant
+    battery_level: sensor.captur_ii_batterie
+    plug_state: sensor.captur_ii_etat_du_branchement
+    mileage: sensor.captur_ii_kilometrage
+    fuel_quantity: sensor.captur_ii_quantite_de_carburant
+    charging_remaining_time: sensor.captur_ii_temps_de_charge_restant
+```
+
+---
+
 ## File Tree
 
 ```
 src/cards/
-├── hexa_tiles/                     [NEW] Hexagonal dashboard card
-├── lights/                         [NEW] Lights control card
-├── climates/                       [NEW] Radiator climate controls
-├── plugs/                          [NEW] Plug power monitor card
-├── weather/                        [NEW] Weather forecast chart
-├── stove/                          [NEW] Stove heat monitor card
-├── vehicles/                       [NEW] Vehicle range and controls
-└── vacuum/                         [NEW] Vacuum manager card
+├── hexa_tiles/
+│   ├── card.ts             [MODIFY] Rewrite TS — config YAML inchangée
+│   ├── editor.ts           [MODIFY] Migration TS — pilotée par config-metadata.ts
+│   ├── config-metadata.ts  [MODIFY] Migration TS — schéma identique
+│   ├── const.ts            [MODIFY] Migration TS
+│   └── style.ts            [MODIFY] Migration TS
+├── lights/                 [MODIFY] même pattern
+├── climates/               [MODIFY] même pattern
+├── plugs/                  [MODIFY] même pattern
+├── weather/                [MODIFY] même pattern
+├── stove/                  [MODIFY] même pattern
+├── vehicles/               [MODIFY] même pattern
+└── vacuum/                 [MODIFY] même pattern
 ```
 
 ---
 
-## Assumptions
-
-| # | Assumption | Risk | Validation |
-|---|---|---|---|
-| 1 | Configuration YAML mappings align with target HA models | Low | → Run Lovelace card configuration dashboard validation |
-| 2 | Lit component loops handle 8 distinct cards reactively | Medium | → Run performance profiling check inside Chrome DevTools |
-| 3 | Chart.js is **bundled** (not CDN-loaded) in the IIFE — offline HA works | Medium | → Run `npm run build` and confirm Chart.js appears in `dist/sci-fi.min.js` bundle stats |
-
----
-
 ## Cross-Spec Contracts
- ### Produces
+
+### Produces
 | Artefact | Consumer | Description |
 |---|---|---|
-| `sci-fi-hexa-tiles` | Spec 06 | Registered custom Lovelace card |
-| `sci-fi-lights` | Spec 06 | Registered custom Lovelace card |
-| `sci-fi-climates` | Spec 06 | Registered custom Lovelace card |
+| `sci-fi-hexa-tiles` | Dashboard HA | Registered custom Lovelace card |
+| `sci-fi-lights` | Dashboard HA | Registered custom Lovelace card |
+| `sci-fi-climates` | Dashboard HA | Registered custom Lovelace card |
+| `sci-fi-plugs` | Dashboard HA | Registered custom Lovelace card |
+| `sci-fi-weather` | Dashboard HA | Registered custom Lovelace card |
+| `sci-fi-stove` | Dashboard HA | Registered custom Lovelace card |
+| `sci-fi-vehicles` | Dashboard HA | Registered custom Lovelace card |
+| `sci-fi-vacuum` | Dashboard HA | Registered custom Lovelace card |
 
- ### Consumes
+### Consumes
 | Artefact | Provider | Description |
 |---|---|---|
 | `SciFiBaseCard` | Spec 03 | Standard card parent class |
-| `<sf-icon>` | Spec 04 | Packaged custom package icon renderer |
-| `getFloors()`, `getLightEntities()`, `getClimateEntities()` | Spec 02 | Direct domain selectors — **no `selectHouseState()`** (ADR-004) |
-
- ### Public Interface
-| Element | Consumed by | Description |
-|---|---|---|
-| `custom:sci-fi-hexa-tiles` | Lovelace Dashboard | Main dashboard card interface |
-| `custom:sci-fi-lights` | Lovelace Dashboard | Main lights control card interface |
-| `custom:sci-fi-climates` | Lovelace Dashboard | Main climate control card interface |
+| `<sf-icon>` | Spec 04 | Icon renderer |
+| `ConfigMetadata` | Spec 02 | Schéma de validation typé |
+| `getFloors()`, `getLightEntities()` etc. | Spec 02 | Domain selectors |
 
 ---
 
@@ -75,15 +487,16 @@ src/cards/
 
 | # | Anti-Pattern | Violation | Correct Behavior |
 |---|---|---|---|
-| 1 | Inline styling duplication | Redefining styles across cards | Import common classes from `common.ts` |
-| 2 | Heavy state calculations | Recomputing arrays in render | Delegate tasks to selector utility functions |
-| 3 | Bypassing base editors | Redefining editor handlers | Inherit functions from `SciFiBaseEditor` |
-| 4 | Ignoring translation files | Hardcoded text labels in card | Query localization utilities via `@lit/localize` |
-| 5 | Infinite re-renders | Modifying parameters in update | Perform updates strictly inside Lit lifecycle hooks |
-| 6 | Dynamic CDN load of Chart.js | `import('https://cdn.jsdelivr.net/npm/chart.js')` | Bundle Chart.js in the IIFE — never load from CDN (offline HA will crash) |
-| 7 | No Chart.js offline fallback | Canvas renders blank on offline HA | If Chart.js fails to init, render static CSS grid with temperature numbers |
-| 8 | `@state()` on never-written fields | `@state() private _activeIndex = 0` declared but never mutated | Remove `@state()` — unused reactive properties trigger unnecessary re-renders on every property update cycle |
-| 9 | `window.location.assign()` for HA navigation | `window.location.assign('/lovelace/home')` replaces the entire SPA | Use HA-native routing: `window.history.pushState(null, '', path)` + `window.dispatchEvent(new CustomEvent('location-changed', { detail: { replace: false } }))`. For external URLs use `window.open(url, '_blank', 'noopener,noreferrer')` |
+| 1 | **Renommer un champ YAML** | `entity_id` à la place de `entity` dans stove/vacuum | Utiliser exactement les noms de `config-metadata.js` v0.9.6 |
+| 2 | **Supprimer une feature** | Enlever `shortcuts` du vacuum | Toute feature de v0.9.6 doit être présente |
+| 3 | **Réduire le schéma sensors** | `sensors: {power: string, energy: string}` pour plugs | `sensors` = dict keyed par entity_id avec `show/name/power/icon` |
+| 4 | **Remplacer config-metadata** | Mettre des types TS simples à la place | Migrer `config-metadata.js` en `.ts` — ne pas supprimer |
+| 5 | **Inline styling duplication** | Redefining styles across cards | Import common classes from `common.ts` |
+| 6 | **Heavy state calculations** | Recomputing arrays in render | Delegate tasks to selector utility functions |
+| 7 | **Dynamic CDN load of Chart.js** | `import('https://cdn.jsdelivr.net/npm/chart.js')` | Bundle Chart.js in the IIFE — never load from CDN |
+| 8 | **`window.location.assign()` for HA navigation** | Replaces entire SPA | Use `window.history.pushState()` + `location-changed` CustomEvent |
+| 9 | **`state_icons`/`state_colors`/`mode_icons`/`mode_colors` absents dans climates** | Feature manquante | Ces 4 sections sont obligatoires dans la card climates |
+| 10 | **Section `alert` absente dans weather** | Feature manquante | La section `alert` est obligatoire dans la card weather |
 
 ---
 
@@ -91,15 +504,19 @@ src/cards/
 
 | Test ID | Type | Description | Input | Expected Output |
 |---|---|---|---|---|
-| TC-501 | Unit | HexaTiles parses configuration | YAML with 3 items | Returns 3 matching tile objects |
-| TC-502 | Unit | WeatherCard renders forecast — Chart.js bundled | Weather entity with 5-day forecast | Chart canvas OR CSS grid fallback visible |
-| TC-503 | Unit | LightsCard filters offline | Entities with unavailable state | Filters and hides offline lights |
-| TC-504 | Unit | VehiclesCard updates dynamic speed | speed state set in HA | SVG speeds match state values |
-| TC-505 | Unit | VacuumCard issues vacuum commands | Click vacuum start button | Dispatches correct HASS service calls |
-| TC-506 | Unit | WeatherCard offline fallback | Chart.js constructor throws | CSS grid with temperature values rendered |
-| IT-501 | Integration | Card registers on customElements | Load script entry point | `customElements.get()` returns classes |
-| IT-502 | Integration | Card updates on HASS state changes | Trigger state update event | Card layout re-renders instantly |
-| IT-503 | Integration | Editor synchronizes configuration | Change toggles in editor | Dispatches valid `config-changed` event |
+| TC-501 | Unit | HexaTiles respecte le champ `entity` (pas `entity_id`) | YAML tile avec `entity: climate.clou` | Tile lit `climate.clou` depuis hass |
+| TC-502 | Unit | WeatherCard lit `weather_entity` (pas `weather_entity_id`) | `weather_entity: weather.test` | Card initialise avec cette entité |
+| TC-503 | Unit | WeatherCard render l'`alert` | Config avec section `alert` | Badge alerte visible selon état |
+| TC-504 | Unit | ClimatesCard applique `state_icons` custom | `state_icons.heat: mdi:fire` | Icône personnalisée affichée |
+| TC-505 | Unit | PlugsCard accepte sensors dict | `sensors: {sensor.power: {show: true, power: true}}` | Sensor affiché avec graph |
+| TC-506 | Unit | VacuumCard execute un shortcut | Click shortcut "Bureau" | `callService` avec `segments: [16]` |
+| TC-507 | Unit | StoveCard lit `sensor_inside_temperature` | Config stove complète | Température intérieure affichée |
+| TC-508 | Unit | VehiclesCard affiche `fuel_quantity` | Config vehicles avec `fuel_quantity` | Jauge carburant visible |
+| IT-501 | Integration | 8 cartes s'enregistrent | Load `sci-fi.min.js` | `customElements.get('sci-fi-*')` retourne toutes les classes |
+| IT-502 | Integration | Backup YAML `plugs.yaml` charge sans erreur | `yaml backup/plugs.yaml` | Card visible, 0 console error |
+| IT-503 | Integration | Backup YAML `vacuum.yaml` charge sans erreur | `yaml backup/vacuum.yaml` | Shortcuts Dobby visibles |
+| IT-504 | Integration | Backup YAML `climate.yaml` charge sans erreur | `yaml backup/climate.yaml` | Icônes et couleurs custom appliqués |
+| IT-505 | Integration | Editor synchronise configuration | Change toggle en editor | Dispatche `config-changed` valide |
 
 ---
 
@@ -107,6 +524,7 @@ src/cards/
 
 | Error | Detection | Response | Fallback |
 |---|---|---|---|
-| YAML Parse Failure | Invalid Lovelace configuration | Log error trace | `SciFiBaseCard.render()` error boundary catches → shows error card |
-| Entity Unavailable | Missing entity in HASS state | Display warning badge | Show entity unavailable placeholder text |
-| Chart.js Init Failure | `new Chart()` throws (offline or blocked) | Catch exception | Render CSS grid fallback with raw temperature forecast numbers |
+| Champ YAML inconnu | `__validateConfig` — clé non dans metadata | Log warning console | Config partielle chargée avec défauts |
+| Champ mandatory manquant | `__validateConfig` — mandatory = true | Throw `Error('Missing X mandatory config parameter.')` | `SciFiBaseCard.render()` error boundary → error card |
+| Entity unavailable | Missing entity in HASS state | Display warning badge | Show entity unavailable placeholder text |
+| Chart.js Init Failure | `new Chart()` throws | Catch exception | Render CSS grid fallback avec chiffres bruts |

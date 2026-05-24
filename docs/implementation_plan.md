@@ -1,33 +1,50 @@
-# ha-sci-fi v2 — Implementation Plan
+# ha-sci-fi v1.0.0 — Implementation Plan
 
-> Stream Coding · SPEC gate · May 2026
-> Branch: `v2` (main stays untouched)
+> Stream Coding · SPEC gate · Révisé 2026-05-24
+> Branch: `v1.0.0-wip` (main = v0.9.6 stable, untouched)
 
 ---
 
 ## Context
 
 Full rewrite of ha-sci-fi (8 custom HA cards) from vanilla JavaScript to TypeScript state-of-the-art.
-All gaps resolved. All ADRs accepted. Ready for BUILD.
 
-**References:**
-- [Discovery report](./research/discovery.md)
+**References :**
+- [Discovery](./discovery.md) ← **Source de vérité absolue pour les schémas YAML**
 - [Strategic blueprint](./strategic/blueprint.md)
+- Backups YAML production : `yaml backup/*.yaml` dans le workspace HA
+
+---
+
+## ⛔ Contrainte Absolue — Zero Breaking YAML Changes (ADR-005)
+
+> [!CAUTION]
+> **AUCUN champ de config YAML ne peut être renommé ou supprimé.**
+> Les noms de champs sont un contrat public avec les dashboards en production.
+> Source de vérité : `docs/discovery.md` §2 + `src/cards/*/config-metadata.js` v0.9.6.
+>
+> Champs GELÉS (exemples critiques) :
+> - `entity` (vacuum, stove) — **PAS** `entity_id`
+> - `weather_entity` (hexa-tiles, weather) — **PAS** `weather_entity_id`
+> - `weather_alert_entity` — **PAS** `weather_alert_entity_id`
+> - `ignored_entities` (lights) — **PAS** `ignored_entity_ids`
+> - `custom_entities` (lights) — **PAS** `entity_overrides`
+> - `entities_to_exclude` (climates) — **PAS** `excluded_entity_ids`
+> - `mop_intensite` (vacuum) — **PAS** `mop_intensity`
+> - `shortcuts` (vacuum) — feature complète, à NE PAS supprimer
+> - `state_icons`, `state_colors`, `mode_icons`, `mode_colors` (climates) — à NE PAS supprimer
+> - `alert` (weather) — section complète, à NE PAS supprimer
+> - `storage_counter`, `pellet_quantity_threshold`, `storage_counter_threshold` (stove) — à NE PAS supprimer
 
 ---
 
 ## User Review Required
 
 > [!IMPORTANT]
-> **Breaking YAML changes** — All 8 card configurations will change in v2.0.0.
-> A `MIGRATION.md` will be produced before the first HACS release.
-> The `main` branch stays untouched; all work is on the `v2` branch.
+> **Zéro breaking change YAML** — Contrairement à la v1.0.0-wip, cette release ne casse aucune configuration existante. Les dashboards `yaml backup/*.yaml` doivent fonctionner sans modification.
 
-> [!CAUTION]
-> **`House` model supprimé** — L'objet `House` est remplacé par des sélecteurs purs
-> (`getFloors(hass)`, `getAreas(hass, floorId)`, etc.). Les cartes composent leurs données
-> directement depuis `hass.areas`, `hass.floors`, `hass.devices`, `hass.entities`.
-> C'est plus performant, plus testable, et élimine le couplage centralisé.
+> [!IMPORTANT]
+> **`config-metadata.ts` est conservé** — Le système de validation déclaratif est migré en TypeScript typé, pas remplacé par Zod. L'éditeur HA reste piloté par ce schéma.
 
 ---
 
@@ -37,7 +54,7 @@ All gaps resolved. All ADRs accepted. Ready for BUILD.
 
 ### Step 1 — Infrastructure & Tooling
 
-> Objective: Branche `v2`, TypeScript strict, Rollup 4, dev server automatisé, CI.
+> Objective: Branche `v1.0.0-wip`, TypeScript strict, Rollup 4, dev server automatisé, CI.
 
 #### [NEW] `tsconfig.json`
 TypeScript 5.x strict, `experimentalDecorators: true`, `useDefineForClassFields: false` (requis Lit), target ES2021.
@@ -53,7 +70,7 @@ TypeScript 5.x strict, `experimentalDecorators: true`, `useDefineForClassFields:
 ```
 Ajouts:  @rollup/plugin-typescript, @rollup/plugin-replace, @web/dev-server,
          @web/test-runner, @open-wc/testing, custom-card-helpers, typescript,
-         eslint, @typescript-eslint/eslint-plugin, chai
+         eslint, @typescript-eslint/eslint-plugin
 
 Suppressions: lodash-es, memoize-one, es-dev-server, rollup (v2)
 
@@ -64,6 +81,7 @@ Scripts:
   "typecheck":   "tsc --noEmit"
   "lint":        "eslint src tests --ext .ts"
   "build":       "rollup -c --environment NODE_ENV:production"
+  "build:dev":   "rollup -c --environment NODE_ENV:development"
 ```
 
 #### [NEW] `.eslintrc.json`
@@ -71,10 +89,6 @@ Scripts:
 
 #### [NEW] `web-test-runner.config.mjs`
 `@web/test-runner` avec Chromium, `@open-wc/testing`, coverage activé.
-
-#### [NEW] `.devcontainer/devcontainer.json`
-VS Code DevContainer avec Home Assistant dev instance.
-Port 8123 exposé. Rollup en watch mode. Hot-reload automatique dans HA.
 
 #### [NEW] `.github/workflows/ci.yml`
 ```yaml
@@ -85,18 +99,33 @@ jobs:
 
 ---
 
-### Step 2 — Types & Domain Model (nouveau)
+### Step 2 — Types & Domain Model
 
-> Objective: Remplacer `helpers/entities/` par des sélecteurs purs et des types TypeScript stricts.
-> Testable sans browser, sans HA réel.
+> Objective: Types TypeScript stricts pour tous les domaines HA.
+> Règle absolue : les noms de champs dans les interfaces = noms exacts du `config-metadata.js` v0.9.6.
 
 #### [NEW] `src/types/ha.ts`
 Interfaces HA: `HassFloor`, `HassArea`, `HassDevice`, `HassEntityEntry` (registres modernes).
 
 #### [NEW] `src/types/config.ts`
-Interfaces config typées par carte:
-`SciFiHexaTilesConfig`, `SciFiLightsConfig`, `SciFiClimatesConfig`, `SciFiPlugsConfig`,
-`SciFiWeatherConfig`, `SciFiStoveConfig`, `SciFiVehiclesConfig`, `SciFiVacuumConfig`.
+Interfaces config typées par carte — **noms de champs = EXACTEMENT ceux de `config-metadata.js`**.
+Voir Spec 05 pour le contrat YAML complet par carte.
+
+#### [MODIFY] `src/types/config-metadata.ts` (migré depuis `config-metadata.js`)
+```typescript
+type FieldType = 'string' | 'boolean' | 'number' | 'array' | 'object' | 'Boolean';
+
+interface FieldMeta {
+  readonly mandatory: boolean;
+  readonly type: FieldType;
+  readonly default?: unknown;
+  readonly range?: { readonly min: number; readonly max: number };
+  readonly data?: ConfigMetadata;
+  readonly data_type?: 'string' | 'number' | 'object';
+}
+
+export type ConfigMetadata = Readonly<Record<string, FieldMeta>>;
+```
 
 #### [NEW] `src/selectors/floor.selectors.ts`
 ```typescript
@@ -115,19 +144,8 @@ export const getAreasByFloor = (hass: HomeAssistant, floorId: string): readonly 
 export const getEntitiesByArea = (hass: HomeAssistant, areaId: string): readonly HassEntityEntry[]
 export const getLightEntities = (hass: HomeAssistant, areaId?: string): readonly HassEntity[]
 export const getClimateEntities = (hass: HomeAssistant, areaId?: string): readonly HassEntity[]
-// + switch, vacuum, weather, sensor, cover par domaine
 ```
 
-#### [NEW] `src/selectors/device.selectors.ts`
-```typescript
-export const getDevicesByArea = (hass: HomeAssistant, areaId: string): readonly HassDevice[]
-```
-
-#### [DELETE] `src/helpers/entities/house.js` + tous les entity files
-
-#### [NEW] `tests/selectors/floor.selectors.test.ts`
-#### [NEW] `tests/selectors/area.selectors.test.ts`
-#### [NEW] `tests/selectors/entity.selectors.test.ts`
 #### [NEW] `tests/fixtures/mock-hass.ts`
 ```typescript
 export function mockHass(overrides?: Partial<HomeAssistant>): HomeAssistant
@@ -140,6 +158,7 @@ export function mockHassWithLights(lights: Partial<HassEntity>[]): HomeAssistant
 ### Step 3 — Base Classes & Shared Styles
 
 > Objective: `SciFiBaseCard` et `SciFiBaseEditor` en TypeScript avec décorateurs Lit.
+> `config-metadata.ts` migré et typé — validation identique à v0.9.6.
 
 #### [MODIFY] `src/utils/base-card.ts` (ex `base-card.js`)
 ```typescript
@@ -159,15 +178,18 @@ export abstract class SciFiBaseCard extends LitElement {
   protected abstract renderCard(): TemplateResult;
   public abstract setConfig(config: unknown): void;
   public abstract getCardSize(): number;
+  
+  // Préserve le système de validation par config-metadata
+  protected __validateConfig(config: unknown, metadata: ConfigMetadata): Record<string, unknown>;
 }
 ```
 
 #### [MODIFY] `src/utils/base-editor.ts` (ex `base_editor.js`)
 - Décorateurs `@property`, `@state`
-- Labels extraits dans `src/locales/labels.ts` (supprime la mega-fonction `getLabel()`)
+- Préserve le rendu piloté par `config-metadata.ts`
 
 #### [MODIFY] `src/styles/common.ts` (ex `common_style.js`)
-#### [MODIFY] `` (ex `editor_common_style.js`)
+#### [MODIFY] `src/styles/editor-common.ts` (ex `editor_common_style.js`)
 
 ---
 
@@ -194,7 +216,6 @@ sf-radiator-controls.ts     # Boutons chaud/froid/off + slider température
 sf-radiator-schedule.ts     # Timeline planning hebdomadaire
 style.ts                    # CSS partagé du module
 ```
-Chaque fichier = `@customElement` enregistré — réutilisable indépendamment.
 
 #### [MODIFY] Tous les autres composants → TypeScript
 `sf-accordion`, `sf-tabs`, `sf-toast`, `sf-toggle-switch`,
@@ -202,61 +223,61 @@ Chaque fichier = `@customElement` enregistré — réutilisable indépendamment.
 `sf-stove`, `sf-landspeeder`, `sf-person`, `sf-wheel`,
 `buttons/*`, `inputs/*`
 
-#### [NEW] `tests/components/sf-radiator.test.ts`
-#### [NEW] `tests/components/sf-toggle-switch.test.ts`
-#### [NEW] `tests/components/sf-icon.test.ts`
-
 ---
 
 ### Step 5 — Cards Rewrite (8 cartes)
 
-> Pattern établi sur `sci-fi-lights` (carte la plus complexe) puis répliqué.
+> Règle absolue : les champs YAML restent exactement ceux de `config-metadata.js` v0.9.6.
+> Voir Spec 05 pour les contrats YAML complets par carte.
 
 #### Règles communes à toutes les cartes
-- `@customElement('sci-fi-<name>')` dans `card.ts` (supprime `import.ts`)
+- `@customElement('sci-fi-<name>')` dans `card.ts`
 - `setConfig()` → copie immutable `{ ...config }`
 - `render()` → hérité de `SciFiBaseCard` (error boundary inclus)
 - `window.customCards.push()` dans `card.ts`
 - Zéro `unsafeHTML` → `repeat()` partout
 - Zéro `var`, zéro `==`
-
----
+- **Champs YAML = noms exacts de `config-metadata.js` v0.9.6 — AUCUNE EXCEPTION**
 
 #### [MODIFY] `src/cards/hexa_tiles/card.ts`
-Breaking YAML changes:
-```yaml
-# v1 → v2
-entity: light.x  →  entity_id: light.x
-# Nouveau: tap_action / hold_action standardisés HA
-```
+Config YAML **inchangée** (voir Spec 05 §YAML hexa-tiles) :
+- `weather.weather_entity` (pas `weather_entity_id`)
+- `weather.weather_alert_entity` (pas `weather_alert_entity_id`)
+- `tiles[].entity` (pas `entity_id`)
+- `tiles[].entity_kind` conservé
 
 #### [MODIFY] `src/cards/lights/card.ts`
-Breaking YAML changes:
-```yaml
-ignored_entities  →  ignored_entity_ids
-custom_entities   →  entity_overrides
-```
+Config YAML **inchangée** :
+- `ignored_entities` (pas `ignored_entity_ids`)
+- `custom_entities` (pas `entity_overrides`)
 
 #### [MODIFY] `src/cards/climates/card.ts`
+Config YAML **inchangée** — `state_icons`, `state_colors`, `mode_icons`, `mode_colors` **TOUS CONSERVÉS**.
+
 #### [MODIFY] `src/cards/plugs/card.ts`
+Config YAML **inchangée** — `sensors` = dict keyed par entity_id avec `show/name/power` **CONSERVÉ**.
+
 #### [MODIFY] `src/cards/weather/card.ts`
+Config YAML **inchangée** — `weather_entity` (pas `weather_entity_id`), section `alert` **CONSERVÉE**.
+
 #### [MODIFY] `src/cards/stove/card.ts`
+Config YAML **inchangée** — `entity` (pas `entity_id`), tous les capteurs + seuils + `storage_counter` **CONSERVÉS**.
+
 #### [MODIFY] `src/cards/vacuum/card.ts`
+Config YAML **inchangée** — `entity` (pas `entity_id`), `mop_intensite` (pas `mop_intensity`), `shortcuts` **CONSERVÉ**.
+
 #### [MODIFY] `src/cards/vehicles/card.ts`
+Config YAML **inchangée** — tous les champs `battery_autonomy`, `fuel_autonomy`, `plug_state`, etc. **CONSERVÉS**.
 
 #### Editors (toutes les cartes)
 #### [MODIFY] `src/cards/*/editor.ts`
+- Migration TypeScript
+- Préserve le rendu piloté par `config-metadata.ts`
 - `ha-selector` pour les entity pickers (standard HA 2025)
-- Supprimer `getLabel()` → `src/locales/labels.ts`
-
-#### Tests cards
-#### [NEW] `tests/cards/lights.test.ts`
-#### [NEW] `tests/cards/hexa-tiles.test.ts`
-#### [NEW] `tests/cards/climates.test.ts`
 
 ---
 
-### Step 6 — Entry Point, Icons, i18n & Migration Doc
+### Step 6 — Entry Point, Icons & i18n
 
 #### [MODIFY] `src/sci-fi.ts`
 - Import des cartes uniquement (auto-enregistrement via `@customElement`)
@@ -267,19 +288,9 @@ custom_entities   →  entity_overrides
 Migré TypeScript, types pour `window.customIcons`.
 
 #### [MODIFY] `src/locales/`
-Re-génération `@lit/localize` sur le setup TS, labels v2 ajoutés.
+Re-génération `@lit/localize` sur le setup TS.
 
-#### [NEW] `MIGRATION.md` (racine du projet)
-Tableau complet par carte:
-
-| Carte | Champ v1 | Champ v2 | Note |
-|-------|---------|---------|------|
-| Toutes | `entity` | `entity_id` | Cohérence avec HA |
-| lights | `ignored_entities` | `ignored_entity_ids` | Cohérence HA |
-| lights | `custom_entities` | `entity_overrides` | Clarté |
-| ... | ... | ... | ... |
-
-Avec exemple YAML complet avant/après pour chaque carte.
+> **Pas de MIGRATION.md** — zéro breaking change = pas de document de migration à produire.
 
 ---
 
@@ -293,15 +304,20 @@ npm test            # ≥ 80% coverage domain + composants
 npm run build       # dist/sci-fi.min.js généré sans erreur
 ```
 
+### YAML Contract Validation (Gate obligatoire)
+Avant tout merge :
+1. Diff `src/types/config.ts` contre `docs/discovery.md` §2 — zéro champ manquant ou renommé
+2. Tester chaque `yaml backup/*.yaml` contre la nouvelle version → 8/8 doivent charger sans erreur
+
 ### Manual Verification (par carte)
-1. Déployer `dist/sci-fi.min.js` dans `/config/www/`
+1. Copier `dist/sci-fi.min.js` dans `/config/www/`
 2. Vérifier rendu visuel dans dashboard HA
-3. Vérifier editor UI dans HA (ha-selector entity picker)
+3. Vérifier editor UI dans HA (entity pickers)
 4. Vérifier interactions (toggle, navigation, service calls)
-5. Vérifier MIGRATION.md : configs v1 migrées fonctionnent en v2
+5. **Vérifier les configs de `yaml backup/*.yaml` fonctionnent sans modification**
 
 ### HACS Gate
-GitHub Actions `hacs/action@main` doit passer ✅ avant tag `v2.0.0`.
+GitHub Actions `hacs/action@main` doit passer ✅ avant tag `v1.0.0`.
 
 ---
 
@@ -310,7 +326,7 @@ GitHub Actions `hacs/action@main` doit passer ✅ avant tag `v2.0.0`.
 ```
 Step 1 (Infra: TS + Rollup 4 + CI)
     ↓
-Step 2 (Types + Sélecteurs — tests unitaires)
+Step 2 (Types + config-metadata.ts + Sélecteurs)
     ↓
 Step 3 (Base classes SciFiBaseCard/Editor)
     ↓
@@ -318,43 +334,12 @@ Step 4 (Composants partagés — sf-radiator découpé)
     ↓
 Step 5 (Cards — séquence: lights → hexa-tiles → climates → plugs → weather → stove → vehicles → vacuum)
     ↓
-Step 6 (Entry + Icons + i18n + MIGRATION.md)
+Step 6 (Entry + Icons + i18n)
     ↓
-Merge v2 → main + tag v2.0.0
+YAML Contract Validation Gate
+    ↓
+Merge v1.0.0-wip → main + tag v1.0.0
 ```
 
 Steps 1-3 sont bloquants pour tout le reste.
 Steps 4-5 peuvent se paralléliser par composant/carte une fois Step 3 terminé.
-
----
-
-## Phase 6: 100% Test Coverage (Coverage Push)
-
-The current coverage is around **51%** (Line/Statement/Function) and **22%** (Branches). The missing coverage is entirely focused on the UI rendering (`render()` methods) and interactive branches of the Lit cards and components.
-
-### Proposed Changes
-
-#### [MODIFY] `tests/cards/**/*.test.ts`
-- Mock the Shadow DOM rendering lifecycle using `await element.updateComplete`.
-- Trigger simulated `click` events to test Home Assistant service calls (`hass.callService`).
-- Test various states (On, Off, Unavailable) by mocking different `hass` payload variants.
-- Ensure 100% line, branch, and function coverage for:
-  - `sci-fi-climates.ts`
-  - `sci-fi-hexa-tiles.ts`
-  - `sci-fi-lights.ts`
-  - `sci-fi-plugs.ts`
-  - `sci-fi-stove.ts`
-  - `sci-fi-vacuum.ts`
-  - `sci-fi-vehicles.ts`
-  - `sci-fi-weather.ts`
-
-#### [MODIFY] `tests/components/**/*.test.ts`
-- Complete tests for `sf-icon.ts` fallback rendering branches.
-- Complete tests for `icon-cache.ts` network failure / IDB failure states.
-
-#### [MODIFY] `tests/selectors/**/*.test.ts`
-- Exhaustively test edge cases for empty areas, floors with no areas, and disconnected entities in `house.ts` and `climate.ts`.
-
-### Verification Plan
-- Run `npm run test:coverage` and ensure the summary reports **100%** across Lines, Functions, Statements, and Branches.
-- Re-run `python3 verify.py .` to ensure the TDD gate sequence and Spec Conformance remain untouched and passing.

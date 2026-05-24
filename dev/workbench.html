@@ -626,7 +626,10 @@
             <button class="console-filter-btn" data-filter="error" onclick="setConsoleFilter('error')">Erreurs</button>
           </div>
         </div>
-        <button class="btn btn-ghost" style="padding:2px 8px;font-size:10px;" onclick="clearConsole()">Vider</button>
+        <div style="display:flex; gap:4px;">
+          <button class="btn btn-ghost" style="padding:2px 8px;font-size:10px;" onclick="copyFilteredConsole()">Copier</button>
+          <button class="btn btn-ghost" style="padding:2px 8px;font-size:10px;" onclick="clearConsole()">Vider</button>
+        </div>
       </div>
       <!-- Keyword search -->
       <div style="padding: 0 16px 10px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 6px;">
@@ -704,6 +707,25 @@
   }
   window._wbLog = log;
   window.clearConsole = () => { consoleEl.innerHTML = ''; };
+  window.copyFilteredConsole = async () => {
+    const lines = document.querySelectorAll('.console-line');
+    const textToCopy = Array.from(lines)
+      .filter(line => (line as HTMLElement).style.display !== 'none')
+      .map(line => line.textContent)
+      .join('\n');
+
+    if (!textToCopy) {
+      log('⚠️ Aucun log visible à copier', 'warn');
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      log('📋 Logs filtrés copiés !', 'ok');
+    } catch (err) {
+      log(`❌ Échec de la copie: ${err}`, 'error');
+    }
+  };
   const _warn = console.warn.bind(console);
   const _error = console.error.bind(console);
   console.warn = (...a) => { _warn(...a); log(a.join(' '), 'warn'); };

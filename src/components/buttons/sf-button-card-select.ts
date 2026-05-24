@@ -53,6 +53,17 @@ export class SciFiCardSelectButton extends SciFiCardButton {
         top: 0;
         bottom: auto;
       }
+      .items.bottom {
+        top: 100%;
+        bottom: auto;
+        transform: none;
+        border-top: none;
+        border-bottom: var(--sf-border-width, 1px) solid var(--sf-border);
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        border-bottom-left-radius: var(--sf-border-radius, 8px);
+        border-bottom-right-radius: var(--sf-border-radius, 8px);
+      }
       .items .item {
         display: flex;
         flex-direction: row;

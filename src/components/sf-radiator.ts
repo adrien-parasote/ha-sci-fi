@@ -394,7 +394,7 @@ export class SciFiRadiator extends LitElement {
     
     return html`
       <sf-button-card-select
-        position="top"
+        position="bottom"
         .icon=${preset_icon}
         title="preset"
         text="${this.__getLabel(presetMode)}"
@@ -403,7 +403,7 @@ export class SciFiRadiator extends LitElement {
         style="--sf-primary-icon-color:${preset_color} --label-color: ${preset_color}"
       ></sf-button-card-select>
       <sf-button-card-select
-        position="top"
+        position="bottom"
         .icon=${hvac_icon}
         title="mode"
         text="${this.__getLabel(hvacMode)}"

@@ -710,7 +710,7 @@
   window.copyFilteredConsole = async () => {
     const lines = document.querySelectorAll('.console-line');
     const textToCopy = Array.from(lines)
-      .filter(line => (line as HTMLElement).style.display !== 'none')
+      .filter(line => line.style.display !== 'none')
       .map(line => line.textContent)
       .join('\n');
 

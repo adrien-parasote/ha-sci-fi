@@ -1,10 +1,10 @@
-import { LitElement, css, html, type TemplateResult } from 'lit';
+import { LitElement, css, html, type TemplateResult, type CSSResultGroup } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 
 @customElement('sf-button')
 export class SciFiButton extends LitElement {
-  static override styles = [
+  static override styles: CSSResultGroup = [
     sciFiCommonStyles,
     css`
       :host {

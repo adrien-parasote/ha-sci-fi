@@ -98,7 +98,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
         }
         /******** HEADER *********/
         .header {
-          padding-top: 10px;
+          padding-top: 0px;
           display: flex;
           flex-direction: row;
           justify-content: center;
@@ -174,8 +174,8 @@ export class SciFiWeatherCard extends SciFiBaseCard {
           flex-direction: row;
           border-bottom: 1px solid var(--primary-bg-color, rgba(255,255,255,0.05));
           background-color: var(--primary-bg-alpha-color, transparent);
-          padding-bottom: 25px;
-          margin-top: 25px;
+          padding-bottom: 10px;
+          margin-top: 0px;
         }
         .today-summary .sensor {
           display: flex;
@@ -195,29 +195,45 @@ export class SciFiWeatherCard extends SciFiBaseCard {
         }
         /******** CHART *********/
         .chart-container {
-          margin: 10px;
+          height: 190px;
           display: flex;
           flex-direction: column;
           justify-content: center;
+          margin: 0;
+          padding: 10px 0;
+          background-color: black;
         }
         .chart-container .chart-header {
           display: flex;
           flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 5px;
         }
         .chart-container .chart-header .title {
           display: flex;
-          flex: 1;
           flex-direction: row;
+          align-items: center;
+          color: var(--secondary-light-color, #7ca8c9);
         }
-        .chart-container .chart-header .title svg {
-          width: var(--icon-size-title, 24px);
-          height: var(--icon-size-title, 24px);
-          margin-right: 10px;
+        .chart-header .title .title-icon {
+          width: 32px;
+          height: 32px;
+          margin-right: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
-        .chart-container .chart-header .title .label {
-          align-self: center;
-          color: var(--primary-light-color, #6ecbf5);
-          text-shadow: 0px 0px 5px var(--secondary-light-color, rgba(110, 203, 245, 0.3));
+        .chart-header .title .title-icon svg {
+          width: 100%;
+          height: 100%;
+          fill: var(--primary-text-color);
+        }
+        .canvas-wrapper {
+          position: relative;
+          flex: 1;
+          width: 100%;
+          min-height: 0;
         }
         .chart-container .chart-header .dropdown {
           position: relative;
@@ -267,8 +283,9 @@ export class SciFiWeatherCard extends SciFiBaseCard {
         }
         .chart-container .dropdown .dropdown-content .dropdown-item svg,
         .chart-container .dropdown .dropdow-button .btn-icon svg {
-          width: var(--icon-size-title, 20px);
-          height: var(--icon-size-title, 20px);
+          width: 32px;
+          height: 32px;
+          fill: var(--primary-text-color);
         }
         .chart-container .dropdown .dropdow-button sf-icon {
           --icon-color: var(--secondary-light-alpha-color, #7ca8c9);
@@ -298,24 +315,23 @@ export class SciFiWeatherCard extends SciFiBaseCard {
           display: none;
         }
         .days-forecast .content .weather {
-          border: 1px solid var(--secondary-light-alpha-color, rgba(224,232,255,0.15));
-          border-radius: var(--border-radius, 8px);
-          padding: 10px 15px;
-          cursor: pointer;
           display: flex;
           flex-direction: column;
           row-gap: 5px;
+          align-items: center;
           min-width: 60px;
+          cursor: pointer;
+          border-radius: 10px;
+          padding: 5px;
+          border: 1px solid var(--primary-bg-color, rgba(255,255,255,0.05));
         }
         .days-forecast .content .weather.selected {
-          background-color: var(--secondary-light-light-alpha-color, rgba(0, 210, 255, 0.12));
-          border-color: var(--sf-primary, #00d2ff);
-          box-shadow: 0 0 5px rgba(0, 210, 255, 0.3);
+          border-color: var(--primary-light-color, #6ecbf5);
+          background-color: var(--primary-bg-alpha-color, rgba(255,255,255,0.05));
         }
         .days-forecast .content .weather .state svg {
-          width: var(--icon-size-title, 32px);
-          height: var(--icon-size-title, 32px);
-          margin: 10px auto;
+          width: 45px;
+          height: 45px;
         }
         .days-forecast .content .weather .label,
         .days-forecast .content .weather .temp {
@@ -381,7 +397,16 @@ export class SciFiWeatherCard extends SciFiBaseCard {
     if (!this._subscribedEntity || this._subscribedEntity !== this.config?.weather_entity) {
       void this._subscribeForecasts();
     }
-    this._renderChart();
+    
+    const shouldRenderChart = !this._chart || 
+      changedProps.has('_hourlyForecast') ||
+      changedProps.has('_dailyForecast') ||
+      changedProps.has('_chartDataKind') ||
+      changedProps.has('_day_selected');
+
+    if (shouldRenderChart && this._chartCanvas) {
+      this._renderChart();
+    }
   }
 
   private async _subscribeForecasts(): Promise<void> {
@@ -501,9 +526,8 @@ export class SciFiWeatherCard extends SciFiBaseCard {
   private _renderHeader(weatherEntity: any) {
     const timeOptions: Intl.DateTimeFormatOptions = { timeStyle: 'short' };
     const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' };
-    
-    const time = new Intl.DateTimeFormat(navigator.language, timeOptions).format(this._date);
-    const date = new Intl.DateTimeFormat(navigator.language, dateOptions).format(this._date);
+    const time = new Intl.DateTimeFormat(this.hass?.locale?.language || navigator.language, timeOptions).format(this._date);
+    const date = new Intl.DateTimeFormat(this.hass?.locale?.language || navigator.language, dateOptions).format(this._date);
 
     const sunEntity = this.hass?.states['sun.sun'];
     const isDay = sunEntity ? sunEntity.state !== 'below_horizon' : true;
@@ -512,7 +536,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
 
     return html`
       <div class="weather-icon">
-        ${(WEATHER_ICON_SET as any)[isDay ? condition : `${condition}-night`] ?? (WEATHER_ICON_SET as any)[condition] ?? html``}
+        ${this._getWeatherIcon(condition, isDay)}
       </div>
       <div class="weather-clock">
         <div class="state">
@@ -600,16 +624,24 @@ export class SciFiWeatherCard extends SciFiBaseCard {
     this.requestUpdate();
   }
 
+  private _renderIcon(iconName: string) {
+    if ((WEATHER_ICON_SET as any)[iconName]) {
+      return (WEATHER_ICON_SET as any)[iconName];
+    }
+    return html`<sf-icon .icon=${'mdi:' + iconName} .connection=${this.hass?.connection}></sf-icon>`;
+  }
+
   private _renderChartSection(weatherEntity: any) {
     const config = SENSORS_MAP[this._chartDataKind];
-    const unit = weatherEntity.attributes[`${this._chartDataKind}_unit`] ?? 
-                 (this._chartDataKind === 'temperature' ? weatherEntity.attributes.temperature_unit : '');
+    const unit = this._chartDataKind === 'precipitation' ? 'mm' : 
+                 (this._chartDataKind === 'wind_speed' ? 'km/h' : 
+                 (this._chartDataKind === 'temperature' ? weatherEntity.attributes.temperature_unit : ''));
                  
     return html`
       <div class="chart-header">
         <div class="title">
           <div class="title-icon">
-             ${(WEATHER_ICON_SET as any)[config.chartTitle.icon] ?? html``}
+             ${this._renderIcon(config.chartTitle.icon)}
           </div>
           <div class="label">
             ${this._getlabels(config.chartTitle.label)} (${unit})
@@ -619,7 +651,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
         <div class="dropdown">
           <button @click=${(e: Event) => this._toggleDropdown(e)} class="dropdow-button">
             <div class="btn-icon">
-              ${(WEATHER_ICON_SET as any)[config.dropdown.icon] ?? html``}
+              ${this._renderIcon(config.dropdown.icon)}
             </div>
             <sf-icon icon="mdi:chevron-down"></sf-icon>
           </button>
@@ -627,14 +659,16 @@ export class SciFiWeatherCard extends SciFiBaseCard {
           <div class="dropdown-content">
             ${Object.keys(SENSORS_MAP).map(key => html`
               <div class="dropdown-item" @click=${(e: Event) => this._selectChartDataKind(e, key)}>
-                ${(WEATHER_ICON_SET as any)[SENSORS_MAP[key].dropdown.icon] ?? html``}
+                ${this._renderIcon(SENSORS_MAP[key].dropdown.icon)}
                 <div class="dropdown-item-label">${this._getlabels(SENSORS_MAP[key].dropdown.label)}</div>
               </div>
             `)}
           </div>
         </div>
       </div>
-      <canvas id="weather-chart"></canvas>
+      <div class="canvas-wrapper">
+        <canvas id="weather-chart"></canvas>
+      </div>
     `;
   }
 
@@ -658,7 +692,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
 
     const getDayName = (dtStr: string) => {
       const dt = new Date(dtStr);
-      return new Intl.DateTimeFormat(navigator.language, { weekday: 'short' }).format(dt);
+      return new Intl.DateTimeFormat(this.hass?.locale?.language || navigator.language, { weekday: 'short' }).format(dt);
     };
 
     return html`
@@ -668,7 +702,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
             <div class="label">${getDayName(d.datetime)}</div>
             <div class="state">${this._getWeatherIcon(d.condition, true)}</div>
             <div class="temp">${d.templow}${tempUnit}</div>
-            <div class="temp hight">${d.temperature}${tempUnit}</div>
+            <div class="temp ${d.temperature > 20 ? 'high' : 'low'}">${d.temperature}${tempUnit}</div>
           </div>
         `)}
       </div>

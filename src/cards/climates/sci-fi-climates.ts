@@ -21,8 +21,8 @@ export class SciFiClimatesCard extends SciFiBaseCard {
   @state() private _active_floor_id: string | null = null;
   @state() private _active_area_id: string | null = null;
 
-  protected override renderCard(): TemplateResult | typeof nothing {
-    if (!this.hass || !this.config) return nothing;
+  protected override renderCard(): TemplateResult {
+    if (!this.hass || !this.config) return html``;
 
     const excluded = this.config.entities_to_exclude ?? [];
     
@@ -38,8 +38,8 @@ export class SciFiClimatesCard extends SciFiBaseCard {
       }
       if ((this.config as any)?.filter_by === 'floor') {
         const allFloors = getFloors(this.hass);
-        if (allFloors.length > 0 && !this._active_floor_id) {
-          this._active_floor_id = allFloors[0].floor_id;
+        if (allFloors && allFloors.length > 0 && !this._active_floor_id) {
+          this._active_floor_id = (allFloors as any)[0].floor_id;
         }
       }
     }
@@ -60,8 +60,8 @@ export class SciFiClimatesCard extends SciFiBaseCard {
       }
       if ((this.config as any)?.filter_by === 'area') {
         const areas = getAreas(this.hass);
-        if (areas.length > 0 && !this._active_area_id) {
-          this._active_area_id = areas[0].area_id;
+        if (areas && areas.length > 0 && !this._active_area_id) {
+          this._active_area_id = (areas as any)[0].area_id;
         }
       }
     }
@@ -80,7 +80,7 @@ export class SciFiClimatesCard extends SciFiBaseCard {
     `;
   }
 
-  private __getAverageTemperature(entities: any[]): number | null {
+  private __getAverageTemperature(entities: readonly any[]): number | null {
     if (entities.length === 0) return null;
     let sum = 0;
     let count = 0;
@@ -155,14 +155,14 @@ export class SciFiClimatesCard extends SciFiBaseCard {
           ${avgTemp !== null ? `${avgTemp}${tempUnit}` : '--'}
         </div>
       </div>
-      <div class="actions">${this.__displayActionHeader(allClimates)}</div>
+        <div class="actions">${this.__displayActionHeader(allClimates as any[])}</div>
       <div class="season ${seasonColor}">
         ${seasonIcon}
       </div>
     `;
   }
 
-  private __displayActionHeader(entities: any[]): TemplateResult | typeof nothing {
+  private __displayActionHeader(entities: any[]): TemplateResult {
     if (!this.config.header?.display) return html``;
     
     const active = entities.some(c => isClimateActive(this.hass, c.entity_id));

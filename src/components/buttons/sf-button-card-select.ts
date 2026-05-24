@@ -1,4 +1,4 @@
-import { css, html, type TemplateResult } from 'lit';
+import { css, html, type TemplateResult, type CSSResultGroup } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { SciFiCardButton } from './sf-button-card.js';
 
@@ -67,7 +67,7 @@ export class SciFiCardSelectButton extends SciFiCardButton {
         --icon-height: var(--sf-icon-size-sm, 16px);
       }
     `,
-    ];
+    ] as CSSResultGroup;
   }
 
   @property({ type: Array })

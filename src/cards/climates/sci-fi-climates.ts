@@ -78,6 +78,15 @@ export class SciFiClimatesCard extends SciFiBaseCard {
         font-size: var(--sf-font-size-xs, 0.7rem);
         color: var(--sf-text-disabled);
       }
+
+      /* ── Responsive ───────────────────────────────────────── */
+      @container sf-card (max-width: 1023px) {
+        .climate-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+      }
+      @container sf-card (max-width: 599px) {
+        .climate-grid { grid-template-columns: repeat(2, 1fr); }
+        .container { padding: var(--sf-spacing-sm); }
+      }
     `,
   ];
 

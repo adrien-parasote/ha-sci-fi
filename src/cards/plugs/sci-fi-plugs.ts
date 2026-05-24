@@ -86,6 +86,15 @@ export class SciFiPlugsCard extends SciFiBaseCard {
         background: var(--sf-primary-dim);
         border-color: var(--sf-primary);
       }
+
+      /* ── Responsive ───────────────────────────────────────── */
+      @container sf-card (max-width: 1023px) {
+        .plugs-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+      }
+      @container sf-card (max-width: 599px) {
+        .plugs-grid { grid-template-columns: 1fr; }
+        .container { padding: var(--sf-spacing-sm); }
+      }
     `,
   ];
 

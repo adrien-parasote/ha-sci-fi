@@ -74,6 +74,16 @@ export class SciFiStoveCard extends SciFiBaseCard {
       }
       .bar-fill.pellet { background: linear-gradient(90deg, #ff6b35, #ffd60a); }
       .bar-fill.storage { background: linear-gradient(90deg, #669cd2, #00ff9d); }
+
+      /* ── Responsive ───────────────────────────────────────── */
+      @container sf-card (max-width: 1023px) {
+        .sensors-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+      }
+      @container sf-card (max-width: 599px) {
+        .sensors-grid { grid-template-columns: repeat(2, 1fr); }
+        .container { padding: var(--sf-spacing-sm); }
+        .stove-status { font-size: 1.2rem; }
+      }
     `,
   ];
 

@@ -102,6 +102,19 @@ export class SciFiLightsCard extends SciFiBaseCard {
         font-size: var(--sf-font-size-base);
         color: var(--sf-text-primary);
       }
+
+      /* ── Responsive ───────────────────────────────────────── */
+      @container sf-card (max-width: 1023px) {
+        .area-tile { flex: 1 1 100px; }
+      }
+      @container sf-card (max-width: 599px) {
+        .area-tile { flex: 1 1 80px; }
+        .floor-btn {
+          padding: var(--sf-spacing-xs) 6px;
+          font-size: 0.7rem;
+        }
+        .container { padding: var(--sf-spacing-sm); }
+      }
     `,
   ];
 

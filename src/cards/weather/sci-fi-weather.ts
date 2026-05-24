@@ -125,6 +125,28 @@ export class SciFiWeatherCard extends SciFiBaseCard {
       }
       .forecast-day .temp-hi { color: var(--sf-text-primary); font-weight: 600; }
       .forecast-day .temp-lo { color: var(--sf-text-disabled); }
+
+      /* ── Responsive ───────────────────────────────────────── */
+      @container sf-card (max-width: 1023px) {
+        .current-temp { font-size: 2.5rem; }
+      }
+      @container sf-card (max-width: 599px) {
+        .current {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: var(--sf-spacing-sm);
+        }
+        .current-temp { font-size: 2rem; }
+        .current-details {
+          margin-left: 0;
+          text-align: left;
+          flex-direction: row;
+          gap: var(--sf-spacing-md);
+        }
+        .chart-container { height: 80px; }
+        .container { padding: var(--sf-spacing-sm); }
+        .forecast-day { min-width: 40px; font-size: 0.7rem; }
+      }
     `,
   ];
 

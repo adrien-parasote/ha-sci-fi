@@ -79,6 +79,12 @@ export class SciFiVehiclesCard extends SciFiBaseCard {
       .battery-bar-fill[data-level="high"] { background: #00ff9d; }
       .battery-bar-fill[data-level="mid"] { background: #ffd60a; }
       .battery-bar-fill[data-level="low"] { background: #ff4d6d; }
+
+      /* ── Responsive ───────────────────────────────────────── */
+      @container sf-card (max-width: 599px) {
+        .vehicle-stats { grid-template-columns: 1fr; }
+        .container { padding: var(--sf-spacing-sm); }
+      }
     `,
   ];
 

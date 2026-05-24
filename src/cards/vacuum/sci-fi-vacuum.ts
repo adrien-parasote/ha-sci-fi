@@ -130,6 +130,21 @@ export class SciFiVacuumCard extends SciFiBaseCard {
         transition: all var(--sf-transition-fast);
       }
       .shortcut-btn:hover { border-color: var(--sf-primary); background: var(--sf-primary-dim); color: var(--sf-primary); }
+
+      /* ── Responsive ───────────────────────────────────────── */
+      @container sf-card (max-width: 599px) {
+        .vacuum-main {
+          flex-direction: column;
+          gap: var(--sf-spacing-sm);
+        }
+        .map-container {
+          width: 100%;
+          height: 160px;
+        }
+        .controls { flex-wrap: wrap; }
+        .ctrl-btn { flex: 1 1 calc(50% - var(--sf-spacing-sm)); }
+        .container { padding: var(--sf-spacing-sm); }
+      }
     `,
   ];
 

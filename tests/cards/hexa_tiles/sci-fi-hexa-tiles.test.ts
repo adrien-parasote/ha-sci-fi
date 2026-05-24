@@ -106,7 +106,7 @@ describe('sci-fi-hexa-tiles', () => {
     expect(badge.icon).to.equal('mdi:home-heart');
   });
 
-  it('renders interlocking rows of 4 columns max with left and right decorative half-hexagons', async () => {
+  it('renders interlocking rows of 2 columns with left and right decorative half-hexagons', async () => {
     const el = document.createElement('sci-fi-hexa-tiles') as SciFiHexaTilesCard;
     el.setConfig({
       type: 'custom:sci-fi-hexa-tiles',
@@ -135,19 +135,25 @@ describe('sci-fi-hexa-tiles', () => {
     await el.updateComplete;
 
     const rows = el.shadowRoot!.querySelectorAll('.hexa-row');
-    expect(rows.length).to.equal(2);
+    expect(rows.length).to.equal(3);
 
-    // Row 0 should chunk first 4 tiles and have left half-tile
+    // Row 0 should chunk first 2 tiles and have left half-tile
     const row0 = rows[0] as HTMLElement;
-    expect(row0.querySelectorAll('.hexa-tile').length).to.equal(4);
+    expect(row0.querySelectorAll('.hexa-tile').length).to.equal(2);
     expect(row0.querySelector('.hexa-half.left')).not.to.be.null;
     expect(row0.querySelector('.hexa-half.right')).to.be.null;
 
-    // Row 1 should chunk remaining 2 tiles and have right half-tile
+    // Row 1 should chunk next 2 tiles and have right half-tile
     const row1 = rows[1] as HTMLElement;
     expect(row1.querySelectorAll('.hexa-tile').length).to.equal(2);
     expect(row1.querySelector('.hexa-half.left')).to.be.null;
     expect(row1.querySelector('.hexa-half.right')).not.to.be.null;
+
+    // Row 2 should chunk remaining 2 tiles and have left half-tile
+    const row2 = rows[2] as HTMLElement;
+    expect(row2.querySelectorAll('.hexa-tile').length).to.equal(2);
+    expect(row2.querySelector('.hexa-half.left')).not.to.be.null;
+    expect(row2.querySelector('.hexa-half.right')).to.be.null;
   });
 
   it('renders weather tile with temperature and link navigation', async () => {

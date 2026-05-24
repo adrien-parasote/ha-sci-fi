@@ -54,8 +54,8 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
         width: 100%;
         height: 100%;
         border-radius: 50%;
-        border: 2px solid #007aff;
-        box-shadow: 0 0 8px #007aff;
+        border: 2px solid var(--sf-primary, #00d2ff);
+        box-shadow: 0 0 8px var(--sf-primary, #00d2ff);
         overflow: hidden;
         display: flex;
         align-items: center;
@@ -71,26 +71,22 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
       .avatar-initials {
         font-size: 1.5rem;
         font-weight: bold;
-        color: #007aff;
+        color: var(--sf-primary, #00d2ff);
       }
       .status-badge {
         position: absolute;
         top: -4px;
         right: -4px;
-        background: #000000;
-        border: 1.5px solid #007aff;
-        border-radius: 50%;
         width: 22px;
         height: 22px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 0 5px #007aff;
       }
       .status-badge sf-icon {
         --icon-width: 14px;
         --icon-height: 14px;
-        --icon-color: #007aff;
+        --icon-color: var(--sf-primary, #00d2ff);
       }
       .header-info {
         display: flex;
@@ -120,8 +116,8 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
 
       /* ===== Interlocking Hexagon Grid ===== */
       :host {
-        --tile-width: 86px;
-        --tile-height: 100px;
+        --tile-width: 120px;
+        --tile-height: 138px;
       }
       .hexa-grid {
         display: flex;
@@ -299,10 +295,10 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
       renderedTiles.push(this._renderCustomTile(tile));
     }
 
-    // Chunk tiles into rows of 4 columns maximum
+    // Chunk tiles into rows of 2 columns
     const tileRows: TemplateResult[][] = [];
-    for (let i = 0; i < renderedTiles.length; i += 4) {
-      tileRows.push(renderedTiles.slice(i, i + 4));
+    for (let i = 0; i < renderedTiles.length; i += 2) {
+      tileRows.push(renderedTiles.slice(i, i + 2));
     }
 
     return html`

@@ -3,17 +3,41 @@
  * Manages config updates and dispatches 'config-changed' for Lovelace.
  */
 
+import { updateWhenLocaleChanges } from '@lit/localize';
 import { LitElement, html, type TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
 import type { HomeAssistantExt } from '../types/ha.js';
 import type { SciFiBaseConfig } from '../types/config.js';
+import { getLocale, setLocale } from '../locales/localization.js';
 
 export abstract class SciFiBaseEditor extends LitElement {
+  private _hassInternal?: HomeAssistantExt;
+
+  get hass(): HomeAssistantExt | undefined {
+    return this._hassInternal;
+  }
+
   @property({ attribute: false })
-  public hass?: HomeAssistantExt;
+  set hass(hass: HomeAssistantExt | undefined) {
+    this._hassInternal = hass;
+    if (hass?.locale?.language && hass.locale.language !== getLocale()) {
+      void (async () => {
+        try {
+          await setLocale(hass.locale.language);
+        } catch (e) {
+          console.error(`Error loading locale ${hass.locale.language}: ${(e as Error).message}`);
+        }
+      })();
+    }
+  }
 
   @property({ attribute: false })
   protected config!: SciFiBaseConfig;
+
+  constructor() {
+    super();
+    updateWhenLocaleChanges(this);
+  }
 
   // ─── Config input ───────────────────────────────────────────────────────────
 

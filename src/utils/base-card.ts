@@ -8,14 +8,33 @@
  * - MUST call `this.validateConfig(config)` inside `setConfig()` before storing
  */
 
+import { updateWhenLocaleChanges } from '@lit/localize';
 import { LitElement, html, nothing, type TemplateResult, type PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import type { HomeAssistantExt } from '../types/ha.js';
 import type { SciFiBaseConfig } from '../types/config.js';
+import { getLocale, setLocale } from '../locales/localization.js';
 
 export abstract class SciFiBaseCard extends LitElement {
+  private _hass!: HomeAssistantExt;
+
+  get hass(): HomeAssistantExt {
+    return this._hass;
+  }
+
   @property({ attribute: false })
-  public hass!: HomeAssistantExt;
+  set hass(hass: HomeAssistantExt) {
+    this._hass = hass;
+    if (hass?.locale?.language && hass.locale.language !== getLocale()) {
+      void (async () => {
+        try {
+          await setLocale(hass.locale.language);
+        } catch (e) {
+          console.error(`Error loading locale ${hass.locale.language}: ${(e as Error).message}`);
+        }
+      })();
+    }
+  }
 
   @state()
   protected config!: SciFiBaseConfig;
@@ -23,24 +42,15 @@ export abstract class SciFiBaseCard extends LitElement {
   @state()
   protected _renderError: string | null = null;
 
-  // ─── Lit lifecycle ──────────────────────────────────────────────────────────
-
-  /**
-   * MEDIUM-02 fix: willUpdate is the sync point for locale.
-   * Any subclass that overrides this MUST call super.willUpdate(changedProperties) first.
-   */
-  override willUpdate(changedProperties: PropertyValues): void {
-    super.willUpdate(changedProperties);
-    // Locale sync hook — will be wired to @lit/localize in Step 6
-    if (changedProperties.has('hass') && this.hass) {
-      this._onHassLocaleChanged(this.hass.locale.language);
-    }
+  constructor() {
+    super();
+    updateWhenLocaleChanges(this);
   }
 
-  /** Called when the HA locale changes. Override to trigger locale sync. */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected _onHassLocaleChanged(_language: string): void {
-    // Default: no-op. Wired to syncHALocale in Step 6.
+  // ─── Lit lifecycle ──────────────────────────────────────────────────────────
+
+  override willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
   }
 
   // ─── Sealed render — subclasses MUST implement renderCard() ────────────────

@@ -1,3 +1,4 @@
+import { msg, updateWhenLocaleChanges } from '@lit/localize';
 import { LitElement, css, html, nothing, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { sciFiCommonStyles } from '../styles/common.js';
@@ -23,6 +24,11 @@ const HASS_CLIMATE_PRESET_MODE_AUTO = 'auto';
 
 @customElement('sf-radiator')
 export class SciFiRadiator extends LitElement {
+  constructor() {
+    super();
+    updateWhenLocaleChanges(this);
+  }
+
   static override styles = [
     sciFiCommonStyles,
     css`
@@ -368,20 +374,20 @@ export class SciFiRadiator extends LitElement {
 
   private __getLabel(key: string): string {
     const labels: Record<string, string> = {
-      [STATE_CLIMATE_HEAT]: 'heat',
-      [STATE_CLIMATE_COOL]: 'cool',
-      [STATE_CLIMATE_OFF]: 'off',
-      [STATE_CLIMATE_AUTO]: 'auto',
-      [HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION]: 'frost protection',
-      [HASS_CLIMATE_PRESET_MODE_FROST]: 'frost protection',
-      [HASS_CLIMATE_PRESET_MODE_ECO]: 'eco',
-      [HASS_CLIMATE_PRESET_MODE_COMFORT]: 'comfort',
-      [HASS_CLIMATE_PRESET_MODE_COMFORT_1]: 'comfort-1',
-      [HASS_CLIMATE_PRESET_MODE_COMFORT_2]: 'comfort-2',
-      [HASS_CLIMATE_PRESET_MODE_BOOST]: 'boost',
-      [HASS_CLIMATE_PRESET_MODE_NONE]: 'none',
-      [HASS_CLIMATE_PRESET_MODE_EXTERNAL]: 'external',
-      [HASS_CLIMATE_PRESET_MODE_PROG]: 'prog'
+      [STATE_CLIMATE_HEAT]: msg('heat'),
+      [STATE_CLIMATE_COOL]: msg('cool'),
+      [STATE_CLIMATE_OFF]: msg('off'),
+      [STATE_CLIMATE_AUTO]: msg('auto'),
+      [HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION]: msg('frost protection'),
+      [HASS_CLIMATE_PRESET_MODE_FROST]: msg('frost protection'),
+      [HASS_CLIMATE_PRESET_MODE_ECO]: msg('eco'),
+      [HASS_CLIMATE_PRESET_MODE_COMFORT]: msg('comfort'),
+      [HASS_CLIMATE_PRESET_MODE_COMFORT_1]: msg('comfort-1'),
+      [HASS_CLIMATE_PRESET_MODE_COMFORT_2]: msg('comfort-2'),
+      [HASS_CLIMATE_PRESET_MODE_BOOST]: msg('boost'),
+      [HASS_CLIMATE_PRESET_MODE_NONE]: msg('none'),
+      [HASS_CLIMATE_PRESET_MODE_EXTERNAL]: msg('external'),
+      [HASS_CLIMATE_PRESET_MODE_PROG]: msg('prog'),
     };
     return labels[key] || key;
   }

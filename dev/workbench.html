@@ -620,9 +620,9 @@
         <div style="display:flex; align-items:center; gap:8px;">
           <span>📋 Console</span>
           <div style="display:flex; gap:3px; overflow-x:auto; margin-left:8px;">
-            <button class="console-filter-btn active" data-filter="all" onclick="setConsoleFilter('all')">Tous</button>
+            <button class="console-filter-btn" data-filter="all" onclick="setConsoleFilter('all')">Tous</button>
             <button class="console-filter-btn" data-filter="info" onclick="setConsoleFilter('info')">Infos</button>
-            <button class="console-filter-btn" data-filter="warn" onclick="setConsoleFilter('warn')">Warns</button>
+            <button class="console-filter-btn active" data-filter="warn" onclick="setConsoleFilter('warn')">Warns</button>
             <button class="console-filter-btn" data-filter="error" onclick="setConsoleFilter('error')">Erreurs</button>
           </div>
         </div>
@@ -656,7 +656,7 @@
 
   // ─── Console proxy ──────────────────────────────────────────────────────
   const consoleEl = document.getElementById('console-area');
-  let activeConsoleFilter = 'all';
+  let activeConsoleFilter = 'warn';
 
   window.setConsoleFilter = (filterType) => {
     activeConsoleFilter = filterType;

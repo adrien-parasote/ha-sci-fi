@@ -293,3 +293,19 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Source**: ha-sci-fi — `sci-fi-weather.ts` chart timelines
 - **Evidence**: Modified 1 file (`sci-fi-weather.ts`). Changed `Intl.DateTimeFormat(navigator.language, ...)` to `Intl.DateTimeFormat(this.hass?.locale?.language || navigator.language, ...)` for timeline chart labels, so the timeline language matches the active user language instead of the browser system language.
 - **Pattern**: When rendering timeline charts or dynamic graphical components inside localized dashboards, do not force `navigator.language` directly for formatting times, dates, or currencies. Instead, always prioritize the active system user locale (`this.hass?.locale?.language`) as the formatting locale to ensure the timeline matches the user's explicit language preference.
+
+### L053: Editor UI Labels Must Route Through `getLabel()` — Never Direct `msg()` in Templates
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi v2 — i18n editor pass (6 editors fixed: hexa-tiles, lights, climates, plugs, vehicles, vacuum)
+- **Evidence**: 6 `*-editor.ts` files contained raw `msg()` calls in their Lit templates (some with hardcoded French strings like `msg('Ajouter une tuile')`). These strings bypassed `getLabel()`, so locale changes did NOT trigger UI updates in the editor. Anti-Pattern #9 in Spec 10 said "Wrap ALL labels in `msg()`" but failed to distinguish between `getLabel()` (the correct pattern for editors) and direct `msg()` calls (the wrong pattern).
+- **Anti-pattern**: In `SciFiBaseEditor` subclasses, calling `msg('Some label')` directly in the template. The string IS wrapped in `msg()` but is NOT registered in the `getLabel()` dictionary, meaning:
+  1. The hash for the string exists in `fr.ts` but the French translation is never actually applied when the locale changes via `updateWhenLocaleChanges()`.
+  2. Adding a NEW label requires only updating `fr.ts` — but no one remembers to also update `base-editor.ts` + `xliff/fr.xlf`.
+- **Fix (3-file coordinated change)**:
+  1. `src/utils/base-editor.ts` — add `'action-add-tile': msg('Add tile')` to `getLabel()` dictionary
+  2. `src/locales/locales/fr.ts` — add `s<hash>: 'Ajouter une tuile'` using hash from `generateMsgId(['Add tile'], false)` via `@lit/localize/internal/id-generation.js`
+  3. `xliff/fr.xlf` — add `<trans-unit id="s<hash>">` with source + target
+  4. In the editor template: `this.getLabel('action-add-tile')` (never `msg('...')`)
+- **Hash computation**: `node -e "const { generateMsgId } = require('@lit/localize/internal/id-generation.js'); console.log(generateMsgId(['Add tile'], false));"` — run from project root.
+- **Scope**: Applies to ALL `SciFiBaseEditor` subclasses. Applies any time a new UI label is added to an editor template.
+

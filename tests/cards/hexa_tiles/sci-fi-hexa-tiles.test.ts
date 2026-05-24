@@ -162,7 +162,7 @@ describe('sci-fi-hexa-tiles', () => {
     expect(row2.querySelector('.hexa-half.right')).to.be.null;
   });
 
-  it('renders weather tile with temperature and link navigation', async () => {
+  it('renders weather tile with custom weather icon and city name and link navigation', async () => {
     const el = document.createElement('sci-fi-hexa-tiles') as SciFiHexaTilesCard;
     // ADR-005: weather_entity (not weather_entity_id)
     el.setConfig({
@@ -172,14 +172,26 @@ describe('sci-fi-hexa-tiles', () => {
 
     el.hass = makeMockHass({
       states: {
-        'weather.home': makeMockEntity({ entity_id: 'weather.home', state: 'sunny', attributes: { temperature: 25.5 } })
+        'weather.home': makeMockEntity({
+          entity_id: 'weather.home',
+          state: 'sunny',
+          attributes: {
+            temperature: 25.5,
+            friendly_name: 'La Chapelle-sur-Erdre'
+          }
+        })
       }
     });
     document.body.appendChild(el);
     await el.updateComplete;
 
     const tile = el.shadowRoot!.querySelector('.hexa-tile') as HTMLElement;
-    expect(tile.textContent).to.include('25.5°');
+    expect(tile.textContent).to.include('La Chapelle-sur-Erdre');
+    expect(tile.textContent).not.to.include('25.5°');
+
+    const iconEl = tile.querySelector('sf-icon') as any;
+    expect(iconEl).not.to.be.null;
+    expect(iconEl.icon).to.equal('mdi:weather-sunny');
 
     // Mock window.history.pushState (happy-dom has no history API)
     const pushStateMock = vi.fn();

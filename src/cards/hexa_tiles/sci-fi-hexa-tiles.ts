@@ -13,6 +13,23 @@ import type { HassEntity } from '../../types/ha.js';
 
 const TAG = 'sci-fi-hexa-tiles';
 
+const WEATHER_ICON_MAP: Record<string, string> = {
+  'clear-night': 'mdi:weather-night',
+  'cloudy': 'mdi:weather-cloudy',
+  'fog': 'mdi:weather-fog',
+  'hail': 'mdi:weather-hail',
+  'lightning': 'mdi:weather-lightning',
+  'lightning-rainy': 'mdi:weather-lightning-rainy',
+  'partlycloudy': 'mdi:weather-partly-cloudy',
+  'pouring': 'mdi:weather-pouring',
+  'rainy': 'mdi:weather-rainy',
+  'snowy': 'mdi:weather-snowy',
+  'snowy-rainy': 'mdi:weather-snowy-rainy',
+  'sunny': 'mdi:weather-sunny',
+  'windy': 'mdi:weather-windy',
+  'windy-variant': 'mdi:weather-windy-variant',
+};
+
 @customElement(TAG)
 export class SciFiHexaTilesCard extends SciFiBaseCard {
   static override styles = [
@@ -357,7 +374,6 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     }
 
     const tilesPerRow = this._cols;
-    const currentSlots = tilesPerRow * this._minRows;
     const entitiesCount = renderedTiles.length;
     const neededRows = Math.ceil(entitiesCount / tilesPerRow);
     const totalRows = Math.max(neededRows, this._minRows);
@@ -498,8 +514,9 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     if (!weather?.weather_entity) return html``;
     const state = this.hass.states[weather.weather_entity];
     if (!state) return html``;
-    const temp = state.attributes['temperature'] as number | undefined;
     const name = state.attributes.friendly_name ?? 'Météo';
+    const condition = state.state;
+    const icon = WEATHER_ICON_MAP[condition] ?? 'mdi:weather-cloudy';
 
     return html`
       <div class="hexa-tile" data-active="false" aria-label="${name}" @click="${() => weather.link ? this._navigate(weather.link) : undefined}">
@@ -508,8 +525,8 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
           <polygon class="hexa-border" points="66,4 128,43 128,121 66,160 4,121 4,43" />
         </svg>
         <div class="hexa-content">
-          <sf-icon .icon="mdi:weather-cloudy" .connection="${this.hass.connection}"></sf-icon>
-          <span class="tile-label">${temp !== null && temp !== undefined ? `${temp}°` : state.state}</span>
+          <sf-icon .icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
+          <span class="tile-label">${name}</span>
         </div>
       </div>
     `;

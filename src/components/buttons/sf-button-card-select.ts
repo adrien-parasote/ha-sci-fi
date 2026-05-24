@@ -30,7 +30,7 @@ export class SciFiCardSelectButton extends SciFiCardButton {
         background-color: var(--sf-bg-primary);
         flex-direction: column;
         min-height: fit-content;
-        border: var(--sf-border-width, 1px) solid var(--sf-bg-secondary);
+        border: var(--sf-border-width, 1px) solid var(--sf-border);
         border-bottom: none;
         border-top-left-radius: var(--sf-border-radius, 8px);
         border-top-right-radius: var(--sf-border-radius, 8px);
@@ -41,19 +41,21 @@ export class SciFiCardSelectButton extends SciFiCardButton {
       }
       .items.left {
         bottom: 0;
+        top: auto;
         transform: translateX(-100%);
         border-radius: var(--sf-border-radius, 8px);
-        border-bottom: var(--sf-border-width, 1px) solid var(--sf-bg-secondary);
+        border: var(--sf-border-width, 1px) solid var(--sf-border);
       }
       .items.left.down {
         top: 0;
+        bottom: auto;
       }
       .items .item {
         display: flex;
         flex-direction: row;
         column-gap: 5px;
         padding: 5px;
-        border-bottom: var(--sf-border-width, 1px) solid var(--sf-bg-secondary);
+        border-bottom: var(--sf-border-width, 1px) solid var(--sf-border);
         min-width: 90px;
         text-transform: capitalize;
         align-items: center;

@@ -139,3 +139,10 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Evidence**: `<sf-icon>` renders `<svg class="sf-icon">` in the Light DOM (using `createRenderRoot() { return this; }`). Inside shadow DOM cards setting CSS variables `--icon-width` and `--icon-height` on `<sf-icon>`, but without active rules in card styles mapping these variables to the actual SVG's `width`, `height`, and `fill` (e.g. `sf-icon svg, .sf-icon { width: var(--icon-width); height: var(--icon-height); fill: var(--icon-color); }`), the SVG collapses to `0x0` or renders with default black fill on black backgrounds, becoming completely invisible.
 - **Pattern**: When using custom elements that render in the Light DOM (like `sf-icon`), you must ensure that card stylesheets or global stylesheets map any custom layout variables (width, height, color) directly to the target Light DOM SVG element inside.
 
+### L031: Promise Caching for Heavy Websocket API Category Fetches
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi v2 — icon-cache.ts + /self-debug
+- **Evidence**: On initial page load, multiple components fetch icons concurrently. The custom icon resolver sent a websocket request `frontend/get_icons` for *each* icon because it didn't cache the active query promise. When loading 10+ icons concurrently, this: (1) hit the concurrency limit (`MAX_CONCURRENT_FETCHES = 5`), instantly returning `ICON_NOT_FOUND` (fallback `?`) for subsequent requests, and (2) sent redundant massive websocket payloads (thousands of icons) to the HA server.
+- **Pattern**: When fetching heavy categories of data from a WebSocket API concurrently, always cache the active `Promise` globally. All concurrent callers will wait for the same promise to resolve. Clear this promise cache in global test resets (`clearMemCache()`) to ensure isolated test suites.
+
+

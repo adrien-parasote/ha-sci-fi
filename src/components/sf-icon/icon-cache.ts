@@ -75,28 +75,33 @@ export interface MdiIconsResponse {
   resources: Record<string, string>; // icon name → path data
 }
 
+let registryPromise: Promise<MdiIconsResponse> | null = null;
+
+async function getMdiRegistry(connection: HassIconConnection): Promise<MdiIconsResponse> {
+  if (!registryPromise) {
+    registryPromise = connection.sendMessagePromise<MdiIconsResponse>({
+      type: 'frontend/get_icons',
+      category: 'mdi',
+    }).catch(err => {
+      registryPromise = null; // clear on error to retry next time
+      throw err;
+    });
+  }
+  return registryPromise;
+}
+
 /** Fetch MDI icon path from HA native icon registry. No CDN. */
 async function fetchMdiFromHass(
   connection: HassIconConnection,
   iconName: string
 ): Promise<string | null> {
-  if (activeFetches >= MAX_CONCURRENT_FETCHES) {
-    console.warn(`[sf-icon] Rate limit reached (${MAX_CONCURRENT_FETCHES} concurrent fetches)`);
-    return null;
-  }
-  activeFetches++;
   try {
-    const response = await connection.sendMessagePromise<MdiIconsResponse>({
-      type: 'frontend/get_icons',
-      category: 'mdi',
-    });
+    const response = await getMdiRegistry(connection);
     const pathData = response?.resources?.[iconName];
     return pathData ?? null;
   } catch (err) {
     console.warn(`[sf-icon] Failed to fetch icon '${iconName}' from HA registry:`, err);
     return null;
-  } finally {
-    activeFetches--;
   }
 }
 
@@ -132,6 +137,7 @@ export function clearMemCache(): void {
   memCache.clear();
   idbAvailable = null;
   activeFetches = 0;
+  registryPromise = null;
 }
 
 /** Expose for testing only. */

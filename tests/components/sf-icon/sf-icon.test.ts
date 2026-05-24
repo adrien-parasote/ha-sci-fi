@@ -122,4 +122,35 @@ describe('sf-icon', () => {
     const path = el.querySelector('path')!;
     expect(path.getAttribute('d')).to.include('M11.5,2C6.81,2');
   });
+
+  it('renders native ha-icon if ha-icon is registered as a custom element', async () => {
+    // Define ha-icon custom element for this test if not already defined
+    if (!customElements.get('ha-icon')) {
+      customElements.define('ha-icon', class extends HTMLElement {
+        static get observedAttributes() { return ['icon']; }
+        icon = '';
+        attributeChangedCallback(name: string, oldVal: string, newVal: string) {
+          if (name === 'icon') {
+            this.icon = newVal;
+            this.innerHTML = `<span class="mock-ha-icon-content">${newVal}</span>`;
+          }
+        }
+      });
+    }
+
+    const el = document.createElement('sf-icon') as SfIcon;
+    el.icon = 'mdi:weather-sunny';
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const haIcon = el.querySelector('ha-icon');
+    expect((haIcon as any).icon).to.equal('mdi:weather-sunny');
+    
+    // Verify CSS styles mapping
+    const styleAttr = haIcon?.getAttribute('style');
+    expect(styleAttr).to.include('--mdc-icon-size');
+    expect(styleAttr).to.include('width');
+    expect(styleAttr).to.include('height');
+    expect(styleAttr).to.include('color');
+  });
 });

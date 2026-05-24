@@ -72,7 +72,7 @@ src/
 
 | # | Anti-Pattern | Violation | Correct Behavior |
 |---|---|---|---|
-| 1 | Heavy SVG requests | Fetch MDI icon from external CDN on every render | Query `icon-cache.ts` module-level Map first; use HA native icon registry via `hass.connection.sendMessagePromise({type: 'frontend/get_icons', category: 'mdi'})` — **never unpkg/jsdelivr CDN** (breaks offline HA) |
+| 1 | Heavy SVG requests | Fetch MDI icon from external CDN on every render | Query `icon-cache.ts` module-level Map first; in live HA environment (if `<ha-icon>` custom element is registered), directly bypass the deprecated `'mdi'` WebSocket registry call and render `<ha-icon .icon="${this.icon}"></ha-icon>` natively — **never unpkg/jsdelivr CDN** (breaks offline HA) |
 | 2 | Hardcoded CDN URL | `fetch('https://unpkg.com/@mdi/svg/...')` | Use HA native registry or local HACS file path `hacsfiles/ha-sci-fi/icons/` — see CRITICAL-01 |
 | 3 | Component styles leak | Global stylesheet inclusion | Define elements within scoped Lit Shadow DOM |
 | 4 | Manual event dispatching | Mutating card config values | Dispatch standard custom element events with `composed: true` |
@@ -101,7 +101,7 @@ src/
 
 | Error | Detection | Response | Fallback |
 |---|---|---|---|
-| Icon not in HA registry | `hass.connection.sendMessagePromise` resolves empty | Log warning, render nothing | Render `mdi:help-circle` placeholder icon |
-| IndexedDB blocked (incognito) | `idb-keyval` `get()`/`set()` throws `DOMException` | Catch, log warning: `[sf-icon] IndexedDB unavailable, using in-memory fallback` | Use module-level `Map` as volatile cache; rate-limit concurrent fetches to 5 simultaneous max via counter |
+| Icon not in HA registry | `<ha-icon>` fail or `resolveIcon` returns `ICON_NOT_FOUND` | Log warning, render nothing | Render `mdi:help-circle` placeholder icon |
+| IndexedDB blocked (incognito) | `idb-keyval` `get()`/`set()` throws `DOMException` | Catch, log warning: `[sf-icon] IndexedDB unavailable, using in-memory fallback` | Use module-level `Map` as volatile fallback cache |
 | Icon fetch fails entirely | Network error or 404 | Catch, warn | `nothing` rendered — no crash |
 | Event dispatch error | Event bubbling fails | Let browser log stack trace | Prevent default, execute safe error boundary catch |

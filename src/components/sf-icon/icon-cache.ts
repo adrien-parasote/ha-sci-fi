@@ -17,8 +17,7 @@ import { get, set } from 'idb-keyval';
 
 const memCache = new Map<string, string>();
 let idbAvailable: boolean | null = null; // null = not yet tested
-let activeFetches = 0;
-const MAX_CONCURRENT_FETCHES = 5;
+
 
 // ─── IDB availability check ───────────────────────────────────────────────────
 
@@ -139,7 +138,7 @@ export async function resolveIcon(
 export function clearMemCache(): void {
   memCache.clear();
   idbAvailable = null;
-  activeFetches = 0;
+
   registryPromises = new WeakMap();
 }
 

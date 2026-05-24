@@ -42,6 +42,14 @@ export class SfIcon extends LitElement {
 
   override willUpdate(changed: Map<string, unknown>): void {
     if ((changed.has('icon') || changed.has('connection')) && this.icon) {
+      const [prefix] = this.icon.split(':');
+      const isHaIconRegistered = typeof customElements !== 'undefined' && customElements.get('ha-icon') !== undefined;
+
+      if (prefix === 'mdi' && isHaIconRegistered) {
+        // Skip async resolution, we'll render <ha-icon> natively
+        this._pathData = null;
+        return;
+      }
       void this._resolveIcon();
     }
   }
@@ -90,6 +98,24 @@ export class SfIcon extends LitElement {
   }
 
   override render(): TemplateResult | typeof nothing {
+    const [prefix] = this.icon ? this.icon.split(':') : [''];
+    const isHaIconRegistered = typeof customElements !== 'undefined' && customElements.get('ha-icon') !== undefined;
+
+    if (prefix === 'mdi' && isHaIconRegistered) {
+      return html`
+        <ha-icon
+          .icon="${this.icon}"
+          style="
+            --mdc-icon-size: var(--icon-width, 24px);
+            width: var(--icon-width, 24px);
+            height: var(--icon-height, 24px);
+            color: var(--icon-color, currentColor);
+            display: inline-block;
+          "
+        ></ha-icon>
+      `;
+    }
+
     if (this._loading) {
       return html`<svg viewBox="0 0 24 24" class="sf-icon sf-icon--loading"></svg>`;
     }

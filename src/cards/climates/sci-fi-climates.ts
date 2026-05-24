@@ -1,6 +1,7 @@
 /**
- * <sci-fi-climates> — v2
- * Shows all climate entities grouped by area, with temperature display.
+ * <sci-fi-climates> — v1.0.0
+ * Shows all climate entities grouped, with temperature display.
+ * Supports custom state_icons, state_colors, mode_icons, mode_colors (ADR-005).
  */
 
 import { html, css, type TemplateResult } from 'lit';
@@ -8,10 +9,26 @@ import { customElement } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
-import type { SciFiClimatesConfig } from '../../types/config.js';
+import type {
+  SciFiClimatesConfig,
+  SciFiStateIconsConfig,
+  SciFiStateColorsConfig,
+} from '../../types/config.js';
 import { getClimateEntitiesExcluding, isClimateActive } from '../../selectors/climate.js';
 
 const TAG = 'sci-fi-climates';
+
+const DEFAULT_STATE_ICONS: Required<SciFiStateIconsConfig> = {
+  auto: 'sci:radiator-auto',
+  off: 'sci:radiator-off',
+  heat: 'sci:radiator-heat',
+};
+
+const DEFAULT_STATE_COLORS: Required<SciFiStateColorsConfig> = {
+  auto: '#669cd2',
+  off: '#6c757d',
+  heat: '#ff7f50',
+};
 
 @customElement(TAG)
 export class SciFiClimatesCard extends SciFiBaseCard {
@@ -26,7 +43,7 @@ export class SciFiClimatesCard extends SciFiBaseCard {
       }
       .climate-tile {
         background: var(--sf-bg-secondary);
-        border: 1px solid var(--sf-border);
+        border: 2px solid var(--sf-border);
         border-radius: var(--sf-radius);
         padding: var(--sf-spacing-md);
         display: flex;
@@ -36,7 +53,6 @@ export class SciFiClimatesCard extends SciFiBaseCard {
         transition: border-color var(--sf-transition-fast);
       }
       .climate-tile[data-active="true"] {
-        border-color: var(--sf-primary);
         background: var(--sf-primary-dim);
       }
       .climate-name {
@@ -54,6 +70,13 @@ export class SciFiClimatesCard extends SciFiBaseCard {
       .climate-state {
         font-size: var(--sf-font-size-sm);
         text-transform: capitalize;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .climate-mode {
+        font-size: var(--sf-font-size-xs, 0.7rem);
+        color: var(--sf-text-disabled);
       }
     `,
   ];
@@ -61,8 +84,13 @@ export class SciFiClimatesCard extends SciFiBaseCard {
   declare config: SciFiClimatesConfig;
 
   protected override renderCard(): TemplateResult {
-    const excluded = this.config.excluded_entity_ids ?? [];
+    // ADR-005: field is entities_to_exclude (not excluded_entity_ids)
+    const excluded = this.config.entities_to_exclude ?? [];
     const climates = getClimateEntitiesExcluding(this.hass, excluded);
+
+    if (climates.length === 0) {
+      return html`<ha-card><div class="container">Aucun radiateur configuré</div></ha-card>`;
+    }
 
     return html`
       <ha-card>
@@ -84,14 +112,19 @@ export class SciFiClimatesCard extends SciFiBaseCard {
     const h = this.config.header;
     if (!h?.display && !this.config.header_message) return html``;
 
-    const iconKey = this.hass.states['sensor.season']?.state === 'winter'
-      ? (h?.icon_winter_state ?? 'mdi:snowflake')
-      : (h?.icon_summer_state ?? 'mdi:white-balance-sunny');
+    const isWinter = this.hass.states['sensor.season']?.state === 'winter';
+    const iconKey = isWinter
+      ? (h?.icon_winter_state ?? 'mdi:thermometer-chevron-up')
+      : (h?.icon_summer_state ?? 'mdi:thermometer-chevron-down');
+
+    // ADR-005: message_winter_state and message_summer_state now supported
+    const message = this.config.header_message
+      ?? (isWinter ? (h?.message_winter_state ?? 'Winter is coming') : (h?.message_summer_state ?? 'Summer time'));
 
     return html`
       <div class="sf-header">
         <sf-icon .icon="${iconKey}" .connection="${this.hass.connection}"></sf-icon>
-        ${this.config.header_message ?? ''}
+        ${message}
       </div>
     `;
   }
@@ -101,25 +134,47 @@ export class SciFiClimatesCard extends SciFiBaseCard {
   ): TemplateResult {
     const state = this.hass.states[entry.entity_id];
     const active = isClimateActive(this.hass, entry.entity_id);
+    const hvacMode = state?.state ?? 'off';
+    const presetMode = state?.attributes['preset_mode'] as string | undefined;
     const name = state?.attributes.friendly_name ?? entry.entity_id;
     const currentTemp = state?.attributes['current_temperature'] as number | undefined;
     const targetTemp = state?.attributes['temperature'] as number | undefined;
+
+    // ADR-005: state_icons and state_colors from config (with defaults)
+    const stateIcons = { ...DEFAULT_STATE_ICONS, ...(this.config.state_icons ?? {}) };
+    const stateColors = { ...DEFAULT_STATE_COLORS, ...(this.config.state_colors ?? {}) };
+
+    // ADR-005: mode_icons and mode_colors from config (no default — user-defined)
+    const modeIcons = this.config.mode_icons ?? {};
+    const modeColors = this.config.mode_colors ?? {};
+
+    // Determine icon and color: prefer preset mode lookup, fall back to hvac mode
+    const iconKey = (presetMode && (modeIcons as Record<string, string>)[presetMode])
+      ? (modeIcons as Record<string, string>)[presetMode]!
+      : (stateIcons as Record<string, string>)[hvacMode] ?? stateIcons.off;
+
+    const color = (presetMode && (modeColors as Record<string, string>)[presetMode])
+      ? (modeColors as Record<string, string>)[presetMode]!
+      : (stateColors as Record<string, string>)[hvacMode] ?? stateColors.off;
 
     return html`
       <div
         class="climate-tile"
         data-active="${active}"
+        style="border-color: ${color}"
         role="button"
         tabindex="0"
-        aria-label="${name}: ${state?.state ?? 'inconnu'}"
-        @click="${() => this._callToggle(entry.entity_id, state?.state ?? 'off')}"
+        aria-label="${name}: ${hvacMode}"
+        @click="${() => this._callToggle(entry.entity_id, hvacMode)}"
       >
         <div class="climate-name">${name}</div>
-        <div class="climate-temp">${currentTemp !== null ? `${currentTemp}°` : '--'}</div>
-        <div class="climate-state ${active ? 'sf-state-on' : 'sf-state-off'}">
-          ${state?.state ?? 'inconnu'}
-          ${targetTemp !== null ? ` → ${targetTemp}°` : ''}
+        <div class="climate-temp">${currentTemp !== null && currentTemp !== undefined ? `${currentTemp}°` : '--'}</div>
+        <div class="climate-state" style="color: ${color}">
+          <sf-icon .icon="${iconKey}" .connection="${this.hass.connection}"></sf-icon>
+          ${hvacMode}
+          ${targetTemp !== null && targetTemp !== undefined ? ` → ${targetTemp}°` : ''}
         </div>
+        ${presetMode ? html`<div class="climate-mode">${presetMode}</div>` : ''}
       </div>
     `;
   }

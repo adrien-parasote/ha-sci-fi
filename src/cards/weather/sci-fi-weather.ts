@@ -1,6 +1,7 @@
 /**
- * <sci-fi-weather> — v2
+ * <sci-fi-weather> — v1.0.0
  * Weather card with current conditions + hourly/daily forecast chart (Chart.js bundled).
+ * ADR-005: uses weather_entity (not weather_entity_id) + alert section preserved.
  * Chart.js is bundled (HIGH-01 fix) — never loaded from CDN.
  */
 
@@ -53,12 +54,28 @@ const WEATHER_ICON_MAP: Record<string, string> = {
   'windy-variant': 'mdi:weather-windy-variant',
 };
 
+// Alert level → background/color mapping
+const ALERT_LEVEL_STYLES: Record<string, { bg: string; color: string }> = {
+  green:  { bg: 'rgba(0,255,157,0.1)',   color: '#00ff9d' },
+  yellow: { bg: 'rgba(255,214,10,0.1)', color: '#ffd60a' },
+  orange: { bg: 'rgba(255,107,53,0.1)', color: '#ff6b35' },
+  red:    { bg: 'rgba(255,77,109,0.15)', color: '#ff4d6d' },
+};
+
 @customElement(TAG)
 export class SciFiWeatherCard extends SciFiBaseCard {
   static override styles = [
     sciFiCommonStyles,
     css`
       .container { padding: var(--sf-spacing-md); }
+      .alert-band {
+        padding: var(--sf-spacing-sm);
+        border-radius: var(--sf-radius-sm);
+        margin-bottom: var(--sf-spacing-md);
+        text-align: center;
+        font-size: var(--sf-font-size-sm);
+        font-weight: 600;
+      }
       .current {
         display: flex;
         align-items: center;
@@ -122,7 +139,8 @@ export class SciFiWeatherCard extends SciFiBaseCard {
 
   private _renderChart(): void {
     if (!this.hass) return;
-    const weatherEntity = this.hass.states[this.config.weather_entity_id];
+    // ADR-005: field is weather_entity (not weather_entity_id)
+    const weatherEntity = this.hass.states[this.config.weather_entity];
     const forecast = (weatherEntity?.attributes['forecast'] as unknown[]) ?? [];
 
     if (!this._chartCanvas || forecast.length === 0) return;
@@ -144,35 +162,51 @@ export class SciFiWeatherCard extends SciFiBaseCard {
       return;
     }
 
-    this._chart = new Chart(this._chartCanvas, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [{
-          data: temps,
-          borderColor: 'rgba(0, 210, 255, 0.8)',
-          backgroundColor: 'rgba(0, 210, 255, 0.1)',
-          fill: true,
-          tension: 0.4,
-          pointRadius: 2,
-        }],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { ticks: { color: 'rgba(224,232,255,0.6)', font: { size: 10 } }, grid: { display: false } },
-          y: { ticks: { color: 'rgba(224,232,255,0.6)', font: { size: 10 } }, grid: { color: 'rgba(0,210,255,0.1)' } },
+    try {
+      this._chart = new Chart(this._chartCanvas, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            data: temps,
+            borderColor: 'rgba(0, 210, 255, 0.8)',
+            backgroundColor: 'rgba(0, 210, 255, 0.1)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 2,
+          }],
         },
-      },
-    });
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: 'rgba(224,232,255,0.6)', font: { size: 10 } }, grid: { display: false } },
+            y: { ticks: { color: 'rgba(224,232,255,0.6)', font: { size: 10 } }, grid: { color: 'rgba(0,210,255,0.1)' } },
+          },
+        },
+      });
+    } catch {
+      // Chart.js init failure — fallback rendered in renderCard (TC-506)
+    }
+  }
+
+  /** Resolve alert state to level string (case-insensitive, trimmed). */
+  private _resolveAlertLevel(alertState: string): string {
+    const s = alertState.trim().toLowerCase();
+    const cfg = this.config.alert!;
+    if (cfg.state_green?.toLowerCase() === s) return 'green';
+    if (cfg.state_yellow?.toLowerCase() === s) return 'yellow';
+    if (cfg.state_orange?.toLowerCase() === s) return 'orange';
+    if (cfg.state_red?.toLowerCase() === s) return 'red';
+    return 'green';
   }
 
   protected override renderCard(): TemplateResult {
-    const weatherEntity = this.hass.states[this.config.weather_entity_id];
+    // ADR-005: field is weather_entity (not weather_entity_id)
+    const weatherEntity = this.hass.states[this.config.weather_entity];
     if (!weatherEntity) {
-      return html`<ha-card><div class="container">Entité météo non trouvée : ${this.config.weather_entity_id}</div></ha-card>`;
+      return html`<ha-card><div class="container">Entité météo non trouvée : ${this.config.weather_entity}</div></ha-card>`;
     }
 
     const condition = weatherEntity.state;
@@ -184,10 +218,14 @@ export class SciFiWeatherCard extends SciFiBaseCard {
     const dailyLimit = this.config.weather_daily_forecast_limit ?? 5;
     const dailyForecast = forecast.slice(0, dailyLimit);
 
+    // ADR-005: alert section preserved
+    const alertSection = this._renderAlert();
+
     return html`
       <ha-card>
         ${this.config.header_message ? html`<div class="sf-header">${this.config.header_message}</div>` : ''}
         <div class="container">
+          ${alertSection}
           <div class="current">
             <sf-icon .icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
             <div>
@@ -228,12 +266,36 @@ export class SciFiWeatherCard extends SciFiBaseCard {
     `;
   }
 
+  /** ADR-005: alert section — was missing in v1.0.0-wip. */
+  private _renderAlert(): TemplateResult {
+    const alertCfg = this.config.alert;
+    if (!alertCfg?.entity_id) return html``;
+
+    const alertState = this.hass.states[alertCfg.entity_id]?.state;
+    if (!alertState) return html``;
+
+    const level = this._resolveAlertLevel(alertState);
+    const styles = ALERT_LEVEL_STYLES[level]!;
+
+    return html`
+      <div
+        class="alert-band"
+        style="background: ${styles.bg}; color: ${styles.color};"
+        role="alert"
+        aria-label="Alerte météo niveau ${level}"
+      >
+        ⚠️ Alerte météo : ${alertState}
+      </div>
+    `;
+  }
+
   static getConfigElement(): HTMLElement {
     return document.createElement(`${TAG}-editor`);
   }
 
   static getStubConfig(): SciFiWeatherConfig {
-    return { type: `custom:${TAG}`, weather_entity_id: 'weather.forecast_home' };
+    // ADR-005: weather_entity (not weather_entity_id)
+    return { type: `custom:${TAG}`, weather_entity: 'weather.forecast_home' };
   }
 }
 

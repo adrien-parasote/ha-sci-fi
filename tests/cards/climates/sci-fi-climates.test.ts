@@ -18,7 +18,7 @@ describe('sci-fi-climates', () => {
   });
 
   afterEach(() => {
-    document.body.innerHTML = '';
+    document.body.replaceChildren();
     vi.resetAllMocks();
   });
 
@@ -105,7 +105,8 @@ describe('sci-fi-climates', () => {
     await el.updateComplete;
 
     const icon = el.shadowRoot!.querySelector('sf-icon') as unknown as any;
-    expect(icon?.icon).to.equal('mdi:snowflake');
+    // ADR-005: default icon_winter_state = 'mdi:thermometer-chevron-up'
+    expect(icon?.icon).to.equal('mdi:thermometer-chevron-up');
     expect(el.shadowRoot!.textContent).to.include('Winter Mode');
   });
 
@@ -117,12 +118,14 @@ describe('sci-fi-climates', () => {
     await el.updateComplete;
 
     const icon = el.shadowRoot!.querySelector('sf-icon') as unknown as any;
-    expect(icon?.icon).to.equal('mdi:white-balance-sunny');
+    // ADR-005: default icon_summer_state = 'mdi:thermometer-chevron-down'
+    expect(icon?.icon).to.equal('mdi:thermometer-chevron-down');
   });
 
   it('respects excluded_entity_ids config', async () => {
     const el = document.createElement('sci-fi-climates') as SciFiClimatesCard;
-    el.setConfig({ type: 'custom:sci-fi-climates', header: { display: false }, excluded_entity_ids: ['climate.hidden'] } as unknown as unknown as any);
+    // ADR-005: entities_to_exclude (not excluded_entity_ids)
+    (el as any).setConfig({ type: 'custom:sci-fi-climates', header: { display: false }, entities_to_exclude: ['climate.hidden'] });
     el.hass = makeMockHass({
       entities: {
         'climate.shown': makeMockEntityEntry({ entity_id: 'climate.shown', domain: 'climate' }),
@@ -135,5 +138,25 @@ describe('sci-fi-climates', () => {
     const tiles = el.shadowRoot!.querySelectorAll('.climate-tile');
     expect(tiles.length).to.equal(1);
     expect(tiles[0]!.querySelector('.climate-name')!.textContent).to.include('climate.shown');
+  });
+
+  it('renders "Aucun radiateur" message when no climates exist', async () => {
+    const el = document.createElement('sci-fi-climates') as SciFiClimatesCard;
+    // Branch coverage: climates.length === 0 → early return with message (L94)
+    el.setConfig(SciFiClimatesCard.getStubConfig());
+    el.hass = makeMockHass({
+      entities: {
+        // No climate entities — only other domains
+        'light.salon': { entity_id: 'light.salon', area_id: 'living_room', device_id: null,
+          disabled_by: null, domain: 'light', platform: 'hue', labels: [] },
+      },
+      states: {}
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    expect(el.shadowRoot!.textContent).to.include('Aucun radiateur configuré');
+    const tiles = el.shadowRoot!.querySelectorAll('.climate-tile');
+    expect(tiles.length).to.equal(0);
   });
 });

@@ -1,6 +1,7 @@
 /**
- * <sci-fi-hexa-tiles> — v2
- * Hexagonal tile dashboard: weather overview, person presence, vehicle location, custom tiles.
+ * <sci-fi-hexa-tiles> — v1.0.0
+ * Hexagonal tile dashboard: weather overview, person presence, custom tiles.
+ * ADR-005: tiles use entity/active_icon/inactive_icon/state_on/link (not entity_id/icon/tap_action).
  */
 
 import { html, css, type TemplateResult } from 'lit';
@@ -79,8 +80,6 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
 
   protected override renderCard(): TemplateResult {
     const tiles = this.config.tiles ?? [];
-    const persons = this.config.persons ?? [];
-    const vehicles = this.config.vehicles ?? [];
     const weather = this.config.weather;
 
     return html`
@@ -90,9 +89,12 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
           ${weather?.activate ? this._renderWeatherAlert(weather) : ''}
           <div class="hexa-grid">
             ${this._renderWeatherTile(weather)}
-            ${repeat(persons, p => p, p => this._renderPersonTile(p))}
-            ${repeat(vehicles, v => v, v => this._renderVehicleTile(v))}
-            ${repeat(tiles, t => t.entity_id, t => this._renderCustomTile(t))}
+            ${repeat(
+              tiles,
+              // ADR-005: tiles use entity (not entity_id), fallback to name/index
+              (t, i) => t.entity ?? t.name ?? String(i),
+              t => this._renderCustomTile(t)
+            )}
           </div>
         </div>
       </ha-card>
@@ -100,8 +102,9 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
   }
 
   private _renderWeatherAlert(weather: NonNullable<SciFiHexaTilesConfig['weather']>): TemplateResult {
-    const alertState = weather.weather_alert_entity_id
-      ? this.hass.states[weather.weather_alert_entity_id]?.state
+    // ADR-005: weather_alert_entity (not weather_alert_entity_id)
+    const alertState = weather.weather_alert_entity
+      ? this.hass.states[weather.weather_alert_entity]?.state
       : null;
     if (!alertState) return html``;
 
@@ -121,8 +124,9 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
   }
 
   private _renderWeatherTile(weather: SciFiHexaTilesConfig['weather']): TemplateResult {
-    if (!weather?.weather_entity_id) return html``;
-    const state = this.hass.states[weather.weather_entity_id];
+    // ADR-005: weather_entity (not weather_entity_id)
+    if (!weather?.weather_entity) return html``;
+    const state = this.hass.states[weather.weather_entity];
     if (!state) return html``;
     const temp = state.attributes['temperature'] as number | undefined;
     return html`
@@ -133,38 +137,30 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     `;
   }
 
-  private _renderPersonTile(entityId: string): TemplateResult {
-    const state = this.hass.states[entityId];
-    if (!state) return html``;
-    const isHome = state.state === 'home';
-    const name = state.attributes.friendly_name ?? entityId;
-    return html`
-      <div class="hexa-tile" data-active="${isHome}">
-        <sf-icon
-          .icon="${isHome ? 'mdi:account-check' : 'mdi:account-off'}"
-          .connection="${this.hass.connection}"
-        ></sf-icon>
-        <span class="tile-label">${name}</span>
-      </div>
-    `;
-  }
-
-  private _renderVehicleTile(entityId: string): TemplateResult {
-    const state = this.hass.states[entityId];
-    if (!state) return html``;
-    const name = state.attributes.friendly_name ?? entityId;
-    return html`
-      <div class="hexa-tile" data-active="false">
-        <sf-icon .icon="mdi:car" .connection="${this.hass.connection}"></sf-icon>
-        <span class="tile-label">${name}</span>
-      </div>
-    `;
-  }
-
   private _renderCustomTile(tile: SciFiHexaTileConfig): TemplateResult {
-    const state = this.hass.states[tile.entity_id];
-    const isActive = state?.state === 'on';
-    const name = tile.name ?? state?.attributes.friendly_name ?? tile.entity_id;
+    // ADR-005: tile uses entity (not entity_id), active_icon/inactive_icon (not icon)
+    const entityId = tile.entity;
+    const state = entityId ? this.hass.states[entityId] : undefined;
+
+    // Determine if tile is "active" using state_on array or fallback to state === 'on'
+    const isActive = state
+      ? (tile.state_on
+          ? tile.state_on.includes(state.state)
+          : state.state === 'on')
+      : false;
+
+    const name = tile.name ?? state?.attributes.friendly_name ?? entityId ?? '';
+
+    // ADR-005: active_icon/inactive_icon (not icon)
+    const icon = (isActive
+      ? (tile.active_icon ?? 'mdi:toggle-switch')
+      : (tile.inactive_icon ?? 'mdi:toggle-switch-off'));
+
+    // ADR-005: link navigation (not tap_action)
+    const handleClick = (): void => {
+      if (tile.link) this._navigate(tile.link);
+    };
+
     return html`
       <div
         class="hexa-tile"
@@ -172,25 +168,12 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
         role="button"
         tabindex="0"
         aria-label="${name}"
-        @click="${() => tile.tap_action ? this._executeAction(tile) : undefined}"
+        @click="${handleClick}"
       >
-        <sf-icon .icon="${tile.icon}" .connection="${this.hass.connection}"></sf-icon>
+        <sf-icon .icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
         <span class="tile-label">${name}</span>
       </div>
     `;
-  }
-
-  private _executeAction(tile: SciFiHexaTileConfig): void {
-    const action = tile.tap_action;
-    if (!action) return;
-    if (action.action === 'navigate' && action.navigation_path) {
-      this._navigate(action.navigation_path);
-    } else if (action.action === 'call-service' && action.service) {
-      const [domain, service] = action.service.split('.');
-      if (domain && service) {
-        void this.hass.callService(domain, service, action.service_data ?? {});
-      }
-    }
   }
 
   /** HA-native navigation: internal paths use pushState + location-changed event.

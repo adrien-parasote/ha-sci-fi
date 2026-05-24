@@ -18,21 +18,21 @@ describe('sci-fi-vehicles', () => {
   });
 
   afterEach(() => {
-    document.body.innerHTML = '';
+    document.body.replaceChildren();
     vi.resetAllMocks();
   });
 
   it('renders gracefully without hass', async () => {
     const el = document.createElement('sci-fi-vehicles') as SciFiVehiclesCard;
     document.body.appendChild(el);
-    el.setConfig(SciFiVehiclesCard.getStubConfig());
+    (el as any).setConfig(SciFiVehiclesCard.getStubConfig());
     await el.updateComplete;
     expect(el.shadowRoot!.textContent).to.be.empty;
   });
 
   it('renders vehicle with missing sensors gracefully', async () => {
     const el = document.createElement('sci-fi-vehicles') as SciFiVehiclesCard;
-    el.setConfig({
+    (el as any).setConfig({
       type: 'custom:sci-fi-vehicles',
       vehicles: [{ id: 'v1', name: 'Car 1' }]
 } as unknown as unknown as any);
@@ -47,7 +47,7 @@ describe('sci-fi-vehicles', () => {
 
   it('renders vehicle stats and battery bar correctly', async () => {
     const el = document.createElement('sci-fi-vehicles') as SciFiVehiclesCard;
-    el.setConfig({
+    (el as any).setConfig({
       type: 'custom:sci-fi-vehicles',
       header_message: 'Garage',
       vehicles: [
@@ -56,7 +56,8 @@ describe('sci-fi-vehicles', () => {
           name: 'Tesla',
           battery_level: 'sensor.tesla_battery',
           charging: 'switch.tesla_charging',
-          range: 'sensor.tesla_range',
+          // ADR-005: battery_autonomy (not range)
+          battery_autonomy: 'sensor.tesla_range',
           mileage: 'sensor.tesla_mileage',
           location: 'device_tracker.tesla',
           lock_status: 'lock.tesla'
@@ -105,7 +106,7 @@ describe('sci-fi-vehicles', () => {
 
   it('renders unlocked state properly', async () => {
     const el = document.createElement('sci-fi-vehicles') as SciFiVehiclesCard;
-    el.setConfig({
+    (el as any).setConfig({
       type: 'custom:sci-fi-vehicles',
       vehicles: [{ id: 'v1', name: 'Tesla', lock_status: 'lock.tesla' }]
 } as unknown as unknown as any);

@@ -46,28 +46,32 @@ describe('sci-fi-weather', () => {
   it('provides getStubConfig', () => {
     const config = SciFiWeatherCard.getStubConfig();
     expect(config.type).to.equal('custom:sci-fi-weather');
+    // ADR-005: weather_entity (not weather_entity_id)
+    expect(config.weather_entity).to.equal('weather.forecast_home');
   });
 
   it('renders gracefully without hass', async () => {
-    el.setConfig(SciFiWeatherCard.getStubConfig());
+    (el as any).setConfig(SciFiWeatherCard.getStubConfig());
     await el.updateComplete;
     expect(el.shadowRoot!.textContent).to.be.empty;
   });
 
   it('renders error message when entity is not found', async () => {
-    el.setConfig({ type: 'custom:sci-fi-weather', weather_entity_id: 'weather.missing' } as unknown as unknown as any);
+    // ADR-005: weather_entity (not weather_entity_id)
+    (el as any).setConfig({ type: 'custom:sci-fi-weather', weather_entity: 'weather.missing' });
     el.hass = makeMockHass();
     await el.updateComplete;
     expect(el.shadowRoot!.textContent).to.include('Entité météo non trouvée : weather.missing');
   });
 
   it('renders current conditions and handles chart gracefully', async () => {
-    el.setConfig({
+    // ADR-005: weather_entity (not weather_entity_id)
+    (el as any).setConfig({
       type: 'custom:sci-fi-weather',
       header_message: 'Météo',
-      weather_entity_id: 'weather.home',
+      weather_entity: 'weather.home',
       weather_daily_forecast_limit: 2
-    } as unknown as unknown as any);
+    });
 
     el.hass = makeMockHass({
       states: {
@@ -86,7 +90,7 @@ describe('sci-fi-weather', () => {
           }
         })
       }
-} as unknown as unknown as any);
+    });
 
     await el.updateComplete;
 
@@ -109,7 +113,8 @@ describe('sci-fi-weather', () => {
   });
 
   it('updates chart data when attributes change', async () => {
-    el.setConfig({ type: 'custom:sci-fi-weather', weather_entity_id: 'weather.home' } as unknown as unknown as any);
+    // ADR-005: weather_entity (not weather_entity_id)
+    (el as any).setConfig({ type: 'custom:sci-fi-weather', weather_entity: 'weather.home' });
 
     el.hass = makeMockHass({
       states: {
@@ -126,7 +131,7 @@ describe('sci-fi-weather', () => {
     });
 
     await el.updateComplete;
-    
+
     el.hass = makeMockHass({
       states: {
         'weather.home': makeMockEntity({
@@ -140,9 +145,59 @@ describe('sci-fi-weather', () => {
         })
       }
     });
-    
+
     await el.updateComplete;
     // If we reach here, updating the chart worked without throwing.
     expect(true).to.be.true;
+  });
+
+  it('renders alert band with correct level', async () => {
+    // ADR-005: alert section preserved
+    (el as any).setConfig({
+      type: 'custom:sci-fi-weather',
+      weather_entity: 'weather.home',
+      alert: {
+        entity_id: 'sensor.meteo_alert',
+        state_green: 'Vert',
+        state_yellow: 'Jaune',
+        state_orange: 'Orange',
+        state_red: 'Rouge'
+      }
+    });
+
+    el.hass = makeMockHass({
+      states: {
+        'weather.home': makeMockEntity({ entity_id: 'weather.home', state: 'sunny', attributes: {} }),
+        'sensor.meteo_alert': makeMockEntity({ entity_id: 'sensor.meteo_alert', state: 'Orange' })
+      }
+    });
+
+    await el.updateComplete;
+
+    const alertBand = el.shadowRoot!.querySelector('.alert-band') as HTMLElement;
+    expect(alertBand).not.to.be.null;
+    expect(alertBand.style.color).to.include('#ff6b35'); // orange color
+    expect(el.shadowRoot!.textContent).to.include('Orange');
+
+    // Branch coverage L201: state_yellow
+    el.hass = makeMockHass({
+      states: {
+        'weather.home': makeMockEntity({ entity_id: 'weather.home', state: 'sunny', attributes: {} }),
+        'sensor.meteo_alert': makeMockEntity({ entity_id: 'sensor.meteo_alert', state: 'Jaune' })
+      }
+    });
+    await el.updateComplete;
+    // Branch coverage L201: yellow level resolves correctly
+    expect(el.shadowRoot!.textContent).to.include('Jaune');
+
+    // Branch coverage L202: state_red
+    el.hass = makeMockHass({
+      states: {
+        'weather.home': makeMockEntity({ entity_id: 'weather.home', state: 'sunny', attributes: {} }),
+        'sensor.meteo_alert': makeMockEntity({ entity_id: 'sensor.meteo_alert', state: 'Rouge' })
+      }
+    });
+    await el.updateComplete;
+    expect(el.shadowRoot!.textContent).to.include('Rouge');
   });
 });

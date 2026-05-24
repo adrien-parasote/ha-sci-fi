@@ -102,6 +102,7 @@ src/
 | TC-207 | Unit | Type guard rejects invalid config | `{ type: 'custom:sci-fi-lights' }` missing required field | Throws `Error` with field name |
 | IT-201 | Integration | Selectors are pure — no mutation | Call `getFloors()` twice | Returns identical references (same data, no mutation) |
 | IT-202 | Integration | Performance: 500 entities | `mockHass` with 500 states | `getLightEntities()` completes under 5ms |
+| IT-203 | Integration | End-to-end selector pipeline | Chain `getFloors` -> `getAreasByFloor` -> `getEntitiesByArea` | Correct entities resolved across hierarchy |
 
 ---
 

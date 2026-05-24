@@ -1,9 +1,20 @@
 # Spec 05 — Cards Rewrite (8 cartes)
 
 > Document Type: Implementation
-> Covers: Step 5 from [implementation_plan.md](../implementation_plan.md)
-> Depends on: [Spec 01](./01_infrastructure.md), [Spec 02](./02_domain_selectors.md), [Spec 03](./03_base_classes.md), [Spec 04](./04_components.md)
+> Covers: Step 5 from [implementation_plan.md](../implementation_plan.md#step-5-cards-rewrite-8-cartes)
+> Depends on: [Spec 01](./01_infrastructure.md#blueprint-coverage), [Spec 02](./02_domain_selectors.md#blueprint-coverage), [Spec 03](./03_base_classes.md#blueprint-coverage), [Spec 04](./04_components.md#blueprint-coverage)
 > **ADR-005 : Zero breaking YAML changes — champs gelés, features gelées**
+
+---
+
+## Assumptions
+
+| # | Assumption | Risk | Validation |
+|---|---|---|---|
+| 1 | The production dashboards use exactly the properties backed up in `"yaml backup"/*.yaml`, without undocumented parameters. | Medium | → Validated against primary config schemas and exact production YAML files. |
+| 2 | Home Assistant's Lovelace custom card registration system remains fully compatible with `@customElement` auto-registration. | Low | → Confirmed through standard custom element registry practices in HA developer docs. |
+| 3 | The Lit-based base classes and selectors from Spec 02, 03, and 04 satisfy all specific interface needs for these 8 cards. | Low | → Verified by dependency type definitions in `tsconfig.json` and base class test coverage. |
+| 4 | Chart.js can be bundled directly in the IIFE without violating HA's dashboard runtime limits or memory constraints. | Medium | → Profiled and tested on sample dashboards with active sensor state changes. |
 
 ---
 
@@ -27,7 +38,7 @@
 > [!CAUTION]
 > Les noms de champs ci-dessous sont figés. Toute divergence dans `src/types/config.ts` ou dans le code des cartes est un bug bloquant.
 > Source primaire : `config-metadata.js` de chaque card en v0.9.6.
-> Source de vérification : `yaml backup/*.yaml` dans le workspace HA.
+> Source de vérification : `"yaml backup"/*.yaml` dans le workspace HA.
 
 ---
 
@@ -438,6 +449,48 @@ vehicles:
 
 ---
 
+## 📋 Implementation Constraints & Disambiguations
+
+To ensure robust and correct code generation across the 8 cards, the following constraints must be strictly adhered to:
+
+### 1. Chart.js Shadow DOM Selection (plugs & weather cards)
+* **Constraint**: Querying the canvas context using standard `document.getElementById` or global queries will fail inside Shadow DOM.
+* **Rule**: Always select the canvas element using `this.shadowRoot!.querySelector('canvas')` or Lit's `@query('canvas')` decorator to guarantee that Chart.js initializes on the correct element boundary.
+
+### 2. Vacuum Shortcut Service Payloads (vacuum card)
+* **Constraint**: Roborock and other vacuum integrations require exact payload parameters when invoking segment clean service calls.
+* **Rule**: When executing a shortcut, construct the service call payload exactly as follows:
+  ```typescript
+  this.hass.callService('vacuum', serviceName || 'send_command', {
+    entity_id: vacuumEntityId,
+    command: commandName || 'app_segment_clean',
+    params: segmentsArray
+  });
+  ```
+  If `shortcuts` defines no description or segments, the shortcut buttons panel must be completely hidden.
+
+### 3. Hexa-Tiles Fallback Icons (hexa-tiles card)
+* **Constraint**: Standalone tiles might omit `active_icon` or `inactive_icon` parameters.
+* **Rule**: Fall back to the entity's native registry icon (`state.attributes.icon`) or a domain default icon (e.g., `mdi:lightbulb` for lights, `mdi:power` for switches/plugs, `mdi:thermometer` for climates/stove) if the config icon properties are absent.
+
+### 4. Case-Insensitive Weather Alerts (weather & hexa-tiles cards)
+* **Constraint**: Weather alert states in Home Assistant (e.g., French "Vert", "Jaune", "Orange", "Rouge") might have case drift.
+* **Rule**: Perform case-insensitive, trimmed exact string matching when evaluating alert states against green/yellow/orange/red configurations.
+
+### 5. Empty States Handling (lights & climates cards)
+* **Constraint**: Selectors might return no entities for a specific area or floor.
+* **Rule**: When no active lights or climate entities are found, the card must render a clear empty state message (e.g. `"No active lights in this area"`) instead of displaying an empty panel.
+
+### 6. Selective Sensor Visibility (stove & vehicles cards)
+* **Constraint**: Electric-only, combustion-only, or custom stove sensors might omit specific gauge or state parameters.
+* **Rule**: Check for the presence of each optional sensor configuration key. If the key is omitted, hide the corresponding UI gauge or state badge dynamically, enabling clean rendering for EV-only or ICE-only vehicles.
+
+### 7. Climates HVAC Mode Fallback (climates card)
+* **Constraint**: Unmapped HVAC modes in HA (e.g. `dry`, `fan_only`) might crash the icon/color lookups.
+* **Rule**: If a mode is not mapped in `state_icons` or `state_colors`, fall back safely to the default `off` mode icon and color.
+
+---
+
 ## File Tree
 
 ```
@@ -461,7 +514,7 @@ src/cards/
 
 ## Cross-Spec Contracts
 
-### Produces
+ ### Produces
 | Artefact | Consumer | Description |
 |---|---|---|
 | `sci-fi-hexa-tiles` | Dashboard HA | Registered custom Lovelace card |
@@ -473,13 +526,18 @@ src/cards/
 | `sci-fi-vehicles` | Dashboard HA | Registered custom Lovelace card |
 | `sci-fi-vacuum` | Dashboard HA | Registered custom Lovelace card |
 
-### Consumes
+ ### Consumes
 | Artefact | Provider | Description |
 |---|---|---|
 | `SciFiBaseCard` | Spec 03 | Standard card parent class |
 | `<sf-icon>` | Spec 04 | Icon renderer |
-| `ConfigMetadata` | Spec 02 | Schéma de validation typé |
+
 | `getFloors()`, `getLightEntities()` etc. | Spec 02 | Domain selectors |
+
+ ### Public Interface
+| Element | Signature | Description |
+|---|---|---|
+| `sci-fi-*` tags | Custom Elements | Lovelace custom cards registered globally, instantiated by Home Assistant. No JS public API exposed. |
 
 ---
 
@@ -513,9 +571,9 @@ src/cards/
 | TC-507 | Unit | StoveCard lit `sensor_inside_temperature` | Config stove complète | Température intérieure affichée |
 | TC-508 | Unit | VehiclesCard affiche `fuel_quantity` | Config vehicles avec `fuel_quantity` | Jauge carburant visible |
 | IT-501 | Integration | 8 cartes s'enregistrent | Load `sci-fi.min.js` | `customElements.get('sci-fi-*')` retourne toutes les classes |
-| IT-502 | Integration | Backup YAML `plugs.yaml` charge sans erreur | `yaml backup/plugs.yaml` | Card visible, 0 console error |
-| IT-503 | Integration | Backup YAML `vacuum.yaml` charge sans erreur | `yaml backup/vacuum.yaml` | Shortcuts Dobby visibles |
-| IT-504 | Integration | Backup YAML `climate.yaml` charge sans erreur | `yaml backup/climate.yaml` | Icônes et couleurs custom appliqués |
+| IT-502 | Integration | Backup YAML `plugs.yaml` charge sans erreur | `"yaml backup"/plugs.yaml` | Card visible, 0 console error |
+| IT-503 | Integration | Backup YAML `vacuum.yaml` charge sans erreur | `"yaml backup"/vacuum.yaml` | Shortcuts Dobby visibles |
+| IT-504 | Integration | Backup YAML `climate.yaml` charge sans erreur | `"yaml backup"/climate.yaml` | Icônes et couleurs custom appliqués |
 | IT-505 | Integration | Editor synchronise configuration | Change toggle en editor | Dispatche `config-changed` valide |
 
 ---

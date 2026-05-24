@@ -6,7 +6,7 @@ import type { SfIcon } from '../../../src/components/sf-icon/sf-icon.js';
 
 describe('sf-icon', () => {
   afterEach(() => {
-    document.body.innerHTML = '';
+    document.body.replaceChildren();
   });
 
   it('renders a fallback icon for unknown namespaces', async () => {

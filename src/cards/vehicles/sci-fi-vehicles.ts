@@ -1,7 +1,7 @@
 /**
- * <sci-fi-vehicles> — v2
- * Electric vehicle monitoring: charging state, battery, range, location.
- * Decoupled from House monolith (ADR-004).
+ * <sci-fi-vehicles> — v1.0.0
+ * Vehicle monitoring: charging state, battery, autonomy, location, fuel.
+ * ADR-005: battery_autonomy + fuel_autonomy (not range), added 7 missing fields.
  */
 
 import { html, css, type TemplateResult } from 'lit';
@@ -12,6 +12,13 @@ import { sciFiCommonStyles } from '../../styles/common.js';
 import type { SciFiVehiclesConfig, SciFiVehicleEntry } from '../../types/config.js';
 
 const TAG = 'sci-fi-vehicles';
+
+interface StatEntry {
+  label: string;
+  value: string | null | undefined;
+  unit?: string;
+  className?: string;
+}
 
 @customElement(TAG)
 export class SciFiVehiclesCard extends SciFiBaseCard {
@@ -91,6 +98,11 @@ export class SciFiVehiclesCard extends SciFiBaseCard {
     `;
   }
 
+  private _getState(entityId: string | undefined): string | null {
+    if (!entityId) return null;
+    return this.hass.states[entityId]?.state ?? null;
+  }
+
   private _renderVehicle(v: SciFiVehicleEntry): TemplateResult {
     const isCharging = v.charging
       ? this.hass.states[v.charging]?.state === 'on'
@@ -101,19 +113,41 @@ export class SciFiVehiclesCard extends SciFiBaseCard {
     const battery = v.battery_level
       ? parseFloat(this.hass.states[v.battery_level]?.state ?? '0')
       : null;
-    const range = v.range
-      ? this.hass.states[v.range]?.state
-      : null;
-    const mileage = v.mileage
-      ? this.hass.states[v.mileage]?.state
-      : null;
-    const location = v.location
-      ? this.hass.states[v.location]?.state
-      : null;
+
+    // ADR-005: battery_autonomy + fuel_autonomy (was range in v1.0.0-wip)
+    const batteryAutonomy = this._getState(v.battery_autonomy);
+    const fuelAutonomy = this._getState(v.fuel_autonomy);
+
+    // ADR-005: newly added fields
+    const chargeState = this._getState(v.charge_state);
+    const plugState = this._getState(v.plug_state);
+    const fuelQuantity = this._getState(v.fuel_quantity);
+    const mileage = this._getState(v.mileage);
+    const location = this._getState(v.location);
+    const locationLastActivity = this._getState(v.location_last_activity);
+    const chargingTime = this._getState(v.charging_remaining_time);
 
     const batteryLevel = battery !== null && battery !== undefined
       ? (battery >= 60 ? 'high' : battery >= 30 ? 'mid' : 'low')
       : 'mid';
+
+    const stats: StatEntry[] = [
+      { label: 'Batterie', value: battery !== null && battery !== undefined ? `${battery}` : null, unit: '%' },
+      { label: 'Autonomie élec.', value: batteryAutonomy, unit: 'km' },
+      { label: 'Autonomie carb.', value: fuelAutonomy, unit: 'km' },
+      { label: 'Carburant', value: fuelQuantity, unit: 'L' },
+      { label: 'Charge', value: chargeState },
+      { label: 'Prise', value: plugState },
+      { label: 'Temps charge', value: chargingTime, unit: 'min' },
+      { label: 'Kilométrage', value: mileage, unit: 'km' },
+      { label: 'Localisation', value: location },
+      { label: 'Dernière activité', value: locationLastActivity },
+      {
+        label: 'Verrouillage',
+        value: isLocked !== null ? (isLocked ? '🔒 Verrouillé' : '🔓 Déverrouillé') : null,
+        className: isLocked ? 'sf-state-on' : 'sf-state-off',
+      },
+    ].filter(s => s.value !== null && s.value !== undefined && s.value !== '');
 
     return html`
       <div class="vehicle-card" data-charging="${isCharging}">
@@ -126,38 +160,12 @@ export class SciFiVehiclesCard extends SciFiBaseCard {
         </div>
 
         <div class="vehicle-stats">
-          ${battery !== null && battery !== undefined ? html`
+          ${stats.map(s => html`
             <div class="stat-item">
-              <span class="stat-label">Batterie</span>
-              <span class="stat-value">${battery}%</span>
+              <span class="stat-label">${s.label}</span>
+              <span class="stat-value ${s.className ?? ''}">${s.value}${s.unit === '%' || s.unit === '°' ? s.unit : s.unit ? ` ${s.unit}` : ''}</span>
             </div>
-          ` : ''}
-          ${range !== null && range !== undefined ? html`
-            <div class="stat-item">
-              <span class="stat-label">Autonomie</span>
-              <span class="stat-value">${range} km</span>
-            </div>
-          ` : ''}
-          ${mileage !== null && mileage !== undefined ? html`
-            <div class="stat-item">
-              <span class="stat-label">Kilométrage</span>
-              <span class="stat-value">${mileage} km</span>
-            </div>
-          ` : ''}
-          ${location !== null && location !== undefined ? html`
-            <div class="stat-item">
-              <span class="stat-label">Localisation</span>
-              <span class="stat-value">${location}</span>
-            </div>
-          ` : ''}
-          ${isLocked !== null && isLocked !== undefined ? html`
-            <div class="stat-item">
-              <span class="stat-label">Verrouillage</span>
-              <span class="stat-value ${isLocked ? 'sf-state-on' : 'sf-state-off'}">
-                ${isLocked ? '🔒 Verrouillé' : '🔓 Déverrouillé'}
-              </span>
-            </div>
-          ` : ''}
+          `)}
         </div>
 
         ${battery !== null && battery !== undefined ? html`

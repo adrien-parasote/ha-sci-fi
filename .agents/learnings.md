@@ -72,3 +72,10 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Source**: ha-sci-fi v2 — README + docs/cards/
 - **Evidence**: README grew to 784 lines (full YAML configs for 8 cards inline). Split into `README.md` (124 lines) + `docs/cards/<card>.md` (8 files, ~90 lines each). README became scannable in 30s; card docs are deep-linkable.
 - **Pattern**: For multi-component libraries, structure docs as: (1) root `README.md` = badges + install + component table with links, (2) `docs/<type>/<name>.md` = full config reference per component. Apply when README exceeds ~200 lines or when 3+ independently configurable components exist.
+
+### L022: XSS Vulnerability in Test DOM Cleanup (OWASP A03)
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi v2 — security scan (VERIFY stage)
+- **Evidence**: 8 test files rewritten. `security_scan.py` flagged `document.body.innerHTML = ''` as a critical-risk pattern for XSS in DOM cleanup (`afterEach`).
+- **Anti-pattern**: Using `document.body.innerHTML = ''` to clear the DOM after unit tests. Even in a testing context, security scanners correctly flag direct `innerHTML` assignments as an OWASP A03 vulnerability.
+- **Fix**: Use `document.body.replaceChildren()` to safely and efficiently clear the DOM synchronously without invoking the HTML parser.

@@ -1,6 +1,7 @@
 /**
- * <sci-fi-plugs> — v2
+ * <sci-fi-plugs> — v1.0.0
  * Plug/switch devices with power monitoring display.
+ * ADR-005: sensors = Record<entityId, SciFiPlugSensorEntry> (not {power: string, energy: string}).
  */
 
 import { html, css, type TemplateResult } from 'lit';
@@ -56,10 +57,19 @@ export class SciFiPlugsCard extends SciFiBaseCard {
         font-weight: 700;
         color: var(--sf-primary);
       }
-      .plug-energy {
+      .sensors-list {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .sensor-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         font-size: var(--sf-font-size-sm);
         color: var(--sf-text-secondary);
       }
+      .sensor-row.power-sensor { color: var(--sf-primary); font-weight: 600; }
       .plug-btn {
         width: 100%;
         padding: var(--sf-spacing-xs);
@@ -100,12 +110,6 @@ export class SciFiPlugsCard extends SciFiBaseCard {
   private _renderPlug(device: SciFiPlugDevice): TemplateResult {
     const switchState = this.hass.states[device.entity_id];
     const isOn = switchState?.state === 'on';
-    const power = device.sensors?.power
-      ? this.hass.states[device.sensors.power]?.state
-      : undefined;
-    const energy = device.sensors?.energy
-      ? this.hass.states[device.sensors.energy]?.state
-      : undefined;
 
     const name = device.name
       ?? switchState?.attributes.friendly_name
@@ -115,14 +119,41 @@ export class SciFiPlugsCard extends SciFiBaseCard {
       ? (device.active_icon ?? 'mdi:power-plug')
       : (device.inactive_icon ?? 'mdi:power-plug-off');
 
+    // ADR-005: sensors = Record<entityId, SciFiPlugSensorEntry>
+    // Each key is the sensor entity_id; entry.power === true marks the "main" power sensor
+    const sensorEntries = Object.entries(device.sensors ?? {});
+    const visibleSensors = sensorEntries.filter(([, e]) => e.show !== false);
+    const powerSensor = sensorEntries.find(([, e]) => e.power === true);
+    const powerValue = powerSensor
+      ? this.hass.states[powerSensor[0]]?.state
+      : undefined;
+
     return html`
       <div class="plug-tile" data-on="${isOn}">
         <div class="plug-header">
           <span class="plug-name ${isOn ? 'sf-state-on' : 'sf-state-off'}">${name}</span>
           <sf-icon .icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
         </div>
-        ${power !== null && power !== undefined ? html`<div class="plug-power">${power} W</div>` : ''}
-        ${energy !== null && energy !== undefined ? html`<div class="plug-energy">${energy} kWh</div>` : ''}
+
+        ${powerValue !== null && powerValue !== undefined ? html`<div class="plug-power">${powerValue} W</div>` : ''}
+
+        ${visibleSensors.length > 0 ? html`
+          <div class="sensors-list">
+            ${visibleSensors.map(([entityId, entry]) => {
+              const sensorState = this.hass.states[entityId];
+              const val = sensorState?.state;
+              const unit = sensorState?.attributes['unit_of_measurement'] as string | undefined;
+              const label = entry.name ?? sensorState?.attributes.friendly_name ?? entityId;
+              return val !== null && val !== undefined ? html`
+                <div class="sensor-row ${entry.power ? 'power-sensor' : ''}">
+                  <span>${label}</span>
+                  <span>${val}${unit ? ` ${unit}` : ''}</span>
+                </div>
+              ` : '';
+            })}
+          </div>
+        ` : ''}
+
         <button
           class="plug-btn"
           @click="${() => this._toggle(device.entity_id, isOn)}"

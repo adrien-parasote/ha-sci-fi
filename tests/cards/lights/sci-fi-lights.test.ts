@@ -18,13 +18,13 @@ describe('sci-fi-lights', () => {
   });
 
   afterEach(() => {
-    document.body.innerHTML = '';
+    document.body.replaceChildren();
   });
 
   it('renders gracefully without hass', async () => {
     const el = document.createElement('sci-fi-lights') as SciFiLightsCard;
     document.body.appendChild(el);
-    el.setConfig(SciFiLightsCard.getStubConfig());
+    (el as any).setConfig(SciFiLightsCard.getStubConfig());
     await el.updateComplete;
     expect(el.shadowRoot!.textContent).to.be.empty;
   });
@@ -36,7 +36,7 @@ describe('sci-fi-lights', () => {
 
   it('renders empty message if no floors exist', async () => {
     const el = document.createElement('sci-fi-lights') as SciFiLightsCard;
-    el.setConfig(SciFiLightsCard.getStubConfig());
+    (el as any).setConfig(SciFiLightsCard.getStubConfig());
     el.hass = makeMockHass({ floors: {} });
     document.body.appendChild(el);
     await el.updateComplete;
@@ -45,11 +45,13 @@ describe('sci-fi-lights', () => {
 
   it('renders floors, areas, and lights with interactions', async () => {
     const el = document.createElement('sci-fi-lights') as SciFiLightsCard;
-    el.setConfig({
+    (el as any).setConfig({
       type: 'custom:sci-fi-lights',
       header_message: 'House Lights',
-      ignored_entity_ids: ['light.ignored'],
-      entity_overrides: {
+      // ADR-005: ignored_entities (not ignored_entity_ids)
+      ignored_entities: ['light.ignored'],
+      // ADR-005: custom_entities (not entity_overrides)
+      custom_entities: {
         'light.salon': { name: 'Salon Custom', icon_on: 'mdi:lamp-on', icon_off: 'mdi:lamp-off' }
       }
 } as unknown as unknown as any);
@@ -93,8 +95,8 @@ describe('sci-fi-lights', () => {
 
     // Lights in living room
     let lightRows = el.shadowRoot!.querySelectorAll('.light-row');
-    expect(lightRows.length).to.equal(1); // ignored is excluded
-    expect(lightRows[0]!.textContent).to.include('Salon Custom');
+    expect(lightRows.length).to.equal(1); // ignored is excluded via ignored_entities
+    expect(lightRows[0]!.textContent).to.include('Salon Custom'); // custom_entities override applied
 
     // Verify custom icons and states
     const icon = lightRows[0]!.querySelector('sf-icon') as unknown as any;
@@ -130,7 +132,7 @@ describe('sci-fi-lights', () => {
 
   it('respects first_floor_to_render and first_area_to_render', async () => {
     const el = document.createElement('sci-fi-lights') as SciFiLightsCard;
-    el.setConfig({
+    (el as any).setConfig({
       type: 'custom:sci-fi-lights',
       first_floor_to_render: 'first',
       first_area_to_render: 'bed',
@@ -153,7 +155,7 @@ describe('sci-fi-lights', () => {
 
   it('ignores same floor selection', async () => {
     const el = document.createElement('sci-fi-lights') as SciFiLightsCard;
-    el.setConfig(SciFiLightsCard.getStubConfig());
+    (el as any).setConfig(SciFiLightsCard.getStubConfig());
     el.hass = makeMockHass({
       floors: {
         'ground': makeMockFloor({ floor_id: 'ground' }),
@@ -167,5 +169,32 @@ describe('sci-fi-lights', () => {
     await el.updateComplete;
     // Coverage for early return in _selectFloor
     expect(btn.getAttribute('aria-selected')).to.equal('true');
+  });
+
+  it('uses default icon_on (mdi:lightbulb) when no custom_entities override (L127-130)', async () => {
+    const el = document.createElement('sci-fi-lights') as SciFiLightsCard;
+    // Branch coverage: L223 — icon_on ?? 'mdi:lightbulb' (default when no override)
+    (el as any).setConfig({ type: 'custom:sci-fi-lights' });
+
+    el.hass = makeMockHass({
+      floors: { 'g': makeMockFloor({ floor_id: 'g', level: 0 }) },
+      areas: { 'a': makeMockArea({ area_id: 'a', floor_id: 'g' }) },
+      entities: {
+        'light.on_no_override': makeMockEntityEntry({ entity_id: 'light.on_no_override', area_id: 'a', domain: 'light' })
+      },
+      states: {
+        'light.on_no_override': makeMockEntity({
+          entity_id: 'light.on_no_override',
+          state: 'on',
+          attributes: { friendly_name: 'Living' }
+        })
+      }
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const icon = el.shadowRoot!.querySelector('.light-row sf-icon') as unknown as any;
+    // No custom_entities → default icon_on = 'mdi:lightbulb'
+    expect(icon.icon).to.equal('mdi:lightbulb');
   });
 });

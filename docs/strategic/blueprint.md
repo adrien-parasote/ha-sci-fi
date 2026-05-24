@@ -39,8 +39,8 @@
 | Build reproductible | CI green en < 60s | GitHub Actions |
 | Toutes les cartes fonctionnelles | 8/8 | Tests visuels manuels dans HA |
 | TypeScript strict | 0 erreurs `tsc --strict` | CI type-check step |
-| **YAML backward compat** | **100% — zéro champ renommé** | **Validation par diff contre `config-metadata.js` v0.9.6** |
-| **Features préservées** | **100% — zéro feature supprimée** | **Validation par `discovery.md` §2** |
+| **YAML backward compat** | **100% — zéro champ renommé** | **Validation par diff contre `config-metadata` v0.9.6** |
+| **Features préservées** | **100% — zéro feature supprimée** | **Validation par `research/discovery.txt` §2** |
 
 **Timeline :** Pas de deadline produit (usage personnel). L'objectif est la qualité durable, pas la vitesse.
 
@@ -106,7 +106,7 @@
 - `memoize-one` → remplacé par le cache natif dans les classes TypeScript
 - `es-dev-server` → EOL
 - Rollup 2 → EOL, manque `@rollup/plugin-typescript`
-- `Zod` → non ajouté (45KB de bundle pour remplacer `config-metadata.ts` qui fait déjà ce travail)
+- `zod` → non ajouté (45KB de bundle pour remplacer `config-metadata.ts` qui fait déjà ce travail)
 
 ---
 
@@ -164,7 +164,7 @@
 | ❌ Storybook / design system externe | Overkill pour un package 8 cartes personnel |
 | ❌ NPM publish | Distribution via HACS uniquement (déjà en place) |
 | ❌ Internationalisation autres langues | EN + FR uniquement (déjà en place avec `@lit/localize`) |
-| ❌ Zod pour validation config | Bundle trop lourd (~45KB). `config-metadata.ts` fait déjà ce travail. |
+| ❌ zod pour validation config | Bundle trop lourd (~45KB). `config-metadata.ts` fait déjà ce travail. |
 
 ---
 
@@ -172,12 +172,12 @@
 
 | # | Gap | Décision |
 |---|-----|----------|
-| 1 | **Backward compat YAML** | ✅ **RÉSOLU — Zero breaking changes.** Les noms de champs YAML sont figés (ADR-005). La source de vérité est `docs/discovery.md` §2 et les `config-metadata.js` v0.9.6. |
+| 1 | **Backward compat YAML** | ✅ **RÉSOLU — Zero breaking changes.** Les noms de champs YAML sont figés (ADR-005). La source de vérité est `docs/research/discovery.txt` §2 et les `config-metadata` v0.9.6. |
 | 2 | **Scope des tests** | ✅ **RÉSOLU** — setup `@web/test-runner` + rebuild automatique. Tests sur domain model ET interactions composants (hass mocké). |
 | 3 | **`sf-radiator` découpage** | ✅ **RÉSOLU** — Composants Lit indépendants (`@customElement`) — state of the art. Chaque sous-composant dans son propre répertoire. |
 | 4 | **Modèle `House`** | ✅ **RÉSOLU** — Sélecteurs HA qui lisent directement `hass.areas`, `hass.floors`, `hass.devices`, `hass.entities` sans construire un objet intermédiaire lourd. |
 | 5 | **Git branching** | ✅ **RÉSOLU** — Branche `v1.0.0-wip` isolée. `main` est revenu sur `v0.9.6` stable. |
-| 6 | **Config validation** | ✅ **RÉSOLU** — `config-metadata.js` migré en TypeScript typé, NON remplacé par Zod. Validation identique à v0.9.6. |
+| 6 | **Config validation** | ✅ **RÉSOLU** — `config-metadata` migré en TypeScript typé, NON remplacé par zod. Validation identique à v0.9.6. |
 
 ---
 
@@ -216,16 +216,16 @@
 - **Status :** Accepted
 - **Context :** La v1.0.0-wip a renommé 8 champs YAML et supprimé des features entières, cassant les dashboards en production.
 - **Rationale :** Les noms de champs YAML sont un **contrat public** entre les cards et les dashboards utilisateur. Changer ces noms sans contrôle brise silencieusement les configurations existantes. Usage personnel ne signifie pas "sans coût de migration" — au contraire, l'utilisateur n'a pas d'équipe pour absorber ce coût.
-- **Source de vérité :** `docs/discovery.md` §2 (inventaire exhaustif) + `src/cards/*/config-metadata.js` v0.9.6.
-- **Règle de validation :** Avant chaque PR, diff les champs TypeScript dans `src/types/config.ts` contre `docs/discovery.md` §2. Tout champ absent ou renommé bloque le merge.
+- **Source de vérité :** `docs/research/discovery.txt` §2 (inventaire exhaustif) + `src/cards/*/config-metadata` v0.9.6.
+- **Règle de validation :** Avant chaque PR, diff les champs TypeScript dans `src/types/config.ts` contre `docs/research/discovery.txt` §2. Tout champ absent ou renommé bloque le merge.
 - **Consequences :**
   - Pas de MIGRATION.md nécessaire (pas de breaking change).
   - `config-metadata.ts` migré en TS mais schéma inchangé.
   - Si un champ DOIT vraiment changer → nouvelle majeure (v2.0.0) avec MIGRATION.md et période de deprecated.
 
-### ADR-006 : config-metadata.ts conservé (pas remplacé par Zod)
-- **Decision :** Migrer `config-metadata.js` en TypeScript typé, ne pas le remplacer par Zod.
+### ADR-006 : config-metadata.ts conservé (pas remplacé par zod)
+- **Decision :** Migrer `config-metadata` en TypeScript typé, ne pas le remplacer par zod.
 - **Status :** Accepted
-- **Context :** La v1.0.0-wip a remplacé `config-metadata.js` par des interfaces TypeScript simples dans `types/config.ts`, perdant la validation dynamique et l'éditeur HA.
-- **Rationale :** `config-metadata.js` fait 3 choses simultanément : (1) valide la config YAML, (2) applique les valeurs par défaut, (3) pilote l'UI de l'éditeur HA. Ces 3 responsabilités sont intrinsèquement liées au schéma. Zod ferait (1) mais pas (2)+(3) sans duplication.
+- **Context :** La v1.0.0-wip a remplacé `config-metadata` par des interfaces TypeScript simples dans `types/config.ts`, perdant la validation dynamique et l'éditeur HA.
+- **Rationale :** `config-metadata` fait 3 choses simultanément : (1) valide la config YAML, (2) applique les valeurs par défaut, (3) pilote l'UI de l'éditeur HA. Ces 3 responsabilités sont intrinsèquement liées au schéma. zod ferait (1) mais pas (2)+(3) sans duplication.
 - **Consequences :** `config-metadata.ts` est migré en TypeScript avec types stricts pour les valeurs `type`, `mandatory`, `default`. L'éditeur HA continue à être piloté par ce schéma déclaratif.

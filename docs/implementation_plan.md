@@ -10,7 +10,7 @@
 Full rewrite of ha-sci-fi (8 custom HA cards) from vanilla JavaScript to TypeScript state-of-the-art.
 
 **References :**
-- [Discovery](./discovery.md) ← **Source de vérité absolue pour les schémas YAML**
+- [Discovery](./research/discovery.txt) ← **Source de vérité absolue pour les schémas YAML**
 - [Strategic blueprint](./strategic/blueprint.md)
 - Backups YAML production : `yaml backup/*.yaml` dans le workspace HA
 
@@ -21,7 +21,7 @@ Full rewrite of ha-sci-fi (8 custom HA cards) from vanilla JavaScript to TypeScr
 > [!CAUTION]
 > **AUCUN champ de config YAML ne peut être renommé ou supprimé.**
 > Les noms de champs sont un contrat public avec les dashboards en production.
-> Source de vérité : `docs/discovery.md` §2 + `src/cards/*/config-metadata.js` v0.9.6.
+> Source de vérité : `docs/research/discovery.txt` §2 + `src/cards/*/config-metadata.js` v0.9.6.
 >
 > Champs GELÉS (exemples critiques) :
 > - `entity` (vacuum, stove) — **PAS** `entity_id`
@@ -306,7 +306,7 @@ npm run build       # dist/sci-fi.min.js généré sans erreur
 
 ### YAML Contract Validation (Gate obligatoire)
 Avant tout merge :
-1. Diff `src/types/config.ts` contre `docs/discovery.md` §2 — zéro champ manquant ou renommé
+1. Diff `src/types/config.ts` contre `docs/research/discovery.txt` §2 — zéro champ manquant ou renommé
 2. Tester chaque `yaml backup/*.yaml` contre la nouvelle version → 8/8 doivent charger sans erreur
 
 ### Manual Verification (par carte)

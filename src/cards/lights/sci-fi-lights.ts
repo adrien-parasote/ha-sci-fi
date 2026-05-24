@@ -138,7 +138,8 @@ export class SciFiLightsCard extends SciFiBaseCard {
 
     const activeLights = this._activeAreaId
       ? getLightEntities(this.hass, this._activeAreaId).filter(e => {
-          const ignored = this.config.ignored_entity_ids ?? [];
+          // ADR-005: ignored_entities (not ignored_entity_ids)
+          const ignored = this.config.ignored_entities ?? [];
           return !ignored.includes(e.entity_id);
         })
       : [];
@@ -205,7 +206,8 @@ export class SciFiLightsCard extends SciFiBaseCard {
 
   private _renderLightList(lights: readonly HassEntityEntry[]): TemplateResult {
     if (lights.length === 0) return html``;
-    const overrides = this.config.entity_overrides ?? {};
+    // ADR-005: custom_entities (not entity_overrides)
+    const overrides = this.config.custom_entities ?? {};
 
     return html`
       <div class="light-list">

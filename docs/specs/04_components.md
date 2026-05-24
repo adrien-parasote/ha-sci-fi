@@ -73,7 +73,7 @@ src/
 | # | Anti-Pattern | Violation | Correct Behavior |
 |---|---|---|---|
 | 1 | Heavy SVG requests | Fetch MDI icon from external CDN on every render | Query `icon-cache.ts` module-level Map first; use HA native icon registry via `hass.connection.sendMessagePromise({type: 'frontend/get_icons', category: 'mdi'})` — **never unpkg/jsdelivr CDN** (breaks offline HA) |
-| 2 | Hardcoded CDN URL | `fetch('https://unpkg.com/@mdi/svg/...')` | Use HA native registry or local HACS file path `/hacsfiles/ha-sci-fi/icons/` — see CRITICAL-01 |
+| 2 | Hardcoded CDN URL | `fetch('https://unpkg.com/@mdi/svg/...')` | Use HA native registry or local HACS file path `hacsfiles/ha-sci-fi/icons/` — see CRITICAL-01 |
 | 3 | Component styles leak | Global stylesheet inclusion | Define elements within scoped Lit Shadow DOM |
 | 4 | Manual event dispatching | Mutating card config values | Dispatch standard custom element events with `composed: true` |
 | 5 | Fetch flood in incognito | IndexedDB blocks in private window — fetching on every render with no rate limit | Use in-memory `Map` as volatile fallback cache + limit concurrent fetches to 5 max — see MEDIUM-03 |

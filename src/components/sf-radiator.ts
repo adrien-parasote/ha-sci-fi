@@ -55,7 +55,7 @@ export class SciFiRadiator extends LitElement {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        row-gap: 80px;
+        row-gap: 60px;
         max-width: 120px;
         overflow: visible;
       }

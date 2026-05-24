@@ -151,5 +151,16 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Evidence**: The custom element `<sf-icon>` resolves MDI icons using a `connection` property passed from its parent (`this.hass.connection`). On the first update, `this.connection` is often `undefined` due to component initialization race conditions. The icon's `willUpdate` hook only watched `changed.has('icon')`, meaning that when the parent subsequently populated the connection property, `sf-icon` ignored the change and remained permanently stuck on the fallback question mark (`?`) placeholder.
 - **Pattern**: When a custom element depends on sibling properties that are initialized asynchronously or reactive (such as state, active connection, or user object), always ensure that its update life cycle hooks (`willUpdate`, `shouldUpdate`) watch for changes to *all* critical dependent properties, not just the primary value.
 
+### L033: Custom Element Upgrade Failure due to Style Mutations in Constructor
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi — sci-fi-hexa-tiles.ts
+- **Evidence**: `cardEl.setConfig is not a function` runtime error thrown in Home Assistant card rendering environment.
+- **Anti-pattern**: Mutating CSS styles or custom properties (such as `this.style.setProperty('--cols', ...)`) inside the Custom Element constructor. This violates Web Component lifecycle specifications, throws a DOMException during upgrade, and halts element registration (meaning the custom element is treated as a plain `HTMLUnknownElement`).
+- **Fix**: Move all dynamic styling or attribute mutations entirely out of the constructor to `connectedCallback()`, `firstUpdated()`, or `willUpdate()`, where element mutation is fully permitted.
 
-
+### L034: Shadow DOM :host Selector Custom Property Inheritance
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi — sci-fi-hexa-tiles.ts
+- **Evidence**: On tablet (iPad Air) and PC viewports in the workbench, the hexagons collapsed into a standard non-shifting vertical grid because `--cols` was not inherited by the `:host` selector when defined on a child element (`<ha-card style="--cols: ...">`).
+- **Anti-pattern**: Attempting to style the `:host` component using CSS custom variables defined inside its own template (on child elements like `ha-card`). Custom properties inherit downwards, not upwards.
+- **Fix**: Set custom properties needed by the `:host` selector directly on the host element's style property in JavaScript using `this.style.setProperty('--name', value)` inside reactive hooks (`_updateLayout` / `connectedCallback`).

@@ -41,10 +41,13 @@ The card header must display the connected user profile information:
 
 ## Interlocking Hexagon Grid
 
-To achieve nested, interlocking columns, tiles are grouped into rows of 4 columns maximum.
-- **Odd rows (Row 0, 2, 4...)** start with a decorative Left Half-Hexagon tile to shift them.
-- **Even rows (Row 1, 3, 5...)** end with a decorative Right Half-Hexagon tile.
+To achieve nested, interlocking columns with a perfect checkerboard (damier) layout:
+- **Even rows (Row 0, 2, 4...)** start with a decorative Left Half-Hexagon tile (`HL`, flat edge on the left, sloped on the right) and end with full hexagons.
+  - Form: `1/2 (left) + cols full hexagons` (e.g. `1/2 + 2 = 2.5` hexagons on mobile).
+- **Odd rows (Row 1, 3, 5...)** start with full hexagons and end with a decorative Right Half-Hexagon tile (`HR`, sloped on the left, flat edge on the right).
+  - Form: `cols full hexagons + 1/2 (right)` (e.g. `2 + 1/2 = 2.5` hexagons on mobile).
 - Interlocking is achieved vertically using negative margins: `margin-bottom: calc(var(--tile-height) * -0.25)` to lock them into the vertical gaps of the adjacent rows.
+- Outer margins and card horizontal padding must be set to `0` to let the outer flat edges of the half-tiles touch the screen/device borders cleanly.
 
 ---
 
@@ -57,7 +60,7 @@ Each hexagon uses inline SVGs (`viewBox="0 0 132 164"`) with a background polygo
   - Text color: `#ffffff` with a glowing text-shadow.
 - **Inactive tile**:
   - Background polygon fill: `rgba(16, 22, 38, 0.6)`
-  - Border polygon stroke: `rgba(224, 232, 255, 0.1)`, stroke-width: `1px`.
+  - Border polygon stroke: `rgba(224, 232, 255, 0.1)`, stroke-width: `1.5px`.
   - Text color: `rgba(224, 232, 255, 0.4)`.
 
 ---
@@ -69,12 +72,16 @@ The weather alert band is displayed only when the alert state is NOT green.
 
 ---
 
-## Fixed Dimensions & Responsiveness
+## Responsive 100% Sizing & Viewport Height Filling
 
-Hexagons have the same fixed dimensions across all viewports (desktop, tablet, mobile) to ensure pixel-perfect rendering with mobile priority:
-- `--tile-width: 78px;`
-- `--tile-height: 96px;` (width × 1.242 ratio).
-- Center alignment of the grid inside the card.
+Instead of fixed sizing, hexagons dynamically resize to fit exactly 100% of their parent container's width:
+- **Mobile Portrait (width < 375px or default)**: Automatically uses exactly `2` columns (`2.5` hexagons per line).
+- **Tablet/PC**: Dynamically calculates the maximum columns possible to fit edge-to-edge: `cols = Math.floor(width / 150 - 0.5)` (minimum `2`).
+- **CSS Proportions**: The CSS calculates widths dynamically using host-level CSS custom variables:
+  - `--tile-width: calc(100% / (var(--cols) + 0.5))`
+  - `--tile-height: calc(var(--tile-width) * 1.1547)` (mathematically perfect 1.1547 aspect ratio).
+- **Viewport Height Filling**: The card calculates how many rows are needed to completely fill the screen viewport height. If there are fewer tiles than rows needed to fill the screen, it pads the grid with empty inactive placeholder hexagons. If there are more tiles, the card naturally scrolls.
+- **ResizeObserver**: Sizing calculations are observed relative to the element's actual layout width (using `ResizeObserver`), ensuring consistent, beautiful proportions in iframe dashboard grids, sidebar panels, and workbench simulators.
 
 ---
 
@@ -82,9 +89,9 @@ Hexagons have the same fixed dimensions across all viewports (desktop, tablet, m
 
 | Tier | Examples |
 |------|----------|
-| **Always do** | Preserve all configuration contracts from Spec 05, use property binding for sf-icon, filter tiles by person visibility. |
+| **Always do** | Preserve all configuration contracts from Spec 05, use property binding for sf-icon, filter tiles by person visibility, set `--cols` directly on the host style declaration. |
 | **Ask first** | Add any external JS packages. |
-| **Never do** | Use CSS `clip-path` for rendering hexagon borders, rename or remove any config properties. |
+| **Never do** | Use CSS `clip-path` for rendering hexagon borders, modify host styles inside the Custom Element constructor, rename or remove any config properties. |
 
 ---
 
@@ -108,10 +115,11 @@ Hexagons have the same fixed dimensions across all viewports (desktop, tablet, m
 | # | Anti-Pattern | Violation | Correct Behavior |
 |---|---|---|---|
 | 1 | **Using CSS `clip-path` for hexagon borders** | Standard borders are clipped, making it impossible to render glowing or custom borders. | Use inline SVG polygons with perfect vector styling. |
-| 2 | **Dynamically shrinking hexagons on mobile** | Hexagons become too small to read or click, or wrap unpredictably. | Maintain fixed size `--tile-width: 78px` and `--tile-height: 96px` on all screens. |
+| 2 | **Using window.innerWidth for grid calculations** | In dashboard grids or simulator containers, the window is wider than the card, causing squeezed rows. | Use `ResizeObserver` to observe actual card layout width. |
 | 3 | **Displaying green weather alert banner** | Screen clutter when weather alert is green. | Completely hide the weather alert banner when level is green. |
 | 4 | **Swallowing or ignoring icon property updates** | Static attribute binding doesn't update when icon state changes. | Use dynamic property binding `.icon="${icon}"` on `<sf-icon>`. |
 | 5 | **Monolithic or manual grid positioning** | Absolute positioning of tiles requires complex JS coordinate math. | Use flex rows with decorative half-hexagons and negative margin vertical overlap. |
+| 6 | **Setting style properties inside the constructor** | Setting style properties inside custom element constructors blocks element upgrades and throws DOMExceptions. | Set styles/custom properties safely in `connectedCallback` or `willUpdate`. |
 
 ---
 
@@ -122,9 +130,9 @@ Hexagons have the same fixed dimensions across all viewports (desktop, tablet, m
 | TC-701 | Unit | User header correctly identifies connected person | HASS states with matching `user_id` | Renders user picture, welcome message, and name |
 | TC-702 | Unit | Status badge shows active zone icon | Person associated with a zone entity | Status badge renders correct zone icon |
 | TC-703 | Unit | Weather alert hidden when green | Alert state = "Vert" | Alert banner is not rendered in the DOM |
-| TC-704 | Unit | Interlocking rows structured with half-hexagons | 8 tiles configured | Row 0 starts with Left Half-Hexagon, Row 1 ends with Right Half-Hexagon |
+| TC-704 | Unit | Interlocking rows structured with half-hexagons | 6 tiles configured (portrait) | Row 0 starts with Left Half-Hexagon (`HL`), Row 1 ends with Right Half-Hexagon (`HR`). Total 5 rows padded. |
 | TC-705 | Unit | Active vs Inactive tiles have correct data-active attributes | Tiles with active and inactive states | Active tile has `data-active="true"`, inactive has `data-active="false"` |
-| IT-701 | Integration | Entire grid interlocking behaves correctly on mobile portrait | Mobile viewport width 390px | Renders 4 columns within the card width without overflow |
+| IT-701 | Integration | Entire grid interlocking behaves correctly on mobile portrait | Mobile viewport width 375px | Renders 2 columns (2.5 hexagons) taking exactly 100% card width with no gaps |
 | IT-702 | Integration | Icons and text glow is rendered when tiles are active | Active switch tile config | Rendered SVG border and text-shadow reflect CSS shadow styles |
 | IT-703 | Integration | Home Assistant theme variables are applied dynamically | Dynamic state and theme updates | Elements pick up `--sf-primary` correctly |
 

@@ -1,4 +1,4 @@
-<!-- Generated: 2026-05-24 | Files scanned: 57 | Token estimate: ~440 | Updated: post-workbench -->
+<!-- Generated: 2026-05-24 | Files scanned: 57 | Token estimate: ~450 | Updated: post-responsive-grid -->
 
 # Home Assistant Sci-Fi Cards — Architecture v2
 
@@ -23,7 +23,7 @@
 | `src/utils/base-card.ts` | `SciFiBaseCard` — error boundary, `hass` guard, lifecycle |
 | `src/components/sf-icon/sf-icon.ts` | MDI icon renderer — `willUpdate()` + 3-tier cache (mem→idb→HA) |
 | `src/components/sf-icon/icon-cache.ts` | `resolveIcon()` — memory Map + idb-keyval + HA native registry |
-| `src/cards/hexa_tiles/sci-fi-hexa-tiles.ts` | Hex dashboard — includes `_navigate()` HA-native router |
+| `src/cards/hexa_tiles/sci-fi-hexa-tiles.ts` | Hex dashboard — includes `_navigate()` HA-native router, ResizeObserver dynamic 100% width interlocking checkerboard grid |
 | `src/cards/weather/sci-fi-weather.ts` | Weather card — Chart.js bundled, `@query` canvas ref |
 | `vitest.config.ts` | Vitest runner — happy-dom, global Canvas/ResizeObserver mocks |
 | `rollup.config.mjs` | Rollup 4 — `@rollup/plugin-terser@^1.0.0`, Chart.js bundled |

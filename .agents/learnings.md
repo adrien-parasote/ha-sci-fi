@@ -225,3 +225,35 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Evidence**: Tests used `.floor-btn`, `.area-tile`, `.light-row`, `aria-selected`, `aria-pressed` — but the implementation used `.floor-hexa`, `.area-hexa`, `.light-btn`, `data-selected`, `data-active`. 6 tests failed. Both the spec and test file needed updating.
 - **Anti-pattern**: Writing test DOM selectors without first inspecting the implementation's actual rendered HTML. Invented selectors (`aria-selected`, `.floor-btn`) that look like best practice but don't match the actual template cause all E2E assertions to silently return `null`.
 - **Fix**: In specs for UI components, always document the canonical CSS class names and data attributes used by tests in a "CSS Selectors for E2E Tests" table (see `05_cards.md → sci-fi-lights`). Treat these selectors as a public API contract between the spec and test files.
+
+### L044: Bottom-Aligned SVG + Fixed `padding-top` = Fragile Positioning
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi — sf-radiator.ts, wheel alignment debugging
+- **Evidence**: The radiator image uses `align-items: end` (bottom-aligned). `padding-top: 54px` worked for one card height but broke for another. The white square drifted because `padding-top` is relative to the container TOP while the image is anchored to the BOTTOM.
+- **Anti-pattern**: Using `padding-top` (top-relative) to position elements that must align with a point in a bottom-anchored asset. Container height changes move the asset but not the padding.
+- **Fix**: Compute `bottom = asset_height - target_y_from_top`. Apply:
+  ```css
+  .element { position: absolute; bottom: 197px; transform: translateY(50%); }
+  ```
+  `bottom` is invariant to container height when the image is always bottom-aligned. `translateY(50%)` centers the element on the anchor point.
+
+### L045: CSS Custom Variable Override vs. `width` on Web Component Host
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi — sf-button-card.ts + sf-radiator.ts debugging
+- **Evidence**: `width: 80px` on host + `min-width: var(--btn-min-width, 90px)` on internal `.btn` → 10px overflow → text clipping ("Frost Protectic").
+- **Anti-pattern**: Setting `width` on a web component host without checking if the shadow DOM has a `min-width` CSS variable. The host width does not override internal `min-width` — the inner element overflows and the parent clips it.
+- **Fix**: Override the CSS variable directly: `--btn-min-width: 80px`. This controls the internal size with no overflow.
+
+### L046: Downward Dropdown Overflow — `right: 0` Is the Correct Horizontal Anchor
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi — sf-button-card-select.ts dropdown overflow
+- **Evidence**: `position: absolute; top: 100%; min-width: max-content` caused page-level horizontal scroll. Button near right edge → dropdown extended rightward → overflow.
+- **Anti-pattern**: Leaving `left: 0` (implicit) on a downward dropdown near the right edge of the card. Content extends rightward and creates horizontal scrollbars.
+- **Fix**: `right: 0; left: auto` anchors the dropdown's RIGHT edge to the button's right edge. Dropdown can only extend LEFTWARD — always within card bounds. Combine with `white-space: nowrap`.
+
+### L047: `overflow-x: hidden` on `:host` Clips Shadow DOM Children
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi — sf-radiator.ts overflow debugging
+- **Evidence**: `overflow-x: hidden` on `sf-radiator :host` clipped buttons in child `sf-button-card-select` shadow DOM, causing text cutoff.
+- **Anti-pattern**: Using blanket `overflow: hidden` at the host level as a symptom fix. It clips absolutely-positioned descendants across shadow DOM boundaries.
+- **Fix**: Fix the ROOT CAUSE (L046: `right: 0` on dropdown). Never use `overflow: hidden` to mask overflow symptoms without confirming all children are in-bounds.

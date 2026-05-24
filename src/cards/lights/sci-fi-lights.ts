@@ -652,7 +652,6 @@ export class SciFiLightsCard extends SciFiBaseCard {
         </svg>
         <div class="hexa-content">
           <sf-icon .icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
-          <span class="floor-name">${floor.name}</span>
         </div>
       </div>
     `;

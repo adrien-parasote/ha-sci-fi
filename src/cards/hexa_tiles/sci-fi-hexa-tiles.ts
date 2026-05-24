@@ -13,22 +13,7 @@ import type { HassEntity } from '../../types/ha.js';
 
 const TAG = 'sci-fi-hexa-tiles';
 
-const WEATHER_ICON_MAP: Record<string, string> = {
-  'clear-night': 'mdi:weather-night',
-  'cloudy': 'mdi:weather-cloudy',
-  'fog': 'mdi:weather-fog',
-  'hail': 'mdi:weather-hail',
-  'lightning': 'mdi:weather-lightning',
-  'lightning-rainy': 'mdi:weather-lightning-rainy',
-  'partlycloudy': 'mdi:weather-partly-cloudy',
-  'pouring': 'mdi:weather-pouring',
-  'rainy': 'mdi:weather-rainy',
-  'snowy': 'mdi:weather-snowy',
-  'snowy-rainy': 'mdi:weather-snowy-rainy',
-  'sunny': 'mdi:weather-sunny',
-  'windy': 'mdi:weather-windy',
-  'windy-variant': 'mdi:weather-windy-variant',
-};
+
 
 @customElement(TAG)
 export class SciFiHexaTilesCard extends SciFiBaseCard {
@@ -519,8 +504,21 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     const state = this.hass.states[weather.weather_entity];
     if (!state) return html``;
     const name = state.attributes.friendly_name ?? 'Météo';
-    const condition = state.state?.toLowerCase();
-    const icon = WEATHER_ICON_MAP[condition] ?? 'mdi:weather-cloudy';
+    const condition = state.state?.toLowerCase() ?? 'unknown';
+    
+    // Determine day/night for animated weather icons
+    const sunEntity = this.hass?.states['sun.sun'];
+    const isDay = sunEntity ? sunEntity.state !== 'below_horizon' : true;
+    
+    // Default fallback to cloudy if condition is unknown/unsupported by sf icons
+    let iconName = `${condition}-${isDay ? 'day' : 'night'}`;
+    // Basic check for supported sf weather icons (since we know the list)
+    const supportedConditions = ['clear-night', 'clear', 'cloudy', 'fog', 'hail', 'lightning', 'lightning-rainy', 'partlycloudy', 'pouring', 'rainy', 'snowy', 'snowy-rainy', 'sunny', 'windy', 'windy-variant'];
+    if (!supportedConditions.includes(condition)) {
+      iconName = `cloudy-${isDay ? 'day' : 'night'}`;
+    }
+    
+    const icon = `sf:${iconName}`;
     const isActive = condition !== 'clear-night';
 
     return html`

@@ -97,6 +97,355 @@
     .error-banner { background: rgba(239,68,68,0.1); border: 1px solid var(--error); border-radius: 8px; padding: 12px 16px; margin-bottom: 14px; font-size: 13px; color: var(--error); display: none; }
     .error-banner.visible { display: block; }
 
+    /* ===== PANEL MODE (card view toggle) ===== */
+    /* Card mode: constrained width, centered, with background */
+    .preview-area.mode-card .card-wrapper {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    /* Panel mode: fill the entire preview area height, no max-width */
+    .preview-area.mode-panel {
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .preview-area.mode-panel .preview-header {
+      padding: 12px 20px;
+      margin-bottom: 0;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .preview-area.mode-panel .error-banner {
+      margin: 8px 20px 0;
+    }
+    .preview-area.mode-panel .card-wrapper {
+      flex: 1;
+      border-radius: 0;
+      border: none;
+      border-top: 1px solid var(--border);
+      min-height: 0;
+      /* Device simulation: overflow:auto so the dark stage can scroll
+         to reveal the full phone/tablet frame height */
+      overflow: auto;
+    }
+    .preview-area.mode-panel .card-wrapper:hover { border-color: var(--border); }
+    /* Desktop panel: card-mount fills height as flex column */
+    .preview-area.mode-panel #card-mount {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .preview-area.mode-panel #card-mount > * {
+      flex: 1;
+      min-height: 0;
+    }
+    /* Phone/Tablet device overrides — same specificity as panel rules above.
+       Phone: card-mount has auto height, device-screen provides the constraint.
+       Tablet: card-mount fills the fixed device-screen height via flex chain. */
+    .preview-area.mode-panel .dev-phone #card-mount {
+      height: auto;
+      min-height: 0;
+      flex: none;
+    }
+    .preview-area.mode-panel .dev-phone #card-mount > * {
+      flex: none;
+      min-height: auto;
+      height: auto;
+    }
+    .preview-area.mode-panel .dev-tablet #card-mount {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .preview-area.mode-panel .dev-tablet #card-mount > * {
+      flex: 1;
+      min-height: 0;
+    }
+    /* Mode toggle button */
+    .mode-toggle {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      gap: 0;
+    }
+    .mode-toggle-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .mode-toggle-btn:first-child { border-right: 1px solid var(--border); }
+    .mode-toggle-btn.active {
+      background: rgba(0,212,255,0.12);
+      color: var(--accent);
+    }
+    .mode-toggle-btn:hover:not(.active) { background: var(--surface2); color: var(--text); }
+
+    /* ===== DEVICE SIZE SIMULATOR ===== */
+    /* Only visible in Panel mode */
+    .device-toggle { display: none; align-items: center; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .device-toggle.visible { display: flex; }
+    .device-toggle-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 6px 11px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .device-toggle-btn:not(:last-child) { border-right: 1px solid var(--border); }
+    .device-toggle-btn.active { background: rgba(0,212,255,0.12); color: var(--accent); }
+    .device-toggle-btn:hover:not(.active) { background: var(--surface2); color: var(--text); }
+
+    /* ── Viewport container ───────────────────────────────────────── */
+    .preview-area.mode-panel .device-viewport {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: auto;
+      min-height: 0;
+      /* dark stage behind device frames */
+      background: #07070f;
+      padding: 32px 24px;
+      gap: 12px;
+    }
+    .preview-area.mode-panel .device-viewport.dev-desktop {
+      padding: 0;
+      background: transparent;
+    }
+
+    /* ── Device outer shell (the physical frame) ─────────────────── */
+    .device-outer {
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ─ DESKTOP: no frame, just fill the space ─ */
+    .dev-desktop .device-outer {
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+    }
+    .dev-desktop .device-screen {
+      flex: 1;
+      min-height: 0;
+    }
+    .dev-desktop .device-home-bar { display: none; }
+
+    /* ─ iPHONE 15 Pro Max frame (430 × 932 logical px) ─ */
+    .dev-phone .device-outer {
+      position: relative;
+      background: linear-gradient(155deg, #2c2c3c 0%, #18181e 60%, #222230 100%);
+      border-radius: 54px;
+      padding: 14px 11px 10px;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.09),
+        inset 0 -1px 0 rgba(255,255,255,0.04),
+        inset 1px 0 0 rgba(255,255,255,0.05),
+        inset -1px 0 0 rgba(255,255,255,0.05),
+        0 0 0 1px rgba(0,0,0,0.7),
+        0 40px 80px rgba(0,0,0,0.8),
+        0 0 80px rgba(0,180,255,0.04);
+      width: 452px;
+      max-width: calc(100vw - 80px);
+    }
+    /* Dynamic Island */
+    .dev-phone .device-outer::before {
+      content: '';
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 126px;
+      height: 36px;
+      background: #070709;
+      border-radius: 18px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06),
+                  0 2px 8px rgba(0,0,0,0.6);
+      z-index: 10;
+    }
+    /* Power button (right side) */
+    .dev-phone .device-outer::after {
+      content: '';
+      position: absolute;
+      right: -3px;
+      top: 150px;
+      width: 3px;
+      height: 80px;
+      background: linear-gradient(#222232, #2e2e40, #222232);
+      border-radius: 0 3px 3px 0;
+      box-shadow: 1px 0 2px rgba(0,0,0,0.5);
+    }
+    .dev-phone .device-vol-left {
+      position: absolute;
+      left: -3px;
+      top: 110px;
+      width: 3px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .dev-phone .device-vol-left span {
+      display: block;
+      width: 3px;
+      height: 40px;
+      background: linear-gradient(#222232, #2e2e40, #222232);
+      border-radius: 3px 0 0 3px;
+    }
+    .dev-phone .device-screen {
+      width: 430px;
+      max-width: 100%;
+      height: 932px;
+      max-height: 85vh;
+      border-radius: 46px;
+      /* Scroll inside the phone like a real device */
+      overflow-y: auto;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      scrollbar-width: none; /* hide scrollbar — feels like real phone */
+      position: relative;
+      background: #0a0a14;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+      /* iOS safe area: push content below Dynamic Island (~52px from screen top) */
+      padding-top: 52px;
+      box-sizing: border-box;
+    }
+    /* Content height must be AUTO so it can overflow and trigger scroll.
+       !important overrides the panel-mode height:100% cascade. */
+    .dev-phone #card-mount {
+      height: auto !important;
+      min-height: calc(100% - 52px);
+    }
+    .dev-phone #card-mount {
+      display: block !important; /* cancel panel-mode flex */
+    }
+    .dev-phone #card-mount > * {
+      flex: initial !important;  /* cancel panel-mode flex:1 */
+      min-height: auto !important;
+    }
+    .dev-phone .device-home-bar {
+      display: block;
+      width: 130px;
+      height: 5px;
+      background: rgba(255,255,255,0.24);
+      border-radius: 3px;
+      margin: 8px auto 4px;
+    }
+
+    /* ─ iPAD AIR 11" portrait frame (820 × 1180 logical px) ─ */
+    .dev-tablet .device-outer {
+      position: relative;
+      background: linear-gradient(150deg, #282838 0%, #16161e 60%, #202030 100%);
+      border-radius: 24px;
+      padding: 28px 22px 18px;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.08),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        0 0 0 1px rgba(0,0,0,0.65),
+        0 40px 80px rgba(0,0,0,0.75),
+        0 0 100px rgba(0,180,255,0.03);
+      width: 864px;
+      max-width: calc(100vw - 80px);
+    }
+    /* Front camera (centered top) */
+    .dev-tablet .device-outer::before {
+      content: '';
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 10px;
+      background: #09090f;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.07),
+                  inset 0 0 4px rgba(0,0,0,0.9);
+    }
+    /* Power button (top-right side) */
+    .dev-tablet .device-outer::after {
+      content: '';
+      position: absolute;
+      right: -3px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 60px;
+      background: linear-gradient(#1e1e2c, #2a2a3c, #1e1e2c);
+      border-radius: 0 3px 3px 0;
+    }
+    .dev-tablet .device-screen {
+      width: 820px;
+      max-width: 100%;
+      /* 1000px target → on a 900px monitor, 92vh=828px > 820px width = portrait ✓
+         Content scrolls inside when taller than the screen. */
+      height: 1000px;
+      max-height: 92vh;
+      border-radius: 8px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      position: relative;
+      background: #0a0a14;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+      /* Status bar safe area */
+      padding-top: 24px;
+      box-sizing: border-box;
+    }
+    /* iPad: fixed height → height:100% chain resolves, card fills the frame.
+       Keep panel-mode flex so the web component stretches to fill height. */
+    .dev-tablet #card-mount {
+      height: 100% !important;
+    }
+    .dev-tablet #card-mount {
+      display: flex !important;
+      flex-direction: column !important;
+    }
+    .dev-tablet #card-mount > * {
+      flex: 1 !important;
+      min-height: 0 !important;
+    }
+    .dev-tablet .device-home-bar {
+      display: block;
+      width: 80px;
+      height: 4px;
+      background: rgba(255,255,255,0.18);
+      border-radius: 2px;
+      margin: 8px auto 4px;
+    }
+
+    /* Device name label below the frame */
+    .device-name-label {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+      text-align: center;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+    .device-name-label.hidden { display: none; }
+
+    /* Shared screen wrapper — must NOT be display:contents so the width
+       chain from device-screen → card-mount-wrap → card-mount is explicit */
+    #card-mount-wrap { display: block; width: 100%; }
+
     /* ===== PANEL RIGHT ===== */
     .panel { border-left: 1px solid var(--border); background: var(--surface); display: flex; flex-direction: column; overflow: hidden; }
     .panel-section { padding: 14px; border-bottom: 1px solid var(--border); }
@@ -144,6 +493,17 @@
   <span class="badge" id="badge-mode">Mock data</span>
   <span class="badge" id="badge-bundle">Bundle…</span>
   <div class="toolbar-sep"></div>
+  <!-- Card / Panel mode toggle -->
+  <div class="mode-toggle" title="Basculer entre le mode carte normal et le mode Panel HA (plein écran)">
+    <button class="mode-toggle-btn active" id="btn-mode-card" onclick="setViewMode('card')">⊡ Card</button>
+    <button class="mode-toggle-btn" id="btn-mode-panel" onclick="setViewMode('panel')">⛶ Panel</button>
+  </div>
+  <!-- Device size simulator (visible only in Panel mode) -->
+  <div class="device-toggle" id="device-toggle" title="Simuler un appareil (Panel mode uniquement)">
+    <button class="device-toggle-btn active" id="btn-dev-desktop" onclick="setDeviceSize('desktop')">🖥️ PC</button>
+    <button class="device-toggle-btn" id="btn-dev-tablet" onclick="setDeviceSize('tablet')">📟 iPad Air</button>
+    <button class="device-toggle-btn" id="btn-dev-phone" onclick="setDeviceSize('phone')">📱 iPhone 15</button>
+  </div>
   <button class="btn btn-ghost" onclick="openConnectModal()" id="btn-connect-toolbar">🔗 Connect to HA</button>
   <button class="btn btn-ghost" onclick="refreshLiveStates()" id="btn-refresh" disabled title="Rafraîchir les états HA">↻ Refresh</button>
   <button class="btn btn-primary" onclick="reloadCard()">↺ Recharger carte</button>
@@ -188,7 +548,22 @@
       <div class="loading-overlay" id="loading-overlay">
         <div class="spinner"></div> Chargement…
       </div>
-      <div id="card-mount"></div>
+      <!-- device-viewport wraps card-mount for device size simulation -->
+      <div class="device-viewport dev-desktop" id="device-viewport">
+        <!-- device-outer = physical device shell -->
+        <div class="device-outer" id="device-outer">
+          <!-- volume buttons (phone only) -->
+          <div class="device-vol-left" id="device-vol-left"><span></span><span></span></div>
+          <!-- screen = card content -->
+          <div class="device-screen" id="card-mount-wrap">
+            <div id="card-mount"></div>
+          </div>
+          <!-- home indicator bar -->
+          <span class="device-home-bar" id="device-home-bar"></span>
+        </div>
+        <!-- device name shown below frame -->
+        <div class="device-name-label hidden" id="device-name-label"></div>
+      </div>
     </div>
   </div>
 
@@ -832,13 +1207,82 @@
     renderCard(currentCard, currentScenario);
   };
 
+  // ─── View mode (Card / Panel) ─────────────────────────────────────────────
+  let viewMode = localStorage.getItem('wb-view-mode') || 'card';
+  let deviceSize = localStorage.getItem('wb-device-size') || 'desktop';
+
+  const DEVICE_LABELS = {
+    desktop: { label: null,                btn: '🖥️ PC' },
+    tablet:  { label: 'iPad Air 11"',      btn: '📟 iPad Air' },
+    phone:   { label: 'iPhone 15 Pro Max', btn: '📱 iPhone 15' }
+  };
+
+  function applyDeviceHeight() {
+    const cardMount = document.getElementById('card-mount');
+    // In Panel mode with phone/tablet: clear inline style — device CSS handles heights.
+    // In Panel desktop or Card mode: set height:100% so card fills the viewport.
+    if (viewMode === 'panel' && (deviceSize === 'phone' || deviceSize === 'tablet')) {
+      cardMount.style.height = '';
+    } else {
+      cardMount.style.height = viewMode === 'panel' ? '100%' : '';
+    }
+  }
+
+  function setViewMode(mode) {
+    if (mode === 'card' && deviceSize !== 'desktop') {
+      setDeviceSize('desktop');
+    }
+    viewMode = mode;
+    localStorage.setItem('wb-view-mode', mode);
+    const previewArea = document.querySelector('.preview-area');
+    previewArea.classList.toggle('mode-card', mode === 'card');
+    previewArea.classList.toggle('mode-panel', mode === 'panel');
+    document.getElementById('btn-mode-card').classList.toggle('active', mode === 'card');
+    document.getElementById('btn-mode-panel').classList.toggle('active', mode === 'panel');
+    // Show/hide device toggle only in Panel mode
+    document.getElementById('device-toggle').classList.toggle('visible', mode === 'panel');
+    applyDeviceHeight();
+    log(`🖥️ Mode ${mode === 'panel' ? 'Panel (plein écran)' : 'Card (normal)'}`, 'info');
+  }
+
+  function setDeviceSize(size) {
+    deviceSize = size;
+    localStorage.setItem('wb-device-size', size);
+    const viewport = document.getElementById('device-viewport');
+    const nameLabel = document.getElementById('device-name-label');
+    viewport.className = `device-viewport dev-${size}`;
+    ['desktop', 'tablet', 'phone'].forEach(s => {
+      document.getElementById(`btn-dev-${s}`).classList.toggle('active', s === size);
+    });
+    const meta = DEVICE_LABELS[size];
+    if (nameLabel) {
+      if (meta.label) {
+        nameLabel.textContent = meta.label;
+        nameLabel.classList.remove('hidden');
+      } else {
+        nameLabel.classList.add('hidden');
+      }
+    }
+    const volLeft = document.getElementById('device-vol-left');
+    if (volLeft) volLeft.style.display = size === 'phone' ? 'flex' : 'none';
+    // Sync inline height now that device has changed
+    applyDeviceHeight();
+    log(`📐 Appareil : ${meta.label || 'PC — plein écran'}`, 'info');
+  }
+
+  window.setViewMode = setViewMode;
+  window.setDeviceSize = setDeviceSize;
+
   // ─── Init ────────────────────────────────────────────────────────────────
   buildTabs();
   selectCard('hexa');
   setHaStatus('offline', 'Non connecté — données mockées');
+  setViewMode(viewMode); // restore saved mode
+  setDeviceSize(deviceSize); // restore saved device size
   log('🚀 Workbench démarré', 'info');
   log('💡 "npm run build" pour mettre à jour · "↺ Recharger" pour voir les changements', 'info');
   log('🔗 Clique "Se connecter" pour utiliser tes vraies données HA', 'info');
+  log(`🖼️ Mode d'affichage : ${viewMode === 'panel' ? 'Panel (plein écran)' : 'Card (normal)'} — toggle dans la toolbar`, 'info');
 
   // Auto-reconnect if tokens saved
   if (localStorage.getItem('hassTokens') && localStorage.getItem('hassUrl')) {

@@ -73,6 +73,40 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
       .weather-alert[data-level="yellow"] { background: rgba(255,214,10,0.1); color: #ffd60a; }
       .weather-alert[data-level="orange"] { background: rgba(255,107,53,0.1); color: #ff6b35; }
       .weather-alert[data-level="red"] { background: rgba(255,77,109,0.15); color: #ff4d6d; }
+
+      /* ── Responsive ───────────────────────────────────────── */
+      @container sf-card (max-width: 1023px) {
+        .hexa-tile {
+          width: 80px;
+          height: 89px;
+        }
+        .hexa-tile .tile-label { max-width: 62px; }
+      }
+      /* ── Mobile : 2 tuiles par rangée, taille fluide ─────── */
+      @container sf-card (max-width: 599px) {
+        /* Grid en 2 colonnes serrées qui remplissent la largeur */
+        .hexa-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 6px;
+          justify-items: center;
+        }
+        /* Chaque tuile prend 90% de sa cellule grid */
+        .hexa-tile {
+          width: 90%;
+          /* ratio hexagonal : hauteur ≈ largeur × 1.155 */
+          aspect-ratio: 1 / 1.155;
+          height: auto;
+        }
+        .hexa-tile .tile-icon { font-size: 2rem; }
+        .hexa-tile .tile-label {
+          font-size: 0.7rem;
+          max-width: 90%;
+          white-space: normal;
+          line-height: 1.2;
+        }
+        .container { padding: var(--sf-spacing-sm); }
+      }
     `,
   ];
 

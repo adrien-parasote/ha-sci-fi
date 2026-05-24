@@ -39,16 +39,37 @@ export const sciFiCommonStyles = css`
     /* ── Animation ───────────────────────────────── */
     --sf-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
     --sf-transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* ── Panel mode support ──────────────────────── */
+    /* display:block + height:100% allows the card to fill its HA Panel
+       container (100vh). In normal dashboard mode the parent controls
+       the height, so these have no visual effect there. */
+    display: block;
+    height: 100%;
+    box-sizing: border-box;
   }
 
   /* ── Card wrapper ──────────────────────────────────────────────────────── */
   ha-card {
+    /* Force block layout so ha-card fills its parent width even when rendered
+       as an unknown custom element (workbench). Without this, display:inline
+       makes the container query report content-width (~668px) instead of
+       the device-frame width (430px), breaking all mobile breakpoints. */
+    display: block;
+    width: 100%;
     background: var(--sf-bg);
     border: 1px solid var(--sf-border);
     border-radius: var(--sf-radius);
-    overflow: hidden;
     font-family: var(--sf-font-family);
     color: var(--sf-text-primary);
+    /* Panel mode: fill host height and enable internal scroll */
+    height: 100%;
+    box-sizing: border-box;
+    overflow-y: auto;
+    /* Container queries: responsive breakpoints react to the card width,
+       not the viewport. Works in Panel mode AND in workbench device simulation. */
+    container-type: inline-size;
+    container-name: sf-card;
   }
 
   /* ── Section header ────────────────────────────────────────────────────── */

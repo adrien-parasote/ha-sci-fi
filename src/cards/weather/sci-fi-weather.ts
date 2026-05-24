@@ -7,6 +7,7 @@
 
 import { html, css, type TemplateResult, type PropertyValues, render } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
+import { msg } from '@lit/localize';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import type { SciFiWeatherConfig } from '../../types/config.js';
@@ -459,15 +460,30 @@ export class SciFiWeatherCard extends SciFiBaseCard {
 
   private _getlabels(key: string): string {
     const labels: Record<string, string> = {
-      clear: 'Clear sky', 'clear-night': 'Clear night', cloudy: 'Cloudy',
-      exceptional: 'Exceptional', fog: 'Fog', hail: 'Risk of hail',
-      lightning: 'Thunderstorms', 'lightning-rainy': 'Lightning rainy',
-      partlycloudy: 'Sunshine', pouring: 'Heavy rain', rainy: 'Rain',
-      snowy: 'Snow', 'snowy-rainy': 'Freezing rain', sunny: 'Sunny',
-      windy: 'Windy', 'windy-variant': 'Variable winds', temp: 'Temperature',
-      forecasted_temp: 'Forecasted temperatures', precipitation: 'Precipitation',
-      forecasted_precipitation: 'Forecasted precipitation', wind_speed: 'Wind speeds',
-      forecasted_wind_speed: 'Forecasted wind speeds', cloud: 'Cloud', frozen: 'Frozen',
+      clear: msg('Clear sky'),
+      'clear-night': msg('Clear night'),
+      cloudy: msg('Cloudy'),
+      exceptional: msg('Exceptional'),
+      fog: msg('Fog'),
+      hail: msg('Risk of hail'),
+      lightning: msg('Thunderstorms'),
+      'lightning-rainy': msg('Lightning rainy'),
+      partlycloudy: msg('Sunshine'),
+      pouring: msg('Heavy rain'),
+      rainy: msg('Rain'),
+      snowy: msg('Snow'),
+      'snowy-rainy': msg('Freezing rain'),
+      sunny: msg('Sunny'),
+      windy: msg('Windy'),
+      'windy-variant': msg('Variable winds'),
+      temp: msg('Temperature'),
+      forecasted_temp: msg('Forecasted temperatures'),
+      precipitation: msg('Precipitation'),
+      forecasted_precipitation: msg('Forecasted precipitation'),
+      wind_speed: msg('Wind speeds'),
+      forecasted_wind_speed: msg('Forecasted wind speeds'),
+      cloud: msg('Cloud'),
+      frozen: msg('Frozen'),
     };
     return labels[key] ?? key;
   }

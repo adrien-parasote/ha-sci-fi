@@ -12,7 +12,6 @@
 import type { HomeAssistantExt } from '../../types/ha.js';
 import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { msg } from '@lit/localize';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
 import type {
@@ -225,7 +224,7 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
             icon="mdi:chevron-left"
             @button-click="${() => { this._edit = false; this._shortcutId = null; }}"
           ></sf-button>
-          <span>${msg('Edit shortcut')} — ${sc.name || this._shortcutId}</span>
+          <span>${this.getLabel('action-edit-shortcut')} — ${sc.name || this._shortcutId}</span>
         </div>
         <sf-editor-input
           element-id="name"
@@ -263,7 +262,7 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
           </div>
         `)}
         <button class="add-btn" @click="${() => this._addShortcutSegment(vi, this._shortcutId!)}">
-          + ${msg('Add segment')}
+          + ${this.getLabel('action-add-segment')}
         </button>
         <div class="delete-btn" style="width:100%;">
           <sf-button
@@ -271,7 +270,7 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
             style="--btn-icon-size: 20px;"
             @button-click="${() => this._deleteShortcut(vi, this._shortcutId!)}"
           ></sf-button>
-          <span style="font-size:0.875rem;color:var(--editor-section-color)">${msg('Delete shortcut')}</span>
+          <span style="font-size:0.875rem;color:var(--editor-section-color)">${this.getLabel('action-delete-shortcut')}</span>
         </div>
       </div>
     `;
@@ -289,7 +288,7 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
           <sf-editor-dropdown-entity
             element-id="entity"
             kind="vacuum-entity"
-            label="${msg('Vacuum entity')}"
+            label="${this.getLabel('input-vacuum-entity')}"
             .value="${vacuum.entity ?? ''}"
             .items="${this._vacuumEntities}"
             @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateVacuumField(vi, 'entity', e.detail.value)}"
@@ -350,7 +349,7 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
             </div>
           `)}
           <button class="add-btn" @click="${() => this._addShortcut(vi)}">
-            + ${msg('Add shortcut')}
+            + ${this.getLabel('action-add-shortcut')}
           </button>
         </sf-editor-accordion>
       </div>
@@ -382,7 +381,7 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
 
           ${vacuums.length > 0
             ? this._renderVacuumPanel(vacuums[this._activeVacuum] ?? { entity: '' }, this._activeVacuum)
-            : html`<p style="color:var(--secondary-text-color);padding:12px">${msg('No vacuum configured.')}</p>`}
+            : html`<p style="color:var(--secondary-text-color);padding:12px">${this.getLabel('text-no-vacuum')}</p>`}
         </div>
       </div>
     `;

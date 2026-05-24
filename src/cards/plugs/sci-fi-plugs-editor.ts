@@ -14,7 +14,6 @@
 import type { HomeAssistantExt } from '../../types/ha.js';
 import { html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { msg } from '@lit/localize';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
 import type {
@@ -141,7 +140,7 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
         <sf-editor-dropdown-entity
           element-id="entity_id"
           kind="plug-switch"
-          label="${msg('Switch entity')}"
+          label="${this.getLabel('input-switch-entity')}"
           icon="mdi:devices"
           .value="${device.entity_id ?? ''}"
           .items="${this._switchEntities}"
@@ -201,7 +200,7 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
             <h1>${this.getSectionTitle('section-title-plug')}</h1>
             ${devices.map((d, i) => this._renderDevice(d, i))}
             <button class="add-btn" @click="${this._addDevice}">
-              + ${msg('Add device')}
+              + ${this.getLabel('action-add-device')}
             </button>
           </section>
         </div>

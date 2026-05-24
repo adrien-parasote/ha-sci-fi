@@ -12,7 +12,6 @@
 import type { HomeAssistantExt } from '../../types/ha.js';
 import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { msg } from '@lit/localize';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
 import type {
@@ -162,7 +161,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
           icon="mdi:chevron-left"
           @button-click="${this._endEdit}"
         ></sf-button>
-        <span>${this.getLabel(titleKey) || `${msg('Edit')} — ${key}`}</span>
+        <span>${this.getLabel(titleKey) || `${this.getLabel('edit-section-title')} \u2014 ${key}`}</span>
       </div>
       <sf-editor-dropdown-icon
         element-id="${key}"

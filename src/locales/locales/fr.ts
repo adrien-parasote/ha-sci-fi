@@ -205,4 +205,16 @@ export const templates: Record<string, any> = {
   saba5ffa9753b7e66: `Segment`,
   s57a172ce127a124d: `Entité alerte météo`,
   s1e187919b52639f1: `Carte`,
+  // ── New entries — editor i18n pass ────────────────────────────────────────
+  s4feea233d049c3e8: `Ajouter une tuile`,
+  s3028e397142cdc2a: `Ajouter une entité personnalisée`,
+  s953ed3bd972ecda4: `Ajouter un véhicule`,
+  s3c74dd5bb67ca97c: `Entité switch`,
+  s665f2a2247cf9c36: `Ajouter un appareil`,
+  sde7d7361638c7605: `Ajouter un segment`,
+  s3e06840f6728b5d8: `Supprimer le raccourci`,
+  s8c1dc171b402c2e5: `Entité aspirateur`,
+  sad98b54b586fc5fe: `Ajouter un raccourci`,
+  sde58bd1e6137142f: `Aucun aspirateur configuré.`,
+  s5cf60e0665e79b11: `Modifier le raccourci`,
 };

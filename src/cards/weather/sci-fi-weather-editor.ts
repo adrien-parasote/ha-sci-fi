@@ -13,7 +13,6 @@
 import type { HomeAssistantExt } from '../../types/ha.js';
 import { html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { msg } from '@lit/localize';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
 import type { SciFiWeatherConfig } from '../../types/config.js';

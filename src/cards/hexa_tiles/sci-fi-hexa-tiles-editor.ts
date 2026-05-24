@@ -13,7 +13,6 @@
 import type { HomeAssistantExt } from '../../types/ha.js';
 import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { msg } from '@lit/localize';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
 import type {
@@ -216,11 +215,11 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   private _renderHeader(config: SciFiHexaTilesConfig): TemplateResult {
     return html`
       <section>
-        <h1><sf-icon icon="mdi:page-layout-header" style="--icon-width:16px;--icon-height:16px;"></sf-icon><span>${msg('En-Tête')}</span></h1>
+        <h1>${this.getSectionTitle('section-title-header')}</h1>
         <sf-editor-input
           element-id="header_message"
           kind=""
-          label="${msg('Message (optionnel)')}"
+          label="${this.getLabel('input-message-text')} ${this.getLabel('text-optional')}"
           icon="mdi:cursor-text"
           .value="${config.header_message ?? ''}"
           @input-update="${this._updateHeaderMessage}"
@@ -234,10 +233,10 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
     const weatherActive = config.weather?.activate ?? false;
     return html`
       <section>
-        <h1><sf-icon icon="mdi:theme-light-dark" style="--icon-width:16px;--icon-height:16px;"></sf-icon><span>${msg('Météo')}</span></h1>
+        <h1>${this.getSectionTitle('section-title-weather')}</h1>
         <sf-toggle-switch
           .checked="${weatherActive}"
-          label="${msg("Ajout d'une tuile météo ?")}"
+          label="${this.getLabel('text-switch-hexa-add-weather-tile')}"
           @sf-toggle-change="${this._toggleWeather}"
         ></sf-toggle-switch>
 
@@ -250,7 +249,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   private _renderWeatherEntities(config: SciFiHexaTilesConfig): TemplateResult {
     return html`
       <sf-editor-accordion
-        title="${msg('Météo')}"
+        title="${this.getLabel('section-title-weather')}"
         icon="mdi:weather-partly-snowy-rainy"
         element-id="weather-detail"
         ?open="${true}"
@@ -258,7 +257,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         <sf-editor-dropdown-entity
           element-id="weather_entity"
           kind="weather_entity"
-          label="${msg('Entité météo (requis)')}"
+          label="${this.getLabel('input-weather-entity')} ${this.getLabel('text-required')}"
           icon="mdi:weather-sunny"
           .value="${config.weather?.weather_entity ?? ''}"
           .items="${this._weatherEntities}"
@@ -268,7 +267,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         <sf-editor-input
           element-id="weather_link"
           kind="link"
-          label="${msg('Lien (optionnel)')}"
+          label="${this.getLabel('input-link')} ${this.getLabel('text-optional')}"
           icon="mdi:link-edit"
           .value="${config.weather?.link ?? ''}"
           @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateWeatherField('link', e.detail.value)}"
@@ -302,13 +301,13 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
     return html`
       ${tiles.map((tile, i) => this._renderTile(tile, i, tiles.length))}
       <button class="add-btn" @click="${this._addTile}">
-        + ${msg('Ajouter une tuile')}
+        + ${this.getLabel('action-add-tile')}
       </button>
     `;
   }
 
   private _renderTile(tile: SciFiHexaTileConfig, index: number, total: number): TemplateResult {
-    const title = tile.name || tile.entity || tile.entity_kind || `${msg('Tuile')} ${index + 1}`;
+    const title = tile.name || tile.entity || tile.entity_kind || `${this.getLabel('section-title-tile')} ${index + 1}`;
     const domainItems = tile.entity_kind ? (this._entitiesByDomain[tile.entity_kind] ?? []) : [];
 
     return html`

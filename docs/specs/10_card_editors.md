@@ -318,6 +318,20 @@ getLabel(key: string): string {
     'input-battery': msg('Battery'),
     'input-mop-intensite': msg('Mop intensite'),
     'input-command': msg('Command'),
+    // ── Action labels ─────────────────────────────────────────────────────
+    'action-add-tile': msg('Add tile'),
+    'action-add-custom-entity': msg('Add custom entity'),
+    'action-add-vehicle': msg('Add vehicle'),
+    'action-add-device': msg('Add device'),
+    'action-add-segment': msg('Add segment'),
+    'action-add-shortcut': msg('Add shortcut'),
+    'action-delete-shortcut': msg('Delete shortcut'),
+    'action-edit-shortcut': msg('Edit shortcut'),
+    // ── Entity labels ─────────────────────────────────────────────────────
+    'input-switch-entity': msg('Switch entity'),
+    'input-vacuum-entity': msg('Vacuum entity'),
+    // ── Status text ───────────────────────────────────────────────────────
+    'text-no-vacuum': msg('No vacuum configured.'),
   };
   return key in labels ? labels[key] : '';
 }
@@ -851,6 +865,7 @@ The `sensors` field in `SciFiPlugDevice` is a `Record<string, SciFiPlugSensorEnt
 | 8 | Dispatching `config-changed` without `composed: true` | Event doesn't reach Lovelace shadow boundary | Always `composed: true, bubbles: true` on `config-changed` |
 | 9 | Adding i18n labels as raw strings without `msg()` | `'Header'` hardcoded | Wrap ALL labels in `msg('Header')` — `getLabel()` already does this |
 | 10 | Building icon list with `getAllIconNames()` (main branch function) | Missing function in TS | Use `Object.keys(CUSTOM_ICONS)` with `sf:` prefix + curated MDI list |
+| 11 | Calling `msg()` directly in editor templates for UI labels | Bypasses `getLabel()`, preventing locale updates; French strings as `msg('Ajouter une tuile')` appear untranslatable in other locales | Add the key to `getLabel()` dictionary in `base-editor.ts`, call `this.getLabel('action-add-tile')` in the template; add corresponding entry to `fr.ts` and `xliff/fr.xlf` |
 
 ---
 

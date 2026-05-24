@@ -19,7 +19,6 @@
 import type { HomeAssistantExt } from '../../types/ha.js';
 import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { msg } from '@lit/localize';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
 import type {
@@ -256,7 +255,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
             icon="mdi:chevron-left"
             @button-click="${this._endEdit}"
           ></sf-button>
-          <span>${msg('Edit')} — ${this._editTarget}</span>
+          <span>${this.getLabel('edit-section-title')} — ${this._editTarget}</span>
         </div>
         <sf-editor-input
           element-id="name"
@@ -364,7 +363,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
             <h1>${this.getSectionTitle('section-title-entity-light-custom')}</h1>
             ${customEntries.map(([id, override]) => this._renderCustomEntityRow(id, override))}
             <button class="add-btn" @click="${this._addCustomEntity}">
-              + ${msg('Add custom entity')}
+              + ${this.getLabel('action-add-custom-entity')}
             </button>
           </section>
 

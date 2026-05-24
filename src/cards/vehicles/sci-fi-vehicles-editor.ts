@@ -10,7 +10,6 @@
 import type { HomeAssistantExt } from '../../types/ha.js';
 import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { msg } from '@lit/localize';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
 import type {
@@ -203,7 +202,7 @@ export class SciFiVehiclesEditor extends SciFiBaseEditor {
             <h1>${this.getSectionTitle('section-title-vehicle')}</h1>
             ${vehicles.map((v, i) => this._renderVehicle(v, i))}
             <button class="add-btn" @click="${this._addVehicle}">
-              + ${msg('Add vehicle')}
+              + ${this.getLabel('action-add-vehicle')}
             </button>
           </section>
         </div>

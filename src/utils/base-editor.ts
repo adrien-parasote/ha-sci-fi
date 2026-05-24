@@ -219,6 +219,20 @@ export abstract class SciFiBaseEditor extends LitElement {
       'input-battery': msg('Battery'),
       'input-mop-intensite': msg('Mop intensite'),
       'input-command': msg('Command'),
+      // ── Action labels ─────────────────────────────────────────────────────
+      'action-add-tile': msg('Add tile'),
+      'action-add-custom-entity': msg('Add custom entity'),
+      'action-add-vehicle': msg('Add vehicle'),
+      'action-add-device': msg('Add device'),
+      'action-add-segment': msg('Add segment'),
+      'action-add-shortcut': msg('Add shortcut'),
+      'action-delete-shortcut': msg('Delete shortcut'),
+      'action-edit-shortcut': msg('Edit shortcut'),
+      // ── Entity labels ─────────────────────────────────────────────────────
+      'input-switch-entity': msg('Switch entity'),
+      'input-vacuum-entity': msg('Vacuum entity'),
+      // ── Status text ───────────────────────────────────────────────────────
+      'text-no-vacuum': msg('No vacuum configured.'),
     };
     return (key in labels ? (labels as Record<string, string>)[key] : '') ?? '';
   }

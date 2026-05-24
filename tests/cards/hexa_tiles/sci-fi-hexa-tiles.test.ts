@@ -107,6 +107,20 @@ describe('sci-fi-hexa-tiles', () => {
   });
 
   it('renders interlocking rows of 2 columns with left and right decorative half-hexagons', async () => {
+    // Force portrait mode
+    const matchMediaSpy = vi.spyOn(window, 'matchMedia').mockImplementation((query) => {
+      return {
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      } as any;
+    });
+
     const el = document.createElement('sci-fi-hexa-tiles') as SciFiHexaTilesCard;
     el.setConfig({
       type: 'custom:sci-fi-hexa-tiles',
@@ -135,7 +149,7 @@ describe('sci-fi-hexa-tiles', () => {
     await el.updateComplete;
 
     const rows = el.shadowRoot!.querySelectorAll('.hexa-row');
-    expect(rows.length).to.equal(3);
+    expect(rows.length).to.equal(5);
 
     // Row 0 should chunk first 2 tiles and have left half-tile
     const row0 = rows[0] as HTMLElement;
@@ -154,6 +168,8 @@ describe('sci-fi-hexa-tiles', () => {
     expect(row2.querySelectorAll('.hexa-tile').length).to.equal(2);
     expect(row2.querySelector('.hexa-half.left')).not.to.be.null;
     expect(row2.querySelector('.hexa-half.right')).to.be.null;
+
+    matchMediaSpy.mockRestore();
   });
 
   it('renders weather tile with temperature and link navigation', async () => {
@@ -225,7 +241,7 @@ describe('sci-fi-hexa-tiles', () => {
 
     expect(el.shadowRoot!.textContent).to.include('Custom Hexa');
 
-    const tiles = el.shadowRoot!.querySelectorAll('.hexa-tile');
+    const tiles = el.shadowRoot!.querySelectorAll('.hexa-tile[role="button"]');
     expect(tiles.length).to.equal(2);
 
     // ADR-005: state_on = ['on'] → active when state === 'on'
@@ -284,7 +300,7 @@ describe('sci-fi-hexa-tiles', () => {
     document.body.appendChild(el);
     await el.updateComplete;
 
-    const tiles = el.shadowRoot!.querySelectorAll('.hexa-tile');
+    const tiles = el.shadowRoot!.querySelectorAll('.hexa-tile[role="button"]');
     expect(tiles.length).to.equal(2);
 
     expect(tiles[0]!.getAttribute('data-active')).to.equal('true');  // Bob home

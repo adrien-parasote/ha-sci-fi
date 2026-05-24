@@ -5,7 +5,7 @@
  */
 
 import { html, css, type TemplateResult } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import type { SciFiHexaTilesConfig, SciFiHexaTileConfig } from '../../types/config.js';
@@ -269,6 +269,42 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     `,
   ];
 
+  @state() private _cols = 2;
+  @state() private _minRows = 5;
+
+  private _query = window.matchMedia('(orientation: landscape)');
+
+  constructor() {
+    super();
+    this._updateLayout(this._query.matches);
+    this._query.addEventListener('change', this._handleOrientationChange);
+    window.addEventListener('resize', this._handleResize);
+  }
+
+  override disconnectedCallback(): void {
+    this._query.removeEventListener('change', this._handleOrientationChange);
+    window.removeEventListener('resize', this._handleResize);
+    super.disconnectedCallback();
+  }
+
+  private _handleOrientationChange = (e: MediaQueryListEvent): void => {
+    this._updateLayout(e.matches);
+  };
+
+  private _handleResize = (): void => {
+    this._updateLayout(this._query.matches);
+  };
+
+  private _updateLayout(landscape: boolean): void {
+    if (landscape) {
+      this._cols = 4;
+      this._minRows = 2;
+    } else {
+      this._cols = 2;
+      this._minRows = 5;
+    }
+  }
+
   declare config: SciFiHexaTilesConfig;
 
   protected override renderCard(): TemplateResult {
@@ -299,10 +335,20 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
       renderedTiles.push(this._renderCustomTile(tile));
     }
 
-    // Chunk tiles into rows of 2 columns
+    const tilesPerRow = this._cols;
+    const currentSlots = tilesPerRow * this._minRows;
+    const entitiesCount = renderedTiles.length;
+    const neededRows = Math.ceil(entitiesCount / tilesPerRow);
+    const totalRows = Math.max(neededRows, this._minRows);
+    const totalSlots = totalRows * tilesPerRow;
+
+    while (renderedTiles.length < totalSlots) {
+      renderedTiles.push(this._renderEmptyTile());
+    }
+
     const tileRows: TemplateResult[][] = [];
-    for (let i = 0; i < renderedTiles.length; i += 2) {
-      tileRows.push(renderedTiles.slice(i, i + 2));
+    for (let i = 0; i < renderedTiles.length; i += this._cols) {
+      tileRows.push(renderedTiles.slice(i, i + this._cols));
     }
 
     return html`
@@ -374,13 +420,24 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
   }
 
   private _renderHalfTile(isLeft: boolean): TemplateResult {
-    // Left half-hexagon (HL) has the top point on the right to align with the left-top slope of the full hexagon.
-    // Right half-hexagon (HR) has the top point on the left to align with the right-top slope of the full hexagon.
-    const points = isLeft ? '66,2 66,162 2,122 2,42' : '0,2 64,42 64,122 0,162';
+    // For isLeft (left edge), we want the cut line on the left: '0,2 64,42 64,122 0,162'
+    // For isRight (right edge), we want the cut line on the right: '66,2 66,162 2,122 2,42'
+    const points = isLeft ? '0,2 64,42 64,122 0,162' : '66,2 66,162 2,122 2,42';
     return html`
       <div class="hexa-half ${isLeft ? 'left' : 'right'}">
         <svg viewBox="0 0 66 164">
           <polygon points="${points}" />
+        </svg>
+      </div>
+    `;
+  }
+
+  private _renderEmptyTile(): TemplateResult {
+    return html`
+      <div class="hexa-tile" data-active="false">
+        <svg class="hexa-svg" viewBox="0 0 132 164">
+          <polygon class="hexa-bg" points="66,2 130,42 130,122 66,162 2,122 2,42" />
+          <polygon class="hexa-border" points="66,4 128,43 128,121 66,160 4,121 4,43" />
         </svg>
       </div>
     `;

@@ -62,6 +62,7 @@ export class SciFiRadiator extends LitElement {
       .content .right sf-button-card-select {
         --title-color: rgba(255, 255, 255, 0.4);
         --btn-padding: 5px 5px 5px 10px;
+        width: 80px;
       }
       .content .left {
         flex: 1;

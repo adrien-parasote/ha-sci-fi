@@ -55,14 +55,14 @@ export class SciFiRadiator extends LitElement {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        row-gap: 30px;
+        row-gap: 80px;
         max-width: 120px;
         overflow: visible;
       }
       .content .right sf-button-card-select {
         --title-color: rgba(255, 255, 255, 0.4);
         --btn-padding: 5px 5px 5px 10px;
-        width: 80px;
+        --min-width: 80px;
       }
       .content .left {
         flex: 1;

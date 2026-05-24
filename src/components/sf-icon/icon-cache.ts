@@ -101,8 +101,9 @@ async function fetchMdiFromHass(
     const response = await getMdiRegistry(connection);
     const pathData = response?.resources?.[iconName] ?? response?.resources?.[`mdi:${iconName}`];
     return pathData ?? null;
-  } catch (err) {
-    console.warn(`[sf-icon] Failed to fetch icon '${iconName}' from HA registry:`, err);
+  } catch (err: unknown) {
+    const errMsg = err && typeof err === 'object' ? JSON.stringify(err) : String(err);
+    console.warn(`[sf-icon] Failed to fetch icon '${iconName}' from HA registry: ${errMsg}`);
     return null;
   }
 }

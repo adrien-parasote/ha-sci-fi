@@ -189,4 +189,11 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Evidence**: Standalone simulators (like `dev/workbench.html`) do not register the platform's native elements (`<ha-icon>`), causing elements using the hybrid native strategy to fail to render and clutter logs.
 - **Pattern**: In isolated developer simulators (workbench), declare a lightweight mock custom element (`ha-icon`) that fetches assets from a public, versioned stable CDN (unpkg) dynamically. This satisfies offline-first HACS compliance because the mock/CDN is restricted purely to dev simulation and never bundled or loaded in production, while enabling a high-fidelity visual experience in development.
 
+### L039: Avoid Unsolicited Style Embellishments on Simple Layout Requests
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi — sci-fi-hexa-tiles.ts session
+- **Evidence**: User rejected the premium circle border, background, and drop-shadow added to the status badge, asking only to keep it raw and make the icon itself larger. 1 iteration of minor rework was required to strip these extra styles.
+- **Anti-pattern**: Adding unsolicited decorative embellishments (e.g. backgrounds, borders, glows, border-radius) when the user only asks to resize or align a UI element, thinking it makes the UI look more premium. This violates the "Maintain Scope Discipline" and "Enforce Simplicity" principles and can easily cause user rejection and rework.
+- **Fix**: When asked to increase the size or adjust the spacing of a UI element, change ONLY the dimensions (width, height, padding, margins, absolute positioning). Do not add backgrounds, borders, or shadow effects unless explicitly requested by the user.
+
 

@@ -1442,6 +1442,37 @@
   window.setViewMode = setViewMode;
   window.setDeviceSize = setDeviceSize;
 
+  // ─── Intercept Navigation for Workbench ──────────────────────────────────
+  const PATH_TO_TAB = {
+    'lights': 'lights',
+    'stove': 'stove',
+    'vacuum': 'vacuum',
+    'vehicles': 'vehicles',
+    'radiators': 'climates',
+    'plug': 'plugs',
+    'weather': 'weather'
+  };
+
+  const origPushState = window.history.pushState;
+  window.history.pushState = function(state, title, url) {
+    if (url) {
+      const cleanUrl = String(url).split('/').pop() || '';
+      const tabKey = PATH_TO_TAB[cleanUrl];
+      if (tabKey) {
+        log(`🔄 Navigation : ${cleanUrl} ➔ Onglet ${tabKey}`, 'info');
+        selectCard(tabKey);
+        if (window.location.protocol === 'file:') {
+          return;
+        }
+      }
+    }
+    try {
+      origPushState.apply(this, arguments);
+    } catch (e) {
+      console.warn('pushState failed:', e);
+    }
+  };
+
   // ─── Init ────────────────────────────────────────────────────────────────
   buildTabs();
   selectCard('hexa');

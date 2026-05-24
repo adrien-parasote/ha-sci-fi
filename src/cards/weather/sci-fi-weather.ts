@@ -82,6 +82,15 @@ export class SciFiWeatherCard extends SciFiBaseCard {
           width: 100%;
           background-color: transparent;
         }
+        ha-card {
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          height: 100%;
+          width: 100%;
+          display: block;
+          box-sizing: border-box;
+        }
         .container {
           display: flex;
           flex-direction: column;

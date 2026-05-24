@@ -94,17 +94,22 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
       }
       .status-badge {
         position: absolute;
-        top: -4px;
-        right: -4px;
-        width: 22px;
-        height: 22px;
+        top: -6px;
+        right: -6px;
+        width: 28px;
+        height: 28px;
+        background: #000000;
+        border: 2px solid var(--sf-primary, #00d2ff);
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
+        box-shadow: 0 0 8px var(--sf-primary, #00d2ff);
+        z-index: 5;
       }
       .status-badge sf-icon {
-        --icon-width: 14px;
-        --icon-height: 14px;
+        --icon-width: 16px;
+        --icon-height: 16px;
         --icon-color: var(--sf-primary, #00d2ff);
       }
       .header-info {

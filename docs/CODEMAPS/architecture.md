@@ -1,4 +1,4 @@
-<!-- Generated: 2026-05-24 | Files scanned: 71 | Token estimate: ~490 | Updated: post-i18n-restoration -->
+<!-- Generated: 2026-05-24 | Files scanned: 71 | Token estimate: ~490 | Updated: post-coverage-hardening -->
 
 # Home Assistant Sci-Fi Cards — Architecture v2
 
@@ -66,11 +66,13 @@ Dynamic icon values **require** Lit property binding (`.icon=`), not attribute b
 
 ## Test Coverage
 
-- **34 test files / 215 tests** — all GREEN (93.03% statements, 83.20% branches, 97.86% functions, 95.02% lines)
+- **51 test files / 420 tests** — all GREEN (82.19% statements, 76.19% branches, 81.37% functions, 83.70% lines)
+- All 4 coverage thresholds pass: statements ≥ 80%, branches ≥ 75%, functions ≥ 80%, lines ≥ 80%
 - Canvas API mocked globally in `tests/setup.ts`
 - `happy-dom` history API mocked per-test via `vi.stubGlobal`
 - `window.customIcons` restored via `afterEach` cleanup
-- Branch coverage ceiling ~90% — Lit template ternaries structurally uncoverable by v8 (L023)
+- Pure SVG data files excluded from coverage (`sf-weather-icons.ts`, `sf-icons.ts`, `ha.ts`)
+- Branch coverage ceiling: Lit template ternaries structurally uncoverable by v8 (L023)
 
 ## Dev Workbench
 

@@ -309,3 +309,27 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Hash computation**: `node -e "const { generateMsgId } = require('@lit/localize/internal/id-generation.js'); console.log(generateMsgId(['Add tile'], false));"` — run from project root.
 - **Scope**: Applies to ALL `SciFiBaseEditor` subclasses. Applies any time a new UI label is added to an editor template.
 
+### L054: DOM Selector Verification Before Writing Editor Tests — Inspect `.tab-btn` vs `.add-btn`
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi v2 — sci-fi-vacuum-editor.test.ts, sci-fi-lights-editor.test.ts coverage hardening
+- **Evidence**: 3 tests failed on first run (vacuum `.add-btn`, lights `.card` global event, slider min/max). Vacuum editor uses `.tab-btn` (not `.add-btn`) for the "add vacuum" button. Lights editor uses per-element `@input-update` handlers (not a global handler on `.card`). 2 test files required complete rewrite of specific test cases.
+- **Anti-pattern**: Writing editor test cases without first inspecting the rendered HTML template to verify CSS class names and event listener locations. Invented selectors (`.add-btn` when `.tab-btn` is used, global `.card` listener when per-element listeners exist) return `null` and silently cause `AssertionError: expected 0 to be greater than 0`.
+- **Fix**: Before writing any editor test, run: `grep -n "class=\"\|@input-update\|@click" src/cards/<module>/<editor>.ts | head -20` to discover: (1) the exact CSS class names for buttons/inputs, (2) whether event listeners are global (on `.card`) or per-element. Document the canonical selectors in the spec's "Test Case Specifications" table as a public contract.
+- **Scope**: Applies to all LitElement editor components. Especially critical for complex multi-section editors (vacuum, lights) where different sub-sections use different interaction patterns.
+
+### L055: Pure SVG Data Files Must Be Excluded From Coverage — They Are Untestable by v8
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi v2 — vitest.config.ts coverage configuration
+- **Evidence**: `src/components/icons/data/sf-weather-icons.ts` and `src/components/sf-icon/data/sf-weather-icons.ts` both reported 0% coverage despite having test files. These files export a `Record<string, TemplateResult>` where each value is a `svg\`...\`` tagged template literal (Lit). v8 cannot instrument SVG data inside tagged template literals — the export object is created at module load time with no branching or function calls.
+- **Anti-pattern**: Including pure data files (SVG icon maps, static lookup tables, CSS-in-JS constant records) in the v8 coverage report. They will permanently show 0% and drag global metrics below thresholds, forcing false gate failures.
+- **Fix**: Exclude all pure data files from `vitest.config.ts` coverage:
+  ```ts
+  exclude: [
+    'src/**/data/sf-weather-icons.ts',
+    'src/**/data/sf-icons.ts',
+    'src/types/ha.ts',  // type-only HA interfaces, no runtime logic
+  ]
+  ```
+  In specs for projects with static data files, add a `## Coverage Exclusions` section listing files that must be excluded and the reason (SVG data, type-only, generated).
+- **Scope**: Applies to all Vitest/c8/Istanbul v8 projects with static data exports (SVG maps, icon registries, JSON-as-TS constants).
+

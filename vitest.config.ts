@@ -8,7 +8,14 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts'],
-      exclude: ['src/locales/generated/**', 'src/**/*.d.ts'],
+      exclude: [
+        'src/locales/generated/**',
+        'src/**/*.d.ts',
+        // Pure data files — SVG icon maps, type definitions only, no logic
+        'src/**/data/sf-weather-icons.ts',
+        'src/**/data/sf-icons.ts',
+        'src/types/ha.ts',
+      ],
       thresholds: {
         lines: 80,
         branches: 75,

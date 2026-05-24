@@ -257,3 +257,22 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Evidence**: `overflow-x: hidden` on `sf-radiator :host` clipped buttons in child `sf-button-card-select` shadow DOM, causing text cutoff.
 - **Anti-pattern**: Using blanket `overflow: hidden` at the host level as a symptom fix. It clips absolutely-positioned descendants across shadow DOM boundaries.
 - **Fix**: Fix the ROOT CAUSE (L046: `right: 0` on dropdown). Never use `overflow: hidden` to mask overflow symptoms without confirming all children are in-bounds.
+
+### L048: Test Coupling to Intermediate Implementation Hooks Breaks On Refactor
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi — base-card.ts i18n restoration
+- **Evidence**: TC-303 tested `_onHassLocaleChanged` (private method used as locale sync hook). After refactoring to the correct `hass` setter pattern, `_onHassLocaleChanged` was removed and TC-303 crashed with "property not defined". 1 test rewritten.
+- **Anti-pattern**: Writing unit tests that spy on private intermediate methods (`_onHassLocaleChanged`, `syncHALocale`) rather than testing the observable contract (hass getter returns what was set, setLocale is invoked). Intermediate hooks are implementation details — they change with refactors. Observable contracts don't.
+- **Fix**: In specs for base classes, write TC expectations against the PUBLIC CONTRACT: "setting `hass` stores the value AND triggers locale sync asynchronously". Test with `el.hass = mockHass; expect(el.hass).toBe(mockHass)` and `await new Promise(r => setTimeout(r, 0))` — never spy on private hooks.
+
+### L049: ES Module Named Exports Are Read-Only in Vitest — Cannot vi.fn() Mock Them Directly
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi — base-editor.test.ts i18n coverage tests
+- **Evidence**: `(locMod as any).setLocale = vi.fn().mockRejectedValue(...)` threw `TypeError: Cannot set property setLocale of [object Module] which has only a getter`. ES module exports are live bindings (read-only) — Vitest preserves this contract.
+- **Anti-pattern**: Trying to override named exports of ES modules in Vitest via direct property assignment on the imported module object. This works in CommonJS (where exports is a mutable object) but NOT in native ESM.
+- **Fix**: Three valid alternatives:
+  1. Test the observable outcome instead (e.g. locale loads without crash for a supported locale, error branch fires for an unsupported one)
+  2. Use `vi.mock('../../src/locales/localization.js', () => ({ setLocale: vi.fn() }))` — module factory mock hoisted at module boundary
+  3. Extract the locale call into an injectable adapter (only if needed for multiple tests)
+  For the error path coverage, approach (1) is sufficient: set `hass` to a language not in `targetLocales` and assert no uncaught exception.
+

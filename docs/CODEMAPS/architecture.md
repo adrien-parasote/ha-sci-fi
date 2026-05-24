@@ -1,4 +1,4 @@
-<!-- Generated: 2026-05-24 | Files scanned: 68 | Token estimate: ~460 | Updated: post-coverage-max -->
+<!-- Generated: 2026-05-24 | Files scanned: 71 | Token estimate: ~490 | Updated: post-i18n-restoration -->
 
 # Home Assistant Sci-Fi Cards — Architecture v2
 
@@ -10,6 +10,7 @@
 | Components | `src/components/` | Reusable UI elements (`sf-icon`, `sf-toggle-switch`) |
 | Selectors | `src/selectors/` | Pure HA state extraction helpers — no mutations |
 | Utils | `src/utils/` | `base-card.ts`, `base-editor.ts` — Lit lifecycle base classes |
+| Locales | `src/locales/` | `@lit/localize` runtime i18n — `localization.ts` (setLocale/getLocale) + `locales/fr.ts` (FR translations) |
 | Types | `src/types/` | TypeScript interfaces (config, ha.ts, HA entity types) |
 | Styles | `src/styles/` | `common.ts` — shared CSS custom properties (`--sf-*` tokens) |
 | Entry | `src/sci-fi.ts` | Bundle entry — registers all 8 `customCards` + `customElements` |
@@ -65,7 +66,7 @@ Dynamic icon values **require** Lit property binding (`.icon=`), not attribute b
 
 ## Test Coverage
 
-- **34 test files / 210 tests** — all GREEN (92.82% statements, 83.04% branches, 97.80% functions, 94.91% lines)
+- **34 test files / 215 tests** — all GREEN (93.03% statements, 83.20% branches, 97.86% functions, 95.02% lines)
 - Canvas API mocked globally in `tests/setup.ts`
 - `happy-dom` history API mocked per-test via `vi.stubGlobal`
 - `window.customIcons` restored via `afterEach` cleanup

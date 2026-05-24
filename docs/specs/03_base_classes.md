@@ -56,7 +56,8 @@ src/
 | Artefact | Provider | Description |
 |---|---|---|
 | `types/ha.ts` | Spec 02 | Immutability extended HA types |
-| `syncHALocale` | Spec 06 | Language localization syncing helper |
+| `setLocale`, `getLocale` | `src/locales/localization.ts` | Runtime locale switching via `@lit/localize` |
+| `updateWhenLocaleChanges` | `@lit/localize` | Schedules re-render when active locale changes |
 
  ### Public Interface
 | Element | Consumed by | Description |
@@ -76,7 +77,7 @@ src/
 | 3 | Manual update calls | `this.performUpdate()` in card | Lit properties handle reactivity automatically |
 | 4 | Duplicated editor styles | Copy-pasting styling rules | Import editor common styles from `editor.ts` |
 | 5 | Unhandled rendering exception | Empty render blocks | Wrap rendering loop in try/catch block |
-| 6 | Missing `super.willUpdate()` call | Card subclass overrides `willUpdate()` without calling `super.willUpdate(changedProperties)` | Any subclass override of `willUpdate`, `updated`, or `firstUpdated` **MUST** call `super.willUpdate(changedProperties)` as the **first line** — otherwise `syncHALocale` is bypassed (MEDIUM-02) |
+| 6 | Orphaned locale sync | Card or editor uses `willUpdate` as the only locale trigger | Use the `hass` property setter (with getter/setter pair) — call `setLocale(hass.locale.language)` when language differs, and `updateWhenLocaleChanges(this)` in the constructor. The `hass` setter fires on every HA state propagation, not just on property changes seen by `willUpdate`. |
 
 ---
 
@@ -86,7 +87,7 @@ src/
 |---|---|---|---|---|
 | TC-301 | Unit | renderCard executes inside try/catch | Valid subclass config | Subclass renders correctly |
 | TC-302 | Unit | renderCard error catches | Throw error in renderCard | Renders error card display banner |
-| TC-303 | Unit | willUpdate triggers syncHALocale | Trigger hass change | syncHALocale executed with state |
+| TC-303 | Unit | hass setter triggers setLocale | Set `hass` with FR language | `setLocale` invoked asynchronously, hass getter returns set value |
 | TC-304 | Unit | setConfig stores config | Configuration object | config gets updated and stored |
 | TC-305 | Unit | baseEditor updates properties | Change value in editor | Dispatches config-changed custom event |
 | TC-306 | Unit | Subclass overriding willUpdate must call super | Subclass with `willUpdate()` override | `super.willUpdate(changedProperties)` is first line; locale sync still fires |

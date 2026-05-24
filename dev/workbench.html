@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🚀 Sci-Fi Cards — Workbench</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
   <style>
     :root {
       --bg: #0d0d1a;
@@ -504,6 +505,161 @@
       .main { grid-template-columns: 1fr; }
       .panel { border-left: none; border-top: 1px solid var(--border); }
     }
+
+    /* ===== WORK MODE / EDIT VIEWPORT ===== */
+    .edit-viewport {
+      display: flex;
+      gap: 20px;
+      height: calc(100vh - 165px);
+      min-height: 500px;
+      padding: 0 10px;
+      box-sizing: border-box;
+    }
+    .edit-left-panel {
+      flex: 1;
+      min-width: 380px;
+      max-width: 600px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .edit-right-panel {
+      flex: 1;
+      background: #07070f;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow: auto;
+      align-items: center;
+      justify-content: center;
+    }
+    .edit-preview-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 16px;
+      align-self: flex-start;
+    }
+    .edit-preview-mount-wrap {
+      width: 100%;
+      max-width: 500px;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .edit-preview-mount-wrap > * {
+      width: 100%;
+    }
+
+    /* ===== EDIT TABS ===== */
+    .edit-tabs {
+      display: flex;
+      align-items: center;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      padding: 4px 10px;
+      gap: 4px;
+    }
+    .edit-tab {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .edit-tab:hover {
+      color: var(--text);
+    }
+    .edit-tab.active {
+      background: rgba(0, 212, 255, 0.1);
+      color: var(--accent);
+      border-color: rgba(0, 212, 255, 0.2);
+    }
+
+    /* ===== TAB CONTENTS ===== */
+    .edit-tab-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .yaml-textarea {
+      flex: 1;
+      background: #080812;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #38bdf8;
+      font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      padding: 16px;
+      resize: none;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .yaml-textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 10px rgba(0, 212, 255, 0.15);
+    }
+
+    /* ===== YAML ERROR BANNER ===== */
+    .yaml-error-banner {
+      background: rgba(239, 68, 68, 0.1);
+      border-top: 1px solid var(--error);
+      color: var(--error);
+      font-size: 12px;
+      font-family: 'SF Mono', monospace;
+      padding: 10px 16px;
+      display: none;
+      white-space: pre-wrap;
+    }
+    .yaml-error-banner.visible {
+      display: block;
+    }
+
+    /* ===== FALLBACK GRAPHICAL UI PANEL ===== */
+    .gui-fallback-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      height: 100%;
+      color: var(--text-muted);
+      padding: 40px 20px;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      background: rgba(13, 13, 26, 0.3);
+    }
+    .gui-fallback-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+    .gui-fallback-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .gui-fallback-text {
+      font-size: 12px;
+      line-height: 1.5;
+      max-width: 320px;
+    }
   </style>
 </head>
 <body>
@@ -519,11 +675,21 @@
     <button class="mode-toggle-btn active" id="btn-mode-card" onclick="setViewMode('card')">⊡ Card</button>
     <button class="mode-toggle-btn" id="btn-mode-panel" onclick="setViewMode('panel')">⛶ Panel</button>
   </div>
+  <!-- Work mode toggle (View vs Edit) -->
+  <div class="mode-toggle" title="Basculer entre visualisation et édition">
+    <button class="mode-toggle-btn active" id="btn-work-view" onclick="setWorkMode('view')">👁️ View</button>
+    <button class="mode-toggle-btn" id="btn-work-edit" onclick="setWorkMode('edit')">✏️ Edit</button>
+  </div>
   <!-- Device size simulator (visible only in Panel mode) -->
   <div class="device-toggle" id="device-toggle" title="Simuler un appareil (Panel mode uniquement)">
     <button class="device-toggle-btn active" id="btn-dev-desktop" onclick="setDeviceSize('desktop')">🖥️ PC</button>
     <button class="device-toggle-btn" id="btn-dev-tablet" onclick="setDeviceSize('tablet')">📟 iPad Air</button>
     <button class="device-toggle-btn" id="btn-dev-phone" onclick="setDeviceSize('phone')">📱 iPhone 15</button>
+  </div>
+  <!-- Language Toggle Selector -->
+  <div class="mode-toggle" id="lang-toggle" title="Changer la langue de la carte">
+    <button class="mode-toggle-btn" id="btn-lang-en" onclick="setLanguage('en')">🇬🇧 EN</button>
+    <button class="mode-toggle-btn active" id="btn-lang-fr" onclick="setLanguage('fr')">🇫🇷 FR</button>
   </div>
   <button class="btn btn-ghost" onclick="openConnectModal()" id="btn-connect-toolbar">🔗 Connect to HA</button>
   <button class="btn btn-ghost" onclick="refreshLiveStates()" id="btn-refresh" disabled title="Rafraîchir les états HA">↻ Refresh</button>
@@ -584,6 +750,38 @@
         </div>
         <!-- device name shown below frame -->
         <div class="device-name-label hidden" id="device-name-label"></div>
+      </div>
+
+      <!-- edit-viewport for side-by-side workspace (Edit mode) -->
+      <div class="edit-viewport" id="edit-viewport" style="display: none;">
+        <!-- Left: The Editor Workspace -->
+        <div class="edit-left-panel">
+          <!-- Tabs for GUI vs YAML code editor -->
+          <div class="edit-tabs">
+            <button class="edit-tab active" id="btn-edit-tab-gui" onclick="setEditTab('gui')">🛠️ Éditeur graphique</button>
+            <button class="edit-tab" id="btn-edit-tab-yaml" onclick="setEditTab('yaml')">📝 Éditeur de code</button>
+            <div style="flex: 1;"></div>
+            <button class="btn btn-ghost" style="padding: 4px 10px; font-size: 11px;" onclick="copyConfigYaml()">📋 Copier le YAML</button>
+          </div>
+          <!-- Tab Contents -->
+          <div class="edit-tab-content" id="edit-content-gui">
+            <!-- Dynamic UI editor gets mounted here -->
+            <div id="gui-editor-mount" style="flex: 1; display: flex; flex-direction: column;"></div>
+          </div>
+          <div class="edit-tab-content" id="edit-content-yaml" style="display: none;">
+            <textarea class="yaml-textarea" id="yaml-textarea" spellcheck="false" placeholder="Écris ta configuration YAML ici..." oninput="handleYamlInput()"></textarea>
+          </div>
+          <!-- Real-time parsing error banner -->
+          <div class="yaml-error-banner" id="yaml-error-banner"></div>
+        </div>
+
+        <!-- Right: Live Card Preview -->
+        <div class="edit-right-panel">
+          <div class="edit-preview-title">Aperçu en direct</div>
+          <div class="edit-preview-mount-wrap">
+            <div id="edit-card-mount"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -807,6 +1005,13 @@
   let unsubServices = null;
   let isLive = false;
 
+  // ─── Workbench custom state variables ───────────────────────────────────
+  let currentLanguage = localStorage.getItem('wb-lang') || 'fr';
+  let workMode = localStorage.getItem('wb-work-mode') || 'view';
+  let editTab = localStorage.getItem('wb-edit-tab') || 'gui';
+  let activeConfig = null;
+  let editorEl = null;
+
   // ─── Mock HASS states ────────────────────────────────────────────────────
   // Données extraites des yaml backup/*.yaml — fidèles à la production
   const MOCK_STATES = {
@@ -1010,8 +1215,8 @@
     return {
       states, areas: MOCK_AREAS, floors: MOCK_FLOORS, entities: MOCK_ENTITIES, devices: {},
       user: { name: 'Adrien', id: 'adrien', is_admin: true },
-      language: 'fr',
-      locale: { language: 'fr', number_format: 'comma_decimal', time_format: '24', date_format: 'DMY', time_zone: 'Europe/Paris', first_weekday: 'monday' },
+      language: currentLanguage,
+      locale: { language: currentLanguage, number_format: 'comma_decimal', time_format: '24', date_format: 'DMY', time_zone: 'Europe/Paris', first_weekday: 'monday' },
       config: { unit_system: { length: 'km', temperature: '°C' }, time_zone: 'Europe/Paris' },
       themes: { darkMode: true, theme: 'default' },
       connection: {
@@ -1037,6 +1242,8 @@
   function buildLiveHass(baseHass) {
     return {
       ...baseHass,
+      language: currentLanguage,
+      locale: { ...baseHass.locale, language: currentLanguage },
       callService: async (domain, service, serviceData, target) => {
         log(`🔧 live callService(${domain}.${service})`, 'live');
         await callService(haConnection, domain, service, serviceData, target);
@@ -1170,6 +1377,18 @@
     baseHass.config = config;
     log(`✅ ${areas.length} zones · ${floors.length} étages · ${entities.length} entités`, 'ok');
 
+    // Sync language with connected Home Assistant configuration if available
+    if (config && config.language) {
+      const haLang = config.language.substring(0, 2).toLowerCase();
+      if (haLang === 'fr' || haLang === 'en') {
+        currentLanguage = haLang;
+        localStorage.setItem('wb-lang', haLang);
+        document.getElementById('btn-lang-en').classList.toggle('active', haLang === 'en');
+        document.getElementById('btn-lang-fr').classList.toggle('active', haLang === 'fr');
+        log(`🌐 Langue détectée depuis Home Assistant : ${config.language} (mappée sur ${haLang})`, 'ok');
+      }
+    }
+
     // Subscribe to live entity states
     if (unsubEntities) unsubEntities();
     unsubEntities = subscribeEntities(haConnection, (states) => {
@@ -1299,11 +1518,189 @@
   let currentScenario = null;
   let cardEl = null;
 
+  // ─── Custom Workbench Logic Functions ──────────────────────────────────
+  function updateHassLanguage() {
+    const hass = isLive && liveHass ? buildLiveHass(liveHass) : buildMockHass();
+    
+    if (cardEl) {
+      cardEl.hass = hass;
+    }
+    if (editorEl) {
+      editorEl.hass = hass;
+    }
+  }
+
+  window.setLanguage = (lang) => {
+    currentLanguage = lang;
+    localStorage.setItem('wb-lang', lang);
+    document.getElementById('btn-lang-en').classList.toggle('active', lang === 'en');
+    document.getElementById('btn-lang-fr').classList.toggle('active', lang === 'fr');
+    
+    log(`🇬🇧 Langue basculée sur : ${lang === 'en' ? 'Anglais' : 'Français'}`, 'info');
+    
+    updateHassLanguage();
+  };
+
+  window.setWorkMode = (mode) => {
+    workMode = mode;
+    localStorage.setItem('wb-work-mode', mode);
+    document.getElementById('btn-work-view').classList.toggle('active', mode === 'view');
+    document.getElementById('btn-work-edit').classList.toggle('active', mode === 'edit');
+    
+    const deviceViewport = document.getElementById('device-viewport');
+    const editViewport = document.getElementById('edit-viewport');
+    const deviceToggle = document.getElementById('device-toggle');
+    
+    if (mode === 'edit') {
+      deviceViewport.style.display = 'none';
+      editViewport.style.display = 'flex';
+      deviceToggle.classList.remove('visible'); // Force PC layout, hide selectors
+      
+      log('✏️ Mode Édition activé', 'info');
+    } else {
+      deviceViewport.style.display = '';
+      editViewport.style.display = 'none';
+      deviceToggle.classList.toggle('visible', viewMode === 'panel'); // restore if panel view
+      
+      log('👁️ Mode Visualisation activé', 'info');
+    }
+    
+    renderCard(currentCard, currentScenario);
+  };
+
+  window.setEditTab = (tab) => {
+    editTab = tab;
+    localStorage.setItem('wb-edit-tab', tab);
+    
+    document.getElementById('btn-edit-tab-gui').classList.toggle('active', tab === 'gui');
+    document.getElementById('btn-edit-tab-yaml').classList.toggle('active', tab === 'yaml');
+    
+    document.getElementById('edit-content-gui').style.display = tab === 'gui' ? 'flex' : 'none';
+    document.getElementById('edit-content-yaml').style.display = tab === 'yaml' ? 'flex' : 'none';
+    
+    if (tab === 'yaml' && activeConfig && window.jsyaml) {
+      document.getElementById('yaml-textarea').value = jsyaml.dump(activeConfig);
+    }
+  };
+
+  window.handleYamlInput = () => {
+    const textarea = document.getElementById('yaml-textarea');
+    const yamlText = textarea.value;
+    const errorBanner = document.getElementById('yaml-error-banner');
+    
+    try {
+      if (!window.jsyaml) {
+        throw new Error("js-yaml non disponible");
+      }
+      
+      const parsed = jsyaml.load(yamlText);
+      if (parsed && typeof parsed === 'object') {
+        activeConfig = parsed;
+        errorBanner.classList.remove('visible');
+        
+        updateCardConfig(parsed);
+        
+        if (editorEl) {
+          editorEl.setConfig(parsed);
+        }
+      }
+    } catch (err) {
+      errorBanner.textContent = `Erreur YAML (ligne ${err.mark ? err.mark.line + 1 : '?'}): ${err.message}`;
+      errorBanner.classList.add('visible');
+    }
+  };
+
+  window.copyConfigYaml = async () => {
+    const yamlText = document.getElementById('yaml-textarea').value;
+    if (!yamlText) {
+      log('⚠️ Pas de configuration à copier', 'warn');
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(yamlText);
+      log('📋 Configuration YAML copiée !', 'ok');
+    } catch (err) {
+      log(`❌ Échec de la copie: ${err}`, 'error');
+    }
+  };
+
+  function updateCardConfig(config) {
+    const errorBanner = document.getElementById('yaml-error-banner');
+    try {
+      if (cardEl) {
+        cardEl.setConfig(config);
+        const hass = isLive && liveHass ? buildLiveHass(liveHass) : buildMockHass();
+        cardEl.hass = hass;
+        errorBanner.classList.remove('visible');
+      }
+    } catch (err) {
+      errorBanner.textContent = `Erreur de la carte: ${err.message}`;
+      errorBanner.classList.add('visible');
+    }
+  }
+
+  function mountUiEditor() {
+    const container = document.getElementById('gui-editor-mount');
+    container.innerHTML = '';
+    editorEl = null;
+    
+    const card = CARDS[currentCard];
+    if (!card) return;
+    
+    const editorTag = `${card.tag}-editor`;
+    const isRegistered = !!customElements.get(editorTag);
+    
+    if (isRegistered) {
+      try {
+        editorEl = document.createElement(editorTag);
+        const hass = isLive && liveHass ? buildLiveHass(liveHass) : buildMockHass();
+        
+        editorEl.hass = hass;
+        editorEl.setConfig(activeConfig);
+        
+        editorEl.addEventListener('config-changed', (e) => {
+          const newConfig = e.detail.config;
+          activeConfig = newConfig;
+          
+          if (window.jsyaml) {
+            document.getElementById('yaml-textarea').value = jsyaml.dump(newConfig);
+          }
+          
+          updateCardConfig(newConfig);
+        });
+        
+        container.appendChild(editorEl);
+        log(`🛠️ Éditeur graphique de <${card.tag}> chargé`, 'info');
+      } catch (err) {
+        log(`❌ Erreur chargement éditeur graphique: ${err.message}`, 'error');
+        container.innerHTML = `<div class="gui-fallback-panel"><span class="gui-fallback-icon">⚠️</span><div class="gui-fallback-title">Erreur de l'éditeur</div><div class="gui-fallback-text">${err.message}</div></div>`;
+      }
+    } else {
+      container.innerHTML = `
+        <div class="gui-fallback-panel">
+          <span class="gui-fallback-icon">🔷</span>
+          <div class="gui-fallback-title">Éditeur graphique indisponible</div>
+          <div class="gui-fallback-text">
+            L'éditeur <code>&lt;${editorTag}&gt;</code> n'est pas encore enregistré.<br><br>
+            Vous pouvez utiliser l'onglet <strong>Éditeur de code</strong> ci-dessus pour modifier la configuration YAML en direct.
+          </div>
+        </div>
+      `;
+    }
+  }
+
   // ─── Render card ─────────────────────────────────────────────────────────
   async function renderCard(cardKey, scenarioKey) {
     const card = CARDS[cardKey];
     if (!card) return;
-    const mount = document.getElementById('card-mount');
+
+    const mountId = workMode === 'edit' ? 'edit-card-mount' : 'card-mount';
+    const mount = document.getElementById(mountId);
+
+    const otherMountId = workMode === 'edit' ? 'card-mount' : 'edit-card-mount';
+    const otherMount = document.getElementById(otherMountId);
+    if (otherMount) otherMount.innerHTML = '';
+
     const overlay = document.getElementById('loading-overlay');
     const errorBanner = document.getElementById('error-banner');
     overlay.classList.remove('hidden');
@@ -1311,17 +1708,28 @@
 
     try {
       await loadBundle();
-      if (cardEl && cardEl.parentNode === mount) mount.removeChild(cardEl);
+      mount.innerHTML = '';
 
       const hass = isLive && liveHass
-        ? liveHass
+        ? buildLiveHass(liveHass)
         : buildMockHass(scenarioKey && card.scenarios[scenarioKey] ? card.scenarios[scenarioKey]() : {});
+
+      if (!activeConfig || currentCard !== cardKey) {
+        activeConfig = { ...card.config };
+        if (window.jsyaml) {
+          document.getElementById('yaml-textarea').value = jsyaml.dump(activeConfig);
+        }
+      }
 
       cardEl = document.createElement(card.tag);
       if (!customElements.get(card.tag)) throw new Error(`<${card.tag}> non enregistré`);
-      cardEl.setConfig(card.config);
+      cardEl.setConfig(activeConfig);
       mount.appendChild(cardEl);
       cardEl.hass = hass;
+
+      if (workMode === 'edit') {
+        mountUiEditor();
+      }
 
       log(`🃏 ${card.label}${isLive ? ' [LIVE]' : ` [${scenarioKey || 'mock'}]`}`, isLive ? 'live' : 'info');
     } catch (err) {
@@ -1371,6 +1779,7 @@
     document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', Object.keys(CARDS)[i] === key));
     document.getElementById('preview-title').textContent = CARDS[key].label;
     buildScenarios(key);
+    activeConfig = null;
     renderCard(key, currentScenario);
   }
 
@@ -1479,8 +1888,14 @@
 
   // ─── Init ────────────────────────────────────────────────────────────────
   buildTabs();
-  selectCard('hexa');
   setHaStatus('offline', 'Non connecté — données mockées');
+  
+  // Set up newly added controls
+  setLanguage(currentLanguage);
+  setWorkMode(workMode);
+  setEditTab(editTab);
+  
+  selectCard('hexa');
   setViewMode(viewMode); // restore saved mode
   setDeviceSize(deviceSize); // restore saved device size
   log('🚀 Workbench démarré', 'info');

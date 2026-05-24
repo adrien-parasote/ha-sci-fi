@@ -25,8 +25,10 @@ describe('sf-icon', () => {
   });
 
   it('renders custom icon if present in window.customIcons', async () => {
-    window.customIcons = {
-      sf: { custom: 'M10 10 H 90 V 90 H 10 L 10 10' },
+    window.customIcons = window.customIcons || {};
+    window.customIcons.sf = {
+      ...window.customIcons.sf,
+      custom: 'M10 10 H 90 V 90 H 10 L 10 10',
     };
     const el = document.createElement('sf-icon') as SfIcon;
     el.icon = 'sf:custom';
@@ -152,5 +154,40 @@ describe('sf-icon', () => {
     expect(styleAttr).to.include('width');
     expect(styleAttr).to.include('height');
     expect(styleAttr).to.include('color');
+  });
+
+  it('registers custom icons and weather icons onto window.customIcons on load', () => {
+    expect(window.customIcons).to.be.an('object');
+    expect(window.customIcons?.sf).to.be.an('object');
+    expect(window.customIcons?.sci).to.be.an('object');
+    expect(window.customIcons?.sf?.stove).to.be.a('string');
+    expect(window.customIcons?.sf?.['clear-day']).to.be.an('object'); // Lit TemplateResult
+  });
+
+  it('renders custom path-based icons correctly', async () => {
+    const el = document.createElement('sf-icon') as SfIcon;
+    el.icon = 'sf:stove';
+    document.body.appendChild(el);
+    await new Promise(r => setTimeout(r, 10));
+    await el.updateComplete;
+
+    const svgElement = el.querySelector('svg')!;
+    expect(svgElement).to.exist;
+    const path = svgElement.querySelector('path')!;
+    expect(path.getAttribute('d')).to.include('M 10.272');
+  });
+
+  it('renders animated weather icons (TemplateResult) correctly', async () => {
+    const el = document.createElement('sf-icon') as SfIcon;
+    el.icon = 'sci:clear-day';
+    document.body.appendChild(el);
+    await new Promise(r => setTimeout(r, 10));
+    await el.updateComplete;
+
+    const svgElement = el.querySelector('svg')!;
+    expect(svgElement).to.exist;
+    // The weather icon clear-day has a circle with r="84" and id="cd1"
+    const circle = svgElement.querySelector('circle')!;
+    expect(circle.getAttribute('r')).to.equal('84');
   });
 });

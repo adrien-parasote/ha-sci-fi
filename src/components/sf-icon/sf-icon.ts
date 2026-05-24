@@ -13,12 +13,21 @@
 import { LitElement, html, svg, nothing, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { resolveIcon, ICON_NOT_FOUND, type HassIconConnection } from './icon-cache.js';
+import CUSTOM_ICONS from './data/sf-icons.js';
+import WEATHER_ICONS from './data/sf-weather-icons.js';
 
 /** Global augmentation for window.customIcons */
 declare global {
   interface Window {
-    customIcons?: Record<string, Record<string, string>>;
+    customIcons?: Record<string, Record<string, string | TemplateResult>>;
   }
+}
+
+// Register custom icons defensively on startup
+if (typeof window !== 'undefined') {
+  window.customIcons = window.customIcons || {};
+  window.customIcons.sf = { ...window.customIcons.sf, ...CUSTOM_ICONS, ...WEATHER_ICONS };
+  window.customIcons.sci = { ...window.customIcons.sci, ...CUSTOM_ICONS, ...WEATHER_ICONS };
 }
 
 // Fallback path for mdi:help-circle when icon resolution fails
@@ -47,7 +56,7 @@ export class SfIcon extends LitElement {
   connection?: HassIconConnection;
 
   @state()
-  private _pathData: string | null = null;
+  private _pathData: string | TemplateResult | null = null;
 
   @state()
   private _loading = false;
@@ -76,6 +85,17 @@ export class SfIcon extends LitElement {
     if (!prefix || !name) {
       this._pathData = FALLBACK_MDI_PATH;
       return;
+    }
+
+    // Ensure our custom icons are registered in window.customIcons
+    if (typeof window !== 'undefined') {
+      window.customIcons = window.customIcons || {};
+      if (!window.customIcons.sf || !window.customIcons.sf.stove) {
+        window.customIcons.sf = { ...window.customIcons.sf, ...CUSTOM_ICONS, ...WEATHER_ICONS };
+      }
+      if (!window.customIcons.sci || !window.customIcons.sci.stove) {
+        window.customIcons.sci = { ...window.customIcons.sci, ...CUSTOM_ICONS, ...WEATHER_ICONS };
+      }
     }
 
     // 1. Check window.customIcons for custom namespaces (e.g. sf:)
@@ -134,6 +154,10 @@ export class SfIcon extends LitElement {
       return html`<svg viewBox="0 0 24 24" class="sf-icon sf-icon--loading"></svg>`;
     }
     if (!this._pathData) return nothing;
+
+    if (typeof this._pathData === 'object') {
+      return this._pathData;
+    }
 
     return html`
       <svg viewBox="0 0 24 24" class="sf-icon" aria-hidden="true">

@@ -133,6 +133,32 @@ custom_entities:
     icon_off: mdi:star-outline
 ```
 
+**Comportement de sélection initiale (floor/area) :**
+
+| Config | Comportement |
+|---|---|
+| `first_floor_to_render: 'rdc'` | Sélectionne 'rdc' SI l'ID existe dans `hass.floors` (même si aucune lumière) |
+| `first_floor_to_render` absent ou ID inconnu | Fallback → 1er floor avec lumières → 1er floor |
+| `first_area_to_render: 'chambre'` | Sélectionne 'chambre' SI elle est dans les areas du floor actif |
+| `first_area_to_render` absent ou area hors floor | Fallback → 1ère area avec lumières → 1ère area du floor |
+
+> [!NOTE]
+> La validation ne requiert **pas** la présence de lumières pour conserver un floor/area configuré. Cela évite un flash d'écran vide lors du 1er rendu quand le registre d'entités HA n'est pas encore chargé.
+
+**CSS selectors des éléments interactifs (pour tests E2E) :**
+
+| Élément | Sélecteur | Attribut d'état |
+|---|---|---|
+| Hexagone de floor | `.floor-hexa` | `data-selected="true/false"`, `data-active="true/false"` |
+| Hexagone d'area | `.area-hexa` | `data-selected="true/false"`, `data-active="true/false"` |
+| Bouton de lumière | `.light-btn` | classe `light-off` si éteinte |
+| Label de lumière | `.light-label` | — |
+
+**Icône jour/nuit dans le header :**
+L'icône en haut à droite du header lit l'état de `sun.sun`. Si `above_horizon` → icône animée `sf:sunny-day` ; sinon → `sf:starry-night`. Utilise `WEATHER_ICON_SET` de `sf-weather-icons.ts`.
+
+**getCardSize() :** retourne `5`.
+
 ---
 
 ### sci-fi-climates
@@ -479,7 +505,12 @@ To ensure robust and correct code generation across the 8 cards, the following c
 
 ### 5. Empty States Handling (lights & climates cards)
 * **Constraint**: Selectors might return no entities for a specific area or floor.
-* **Rule**: When no active lights or climate entities are found, the card must render a clear empty state message (e.g. `"No active lights in this area"`) instead of displaying an empty panel.
+* **Rule**: When no active lights or climate entities are found, the card must render a clear empty state message (e.g. `"Aucune lumière"`) instead of displaying an empty panel.
+* **Note (lights)**: "Aucune lumière configurée pour cet étage" is shown ONLY when `areasWithLights.length === 0` for the selected floor. A configured floor is kept (even with 0 lights) if its ID exists in `hass.floors`, preventing false empty state on initial HA load.
+
+### 8. Floor/Area Initial Selection (lights card)
+* **Constraint**: `first_floor_to_render` / `first_area_to_render` may refer to floors/areas with no lights (e.g. during HA entity registry load, or misconfiguration).
+* **Rule**: Validate `first_floor_to_render` by ID existence in `hass.floors` only — NOT by light count. Validate `first_area_to_render` by presence in the active floor's area list — NOT by light count. Fallback only when ID is truly absent from HA.
 
 ### 6. Selective Sensor Visibility (stove & vehicles cards)
 * **Constraint**: Electric-only, combustion-only, or custom stove sensors might omit specific gauge or state parameters.

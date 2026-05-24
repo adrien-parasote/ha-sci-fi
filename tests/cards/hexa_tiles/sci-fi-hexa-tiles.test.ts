@@ -193,7 +193,7 @@ describe('sci-fi-hexa-tiles', () => {
 
     const iconEl = tile.querySelector('sf-icon') as any;
     expect(iconEl).not.to.be.null;
-    expect(iconEl.icon).to.equal('mdi:weather-sunny');
+    expect(iconEl.icon).to.equal('sf:sunny-day');
 
     // Test 2: Night (clear-night) should be inactive
     el.hass = makeMockHass({

@@ -29,9 +29,9 @@ describe('sci-fi-lights', () => {
     expect(el.shadowRoot!.textContent).to.be.empty;
   });
 
-  it('returns card size of 4', () => {
+  it('returns card size of 5', () => {
     const el = document.createElement('sci-fi-lights') as SciFiLightsCard;
-    expect(el.getCardSize()).to.equal(4);
+    expect(el.getCardSize()).to.equal(5);
   });
 
   it('renders empty message if no floors exist', async () => {
@@ -85,49 +85,51 @@ describe('sci-fi-lights', () => {
     expect(el.shadowRoot!.textContent).to.include('House Lights');
 
     // Default selection: ground floor -> living area
-    let floorBtns = el.shadowRoot!.querySelectorAll('.floor-btn');
-    expect(floorBtns.length).to.equal(2);
-    expect(floorBtns[0]!.getAttribute('aria-selected')).to.equal('true');
+    // Floor hexagons use class 'floor-hexa' and data-selected attribute
+    let floorHexas = el.shadowRoot!.querySelectorAll('.floor-hexa');
+    expect(floorHexas.length).to.equal(2);
+    expect(floorHexas[0]!.getAttribute('data-selected')).to.equal('true');
 
-    let areaTiles = el.shadowRoot!.querySelectorAll('.area-tile');
-    expect(areaTiles.length).to.equal(2); // Living Room, Kitchen
-    expect(areaTiles[0]!.getAttribute('aria-pressed')).to.equal('true');
+    // Area hexagons use class 'area-hexa' and data-selected attribute
+    let areaHexas = el.shadowRoot!.querySelectorAll('.area-hexa');
+    expect(areaHexas.length).to.equal(2); // Living Room, Kitchen
+    expect(areaHexas[0]!.getAttribute('data-selected')).to.equal('true');
 
-    // Lights in living room
-    let lightRows = el.shadowRoot!.querySelectorAll('.light-row');
-    expect(lightRows.length).to.equal(1); // ignored is excluded via ignored_entities
-    expect(lightRows[0]!.textContent).to.include('Salon Custom'); // custom_entities override applied
+    // Lights use class 'light-btn'
+    let lightBtns = el.shadowRoot!.querySelectorAll('.light-btn');
+    expect(lightBtns.length).to.equal(1); // ignored is excluded via ignored_entities
+    expect(lightBtns[0]!.textContent).to.include('Salon Custom'); // custom_entities override applied
 
-    // Verify custom icons and states
-    const icon = lightRows[0]!.querySelector('sf-icon') as unknown as any;
+    // Verify custom icons: light is on → icon_on = 'mdi:lamp-on', button has no 'light-off' class
+    const icon = lightBtns[0]!.querySelector('sf-icon') as unknown as any;
     expect(icon.icon).to.equal('mdi:lamp-on');
-    expect(lightRows[0]!.querySelector('.light-name')!.classList.contains('sf-state-on')).to.be.true;
+    expect(lightBtns[0]!.classList.contains('light-off')).to.be.false;
 
     // Click on Kitchen area
-    (areaTiles[1] as HTMLElement).click();
+    (areaHexas[1] as HTMLElement).click();
     await el.updateComplete;
-    areaTiles = el.shadowRoot!.querySelectorAll('.area-tile');
-    expect(areaTiles[1]!.getAttribute('aria-pressed')).to.equal('true');
+    areaHexas = el.shadowRoot!.querySelectorAll('.area-hexa');
+    expect(areaHexas[1]!.getAttribute('data-selected')).to.equal('true');
 
-    lightRows = el.shadowRoot!.querySelectorAll('.light-row');
-    expect(lightRows.length).to.equal(1);
-    expect(lightRows[0]!.textContent).to.include('light.cuisine'); // fallback name
-    expect((lightRows[0]!.querySelector('sf-icon') as unknown as any).icon).to.equal('mdi:lightbulb-outline'); // default off icon
+    lightBtns = el.shadowRoot!.querySelectorAll('.light-btn');
+    expect(lightBtns.length).to.equal(1);
+    expect(lightBtns[0]!.textContent).to.include('light.cuisine'); // fallback name
+    expect((lightBtns[0]!.querySelector('sf-icon') as unknown as any).icon).to.equal('mdi:lightbulb-outline'); // default off icon
 
     // Click on First floor
-    floorBtns = el.shadowRoot!.querySelectorAll('.floor-btn');
-    (floorBtns[1] as HTMLElement).click();
+    floorHexas = el.shadowRoot!.querySelectorAll('.floor-hexa');
+    (floorHexas[1] as HTMLElement).click();
     await el.updateComplete;
 
-    // Wait, clicking a floor resets active area to null, which auto-selects the first area of that floor.
-    areaTiles = el.shadowRoot!.querySelectorAll('.area-tile');
-    expect(areaTiles.length).to.equal(1); // Bedroom
-    expect(areaTiles[0]!.getAttribute('aria-pressed')).to.equal('true');
+    // Clicking a floor resets active area to null, which auto-selects the first area of that floor.
+    areaHexas = el.shadowRoot!.querySelectorAll('.area-hexa');
+    expect(areaHexas.length).to.equal(1); // Bedroom
+    expect(areaHexas[0]!.getAttribute('data-selected')).to.equal('true');
 
     // Check lights in bedroom
-    lightRows = el.shadowRoot!.querySelectorAll('.light-row');
-    expect(lightRows.length).to.equal(1);
-    expect(lightRows[0]!.textContent).to.include('light.chambre');
+    lightBtns = el.shadowRoot!.querySelectorAll('.light-btn');
+    expect(lightBtns.length).to.equal(1);
+    expect(lightBtns[0]!.textContent).to.include('light.chambre');
   });
 
   it('respects first_floor_to_render and first_area_to_render', async () => {
@@ -149,8 +151,9 @@ describe('sci-fi-lights', () => {
     document.body.appendChild(el);
     await el.updateComplete;
 
-    const floorBtns = el.shadowRoot!.querySelectorAll('.floor-btn');
-    expect(floorBtns[1]!.getAttribute('aria-selected')).to.equal('true');
+    // Floor hexagons — 'first' floor (level 1) is index 1 and should be selected
+    const floorHexas = el.shadowRoot!.querySelectorAll('.floor-hexa');
+    expect(floorHexas[1]!.getAttribute('data-selected')).to.equal('true');
   });
 
   it('ignores same floor selection', async () => {
@@ -164,16 +167,16 @@ describe('sci-fi-lights', () => {
     document.body.appendChild(el);
     await el.updateComplete;
 
-    const btn = el.shadowRoot!.querySelector('.floor-btn') as HTMLElement;
+    const btn = el.shadowRoot!.querySelector('.floor-hexa') as HTMLElement;
     btn.click();
     await el.updateComplete;
     // Coverage for early return in _selectFloor
-    expect(btn.getAttribute('aria-selected')).to.equal('true');
+    expect(btn.getAttribute('data-selected')).to.equal('true');
   });
 
-  it('uses default icon_on (mdi:lightbulb) when no custom_entities override (L127-130)', async () => {
+  it('uses default icon_on (mdi:lightbulb-on-outline) when no custom_entities override', async () => {
     const el = document.createElement('sci-fi-lights') as SciFiLightsCard;
-    // Branch coverage: L223 — icon_on ?? 'mdi:lightbulb' (default when no override)
+    // Branch coverage: icon_on fallback chain — no override, no haIcon, no default_icon_on config
     (el as any).setConfig({ type: 'custom:sci-fi-lights' });
 
     el.hass = makeMockHass({
@@ -193,8 +196,8 @@ describe('sci-fi-lights', () => {
     document.body.appendChild(el);
     await el.updateComplete;
 
-    const icon = el.shadowRoot!.querySelector('.light-row sf-icon') as unknown as any;
-    // No custom_entities → default icon_on = 'mdi:lightbulb'
-    expect(icon.icon).to.equal('mdi:lightbulb');
+    const icon = el.shadowRoot!.querySelector('.light-btn sf-icon') as unknown as any;
+    // No custom_entities, no default_icon_on config → falls back to 'mdi:lightbulb-on-outline'
+    expect(icon.icon).to.equal('mdi:lightbulb-on-outline');
   });
 });

@@ -196,4 +196,32 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Anti-pattern**: Adding unsolicited decorative embellishments (e.g. backgrounds, borders, glows, border-radius) when the user only asks to resize or align a UI element, thinking it makes the UI look more premium. This violates the "Maintain Scope Discipline" and "Enforce Simplicity" principles and can easily cause user rejection and rework.
 - **Fix**: When asked to increase the size or adjust the spacing of a UI element, change ONLY the dimensions (width, height, padding, margins, absolute positioning). Do not add backgrounds, borders, or shadow effects unless explicitly requested by the user.
 
+### L040: Intercepting Custom Element Platform Navigation in Developer Workbench Simulators
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi — dev/workbench.html session
+- **Evidence**: Intercepted `window.history.pushState` dynamically to map card links to local tabs (`lights`, `stove`, etc.) and called `selectCard()`. This: (1) updated the workbench UI to match the tab context when clicking hexagon tiles, and (2) prevented security exceptions (`DOMException`) under `file://` protocol.
+- **Pattern**: When simulating dynamic navigation or platform-level URL changes (like Home Assistant internal links) inside a standalone developer simulator, monkeypatch `window.history.pushState` (or write a listener for custom `location-changed` events) to map destination URLs to the simulator's own tab-switching or state-switching functions, and explicitly bypass the native `pushState` under the `file://` protocol to prevent browser security blocks.
 
+
+
+
+### L041: Avoid Bypassing Component Architecture with Direct Workbench Injection
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi v2 — dev/workbench.html session
+- **Evidence**: Directly modifying the workbench mock state to inject SVG templates bypassed the underlying component's architecture, causing the UI not to update and resulting in a messy mock environment.
+- **Anti-pattern**: Bypassing component boundaries and polluting local development mock data to force an integration (e.g. injecting HTML/SVG strings into mocked state objects).
+- **Fix**: Leverage the component's internal logic and registration namespaces (`window.customIcons.sf`) to map custom dynamic values cleanly without rewriting static mock data in the workbench. Mock data should simulate pure backend states, not UI rendering logic.
+
+### L042: Floor/Area Initial Selection — Validate Existence, Not Content
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi v2 — sci-fi-lights.ts HARDEN session
+- **Evidence**: `first_floor_to_render: 'rdc'` validation required `lightAreas(floorId).length > 0`. On first HA render, `hass.entities` (entity registry) may not be fully loaded → `lightAreas` returns 0 → fallback fires → wrong floor shown → "Aucune lumière" flash. Fix: validate floor by `hass.floors[id] !== undefined`, not by light count.
+- **Anti-pattern**: Using downstream content (light count, entity count) to validate upstream config references (floor IDs, area IDs). This introduces false-negatives when the referenced entities aren't loaded yet.
+- **Fix**: Validate config-referenced IDs by existence in the host data store only. Content-based validation (e.g. "must have ≥1 entity") belongs in the render layer (show empty-state message), NOT in the selection-validation layer. Never let an empty entity registry cause a config-valid floor to be deselected.
+
+### L043: Test Selectors Must Match Implementation HTML — Document in Spec
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi v2 — sci-fi-lights.test.ts HARDEN session
+- **Evidence**: Tests used `.floor-btn`, `.area-tile`, `.light-row`, `aria-selected`, `aria-pressed` — but the implementation used `.floor-hexa`, `.area-hexa`, `.light-btn`, `data-selected`, `data-active`. 6 tests failed. Both the spec and test file needed updating.
+- **Anti-pattern**: Writing test DOM selectors without first inspecting the implementation's actual rendered HTML. Invented selectors (`aria-selected`, `.floor-btn`) that look like best practice but don't match the actual template cause all E2E assertions to silently return `null`.
+- **Fix**: In specs for UI components, always document the canonical CSS class names and data attributes used by tests in a "CSS Selectors for E2E Tests" table (see `05_cards.md → sci-fi-lights`). Treat these selectors as a public API contract between the spec and test files.

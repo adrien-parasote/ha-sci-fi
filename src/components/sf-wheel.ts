@@ -133,7 +133,7 @@ export class SciFiWheel extends LitElement {
     return this.items.map(
       (el) => html`
         <div
-          class="slider-item ${el.id == this.selectedId
+          class="slider-item ${el.id === this.selectedId
             ? 'show'
             : 'hide'} ${this.disabled ? 'disabled' : ''}"
         >
@@ -146,7 +146,7 @@ export class SciFiWheel extends LitElement {
 
   private __findNext(direction: 'up' | 'down' | null): WheelItem | null {
     if (this.items.length === 0) return null;
-    let item_idx = this.items.findIndex((e) => e.id == this.selectedId);
+    let item_idx = this.items.findIndex((e) => e.id === this.selectedId);
     if (direction) {
       if (direction === 'up') {
         item_idx = item_idx + 1 >= this.items.length ? 0 : item_idx + 1;

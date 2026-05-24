@@ -437,4 +437,79 @@ describe('sci-fi-hexa-tiles', () => {
     expect(tile.getAttribute('data-active')).to.equal('true');
     expect(tile.textContent).to.include('Télévision');
   });
+
+  it('covers various fallback branches including avatar error, weather conditions, alert levels, and media_player default state', async () => {
+    const el = document.createElement('sci-fi-hexa-tiles') as SciFiHexaTilesCard;
+    el.setConfig({
+      type: 'custom:sci-fi-hexa-tiles',
+      header_message: 'Hey, Welcome Back!',
+      weather: {
+        activate: true,
+        weather_entity: 'weather.home',
+        weather_alert_entity: 'sensor.alert',
+        state_green: 'Vert',
+        state_yellow: 'Jaune',
+        state_orange: 'Orange',
+        state_red: 'Rouge'
+      },
+      tiles: [
+        {
+          entity: 'media_player.living_room_tv',
+          name: 'TV'
+        }
+      ]
+    } as unknown as any);
+
+    el.hass = makeMockHass({
+      states: {
+        'person.adrien': makeMockEntity({
+          entity_id: 'person.adrien',
+          state: 'home',
+          attributes: {
+            user_id: '1',
+            friendly_name: 'Adrien',
+            entity_picture: 'profile_pic_broken.jpg'
+          }
+        }),
+        'weather.home': makeMockEntity({
+          entity_id: 'weather.home',
+          state: 'unsupported_condition', // Should trigger fallback to cloudy
+          attributes: {
+            friendly_name: 'Météo'
+          }
+        }),
+        'sensor.alert': makeMockEntity({
+          entity_id: 'sensor.alert',
+          state: 'UnknownColorState' // Should default to 'green' and hide the alert
+        }),
+        'media_player.living_room_tv': makeMockEntity({
+          entity_id: 'media_player.living_room_tv',
+          state: 'playing'
+        })
+      }
+    });
+
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    // 1. Trigger @error on avatar img
+    const avatarImg = el.shadowRoot!.querySelector('.avatar img') as HTMLImageElement;
+    expect(avatarImg).to.exist;
+    avatarImg.dispatchEvent(new Event('error'));
+    expect(avatarImg.style.display).to.equal('none');
+
+    // 2. Weather alert fallback to 'green' (should not render alert banner)
+    const alertBanner = el.shadowRoot!.querySelector('.weather-alert');
+    expect(alertBanner).to.be.null;
+
+    // 3. Unsupported weather condition fallback (should fallback to sf:cloudy-day)
+    const weatherIcon = el.shadowRoot!.querySelector('.weather-tile sf-icon') as any;
+    expect(weatherIcon).to.exist;
+    expect(weatherIcon.icon).to.equal('sf:cloudy-day');
+
+    // 4. media_player default state checking (active when playing)
+    const mediaTile = el.shadowRoot!.querySelectorAll('.hexa-tile[role="button"]')[0] as HTMLElement;
+    expect(mediaTile.getAttribute('data-active')).to.equal('true');
+  });
 });
+

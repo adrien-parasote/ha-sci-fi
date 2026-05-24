@@ -6,6 +6,12 @@ import '../../../src/cards/climates/sci-fi-climates.js';
 import { SciFiClimatesCard } from '../../../src/cards/climates/sci-fi-climates.js';
 import { makeMockHass, makeMockEntity, makeMockEntityEntry } from '../../fixtures/mock-hass.js';
 
+if (!customElements.get('sf-toast')) {
+  customElements.define('sf-toast', class extends HTMLElement {
+    addMessage() {}
+  });
+}
+
 describe('sci-fi-climates', () => {
   it('provides getConfigElement', () => {
     const el = SciFiClimatesCard.getConfigElement();
@@ -34,7 +40,7 @@ describe('sci-fi-climates', () => {
     const el = document.createElement('sci-fi-climates') as SciFiClimatesCard;
     el.setConfig(SciFiClimatesCard.getStubConfig());
 
-    const mockCallService = vi.fn();
+    const mockCallService = vi.fn().mockResolvedValue({} as any);
     el.hass = makeMockHass({
       callService: mockCallService,
       entities: {
@@ -64,89 +70,153 @@ describe('sci-fi-climates', () => {
     document.body.appendChild(el);
     await el.updateComplete;
 
-    const tiles = el.shadowRoot!.querySelectorAll('.climate-tile');
-    expect(tiles.length).to.equal(3);
+    const radiators = el.shadowRoot!.querySelectorAll('sf-radiator');
+    expect(radiators.length).to.equal(3);
 
     // Salon (Heat)
-    const salonTile = tiles[0] as HTMLElement;
-    expect(salonTile.getAttribute('data-active')).to.equal('true');
-    expect(salonTile.querySelector('.climate-name')!.textContent).to.equal('Salon');
-    expect(salonTile.querySelector('.climate-temp')!.textContent).to.equal('21.5°');
-    expect(salonTile.querySelector('.climate-state')!.textContent).to.include('heat');
-    expect(salonTile.querySelector('.climate-state')!.textContent).to.include('→ 22°');
+    const salonRadiator = radiators[0] as any;
+    expect(salonRadiator.climateEntity.entity_id).to.equal('climate.salon');
+    expect(salonRadiator.climateEntity.state).to.equal('heat');
+    expect(salonRadiator.climateEntity.attributes.friendly_name).to.equal('Salon');
 
     // Chambre (Off, null temp)
-    const chambreTile = tiles[1] as HTMLElement;
-    expect(chambreTile.getAttribute('data-active')).to.equal('false');
-    expect(chambreTile.querySelector('.climate-name')!.textContent).to.equal('climate.chambre');
-    expect(chambreTile.querySelector('.climate-temp')!.textContent).to.equal('--');
-    expect(chambreTile.querySelector('.climate-state')!.textContent).to.include('off');
-    expect(chambreTile.querySelector('.climate-state')!.textContent).not.to.include('→');
+    const chambreRadiator = radiators[1] as any;
+    expect(chambreRadiator.climateEntity.entity_id).to.equal('climate.chambre');
+    expect(chambreRadiator.climateEntity.state).to.equal('off');
 
     // SDB (Unknown state)
-    const sdbTile = tiles[2] as HTMLElement;
-    expect(sdbTile.getAttribute('data-active')).to.equal('true'); // state is unknown, which is !== 'off'
-    expect(sdbTile.querySelector('.climate-state')!.textContent).to.include('unknown');
+    const sdbRadiator = radiators[2] as any;
+    expect(sdbRadiator.climateEntity.entity_id).to.equal('climate.sdb');
+    expect(sdbRadiator.climateEntity.state).to.equal('unknown');
 
-    // Test toggle click on heat
-    salonTile.click();
-    expect(mockCallService).toHaveBeenCalledWith('climate', 'set_hvac_mode', { entity_id: 'climate.salon', hvac_mode: 'off' });
+    // Test toggle / event triggers on set_temperature
+    salonRadiator.dispatchEvent(new CustomEvent('change-temperature', {
+      bubbles: true,
+      composed: true,
+      detail: { id: 'climate.salon', temperature: 22 }
+    }));
+    expect(mockCallService).toHaveBeenCalledWith('climate', 'set_temperature', { entity_id: 'climate.salon', temperature: 22 });
 
-    // Test toggle click on off
-    chambreTile.click();
+    // Test change-hvac-mode
+    chambreRadiator.dispatchEvent(new CustomEvent('change-hvac-mode', {
+      bubbles: true,
+      composed: true,
+      detail: { id: 'climate.chambre', mode: 'heat' }
+    }));
     expect(mockCallService).toHaveBeenCalledWith('climate', 'set_hvac_mode', { entity_id: 'climate.chambre', hvac_mode: 'heat' });
+
+    // Test change-preset-mode
+    salonRadiator.dispatchEvent(new CustomEvent('change-preset-mode', {
+      bubbles: true,
+      composed: true,
+      detail: { id: 'climate.salon', mode: 'eco' }
+    }));
+    expect(mockCallService).toHaveBeenCalledWith('climate', 'set_preset_mode', { entity_id: 'climate.salon', preset_mode: 'eco' });
+
+    // Test rejection/error toast handling
+    const mockCallServiceReject = vi.fn().mockRejectedValue(new Error('Service failed'));
+    el.hass.callService = mockCallServiceReject;
+
+    salonRadiator.dispatchEvent(new CustomEvent('change-temperature', {
+      bubbles: true,
+      composed: true,
+      detail: { id: 'climate.salon', temperature: 24 }
+    }));
+
+    chambreRadiator.dispatchEvent(new CustomEvent('change-hvac-mode', {
+      bubbles: true,
+      composed: true,
+      detail: { id: 'climate.chambre', mode: 'heat' }
+    }));
+
+    salonRadiator.dispatchEvent(new CustomEvent('change-preset-mode', {
+      bubbles: true,
+      composed: true,
+      detail: { id: 'climate.salon', mode: 'eco' }
+    }));
+
+    await new Promise(r => setTimeout(r, 10)); // Flush promises
   });
 
   it('renders header with winter season icon', async () => {
     const el = document.createElement('sci-fi-climates') as SciFiClimatesCard;
-    el.setConfig({ type: 'custom:sci-fi-climates', header: { display: true }, header_message: 'Winter Mode' } as unknown as unknown as any);
-    el.hass = makeMockHass({ states: { 'sensor.season': makeMockEntity({ entity_id: 'sensor.season', state: 'winter' }) } });
+    el.setConfig({
+      type: 'custom:sci-fi-climates',
+      header: {
+        display: true,
+        icon_winter_state: 'mdi:thermometer-chevron-up',
+        message_winter_state: 'Winter Mode'
+      }
+    } as any);
+    el.hass = makeMockHass({
+      entities: {
+        'climate.salon': makeMockEntityEntry({ entity_id: 'climate.salon', domain: 'climate' }),
+      },
+      states: {
+        'sensor.season': makeMockEntity({ entity_id: 'sensor.season', state: 'winter' }),
+        'climate.salon': makeMockEntity({ entity_id: 'climate.salon', state: 'off' }) // not active
+      }
+    });
     document.body.appendChild(el);
     await el.updateComplete;
 
-    const icon = el.shadowRoot!.querySelector('sf-icon') as unknown as any;
-    // ADR-005: default icon_winter_state = 'mdi:thermometer-chevron-up'
+    const icon = el.shadowRoot!.querySelector('.actions sf-icon') as unknown as any;
     expect(icon?.icon).to.equal('mdi:thermometer-chevron-up');
     expect(el.shadowRoot!.textContent).to.include('Winter Mode');
   });
 
   it('renders header with summer season icon', async () => {
     const el = document.createElement('sci-fi-climates') as SciFiClimatesCard;
-    el.setConfig({ type: 'custom:sci-fi-climates', header: { display: true } } as unknown as unknown as any);
-    el.hass = makeMockHass({ states: { 'sensor.season': makeMockEntity({ entity_id: 'sensor.season', state: 'summer' }) } });
-    document.body.appendChild(el);
-    await el.updateComplete;
-
-    const icon = el.shadowRoot!.querySelector('sf-icon') as unknown as any;
-    // ADR-005: default icon_summer_state = 'mdi:thermometer-chevron-down'
-    expect(icon?.icon).to.equal('mdi:thermometer-chevron-down');
-  });
-
-  it('respects excluded_entity_ids config', async () => {
-    const el = document.createElement('sci-fi-climates') as SciFiClimatesCard;
-    // ADR-005: entities_to_exclude (not excluded_entity_ids)
-    (el as any).setConfig({ type: 'custom:sci-fi-climates', header: { display: false }, entities_to_exclude: ['climate.hidden'] });
+    el.setConfig({
+      type: 'custom:sci-fi-climates',
+      header: {
+        display: true,
+        icon_summer_state: 'mdi:thermometer-chevron-down',
+        message_summer_state: 'Summer Mode'
+      }
+    } as any);
     el.hass = makeMockHass({
       entities: {
-        'climate.shown': makeMockEntityEntry({ entity_id: 'climate.shown', domain: 'climate' }),
-        'climate.hidden': makeMockEntityEntry({ entity_id: 'climate.hidden', domain: 'climate' }),
+        'climate.salon': makeMockEntityEntry({ entity_id: 'climate.salon', domain: 'climate' }),
+      },
+      states: {
+        'sensor.season': makeMockEntity({ entity_id: 'sensor.season', state: 'summer' }),
+        'climate.salon': makeMockEntity({ entity_id: 'climate.salon', state: 'heat' }) // active
       }
     });
     document.body.appendChild(el);
     await el.updateComplete;
 
-    const tiles = el.shadowRoot!.querySelectorAll('.climate-tile');
-    expect(tiles.length).to.equal(1);
-    expect(tiles[0]!.querySelector('.climate-name')!.textContent).to.include('climate.shown');
+    const icon = el.shadowRoot!.querySelector('.actions sf-icon') as unknown as any;
+    expect(icon?.icon).to.equal('mdi:thermometer-chevron-down');
+  });
+
+  it('respects excluded_entity_ids config', async () => {
+    const el = document.createElement('sci-fi-climates') as SciFiClimatesCard;
+    (el as any).setConfig({ type: 'custom:sci-fi-climates', header: { display: false }, entities_to_exclude: ['climate.hidden'] });
+    el.hass = makeMockHass({
+      entities: {
+        'climate.shown': makeMockEntityEntry({ entity_id: 'climate.shown', domain: 'climate' }),
+        'climate.hidden': makeMockEntityEntry({ entity_id: 'climate.hidden', domain: 'climate' }),
+      },
+      states: {
+        'climate.shown': makeMockEntity({ entity_id: 'climate.shown', state: 'heat' }),
+        'climate.hidden': makeMockEntity({ entity_id: 'climate.hidden', state: 'heat' }),
+      }
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const radiators = el.shadowRoot!.querySelectorAll('sf-radiator');
+    expect(radiators.length).to.equal(1);
+    expect(radiators[0]!.id).to.equal('climate.shown');
   });
 
   it('renders "Aucun radiateur" message when no climates exist', async () => {
     const el = document.createElement('sci-fi-climates') as SciFiClimatesCard;
-    // Branch coverage: climates.length === 0 → early return with message (L94)
     el.setConfig(SciFiClimatesCard.getStubConfig());
     el.hass = makeMockHass({
       entities: {
-        // No climate entities — only other domains
         'light.salon': { entity_id: 'light.salon', area_id: 'living_room', device_id: null,
           disabled_by: null, domain: 'light', platform: 'hue', labels: [] },
       },
@@ -156,7 +226,65 @@ describe('sci-fi-climates', () => {
     await el.updateComplete;
 
     expect(el.shadowRoot!.textContent).to.include('Aucun radiateur configuré');
-    const tiles = el.shadowRoot!.querySelectorAll('.climate-tile');
-    expect(tiles.length).to.equal(0);
+    const radiators = el.shadowRoot!.querySelectorAll('sf-radiator');
+    expect(radiators.length).to.equal(0);
+  });
+
+  it('handles floor and area selection hexagon clicks and warns when sf-toast is missing', async () => {
+    const el = document.createElement('sci-fi-climates') as SciFiClimatesCard;
+    el.setConfig(SciFiClimatesCard.getStubConfig());
+
+    el.hass = makeMockHass({
+      entities: {
+        'climate.salon': makeMockEntityEntry({ entity_id: 'climate.salon', area_id: 'living_room', domain: 'climate' }),
+        'climate.chambre': makeMockEntityEntry({ entity_id: 'climate.chambre', area_id: 'bedroom', domain: 'climate' }),
+      },
+      states: {
+        'climate.salon': makeMockEntity({ entity_id: 'climate.salon', state: 'heat', attributes: { current_temperature: 21.5 } }),
+        'climate.chambre': makeMockEntity({ entity_id: 'climate.chambre', state: 'off', attributes: { current_temperature: 18.0 } }),
+      }
+    });
+
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    // Test console.warn when toast is missing first (on default selected ground floor / living_room area)
+    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const toast = el.shadowRoot!.querySelector('sf-toast')!;
+    toast.remove();
+
+    const salonRadiator = el.shadowRoot!.querySelector('sf-radiator') as any;
+    expect(salonRadiator).to.exist;
+    salonRadiator.dispatchEvent(new CustomEvent('change-temperature', {
+      bubbles: true,
+      composed: true,
+      detail: { id: 'climate.salon', temperature: 24 }
+    }));
+
+    await new Promise(r => setTimeout(r, 10));
+
+    expect(consoleWarnSpy).toHaveBeenCalled();
+    consoleWarnSpy.mockRestore();
+
+    // Now test floor and area selections
+    expect((el as any)._active_floor_id).to.equal('ground');
+
+    const floorsRow = el.shadowRoot!.querySelector('.floors sf-hexa-row')!;
+    floorsRow.dispatchEvent(new CustomEvent('cell-selected', {
+      detail: { cell: { id: 'first' } }
+    }));
+    await el.updateComplete;
+
+    expect((el as any)._active_floor_id).to.equal('first');
+    expect((el as any)._active_area_id).to.equal('bedroom');
+
+    floorsRow.dispatchEvent(new CustomEvent('cell-selected', {
+      detail: { cell: { id: 'ground' } }
+    }));
+    await el.updateComplete;
+    expect((el as any)._active_floor_id).to.equal('ground');
+    expect((el as any)._active_area_id).to.equal('living_room');
   });
 });
+
+

@@ -13,6 +13,9 @@ vi.mock('chart.js', () => {
       options: any;
       static register() {}
       constructor(ctx: any, config: any) {
+        if ((globalThis as any).__mockChartShouldThrow) {
+          throw new Error('Mock Init Failure');
+        }
         this.data = config.data || { labels: [], datasets: [{ data: [] }] };
         this.options = config.options || {};
       }
@@ -229,6 +232,56 @@ describe('sci-fi-weather', () => {
       
       const newDate = (el as any)._date.getTime();
       expect(newDate).to.be.greaterThan(initialDate);
+    });
+
+    it('IT-004: test weatherIcon plugin directly and handles init failure gracefully', async () => {
+      const plugin = (el as any)._getChartPlugins();
+      expect(plugin.id).to.equal('weatherIcon');
+
+      const drawImageSpy = vi.fn();
+      const mockChart = {
+        ctx: {
+          save: vi.fn(),
+          restore: vi.fn(),
+          drawImage: drawImageSpy
+        },
+        data: {
+          datasets: [{
+            weather: ['sunny-day'],
+            data: [25]
+          }]
+        },
+        chartArea: { top: 10 },
+        getDatasetMeta: () => ({
+          data: [{ x: 50 }]
+        })
+      };
+
+      const originalImage = globalThis.Image;
+      class MockImage {
+        onload: any = null;
+        set src(val: string) {
+          if (this.onload) this.onload();
+        }
+      }
+      globalThis.Image = MockImage as any;
+
+      plugin.afterDatasetsDraw(mockChart);
+
+      expect(drawImageSpy).toHaveBeenCalled();
+      globalThis.Image = originalImage;
+
+      // Test initialization failure error handling
+      (globalThis as any).__mockChartShouldThrow = true;
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      (el as any)._chart = undefined;
+      (el as any)._renderChart();
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith("Chart.js failed to init", expect.any(Error));
+
+      (globalThis as any).__mockChartShouldThrow = false;
+      consoleWarnSpy.mockRestore();
     });
   });
 });

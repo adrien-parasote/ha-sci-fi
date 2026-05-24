@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 // @vitest-environment happy-dom
-import { expect, describe, it, beforeEach, afterEach } from 'vitest';
+import { expect, describe, it, beforeEach, afterEach, vi } from 'vitest';
 
 import '../../../src/cards/lights/sci-fi-lights.js';
 import { SciFiLightsCard } from '../../../src/cards/lights/sci-fi-lights.js';
@@ -200,4 +200,56 @@ describe('sci-fi-lights', () => {
     // No custom_entities, no default_icon_on config → falls back to 'mdi:lightbulb-on-outline'
     expect(icon.icon).to.equal('mdi:lightbulb-on-outline');
   });
+
+  it('handles light, area, floor, and global power toggle interactions', async () => {
+    const el = document.createElement('sci-fi-lights') as SciFiLightsCard;
+    (el as any).setConfig({
+      type: 'custom:sci-fi-lights'
+    });
+
+    const callServiceMock = vi.fn().mockResolvedValue({} as any);
+    el.hass = makeMockHass({
+      callService: callServiceMock,
+      floors: {
+        'ground': makeMockFloor({ floor_id: 'ground', name: 'Ground Floor', level: 0 }),
+      },
+      areas: {
+        'living': makeMockArea({ area_id: 'living', name: 'Living Room', floor_id: 'ground' }),
+      },
+      entities: {
+        'light.salon': makeMockEntityEntry({ entity_id: 'light.salon', area_id: 'living', domain: 'light' }),
+      },
+      states: {
+        'light.salon': makeMockEntity({ entity_id: 'light.salon', state: 'on' }),
+      }
+    });
+
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    // 1. Individual Light Button toggle (currently ON -> should trigger turn_off)
+    const lightBtn = el.shadowRoot!.querySelector('.light-btn') as HTMLElement;
+    expect(lightBtn).to.exist;
+    lightBtn.click();
+    expect(callServiceMock).toHaveBeenLastCalledWith('light', 'turn_off', { entity_id: 'light.salon' });
+
+    // 2. Area Power toggle (currently ON -> should trigger turn_off)
+    const areaPowerBtn = el.shadowRoot!.querySelector('.area-title .power-btn') as HTMLElement;
+    expect(areaPowerBtn).to.exist;
+    areaPowerBtn.click();
+    expect(callServiceMock).toHaveBeenLastCalledWith('light', 'turn_off', { entity_id: ['light.salon'] });
+
+    // 3. Floor Power toggle (currently ON -> should trigger turn_off)
+    const floorPowerBtn = el.shadowRoot!.querySelector('.floor-title .power-btn') as HTMLElement;
+    expect(floorPowerBtn).to.exist;
+    floorPowerBtn.click();
+    expect(callServiceMock).toHaveBeenLastCalledWith('light', 'turn_off', { entity_id: ['light.salon'] });
+
+    // 4. Global Power toggle (currently ON -> should trigger turn_off)
+    const globalPowerBtn = el.shadowRoot!.querySelector('.header-power') as HTMLElement;
+    expect(globalPowerBtn).to.exist;
+    globalPowerBtn.click();
+    expect(callServiceMock).toHaveBeenLastCalledWith('light', 'turn_off', { entity_id: ['light.salon'] });
+  });
 });
+

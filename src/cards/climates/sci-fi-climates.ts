@@ -25,6 +25,10 @@ export class SciFiClimatesCard extends SciFiBaseCard {
     if (!this.hass || !this.config) return html``;
 
     const excluded = this.config.entities_to_exclude ?? [];
+    const allClimates = getClimateEntitiesExcluding(this.hass, excluded);
+    if (allClimates.length === 0) {
+      return html`<div class="empty-message">Aucun radiateur configuré</div>`;
+    }
     
     // Initialize active floor if empty
     if (!this._active_floor_id) {
@@ -334,7 +338,7 @@ export class SciFiClimatesCard extends SciFiBaseCard {
     if (toast && toast.addMessage) {
       toast.addMessage(text, error);
     } else {
-      console.log(`Toast (${error ? 'ERROR' : 'OK'}): ${text}`);
+      console.warn(`Toast (${error ? 'ERROR' : 'OK'}): ${text}`);
     }
   }
 

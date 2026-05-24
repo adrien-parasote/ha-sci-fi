@@ -10,11 +10,25 @@ import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import type { SciFiHexaTilesConfig, SciFiHexaTileConfig } from '../../types/config.js';
 import type { HassEntity } from '../../types/ha.js';
-import WEATHER_ICON_SET from '../../components/icons/data/sf-weather-icons.js';
 
 const TAG = 'sci-fi-hexa-tiles';
 
-
+const WEATHER_ICON_MAP: Record<string, string> = {
+  'clear-night': 'mdi:weather-night',
+  'cloudy': 'mdi:weather-cloudy',
+  'fog': 'mdi:weather-fog',
+  'hail': 'mdi:weather-hail',
+  'lightning': 'mdi:weather-lightning',
+  'lightning-rainy': 'mdi:weather-lightning-rainy',
+  'partlycloudy': 'mdi:weather-partly-cloudy',
+  'pouring': 'mdi:weather-pouring',
+  'rainy': 'mdi:weather-rainy',
+  'snowy': 'mdi:weather-snowy',
+  'snowy-rainy': 'mdi:weather-snowy-rainy',
+  'sunny': 'mdi:weather-sunny',
+  'windy': 'mdi:weather-windy',
+  'windy-variant': 'mdi:weather-windy-variant',
+};
 
 @customElement(TAG)
 export class SciFiHexaTilesCard extends SciFiBaseCard {
@@ -224,18 +238,6 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
         --icon-height: 56px;
         transition: color var(--sf-transition-fast), filter var(--sf-transition-fast);
       }
-      .hexa-content .custom-weather-icon {
-        width: 56px;
-        height: 56px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: filter var(--sf-transition-fast);
-      }
-      .hexa-content .custom-weather-icon svg {
-        width: 100%;
-        height: 100%;
-      }
       .hexa-tile[data-active="true"] .hexa-content sf-icon {
         --icon-color: var(--sf-primary, #00d2ff);
         filter: drop-shadow(0 0 3px var(--sf-primary, #00d2ff));
@@ -246,9 +248,6 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
       .hexa-tile.weather-tile[data-active="true"] .hexa-content sf-icon {
         --icon-color: #ffd60a;
         filter: drop-shadow(0 0 3px #ffd60a);
-      }
-      .hexa-tile.weather-tile[data-active="true"] .hexa-content .custom-weather-icon {
-        filter: drop-shadow(0 0 3px rgba(255, 214, 10, 0.5));
       }
 
       .tile-label {
@@ -521,12 +520,7 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     if (!state) return html``;
     const name = state.attributes.friendly_name ?? 'Météo';
     const condition = state.state?.toLowerCase();
-    
-    const sunEntity = this.hass?.states['sun.sun'];
-    const isDay = sunEntity ? sunEntity.state !== 'below_horizon' : true;
-    const iconKey = `${condition}-${isDay ? 'day' : 'night'}`;
-    const customIcon = (WEATHER_ICON_SET as any)[iconKey] ?? (WEATHER_ICON_SET as any)[condition] ?? (WEATHER_ICON_SET as any)['cloudy-day'] ?? html``;
-    
+    const icon = WEATHER_ICON_MAP[condition] ?? 'mdi:weather-cloudy';
     const isActive = condition !== 'clear-night';
 
     return html`
@@ -536,9 +530,7 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
           <polygon class="hexa-border" points="66,4 128,43 128,121 66,160 4,121 4,43" />
         </svg>
         <div class="hexa-content">
-          <div class="custom-weather-icon">
-            ${customIcon}
-          </div>
+          <sf-icon .icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
           <span class="tile-label">${name}</span>
         </div>
       </div>

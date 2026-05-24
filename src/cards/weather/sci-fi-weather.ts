@@ -751,7 +751,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
     const hourly = this._getHourlyForSelectedDay();
 
     const labels = hourly.map(h => {
-      return new Intl.DateTimeFormat(navigator.language, { hour: '2-digit' }).format(new Date(h.datetime));
+      return new Intl.DateTimeFormat(this.hass?.locale?.language || navigator.language, { hour: '2-digit' }).format(new Date(h.datetime));
     });
 
     const dataPoints = hourly.map(h => {

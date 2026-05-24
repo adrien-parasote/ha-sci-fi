@@ -1,5 +1,6 @@
 import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { msg } from '@lit/localize';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import { climateStyles } from './styles.js';
@@ -172,11 +173,11 @@ export class SciFiClimatesCard extends SciFiBaseCard {
     const active = entities.some(c => isClimateActive(this.hass, c.entity_id));
     const h = this.config.header;
     const icon = active ? (h.icon_summer_state || 'mdi:thermometer-chevron-down') : (h.icon_winter_state || 'mdi:thermometer-chevron-up');
-    const msg = active ? (h.message_summer_state || 'Summer time') : (h.message_winter_state || 'Winter is coming');
+    const headerMsg = active ? (h.message_summer_state || msg('Summer time')) : (h.message_winter_state || msg('Winter is coming'));
 
     return html`<div class="action" @click="${() => this.__globalOnOffClimates(entities, active)}">
       <sf-icon .icon=${icon}></sf-icon>
-      <div>${msg}</div>
+      <div>${headerMsg}</div>
     </div>`;
   }
 

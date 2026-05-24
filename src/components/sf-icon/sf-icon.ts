@@ -41,7 +41,7 @@ export class SfIcon extends LitElement {
   private _loading = false;
 
   override willUpdate(changed: Map<string, unknown>): void {
-    if (changed.has('icon') && this.icon) {
+    if ((changed.has('icon') || changed.has('connection')) && this.icon) {
       void this._resolveIcon();
     }
   }

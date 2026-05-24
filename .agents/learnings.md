@@ -145,4 +145,11 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Evidence**: On initial page load, multiple components fetch icons concurrently. The custom icon resolver sent a websocket request `frontend/get_icons` for *each* icon because it didn't cache the active query promise. When loading 10+ icons concurrently, this: (1) hit the concurrency limit (`MAX_CONCURRENT_FETCHES = 5`), instantly returning `ICON_NOT_FOUND` (fallback `?`) for subsequent requests, and (2) sent redundant massive websocket payloads (thousands of icons) to the HA server.
 - **Pattern**: When fetching heavy categories of data from a WebSocket API concurrently, always cache the active `Promise` globally. All concurrent callers will wait for the same promise to resolve. Clear this promise cache in global test resets (`clearMemCache()`) to ensure isolated test suites.
 
+### L032: Sibling Lit Property Race Condition & Initialization Updates
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi v2 — sf-icon.ts + /self-debug
+- **Evidence**: The custom element `<sf-icon>` resolves MDI icons using a `connection` property passed from its parent (`this.hass.connection`). On the first update, `this.connection` is often `undefined` due to component initialization race conditions. The icon's `willUpdate` hook only watched `changed.has('icon')`, meaning that when the parent subsequently populated the connection property, `sf-icon` ignored the change and remained permanently stuck on the fallback question mark (`?`) placeholder.
+- **Pattern**: When a custom element depends on sibling properties that are initialized asynchronously or reactive (such as state, active connection, or user object), always ensure that its update life cycle hooks (`willUpdate`, `shouldUpdate`) watch for changes to *all* critical dependent properties, not just the primary value.
+
+
 

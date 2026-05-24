@@ -25,6 +25,8 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
         padding: var(--sf-spacing-md);
         display: block;
         width: 100%;
+        height: 100% !important;
+        min-height: 100vh;
         box-sizing: border-box;
       }
 
@@ -118,6 +120,8 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
       :host {
         --tile-width: 120px;
         --tile-height: 138px;
+        display: block;
+        height: 100%;
       }
       .hexa-grid {
         display: flex;
@@ -150,16 +154,16 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
         width: calc(var(--tile-width) / 2);
         height: var(--tile-height);
         margin: 0;
-        opacity: 0.15;
       }
       .hexa-half svg {
         width: 100%;
         height: 100%;
+        display: block;
       }
       .hexa-half svg polygon {
-        fill: rgba(255, 255, 255, 0.04);
+        fill: rgba(16, 22, 38, 0.6);
         stroke: rgba(224, 232, 255, 0.1);
-        stroke-width: 1px;
+        stroke-width: 1.5px;
       }
 
       /* SVG structures */

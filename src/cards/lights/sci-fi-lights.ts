@@ -107,8 +107,8 @@ export class SciFiLightsCard extends SciFiBaseCard {
         column-gap: 5px;
         justify-content: center;
         align-items: center;
-        margin: 10px 0;
-        padding: 0 8px;
+        margin: 0;
+        padding: 20px 0;
       }
 
       .floor-hexa {

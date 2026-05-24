@@ -479,6 +479,28 @@
     .console-line.ok { color: var(--success); }
     .console-line.live { color: var(--accent); }
 
+    .console-filter-btn {
+      padding: 3px 8px;
+      font-size: 10px;
+      font-weight: 600;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .console-filter-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .console-filter-btn.active {
+      border-color: var(--accent);
+      background: rgba(0, 212, 255, 0.1);
+      color: var(--accent);
+    }
+
     @media (max-width: 900px) {
       .main { grid-template-columns: 1fr; }
       .panel { border-left: none; border-top: 1px solid var(--border); }
@@ -594,7 +616,22 @@
 
     <!-- Console -->
     <div class="panel-section" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
-      <div class="panel-section-title">📋 Console <button class="btn btn-ghost" style="padding:2px 8px;font-size:10px;float:right" onclick="clearConsole()">Vider</button></div>
+      <div class="panel-section-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span>📋 Console</span>
+          <div style="display:flex; gap:3px; overflow-x:auto; margin-left:8px;">
+            <button class="console-filter-btn active" data-filter="all" onclick="setConsoleFilter('all')">Tous</button>
+            <button class="console-filter-btn" data-filter="info" onclick="setConsoleFilter('info')">Infos</button>
+            <button class="console-filter-btn" data-filter="warn" onclick="setConsoleFilter('warn')">Warns</button>
+            <button class="console-filter-btn" data-filter="error" onclick="setConsoleFilter('error')">Erreurs</button>
+          </div>
+        </div>
+        <button class="btn btn-ghost" style="padding:2px 8px;font-size:10px;" onclick="clearConsole()">Vider</button>
+      </div>
+      <!-- Keyword search -->
+      <div style="padding: 0 16px 10px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 6px;">
+        <input type="text" id="console-search" placeholder="Filtrer les lignes par mot-clé..." oninput="filterConsoleLines()" style="flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; color: var(--text); font-size: 11px; outline: none; transition: border-color 0.15s;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+      </div>
       <div class="console-area" id="console-area"></div>
     </div>
   </div>
@@ -616,12 +653,53 @@
 
   // ─── Console proxy ──────────────────────────────────────────────────────
   const consoleEl = document.getElementById('console-area');
+  let activeConsoleFilter = 'all';
+
+  window.setConsoleFilter = (filterType) => {
+    activeConsoleFilter = filterType;
+    document.querySelectorAll('.console-filter-btn').forEach(btn => {
+      if (btn.getAttribute('data-filter') === filterType) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+    filterConsoleLines();
+  };
+
+  window.filterConsoleLines = () => {
+    const searchVal = (document.getElementById('console-search').value || '').toLowerCase();
+    const lines = document.querySelectorAll('.console-line');
+    
+    lines.forEach(line => {
+      let matchesFilter = false;
+      if (activeConsoleFilter === 'all') {
+        matchesFilter = true;
+      } else if (activeConsoleFilter === 'info') {
+        matchesFilter = line.classList.contains('info') || line.classList.contains('ok') || line.classList.contains('live');
+      } else if (activeConsoleFilter === 'warn') {
+        matchesFilter = line.classList.contains('warn');
+      } else if (activeConsoleFilter === 'error') {
+        matchesFilter = line.classList.contains('error');
+      }
+
+      const matchesSearch = line.textContent.toLowerCase().includes(searchVal);
+
+      if (matchesFilter && matchesSearch) {
+        line.style.display = 'block';
+      } else {
+        line.style.display = 'none';
+      }
+    });
+  };
+
   function log(msg, type = 'info') {
     const line = document.createElement('div');
     line.className = `console-line ${type}`;
     const ts = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     line.textContent = `[${ts}] ${msg}`;
     consoleEl.appendChild(line);
+    filterConsoleLines();
     consoleEl.scrollTop = consoleEl.scrollHeight;
   }
   window._wbLog = log;

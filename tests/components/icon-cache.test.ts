@@ -44,6 +44,16 @@ describe('icon-cache', () => {
     expect(_memCache.get('mdi:test-icon')).toBe('M1 2 3 4Z');
   });
 
+  it('resolves icon when HA registry returns keys with mdi: prefix', async () => {
+    const conn = {
+      sendMessagePromise: vi.fn().mockResolvedValue({
+        resources: { 'mdi:prefixed-icon': 'M10 20Z' }
+      })
+    };
+    const result = await resolveIcon(conn, 'mdi:prefixed-icon', 'prefixed-icon');
+    expect(result).toBe('M10 20Z');
+  });
+
   // TC-401: sf-icon checks customIcons first (via cache hit)
   it('TC-401: resolveIcon returns memory-cached value without calling HA', async () => {
     _memCache.set('mdi:cached-icon', 'M5 6 7 8Z');

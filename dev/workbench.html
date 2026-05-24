@@ -139,18 +139,16 @@
       flex: 1;
       min-height: 0;
     }
-    /* Phone/Tablet device overrides — same specificity as panel rules above.
-       Phone: card-mount has auto height, device-screen provides the constraint.
-       Tablet: card-mount fills the fixed device-screen height via flex chain. */
+    /* Phone device in panel mode: same as base phone rule — card fills device-screen. */
     .preview-area.mode-panel .dev-phone #card-mount {
-      height: auto;
+      height: 100%;
       min-height: 0;
       flex: none;
     }
     .preview-area.mode-panel .dev-phone #card-mount > * {
       flex: none;
-      min-height: auto;
-      height: auto;
+      min-height: 0;
+      height: 100%;
     }
     .preview-area.mode-panel .dev-tablet #card-mount {
       height: 100%;
@@ -326,18 +324,19 @@
       padding-top: 52px;
       box-sizing: border-box;
     }
-    /* Content height must be AUTO so it can overflow and trigger scroll.
-       !important overrides the panel-mode height:100% cascade. */
+    /* Phone: card fills the device-screen content area (below Dynamic Island).
+       device-screen has box-sizing:border-box + padding-top:52px, so
+       100% = screen-height − 52px, which is exactly the visible area. */
     .dev-phone #card-mount {
-      height: auto !important;
-      min-height: calc(100% - 52px);
+      height: 100%;
+      min-height: 0;
     }
     .dev-phone #card-mount {
       display: block !important; /* cancel panel-mode flex */
     }
     .dev-phone #card-mount > * {
-      flex: initial !important;  /* cancel panel-mode flex:1 */
-      min-height: auto !important;
+      height: 100%;
+      min-height: 0;
     }
     .dev-phone .device-home-bar {
       display: block;
@@ -991,7 +990,7 @@
     },
     lights: {
       label: '💡 Lights', tag: 'sci-fi-lights',
-      config: { type: 'custom:sci-fi-lights', default_icon_on: 'mdi:lightbulb-on-outline', default_icon_off: 'mdi:lightbulb-outline', first_floor_to_render: 'rdc', first_area_to_render: 'chambre', ignored_entities: ['light.la_boite_a_cha_day_ambient_colour','light.la_boite_a_cha_night_ambient_colour'], custom_entities: { 'light.nous_salon': { name: 'Étoile', icon_on: 'mdi:star', icon_off: 'mdi:star-outline' }, 'light.zbmini_l_lampe_salon': { name: 'Lampe', icon_on: 'mdi:desk-lamp-on', icon_off: 'mdi:desk-lamp' }, 'light.zbmini_l_salon': { name: 'Plafond', icon_on: 'mdi:ceiling-light-outline', icon_off: 'mdi:ceiling-light' }, 'light.zbmini_l_bureau': { name: 'Bureau', icon_on: 'mdi:ceiling-light-outline', icon_off: 'mdi:ceiling-light' }}, header: 'Lumières' },
+      config: { type: 'custom:sci-fi-lights', default_icon_on: 'mdi:lightbulb-on-outline', default_icon_off: 'mdi:lightbulb-outline', first_floor_to_render: 'rdc', first_area_to_render: 'chambre', ignored_entities: ['light.la_boite_a_cha_day_ambient_colour','light.la_boite_a_cha_night_ambient_colour','light.la_boite_a_nard_day_ambient_colour','light.la_boite_a_nard_night_ambient_colour'], custom_entities: { 'light.nous_salon': { name: 'Étoile', icon_on: 'mdi:star', icon_off: 'mdi:star-outline' }, 'light.zbmini_l_lampe_salon': { name: 'Lampe', icon_on: 'mdi:desk-lamp-on', icon_off: 'mdi:desk-lamp' }, 'light.zbmini_l_salon': { name: 'Plafond', icon_on: 'mdi:ceiling-light-outline', icon_off: 'mdi:ceiling-light' }, 'light.zbmini_l_dressing_parent': { name: 'Dressing', icon_on: 'mdi:light-recessed', icon_off: 'mdi:light-recessed' }, 'light.zbmini_l_parent': { name: 'Plafond', icon_on: 'mdi:ceiling-light-outline', icon_off: 'mdi:ceiling-light' }, 'light.zbmini_l_douche_parent': { name: 'Douche', icon_on: 'mdi:light-recessed', icon_off: 'mdi:light-recessed' }, 'light.zbmini_l_lavabo_parent': { name: 'Lavabo', icon_on: 'mdi:light-recessed', icon_off: 'mdi:light-recessed' }, 'light.zbmini_l_cuisine': { name: 'Plafond', icon_on: 'mdi:ceiling-light-outline', icon_off: 'mdi:ceiling-light' }, 'light.zbmini_l_bureau': { name: 'Plafond', icon_on: 'mdi:ceiling-light-outline', icon_off: 'mdi:ceiling-light' }, 'light.zbmini_l_charlotte': { name: 'Plafond', icon_on: 'mdi:ceiling-light-outline', icon_off: 'mdi:ceiling-light' }, 'light.zbmini_l_leonard': { name: 'Plafond', icon_on: 'mdi:ceiling-light-outline', icon_off: 'mdi:ceiling-light' }, 'light.zbmini_l_mezzanine': { name: 'Mezzanine', icon_on: 'mdi:light-recessed', icon_off: 'mdi:light-recessed' } }, header_message: 'Lumières' },
       scenarios: {
         'Quelques lumières allumées': () => ({}),
         'Tout allumé': () => Object.fromEntries(Object.entries(MOCK_STATES).filter(([k]) => k.startsWith('light.')).map(([k,v]) => [k, { ...v, state: 'on' }])),

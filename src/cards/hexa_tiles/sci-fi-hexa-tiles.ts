@@ -310,6 +310,9 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
       cols = 2;
     }
     
+    // Set host style property so :host CSS can read it!
+    this.style.setProperty('--cols', String(cols));
+    
     // Calculate minRows to fill the screen height
     const headerHeight = 120; // estimated header + margins + alerts
     const tileWidth = width / (cols + 0.5);

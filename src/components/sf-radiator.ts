@@ -81,11 +81,11 @@ export class SciFiRadiator extends LitElement {
       }
       .content .left .select-temperature .display .h-path,
       .content .left .temperature .temperature-label .display .h-path {
-        border-top: 1px solid var(--sf-text-primary, #ffffff);
+        border-top: 1px solid var(--sf-primary);
         width: 20px;
       }
       .content .left .select-temperature .display .circle {
-        background-color: var(--sf-text-primary, #ffffff);
+        background-color: var(--sf-primary);
         width: 6px;
         height: 6px;
         border-radius: 50%;
@@ -114,8 +114,7 @@ export class SciFiRadiator extends LitElement {
         text-shadow: 0px 0px 5px var(--sf-primary);
         width: 100%;
         height: fit-content;
-        border-bottom: calc(2 * var(--sf-border-width, 1px)) solid
-          var(--sf-bg-secondary);
+        border-bottom: 2px solid var(--sf-primary);
         margin-right: 10px;
       }
       .content .left .temperature .temperature-label .radical {
@@ -339,7 +338,7 @@ export class SciFiRadiator extends LitElement {
     return html` <div class="temperature">
       <div class="temperature-label">
         <div class="display">
-          <div class="circle" style="width: 6px; height: 6px; border-radius: 50%; background-color: var(--sf-text-primary, #ffffff); border: none;"></div>
+          <div class="circle" style="width: 6px; height: 6px; border-radius: 50%; background-color: var(--sf-primary); border: none;"></div>
           <div class="h-path"></div>
         </div>
         <div class="radical">

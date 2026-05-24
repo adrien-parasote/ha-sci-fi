@@ -40,11 +40,13 @@ export class SciFiCardSelectButton extends SciFiCardButton {
         z-index: 10;
       }
       .items.left {
-        bottom: 0;
+        right: 100%;
+        left: auto;
         top: auto;
-        transform: translateX(-100%);
+        bottom: 0;
         border-radius: var(--sf-border-radius, 8px);
         border: var(--sf-border-width, 1px) solid var(--sf-border);
+        transform: none;
       }
       .items.left.down {
         top: 0;

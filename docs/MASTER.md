@@ -108,6 +108,9 @@ Avant de lancer le BUILD, vérifier :
 | ADR-004 | Tests domain-first (pas E2E) | ✅ Accepted |
 | ADR-005 | **Zero Breaking YAML Changes** | ✅ Accepted — CRITIQUE |
 | ADR-006 | **config-metadata.ts conservé** | ✅ Accepted |
+| ADR-007 | **Workbench local obligatoire avant déploiement prod** | ✅ Accepted — 2026-05-24 |
+
+> **ADR-007 rationale :** Le déploiement v1.0.0 a cassé la prod sans validation visuelle préalable. La règle est désormais : `npm run build` → `npx serve . --listen 8888` → valider toutes les cartes dans `dev/workbench.html` → SEULEMENT ALORS copier `dist/sci-fi.min.js` vers `www/community/ha-sci-fi/`.
 
 ---
 

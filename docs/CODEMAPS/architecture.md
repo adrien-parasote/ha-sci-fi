@@ -1,4 +1,4 @@
-<!-- Generated: 2026-05-23 | Files scanned: 55 | Token estimate: ~420 | Updated: post-review v2 -->
+<!-- Generated: 2026-05-24 | Files scanned: 57 | Token estimate: ~440 | Updated: post-workbench -->
 
 # Home Assistant Sci-Fi Cards — Architecture v2
 
@@ -13,6 +13,7 @@
 | Types | `src/types/` | TypeScript interfaces (config, ha.ts, HA entity types) |
 | Styles | `src/styles/` | `common.ts` — shared CSS custom properties (`--sf-*` tokens) |
 | Entry | `src/sci-fi.ts` | Bundle entry — registers all 8 `customCards` + `customElements` |
+| Dev Workbench | `dev/workbench.html` | Local UI test environment — loads `dist/sci-fi.min.js`, mock + live HA data |
 
 ## Key Files
 
@@ -27,6 +28,7 @@
 | `vitest.config.ts` | Vitest runner — happy-dom, global Canvas/ResizeObserver mocks |
 | `rollup.config.mjs` | Rollup 4 — `@rollup/plugin-terser@^1.0.0`, Chart.js bundled |
 | `tests/setup.ts` | Global test setup — silences Lit dev warnings, mocks Canvas API |
+| `dev/workbench.html` | Dev workbench — `npx serve . --listen 8888`, live HA via `home-assistant-js-websocket` |
 
 ## Navigation Pattern (hexa-tiles)
 
@@ -58,10 +60,35 @@ Dynamic icon values **require** Lit property binding (`.icon=`), not attribute b
 | `vitest` + `happy-dom` | latest | Test runner |
 | `@rollup/plugin-terser` | `^1.0.0` | Minification (upgraded from 0.4.x, fixes serialize-javascript RCE) |
 | `typescript` | `5.x` | Strict type checking |
+| `home-assistant-js-websocket` | bundled | HA WebSocket client — used by workbench for live entity subscription |
+| `npx serve` | devDependency | Static file server for `dev/workbench.html` — `serve . --listen 8888 --cors` |
 
 ## Test Coverage
 
-- **22 test files / 137 tests** — all GREEN
+- **22 test files / 158 tests** — all GREEN (90.39% branch, ~100% functions/statements)
 - Canvas API mocked globally in `tests/setup.ts`
 - `happy-dom` history API mocked per-test via `vi.stubGlobal`
 - `window.customIcons` restored via `afterEach` cleanup
+- Branch coverage ceiling ~90% — Lit template ternaries structurally uncoverable by v8 (L023)
+
+## Dev Workbench
+
+Localhost UI test environment — run BEFORE any production deployment:
+
+```bash
+# Step 1 — build
+npm run build
+
+# Step 2 — serve
+npx serve . --listen 8888 --cors
+
+# Step 3 — open
+open http://localhost:8888/dev/workbench.html
+```
+
+**Features:**
+- 8 card tabs (all cards, production YAML configs)
+- Mock mode: pre-built scenarios per card (Dobby cleaning, EvLink charging, pellets low…)
+- Live mode: connects to real HA instance via `home-assistant-js-websocket` (OAuth or Long-Lived Token)
+- Auto-reconnect from `localStorage` tokens
+- In-browser console log for `callService` calls and state changes

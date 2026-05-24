@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🚀 Sci-Fi Cards — Workbench</title>
+  <style>
+    :root {
+      --bg: #0d0d1a;
+      --surface: #111827;
+      --surface2: #1a2235;
+      --border: #2a3a5c;
+      --accent: #00d4ff;
+      --accent2: #7c3aed;
+      --text: #e2e8f0;
+      --text-muted: #64748b;
+      --success: #22c55e;
+      --warn: #f59e0b;
+      --error: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; min-height: 100vh; }
+
+    /* ===== TOOLBAR ===== */
+    .toolbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(13,13,26,0.96); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+    .toolbar-logo { font-size: 18px; font-weight: 700; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; white-space: nowrap; }
+    .toolbar-sep { flex: 1; min-width: 8px; }
+
+    .badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; border: 1px solid var(--border); color: var(--text-muted); white-space: nowrap; }
+    .badge.ok { border-color: var(--success); color: var(--success); }
+    .badge.warn { border-color: var(--warn); color: var(--warn); }
+    .badge.err { border-color: var(--error); color: var(--error); }
+    .badge.live { border-color: var(--accent); color: var(--accent); animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+
+    .btn { border: none; border-radius: 8px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-ghost { background: var(--surface2); border: 1px solid var(--border); color: var(--text); }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-danger { background: rgba(239,68,68,0.15); border: 1px solid var(--error); color: var(--error); }
+    .btn-danger:hover { background: rgba(239,68,68,0.25); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ===== CONNECT PANEL ===== */
+    .connect-modal {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+      align-items: center; justify-content: center;
+    }
+    .connect-modal.open { display: flex; }
+    .connect-box {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      padding: 28px; width: 420px; max-width: 95vw;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.6);
+    }
+    .connect-box h2 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+    .connect-box p { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; }
+    .connect-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .connect-field label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+    .connect-field input {
+      background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+      padding: 9px 12px; color: var(--text); font-size: 13px; font-family: inherit;
+      transition: border-color 0.15s;
+    }
+    .connect-field input:focus { outline: none; border-color: var(--accent); }
+    .connect-field input::placeholder { color: var(--text-muted); }
+    .connect-btns { display: flex; gap: 10px; margin-top: 20px; }
+    .connect-btns .btn { flex: 1; padding: 10px; }
+    .connect-note { font-size: 11px; color: var(--text-muted); margin-top: 14px; padding: 10px 12px; background: var(--surface2); border-radius: 8px; line-height: 1.6; }
+
+    /* ===== TABS ===== */
+    .tabs { display: flex; gap: 4px; padding: 14px 20px 0; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab { padding: 7px 16px; border-radius: 8px 8px 0 0; border: 1px solid transparent; background: transparent; color: var(--text-muted); cursor: pointer; font-size: 13px; font-weight: 500; white-space: nowrap; transition: all 0.15s; }
+    .tab:hover { color: var(--text); background: var(--surface2); }
+    .tab.active { color: var(--accent); border-color: var(--border); border-bottom-color: var(--bg); background: var(--bg); }
+
+    /* ===== MAIN LAYOUT ===== */
+    .main { display: grid; grid-template-columns: 1fr 320px; min-height: calc(100vh - 105px); }
+
+    /* ===== PREVIEW ===== */
+    .preview-area { padding: 28px; overflow-y: auto; }
+    .preview-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .preview-title { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+    .card-wrapper { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; position: relative; transition: border-color 0.2s; }
+    .card-wrapper:hover { border-color: var(--accent); }
+    .loading-overlay { position: absolute; inset: 0; background: rgba(13,13,26,0.8); display: flex; align-items: center; justify-content: center; border-radius: 16px; font-size: 13px; color: var(--text-muted); pointer-events: none; transition: opacity 0.3s; }
+    .loading-overlay.hidden { opacity: 0; pointer-events: none; }
+    .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 10px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error-banner { background: rgba(239,68,68,0.1); border: 1px solid var(--error); border-radius: 8px; padding: 12px 16px; margin-bottom: 14px; font-size: 13px; color: var(--error); display: none; }
+    .error-banner.visible { display: block; }
+
+    /* ===== PANEL RIGHT ===== */
+    .panel { border-left: 1px solid var(--border); background: var(--surface); display: flex; flex-direction: column; overflow: hidden; }
+    .panel-section { padding: 14px; border-bottom: 1px solid var(--border); }
+    .panel-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 10px; }
+
+    /* ===== HA CONNECTION STATUS ===== */
+    .ha-status { display: flex; align-items: center; gap: 10px; }
+    .ha-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); flex-shrink: 0; }
+    .ha-dot.live { background: var(--success); box-shadow: 0 0 6px var(--success); }
+    .ha-dot.connecting { background: var(--warn); animation: pulse 1s ease-in-out infinite; }
+    .ha-dot.error { background: var(--error); }
+    .ha-status-text { font-size: 12px; color: var(--text-muted); flex: 1; }
+    .ha-btns { display: flex; gap: 6px; margin-top: 8px; }
+    .ha-btns .btn { flex: 1; padding: 6px 10px; font-size: 12px; }
+
+    /* ===== SCENARIOS ===== */
+    .scenario-list { display: flex; flex-direction: column; gap: 5px; }
+    .scenario-btn { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); cursor: pointer; font-size: 12px; transition: all 0.15s; text-align: left; }
+    .scenario-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .scenario-btn.active { border-color: var(--accent); background: rgba(0,212,255,0.08); color: var(--accent); }
+    .scenario-btn .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+    .live-mode-note { font-size: 11px; color: var(--accent); margin-top: 8px; padding: 8px 10px; background: rgba(0,212,255,0.06); border-radius: 6px; border: 1px solid rgba(0,212,255,0.2); line-height: 1.5; }
+    .live-mode-note.hidden { display: none; }
+
+    /* ===== CONSOLE ===== */
+    .console-area { flex: 1; overflow-y: auto; padding: 10px; max-height: 240px; }
+    .console-line { font-size: 11px; font-family: 'SF Mono', 'Fira Code', monospace; padding: 2px 5px; border-radius: 3px; margin-bottom: 2px; white-space: pre-wrap; word-break: break-all; }
+    .console-line.info { color: #60a5fa; }
+    .console-line.warn { color: var(--warn); background: rgba(245,158,11,0.08); }
+    .console-line.error { color: var(--error); background: rgba(239,68,68,0.08); }
+    .console-line.ok { color: var(--success); }
+    .console-line.live { color: var(--accent); }
+
+    @media (max-width: 900px) {
+      .main { grid-template-columns: 1fr; }
+      .panel { border-left: none; border-top: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="toolbar-logo">🚀 Sci-Fi Workbench</div>
+  <span class="badge" id="badge-mode">Mock data</span>
+  <span class="badge" id="badge-bundle">Bundle…</span>
+  <div class="toolbar-sep"></div>
+  <button class="btn btn-ghost" onclick="openConnectModal()" id="btn-connect-toolbar">🔗 Connect to HA</button>
+  <button class="btn btn-ghost" onclick="refreshLiveStates()" id="btn-refresh" disabled title="Rafraîchir les états HA">↻ Refresh</button>
+  <button class="btn btn-primary" onclick="reloadCard()">↺ Recharger carte</button>
+</div>
+
+<!-- CONNECT MODAL -->
+<div class="connect-modal" id="connect-modal">
+  <div class="connect-box">
+    <h2>🔗 Connecter à Home Assistant</h2>
+    <p>Connexion via <code>home-assistant-js-websocket</code> — les vrais états de tes entités seront chargés en direct.</p>
+    <div class="connect-field">
+      <label>URL de ton instance HA</label>
+      <input type="url" id="ha-url" placeholder="https://ton-ha.duckdns.org" />
+    </div>
+    <div class="connect-field">
+      <label>Long-Lived Access Token (optionnel — laisse vide pour OAuth)</label>
+      <input type="password" id="ha-token" placeholder="eyJ... (laisse vide = flux OAuth)" />
+    </div>
+    <div class="connect-btns">
+      <button class="btn btn-ghost" onclick="closeConnectModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="connectToHA()" id="btn-connect-action">Se connecter</button>
+    </div>
+    <div class="connect-note">
+      💡 <strong>OAuth :</strong> Laisse le token vide → redirection automatique vers la page de login HA.<br>
+      🔑 <strong>Token :</strong> Profil HA → Sécurité → Jetons d'accès longue durée.<br>
+      🔒 Le token n'est jamais stocké en dur — sauvegardé dans <code>localStorage</code> uniquement.
+    </div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs" id="tabs-container"></div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="preview-area">
+    <div class="preview-header">
+      <span class="preview-title" id="preview-title">Preview</span>
+    </div>
+    <div class="error-banner" id="error-banner"></div>
+    <div class="card-wrapper" id="card-wrapper">
+      <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div> Chargement…
+      </div>
+      <div id="card-mount"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <!-- HA Status -->
+    <div class="panel-section">
+      <div class="panel-section-title">🏠 Home Assistant</div>
+      <div class="ha-status">
+        <div class="ha-dot" id="ha-dot"></div>
+        <span class="ha-status-text" id="ha-status-text">Non connecté — données mockées</span>
+      </div>
+      <div class="ha-btns">
+        <button class="btn btn-ghost" onclick="openConnectModal()" id="btn-connect-panel">Se connecter</button>
+        <button class="btn btn-danger" onclick="disconnectHA()" id="btn-disconnect" style="display:none">Déconnecter</button>
+      </div>
+    </div>
+
+    <!-- Scenarios -->
+    <div class="panel-section">
+      <div class="panel-section-title">🎬 Scénarios (mode mock)</div>
+      <div class="scenario-list" id="scenario-list"></div>
+      <div class="live-mode-note hidden" id="live-mode-note">
+        ✅ Données live depuis ton HA.<br>
+        Les scénarios sont désactivés.<br>
+        Clique <strong>↻ Refresh</strong> pour actualiser.
+      </div>
+    </div>
+
+    <!-- Console -->
+    <div class="panel-section" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+      <div class="panel-section-title">📋 Console <button class="btn btn-ghost" style="padding:2px 8px;font-size:10px;float:right" onclick="clearConsole()">Vider</button></div>
+      <div class="console-area" id="console-area"></div>
+    </div>
+  </div>
+</div>
+
+<!-- HA JS Websocket loaded as ESM module -->
+<script type="module">
+  // ─── Import ha-websocket from node_modules served locally ──────────────
+  import {
+    ERR_HASS_HOST_REQUIRED,
+    callService,
+    createConnection,
+    getAuth,
+    getConfig,
+    getUser,
+    subscribeEntities,
+    subscribeServices,
+  } from '/node_modules/home-assistant-js-websocket/dist/index.js';
+
+  // ─── Console proxy ──────────────────────────────────────────────────────
+  const consoleEl = document.getElementById('console-area');
+  function log(msg, type = 'info') {
+    const line = document.createElement('div');
+    line.className = `console-line ${type}`;
+    const ts = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    line.textContent = `[${ts}] ${msg}`;
+    consoleEl.appendChild(line);
+    consoleEl.scrollTop = consoleEl.scrollHeight;
+  }
+  window._wbLog = log;
+  window.clearConsole = () => { consoleEl.innerHTML = ''; };
+  const _warn = console.warn.bind(console);
+  const _error = console.error.bind(console);
+  console.warn = (...a) => { _warn(...a); log(a.join(' '), 'warn'); };
+  console.error = (...a) => { _error(...a); log(a.join(' '), 'error'); };
+
+  // ─── HA Live connection state ────────────────────────────────────────────
+  let haConnection = null;
+  let haAuth = null;
+  let liveHass = null;     // set when connected + data loaded
+  let unsubEntities = null;
+  let unsubServices = null;
+  let isLive = false;
+
+  // ─── Mock HASS states ────────────────────────────────────────────────────
+  // Données extraites des yaml backup/*.yaml — fidèles à la production
+  const MOCK_STATES = {
+    'weather.la_chapelle_sur_erdre': { entity_id: 'weather.la_chapelle_sur_erdre', state: 'partlycloudy', attributes: { friendly_name: 'La Chapelle-sur-Erdre', temperature: 19.5, humidity: 68, wind_speed: 14, forecast: [
+      { datetime: new Date(Date.now()).toISOString(), condition: 'partlycloudy', temperature: 22, templow: 14 },
+      { datetime: new Date(Date.now()+86400000).toISOString(), condition: 'rainy', temperature: 18, templow: 12 },
+      { datetime: new Date(Date.now()+172800000).toISOString(), condition: 'sunny', temperature: 25, templow: 15 },
+      { datetime: new Date(Date.now()+259200000).toISOString(), condition: 'cloudy', temperature: 20, templow: 13 },
+      { datetime: new Date(Date.now()+345600000).toISOString(), condition: 'sunny', temperature: 27, templow: 16 },
+    ]}},
+    'sensor.44_weather_alert': { entity_id: 'sensor.44_weather_alert', state: 'Vert', attributes: { friendly_name: 'Alerte météo 44' }},
+    'climate.clou': { entity_id: 'climate.clou', state: 'heat', attributes: { friendly_name: 'Clou', hvac_mode: 'heat', current_temperature: 21.5, temperature: 22, preset_mode: 'comfort' }},
+    'sensor.clou_combustion_chamber_temperature': { entity_id: 'sensor.clou_combustion_chamber_temperature', state: '340', attributes: { unit_of_measurement: '°C' }},
+    'sensor.frient_smoke_detector_salon_temperature': { entity_id: 'sensor.frient_smoke_detector_salon_temperature', state: '21.5', attributes: { unit_of_measurement: '°C', friendly_name: 'Temp. salon' }},
+    'sensor.clou_fan_speed': { entity_id: 'sensor.clou_fan_speed', state: '3', attributes: { unit_of_measurement: '' }},
+    'sensor.clou_pressure': { entity_id: 'sensor.clou_pressure', state: '1.2', attributes: { unit_of_measurement: 'mbar' }},
+    'sensor.clou_power': { entity_id: 'sensor.clou_power', state: '7.5', attributes: { unit_of_measurement: 'kW' }},
+    'sensor.smart_energy_monitor_poele_power': { entity_id: 'sensor.smart_energy_monitor_poele_power', state: '65', attributes: { unit_of_measurement: 'W' }},
+    'sensor.clou_pellet_quantity': { entity_id: 'sensor.clou_pellet_quantity', state: '45', attributes: { unit_of_measurement: '%' }},
+    'sensor.clou_time_to_service': { entity_id: 'sensor.clou_time_to_service', state: '234', attributes: { unit_of_measurement: 'h' }},
+    'binary_sensor.clou_stove_status': { entity_id: 'binary_sensor.clou_stove_status', state: 'on', attributes: { friendly_name: 'Statut poêle' }},
+    'counter.pellet_stock': { entity_id: 'counter.pellet_stock', state: '8', attributes: { friendly_name: 'Stock sacs', minimum: 0, maximum: 20 }},
+    'vacuum.dobby': { entity_id: 'vacuum.dobby', state: 'docked', attributes: { friendly_name: 'Dobby' }},
+    'sensor.s7_batterie': { entity_id: 'sensor.s7_batterie', state: '95', attributes: { unit_of_measurement: '%' }},
+    'select.s7_intensite_de_frottement': { entity_id: 'select.s7_intensite_de_frottement', state: 'Standard', attributes: {}},
+    'sensor.s7_surface_de_nettoyage': { entity_id: 'sensor.s7_surface_de_nettoyage', state: '47', attributes: { unit_of_measurement: 'm²' }},
+    'sensor.s7_duree_de_nettoyage': { entity_id: 'sensor.s7_duree_de_nettoyage', state: '38', attributes: { unit_of_measurement: 'min' }},
+    'image.s7_map_0': { entity_id: 'image.s7_map_0', state: 'idle', attributes: {}},
+    'binary_sensor.captur_ii_en_charge': { entity_id: 'binary_sensor.captur_ii_en_charge', state: 'off', attributes: { friendly_name: 'Captur II en charge' }},
+    'binary_sensor.captur_ii_serrure': { entity_id: 'binary_sensor.captur_ii_serrure', state: 'off', attributes: {}},
+    'device_tracker.captur_ii_emplacement': { entity_id: 'device_tracker.captur_ii_emplacement', state: 'home', attributes: {}},
+    'sensor.captur_ii_autonomie_de_la_batterie': { entity_id: 'sensor.captur_ii_autonomie_de_la_batterie', state: '42', attributes: { unit_of_measurement: 'km' }},
+    'sensor.captur_ii_autonomie_en_carburant': { entity_id: 'sensor.captur_ii_autonomie_en_carburant', state: '380', attributes: { unit_of_measurement: 'km' }},
+    'sensor.captur_ii_batterie': { entity_id: 'sensor.captur_ii_batterie', state: '72', attributes: { unit_of_measurement: '%' }},
+    'sensor.captur_ii_etat_du_branchement': { entity_id: 'sensor.captur_ii_etat_du_branchement', state: 'unplugged', attributes: {}},
+    'sensor.captur_ii_kilometrage': { entity_id: 'sensor.captur_ii_kilometrage', state: '28540', attributes: { unit_of_measurement: 'km' }},
+    'sensor.captur_ii_quantite_de_carburant': { entity_id: 'sensor.captur_ii_quantite_de_carburant', state: '38', attributes: { unit_of_measurement: 'L' }},
+    'sensor.captur_ii_temps_de_charge_restant': { entity_id: 'sensor.captur_ii_temps_de_charge_restant', state: '0', attributes: { unit_of_measurement: 'min' }},
+    'switch.nous_ventilateur_leonard': { entity_id: 'switch.nous_ventilateur_leonard', state: 'on', attributes: { friendly_name: 'Ventilateur Léonard' }},
+    'number.nous_ventilateur_leonard_countdown': { entity_id: 'number.nous_ventilateur_leonard_countdown', state: '0', attributes: { unit_of_measurement: 'min' }},
+    'select.nous_ventilateur_leonard_power_outage_memory': { entity_id: 'select.nous_ventilateur_leonard_power_outage_memory', state: 'Power On', attributes: {}},
+    'sensor.nous_ventilateur_leonard_power': { entity_id: 'sensor.nous_ventilateur_leonard_power', state: '18', attributes: { unit_of_measurement: 'W' }},
+    'switch.nous_ventilateur_leonard_child_lock': { entity_id: 'switch.nous_ventilateur_leonard_child_lock', state: 'off', attributes: {}},
+    'sensor.nous_ventilateur_leonard_energy': { entity_id: 'sensor.nous_ventilateur_leonard_energy', state: '4.87', attributes: { unit_of_measurement: 'kWh' }},
+    'switch.mureva_evlink': { entity_id: 'switch.mureva_evlink', state: 'off', attributes: { friendly_name: 'EvLink' }},
+    'sensor.mureva_evlink_energy_corrected': { entity_id: 'sensor.mureva_evlink_energy_corrected', state: '142.5', attributes: { unit_of_measurement: 'kWh' }},
+    'binary_sensor.mureva_evlink_charge': { entity_id: 'binary_sensor.mureva_evlink_charge', state: 'off', attributes: {}},
+    'sensor.mureva_evlink_current': { entity_id: 'sensor.mureva_evlink_current', state: '0', attributes: { unit_of_measurement: 'A' }},
+    'switch.nous_paillette_charlotte': { entity_id: 'switch.nous_paillette_charlotte', state: 'on', attributes: {}},
+    'sensor.nous_paillette_charlotte_energy': { entity_id: 'sensor.nous_paillette_charlotte_energy', state: '0.45', attributes: { unit_of_measurement: 'kWh' }},
+    'switch.nous_paillette_charlotte_child_lock': { entity_id: 'switch.nous_paillette_charlotte_child_lock', state: 'off', attributes: {}},
+    'climate.radiateur_salon': { entity_id: 'climate.radiateur_salon', state: 'heat', attributes: { friendly_name: 'Salon', hvac_mode: 'heat', current_temperature: 20.5, temperature: 21, preset_mode: 'comfort' }},
+    'climate.radiateur_cuisine': { entity_id: 'climate.radiateur_cuisine', state: 'auto', attributes: { friendly_name: 'Cuisine', hvac_mode: 'auto', current_temperature: 19, temperature: 20, preset_mode: 'eco' }},
+    'climate.radiateur_chambre': { entity_id: 'climate.radiateur_chambre', state: 'off', attributes: { friendly_name: 'Chambre parents', hvac_mode: 'off', current_temperature: 17, temperature: null, preset_mode: 'frost_protection' }},
+    'climate.radiateur_bureau': { entity_id: 'climate.radiateur_bureau', state: 'heat', attributes: { friendly_name: 'Bureau', hvac_mode: 'heat', current_temperature: 21, temperature: 22, preset_mode: 'comfort-1' }},
+    'light.zbmini_l_salon': { entity_id: 'light.zbmini_l_salon', state: 'on', attributes: { friendly_name: 'Plafond salon' }},
+    'light.zbmini_l_cuisine': { entity_id: 'light.zbmini_l_cuisine', state: 'off', attributes: {}},
+    'light.zbmini_l_bureau': { entity_id: 'light.zbmini_l_bureau', state: 'on', attributes: {}},
+    'light.zbmini_l_parent': { entity_id: 'light.zbmini_l_parent', state: 'off', attributes: {}},
+    'light.zbmini_l_charlotte': { entity_id: 'light.zbmini_l_charlotte', state: 'off', attributes: {}},
+    'light.zbmini_l_leonard': { entity_id: 'light.zbmini_l_leonard', state: 'on', attributes: {}},
+    'light.zbmini_l_mezzanine': { entity_id: 'light.zbmini_l_mezzanine', state: 'off', attributes: {}},
+    'light.nous_salon': { entity_id: 'light.nous_salon', state: 'on', attributes: { friendly_name: 'Étoile salon' }},
+    'light.zbmini_l_lampe_salon': { entity_id: 'light.zbmini_l_lampe_salon', state: 'off', attributes: {}},
+    'media_player.bravia_4k_vh22': { entity_id: 'media_player.bravia_4k_vh22', state: 'off', attributes: {}},
+    'switch.plugs': { entity_id: 'switch.plugs', state: 'on', attributes: {}},
+    'person.adrien': { entity_id: 'person.adrien', state: 'home', attributes: { friendly_name: 'Adrien' }},
+    'person.virginie': { entity_id: 'person.virginie', state: 'home', attributes: { friendly_name: 'Virginie' }},
+  };
+
+  const MOCK_AREAS = {
+    'salon': { area_id: 'salon', name: 'Salon', floor_id: 'rdc' },
+    'cuisine': { area_id: 'cuisine', name: 'Cuisine', floor_id: 'rdc' },
+    'bureau': { area_id: 'bureau', name: 'Bureau', floor_id: 'rdc' },
+    'chambre': { area_id: 'chambre', name: 'Chambre parents', floor_id: 'r1' },
+    'charlotte': { area_id: 'charlotte', name: 'Charlotte', floor_id: 'r1' },
+    'leonard': { area_id: 'leonard', name: 'Léonard', floor_id: 'r1' },
+    'mezzanine': { area_id: 'mezzanine', name: 'Mezzanine', floor_id: 'r1' },
+  };
+  const MOCK_FLOORS = {
+    'rdc': { floor_id: 'rdc', name: 'RDC', level: 0 },
+    'r1': { floor_id: 'r1', name: 'R+1', level: 1 },
+  };
+  const MOCK_ENTITIES = {
+    'light.zbmini_l_salon': { entity_id: 'light.zbmini_l_salon', area_id: 'salon' },
+    'light.nous_salon': { entity_id: 'light.nous_salon', area_id: 'salon' },
+    'light.zbmini_l_lampe_salon': { entity_id: 'light.zbmini_l_lampe_salon', area_id: 'salon' },
+    'light.zbmini_l_cuisine': { entity_id: 'light.zbmini_l_cuisine', area_id: 'cuisine' },
+    'light.zbmini_l_bureau': { entity_id: 'light.zbmini_l_bureau', area_id: 'bureau' },
+    'light.zbmini_l_parent': { entity_id: 'light.zbmini_l_parent', area_id: 'chambre' },
+    'light.zbmini_l_charlotte': { entity_id: 'light.zbmini_l_charlotte', area_id: 'charlotte' },
+    'light.zbmini_l_leonard': { entity_id: 'light.zbmini_l_leonard', area_id: 'leonard' },
+    'light.zbmini_l_mezzanine': { entity_id: 'light.zbmini_l_mezzanine', area_id: 'mezzanine' },
+  };
+
+  // ─── Card configs (exact production YAML → JS) ──────────────────────────
+  const CARDS = {
+    hexa: {
+      label: '🔷 Hexa Tiles', tag: 'sci-fi-hexa-tiles',
+      config: { type: 'custom:sci-fi-hexa-tiles', header_message: 'Hey, welcome back !', weather: { activate: true, weather_entity: 'weather.la_chapelle_sur_erdre', link: 'weather', state_green: 'Vert', state_yellow: 'Jaune', state_orange: 'Orange', state_red: 'Rouge', weather_alert_entity: 'sensor.44_weather_alert' }, tiles: [
+        { standalone: false, entity_kind: 'light', entities_to_exclude: ['light.la_boite_a_cha_day_ambient_colour','light.la_boite_a_cha_night_ambient_colour','light.la_boite_a_nard_day_ambient_colour','light.la_boite_a_nard_night_ambient_colour'], active_icon: 'mdi:lightbulb-on-outline', inactive_icon: 'mdi:lightbulb', name: 'Lumières', state_on: ['on'], state_error: '', link: 'lights', visibility: ['person.adrien','person.virginie','person.root'] },
+        { standalone: true, active_icon: 'mdi:fire', inactive_icon: 'mdi:fire-off', name: 'Poêle', state_on: ['cool','heat'], state_error: null, link: 'stove', entity: 'climate.clou', visibility: ['person.adrien','person.virginie'] },
+        { standalone: true, active_icon: 'mdi:robot-vacuum', inactive_icon: 'mdi:robot-vacuum-variant-alert', name: 'Dobby', state_on: ['cleaning','returning'], state_error: 'error', link: 'vacuum', entity: 'vacuum.dobby', visibility: ['person.adrien'], entities_to_exclude: [] },
+        { standalone: true, active_icon: 'mdi:television-play', inactive_icon: 'mdi:television', name: 'Télévision', state_on: ['on'], state_error: null, link: 'media', entity: 'media_player.bravia_4k_vh22', visibility: ['person.virginie','person.adrien'], entities_to_exclude: [] },
+        { standalone: false, entity_kind: 'climate', active_icon: 'mdi:radiator', inactive_icon: 'mdi:radiator-disabled', name: 'Chauffage', state_on: ['auto','heat'], state_error: '', link: 'radiators', entities_to_exclude: ['climate.clou'], visibility: ['person.adrien'] },
+        { standalone: true, active_icon: 'mdi:car-electric', inactive_icon: 'mdi:car', name: 'Cars', state_on: ['on'], state_error: null, link: 'vehicles', entity: 'binary_sensor.captur_ii_en_charge', visibility: ['person.adrien'] },
+        { entity_kind: '', entities_to_exclude: [], active_icon: 'mdi:power-plug-outline', inactive_icon: 'mdi:power-plug-off-outline', name: 'Plug', state_on: ['on'], state_error: null, link: 'plug', visibility: ['person.adrien'], standalone: true, entity: 'switch.plugs' }
+      ]},
+      scenarios: {
+        'Normal': () => ({}),
+        'Alerte météo JAUNE': () => ({'sensor.44_weather_alert': { ...MOCK_STATES['sensor.44_weather_alert'], state: 'Jaune' }}),
+        'Alerte météo ROUGE': () => ({'sensor.44_weather_alert': { ...MOCK_STATES['sensor.44_weather_alert'], state: 'Rouge' }}),
+        'Dobby en nettoyage': () => ({'vacuum.dobby': { ...MOCK_STATES['vacuum.dobby'], state: 'cleaning' }}),
+        'Voiture en charge': () => ({'binary_sensor.captur_ii_en_charge': { ...MOCK_STATES['binary_sensor.captur_ii_en_charge'], state: 'on' }}),
+      }
+    },
+    weather: {
+      label: '⛅ Weather', tag: 'sci-fi-weather',
+      config: { type: 'custom:sci-fi-weather', weather_entity: 'weather.la_chapelle_sur_erdre', weather_hourly_forecast_limit: 24, weather_daily_forecast_limit: 10, alert: { state_green: 'Vert', state_yellow: 'Jaune', state_orange: 'Orange', state_red: 'Rouge', entity_id: 'sensor.44_weather_alert' }},
+      scenarios: {
+        'Partiellement nuageux': () => ({}),
+        'Pluie + alerte jaune': () => ({ 'weather.la_chapelle_sur_erdre': { ...MOCK_STATES['weather.la_chapelle_sur_erdre'], state: 'rainy', attributes: { ...MOCK_STATES['weather.la_chapelle_sur_erdre'].attributes, temperature: 14, humidity: 89, wind_speed: 32 }}, 'sensor.44_weather_alert': { ...MOCK_STATES['sensor.44_weather_alert'], state: 'Jaune' }}),
+        'Grand soleil': () => ({ 'weather.la_chapelle_sur_erdre': { ...MOCK_STATES['weather.la_chapelle_sur_erdre'], state: 'sunny', attributes: { ...MOCK_STATES['weather.la_chapelle_sur_erdre'].attributes, temperature: 28, humidity: 45, wind_speed: 8 }}}),
+        'Orage + alerte rouge': () => ({ 'weather.la_chapelle_sur_erdre': { ...MOCK_STATES['weather.la_chapelle_sur_erdre'], state: 'lightning-rainy' }, 'sensor.44_weather_alert': { ...MOCK_STATES['sensor.44_weather_alert'], state: 'Rouge' }}),
+      }
+    },
+    stove: {
+      label: '🔥 Stove', tag: 'sci-fi-stove',
+      config: { type: 'custom:sci-fi-stove', sensors: { sensor_combustion_chamber_temperature: 'sensor.clou_combustion_chamber_temperature', sensor_inside_temperature: 'sensor.frient_smoke_detector_salon_temperature', sensor_fan_speed: 'sensor.clou_fan_speed', sensor_pressure: 'sensor.clou_pressure', sensor_actual_power: 'sensor.clou_power', sensor_power: 'sensor.smart_energy_monitor_poele_power', sensor_pellet_quantity: 'sensor.clou_pellet_quantity', sensor_time_to_service: 'sensor.clou_time_to_service', sensor_status: 'binary_sensor.clou_stove_status' }, pellet_quantity_threshold: 0.3, storage_counter_threshold: 0.1, entity: 'climate.clou', storage_counter: 'counter.pellet_stock' },
+      scenarios: {
+        'Poêle en chauffe': () => ({}),
+        'Pellets bas (25%)': () => ({'sensor.clou_pellet_quantity': { ...MOCK_STATES['sensor.clou_pellet_quantity'], state: '25' }}),
+        'Pellets critiques (8%)': () => ({'sensor.clou_pellet_quantity': { ...MOCK_STATES['sensor.clou_pellet_quantity'], state: '8' }}),
+        'Stock sacs vide (1/20)': () => ({'counter.pellet_stock': { ...MOCK_STATES['counter.pellet_stock'], state: '1' }}),
+        'Poêle éteint': () => ({ 'climate.clou': { ...MOCK_STATES['climate.clou'], state: 'off', attributes: { ...MOCK_STATES['climate.clou'].attributes, hvac_mode: 'off' }}, 'binary_sensor.clou_stove_status': { ...MOCK_STATES['binary_sensor.clou_stove_status'], state: 'off' }}),
+      }
+    },
+    vacuum: {
+      label: '🤖 Vacuum', tag: 'sci-fi-vacuum',
+      config: { type: 'custom:sci-fi-vacuum', vacuums: [{ entity: 'vacuum.dobby', sensors: { battery: 'sensor.s7_batterie', mop_intensite: 'select.s7_intensite_de_frottement', current_clean_area: 'sensor.s7_surface_de_nettoyage', current_clean_duration: 'sensor.s7_duree_de_nettoyage', map: 'image.s7_map_0' }, start: true, pause: true, stop: true, return_to_base: true, shortcuts: { service: 'vacuum.send_command', command: 'app_segment_clean', description: [{ name: 'Bureau', icon: 'mdi:desk-lamp', segments: [16] },{ name: 'Charlotte', icon: 'mdi:teddy-bear', segments: [18] },{ name: 'Mezzanine', icon: 'mdi:stairs', segments: [17] },{ name: 'Léonard', icon: 'mdi:toy-brick-outline', segments: [19] },{ name: 'SdB', icon: 'mdi:bathtub-outline', segments: [20] }] }}] },
+      scenarios: {
+        'Dobby en veille': () => ({}),
+        'Dobby nettoyage': () => ({'vacuum.dobby': { ...MOCK_STATES['vacuum.dobby'], state: 'cleaning' }}),
+        'Dobby qui rentre': () => ({'vacuum.dobby': { ...MOCK_STATES['vacuum.dobby'], state: 'returning' }}),
+        'Dobby en erreur': () => ({'vacuum.dobby': { ...MOCK_STATES['vacuum.dobby'], state: 'error' }}),
+        'Batterie faible (12%)': () => ({'sensor.s7_batterie': { ...MOCK_STATES['sensor.s7_batterie'], state: '12' }}),
+      }
+    },
+    vehicles: {
+      label: '🚗 Vehicles', tag: 'sci-fi-vehicles',
+      config: { type: 'custom:sci-fi-vehicles', vehicles: [{ id: 'b35bbd24dc8783e010d0d9da45678554', name: 'Captur II', charging: 'binary_sensor.captur_ii_en_charge', lock_status: 'binary_sensor.captur_ii_serrure', location: 'device_tracker.captur_ii_emplacement', battery_autonomy: 'sensor.captur_ii_autonomie_de_la_batterie', fuel_autonomy: 'sensor.captur_ii_autonomie_en_carburant', battery_level: 'sensor.captur_ii_batterie', location_last_activity: '', charge_state: '', plug_state: 'sensor.captur_ii_etat_du_branchement', mileage: 'sensor.captur_ii_kilometrage', fuel_quantity: 'sensor.captur_ii_quantite_de_carburant', charging_remaining_time: 'sensor.captur_ii_temps_de_charge_restant' }] },
+      scenarios: {
+        'À la maison, déchargé': () => ({}),
+        'En charge électrique': () => ({'binary_sensor.captur_ii_en_charge': { ...MOCK_STATES['binary_sensor.captur_ii_en_charge'], state: 'on' }, 'sensor.captur_ii_temps_de_charge_restant': { ...MOCK_STATES['sensor.captur_ii_temps_de_charge_restant'], state: '45' }}),
+        'Batterie faible (18%)': () => ({'sensor.captur_ii_batterie': { ...MOCK_STATES['sensor.captur_ii_batterie'], state: '18' }}),
+        'Voiture déverrouillée': () => ({'binary_sensor.captur_ii_serrure': { ...MOCK_STATES['binary_sensor.captur_ii_serrure'], state: 'on' }}),
+      }
+    },
+    climates: {
+      label: '🌡️ Climates', tag: 'sci-fi-climates',
+      config: { type: 'custom:sci-fi-climates', header: { icon_winter_state: 'mdi:thermometer-chevron-up', message_winter_state: 'Winter is coming', icon_summer_state: 'mdi:thermometer-chevron-down', message_summer_state: 'Summer time', display: false }, entities_to_exclude: ['climate.clou'], state_icons: { auto: 'mdi:thermostat-auto', 'off': 'mdi:thermostat', heat: 'mdi:fire' }, state_colors: { auto: '#69d4fb', 'off': '#6c757d', heat: '#ff7f50' }, mode_icons: { frost_protection: 'mdi:snowflake', eco: 'mdi:leaf', comfort: 'mdi:sun-thermometer-outline', 'comfort-1': 'mdi:sun-thermometer-outline', 'comfort-2': 'mdi:sun-thermometer-outline', boost: 'mdi:rocket-launch-outline' }, mode_colors: { frost_protection: '#acd5f3', eco: '#96d35f', comfort: '#ffff8f', 'comfort-1': '#ffff8f', 'comfort-2': '#ffff8f', boost: '#ff3a30' }},
+      scenarios: {
+        'Hiver — chauffage actif': () => ({}),
+        'Tout mode éco': () => ({ 'climate.radiateur_salon': { ...MOCK_STATES['climate.radiateur_salon'], state: 'auto', attributes: { ...MOCK_STATES['climate.radiateur_salon'].attributes, preset_mode: 'eco', hvac_mode: 'auto' }}, 'climate.radiateur_bureau': { ...MOCK_STATES['climate.radiateur_bureau'], state: 'auto', attributes: { ...MOCK_STATES['climate.radiateur_bureau'].attributes, preset_mode: 'eco', hvac_mode: 'auto' }}}),
+        'Mode boost (salon)': () => ({'climate.radiateur_salon': { ...MOCK_STATES['climate.radiateur_salon'], attributes: { ...MOCK_STATES['climate.radiateur_salon'].attributes, preset_mode: 'boost', temperature: 25 }}}),
+        'Tout hors gel': () => ({'climate.radiateur_salon': { ...MOCK_STATES['climate.radiateur_salon'], state: 'off', attributes: { ...MOCK_STATES['climate.radiateur_salon'].attributes, hvac_mode: 'off', preset_mode: 'frost_protection', temperature: null }}}),
+      }
+    },
+    plugs: {
+      label: '🔌 Plugs', tag: 'sci-fi-plugs',
+      config: { type: 'custom:sci-fi-plugs', devices: [
+        { device_id: '31428114e049a5557c8a8a05e2b7f9bd', entity_id: 'switch.nous_ventilateur_leonard', active_icon: 'mdi:fan', inactive_icon: 'mdi:fan-off', name: 'Ventilateur Léonard', sensors: { 'number.nous_ventilateur_leonard_countdown': { show: true, name: 'Countdown', icon: 'mdi:ray-vertex', power: false }, 'select.nous_ventilateur_leonard_power_outage_memory': { show: true, name: 'Power outage memory', power: false }, 'sensor.nous_ventilateur_leonard_power': { show: false, name: 'Puissance', power: true }, 'switch.nous_ventilateur_leonard_child_lock': { show: true, name: 'Child lock', icon: 'mdi:account-lock', power: false }, 'sensor.nous_ventilateur_leonard_energy': { show: true, name: 'Énergie', icon: 'mdi:lightning-bolt', power: false }}},
+        { device_id: 'a041422639f495ca70ed05e3a74ff183', entity_id: 'switch.mureva_evlink', active_icon: 'mdi:ev-plug-type2', inactive_icon: 'mdi:ev-plug-type2', name: 'EvLink', sensors: { 'sensor.mureva_evlink_energy_corrected': { show: true, name: 'Energy corrected', icon: 'mdi:lightning-bolt', power: false }, 'binary_sensor.mureva_evlink_charge': { show: true, name: 'Charge', icon: 'mdi:stop', power: false }, 'sensor.mureva_evlink_current': { show: true, name: 'Courant', power: false }}},
+        { device_id: '7ae536ffff7d2371aadcdbc90750108d', entity_id: 'switch.nous_paillette_charlotte', active_icon: 'mdi:lava-lamp', inactive_icon: 'mdi:lava-lamp', name: 'Paillette Charlotte', sensors: { 'sensor.nous_paillette_charlotte_energy': { show: true, name: 'Energy', icon: 'mdi:lightning-bolt', power: false }, 'switch.nous_paillette_charlotte_child_lock': { show: true, name: 'Child lock', icon: 'mdi:account-lock', power: false }}}
+      ]},
+      scenarios: {
+        'Normal': () => ({}),
+        'Ventilo OFF': () => ({'switch.nous_ventilateur_leonard': { ...MOCK_STATES['switch.nous_ventilateur_leonard'], state: 'off' }}),
+        'EvLink en charge': () => ({'switch.mureva_evlink': { ...MOCK_STATES['switch.mureva_evlink'], state: 'on' }, 'binary_sensor.mureva_evlink_charge': { ...MOCK_STATES['binary_sensor.mureva_evlink_charge'], state: 'on' }, 'sensor.mureva_evlink_current': { ...MOCK_STATES['sensor.mureva_evlink_current'], state: '16' }}),
+      }
+    },
+    lights: {
+      label: '💡 Lights', tag: 'sci-fi-lights',
+      config: { type: 'custom:sci-fi-lights', default_icon_on: 'mdi:lightbulb-on-outline', default_icon_off: 'mdi:lightbulb-outline', first_floor_to_render: 'rdc', first_area_to_render: 'chambre', ignored_entities: ['light.la_boite_a_cha_day_ambient_colour','light.la_boite_a_cha_night_ambient_colour'], custom_entities: { 'light.nous_salon': { name: 'Étoile', icon_on: 'mdi:star', icon_off: 'mdi:star-outline' }, 'light.zbmini_l_lampe_salon': { name: 'Lampe', icon_on: 'mdi:desk-lamp-on', icon_off: 'mdi:desk-lamp' }, 'light.zbmini_l_salon': { name: 'Plafond', icon_on: 'mdi:ceiling-light-outline', icon_off: 'mdi:ceiling-light' }, 'light.zbmini_l_bureau': { name: 'Bureau', icon_on: 'mdi:ceiling-light-outline', icon_off: 'mdi:ceiling-light' }}, header: 'Lumières' },
+      scenarios: {
+        'Quelques lumières allumées': () => ({}),
+        'Tout allumé': () => Object.fromEntries(Object.entries(MOCK_STATES).filter(([k]) => k.startsWith('light.')).map(([k,v]) => [k, { ...v, state: 'on' }])),
+        'Tout éteint': () => Object.fromEntries(Object.entries(MOCK_STATES).filter(([k]) => k.startsWith('light.')).map(([k,v]) => [k, { ...v, state: 'off' }])),
+      }
+    },
+  };
+
+  // ─── Build mock hass ─────────────────────────────────────────────────────
+  function buildMockHass(stateOverrides = {}) {
+    const states = { ...MOCK_STATES, ...stateOverrides };
+    return {
+      states, areas: MOCK_AREAS, floors: MOCK_FLOORS, entities: MOCK_ENTITIES, devices: {},
+      user: { name: 'Adrien', id: 'adrien', is_admin: true },
+      language: 'fr',
+      locale: { language: 'fr', number_format: 'comma_decimal', time_format: '24', date_format: 'DMY', time_zone: 'Europe/Paris', first_weekday: 'monday' },
+      config: { unit_system: { length: 'km', temperature: '°C' }, time_zone: 'Europe/Paris' },
+      themes: { darkMode: true, theme: 'default' },
+      connection: {
+        subscribeEvents: () => () => {},
+        sendMessagePromise: async (msg) => {
+          if (msg.type === 'weather/subscribe_forecast') return { forecast: states['weather.la_chapelle_sur_erdre']?.attributes?.forecast ?? [] };
+          return {};
+        },
+        addEventListener: () => {}, removeEventListener: () => {},
+      },
+      subscribeMessage: (cb, msg) => {
+        if (msg.type === 'weather/subscribe_forecast') {
+          setTimeout(() => cb({ type: 'event', event: { forecast: states['weather.la_chapelle_sur_erdre']?.attributes?.forecast ?? [] }}), 50);
+        }
+        return Promise.resolve(() => {});
+      },
+      callService: (domain, service, data) => { log(`🔧 callService(${domain}.${service})`, 'ok'); return Promise.resolve(); },
+      callWS: async () => ({}),
+    };
+  }
+
+  // ─── Build live hass (connected to real HA) ──────────────────────────────
+  function buildLiveHass(baseHass) {
+    return {
+      ...baseHass,
+      callService: async (domain, service, serviceData, target) => {
+        log(`🔧 live callService(${domain}.${service})`, 'live');
+        await callService(haConnection, domain, service, serviceData, target);
+        // Refresh states after service call
+        setTimeout(() => refreshLiveStates(), 1500);
+      },
+      callWS: async (msg) => haConnection.sendMessagePromise(msg),
+      subscribeMessage: (cb, msg) => {
+        if (haConnection) return haConnection.subscribeMessage(cb, msg);
+        return Promise.resolve(() => {});
+      },
+    };
+  }
+
+  // ─── HA Connection ───────────────────────────────────────────────────────
+  function getAuthOptions(hassUrl, token) {
+    if (token) {
+      // Long-lived access token mode
+      return {
+        hassUrl,
+        async loadTokens() { return null; },
+        saveTokens() {},
+        accessToken: token,
+        // Override getAuth to use the token directly
+      };
+    }
+    // OAuth flow
+    return {
+      hassUrl,
+      async loadTokens() {
+        try { return JSON.parse(localStorage.getItem('hassTokens') || 'null'); } catch { return null; }
+      },
+      saveTokens: (tokens) => { localStorage.setItem('hassTokens', JSON.stringify(tokens)); },
+    };
+  }
+
+  async function connectToHA() {
+    const urlInput = document.getElementById('ha-url').value.trim();
+    const tokenInput = document.getElementById('ha-token').value.trim();
+
+    if (!urlInput) {
+      alert('Saisis l\'URL de ton instance HA');
+      return;
+    }
+
+    const hassUrl = urlInput.replace(/\/$/, '');
+    setHaStatus('connecting', 'Connexion en cours…');
+    document.getElementById('btn-connect-action').disabled = true;
+    log(`🔗 Connexion à ${hassUrl}…`, 'info');
+
+    try {
+      let auth;
+
+      if (tokenInput) {
+        // Long-lived token — build auth object manually
+        auth = {
+          data: { hassUrl, access_token: tokenInput },
+          accessToken: tokenInput,
+          expired: false,
+          refreshAccessToken: async () => {},
+        };
+      } else {
+        // OAuth flow
+        const authOptions = getAuthOptions(hassUrl, null);
+        try {
+          auth = await getAuth(authOptions);
+        } catch (err) {
+          if (err === ERR_HASS_HOST_REQUIRED || err.toString().includes('ERR_HASS_HOST_REQUIRED')) {
+            authOptions.hassUrl = hassUrl;
+            auth = await getAuth(authOptions);
+          } else throw err;
+        }
+      }
+
+      haConnection = await createConnection({ auth });
+      haAuth = auth;
+
+      for (const ev of ['disconnected', 'ready', 'reconnect-error']) {
+        haConnection.addEventListener(ev, () => {
+          log(`HA event: ${ev}`, ev === 'ready' ? 'ok' : 'warn');
+          if (ev === 'disconnected') setHaStatus('error', 'Déconnecté du HA');
+          if (ev === 'ready') setHaStatus('live', 'Reconnecté');
+        });
+      }
+
+      log('✅ Connexion WebSocket établie', 'ok');
+      closeConnectModal();
+
+      // Load all HA data
+      await loadLiveData();
+
+    } catch (err) {
+      log(`❌ Erreur de connexion: ${err}`, 'error');
+      setHaStatus('error', `Erreur: ${err}`);
+      document.getElementById('btn-connect-action').disabled = false;
+    }
+  }
+
+  async function loadLiveData() {
+    setHaStatus('connecting', 'Chargement des données HA…');
+    log('📡 Chargement states, areas, floors, entities…', 'info');
+
+    const baseHass = {
+      states: {},
+      areas: {},
+      floors: {},
+      devices: {},
+      entities: {},
+      user: {},
+      language: 'fr',
+      locale: { language: 'fr', number_format: 'comma_decimal', time_format: '24', date_format: 'DMY', time_zone: 'Europe/Paris', first_weekday: 'monday' },
+      themes: { darkMode: true, theme: 'default' },
+      connection: haConnection,
+    };
+
+    // Load registries in parallel
+    const [areas, floors, devices, entities, user, config] = await Promise.all([
+      haConnection.sendMessagePromise({ type: 'config/area_registry/list' }),
+      haConnection.sendMessagePromise({ type: 'config/floor_registry/list' }),
+      haConnection.sendMessagePromise({ type: 'config/device_registry/list' }),
+      haConnection.sendMessagePromise({ type: 'config/entity_registry/list' }),
+      getUser(haConnection),
+      getConfig(haConnection),
+    ]);
+
+    areas.forEach(a => { baseHass.areas[a.area_id] = a; });
+    floors.forEach(f => { baseHass.floors[f.floor_id] = f; });
+    devices.forEach(d => { baseHass.devices[d.id] = d; });
+    entities.forEach(e => { baseHass.entities[e.entity_id] = e; });
+    baseHass.user = user;
+    baseHass.config = config;
+    log(`✅ ${areas.length} zones · ${floors.length} étages · ${entities.length} entités`, 'ok');
+
+    // Subscribe to live entity states
+    if (unsubEntities) unsubEntities();
+    unsubEntities = subscribeEntities(haConnection, (states) => {
+      baseHass.states = states;
+      liveHass = buildLiveHass(baseHass);
+      isLive = true;
+      updateCardHass(liveHass);
+    });
+
+    // Subscribe to services
+    if (unsubServices) unsubServices();
+    unsubServices = subscribeServices(haConnection, (services) => {
+      baseHass.services = services;
+    });
+
+    setHaStatus('live', `Live — ${user.name || 'connecté'}`);
+    setLiveMode(true);
+    log('🟢 Mode live activé — données réelles de ton HA', 'live');
+  }
+
+  function disconnectHA() {
+    if (haConnection) haConnection.close();
+    if (unsubEntities) { unsubEntities(); unsubEntities = null; }
+    if (unsubServices) { unsubServices(); unsubServices = null; }
+    haConnection = null; haAuth = null; liveHass = null; isLive = false;
+    setHaStatus('offline', 'Non connecté — données mockées');
+    setLiveMode(false);
+    log('🔴 Déconnecté du HA — retour en mode mock', 'warn');
+    renderCard(currentCard, currentScenario);
+  }
+
+  window.refreshLiveStates = async () => {
+    if (!isLive || !liveHass) { log('⚠️ Non connecté au HA', 'warn'); return; }
+    updateCardHass(liveHass);
+    log('↻ États rafraîchis', 'live');
+  };
+
+  function updateCardHass(hass) {
+    if (cardEl) {
+      cardEl.hass = hass;
+      log('↻ hass mis à jour sur la carte', 'live');
+    }
+  }
+
+  // ─── UI helpers ──────────────────────────────────────────────────────────
+  function setHaStatus(state, text) {
+    const dot = document.getElementById('ha-dot');
+    const statusText = document.getElementById('ha-status-text');
+    const badgeMode = document.getElementById('badge-mode');
+    const btnRefresh = document.getElementById('btn-refresh');
+    const btnDisconnect = document.getElementById('btn-disconnect');
+    const btnConnectPanel = document.getElementById('btn-connect-panel');
+    const btnConnectToolbar = document.getElementById('btn-connect-toolbar');
+
+    dot.className = 'ha-dot ' + (state === 'live' ? 'live' : state === 'connecting' ? 'connecting' : state === 'error' ? 'error' : '');
+    statusText.textContent = text;
+
+    if (state === 'live') {
+      badgeMode.textContent = '🟢 Live HA';
+      badgeMode.className = 'badge live';
+      btnRefresh.disabled = false;
+      btnDisconnect.style.display = '';
+      btnConnectPanel.style.display = 'none';
+      btnConnectToolbar.style.display = 'none';
+    } else {
+      badgeMode.textContent = 'Mock data';
+      badgeMode.className = 'badge';
+      btnRefresh.disabled = true;
+      btnDisconnect.style.display = 'none';
+      btnConnectPanel.style.display = '';
+      btnConnectToolbar.style.display = '';
+    }
+  }
+
+  function setLiveMode(live) {
+    const scenarioList = document.getElementById('scenario-list');
+    const liveNote = document.getElementById('live-mode-note');
+    const panelTitle = scenarioList.previousElementSibling;
+    scenarioList.style.opacity = live ? '0.3' : '1';
+    scenarioList.style.pointerEvents = live ? 'none' : 'auto';
+    liveNote.classList.toggle('hidden', !live);
+    panelTitle.textContent = live ? '🎬 Scénarios (désactivés en live)' : '🎬 Scénarios (mode mock)';
+  }
+
+  window.openConnectModal = () => {
+    document.getElementById('connect-modal').classList.add('open');
+    // Pre-fill from localStorage if available
+    const saved = localStorage.getItem('hassUrl');
+    if (saved) document.getElementById('ha-url').value = saved;
+    document.getElementById('btn-connect-action').disabled = false;
+  };
+  window.closeConnectModal = () => {
+    document.getElementById('connect-modal').classList.remove('open');
+    const url = document.getElementById('ha-url').value.trim();
+    if (url) localStorage.setItem('hassUrl', url);
+  };
+  window.disconnectHA = disconnectHA;
+  window.connectToHA = connectToHA;
+
+  // ─── Bundle loading ──────────────────────────────────────────────────────
+  let bundleLoaded = false;
+  function loadBundle() {
+    return new Promise((resolve, reject) => {
+      if (bundleLoaded) return resolve();
+      const s = document.createElement('script');
+      s.type = 'module';
+      s.src = '../dist/sci-fi.min.js?v=' + Date.now();
+      s.onload = () => {
+        bundleLoaded = true;
+        log('✅ sci-fi.min.js chargé', 'ok');
+        document.getElementById('badge-bundle').textContent = 'Bundle OK';
+        document.getElementById('badge-bundle').className = 'badge ok';
+        resolve();
+      };
+      s.onerror = () => {
+        log('❌ Bundle introuvable — lance: npm run build', 'error');
+        document.getElementById('badge-bundle').textContent = 'Bundle ❌';
+        document.getElementById('badge-bundle').className = 'badge err';
+        reject(new Error('Bundle not found'));
+      };
+      document.head.appendChild(s);
+    });
+  }
+
+  // ─── App state ───────────────────────────────────────────────────────────
+  let currentCard = 'hexa';
+  let currentScenario = null;
+  let cardEl = null;
+
+  // ─── Render card ─────────────────────────────────────────────────────────
+  async function renderCard(cardKey, scenarioKey) {
+    const card = CARDS[cardKey];
+    if (!card) return;
+    const mount = document.getElementById('card-mount');
+    const overlay = document.getElementById('loading-overlay');
+    const errorBanner = document.getElementById('error-banner');
+    overlay.classList.remove('hidden');
+    errorBanner.classList.remove('visible');
+
+    try {
+      await loadBundle();
+      if (cardEl && cardEl.parentNode === mount) mount.removeChild(cardEl);
+
+      const hass = isLive && liveHass
+        ? liveHass
+        : buildMockHass(scenarioKey && card.scenarios[scenarioKey] ? card.scenarios[scenarioKey]() : {});
+
+      cardEl = document.createElement(card.tag);
+      if (!customElements.get(card.tag)) throw new Error(`<${card.tag}> non enregistré`);
+      cardEl.setConfig(card.config);
+      mount.appendChild(cardEl);
+      cardEl.hass = hass;
+
+      log(`🃏 ${card.label}${isLive ? ' [LIVE]' : ` [${scenarioKey || 'mock'}]`}`, isLive ? 'live' : 'info');
+    } catch (err) {
+      log(`❌ ${err.message}`, 'error');
+      errorBanner.textContent = `Erreur: ${err.message}`;
+      errorBanner.classList.add('visible');
+    } finally {
+      overlay.classList.add('hidden');
+    }
+  }
+
+  // ─── Tabs & scenarios ────────────────────────────────────────────────────
+  function buildTabs() {
+    const container = document.getElementById('tabs-container');
+    container.innerHTML = '';
+    Object.entries(CARDS).forEach(([key, card]) => {
+      const tab = document.createElement('button');
+      tab.className = 'tab' + (key === currentCard ? ' active' : '');
+      tab.textContent = card.label;
+      tab.onclick = () => selectCard(key);
+      container.appendChild(tab);
+    });
+  }
+
+  function buildScenarios(cardKey) {
+    const card = CARDS[cardKey];
+    const list = document.getElementById('scenario-list');
+    list.innerHTML = '';
+    Object.keys(card.scenarios).forEach((name, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'scenario-btn' + (i === 0 ? ' active' : '');
+      btn.innerHTML = `<span class="dot"></span>${name}`;
+      btn.onclick = () => {
+        if (isLive) return;
+        list.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentScenario = name;
+        renderCard(currentCard, currentScenario);
+      };
+      list.appendChild(btn);
+    });
+    currentScenario = Object.keys(card.scenarios)[0];
+  }
+
+  function selectCard(key) {
+    currentCard = key;
+    document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', Object.keys(CARDS)[i] === key));
+    document.getElementById('preview-title').textContent = CARDS[key].label;
+    buildScenarios(key);
+    renderCard(key, currentScenario);
+  }
+
+  window.reloadCard = () => {
+    bundleLoaded = false;
+    document.querySelectorAll('script[src*="sci-fi.min.js"]').forEach(s => s.remove());
+    renderCard(currentCard, currentScenario);
+  };
+
+  // ─── Init ────────────────────────────────────────────────────────────────
+  buildTabs();
+  selectCard('hexa');
+  setHaStatus('offline', 'Non connecté — données mockées');
+  log('🚀 Workbench démarré', 'info');
+  log('💡 "npm run build" pour mettre à jour · "↺ Recharger" pour voir les changements', 'info');
+  log('🔗 Clique "Se connecter" pour utiliser tes vraies données HA', 'info');
+
+  // Auto-reconnect if tokens saved
+  if (localStorage.getItem('hassTokens') && localStorage.getItem('hassUrl')) {
+    log('🔄 Tokens trouvés — tentative de reconnexion…', 'info');
+    const savedUrl = localStorage.getItem('hassUrl');
+    document.getElementById('ha-url').value = savedUrl;
+    setTimeout(async () => {
+      try {
+        const authOptions = getAuthOptions(savedUrl, null);
+        const auth = await getAuth(authOptions);
+        haConnection = await createConnection({ auth });
+        haAuth = auth;
+        await loadLiveData();
+      } catch (err) {
+        log(`ℹ️ Reconnexion auto échouée: ${err} — mode mock`, 'warn');
+      }
+    }, 500);
+  }
+</script>
+</body>
+</html>

@@ -102,3 +102,20 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Pattern**: Utility functions (`assertX`, `validateX`, `parseX`) that exist at the type layer should have their own test file under `tests/types/` or `tests/utils/`, matching the source structure. This prevents domain pollution and makes coverage gaps obvious.
 - **Fix**: In specs that define type-guard or validation utility functions, always include a `tests/types/<module>.test.ts` pointer in the Test Case Specifications table.
 
+### L026: Inspect the Branch History Before Building Any Dev Tool
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi — workbench session
+- **Evidence**: User reminded agent mid-session that `main` branch already contained `tests/js/hass.js` with a fully working `home-assistant-js-websocket` connection + `subscribeEntities` pattern. Agent had started implementing from scratch instead of inspecting the branch. 1 iteration of rework avoided once user pointed this out.
+- **Anti-pattern**: Starting implementation of a dev/infra tool (workbench, mock server, test helper) without first running `git ls-tree -r <branch> --name-only | grep <keyword>` to check if prior art exists on another branch.
+- **Fix**: Before building any developer tooling (workbench, mock, server, demo page), ALWAYS run:
+  1. `git branch -a` — list all branches
+  2. `git ls-tree -r main --name-only | grep -i "test\|demo\|workbench\|dev"` — check prior art
+  3. `git show main:<file>` — read the existing implementation
+  Only then decide Adopt / Adapt / Build-New.
+
+### L027: Production YAML Configs Are the Ideal Source for Mock Data
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi — workbench session
+- **Evidence**: The `yaml backup/*.yaml` files contained exact production entity IDs, sensor names, and config structures. Using them to generate mock `hass.states` produced 100% realistic workbench data with zero guesswork — all entity IDs matched production on first try.
+- **Pattern**: For HA card projects, always derive workbench mock data from the production YAML backups (or equivalent config files), not from invented entity names. The entity IDs in `yaml backup/*.yaml` are the ground truth; mock data that diverges from them will hide integration bugs.
+- **Fix**: In any workbench or test helper spec for HA custom cards, add: "Mock `hass.states` MUST be derived from `yaml backup/*.yaml`. Never invent entity IDs — copy them verbatim."

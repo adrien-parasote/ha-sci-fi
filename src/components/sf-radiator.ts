@@ -67,7 +67,7 @@ export class SciFiRadiator extends LitElement {
         align-items: flex-start;
         flex-direction: column;
         justify-content: flex-start;
-        padding-top: 54px;
+        padding-top: 64px;
       }
       .content .left .select-temperature {
         margin-top: 5px;
@@ -78,7 +78,7 @@ export class SciFiRadiator extends LitElement {
         position: absolute;
         display: flex;
         flex-direction: row;
-        right: 100%;
+        right: calc(100% - 10px);
         top: 50%;
         transform: translateY(-50%);
         align-items: center;

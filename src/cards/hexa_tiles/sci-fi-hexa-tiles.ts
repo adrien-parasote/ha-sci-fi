@@ -234,8 +234,8 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
         pointer-events: none; /* Let clicks pass to the wrapper */
       }
       .hexa-content sf-icon {
-        --icon-width: 42px;
-        --icon-height: 42px;
+        --icon-width: 56px;
+        --icon-height: 56px;
         transition: color var(--sf-transition-fast), filter var(--sf-transition-fast);
       }
       .hexa-tile[data-active="true"] .hexa-content sf-icon {

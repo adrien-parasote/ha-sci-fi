@@ -48,7 +48,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
       }
 
       ha-card {
-        background: #000000 !important;
+        background: rgba(39, 40, 43, 0.3) !important;
         border: none !important;
         height: 100%;
         width: 100%;
@@ -68,7 +68,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
         display: flex;
         flex-direction: row;
         border-bottom: 1px solid rgba(0,210,255,0.2);
-        background-color: rgba(39, 40, 43, 0.3);
+        background-color: transparent;
         padding: 5px 10px 0 10px;
         align-items: center;
         min-height: 44px;
@@ -196,7 +196,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
         border-top: 1px solid rgba(0,210,255,0.15);
         padding: 10px 0;
         margin: 0;
-        background-color: rgba(39, 40, 43, 0.3);
+        background-color: transparent;
       }
       .floor-info {
         display: flex;

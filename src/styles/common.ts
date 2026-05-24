@@ -11,7 +11,7 @@ export const sciFiCommonStyles = css`
     --sf-primary: var(--primary-color, #00d2ff);
     --sf-primary-dim: color-mix(in srgb, var(--sf-primary) 40%, transparent);
     --sf-bg: var(--ha-card-background, rgba(10, 14, 26, 0.92));
-    --sf-bg-secondary: rgba(39, 40, 43, 0.3);
+    --sf-bg-secondary: rgba(255, 255, 255, 0.04);
     --sf-border: rgba(0, 210, 255, 0.15);
     --sf-text-primary: var(--primary-text-color, #e0e8ff);
     --sf-text-secondary: var(--secondary-text-color, rgba(224, 232, 255, 0.6));

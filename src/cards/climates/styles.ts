@@ -5,7 +5,7 @@ export const climateStyles = css`
     font-size: var(--sf-text-sm, 12px);
     height: 100%;
     width: 100%;
-    background-color: #000;
+    background-color: rgba(39, 40, 43, 0.3);
   }
   .container {
     display: flex;
@@ -17,7 +17,7 @@ export const climateStyles = css`
     display: flex;
     flex-direction: row;
     border-bottom: var(--sf-border-width, 1px) solid var(--sf-border);
-    background-color: var(--sf-bg-secondary);
+    background-color: transparent;
     padding: 5px 10px;
     font-size: var(--sf-text-sm, 12px);
   }
@@ -93,7 +93,7 @@ export const climateStyles = css`
     border-top: var(--sf-border-width, 1px) solid var(--sf-border);
     padding: 10px;
     justify-content: center;
-    background-color: var(--sf-bg-secondary);
+    background-color: transparent;
     color: var(--sf-primary);
   }
   .floor-content .title {
@@ -154,7 +154,7 @@ export const climateStyles = css`
     border-bottom: var(--sf-border-width, 1px) solid var(--sf-border);
     border-top: var(--sf-border-width, 1px) solid var(--sf-border);
     padding: 10px 0;
-    background-color: var(--sf-bg-secondary);
+    background-color: transparent;
     font-weight: bold;
     width: 100%;
     align-items: center;

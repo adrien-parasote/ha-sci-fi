@@ -74,6 +74,15 @@ export const climateStyles = css`
   /*********** FLOORS *************/
   .floors {
     display: flex;
+    justify-content: center;
+  }
+  .floors sf-hexa-row {
+    --sf-hexa-row-width: 50px;
+    --sf-hexa-row-selected-width: 70px;
+    --sf-hexa-row-icon-width: 24px;
+    --sf-hexa-row-icon-height: 24px;
+    --sf-hexa-row-icon-selected-width: 36px;
+    --sf-hexa-row-icon-selected-height: 36px;
   }
   
   /*********** FLOOR CONTENT *************/
@@ -123,7 +132,11 @@ export const climateStyles = css`
     display: flex;
   }
   .areas .area-list sf-hexa-row {
+    --sf-hexa-row-width: 50px;
     --sf-hexa-row-selected-width: 70px;
+    --sf-hexa-row-icon-width: 24px;
+    --sf-hexa-row-icon-height: 24px;
+    --sf-hexa-row-icon-selected-width: 36px;
     --sf-hexa-row-icon-selected-height: 36px;
   }
 

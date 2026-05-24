@@ -200,4 +200,68 @@ describe('sci-fi-weather', () => {
     await el.updateComplete;
     expect(el.shadowRoot!.textContent).to.include('Rouge');
   });
+
+  it('subscribes to hourly and daily forecasts and renders them', async () => {
+    (el as any).setConfig({
+      type: 'custom:sci-fi-weather',
+      weather_entity: 'weather.home',
+      weather_daily_forecast_limit: 2
+    });
+
+    let hourlyCallback: any;
+    let dailyCallback: any;
+
+    const mockHass = makeMockHass({
+      states: {
+        'weather.home': makeMockEntity({
+          entity_id: 'weather.home',
+          state: 'sunny',
+          attributes: {
+            temperature: 24,
+            humidity: 45,
+            wind_speed: 12
+          }
+        })
+      }
+    });
+
+    mockHass.connection.subscribeMessage = async (callback: any, params: any) => {
+      if (params.forecast_type === 'hourly') {
+        hourlyCallback = callback;
+      } else if (params.forecast_type === 'daily') {
+        dailyCallback = callback;
+      }
+      return () => {};
+    };
+
+    el.hass = mockHass;
+    await el.updateComplete;
+
+    // Trigger callbacks with forecast data
+    if (hourlyCallback) {
+      hourlyCallback({
+        forecast: [
+          { datetime: '2023-10-10T12:00:00Z', temperature: 25, condition: 'sunny' }
+        ]
+      });
+    }
+
+    if (dailyCallback) {
+      dailyCallback({
+        forecast: [
+          { datetime: '2023-10-10T12:00:00Z', temperature: 25, templow: 15, condition: 'sunny' },
+          { datetime: '2023-10-11T12:00:00Z', temperature: 22, templow: 14, condition: 'cloudy' }
+        ]
+      });
+    }
+
+    await el.updateComplete;
+
+    // Daily forecast should render the two days
+    const days = el.shadowRoot!.querySelectorAll('.forecast-day');
+    expect(days.length).to.equal(2);
+    expect(days[0]!.textContent).to.include('25°');
+    expect(days[0]!.textContent).to.include('15°');
+  });
 });
+

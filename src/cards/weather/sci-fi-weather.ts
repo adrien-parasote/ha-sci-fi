@@ -5,8 +5,8 @@
  * Chart.js is bundled (HIGH-01 fix) — never loaded from CDN.
  */
 
-import { html, css, type TemplateResult } from 'lit';
-import { customElement, query } from 'lit/decorators.js';
+import { html, css, type TemplateResult, type PropertyValues } from 'lit';
+import { customElement, query, state } from 'lit/decorators.js';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import type { SciFiWeatherConfig } from '../../types/config.js';
@@ -153,17 +153,95 @@ export class SciFiWeatherCard extends SciFiBaseCard {
   @query('#weather-chart') private _chartCanvas?: HTMLCanvasElement;
   private _chart?: Chart;
 
+  @state() private _hourlyForecast: unknown[] = [];
+  @state() private _dailyForecast: unknown[] = [];
+  
+  private _unsubHourly?: () => void | Promise<void>;
+  private _unsubDaily?: () => void | Promise<void>;
+  private _subscribedEntity?: string;
+
   declare config: SciFiWeatherConfig;
 
-  override updated(): void {
+  override connectedCallback(): void {
+    super.connectedCallback();
+    if (this.hass && this.config) {
+      void this._subscribeForecasts();
+    }
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._unsubscribeForecasts();
+  }
+
+  override updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (!this._subscribedEntity || this._subscribedEntity !== this.config?.weather_entity) {
+      void this._subscribeForecasts();
+    }
     this._renderChart();
+  }
+
+  private async _subscribeForecasts(): Promise<void> {
+    if (!this.hass || !this.config?.weather_entity) return;
+    const entityId = this.config.weather_entity;
+    
+    if (this._subscribedEntity === entityId) return;
+    
+    this._unsubscribeForecasts();
+    this._subscribedEntity = entityId;
+
+    try {
+      this._unsubHourly = await this.hass.connection.subscribeMessage?.<{ forecast?: unknown[] }>(
+        (message) => {
+          this._hourlyForecast = message.forecast ?? [];
+        },
+        {
+          type: 'weather/subscribe_forecast',
+          forecast_type: 'hourly',
+          entity_id: entityId,
+        }
+      );
+    } catch (err) {
+      console.warn("Failed to subscribe to hourly forecast", err);
+      this._hourlyForecast = this.hass.states[entityId]?.attributes['forecast'] as unknown[] ?? [];
+    }
+
+    try {
+      this._unsubDaily = await this.hass.connection.subscribeMessage?.<{ forecast?: unknown[] }>(
+        (message) => {
+          this._dailyForecast = message.forecast ?? [];
+        },
+        {
+          type: 'weather/subscribe_forecast',
+          forecast_type: 'daily',
+          entity_id: entityId,
+        }
+      );
+    } catch (err) {
+      console.warn("Failed to subscribe to daily forecast", err);
+      this._dailyForecast = this.hass.states[entityId]?.attributes['forecast'] as unknown[] ?? [];
+    }
+  }
+
+  private _unsubscribeForecasts(): void {
+    if (this._unsubHourly) {
+      void this._unsubHourly();
+      this._unsubHourly = undefined;
+    }
+    if (this._unsubDaily) {
+      void this._unsubDaily();
+      this._unsubDaily = undefined;
+    }
+    this._subscribedEntity = undefined;
   }
 
   private _renderChart(): void {
     if (!this.hass) return;
     // ADR-005: field is weather_entity (not weather_entity_id)
     const weatherEntity = this.hass.states[this.config.weather_entity];
-    const forecast = (weatherEntity?.attributes['forecast'] as unknown[]) ?? [];
+    const forecast = this._hourlyForecast.length > 0 ? this._hourlyForecast : 
+      ((weatherEntity?.attributes['forecast'] as unknown[]) ?? []);
 
     if (!this._chartCanvas || forecast.length === 0) return;
 
@@ -236,7 +314,8 @@ export class SciFiWeatherCard extends SciFiBaseCard {
     const temp = weatherEntity.attributes['temperature'] as number | undefined;
     const humidity = weatherEntity.attributes['humidity'] as number | undefined;
     const wind = weatherEntity.attributes['wind_speed'] as number | undefined;
-    const forecast = (weatherEntity.attributes['forecast'] as unknown[]) ?? [];
+    const forecast = this._dailyForecast.length > 0 ? this._dailyForecast : 
+      ((weatherEntity.attributes['forecast'] as unknown[]) ?? []);
     const dailyLimit = this.config.weather_daily_forecast_limit ?? 5;
     const dailyForecast = forecast.slice(0, dailyLimit);
 

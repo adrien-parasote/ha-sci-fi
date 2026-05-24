@@ -81,6 +81,10 @@ export interface HomeAssistantExt {
   };
   readonly connection: {
     sendMessagePromise: <T>(message: Record<string, unknown>) => Promise<T>;
+    subscribeMessage?: <T>(
+      callback: (message: T) => void,
+      params: Record<string, unknown>
+    ) => Promise<() => void | Promise<void>>;
   };
   callService(
     domain: string,

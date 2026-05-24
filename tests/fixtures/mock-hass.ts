@@ -106,6 +106,7 @@ export function makeMockHass(
     user: { id: '1', name: 'Adrien', is_admin: true },
     connection: {
       sendMessagePromise: () => Promise.resolve({} as never),
+      subscribeMessage: () => Promise.resolve(() => {}),
     },
     callService,
   };

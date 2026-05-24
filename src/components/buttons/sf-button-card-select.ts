@@ -40,7 +40,7 @@ export class SciFiCardSelectButton extends SciFiCardButton {
         font-size: var(--sf-text-sm, 12px);
         cursor: pointer;
         z-index: 100;
-        min-width: max-content;
+        white-space: nowrap;
       }
       .items.left {
         right: 100%;
@@ -58,6 +58,8 @@ export class SciFiCardSelectButton extends SciFiCardButton {
       .items.bottom {
         top: 100%;
         bottom: auto;
+        right: 0;
+        left: auto;
         transform: none;
         border-top: none;
         border-bottom: var(--sf-border-width, 1px) solid var(--sf-border);

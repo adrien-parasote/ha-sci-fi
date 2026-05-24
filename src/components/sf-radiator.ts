@@ -48,7 +48,6 @@ export class SciFiRadiator extends LitElement {
         flex: 1;
         display: flex;
         flex-direction: row;
-        overflow: visible;
       }
       .content .right {
         padding: 25px 10px;

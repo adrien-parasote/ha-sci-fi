@@ -37,7 +37,7 @@ export class SciFiRadiator extends LitElement {
         position: absolute;
         top: 25px;
         left: 0;
-        color: var(--sf-bg-primary);
+        color: rgba(255, 255, 255, 0.4);
       }
       .img {
         display: flex;

@@ -25,6 +25,18 @@ declare global {
 const FALLBACK_MDI_PATH =
   'M11.5,2C6.81,2 3,5.81 3,10.5S6.81,19 11.5,19H12V22C16.86,18.92 21,15.44 21,10.5C21,5.81 17.19,2 11.5,2M12.5,16.5H10.5V14.5H12.5V16.5M12.5,13H10.5C10.5,9.75 13.5,10 13.5,8C13.5,6.9 12.6,6 11.5,6C10.4,6 9.5,6.9 9.5,8H7.5C7.5,5.79 9.29,4 11.5,4C13.71,4 15.5,5.79 15.5,8C15.5,10.5 12.5,10.75 12.5,13Z';
 
+const isTestEnv = (): boolean => {
+  return typeof window === 'undefined' ||
+    (window as any).__vitest_environment__ ||
+    (typeof process !== 'undefined' && process.env.NODE_ENV === 'test');
+};
+
+const isLiveHA = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  const isWorkbench = window.location.pathname.includes('workbench');
+  return !isWorkbench && !isTestEnv();
+};
+
 @customElement('sf-icon')
 export class SfIcon extends LitElement {
   /** Icon string in format "prefix:name" e.g. "mdi:home" or "sf:radiator" */
@@ -44,8 +56,9 @@ export class SfIcon extends LitElement {
     if ((changed.has('icon') || changed.has('connection')) && this.icon) {
       const [prefix] = this.icon.split(':');
       const isHaIconRegistered = typeof customElements !== 'undefined' && customElements.get('ha-icon') !== undefined;
+      const shouldRenderNative = prefix === 'mdi' && (isLiveHA() || isHaIconRegistered);
 
-      if (prefix === 'mdi' && isHaIconRegistered) {
+      if (shouldRenderNative) {
         // Skip async resolution, we'll render <ha-icon> natively
         this._pathData = null;
         return;
@@ -100,8 +113,9 @@ export class SfIcon extends LitElement {
   override render(): TemplateResult | typeof nothing {
     const [prefix] = this.icon ? this.icon.split(':') : [''];
     const isHaIconRegistered = typeof customElements !== 'undefined' && customElements.get('ha-icon') !== undefined;
+    const shouldRenderNative = prefix === 'mdi' && (isLiveHA() || isHaIconRegistered);
 
-    if (prefix === 'mdi' && isHaIconRegistered) {
+    if (shouldRenderNative) {
       return html`
         <ha-icon
           .icon="${this.icon}"

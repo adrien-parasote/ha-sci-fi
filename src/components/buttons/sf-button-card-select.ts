@@ -17,6 +17,8 @@ export class SciFiCardSelectButton extends SciFiCardButton {
       css`
       :host {
         position: relative;
+        --border: 1px solid var(--sf-primary, #00d2ff);
+        --sf-border-radius: 6px;
       }
       .items.hide {
         display: none;

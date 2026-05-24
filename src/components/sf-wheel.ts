@@ -64,7 +64,7 @@ export class SciFiWheel extends LitElement {
         align-items: center;
       }
       .slider .slider-item.disabled {
-        color: var(--sf-bg-secondary);
+        color: rgba(255, 255, 255, 0.4);
       }
       .slider .slider-item.hide {
         display: none;

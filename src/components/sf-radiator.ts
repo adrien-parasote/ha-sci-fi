@@ -32,7 +32,6 @@ export class SciFiRadiator extends LitElement {
         height: 100%;
         width: 368px;
         position: relative;
-        overflow-x: hidden;
       }
       .name {
         position: absolute;
@@ -71,12 +70,14 @@ export class SciFiRadiator extends LitElement {
         align-items: flex-start;
         flex-direction: column;
         justify-content: flex-start;
-        padding-top: 54px;
+        position: relative;
       }
       .content .left .select-temperature {
-        margin-top: 5px;
+        position: absolute;
+        bottom: 197px;
+        left: 0;
         padding-left: 10px;
-        position: relative;
+        transform: translateY(50%);
       }
       .content .left .select-temperature .display {
         position: absolute;

@@ -170,6 +170,7 @@ describe('sci-fi-hexa-tiles', () => {
       weather: { activate: true, weather_entity: 'weather.home', link: '/lovelace/weather' }
     } as unknown as any);
 
+    // Test 1: Day (sunny) should be active
     el.hass = makeMockHass({
       states: {
         'weather.home': makeMockEntity({
@@ -185,13 +186,32 @@ describe('sci-fi-hexa-tiles', () => {
     document.body.appendChild(el);
     await el.updateComplete;
 
-    const tile = el.shadowRoot!.querySelector('.hexa-tile') as HTMLElement;
+    let tile = el.shadowRoot!.querySelector('.hexa-tile') as HTMLElement;
     expect(tile.textContent).to.include('La Chapelle-sur-Erdre');
     expect(tile.textContent).not.to.include('25.5°');
+    expect(tile.getAttribute('data-active')).to.equal('true');
 
     const iconEl = tile.querySelector('sf-icon') as any;
     expect(iconEl).not.to.be.null;
     expect(iconEl.icon).to.equal('mdi:weather-sunny');
+
+    // Test 2: Night (clear-night) should be inactive
+    el.hass = makeMockHass({
+      states: {
+        'weather.home': makeMockEntity({
+          entity_id: 'weather.home',
+          state: 'clear-night',
+          attributes: {
+            temperature: 15.0,
+            friendly_name: 'La Chapelle-sur-Erdre'
+          }
+        })
+      }
+    });
+    await el.updateComplete;
+
+    tile = el.shadowRoot!.querySelector('.hexa-tile') as HTMLElement;
+    expect(tile.getAttribute('data-active')).to.equal('false');
 
     // Mock window.history.pushState (happy-dom has no history API)
     const pushStateMock = vi.fn();

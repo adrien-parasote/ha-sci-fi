@@ -245,6 +245,10 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
       .hexa-tile[data-active="false"] .hexa-content sf-icon {
         --icon-color: rgba(224, 232, 255, 0.4);
       }
+      .hexa-tile.weather-tile[data-active="true"] .hexa-content sf-icon {
+        --icon-color: #ffd60a;
+        filter: drop-shadow(0 0 3px #ffd60a);
+      }
 
       .tile-label {
         font-size: 0.625rem;
@@ -515,11 +519,12 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     const state = this.hass.states[weather.weather_entity];
     if (!state) return html``;
     const name = state.attributes.friendly_name ?? 'Météo';
-    const condition = state.state;
+    const condition = state.state?.toLowerCase();
     const icon = WEATHER_ICON_MAP[condition] ?? 'mdi:weather-cloudy';
+    const isActive = condition !== 'clear-night';
 
     return html`
-      <div class="hexa-tile" data-active="false" aria-label="${name}" @click="${() => weather.link ? this._navigate(weather.link) : undefined}">
+      <div class="hexa-tile weather-tile" data-active="${isActive ? 'true' : 'false'}" aria-label="${name}" @click="${() => weather.link ? this._navigate(weather.link) : undefined}">
         <svg class="hexa-svg" viewBox="0 0 132 164">
           <polygon class="hexa-bg" points="66,2 130,42 130,122 66,162 2,122 2,42" />
           <polygon class="hexa-border" points="66,4 128,43 128,121 66,160 4,121 4,43" />

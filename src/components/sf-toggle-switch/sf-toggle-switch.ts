@@ -8,7 +8,7 @@ import { customElement, property } from 'lit/decorators.js';
 
 @customElement('sf-toggle-switch')
 export class SfToggleSwitch extends LitElement {
-  @property({ type: Boolean })
+  @property({ type: Boolean, reflect: true })
   checked = false;
 
   @property({ type: Boolean })
@@ -19,15 +19,23 @@ export class SfToggleSwitch extends LitElement {
 
   static override styles = css`
     :host {
-      display: inline-flex;
+      display: flex;
       align-items: center;
       gap: 8px;
       cursor: pointer;
+      width: 100%;
     }
 
     :host([disabled]) {
       opacity: 0.5;
       pointer-events: none;
+    }
+
+    .label {
+      flex: 1;
+      font-size: 0.875rem;
+      color: var(--primary-text-color, #e0e8ff);
+      user-select: none;
     }
 
     .track {
@@ -59,12 +67,6 @@ export class SfToggleSwitch extends LitElement {
     :host([checked]) .thumb {
       transform: translateX(16px);
     }
-
-    .label {
-      font-size: 0.875rem;
-      color: var(--primary-text-color, #e0e8ff);
-      user-select: none;
-    }
   `;
 
   private _handleClick(): void {
@@ -82,6 +84,7 @@ export class SfToggleSwitch extends LitElement {
 
   override render(): TemplateResult {
     return html`
+      ${this.label ? html`<span class="label">${this.label}</span>` : ''}
       <div
         class="track"
         role="switch"
@@ -93,7 +96,6 @@ export class SfToggleSwitch extends LitElement {
       >
         <div class="thumb"></div>
       </div>
-      ${this.label ? html`<span class="label">${this.label}</span>` : ''}
     `;
   }
 }

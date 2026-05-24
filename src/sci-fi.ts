@@ -8,6 +8,7 @@
 
 // ── Styles & Components ────────────────────────────────────────────────────────
 import './components/sf-icon/sf-icon.js';
+import './components/sf-icon/sf-iconset.js'; // registers sci: namespace with HA customIconsets
 import './components/sf-toggle-switch/sf-toggle-switch.js';
 
 // ── Cards ─────────────────────────────────────────────────────────────────────
@@ -19,6 +20,17 @@ import './cards/weather/sci-fi-weather.js';
 import './cards/stove/sci-fi-stove.js';
 import './cards/vacuum/sci-fi-vacuum.js';
 import './cards/vehicles/sci-fi-vehicles.js';
+
+// ── Card Editors ──────────────────────────────────────────────────────────────
+import './cards/hexa_tiles/sci-fi-hexa-tiles-editor.js';
+import './cards/lights/sci-fi-lights-editor.js';
+import './cards/climates/sci-fi-climates-editor.js';
+import './cards/plugs/sci-fi-plugs-editor.js';
+import './cards/weather/sci-fi-weather-editor.js';
+import './cards/stove/sci-fi-stove-editor.js';
+import './cards/vacuum/sci-fi-vacuum-editor.js';
+import './cards/vehicles/sci-fi-vehicles-editor.js';
+
 
 // ── Card registry for Lovelace (required for card picker UI) ──────────────────
 

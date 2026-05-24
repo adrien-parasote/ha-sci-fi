@@ -63,7 +63,8 @@ export class SfIcon extends LitElement {
 
   override willUpdate(changed: Map<string, unknown>): void {
     if ((changed.has('icon') || changed.has('connection')) && this.icon) {
-      const [prefix] = this.icon.split(':');
+      const [prefix, ...nameParts] = this.icon.split(':');
+      const name = nameParts.join(':');
       const isHaIconRegistered = typeof customElements !== 'undefined' && customElements.get('ha-icon') !== undefined;
       const shouldRenderNative = prefix === 'mdi' && (isLiveHA() || isHaIconRegistered);
 
@@ -72,7 +73,35 @@ export class SfIcon extends LitElement {
         this._pathData = null;
         return;
       }
+
+      // Fast-path: synchronous lookup for custom icons (sci:/sf:) — avoids blank-flash
+      this._ensureCustomIcons();
+      if (prefix) {
+        const iconMap = (window.customIcons as Record<string, Record<string, unknown>> | undefined)?.[prefix];
+        const syncPath = iconMap?.[name];
+        if (syncPath && typeof syncPath === 'string') {
+          this._pathData = syncPath;
+          return;
+        }
+        if (syncPath && typeof syncPath === 'object') {
+          this._pathData = syncPath as import('lit').TemplateResult;
+          return;
+        }
+      }
+
       void this._resolveIcon();
+    }
+  }
+
+  /** Ensures our icon data is in window.customIcons (idempotent). */
+  private _ensureCustomIcons(): void {
+    if (typeof window === 'undefined') return;
+    window.customIcons = window.customIcons || {};
+    if (!window.customIcons.sf || !(window.customIcons.sf as Record<string, unknown>)['stove']) {
+      window.customIcons.sf = { ...(window.customIcons.sf as object | undefined), ...CUSTOM_ICONS, ...(WEATHER_ICONS as unknown as object) } as Record<string, string>;
+    }
+    if (!window.customIcons.sci || !(window.customIcons.sci as Record<string, unknown>)['stove']) {
+      window.customIcons.sci = { ...(window.customIcons.sci as object | undefined), ...CUSTOM_ICONS, ...(WEATHER_ICONS as unknown as object) } as Record<string, string>;
     }
   }
 
@@ -88,15 +117,7 @@ export class SfIcon extends LitElement {
     }
 
     // Ensure our custom icons are registered in window.customIcons
-    if (typeof window !== 'undefined') {
-      window.customIcons = window.customIcons || {};
-      if (!window.customIcons.sf || !window.customIcons.sf.stove) {
-        window.customIcons.sf = { ...window.customIcons.sf, ...CUSTOM_ICONS, ...WEATHER_ICONS };
-      }
-      if (!window.customIcons.sci || !window.customIcons.sci.stove) {
-        window.customIcons.sci = { ...window.customIcons.sci, ...CUSTOM_ICONS, ...WEATHER_ICONS };
-      }
-    }
+    this._ensureCustomIcons();
 
     // 1. Check window.customIcons for custom namespaces (e.g. sf:)
     const customPath = window.customIcons?.[prefix]?.[name];
@@ -160,7 +181,12 @@ export class SfIcon extends LitElement {
     }
 
     return html`
-      <svg viewBox="0 0 24 24" class="sf-icon" aria-hidden="true">
+      <svg
+        viewBox="0 0 24 24"
+        class="sf-icon"
+        aria-hidden="true"
+        style="width:var(--icon-width,24px);height:var(--icon-height,24px);fill:var(--icon-color,currentColor);display:block;"
+      >
         ${svg`<path d="${this._pathData}" />`}
       </svg>
     `;

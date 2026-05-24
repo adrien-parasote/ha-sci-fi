@@ -75,19 +75,21 @@ export interface MdiIconsResponse {
   resources: Record<string, string>; // icon name → path data
 }
 
-let registryPromise: Promise<MdiIconsResponse> | null = null;
+let registryPromises = new WeakMap<HassIconConnection, Promise<MdiIconsResponse>>();
 
 async function getMdiRegistry(connection: HassIconConnection): Promise<MdiIconsResponse> {
-  if (!registryPromise) {
-    registryPromise = connection.sendMessagePromise<MdiIconsResponse>({
+  let promise = registryPromises.get(connection);
+  if (!promise) {
+    promise = connection.sendMessagePromise<MdiIconsResponse>({
       type: 'frontend/get_icons',
       category: 'mdi',
     }).catch(err => {
-      registryPromise = null; // clear on error to retry next time
+      registryPromises.delete(connection); // clear on error to retry next time
       throw err;
     });
+    registryPromises.set(connection, promise);
   }
-  return registryPromise;
+  return promise;
 }
 
 /** Fetch MDI icon path from HA native icon registry. No CDN. */
@@ -137,7 +139,7 @@ export function clearMemCache(): void {
   memCache.clear();
   idbAvailable = null;
   activeFetches = 0;
-  registryPromise = null;
+  registryPromises = new WeakMap();
 }
 
 /** Expose for testing only. */

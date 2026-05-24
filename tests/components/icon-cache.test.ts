@@ -54,6 +54,30 @@ describe('icon-cache', () => {
     expect(result).toBe('M10 20Z');
   });
 
+  it('queries the correct connection for uncached icons when connection changes', async () => {
+    const conn1 = {
+      sendMessagePromise: vi.fn().mockResolvedValue({
+        resources: { 'icon1': 'M1 2Z' }
+      })
+    };
+    const conn2 = {
+      sendMessagePromise: vi.fn().mockResolvedValue({
+        resources: { 'icon2': 'M3 4Z' }
+      })
+    };
+
+    // First call with conn1
+    const result1 = await resolveIcon(conn1, 'mdi:icon1', 'icon1');
+    expect(result1).toBe('M1 2Z');
+    expect(conn1.sendMessagePromise).toHaveBeenCalledTimes(1);
+
+    // Second call with conn2 for a different icon — should query conn2
+    const result2 = await resolveIcon(conn2, 'mdi:icon2', 'icon2');
+    expect(result2).toBe('M3 4Z');
+    expect(conn2.sendMessagePromise).toHaveBeenCalledTimes(1);
+    expect(conn1.sendMessagePromise).toHaveBeenCalledTimes(1); // conn1 not called again
+  });
+
   // TC-401: sf-icon checks customIcons first (via cache hit)
   it('TC-401: resolveIcon returns memory-cached value without calling HA', async () => {
     _memCache.set('mdi:cached-icon', 'M5 6 7 8Z');

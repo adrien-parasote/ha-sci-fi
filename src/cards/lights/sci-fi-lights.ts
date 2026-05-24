@@ -104,6 +104,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
       .floors {
         display: flex;
         flex-direction: row;
+        background-color: black;
         column-gap: 5px;
         justify-content: center;
         align-items: center;
@@ -248,6 +249,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
       /* ── Areas section — left column + right panel ───────── */
       .areas-section {
         display: flex;
+        background-color: black;
         flex-direction: row;
         flex: 1;                  /* fill all remaining vertical space in .container */
         align-items: stretch;     /* right panel stretches to same height as area-list */

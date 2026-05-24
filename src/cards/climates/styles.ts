@@ -75,6 +75,7 @@ export const climateStyles = css`
   .floors {
     display: flex;
     justify-content: center;
+    background-color: black;
   }
   .floors sf-hexa-row {
     --sf-hexa-row-width: 50px;
@@ -130,6 +131,7 @@ export const climateStyles = css`
   }
   .areas .area-list {
     display: flex;
+    background-color: black;
   }
   .areas .area-list sf-hexa-row {
     --sf-hexa-row-width: 50px;

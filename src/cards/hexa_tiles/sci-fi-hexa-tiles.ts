@@ -270,24 +270,38 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
   @state() private _cols = 2;
   @state() private _minRows = 5;
 
+  private _resizeObserver?: ResizeObserver;
+
   constructor() {
     super();
-    this._updateLayout();
-    window.addEventListener('resize', this._handleResize);
+    // Synchronous initial guess based on screen width
+    this._updateLayout(window.innerWidth);
+  }
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this._resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const width = entry.contentRect.width;
+        if (width > 0) {
+          this._updateLayout(width);
+          this.requestUpdate();
+        }
+      }
+    });
+    this._resizeObserver.observe(this);
   }
 
   override disconnectedCallback(): void {
-    window.removeEventListener('resize', this._handleResize);
+    if (this._resizeObserver) {
+      this._resizeObserver.disconnect();
+    }
     super.disconnectedCallback();
   }
 
-  private _handleResize = (): void => {
-    this._updateLayout();
-    this.requestUpdate();
-  };
+  private _updateLayout(width: number): void {
+    if (width <= 0) return;
 
-  private _updateLayout(): void {
-    const width = window.innerWidth;
     // Calculate cols based on target width of 150px per hexagon
     // Ensuring minimum 2 columns (for mobile)
     const targetWidth = 150;

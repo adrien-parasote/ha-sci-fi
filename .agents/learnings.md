@@ -119,3 +119,16 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Evidence**: The `yaml backup/*.yaml` files contained exact production entity IDs, sensor names, and config structures. Using them to generate mock `hass.states` produced 100% realistic workbench data with zero guesswork — all entity IDs matched production on first try.
 - **Pattern**: For HA card projects, always derive workbench mock data from the production YAML backups (or equivalent config files), not from invented entity names. The entity IDs in `yaml backup/*.yaml` are the ground truth; mock data that diverges from them will hide integration bugs.
 - **Fix**: In any workbench or test helper spec for HA custom cards, add: "Mock `hass.states` MUST be derived from `yaml backup/*.yaml`. Never invent entity IDs — copy them verbatim."
+
+### L028: ID Selectors on Root Layout Wrappers Override Granular Class Logic
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi — Workbench responsive device frames
+- **Evidence**: Device simulation for iPad (`height: 1000px`) and iPhone frames kept collapsing to content height in panel mode. The culprit was a global utility rule `#card-mount-wrap { height: 100%; }`. Because `id="card-mount-wrap"` was placed on the exact same HTML element as `.device-screen`, the ID selector `(0,1,0,0)` permanently overrode the class selector `(0,0,2,0)`.
+- **Anti-pattern**: Using ID selectors for generic layout wrappers (`#wrapper`, `#container`, `#mount`) while simultaneously applying context-specific dimensions via class names (`.tablet-screen`). The ID will always win the specificity war, making the contextual classes powerless and incredibly hard to debug in responsive/fluid designs.
+- **Fix**: Never use IDs for structural styling. Use classes. If an ID is required for JS targeting (`getElementById`), restrict its CSS usage strictly to properties that won't conflict with layout (or better, don't style the ID at all).
+
+### L029: Web Components and Container Queries in DOM Simulation
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi — Workbench responsive device frames
+- **Evidence**: `@container (max-width: 450px)` failed to trigger on `ha-card` in the custom workbench. `ha-card` is an unknown custom element to the browser (not registered by HA core in this standalone env), meaning the browser rendered it as `display: inline`. Inline elements cannot act as container query contexts, so the query silently resolved to the width of the content, breaking all mobile breakpoints.
+- **Pattern**: When simulating or mounting Web Components in a standalone workbench or testing environment, ensure custom element wrappers (`ha-card`, etc.) explicitly declare `display: block; width: 100%;` in their base CSS. Relying on the host app (HA) to provide these styles works in production but breaks CSS container queries in isolation.

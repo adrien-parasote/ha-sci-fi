@@ -5,7 +5,7 @@ import { sciFiCommonStyles } from '../../styles/common.js';
 import { climateStyles } from './styles.js';
 import type { SciFiClimatesConfig } from '../../types/config.js';
 import { getClimateEntitiesExcluding, isClimateActive } from '../../selectors/climate.js';
-import { getFloors, getAreasByFloor, getEntitiesByAreaAndDomain, getFirstFloor, getFloorById, getAreaById } from '../../selectors/house.js';
+import { getFloors, getAreasByFloor, getEntitiesByAreaAndDomain, getFirstFloor, getFloorById, getAreaById, getAreas } from '../../selectors/house.js';
 
 import '../../components/sf-hexa-row.js';
 import '../../components/sf-radiator.js';
@@ -36,8 +36,11 @@ export class SciFiClimatesCard extends SciFiBaseCard {
           break;
         }
       }
-      if (!this._active_floor_id && allFloors && allFloors.length > 0) {
-        this._active_floor_id = allFloors[0].floor_id;
+      if ((this.config as any)?.filter_by === 'floor') {
+        const allFloors = getFloors(this.hass);
+        if (allFloors.length > 0 && !this._active_floor_id) {
+          this._active_floor_id = allFloors[0].floor_id;
+        }
       }
     }
 
@@ -54,7 +57,10 @@ export class SciFiClimatesCard extends SciFiBaseCard {
             break;
           }
         }
-        if (!this._active_area_id && areas && areas.length > 0) {
+      }
+      if ((this.config as any)?.filter_by === 'area') {
+        const areas = getAreas(this.hass);
+        if (areas.length > 0 && !this._active_area_id) {
           this._active_area_id = areas[0].area_id;
         }
       }
@@ -74,7 +80,7 @@ export class SciFiClimatesCard extends SciFiBaseCard {
     `;
   }
 
-  private __getAverageTemperature(entities: any[]): string | null {
+  private __getAverageTemperature(entities: any[]): number | null {
     if (entities.length === 0) return null;
     let sum = 0;
     let count = 0;
@@ -86,7 +92,7 @@ export class SciFiClimatesCard extends SciFiBaseCard {
         count++;
       }
     }
-    return count > 0 ? (sum / count).toFixed(1) : null;
+    return count > 0 ? Math.round((sum / count) * 10) / 10 : null;
   }
 
   private __hasClimateInArea(areaId: string, excluded: readonly string[]): boolean {
@@ -156,15 +162,15 @@ export class SciFiClimatesCard extends SciFiBaseCard {
     `;
   }
 
-  private __displayActionHeader(allClimates: any[]): TemplateResult | typeof nothing {
-    if (!this.config.header?.display) return nothing;
+  private __displayActionHeader(entities: any[]): TemplateResult | typeof nothing {
+    if (!this.config.header?.display) return html``;
     
-    const active = allClimates.some(c => isClimateActive(this.hass, c.entity_id));
+    const active = entities.some(c => isClimateActive(this.hass, c.entity_id));
     const h = this.config.header;
     const icon = active ? (h.icon_summer_state || 'mdi:thermometer-chevron-down') : (h.icon_winter_state || 'mdi:thermometer-chevron-up');
     const msg = active ? (h.message_summer_state || 'Summer time') : (h.message_winter_state || 'Winter is coming');
 
-    return html`<div class="action" @click="${() => this.__globalOnOffClimates(allClimates, active)}">
+    return html`<div class="action" @click="${() => this.__globalOnOffClimates(entities, active)}">
       <sf-icon .icon=${icon}></sf-icon>
       <div>${msg}</div>
     </div>`;

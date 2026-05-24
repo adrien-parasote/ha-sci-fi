@@ -55,6 +55,8 @@ export const climateStyles = css`
   .header .info sf-icon {
     --icon-width: var(--sf-icon-size-sm, 16px);
     --icon-height: var(--sf-icon-size-sm, 16px);
+    --icon-color: var(--sf-primary);
+    filter: drop-shadow(0px 0px 5px var(--sf-primary));
   }
   .header .season {
     display: flex;

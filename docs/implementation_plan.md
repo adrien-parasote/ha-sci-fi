@@ -1,46 +1,63 @@
-# Hexagonal Dashboard Card Layout & Layout Fixes
+# Climate UI Restoration from Main
 
-This implementation plan details the strategy and specification for refactoring the `sci-fi-hexa-tiles` card to resolve layout and functional issues, including interlocking hexagons, user header with avatar picture and status badge, centered icons, custom SVG-based borders, and correct case-insensitive weather alerts.
+## Background
+The user reported that the recent rewrite of the `sci-fi-climates` card lost its "Sci-Fi" design from the `main` branch. The current `sci-fi-climates.ts` implements a simple grid, whereas the `main` branch used a complex interface consisting of:
+1. A `<sci-fi-hexa-row>` representing the floors of the house.
+2. A `<sci-fi-hexa-row>` representing the areas within the selected floor.
+3. A carousel (`.slider`) of `<sci-fi-radiator>` components for the climates in the selected area.
+4. An SVG-based custom radiator UI (`sf-radiator`).
+
+## Goal
+Restore the exact visual design of the `sci-fi-climates` card from `main`, while adapting its backend logic to use the new v1.0.0 pure function selectors (`selectors/house.ts`, `selectors/climate.ts`) since the old stateful `House`, `Floor`, and `Area` classes have been removed (ADR-004).
 
 ## User Review Required
-
 > [!IMPORTANT]
-> **Fixed Dimensions**: All hexagons will be rendered with a fixed size of `78px` width and `96px` height across all devices (mobile, tablet, desktop). This ensures they fit perfectly in 4 columns on mobile portrait without wrapping or overflow.
-> **No clip-path**: We will replace the modern CSS `clip-path` hexagon implementation with inline SVGs containing `<polygon>` elements, which allows drawing crisp glowing neon borders that are not clipped.
-> **Weather Alert Green State**: The weather alert banner is completely hidden when the alert level is green (e.g. `'Vert'`).
+> The `main` branch relied heavily on stateful classes (`this._house.getFloorsOrderedByLevel()`). The new implementation will maintain the exact same UI structure but will fetch data using the pure selectors from `src/selectors/house.ts`.
+### [x] Phase 2: Weather Card Header & UI Polish
+* Remove `padding-top` from the weather card header (`.header`).
+* Ensure days forecast slider border colors represent active/inactive selection (matching hexagons), while high/low temperature coloring applies only to text.
+* Adjusted `.today-summary` and `.chart-container` padding/margins.
+
+### [x] Phase 3: TypeScript Fixes
+* Fix `TemplateResult | typeof nothing` return type mismatches in `renderCard`.
+* Resolve `Object is possibly 'undefined'` errors for array accesses (`allFloors`, `areas`).
+* Update `CSSResultGroup` typings for `sf-button-card` and `sf-button-card-select`.build.
 
 ## Proposed Changes
 
-### Hexagonal Tiles Card
+### 1. Re-introduce Missing Components
+I will convert the following components from the `main` branch into TypeScript (`.ts`) and place them in `src/components/`:
+- `sf-hexa-tile.ts` (and `sf-half-hexa-tile.ts`)
+- `sf-hexa-row.ts`
+- `sf-radiator.ts`
 
-#### [MODIFY] [sci-fi-hexa-tiles.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/hexa_tiles/sci-fi-hexa-tiles.ts)
+#### [NEW] src/components/sf-hexa-tile.ts
+#### [NEW] src/components/sf-hexa-row.ts
+#### [NEW] src/components/sf-radiator.ts
 
-- **Header Renders Profile Information**:
-  - Lookup the connected person entity in `hass.states` using `person.*` where `attributes.user_id === hass.user.id`.
-  - Render a gorgeous avatar circular image with blue border and glow.
-  - Render an absolute-positioned status badge in the top-right of the avatar with the active zone icon.
-  - Render the small, light blue welcome message (`header_message`) above the bold, white, glowing name.
-- **Interlocking SVG Grid**:
-  - Filter tiles array by person visibility constraint: `tile.visibility.includes(userId)`.
-  - Render decorative Left/Right Half-Hexagon SVGs on the ends of odd/even rows to offset them by half a tile.
-  - Pull rows vertically using `margin-bottom: calc(var(--tile-height) * -0.25)` to interlock them.
-  - SVG uses viewBox `0 0 132 164` with custom `<polygon>` background and stroke.
-- **Centered Icons & Text**:
-  - Content elements absolutely positioned at `z-index: 2` on top of the SVG to prevent clipping.
-  - Custom color/glow attributes for active states vs dark dim colors for inactive states.
-- **Weather Alert Green Check**:
-  - Hides the weather alert banner when the state is equal to `state_green`.
+### 2. Rewrite Climate Card UI
+I will rewrite `src/cards/climates/sci-fi-climates.ts` and `src/cards/climates/styles.ts` using the exact layout from `main`:
+- **Header:** House temperature, global on/off action, and season icon.
+- **Floors:** A `sci-fi-hexa-row` showing available floors.
+- **Floor Content:** Floor name and average temperature.
+- **Areas:** A `sci-fi-hexa-row` showing available areas in the selected floor.
+- **Area Content:** A carousel containing the `sci-fi-radiator` components for the selected area.
 
----
+#### [MODIFY] src/cards/climates/sci-fi-climates.ts
+- Add local state for `_active_floor_id` and `_active_area_id`.
+- Re-implement `__displayHeader`, `__displayFloors`, `__displayFloorInfo`, `__displayAreas`, `__displayAreaInfo`, and the carousel logic.
+- Replace `this._house...` calls with pure selector calls (e.g., `getFloors(this.hass)`, `getAreasByFloor(this.hass, floorId)`, `getEntitiesByAreaAndDomain(this.hass, areaId, 'climate')`).
+
+#### [MODIFY] src/cards/climates/styles.ts
+- Port the CSS from `style.js` on `main` to `styles.ts`, adapting it for the new standard variable names (`--sf-bg-primary`, etc.) where appropriate, but keeping the exact structural classes (`.floors`, `.areas`, `.slider`, etc.).
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `npm run typecheck` to verify that all TypeScript styles and models type-check perfectly.
-- Run `npm test` to execute Vitest unit tests and integration tests.
-- Re-run the deterministic spec gate check to verify conformance.
+- Typecheck (`tsc --noEmit`) to ensure the newly ported TS components compile correctly.
+- Linting (`eslint src/cards/climates/`).
 
 ### Manual Verification
-- Deploy build to Lovelace and load workbench to inspect UI across simulated desktop, iPad, and iPhone frames.
-- Check active state updates (e.g. stove active vs inactive).
-- Verify case-insensitive green weather alert hiding.
+- Render the `workbench.html` and confirm the climate card visually matches the screenshots provided by the user and displays the mock entities correctly.
+- Ensure clicking the hexagon floors and areas correctly updates the selected states.
+- Ensure the `<sci-fi-radiator>` wheel and buttons render the exact same SVG structure.

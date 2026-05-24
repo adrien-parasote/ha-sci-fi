@@ -57,11 +57,17 @@ Each hexagon uses inline SVGs (`viewBox="0 0 132 164"`) with a background polygo
 - **Active tile**:
   - Background polygon fill: `rgba(0, 210, 255, 0.08)`
   - Border polygon stroke: `var(--sf-primary)` (`#00d2ff`), stroke-width: `2px`, filter: standard cyan drop-shadow.
-  - Text color: `#ffffff` with a glowing text-shadow.
+  - Text color: `var(--sf-primary)` (`#00d2ff`) with a glowing text-shadow.
 - **Inactive tile**:
   - Background polygon fill: `rgba(16, 22, 38, 0.6)`
   - Border polygon stroke: `rgba(224, 232, 255, 0.1)`, stroke-width: `1.5px`.
   - Text color: `rgba(224, 232, 255, 0.4)`.
+
+## Tile Content & Icons
+
+- Hexagon `<sf-icon>` elements are sized uniformly to `56px` width and height.
+- **Weather Tile**: Dynamically resolves custom animated weather icons via the `sf:` namespace (e.g. `sf:partlycloudy-day`) rather than static `mdi:` icons. This ensures seamless integration with the existing `sf-weather-icons.js` Lit SVG templates. Active weather tiles receive a specific yellow drop-shadow (`#ffd60a`).
+- **Avatar Status Badge**: Positioned at the top-right of the avatar with `26px` width/height and `22px` icons, with no circular background block behind it, to ensure it visually floats over the avatar border.
 
 ---
 

@@ -6,10 +6,10 @@
 
 import { html, css, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import { repeat } from 'lit/directives/repeat.js';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import type { SciFiHexaTilesConfig, SciFiHexaTileConfig } from '../../types/config.js';
+import type { HassEntity } from '../../types/ha.js';
 
 const TAG = 'sci-fi-hexa-tiles';
 
@@ -18,46 +18,228 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
   static override styles = [
     sciFiCommonStyles,
     css`
-      .container { padding: var(--sf-spacing-md); }
+      /* Card Background */
+      ha-card {
+        background: #000000 !important;
+        border: none !important;
+        padding: var(--sf-spacing-md);
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+      }
 
-      /* Hexagonal grid layout */
+      .container {
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+      }
+
+      /* ===== User Header ===== */
+      .header {
+        display: flex;
+        flex-direction: row;
+        column-gap: 16px;
+        margin-bottom: var(--sf-spacing-md);
+        align-items: center;
+        width: 100%;
+      }
+      .avatar-container {
+        position: relative;
+        width: 60px;
+        height: 60px;
+      }
+      .avatar {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 2px solid var(--sf-primary, #00d2ff);
+        box-shadow: 0 0 8px var(--sf-primary, #00d2ff);
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .avatar-initials {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--sf-primary, #00d2ff);
+      }
+      .status-badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background: #000000;
+        border: 1.5px solid var(--sf-primary, #00d2ff);
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 5px var(--sf-primary, #00d2ff);
+      }
+      .status-badge sf-icon {
+        --icon-width: 14px;
+        --icon-height: 14px;
+        --icon-color: var(--sf-primary, #00d2ff);
+      }
+      .header-info {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .header-message {
+        font-size: 0.8rem;
+        color: var(--sf-primary, #00d2ff);
+        margin-bottom: 2px;
+        text-transform: capitalize;
+      }
+      .header-name {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #ffffff;
+        text-shadow: 0 0 6px var(--sf-primary, #00d2ff);
+      }
+
+      /* ===== Interlocking Hexagon Grid ===== */
+      :host {
+        --tile-width: 78px;
+        --tile-height: 96px;
+      }
       .hexa-grid {
         display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+      }
+      .hexa-row {
+        display: flex;
+        flex-direction: row;
         justify-content: center;
+        height: var(--tile-height);
+        margin-bottom: calc(var(--tile-height) * -0.25);
+        width: 100%;
+      }
+      .hexa-row:last-child {
+        margin-bottom: 0;
       }
 
       /* Hexagon tile */
       .hexa-tile {
-        width: 90px;
-        height: 100px;
-        clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-        background: var(--sf-bg-secondary);
-        border: none;
+        position: relative;
+        width: var(--tile-width);
+        height: var(--tile-height);
+        margin: 0 2px;
+        cursor: pointer;
+        display: block;
+      }
+      .hexa-half {
+        width: calc(var(--tile-width) / 2);
+        height: var(--tile-height);
+        margin: 0 2px;
+        opacity: 0.15;
+      }
+      .hexa-half svg {
+        width: 100%;
+        height: 100%;
+      }
+      .hexa-half svg polygon {
+        fill: rgba(255, 255, 255, 0.04);
+        stroke: rgba(224, 232, 255, 0.1);
+        stroke-width: 1px;
+      }
+
+      /* SVG structures */
+      .hexa-svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .hexa-bg {
+        transition: fill var(--sf-transition-fast);
+      }
+      .hexa-border {
+        transition: stroke var(--sf-transition-fast), filter var(--sf-transition-fast);
+        fill: none;
+      }
+
+      /* Active vs Inactive tile styles */
+      .hexa-tile[data-active="true"] .hexa-bg {
+        fill: rgba(0, 210, 255, 0.08);
+      }
+      .hexa-tile[data-active="true"] .hexa-border {
+        stroke: var(--sf-primary, #00d2ff);
+        stroke-width: 2px;
+        filter: drop-shadow(0 0 4px var(--sf-primary, #00d2ff));
+      }
+      .hexa-tile[data-active="false"] .hexa-bg {
+        fill: rgba(16, 22, 38, 0.6);
+      }
+      .hexa-tile[data-active="false"] .hexa-border {
+        stroke: rgba(224, 232, 255, 0.1);
+        stroke-width: 1.5px;
+      }
+
+      /* Hover effects */
+      .hexa-tile:hover .hexa-border {
+        stroke: var(--sf-primary, #00d2ff);
+        filter: drop-shadow(0 0 6px var(--sf-primary, #00d2ff));
+      }
+
+      /* Center content */
+      .hexa-content {
+        position: absolute;
+        inset: 0;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        cursor: pointer;
-        transition: filter var(--sf-transition-fast);
-        position: relative;
-        overflow: hidden;
+        text-align: center;
+        padding: 6px;
+        box-sizing: border-box;
+        z-index: 2;
+        pointer-events: none; /* Let clicks pass to the wrapper */
+      }
+      .hexa-content sf-icon {
+        --icon-width: 22px;
+        --icon-height: 22px;
+        transition: color var(--sf-transition-fast), filter var(--sf-transition-fast);
+      }
+      .hexa-tile[data-active="true"] .hexa-content sf-icon {
+        --icon-color: var(--sf-primary, #00d2ff);
+        filter: drop-shadow(0 0 3px var(--sf-primary, #00d2ff));
+      }
+      .hexa-tile[data-active="false"] .hexa-content sf-icon {
+        --icon-color: rgba(224, 232, 255, 0.4);
       }
 
-      .hexa-tile:hover { filter: brightness(1.2); }
-      .hexa-tile[data-active="true"] { background: var(--sf-primary-dim); }
-
-      .hexa-tile .tile-icon { font-size: 1.5rem; }
-      .hexa-tile .tile-label {
+      .tile-label {
         font-size: 0.625rem;
-        color: var(--sf-text-secondary);
-        text-align: center;
+        font-weight: 500;
         margin-top: 4px;
-        max-width: 70px;
-        white-space: nowrap;
+        max-width: 90%;
+        line-height: 1.2;
         overflow: hidden;
         text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        transition: color var(--sf-transition-fast);
+      }
+      .hexa-tile[data-active="true"] .tile-label {
+        color: #ffffff;
+        text-shadow: 0 0 5px var(--sf-primary, #00d2ff);
+      }
+      .hexa-tile[data-active="false"] .tile-label {
+        color: rgba(224, 232, 255, 0.4);
       }
 
       /* Weather alert band */
@@ -68,45 +250,13 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
         text-align: center;
         font-size: var(--sf-font-size-sm);
         font-weight: 600;
+        width: 100%;
+        box-sizing: border-box;
       }
       .weather-alert[data-level="green"] { background: rgba(0,255,157,0.1); color: #00ff9d; }
       .weather-alert[data-level="yellow"] { background: rgba(255,214,10,0.1); color: #ffd60a; }
       .weather-alert[data-level="orange"] { background: rgba(255,107,53,0.1); color: #ff6b35; }
       .weather-alert[data-level="red"] { background: rgba(255,77,109,0.15); color: #ff4d6d; }
-
-      /* ── Responsive ───────────────────────────────────────── */
-      @container sf-card (max-width: 1023px) {
-        .hexa-tile {
-          width: 80px;
-          height: 89px;
-        }
-        .hexa-tile .tile-label { max-width: 62px; }
-      }
-      /* ── Mobile : 2 tuiles par rangée, taille fluide ─────── */
-      @container sf-card (max-width: 599px) {
-        /* Grid en 2 colonnes serrées qui remplissent la largeur */
-        .hexa-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 6px;
-          justify-items: center;
-        }
-        /* Chaque tuile prend 90% de sa cellule grid */
-        .hexa-tile {
-          width: 90%;
-          /* ratio hexagonal : hauteur ≈ largeur × 1.155 */
-          aspect-ratio: 1 / 1.155;
-          height: auto;
-        }
-        .hexa-tile .tile-icon { font-size: 2rem; }
-        .hexa-tile .tile-label {
-          font-size: 0.7rem;
-          max-width: 90%;
-          white-space: normal;
-          line-height: 1.2;
-        }
-        .container { padding: var(--sf-spacing-sm); }
-      }
     `,
   ];
 
@@ -116,67 +266,169 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     const tiles = this.config.tiles ?? [];
     const weather = this.config.weather;
 
+    // connected user details
+    const connectedPerson = Object.values(this.hass.states).find(
+      state => state.entity_id.startsWith('person.') && state.attributes.user_id === this.hass.user?.id
+    );
+    const userId = connectedPerson?.entity_id;
+
+    // filter tiles by person visibility
+    const visibleTiles = tiles.filter(tile => {
+      if (!tile.visibility || tile.visibility.length === 0) return true;
+      return userId ? tile.visibility.includes(userId) : true;
+    });
+
+    const renderedTiles: TemplateResult[] = [];
+
+    // Prepend weather tile if active
+    if (weather?.activate && weather.weather_entity) {
+      renderedTiles.push(this._renderWeatherTile(weather));
+    }
+
+    // Append custom tiles
+    for (const tile of visibleTiles) {
+      renderedTiles.push(this._renderCustomTile(tile));
+    }
+
+    // Chunk tiles into rows of 4 columns maximum
+    const tileRows: TemplateResult[][] = [];
+    for (let i = 0; i < renderedTiles.length; i += 4) {
+      tileRows.push(renderedTiles.slice(i, i + 4));
+    }
+
     return html`
       <ha-card>
-        ${this.config.header_message ? html`<div class="sf-header">${this.config.header_message}</div>` : ''}
+        ${this._renderHeader(connectedPerson)}
         <div class="container">
           ${weather?.activate ? this._renderWeatherAlert(weather) : ''}
           <div class="hexa-grid">
-            ${this._renderWeatherTile(weather)}
-            ${repeat(
-              tiles,
-              // ADR-005: tiles use entity (not entity_id), fallback to name/index
-              (t, i) => t.entity ?? t.name ?? String(i),
-              t => this._renderCustomTile(t)
-            )}
+            ${tileRows.map((row, i) => {
+              const isEvenRow = i % 2 === 0;
+              return html`
+                <div class="hexa-row">
+                  ${isEvenRow ? this._renderHalfTile(true) : ''}
+                  ${row}
+                  ${!isEvenRow ? this._renderHalfTile(false) : ''}
+                </div>
+              `;
+            })}
           </div>
         </div>
       </ha-card>
     `;
   }
 
+  private _renderHeader(connectedPerson: HassEntity | undefined): TemplateResult {
+    const userName = connectedPerson?.attributes.friendly_name ?? this.hass.user?.name ?? 'User';
+    const userPicture = connectedPerson?.attributes.entity_picture as string | undefined;
+    const personId = connectedPerson?.entity_id;
+    const personState = connectedPerson?.state ?? 'home';
+
+    let zoneIcon = 'mdi:home';
+    if (personId) {
+      const activeZone = Object.values(this.hass.states).find(
+        s => s.entity_id.startsWith('zone.') && 
+             Array.isArray(s.attributes.persons) && 
+             s.attributes.persons.includes(personId)
+      );
+      if (activeZone?.attributes.icon) {
+        zoneIcon = activeZone.attributes.icon as string;
+      } else if (personState === 'not_home') {
+        zoneIcon = 'mdi:home-off-outline';
+      }
+    } else {
+      if (personState === 'not_home') {
+        zoneIcon = 'mdi:home-off-outline';
+      }
+    }
+
+    return html`
+      <div class="header">
+        <div class="avatar-container">
+          <div class="avatar">
+            ${userPicture 
+              ? html`<img src="${userPicture}" alt="${userName}" />` 
+              : html`<div class="avatar-initials">${userName[0]?.toUpperCase()}</div>`
+            }
+          </div>
+          <div class="status-badge">
+            <sf-icon .icon="${zoneIcon}" .connection="${this.hass.connection}"></sf-icon>
+          </div>
+        </div>
+        <div class="header-info">
+          <div class="header-message">${this.config.header_message ?? 'Hey, Welcome Back!'}</div>
+          <div class="header-name">${userName}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  private _renderHalfTile(isLeft: boolean): TemplateResult {
+    const points = isLeft ? '66,2 66,162 2,122 2,42' : '0,2 64,42 64,122 0,162';
+    return html`
+      <div class="hexa-half ${isLeft ? 'left' : 'right'}">
+        <svg viewBox="0 0 66 164">
+          <polygon points="${points}" />
+        </svg>
+      </div>
+    `;
+  }
+
   private _renderWeatherAlert(weather: NonNullable<SciFiHexaTilesConfig['weather']>): TemplateResult {
-    // ADR-005: weather_alert_entity (not weather_alert_entity_id)
     const alertState = weather.weather_alert_entity
       ? this.hass.states[weather.weather_alert_entity]?.state
       : null;
     if (!alertState) return html``;
 
     const stateToLevel = (state: string): string => {
-      if (state === weather.state_green) return 'green';
-      if (state === weather.state_yellow) return 'yellow';
-      if (state === weather.state_orange) return 'orange';
-      if (state === weather.state_red) return 'red';
+      const lowerState = state.toLowerCase().trim();
+      const green = (weather.state_green ?? 'vert').toLowerCase().trim();
+      const yellow = (weather.state_yellow ?? 'jaune').toLowerCase().trim();
+      const orange = (weather.state_orange ?? 'orange').toLowerCase().trim();
+      const red = (weather.state_red ?? 'rouge').toLowerCase().trim();
+
+      if (lowerState === green) return 'green';
+      if (lowerState === yellow) return 'yellow';
+      if (lowerState === orange) return 'orange';
+      if (lowerState === red) return 'red';
       return 'green';
     };
 
+    const level = stateToLevel(alertState);
+    if (level === 'green') return html``; // Hidden on green state per Spec 07
+
     return html`
-      <div class="weather-alert" data-level="${stateToLevel(alertState)}">
+      <div class="weather-alert" data-level="${level}">
         ⚠️ Alerte météo : ${alertState}
       </div>
     `;
   }
 
   private _renderWeatherTile(weather: SciFiHexaTilesConfig['weather']): TemplateResult {
-    // ADR-005: weather_entity (not weather_entity_id)
     if (!weather?.weather_entity) return html``;
     const state = this.hass.states[weather.weather_entity];
     if (!state) return html``;
     const temp = state.attributes['temperature'] as number | undefined;
+    const name = state.attributes.friendly_name ?? 'Météo';
+
     return html`
-      <div class="hexa-tile" data-active="false" @click="${() => weather.link ? this._navigate(weather.link) : undefined}">
-        <sf-icon .icon="mdi:weather-cloudy" .connection="${this.hass.connection}"></sf-icon>
-        <span class="tile-label">${temp !== null && temp !== undefined ? `${temp}°` : state.state}</span>
+      <div class="hexa-tile" data-active="false" aria-label="${name}" @click="${() => weather.link ? this._navigate(weather.link) : undefined}">
+        <svg class="hexa-svg" viewBox="0 0 132 164">
+          <polygon class="hexa-bg" points="66,2 130,42 130,122 66,162 2,122 2,42" />
+          <polygon class="hexa-border" points="66,4 128,43 128,121 66,160 4,121 4,43" />
+        </svg>
+        <div class="hexa-content">
+          <sf-icon .icon="mdi:weather-cloudy" .connection="${this.hass.connection}"></sf-icon>
+          <span class="tile-label">${temp !== null && temp !== undefined ? `${temp}°` : state.state}</span>
+        </div>
       </div>
     `;
   }
 
   private _renderCustomTile(tile: SciFiHexaTileConfig): TemplateResult {
-    // ADR-005: tile uses entity (not entity_id), active_icon/inactive_icon (not icon)
     const entityId = tile.entity;
     const state = entityId ? this.hass.states[entityId] : undefined;
 
-    // Determine if tile is "active" using state_on array or fallback to state === 'on'
     const isActive = state
       ? (tile.state_on
           ? tile.state_on.includes(state.state)
@@ -185,12 +437,16 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
 
     const name = tile.name ?? state?.attributes.friendly_name ?? entityId ?? '';
 
-    // ADR-005: active_icon/inactive_icon (not icon)
-    const icon = (isActive
-      ? (tile.active_icon ?? 'mdi:toggle-switch')
-      : (tile.inactive_icon ?? 'mdi:toggle-switch-off'));
+    // Spec 07 domain fallbacks
+    const defaultIcon = entityId?.startsWith('light.') ? 'mdi:lightbulb' 
+                      : entityId?.startsWith('switch.') ? 'mdi:power'
+                      : entityId?.startsWith('climate.') ? 'mdi:thermometer'
+                      : 'mdi:toggle-switch';
 
-    // ADR-005: link navigation (not tap_action)
+    const icon = isActive
+      ? (tile.active_icon ?? state?.attributes.icon ?? defaultIcon)
+      : (tile.inactive_icon ?? state?.attributes.icon ?? defaultIcon);
+
     const handleClick = (): void => {
       if (tile.link) this._navigate(tile.link);
     };
@@ -204,8 +460,14 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
         aria-label="${name}"
         @click="${handleClick}"
       >
-        <sf-icon .icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
-        <span class="tile-label">${name}</span>
+        <svg class="hexa-svg" viewBox="0 0 132 164">
+          <polygon class="hexa-bg" points="66,2 130,42 130,122 66,162 2,122 2,42" />
+          <polygon class="hexa-border" points="66,4 128,43 128,121 66,160 4,121 4,43" />
+        </svg>
+        <div class="hexa-content">
+          <sf-icon .icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
+          <span class="tile-label">${name}</span>
+        </div>
       </div>
     `;
   }

@@ -31,9 +31,8 @@ describe('sci-fi-hexa-tiles', () => {
     expect(el.shadowRoot!.textContent).to.be.empty;
   });
 
-  it('renders weather alert with correct colors', async () => {
+  it('does NOT render weather alert when state is green, but renders it for non-green states', async () => {
     const el = document.createElement('sci-fi-hexa-tiles') as SciFiHexaTilesCard;
-    // ADR-005: weather_alert_entity (not weather_alert_entity_id)
     el.setConfig({
       type: 'custom:sci-fi-hexa-tiles',
       weather: {
@@ -46,23 +45,109 @@ describe('sci-fi-hexa-tiles', () => {
       }
     } as unknown as any);
 
-    // Test green
+    // Test green -> should not render anything
     el.hass = makeMockHass({ states: { 'sensor.alert': makeMockEntity({ entity_id: 'sensor.alert', state: 'Vert' }) } });
     document.body.appendChild(el);
     await el.updateComplete;
-    const alert = el.shadowRoot!.querySelector('.weather-alert') as HTMLElement;
-    expect(alert.getAttribute('data-level')).to.equal('green');
-    expect(alert.textContent).to.include('Vert');
+    let alert = el.shadowRoot!.querySelector('.weather-alert') as HTMLElement;
+    expect(alert).to.be.null;
 
-    // Test red
+    // Test red -> should render red banner
     el.hass = makeMockHass({ states: { 'sensor.alert': makeMockEntity({ entity_id: 'sensor.alert', state: 'Rouge' }) } });
     await el.updateComplete;
+    alert = el.shadowRoot!.querySelector('.weather-alert') as HTMLElement;
+    expect(alert).not.to.be.null;
     expect(alert.getAttribute('data-level')).to.equal('red');
+    expect(alert.textContent).to.include('Rouge');
+  });
 
-    // Test unknown state (defaults to green)
-    el.hass = makeMockHass({ states: { 'sensor.alert': makeMockEntity({ entity_id: 'sensor.alert', state: 'Inconnu' }) } });
+  it('renders connected user profile header with message, name, circular avatar and status badge', async () => {
+    const el = document.createElement('sci-fi-hexa-tiles') as SciFiHexaTilesCard;
+    el.setConfig({
+      type: 'custom:sci-fi-hexa-tiles',
+      header_message: 'Hey, Welcome Back!',
+      tiles: []
+    } as unknown as any);
+
+    el.hass = makeMockHass({
+      states: {
+        'person.adrien': makeMockEntity({
+          entity_id: 'person.adrien',
+          state: 'home',
+          attributes: {
+            user_id: '1',
+            friendly_name: 'Adrien',
+            entity_picture: 'profile_pic.jpg'
+          }
+        }),
+        'zone.home': makeMockEntity({
+          entity_id: 'zone.home',
+          state: '0',
+          attributes: {
+            persons: ['person.adrien'],
+            icon: 'mdi:home-heart'
+          }
+        })
+      }
+    });
+
+    document.body.appendChild(el);
     await el.updateComplete;
-    expect(alert.getAttribute('data-level')).to.equal('green');
+
+    // Check header elements
+    const message = el.shadowRoot!.querySelector('.header-message') as HTMLElement;
+    const name = el.shadowRoot!.querySelector('.header-name') as HTMLElement;
+    const avatar = el.shadowRoot!.querySelector('.avatar img') as HTMLImageElement;
+    const badge = el.shadowRoot!.querySelector('.status-badge sf-icon') as any;
+
+    expect(message.textContent).to.include('Hey, Welcome Back!');
+    expect(name.textContent).to.include('Adrien');
+    expect(avatar.src).to.include('profile_pic.jpg');
+    expect(badge.icon).to.equal('mdi:home-heart');
+  });
+
+  it('renders interlocking rows of 4 columns max with left and right decorative half-hexagons', async () => {
+    const el = document.createElement('sci-fi-hexa-tiles') as SciFiHexaTilesCard;
+    el.setConfig({
+      type: 'custom:sci-fi-hexa-tiles',
+      tiles: [
+        { entity: 'switch.t1', name: 'Tile 1' },
+        { entity: 'switch.t2', name: 'Tile 2' },
+        { entity: 'switch.t3', name: 'Tile 3' },
+        { entity: 'switch.t4', name: 'Tile 4' },
+        { entity: 'switch.t5', name: 'Tile 5' },
+        { entity: 'switch.t6', name: 'Tile 6' }
+      ]
+    } as unknown as any);
+
+    el.hass = makeMockHass({
+      states: {
+        'switch.t1': makeMockEntity({ entity_id: 'switch.t1', state: 'off' }),
+        'switch.t2': makeMockEntity({ entity_id: 'switch.t2', state: 'off' }),
+        'switch.t3': makeMockEntity({ entity_id: 'switch.t3', state: 'off' }),
+        'switch.t4': makeMockEntity({ entity_id: 'switch.t4', state: 'off' }),
+        'switch.t5': makeMockEntity({ entity_id: 'switch.t5', state: 'off' }),
+        'switch.t6': makeMockEntity({ entity_id: 'switch.t6', state: 'off' })
+      }
+    });
+
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const rows = el.shadowRoot!.querySelectorAll('.hexa-row');
+    expect(rows.length).to.equal(2);
+
+    // Row 0 should chunk first 4 tiles and have left half-tile
+    const row0 = rows[0] as HTMLElement;
+    expect(row0.querySelectorAll('.hexa-tile').length).to.equal(4);
+    expect(row0.querySelector('.hexa-half.left')).not.to.be.null;
+    expect(row0.querySelector('.hexa-half.right')).to.be.null;
+
+    // Row 1 should chunk remaining 2 tiles and have right half-tile
+    const row1 = rows[1] as HTMLElement;
+    expect(row1.querySelectorAll('.hexa-tile').length).to.equal(2);
+    expect(row1.querySelector('.hexa-half.left')).to.be.null;
+    expect(row1.querySelector('.hexa-half.right')).not.to.be.null;
   });
 
   it('renders weather tile with temperature and link navigation', async () => {

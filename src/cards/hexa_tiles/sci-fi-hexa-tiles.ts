@@ -234,8 +234,8 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
         pointer-events: none; /* Let clicks pass to the wrapper */
       }
       .hexa-content sf-icon {
-        --icon-width: 22px;
-        --icon-height: 22px;
+        --icon-width: 28px;
+        --icon-height: 28px;
         transition: color var(--sf-transition-fast), filter var(--sf-transition-fast);
       }
       .hexa-tile[data-active="true"] .hexa-content sf-icon {
@@ -264,11 +264,15 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
         transition: color var(--sf-transition-fast);
       }
       .hexa-tile[data-active="true"] .tile-label {
-        color: #ffffff;
+        color: var(--sf-primary, #00d2ff);
         text-shadow: 0 0 5px var(--sf-primary, #00d2ff);
       }
       .hexa-tile[data-active="false"] .tile-label {
         color: rgba(224, 232, 255, 0.4);
+      }
+      .hexa-tile.weather-tile[data-active="true"] .tile-label {
+        color: #ffd60a;
+        text-shadow: 0 0 5px #ffd60a;
       }
 
       .weather-alert {

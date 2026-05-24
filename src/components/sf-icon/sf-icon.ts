@@ -27,7 +27,7 @@ const FALLBACK_MDI_PATH =
 
 const isTestEnv = (): boolean => {
   return typeof window === 'undefined' ||
-    (window as any).__vitest_environment__ ||
+    '__vitest_environment__' in window ||
     (typeof process !== 'undefined' && process.env.NODE_ENV === 'test');
 };
 

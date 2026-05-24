@@ -164,3 +164,29 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Evidence**: On tablet (iPad Air) and PC viewports in the workbench, the hexagons collapsed into a standard non-shifting vertical grid because `--cols` was not inherited by the `:host` selector when defined on a child element (`<ha-card style="--cols: ...">`).
 - **Anti-pattern**: Attempting to style the `:host` component using CSS custom variables defined inside its own template (on child elements like `ha-card`). Custom properties inherit downwards, not upwards.
 - **Fix**: Set custom properties needed by the `:host` selector directly on the host element's style property in JavaScript using `this.style.setProperty('--name', value)` inside reactive hooks (`_updateLayout` / `connectedCallback`).
+
+### L035: MDI Icon Mapping for Weather Conditions in Lovelace Hexagonal Dashboards
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi v2 — sci-fi-hexa-tiles.ts + /tdd
+- **Evidence**: Replaced hardcoded `mdi:weather-cloudy` weather icon and temperature text with custom mapped weather icon matching HA weather state and entity's friendly name (city name) as tile label.
+- **Pattern**: When rendering a weather tile inside specialized layout grids (like hexagons), avoid hardcoding temporary/generic icons. Define a standard `WEATHER_ICON_MAP` covering all standard HA weather states (`sunny`, `rainy`, etc.), and map the state value to dynamically select the correct icon. Render the `friendly_name` of the weather entity as the label to present the target city clearly.
+
+### L036: Hybrid Native Element Rendering for Heavy WebSocket APIs
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi — sf-icon.ts session
+- **Evidence**: Fetching the MDI icon registry via the WebSocket `frontend/get_icons` with category `mdi` is deprecated in modern HA and throws `invalid_format`. Bypassed the API and rendered `<ha-icon .icon="${this.icon}"></ha-icon>` natively in the browser.
+- **Pattern**: For custom elements that render standard platform-native elements (like icons) which are backed by heavy databases, bypass custom APIs and delegate rendering directly to the host platform's native custom elements (`<ha-icon>`). Use inline CSS property mapping (`--mdc-icon-size: var(--icon-width); width: var(--icon-width); ...`) to bridge custom design tokens.
+
+### L037: Environment Isolation to Prevent Startup Race Conditions
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi — sf-icon.ts session
+- **Evidence**: On dashboard load, the custom card and `<ha-icon>` register concurrently. A dynamic check `customElements.get('ha-icon') !== undefined` at first update failed due to this registration race, locking the card into the broken WebSocket fallback branch.
+- **Pattern**: When deciding whether to render a platform element at element initialization, do not rely on dynamic custom element registration checks which are subject to race conditions. Instead, use static environment detection helpers (e.g. `isLiveHA()` by checking URL pathnames and vitest environment flags) to unconditionally choose the platform-native element rendering path in production. The browser will naturally upgrade the element once it is registered.
+
+### L038: Mocking Dynamic Platform Elements in Isolated Dev Tools
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi — dev/workbench.html session
+- **Evidence**: Standalone simulators (like `dev/workbench.html`) do not register the platform's native elements (`<ha-icon>`), causing elements using the hybrid native strategy to fail to render and clutter logs.
+- **Pattern**: In isolated developer simulators (workbench), declare a lightweight mock custom element (`ha-icon`) that fetches assets from a public, versioned stable CDN (unpkg) dynamically. This satisfies offline-first HACS compliance because the mock/CDN is restricted purely to dev simulation and never bundled or loaded in production, while enabling a high-fidelity visual experience in development.
+
+

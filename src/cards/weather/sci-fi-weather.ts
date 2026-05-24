@@ -478,23 +478,27 @@ export class SciFiWeatherCard extends SciFiBaseCard {
   // MARK: Render Helpers
 
   private _renderHeader(weatherEntity: any) {
-    const condition = weatherEntity.state;
-    const tempUnit = weatherEntity.attributes.temperature_unit ?? '°C';
-
     const timeOptions: Intl.DateTimeFormatOptions = { timeStyle: 'short' };
     const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' };
     
-    const timeStr = new Intl.DateTimeFormat(navigator.language, timeOptions).format(this._date);
-    const dateStr = new Intl.DateTimeFormat(navigator.language, dateOptions).format(this._date);
+    const time = new Intl.DateTimeFormat(navigator.language, timeOptions).format(this._date);
+    const date = new Intl.DateTimeFormat(navigator.language, dateOptions).format(this._date);
+
+    const sunEntity = this.hass?.states['sun.sun'];
+    const isDay = sunEntity ? sunEntity.state !== 'below_horizon' : true;
+    const condition = weatherEntity.state;
+    const temp = weatherEntity.attributes.temperature;
 
     return html`
       <div class="weather-icon">
-        ${this._getWeatherIcon(condition, this._isDay())}
+        ${(WEATHER_ICON_SET as any)[isDay ? condition : `${condition}-night`] ?? (WEATHER_ICON_SET as any)[condition] ?? html``}
       </div>
       <div class="weather-clock">
-        <div class="state">${this._getlabels(condition)}, ${tempUnit}</div>
-        <div class="hour">${timeStr}</div>
-        <div class="date">${dateStr}</div>
+        <div class="state">
+          ${this._getlabels(condition)}, ${temp}${weatherEntity.attributes.temperature_unit ?? '°C'}
+        </div>
+        <div class="hour">${time}</div>
+        <div class="date">${date}</div>
       </div>
     `;
   }
@@ -540,22 +544,19 @@ export class SciFiWeatherCard extends SciFiBaseCard {
     const freeze = getSensorVal('freeze_chance');
     const snow = getSensorVal('snow_chance');
 
-    const renderSensor = (name: string, iconKey: string, value: string) => html`
+    const renderSensor = (name: string, value: string) => html`
       <div class="sensor">
         <div class="label">${this._getlabels(name)}</div>
-        <div class="state">
-          ${(WEATHER_ICON_SET as any)[iconKey] ?? (WEATHER_ICON_SET as any)['cloudy-day']}
-        </div>
         <div class="label">${value}</div>
       </div>
     `;
 
     return html`
-      ${renderSensor('cloud', 'cloudy-day', cloud)}
-      ${renderSensor('precipitation', 'pouring-day', precip)}
-      ${renderSensor('rainy', 'rainy-day', rain)}
-      ${renderSensor('frozen', 'snowy-day', freeze)}
-      ${renderSensor('snowy', 'snowy-day', snow)}
+      ${renderSensor('cloud', cloud)}
+      ${renderSensor('precipitation', precip)}
+      ${renderSensor('rainy', rain)}
+      ${renderSensor('frozen', freeze)}
+      ${renderSensor('snowy', snow)}
     `;
   }
 
@@ -601,15 +602,12 @@ export class SciFiWeatherCard extends SciFiBaseCard {
             </div>
             <sf-icon icon="mdi:chevron-down"></sf-icon>
           </button>
+          
           <div class="dropdown-content">
             ${Object.keys(SENSORS_MAP).map(key => html`
-              <div @click=${(e: Event) => this._selectChartDataKind(e, key)} class="dropdown-item">
-                <div class="item-icon">
-                  ${(WEATHER_ICON_SET as any)[SENSORS_MAP[key].dropdown.icon] ?? html``}
-                </div>
-                <div class="dropdown-item-label">
-                  ${this._getlabels(SENSORS_MAP[key].dropdown.label)}
-                </div>
+              <div class="dropdown-item" @click=${(e: Event) => this._selectChartDataKind(e, key)}>
+                ${(WEATHER_ICON_SET as any)[SENSORS_MAP[key].dropdown.icon] ?? html``}
+                <div class="dropdown-item-label">${this._getlabels(SENSORS_MAP[key].dropdown.label)}</div>
               </div>
             `)}
           </div>

@@ -274,12 +274,12 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
 
   constructor() {
     super();
-    // Synchronous initial guess based on screen width
-    this._updateLayout(window.innerWidth);
   }
 
   override connectedCallback(): void {
     super.connectedCallback();
+    this.style.setProperty('--cols', String(this._cols));
+    
     this._resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const width = entry.contentRect.width;

@@ -16,6 +16,7 @@ export const climateStyles = css`
   .header {
     display: flex;
     flex-direction: row;
+    border-top: var(--sf-border-width, 1px) solid var(--sf-border);
     border-bottom: var(--sf-border-width, 1px) solid var(--sf-border);
     background-color: transparent;
     padding: 5px 10px;

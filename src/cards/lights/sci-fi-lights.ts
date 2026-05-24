@@ -67,9 +67,11 @@ export class SciFiLightsCard extends SciFiBaseCard {
       .header {
         display: flex;
         flex-direction: row;
-        border-bottom: 1px solid rgba(0,210,255,0.2);
+        border-top: var(--sf-border-width, 1px) solid var(--sf-border);
+        border-bottom: var(--sf-border-width, 1px) solid var(--sf-border);
         background-color: transparent;
-        padding: 5px 10px 0 10px;
+        padding: 5px 10px;
+        font-size: var(--sf-text-sm, 12px);
         align-items: center;
         min-height: 44px;
       }

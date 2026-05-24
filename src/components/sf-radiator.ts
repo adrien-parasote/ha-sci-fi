@@ -32,6 +32,7 @@ export class SciFiRadiator extends LitElement {
         height: 100%;
         width: 368px;
         position: relative;
+        overflow-x: hidden;
       }
       .name {
         position: absolute;

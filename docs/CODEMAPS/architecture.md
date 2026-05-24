@@ -1,4 +1,4 @@
-<!-- Generated: 2026-05-24 | Files scanned: 57 | Token estimate: ~450 | Updated: post-responsive-grid -->
+<!-- Generated: 2026-05-24 | Files scanned: 68 | Token estimate: ~460 | Updated: post-coverage-max -->
 
 # Home Assistant Sci-Fi Cards — Architecture v2
 
@@ -65,7 +65,7 @@ Dynamic icon values **require** Lit property binding (`.icon=`), not attribute b
 
 ## Test Coverage
 
-- **22 test files / 158 tests** — all GREEN (90.39% branch, ~100% functions/statements)
+- **34 test files / 210 tests** — all GREEN (92.82% statements, 83.04% branches, 97.80% functions, 94.91% lines)
 - Canvas API mocked globally in `tests/setup.ts`
 - `happy-dom` history API mocked per-test via `vi.stubGlobal`
 - `window.customIcons` restored via `afterEach` cleanup

@@ -54,13 +54,14 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
         width: 100%;
         height: 100%;
         border-radius: 50%;
-        border: 2px solid var(--sf-primary, #00d2ff);
-        box-shadow: 0 0 8px var(--sf-primary, #00d2ff);
+        border: 2px solid #007aff;
+        box-shadow: 0 0 8px #007aff;
         overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
         background: rgba(255, 255, 255, 0.04);
+        position: relative;
       }
       .avatar img {
         width: 100%;
@@ -70,26 +71,26 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
       .avatar-initials {
         font-size: 1.5rem;
         font-weight: bold;
-        color: var(--sf-primary, #00d2ff);
+        color: #007aff;
       }
       .status-badge {
         position: absolute;
         top: -4px;
         right: -4px;
         background: #000000;
-        border: 1.5px solid var(--sf-primary, #00d2ff);
+        border: 1.5px solid #007aff;
         border-radius: 50%;
         width: 22px;
         height: 22px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 0 5px var(--sf-primary, #00d2ff);
+        box-shadow: 0 0 5px #007aff;
       }
       .status-badge sf-icon {
         --icon-width: 14px;
         --icon-height: 14px;
-        --icon-color: var(--sf-primary, #00d2ff);
+        --icon-color: #007aff;
       }
       .header-info {
         display: flex;
@@ -109,10 +110,18 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
         text-shadow: 0 0 6px var(--sf-primary, #00d2ff);
       }
 
+      /* Icon mapping for Light DOM sf-icon */
+      sf-icon svg, .sf-icon {
+        width: var(--icon-width, 24px);
+        height: var(--icon-height, 24px);
+        fill: var(--icon-color, currentColor);
+        display: inline-block;
+      }
+
       /* ===== Interlocking Hexagon Grid ===== */
       :host {
-        --tile-width: 78px;
-        --tile-height: 96px;
+        --tile-width: 86px;
+        --tile-height: 100px;
       }
       .hexa-grid {
         display: flex;
@@ -137,14 +146,14 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
         position: relative;
         width: var(--tile-width);
         height: var(--tile-height);
-        margin: 0 2px;
+        margin: 0;
         cursor: pointer;
         display: block;
       }
       .hexa-half {
         width: calc(var(--tile-width) / 2);
         height: var(--tile-height);
-        margin: 0 2px;
+        margin: 0;
         opacity: 0.15;
       }
       .hexa-half svg {
@@ -346,9 +355,10 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
       <div class="header">
         <div class="avatar-container">
           <div class="avatar">
+            <div class="avatar-initials">${userName[0]?.toUpperCase()}</div>
             ${userPicture 
-              ? html`<img src="${userPicture}" alt="${userName}" />` 
-              : html`<div class="avatar-initials">${userName[0]?.toUpperCase()}</div>`
+              ? html`<img src="${userPicture}" alt="${userName}" style="position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" @error="${(e: Event) => (e.target as HTMLElement).style.display = 'none'}" />` 
+              : ''
             }
           </div>
           <div class="status-badge">

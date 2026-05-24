@@ -132,3 +132,10 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Source**: ha-sci-fi — Workbench responsive device frames
 - **Evidence**: `@container (max-width: 450px)` failed to trigger on `ha-card` in the custom workbench. `ha-card` is an unknown custom element to the browser (not registered by HA core in this standalone env), meaning the browser rendered it as `display: inline`. Inline elements cannot act as container query contexts, so the query silently resolved to the width of the content, breaking all mobile breakpoints.
 - **Pattern**: When simulating or mounting Web Components in a standalone workbench or testing environment, ensure custom element wrappers (`ha-card`, etc.) explicitly declare `display: block; width: 100%;` in their base CSS. Relying on the host app (HA) to provide these styles works in production but breaks CSS container queries in isolation.
+
+### L030: SVG-rendered Light DOM Custom Element Sizing & Invisible Icons
+- **Date**: 2026-05-24
+- **Source**: ha-sci-fi v2 — sci-fi-hexa-tiles.ts + /self-debug
+- **Evidence**: `<sf-icon>` renders `<svg class="sf-icon">` in the Light DOM (using `createRenderRoot() { return this; }`). Inside shadow DOM cards setting CSS variables `--icon-width` and `--icon-height` on `<sf-icon>`, but without active rules in card styles mapping these variables to the actual SVG's `width`, `height`, and `fill` (e.g. `sf-icon svg, .sf-icon { width: var(--icon-width); height: var(--icon-height); fill: var(--icon-color); }`), the SVG collapses to `0x0` or renders with default black fill on black backgrounds, becoming completely invisible.
+- **Pattern**: When using custom elements that render in the Light DOM (like `sf-icon`), you must ensure that card stylesheets or global stylesheets map any custom layout variables (width, height, color) directly to the target Light DOM SVG element inside.
+

@@ -70,7 +70,7 @@ export class SciFiRadiator extends LitElement {
         align-items: flex-start;
         flex-direction: column;
         justify-content: flex-start;
-        padding-top: 64px;
+        padding-top: 57px;
       }
       .content .left .select-temperature {
         margin-top: 5px;
@@ -394,7 +394,7 @@ export class SciFiRadiator extends LitElement {
     
     return html`
       <sf-button-card-select
-        position="left down"
+        position="top"
         .icon=${preset_icon}
         title="preset"
         text="${this.__getLabel(presetMode)}"
@@ -403,7 +403,7 @@ export class SciFiRadiator extends LitElement {
         style="--sf-primary-icon-color:${preset_color} --label-color: ${preset_color}"
       ></sf-button-card-select>
       <sf-button-card-select
-        position="left"
+        position="top"
         .icon=${hvac_icon}
         title="mode"
         text="${this.__getLabel(hvacMode)}"

@@ -27,7 +27,7 @@ export class SciFiCardSelectButton extends SciFiCardButton {
         position: absolute;
         transform: translateY(-100%);
         display: flex;
-        background-color: var(--sf-bg-primary);
+        background-color: var(--sf-bg-primary, #0d1117);
         flex-direction: column;
         min-height: fit-content;
         border: var(--sf-border-width, 1px) solid var(--sf-border);
@@ -37,7 +37,8 @@ export class SciFiCardSelectButton extends SciFiCardButton {
         color: var(--sf-text-secondary);
         font-size: var(--sf-text-sm, 12px);
         cursor: pointer;
-        z-index: 10;
+        z-index: 100;
+        min-width: max-content;
       }
       .items.left {
         right: 100%;

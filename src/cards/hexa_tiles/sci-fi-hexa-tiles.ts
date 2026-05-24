@@ -539,20 +539,47 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
 
   private _renderCustomTile(tile: SciFiHexaTileConfig): TemplateResult {
     const entityId = tile.entity;
+
+    // Helper to evaluate active state of a single entity based on config criteria
+    const isEntityActive = (entityState: string, id?: string): boolean => {
+      const isMedia = id?.startsWith('media_player.');
+      if (tile.state_on) {
+        if (tile.state_on.includes(entityState)) return true;
+        // Special case: if state_on contains 'on', also accept common active states for media_player
+        if (tile.state_on.includes('on') && isMedia && ['playing', 'paused', 'on'].includes(entityState)) return true;
+        return false;
+      }
+      if (isMedia) {
+        return ['on', 'playing', 'paused'].includes(entityState);
+      }
+      return entityState === 'on';
+    };
+
+    let isActive = false;
     const state = entityId ? this.hass.states[entityId] : undefined;
 
-    const isActive = state
-      ? (tile.state_on
-          ? tile.state_on.includes(state.state)
-          : state.state === 'on')
-      : false;
+    if (tile.standalone !== false && entityId) {
+      // Standalone tile logic
+      isActive = state ? isEntityActive(state.state, entityId) : false;
+    } else if (tile.entity_kind) {
+      // Aggregated kind tile logic (aggregates multiple entities of the same type/domain)
+      const prefix = `${tile.entity_kind}.`;
+      const excludes = tile.entities_to_exclude ?? [];
+
+      isActive = Object.values(this.hass.states).some(s => {
+        if (!s.entity_id.startsWith(prefix)) return false;
+        if (excludes.includes(s.entity_id)) return false;
+        return isEntityActive(s.state, s.entity_id);
+      });
+    }
 
     const name = tile.name ?? state?.attributes.friendly_name ?? entityId ?? '';
 
-    // Spec 07 domain fallbacks
-    const defaultIcon = entityId?.startsWith('light.') ? 'mdi:lightbulb' 
-                      : entityId?.startsWith('switch.') ? 'mdi:power'
-                      : entityId?.startsWith('climate.') ? 'mdi:thermometer'
+    // Spec 07 domain/kind fallbacks
+    const kind = tile.entity_kind ?? (entityId ? entityId.split('.')[0] : '');
+    const defaultIcon = kind === 'light' ? 'mdi:lightbulb' 
+                      : kind === 'switch' ? 'mdi:power'
+                      : kind === 'climate' ? 'mdi:thermometer'
                       : 'mdi:toggle-switch';
 
     const icon = isActive

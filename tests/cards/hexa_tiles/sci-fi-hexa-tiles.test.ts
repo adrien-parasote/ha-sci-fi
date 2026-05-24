@@ -365,4 +365,76 @@ describe('sci-fi-hexa-tiles', () => {
     expect(openMock).toHaveBeenCalledWith('https://example.com', '_blank', 'noopener,noreferrer');
     vi.unstubAllGlobals();
   });
+
+  it('renders non-standalone (aggregated kind) tiles and resolves active state correctly', async () => {
+    const el = document.createElement('sci-fi-hexa-tiles') as SciFiHexaTilesCard;
+    el.setConfig({
+      type: 'custom:sci-fi-hexa-tiles',
+      tiles: [
+        {
+          standalone: false,
+          entity_kind: 'light',
+          name: 'Lumières',
+          entities_to_exclude: ['light.excluded'],
+          state_on: ['on']
+        },
+        {
+          standalone: false,
+          entity_kind: 'climate',
+          name: 'Chauffage',
+          state_on: ['auto', 'heat']
+        }
+      ]
+    } as unknown as any);
+
+    el.hass = makeMockHass({
+      states: {
+        'light.l1': makeMockEntity({ entity_id: 'light.l1', state: 'off' }),
+        'light.l2': makeMockEntity({ entity_id: 'light.l2', state: 'on' }),
+        'light.excluded': makeMockEntity({ entity_id: 'light.excluded', state: 'on' }),
+        'climate.c1': makeMockEntity({ entity_id: 'climate.c1', state: 'off' }),
+        'climate.c2': makeMockEntity({ entity_id: 'climate.c2', state: 'heat' })
+      }
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const tiles = el.shadowRoot!.querySelectorAll('.hexa-tile[role="button"]');
+    expect(tiles.length).to.equal(2);
+
+    // Light tile: active because light.l2 is 'on' (and l1 is off, excluded is ignored)
+    expect(tiles[0]!.getAttribute('data-active')).to.equal('true');
+    expect(tiles[0]!.textContent).to.include('Lumières');
+
+    // Climate tile: active because climate.c2 is 'heat'
+    expect(tiles[1]!.getAttribute('data-active')).to.equal('true');
+    expect(tiles[1]!.textContent).to.include('Chauffage');
+  });
+
+  it('handles media_player playing state as active when state_on includes on', async () => {
+    const el = document.createElement('sci-fi-hexa-tiles') as SciFiHexaTilesCard;
+    el.setConfig({
+      type: 'custom:sci-fi-hexa-tiles',
+      tiles: [
+        {
+          standalone: true,
+          entity: 'media_player.bravia_4k_vh22',
+          name: 'Télévision',
+          state_on: ['on']
+        }
+      ]
+    } as unknown as any);
+
+    el.hass = makeMockHass({
+      states: {
+        'media_player.bravia_4k_vh22': makeMockEntity({ entity_id: 'media_player.bravia_4k_vh22', state: 'playing' })
+      }
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const tile = el.shadowRoot!.querySelector('.hexa-tile[role="button"]') as HTMLElement;
+    expect(tile.getAttribute('data-active')).to.equal('true');
+    expect(tile.textContent).to.include('Télévision');
+  });
 });

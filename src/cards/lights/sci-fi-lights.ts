@@ -68,7 +68,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
         display: flex;
         flex-direction: row;
         border-bottom: 1px solid rgba(0,210,255,0.2);
-        background-color: rgba(0,0,0,0.6);
+        background-color: rgba(39, 40, 43, 0.3);
         padding: 5px 10px 0 10px;
         align-items: center;
         min-height: 44px;
@@ -195,8 +195,8 @@ export class SciFiLightsCard extends SciFiBaseCard {
         border-bottom: 1px solid rgba(0,210,255,0.15);
         border-top: 1px solid rgba(0,210,255,0.15);
         padding: 10px 0;
-        margin: 0 0 16px 0;
-        background-color: rgba(0,0,0,0.4);
+        margin: 0;
+        background-color: rgba(39, 40, 43, 0.3);
       }
       .floor-info {
         display: flex;
@@ -251,7 +251,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
         flex-direction: row;
         flex: 1;                  /* fill all remaining vertical space in .container */
         align-items: stretch;     /* right panel stretches to same height as area-list */
-        padding: 0 10px;
+        padding: 10px 10px 0 10px;
         gap: 0;
         overflow: hidden;
       }
@@ -292,9 +292,13 @@ export class SciFiLightsCard extends SciFiBaseCard {
         height: var(--hexa-h);
         cursor: pointer;
         flex-shrink: 0;
-        transition: transform 0.15s;
+        transition: transform 0.2s ease;
       }
-      .area-hexa:hover { transform: scale(1.05); }
+      .area-hexa:hover { transform: scale(1.08); }
+      .area-hexa:hover .hexa-border {
+        stroke: var(--sf-primary, #00d2ff);
+        filter: drop-shadow(0 0 5px var(--sf-primary, #00d2ff));
+      }
       .area-hexa svg { width: 100%; height: 100%; display: block; }
       .area-hexa .hexa-bg { transition: fill 0.15s; }
       .area-hexa .hexa-border { fill: none; transition: stroke 0.15s, filter 0.15s; }

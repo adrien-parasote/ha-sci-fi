@@ -83,7 +83,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
           background-color: transparent;
         }
         ha-card {
-          background: transparent !important;
+          background: rgba(39, 40, 43, 0.3) !important;
           border: none !important;
           box-shadow: none !important;
           height: 100%;
@@ -103,7 +103,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
           flex-direction: row;
           justify-content: center;
           column-gap: 20px;
-          border-top: 1px solid var(--primary-bg-color, rgba(255,255,255,0.05));
+          border-top: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
           background-color: var(--primary-bg-alpha-color, transparent);
         }
         .header .weather-icon svg {
@@ -172,7 +172,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
           width: 100%;
           justify-content: center;
           flex-direction: row;
-          border-bottom: 1px solid var(--primary-bg-color, rgba(255,255,255,0.05));
+          border-bottom: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
           background-color: var(--primary-bg-alpha-color, transparent);
           padding-bottom: 10px;
           margin-top: 0px;
@@ -243,8 +243,8 @@ export class SciFiWeatherCard extends SciFiBaseCard {
         }
         .chart-container .chart-header .dropdown .dropdow-button {
           border-radius: var(--border-radius, 8px);
-          border: 1px solid var(--primary-bg-color, rgba(255,255,255,0.1));
-          background-color: var(--primary-bg-alpha-color, rgba(0,0,0,0.2));
+          border: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
+          background-color: rgba(39, 40, 43, 0.3);
           cursor: pointer;
           display: flex;
           flex-direction: row;
@@ -296,8 +296,8 @@ export class SciFiWeatherCard extends SciFiBaseCard {
         /******** DAILY FORECAST *********/
         .days-forecast {
           display: grid;
-          border-bottom: 1px solid var(--primary-bg-color, rgba(255,255,255,0.05));
-          border-top: 1px solid var(--primary-bg-color, rgba(255,255,255,0.05));
+          border-bottom: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
+          border-top: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
           padding: 20px 10px;
           background-color: var(--primary-bg-alpha-color, transparent);
           color: var(--secondary-light-color, #7ca8c9);

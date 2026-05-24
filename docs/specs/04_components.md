@@ -24,7 +24,10 @@ src/
 └── components/
     ├── sf-icon/
     │   ├── sf-icon.ts              [NEW] Icon rendering element
-    │   └── icon-cache.ts           [NEW] idb-keyval icon cache
+    │   ├── icon-cache.ts           [NEW] idb-keyval icon cache
+    │   └── data/
+    │       ├── sf-icons.ts         [NEW] Custom static SVGs
+    │       └── sf-weather-icons.ts [NEW] Animated weather SVGs
     ├── sf-radiator/
     │   ├── sf-radiator.ts          [NEW] Main radiator container
     │   ├── sf-radiator-button.ts   [NEW] Mode select buttons

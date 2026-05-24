@@ -2,9 +2,30 @@
  * Domain selectors — house (floors + areas)
  * Pure, stateless functions. No mutation. Returns new readonly arrays.
  * selectHouseState() is REMOVED per ADR-004 — use direct selectors instead.
+ *
+ * Area resolution order (mirrors HA UI behaviour):
+ *   1. entity.area_id (direct assignment on the entity)
+ *   2. device.area_id (inherited from the device the entity belongs to)
+ * Both cases must be handled — the standard HA pattern is to assign the DEVICE
+ * to an area, which leaves entity.area_id = null for every entity on that device.
  */
 
 import type { HomeAssistantExt, HassFloor, HassArea, HassEntityEntry } from '../types/ha.js';
+
+/**
+ * Resolves the effective area_id for an entity entry.
+ * Returns the entity's own area_id, or falls back to the area of its device.
+ */
+function resolveEntityAreaId(
+  hass: HomeAssistantExt,
+  entry: HassEntityEntry
+): string | null {
+  if (entry.area_id) return entry.area_id;
+  if (entry.device_id && hass.devices) {
+    return hass.devices[entry.device_id]?.area_id ?? null;
+  }
+  return null;
+}
 
 // ─── Floors ───────────────────────────────────────────────────────────────────
 
@@ -73,25 +94,32 @@ export function getAreaById(
 
 /**
  * Returns all entity entries in an area.
+ * Resolves area via the entity directly OR via the entity's device (HA standard pattern).
  */
 export function getEntitiesByArea(
   hass: HomeAssistantExt,
   areaId: string
 ): readonly HassEntityEntry[] {
   if (!hass.entities) return [];
-  return Object.values(hass.entities).filter(entry => entry.area_id === areaId);
+  return Object.values(hass.entities).filter(
+    entry => resolveEntityAreaId(hass, entry) === areaId
+  );
 }
 
 /**
  * Returns entity entries in an area filtered by domain.
- * Domain is extracted from entity_id prefix (e.g. "light" from "light.salon").
+ * Domain is DERIVED from entity_id prefix — the HA entity_registry API does NOT send a `domain` field.
+ * Excludes disabled entities (disabled_by is often absent — treat undefined as not disabled).
+ * Resolves area via entity OR device.
  */
 export function getEntitiesByAreaAndDomain(
   hass: HomeAssistantExt,
   areaId: string,
   domain: string
 ): readonly HassEntityEntry[] {
-  return getEntitiesByArea(hass, areaId).filter(
-    entry => entry.domain === domain && !entry.disabled_by
-  );
+  return getEntitiesByArea(hass, areaId).filter(entry => {
+    const entryDomain = entry.entity_id.split('.')[0];
+    const isDisabled = entry.disabled_by !== null && entry.disabled_by !== undefined;
+    return entryDomain === domain && !isDisabled;
+  });
 }

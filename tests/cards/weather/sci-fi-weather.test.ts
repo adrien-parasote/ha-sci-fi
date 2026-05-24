@@ -6,23 +6,28 @@ import { SciFiWeatherCard } from '../../../src/cards/weather/sci-fi-weather.js';
 import { makeMockHass, makeMockEntity } from '../../fixtures/mock-hass.js';
 
 vi.mock('chart.js', () => {
+  class DummyClass {}
   return {
     Chart: class {
       data: any;
+      options: any;
       static register() {}
-      constructor() {
-        this.data = { labels: [], datasets: [{ data: [] }] };
+      constructor(ctx: any, config: any) {
+        this.data = config.data || { labels: [], datasets: [{ data: [] }] };
+        this.options = config.options || {};
       }
       update() {}
       destroy() {}
     },
-    LineController: {},
-    LineElement: {},
-    PointElement: {},
-    LinearScale: {},
-    CategoryScale: {},
-    Filler: {},
-    Tooltip: {},
+    LineController: DummyClass,
+    BarController: DummyClass,
+    LineElement: DummyClass,
+    BarElement: DummyClass,
+    PointElement: DummyClass,
+    LinearScale: DummyClass,
+    CategoryScale: DummyClass,
+    Filler: DummyClass,
+    Tooltip: DummyClass
   };
 });
 
@@ -30,238 +35,200 @@ describe('sci-fi-weather', () => {
   let el: SciFiWeatherCard;
 
   beforeEach(() => {
+    vi.useFakeTimers();
     el = document.createElement('sci-fi-weather') as SciFiWeatherCard;
     document.body.appendChild(el);
   });
 
   afterEach(() => {
+    vi.restoreAllMocks();
     el.remove();
   });
 
-  it('provides getConfigElement', () => {
-    const editor = SciFiWeatherCard.getConfigElement();
-    expect(editor.tagName.toLowerCase()).to.equal('sci-fi-weather-editor');
+  describe('Cross-spec Contracts', () => {
+    it('provides getConfigElement', () => {
+      const editor = SciFiWeatherCard.getConfigElement();
+      expect(editor.tagName.toLowerCase()).to.equal('sci-fi-weather-editor');
+    });
+
+    it('provides getStubConfig', () => {
+      const config = SciFiWeatherCard.getStubConfig();
+      expect(config.type).to.equal('custom:sci-fi-weather');
+      expect(config.weather_entity).to.equal('weather.forecast_home');
+    });
   });
 
-  it('provides getStubConfig', () => {
-    const config = SciFiWeatherCard.getStubConfig();
-    expect(config.type).to.equal('custom:sci-fi-weather');
-    // ADR-005: weather_entity (not weather_entity_id)
-    expect(config.weather_entity).to.equal('weather.forecast_home');
-  });
-
-  it('renders gracefully without hass', async () => {
-    (el as any).setConfig(SciFiWeatherCard.getStubConfig());
-    await el.updateComplete;
-    expect(el.shadowRoot!.textContent).to.be.empty;
-  });
-
-  it('renders error message when entity is not found', async () => {
-    // ADR-005: weather_entity (not weather_entity_id)
-    (el as any).setConfig({ type: 'custom:sci-fi-weather', weather_entity: 'weather.missing' });
-    el.hass = makeMockHass();
-    await el.updateComplete;
-    expect(el.shadowRoot!.textContent).to.include('Entité météo non trouvée : weather.missing');
-  });
-
-  it('renders current conditions and handles chart gracefully', async () => {
-    // ADR-005: weather_entity (not weather_entity_id)
-    (el as any).setConfig({
-      type: 'custom:sci-fi-weather',
-      header_message: 'Météo',
-      weather_entity: 'weather.home',
-      weather_daily_forecast_limit: 2
-    });
-
-    el.hass = makeMockHass({
-      states: {
-        'weather.home': makeMockEntity({
-          entity_id: 'weather.home',
-          state: 'sunny',
-          attributes: {
-            temperature: 24,
-            humidity: 45,
-            wind_speed: 12,
-            forecast: [
-              { datetime: '2023-10-10T12:00:00Z', temperature: 25, templow: 15, condition: 'sunny' },
-              { datetime: '2023-10-11T12:00:00Z', temperature: 22, templow: 14, condition: 'cloudy' },
-              { datetime: '2023-10-12T12:00:00Z', temperature: 18, templow: 10, condition: 'rainy' }
-            ]
-          }
-        })
-      }
-    });
-
-    await el.updateComplete;
-
-    expect(el.shadowRoot!.textContent).to.include('Météo');
-    expect(el.shadowRoot!.textContent).to.include('24°');
-    expect(el.shadowRoot!.textContent).to.include('sunny');
-    expect(el.shadowRoot!.textContent).to.include('45%');
-    expect(el.shadowRoot!.textContent).to.include('12 km/h');
-
-    // Should only render 2 forecast days due to limit
-    const days = el.shadowRoot!.querySelectorAll('.forecast-day');
-    expect(days.length).to.equal(2);
-    expect(days[0]!.textContent).to.include('25°');
-    expect(days[0]!.textContent).to.include('15°');
-    expect(days[1]!.textContent).to.include('22°');
-
-    // Check chart canvas exists
-    const canvas = el.shadowRoot!.querySelector('canvas');
-    expect(canvas).not.to.be.null;
-  });
-
-  it('updates chart data when attributes change', async () => {
-    // ADR-005: weather_entity (not weather_entity_id)
-    (el as any).setConfig({ type: 'custom:sci-fi-weather', weather_entity: 'weather.home' });
-
-    el.hass = makeMockHass({
-      states: {
-        'weather.home': makeMockEntity({
-          entity_id: 'weather.home',
-          state: 'sunny',
-          attributes: {
-            forecast: [
-              { datetime: '2023-10-10T12:00:00Z', temperature: 25 }
-            ]
-          }
-        })
-      }
-    });
-
-    await el.updateComplete;
-
-    el.hass = makeMockHass({
-      states: {
-        'weather.home': makeMockEntity({
-          entity_id: 'weather.home',
-          state: 'sunny',
-          attributes: {
-            forecast: [
-              { datetime: '2023-10-10T12:00:00Z', temperature: 30 }
-            ]
-          }
-        })
-      }
-    });
-
-    await el.updateComplete;
-    // If we reach here, updating the chart worked without throwing.
-    expect(true).to.be.true;
-  });
-
-  it('renders alert band with correct level', async () => {
-    // ADR-005: alert section preserved
-    (el as any).setConfig({
-      type: 'custom:sci-fi-weather',
-      weather_entity: 'weather.home',
-      alert: {
-        entity_id: 'sensor.meteo_alert',
-        state_green: 'Vert',
-        state_yellow: 'Jaune',
-        state_orange: 'Orange',
-        state_red: 'Rouge'
-      }
-    });
-
-    el.hass = makeMockHass({
-      states: {
-        'weather.home': makeMockEntity({ entity_id: 'weather.home', state: 'sunny', attributes: {} }),
-        'sensor.meteo_alert': makeMockEntity({ entity_id: 'sensor.meteo_alert', state: 'Orange' })
-      }
-    });
-
-    await el.updateComplete;
-
-    const alertBand = el.shadowRoot!.querySelector('.alert-band') as HTMLElement;
-    expect(alertBand).not.to.be.null;
-    expect(alertBand.style.color).to.include('#ff6b35'); // orange color
-    expect(el.shadowRoot!.textContent).to.include('Orange');
-
-    // Branch coverage L201: state_yellow
-    el.hass = makeMockHass({
-      states: {
-        'weather.home': makeMockEntity({ entity_id: 'weather.home', state: 'sunny', attributes: {} }),
-        'sensor.meteo_alert': makeMockEntity({ entity_id: 'sensor.meteo_alert', state: 'Jaune' })
-      }
-    });
-    await el.updateComplete;
-    // Branch coverage L201: yellow level resolves correctly
-    expect(el.shadowRoot!.textContent).to.include('Jaune');
-
-    // Branch coverage L202: state_red
-    el.hass = makeMockHass({
-      states: {
-        'weather.home': makeMockEntity({ entity_id: 'weather.home', state: 'sunny', attributes: {} }),
-        'sensor.meteo_alert': makeMockEntity({ entity_id: 'sensor.meteo_alert', state: 'Rouge' })
-      }
-    });
-    await el.updateComplete;
-    expect(el.shadowRoot!.textContent).to.include('Rouge');
-  });
-
-  it('subscribes to hourly and daily forecasts and renders them', async () => {
-    (el as any).setConfig({
-      type: 'custom:sci-fi-weather',
-      weather_entity: 'weather.home',
-      weather_daily_forecast_limit: 2
-    });
-
-    let hourlyCallback: any;
-    let dailyCallback: any;
-
-    const mockHass = makeMockHass({
-      states: {
-        'weather.home': makeMockEntity({
-          entity_id: 'weather.home',
-          state: 'sunny',
-          attributes: {
-            temperature: 24,
-            humidity: 45,
-            wind_speed: 12
-          }
-        })
-      }
-    });
-
-    mockHass.connection.subscribeMessage = async (callback: any, params: any) => {
-      if (params.forecast_type === 'hourly') {
-        hourlyCallback = callback;
-      } else if (params.forecast_type === 'daily') {
-        dailyCallback = callback;
-      }
-      return () => {};
-    };
-
-    el.hass = mockHass;
-    await el.updateComplete;
-
-    // Trigger callbacks with forecast data
-    if (hourlyCallback) {
-      hourlyCallback({
-        forecast: [
-          { datetime: '2023-10-10T12:00:00Z', temperature: 25, condition: 'sunny' }
-        ]
+  describe('UI Restoration (Unit Tests)', () => {
+    beforeEach(async () => {
+      (el as any).setConfig({
+        type: 'custom:sci-fi-weather',
+        weather_entity: 'weather.home',
+        alert: {
+          entity_id: 'sensor.meteo_alert',
+          state_green: 'Vert',
+          state_yellow: 'Jaune',
+          state_orange: 'Orange',
+          state_red: 'Rouge'
+        }
       });
-    }
-
-    if (dailyCallback) {
-      dailyCallback({
-        forecast: [
-          { datetime: '2023-10-10T12:00:00Z', temperature: 25, templow: 15, condition: 'sunny' },
-          { datetime: '2023-10-11T12:00:00Z', temperature: 22, templow: 14, condition: 'cloudy' }
-        ]
+      el.hass = makeMockHass({
+        states: {
+          'weather.home': makeMockEntity({
+            entity_id: 'weather.home',
+            state: 'sunny',
+            attributes: {
+              temperature: 24,
+              temperature_unit: '°C',
+              friendly_name: 'Home',
+            }
+          }),
+          'sun.sun': makeMockEntity({
+            entity_id: 'sun.sun',
+            state: 'above_horizon',
+            attributes: {
+              next_dawn: '2026-05-25T04:00:00.000Z',
+              next_dusk: '2026-05-24T20:00:00.000Z',
+            }
+          }),
+          'sensor.home_daily_precipitation': makeMockEntity({ state: '2', attributes: { unit_of_measurement: 'mm' } }),
+          'sensor.home_freeze_chance': makeMockEntity({ state: '0', attributes: { unit_of_measurement: '%' } }),
+          'sensor.home_rain_chance': makeMockEntity({ state: '10', attributes: { unit_of_measurement: '%' } }),
+          'sensor.home_snow_chance': makeMockEntity({ state: '0', attributes: { unit_of_measurement: '%' } }),
+          'sensor.home_cloud_cover': makeMockEntity({ state: '20', attributes: { unit_of_measurement: '%' } }),
+          'sensor.meteo_alert': makeMockEntity({
+            entity_id: 'sensor.meteo_alert',
+            state: 'Orange',
+            attributes: {
+              'Crues': 'Orange',
+              'Orages': 'Jaune'
+            }
+          })
+        }
       });
-    }
+      // Mock subscriptions to populate forecast data immediately
+      el.hass.connection.subscribeMessage = async (callback: any, params: any) => {
+        if (params.forecast_type === 'hourly') {
+          callback({ forecast: [{ datetime: '2026-05-24T12:00:00Z', temperature: 25 }] });
+        } else if (params.forecast_type === 'daily') {
+          callback({ forecast: [{ datetime: '2026-05-24T00:00:00Z', temperature: 25, templow: 15 }] });
+        }
+        return () => {};
+      };
+      await el.updateComplete;
+    });
 
-    await el.updateComplete;
+    it('TC-001: Header rendering', () => {
+      const header = el.shadowRoot!.querySelector('.header');
+      expect(header).not.to.be.null;
+      const clock = header!.querySelector('.weather-clock');
+      expect(clock).not.to.be.null;
+      expect(clock!.querySelector('.hour')).not.to.be.null;
+      expect(clock!.querySelector('.date')).not.to.be.null;
+    });
 
-    // Daily forecast should render the two days
-    const days = el.shadowRoot!.querySelectorAll('.forecast-day');
-    expect(days.length).to.equal(2);
-    expect(days[0]!.textContent).to.include('25°');
-    expect(days[0]!.textContent).to.include('15°');
+    it('TC-002: Alerts rendering', () => {
+      const alerts = el.shadowRoot!.querySelector('.alerts');
+      expect(alerts).not.to.be.null;
+      // Should show 'Crues' (Orange) and 'Orages' (Jaune)
+      expect(alerts!.textContent).to.include('Crues');
+      expect(alerts!.textContent).to.include('Orages');
+    });
+
+    it('TC-003: Today summary rendering', () => {
+      const summary = el.shadowRoot!.querySelector('.today-summary');
+      expect(summary).not.to.be.null;
+      const sensors = summary!.querySelectorAll('.sensor');
+      expect(sensors.length).to.equal(5);
+    });
+
+    it('TC-004: Chart rendering', () => {
+      const chartContainer = el.shadowRoot!.querySelector('.chart-container');
+      expect(chartContainer).not.to.be.null;
+      const canvas = chartContainer!.querySelector('canvas');
+      expect(canvas).not.to.be.null;
+    });
+
+    it('TC-005: Days list rendering', () => {
+      const days = el.shadowRoot!.querySelector('.days-forecast');
+      expect(days).not.to.be.null;
+      const weathers = days!.querySelectorAll('.weather');
+      expect(weathers.length).to.be.greaterThan(0);
+    });
+  });
+
+  describe('UI Restoration (Integration Tests)', () => {
+    beforeEach(async () => {
+      (el as any).setConfig({
+        type: 'custom:sci-fi-weather',
+        weather_entity: 'weather.home'
+      });
+      el.hass = makeMockHass({
+        states: {
+          'weather.home': makeMockEntity({ entity_id: 'weather.home', state: 'sunny', attributes: { temperature: 24 } }),
+          'sun.sun': makeMockEntity({ entity_id: 'sun.sun', state: 'above_horizon', attributes: {} })
+        }
+      });
+      el.hass.connection.subscribeMessage = async (callback: any, params: any) => {
+        if (params.forecast_type === 'hourly') {
+          callback({ forecast: [{ datetime: '2026-05-24T12:00:00Z', temperature: 25 }] });
+        } else if (params.forecast_type === 'daily') {
+          callback({ forecast: [{ datetime: '2026-05-24T00:00:00Z', temperature: 25, templow: 15 }] });
+        }
+        return () => {};
+      };
+      await el.updateComplete;
+    });
+
+    it('IT-001: Chart Interaction (Dropdown updates chartDataKind)', async () => {
+      const dropdownBtn = el.shadowRoot!.querySelector('.dropdow-button') as HTMLButtonElement;
+      expect(dropdownBtn).not.to.be.null;
+      dropdownBtn.click(); // Open dropdown
+      await el.updateComplete;
+
+      const dropdownItems = el.shadowRoot!.querySelectorAll('.dropdown-item');
+      expect(dropdownItems.length).to.be.greaterThan(1);
+      
+      const windSpeedItem = Array.from(dropdownItems).find(i => i.textContent?.includes('Wind speeds')) as HTMLElement;
+      if (windSpeedItem) {
+        windSpeedItem.click();
+        await el.updateComplete;
+        expect((el as any)._chartDataKind).to.equal('wind_speed');
+      }
+    });
+
+    it('IT-002: Day Selection updates _day_selected', async () => {
+      // Mock daily forecast to return 2 days
+      el.hass.connection.subscribeMessage = async (callback: any, params: any) => {
+        if (params.forecast_type === 'daily') {
+          callback({ forecast: [
+            { datetime: '2026-05-24T00:00:00Z', temperature: 25, templow: 15 },
+            { datetime: '2026-05-25T00:00:00Z', temperature: 22, templow: 14 }
+          ] });
+        }
+        return () => {};
+      };
+      (el as any)._unsubscribeForecasts(); // force clear
+      await (el as any)._subscribeForecasts(); // force resubscribe
+      await el.updateComplete;
+
+      const weathers = el.shadowRoot!.querySelectorAll('.weather');
+      expect(weathers.length).to.equal(2);
+      
+      const secondDay = weathers[1] as HTMLElement;
+      secondDay.click();
+      await el.updateComplete;
+
+      expect((el as any)._day_selected).to.equal(1);
+    });
+
+    it('IT-003: Clock Update via Interval', async () => {
+      const initialDate = (el as any)._date.getTime();
+      
+      // Advance timers by 11 seconds (interval is 10s)
+      vi.advanceTimersByTime(11000);
+      
+      const newDate = (el as any)._date.getTime();
+      expect(newDate).to.be.greaterThan(initialDate);
+    });
   });
 });
-

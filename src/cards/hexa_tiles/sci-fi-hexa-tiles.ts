@@ -374,7 +374,9 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
   }
 
   private _renderHalfTile(isLeft: boolean): TemplateResult {
-    const points = isLeft ? '66,2 66,162 2,122 2,42' : '0,2 64,42 64,122 0,162';
+    // For isLeft (left edge), we want the cut line on the left: '0,2 64,42 64,122 0,162'
+    // For isRight (right edge), we want the cut line on the right: '66,2 66,162 2,122 2,42'
+    const points = isLeft ? '0,2 64,42 64,122 0,162' : '66,2 66,162 2,122 2,42';
     return html`
       <div class="hexa-half ${isLeft ? 'left' : 'right'}">
         <svg viewBox="0 0 66 164">

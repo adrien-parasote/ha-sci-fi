@@ -34,8 +34,12 @@ export class SciFiCircleProgressBar extends LitElement {
         fill: var(--sf-primary, #00d2ff);
       }
       .warning {
-        color: var(--sf-error, #ff6b35);
-        fill: var(--sf-error, #ff6b35);
+        color: rgb(250, 146, 29);
+        fill: rgb(250, 146, 29);
+      }
+      .critical {
+        color: #ff4444;
+        fill: #ff4444;
       }
       .circular-progress circle {
         stroke-width: 16px;
@@ -50,8 +54,12 @@ export class SciFiCircleProgressBar extends LitElement {
         filter: drop-shadow(0px 0px 5px var(--sf-primary, #00d2ff));
       }
       .circular-progress.warning circle.fg {
-        stroke: var(--sf-error, #ff6b35);
-        filter: drop-shadow(0px 0px 5px var(--sf-error, #ff6b35));
+        stroke: rgb(250, 146, 29);
+        filter: drop-shadow(0px 0px 5px rgb(250, 146, 29));
+      }
+      .circular-progress.critical circle.fg {
+        stroke: #ff4444;
+        filter: drop-shadow(0px 0px 5px #ff4444);
       }
     `,
   ];
@@ -61,7 +69,13 @@ export class SciFiCircleProgressBar extends LitElement {
   @property({ type: Number }) threshold = 0.5;
 
   protected override render(): TemplateResult {
+    const critical = this.val <= 10;
     const warning = this.val / 100 < this.threshold;
+    const classes = [
+      warning ? 'warning' : '',
+      critical ? 'critical' : '',
+    ].filter(Boolean).join(' ');
+
     const dashoffset = Math.round(CIRCUMFERENCE * ((100 - this.val) / 100));
     const textX = this.val < 10 ? '90px' : this.val > 99 ? '60px' : '80px';
 
@@ -72,7 +86,7 @@ export class SciFiCircleProgressBar extends LitElement {
           width="100%"
           height="100%"
           viewBox="0 0 250 250"
-          class="circular-progress ${warning ? 'warning' : ''}"
+          class="circular-progress ${classes}"
           style="transform:rotate(-90deg)"
         >
           <circle class="bg" r="100" cx="125" cy="125"></circle>
@@ -85,7 +99,7 @@ export class SciFiCircleProgressBar extends LitElement {
             stroke-dasharray="${CIRCUMFERENCE}px"
           ></circle>
           <text
-            class="value ${warning ? 'warning' : ''}"
+            class="value ${classes}"
             x="${textX}"
             y="90px"
             font-size="52px"
@@ -95,7 +109,7 @@ export class SciFiCircleProgressBar extends LitElement {
             ${this.val}%
           </text>
         </svg>
-        <div class="text ${warning ? 'warning' : ''}">${this.text}</div>
+        <div class="text ${classes}">${this.text}</div>
       </div>
     `;
   }

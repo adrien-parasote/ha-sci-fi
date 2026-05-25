@@ -601,3 +601,32 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
   ```
 - **Rule**: Whenever `position:absolute` element references a fixed-size background image inside a `flex:1` container, cap all `top`/`left` with `min(%, px_equivalent)`.
 - **Scope**: Applies to any card with image+overlay indicators inside a flexible container (sf-landspeeder, sf-radiator, and future cards).
+
+### L067: Vitest Chai Assertions — Avoid Non-Existent `toBeA`
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi v2 — Vitest style tests
+- **Evidence**: 8 styles test files crashed with `TypeError: Invalid Chai property: toBeA` after using `expect(xx).toBeA('string')`.
+- **Anti-pattern**: Relying on non-existent `toBeA` Chai assertion in Vitest.
+- **Fix**: Use standard JavaScript `typeof` check or `.toBeTypeOf()`:
+  ```typescript
+  expect(typeof (styles as any).cssText).toBe('string');
+  ```
+
+### L068: Stale Locked Test Files in Additive `.tdd_lock`
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi v2 — TDD sequence lock check (P10)
+- **Evidence**: `verify.py P10` failed because `.tdd_lock` still contained deleted files (such as `tests/cards/hexa_tiles/sci-fi-hexa-tiles.test.ts` and `house.selectors.test.ts`). `tdd_check.py --lock` operates additively (it merges new hashes into the existing file) and does not automatically purge deleted test references from the lock.
+- **Fix**: When deleting or renaming test files, manually delete the stale lock file `rm .tdd_lock` before regenerating the lock via `python3 tdd_check.py . --lock`. Also, ensure all deletions are staged (`git add .` or `git add -u`) to prevent the file discovery script from scanning untracked deletions.
+
+### L069: Test Quality Check (P9) and Dynamic/Side-Effect Imports Support
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi v2 — Test quality check (P9)
+- **Evidence**: `verify.py P9` flagged 5 custom Web Component tests (`sf-stack-bar.test.ts`, `sf-toast.test.ts`, etc.) with "imports nothing from production code" because they loaded elements dynamically (`await import('...')`) or as side-effects (`import '../../src/...'`), which bypassed the strict `import ... from` static analysis regex patterns.
+- **Fix**: Test quality analysis regex must support side-effect (`import\s+['\"]\.\.?/`) and dynamic (`import\s*\(\s*['\"]\.\.?/`) import styles to avoid false-positive test quality warnings in component-oriented codebases.
+
+### L070: Sentrux Base Registry Exception in God Files Constraint
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi v2 — Architecture regression check (P7)
+- **Evidence**: `verify.py P7` threw a regression failure because the newly urbanized central element entrypoint `src/sci-fi.ts` registered all 8 cards, 8 editors, and components, fanning out to 19 imports and triggering the `no_god_files` limit warning.
+- **Fix**: Central registry files that dynamically bundle the codebase naturally have high fan-out coupling. Use `sentrux gate --save .` to save the new baseline once the registry files are confirmed to contain only clean import registrations, satisfying the regression gate.
+

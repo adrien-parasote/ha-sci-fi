@@ -69,7 +69,7 @@
 | `SciFiVacuumConfig`, `SciFiVacuumEntry`, `SciFiVacuumSensors`, `SciFiVacuumShortcuts`, `SciFiVacuumShortcutDescription` | TS interfaces | Spec 05 § sci-fi-vacuum | `src/types/config.ts` |
 | `sf-icon` | Web Component | Spec 04 § sf-icon | `src/components/sf-icon/` |
 | `sf-button` | Web Component | Spec 04 § sf-button | `src/components/buttons/sf-button.ts` |
-| `sf-toast` | Web Component | Spec 04 § sf-toast | `src/components/sf-toast/sf-toast.js` |
+| `sf-toast` | Web Component | Spec 04 § sf-toast | `src/components/sf-toast.ts` |
 
 ### Public Interface
 
@@ -450,7 +450,7 @@ import {
 
 import '../../components/sf-icon/sf-icon.js';
 import '../../components/buttons/sf-button.js';
-import '../../components/sf-toast/sf-toast.js';
+import '../../components/sf-toast.js';
 ```
 
 ### static override styles
@@ -719,7 +719,8 @@ private _callAction(entityId: string, service: string): void {
   if (service === 'set_fan_speed') {
     const state = this.hass.states[entityId];
     const currentSpeed = (state?.attributes as any)?.fan_speed as string | undefined;
-    const speeds = ['quiet', 'standard', 'strong', 'max'];
+    const speeds = ((state?.attributes as any)?.fan_speed_list as string[] | undefined)
+      ?? ['quiet', 'standard', 'strong', 'max'];
     const nextIndex = currentSpeed ? (speeds.indexOf(currentSpeed) + 1) % speeds.length : 1;
     const nextSpeed = speeds[nextIndex];
     void this.hass.callService('vacuum', 'set_fan_speed', { entity_id: entityId, fan_speed: nextSpeed })
@@ -828,6 +829,8 @@ private _toast(error: boolean, text: string): void {
 | TC-1520 | Unit | Devices bar present for multiple vacuums | 2 vacuums | `.devices` present with 2 dots |
 | TC-1521 | Unit | Prev navigation cycles correctly | 2 vacuums at idx 0, click prev | `_vacuum_selected_id` becomes 1 |
 | TC-1522 | Unit | Next navigation cycles correctly | 2 vacuums at idx 1, click next | `_vacuum_selected_id` becomes 0 |
+| TC-1523 | Unit | Toast shows success message after action | click start, service resolves | `sf-toast.addMessage` called with `('done', false)` |
+| TC-1524 | Unit | Toast shows error message after action failure | click start, service rejects with Error('fail') | `sf-toast.addMessage` called with `('fail', true)` |
 | IT-1501 | Integration | Card registers in `customElements` | load card | `customElements.get('sci-fi-vacuum')` returns class |
 | IT-1502 | Integration | Card full render: header + sub-header + map + actions | mount with full config | `.header`, `.sub-header`, `.map`, `.actions` all present |
 | IT-1503 | Integration | `vacuum/styles.ts` imported — no inline `css\`` in `sci-fi-vacuum.ts` | grep | `grep -c "css\`" sci-fi-vacuum.ts` returns 0 |
@@ -881,7 +884,7 @@ private _toast(error: boolean, text: string): void {
 | Vehicle card (navigation pattern) | [sci-fi-vehicles.ts](../../src/cards/vehicles/sci-fi-vehicles.ts#L1) |
 | sf-button component | [sf-button.ts](../../src/components/buttons/sf-button.ts#L1) |
 | sf-icon component | [sf-icon/](../../src/components/sf-icon/#L1) |
-| sf-toast component | `src/components/sf-toast/sf-toast.js` |
+| sf-toast component | [sf-toast.ts](../../src/components/sf-toast.ts#L1) |
 | Common tokens | [styles/common.ts](../../src/styles/common.ts#L1) |
 | Existing vacuum tests | [sci-fi-vacuum.test.ts](../../tests/cards/vacuum/sci-fi-vacuum.test.ts#L1) |
 | Plugs spec (styles.ts + toast pattern) | [Spec 13](./13_plugs_card_design_update.md#L1) |

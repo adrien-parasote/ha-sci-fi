@@ -66,7 +66,7 @@ tiles:
 
 ## Assumptions
 
-| # | Assumption | Risk | Validation |
+| ID | Assumption | Risk | Validation |
 |---|---|---|---|
 | 1 | The connected user can be identified in HA by matching a `person.*` entity whose `attributes.user_id` is equal to `hass.user.id`. | Low | → Confirmed by Home Assistant developer guidelines for user-to-person associations. |
 | 2 | Home Assistant zones contain the `persons` attribute containing a list of person entity IDs (e.g. `['person.adrien']`). | Low | → Confirmed by HA native zone schema. |
@@ -126,7 +126,7 @@ Each hexagon uses inline SVGs (`viewBox="0 0 132 164"`) with a background polygo
 ## Tile Content & Icons
 
 - Hexagon `<sf-icon>` elements are sized uniformly to `56px` width and height.
-- **Weather Tile**: Dynamically resolves custom animated weather icons via the `sf:` namespace (e.g. `sf:partlycloudy-day`) rather than static `mdi:` icons. This ensures seamless integration with the existing `sf-weather-icons.js` Lit SVG templates. Active weather tiles receive a specific yellow drop-shadow (`#ffd60a`).
+- **Weather Tile**: Dynamically resolves custom animated weather icons via the `sf:` namespace (e.g. `sf:partlycloudy-day`) rather than static `mdi:` icons. This ensures seamless integration with the existing 'sf-weather-icons.js' Lit SVG templates. Active weather tiles receive a specific yellow drop-shadow (`#ffd60a`).
 - **Avatar Status Badge**: Positioned at the top-right of the avatar with `26px` width/height and `22px` icons, with no circular background block behind it, to ensure it visually floats over the avatar border.
 
 ---
@@ -196,16 +196,24 @@ Instead of fixed sizing, hexagons dynamically resize to fit exactly 100% of thei
 
 ## Cross-Spec Contracts
 
-### Produces
+ ### Produces
 | Path / Identifier | Format | Schema location | Consumers |
 |---|---|---|---|
 | `sci-fi-hexa-tiles` | Custom Element | This spec | HA Lovelace Dashboard |
 
-### Consumes
+ ### Consumes
 | Path / Identifier | Format | Schema location | Producer |
 |---|---|---|---|
 | `SciFiBaseCard` | Class | `src/utils/base-card.ts` | Spec 03 |
 | `<sf-icon>` | Component | `src/components/sf-icon/sf-icon.ts` | Spec 04 |
+| `sciFiCommonStyles` | CSS | `src/styles/common.ts` | Spec 03 |
+
+ ### Public Interface
+| Element | Signature | Description |
+|---|---|---|
+| `sci-fi-hexa-tiles` | Custom Element | Lovelace card — no JS public API exposed |
+| `setConfig(config)` | `(config: SciFiHexaTilesConfig) => void` | Called by HA to configure the card |
+| `getCardSize()` | `() => number` | Returns layout size hint to Lovelace |
 
 ---
 
@@ -250,3 +258,7 @@ Instead of fixed sizing, hexagons dynamically resize to fit exactly 100% of thei
 | Connected user not found | No `person.*` entity matches `hass.user.id` | Display `hass.user.name` in header | Initials from user name, default home icon |
 | User picture missing | `entity_picture` attribute is null or undefined | Render name initials inside circle | First letter of friendly name |
 | Zone icon not found | Zone entity has no `icon` attribute | Fallback to home/away default icon | `mdi:home` or `mdi:home-off-outline` |
+
+
+## Adversarial Fixes: Responsive Layout
+**Responsive Wrap Behavior**: The layout MUST use `flex-wrap: wrap` and maintain a fixed tile width (e.g., 80px) so that when more tiles are configured than fit horizontally, they wrap gracefully to a new row rather than shrinking or overflowing.

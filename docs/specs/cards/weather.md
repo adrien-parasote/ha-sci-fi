@@ -47,7 +47,7 @@ The `sci-fi-weather` component has lost its original, complex UI during the migr
 
 ## Assumptions
 
-| # | Assumption | Risk | Validation |
+| ID | Assumption | Risk | Validation |
 |---|---|---|---|
 | 1 | Chart.js version 4.x is compatible with old logic | Medium | Verified in package.json |
 | 2 | Extracted SVGs from sf-weather-icons match layout | Low | Will reuse existing `sci-fi-weather-icon` |
@@ -65,7 +65,7 @@ The `sci-fi-weather` component has lost its original, complex UI during the migr
 - **Alerts**: Shows active weather alerts based on the config thresholds (`state_yellow`, `state_orange`, `state_red`).
 - **Today Summary**: Renders 5 key metrics (`cloud`, `precipitation`, `rainy`, `frozen`, `snowy`) using `<sci-fi-weather-icon>`.
 - **Chart**: 
-  - Integrated with `Chart.js`.
+  - Integrated with 'Chart.js'.
   - Top dropdown to switch chart data type (`temperature`, `precipitation`, `wind_speed`).
   - Implements a custom Chart.js plugin `afterDatasetsDraw` to render weather SVG icons at data points directly on the canvas.
 - **Daily Forecast (Footer)**: 
@@ -73,21 +73,53 @@ The `sci-fi-weather` component has lost its original, complex UI during the migr
   - Interactive: Clicking a day updates `_day_selected` and automatically redraws the Chart to show hourly data for that specific day.
 
 ### Styling
-- The full CSS from `old_weather_style.js` must be ported to the Lit `styles` getter.
+- The full CSS from 'old_weather_style.js' must be ported to the Lit `styles` getter.
 - Use CSS variables (`--primary-bg-color`, `--secondary-light-color`) as defined in the global design system.
 
 ## 4. Cross-spec Contracts
-- **05_cards.md**: The `sci-fi-weather` card must still implement `getStubConfig` and `getConfigElement` as defined in the parent spec.
-- **03_base_classes.md**: The component MUST extend `SciFiBaseCard` and use its `hass` setter property correctly.
+
+ ### Produces
+| Path / Identifier | Format | Schema location | Consumers |
+|---|---|---|---|
+| `sci-fi-weather` | Custom Element | This spec | HA Lovelace Dashboard |
+
+ ### Consumes
+| Path / Identifier | Format | Schema location | Producer |
+|---|---|---|---|
+| `SciFiBaseCard` | Abstract class | `src/utils/base-card.ts` | Spec 03 |
+| `sciFiCommonStyles` | Lit CSS | `src/styles/common.ts` | Spec 03 |
+| `SciFiWeatherConfig`, `SciFiWeatherAlertConfig` | TS interfaces | Spec 05 § sci-fi-weather | `src/types/config.ts` |
+| 'sci-fi-weather-icons.js' | JS icon map | `src/components/sf-icon/` | Spec 04 |
+| Chart.js | External lib | `package.json` | `chart.js@^4` |
+| `getStubConfig` / `getConfigElement` | Abstract methods | Spec 05 | `src/utils/base-card.ts` |
+
+ ### Public Interface
+| Element | Signature | Description |
+|---|---|---|
+| `sci-fi-weather` | Custom Element | HA Lovelace weather card (unchanged tag) |
+| `setConfig(config)` | `(config: SciFiWeatherConfig) => void` | Called by HA to configure the card |
+| `getCardSize()` | `() => number` | Returns layout size hint to Lovelace |
+
+ ### External Invocations
+| Service | Action | Params | When |
+|---|---|---|---|
+| `hass.callWS({ type: 'weather/subscribe_forecast' })` | Subscribe forecast | `entity_id`, `forecast_type: 'daily'` | On config set |
+
+ ### Tracked Concepts
+| Concept | Shared with | Description |
+|---|---|---|
+| Weather alert level detection | hexa-tiles.md | Same `state_green/yellow/orange/red` config pattern — must stay in sync |
+| `weather_alert_entity` attribute keys as phenomenon names | hexa-tiles.md | Both cards read phenomenon names from alert entity attribute keys |
+
 
 ## 5. Anti-patterns
 
 | # | Anti-Pattern | Violation | Correct Behavior |
 |---|---|---|---|
-| 1 | Creating many helpers files | Module fragmentation for simple UI state | Embed utility logic inside `sci-fi-weather.ts` as private methods. |
+| 1 | Creating many helpers files | Module fragmentation for simple UI state | Embed utility logic inside 'sci-fi-weather.ts' as private methods. |
 | 2 | DOM element creation via JS | Violates Lit framework patterns | Declare `<canvas>` in HTML template and use `@query`. |
 | 3 | Unmanaged Chart.js instances | Memory leaks and rendering artifacts | Call `this._chart.update()` or `this._chart.destroy()` when updating. |
-| 4 | Duplicating SVG icons | Wasted bundle size | Import from `sci-fi-weather-icons.js` as in original |
+| 4 | Duplicating SVG icons | Wasted bundle size | Import from 'sci-fi-weather-icons.js' as in original |
 | 5 | Polluting Home Assistant entity | Anti-pattern to add props to Hass objects | Create local wrapper or mapping dictionary |
 
 ## 6. Error Handling

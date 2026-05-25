@@ -15,7 +15,7 @@ import {
   VEHICLE_CHARGE_STATES_UNAVAILABLE,
   VEHICLE_PLUG_STATES_ERROR,
   VEHICLE_SENSOR_ON_STATE,
-} from '../cards/vehicles/vehicle_const.js';
+} from './vehicle_const.js';
 import './sf-icon/sf-icon.js';
 import './buttons/sf-button.js';
 

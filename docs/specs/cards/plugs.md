@@ -18,23 +18,23 @@
 | F-PLG-D05 | Footer navigation: prev/next arrows + plug selector icons | ✅ This spec § Footer |
 | F-PLG-D06 | Extract CSS into `styles.ts` (stove/vehicle pattern) | ✅ This spec § styles.ts |
 | F-PLG-D07 | Toggle plug on/off via `switch.turn_on` / `switch.turn_off` service | ✅ This spec § Toggle action |
-| F-PLG-D08 | `plug_const.ts` constants file (ported from main) | ✅ This spec § Constants |
+| F-PLG-D08 | 'plug_const.ts' constants file (ported from main) | ✅ This spec § Constants |
 | F-PLG-D09 | All existing 8 plugs tests remain GREEN (regression gate) | ✅ This spec § Test Selectors |
 
 ---
 
 ## Assumptions
 
-| # | Assumption | Risk | Source Type | Validation |
+| ID | Assumption | Risk | Source Type | Validation |
 |---|---|---|---|---|
-| 1 | `SciFiPlugDevice` and `SciFiPlugsConfig` config fields are frozen — no new fields needed | Low | SHOW | `grep -n "SciFiPlugDevice\|SciFiPlugsConfig" src/types/config.ts` → L119–L138 define all fields |
-| 2 | Existing CSS selectors `.plug-tile`, `.plug-name`, `.plug-power`, `.sensor-row`, `.plug-btn` in existing tests MUST be **updated** — layout changes completely | Medium | SHOW | `grep -n "querySelector" tests/cards/plugs/sci-fi-plugs.test.ts` → all 8 tests reference old grid selectors |
+| 1 | `SciFiPlugDevice` and `SciFiPlugsConfig` config fields are frozen — no new fields needed | Low | SHOW | 'grep -n "SciFiPlugDevice\|SciFiPlugsConfig" src/types/config.ts' → L119–L138 define all fields |
+| 2 | Existing CSS selectors `.plug-tile`, `.plug-name`, `.plug-power`, `.sensor-row`, `.plug-btn` in existing tests MUST be **updated** — layout changes completely | Medium | SHOW | 'grep -n "querySelector" tests/cards/plugs/sci-fi-plugs.test.ts' → all 8 tests reference old grid selectors |
 | 3 | Chart.js `^4.4.7` is already in `package.json` — no new dependency needed | Low | SHOW | `cat package.json \| grep chart` → `"chart.js": "^4.4.7"` present |
-| 4 | The EU socket SVG (`.icon` with 3 circles) is reproduced in pure CSS — no SVG import needed | Low | SHOW | `git show main:src/cards/plugs/style.js` → all styling is CSS, no `<svg>` tag, no external file |
-| 5 | The `Device` helper (area, manufacturer, model from device registry) is NOT yet ported to TS — fallback to HA state attributes | High | TELL | `ls src/helpers/` → no `device.ts` or equivalent; `hass.devices[device_id]` is used instead of helper class |
-| 6 | `LockSensor` and `SelectSensor` types are NOT yet ported to TS — sensor type dispatch is based on `entityId.split('.')[0]` prefix | High | TELL | `ls src/helpers/entities/` → no `sensor.ts` directory in TS project |
-| 7 | The power history API call uses `hass.callApi('GET', 'history/period/...')` — available on HA's `HomeAssistant` object | Medium | SHOW | `git show main:src/helpers/entities/plug/plug.js` → `this._hass.callApi(...)` pattern |
-| 8 | The animation "courant qui passe" (`.cirle-container .circle` with `@keyframes move`) is pure CSS, portable 1:1 | Low | SHOW | `git show main:src/cards/plugs/style.js` → full `@keyframes move` block, no JS |
+| 4 | The EU socket SVG (`.icon` with 3 circles) is reproduced in pure CSS — no SVG import needed | Low | SHOW | 'git show main:src/cards/plugs/style.js' → all styling is CSS, no `<svg>` tag, no external file |
+| 5 | The `Device` helper (area, manufacturer, model from device registry) is NOT yet ported to TS — fallback to HA state attributes | High | TELL | 'ls src/helpers/' → no 'device.ts' or equivalent; `hass.devices[device_id]` is used instead of helper class |
+| 6 | `LockSensor` and `SelectSensor` types are NOT yet ported to TS — sensor type dispatch is based on `entityId.split('.')[0]` prefix | High | TELL | 'ls src/helpers/entities/' → no 'sensor.ts' directory in TS project |
+| 7 | The power history API call uses `hass.callApi('GET', 'history/period/...')` — available on HA's `HomeAssistant` object | Medium | SHOW | 'git show main:src/helpers/entities/plug/plug.js' → `this._hass.callApi(...)` pattern |
+| 8 | The animation "courant qui passe" (`.cirle-container .circle` with `@keyframes move`) is pure CSS, portable 1:1 | Low | SHOW | 'git show main:src/cards/plugs/style.js' → full `@keyframes move` block, no JS |
 
 ---
 
@@ -50,7 +50,7 @@
 
 ## Cross-Spec Contracts
 
-### Produces
+ ### Produces
 
 | Path / Identifier | Format | Schema location | Consumers |
 |---|---|---|---|
@@ -58,7 +58,7 @@
 | `src/cards/plugs/plug_const.ts` | TS constants | This spec § Constants | `plugs/sci-fi-plugs.ts` |
 | Updated `sci-fi-plugs` card | Web Component | This spec § Full render | Lovelace via `getConfigElement()` (Spec 05) |
 
-### Consumes
+ ### Consumes
 
 | Path / Identifier | Format | Schema location | Producer |
 |---|---|---|---|
@@ -68,13 +68,13 @@
 | `sf-icon` | Web Component | Spec 04 § sf-icon | `src/components/sf-icon/` |
 | `sf-button` | Web Component | Spec 04 § sf-button | `src/components/buttons/sf-button.ts` |
 
-### Public Interface
+ ### Public Interface
 
 | Element | Consumed by | Description |
 |---|---|---|
 | `<sci-fi-plugs>` | HA Lovelace | Plug monitoring card (unchanged tag) |
 
-### External Invocations
+ ### External Invocations
 
 | Service | Action | Params | When |
 |---|---|---|---|
@@ -82,7 +82,7 @@
 | `switch` | `turn_off` | `{ entity_id: device.entity_id }` | User clicks image/toggle when plug is ON |
 | `hass.callApi` | `GET history/period/...` | yesterday + `filter_entity_id=powerSensorId` | Power chart loads |
 
-### Tracked Concepts
+ ### Tracked Concepts
 
 | Concept | Status in this spec | Mentioned in |
 |---|---|---|
@@ -109,7 +109,7 @@ xliff/
 ```
 
 > [!NOTE]
-> No new component files needed (unlike vehicles' `sf-landspeeder`). The plug image zone is rendered inline in `sci-fi-plugs.ts` using CSS-only (no SVG import). The `Device` helper is replaced by direct `hass.devices[device_id]` access.
+> No new component files needed (unlike vehicles' `sf-landspeeder`). The plug image zone is rendered inline in 'sci-fi-plugs.ts' using CSS-only (no SVG import). The `Device` helper is replaced by direct `hass.devices[device_id]` access.
 
 ---
 
@@ -142,7 +142,7 @@ export const CHART_BORDER_COLOR = 'rgb(102, 156, 210)';
 
 **Export name:** `plugStyles`
 
-Ported 1:1 from `main:src/cards/plugs/style.js` with CSS variable adaptations:
+Ported 1:1 from 'main:src/cards/plugs/style.js' with CSS variable adaptations:
 
 | main CSS variable | TS equivalent |
 |---|---|
@@ -860,7 +860,7 @@ private _toast(error: boolean, text: string): void {
 | TC-1315 | Regression | All 2 static tests pass | `getConfigElement`, `getStubConfig` | No failures |
 | IT-1301 | Integration | Card registers in `customElements` | load card | `customElements.get('sci-fi-plugs')` returns class |
 | IT-1302 | Integration | Card full render: header + content + footer | mount with full config | `.header`, `.content`, `.footer` all present |
-| IT-1303 | Integration | `plugs/styles.ts` imported — no inline `css\`` in `sci-fi-plugs.ts` | grep | `grep -c "css\`" sci-fi-plugs.ts` returns 0 |
+| IT-1303 | Integration | `plugs/styles.ts` imported — no inline `css\`` in 'sci-fi-plugs.ts' | grep | 'grep -c "css\'" sci-fi-plugs.ts` returns 0 |
 
 ---
 
@@ -884,13 +884,13 @@ private _toast(error: boolean, text: string): void {
 
 | English key (msg()) | French translation |
 |---|---|
-| `'by'` | `[NEW]` — French: `'par'` — run `grep "'by'" xliff/fr.xlf`; add if absent |
+| `'by'` | `[NEW]` — French: `'par'` — run 'grep "'by'" xliff/fr.xlf'; add if absent |
 | `'done'` | Already present from vehicle card — verify |
 | `'No power data to display'` | `'Aucune donnée de puissance à afficher'` |
 | `'Power'` | `'Puissance'` (used in chart tooltip title) |
 
 > [!IMPORTANT]
-> Run `grep -r "msg('by'\|msg('done'\|msg('No power" src/` before adding. Only add keys that are genuinely missing. Do NOT modify `src/locales/locales/fr.ts` by hand — update `xliff/fr.xlf` first, then run `npm run locale:build`.
+> Run 'grep -r "msg('by'\|msg('done'\|msg('No power" src/' before adding. Only add keys that are genuinely missing. Do NOT modify `src/locales/locales/fr.ts` by hand — update `xliff/fr.xlf` first, then run `npm run locale:build`.
 
 ---
 
@@ -900,9 +900,9 @@ private _toast(error: boolean, text: string): void {
 |---|---|
 | Current plugs card (to replace) | [sci-fi-plugs.ts](../../src/cards/plugs/sci-fi-plugs.ts#L1) |
 | Plugs config types (frozen) | [config.ts L119-L139](../../src/types/config.ts#L119-L139) |
-| Main branch card.js (reference) | `git show main:src/cards/plugs/card.js` |
-| Main branch style.js (reference) | `git show main:src/cards/plugs/style.js` |
-| Main branch plug_const.js | `git show main:src/helpers/entities/plug/plug_const.js` |
+| Main branch card.js (reference) | 'git show main:src/cards/plugs/card.js' |
+| Main branch style.js (reference) | 'git show main:src/cards/plugs/style.js' |
+| Main branch plug_const.js | 'git show main:src/helpers/entities/plug/plug_const.js' |
 | Vehicle card (navigation pattern) | [sci-fi-vehicles.ts](../../src/cards/vehicles/sci-fi-vehicles.ts#L1) |
 | Vehicle styles pattern | [vehicles/styles.ts](../../src/cards/vehicles/styles.ts#L1) |
 | Stove styles pattern | [stove/styles.ts](../../src/cards/stove/styles.ts#L1) |
@@ -912,4 +912,9 @@ private _toast(error: boolean, text: string): void {
 | Existing plugs tests | [sci-fi-plugs.test.ts](../../tests/cards/plugs/sci-fi-plugs.test.ts#L1) |
 | Vehicle spec (navigation pattern) | [Spec 12](./12_vehicle_card_design_update.md#L1) |
 | Stove spec (styles.ts pattern) | [Spec 11](./11_stove_card_design_update.md#L1) |
-| Screenshots (main UX) | `git show main:screenshot/plug_1.jpeg` |
+| Screenshots (main UX) | 'git show main:screenshot/plug_1.jpeg' |
+
+
+## Adversarial Fixes: Edge Cases & Error States
+1. **Unavailable State Handling**: The card MUST disable interaction buttons and render an 'Offline' overlay or distinct visual state when `entity.state === 'unavailable' || entity.state === 'unknown'`.
+2. **API Timeout (Power History)**: The card MUST define a `historyLoading` property and an error state UI for the chart section if the `history/period/` API call fails or takes > 2 seconds.

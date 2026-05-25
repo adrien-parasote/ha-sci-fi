@@ -36,7 +36,7 @@ src/
 
 ## Assumptions
 
-| # | Assumption | Risk | Validation |
+| ID | Assumption | Risk | Validation |
 |---|---|---|---|
 | 1 | HA single-resource requires absolute self-contained files | Low | → Run bundle compilation and verify output file is standalone |
 | 2 | Static import locales prevent dynamic loading fetch errors | High | → Run build size check and check output includes locale keys |

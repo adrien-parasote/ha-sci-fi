@@ -74,7 +74,7 @@ src/
 
 ## Assumptions
 
-| # | Assumption | Risk | Validation |
+| ID | Assumption | Risk | Validation |
 |---|---|---|---|
 | 1 | `hass.floors`, `hass.areas`, `hass.devices` are populated before editor opens | Medium | Guard with `!hass.floors` checks; show empty dropdown if unpopulated |
 | 2 | `sf-toggle-switch` emits `sf-toggle-change` (not `toggle-change`) with `{ checked: boolean }` payload | Low | Confirmed in `src/components/sf-toggle-switch/sf-toggle-switch.ts` |
@@ -112,7 +112,7 @@ src/
 
 ## Cross-Spec Contracts
 
-### Produces
+ ### Produces
 
 | Path / Identifier | Format | Schema location | Consumers |
 |---|---|---|---|
@@ -121,7 +121,7 @@ src/
 | `SciFiBaseEditor.getLabel(key)` | `string` method | This spec § Base Editor Enrichment | All 8 card editors |
 | `SciFiBaseEditor._getNewConfig<T>()` | `T` method | This spec § Base Editor Enrichment | All 8 card editors |
 
-### Consumes
+ ### Consumes
 
 | Path / Identifier | Format | Schema location | Producer |
 |---|---|---|---|
@@ -134,7 +134,7 @@ src/
 | `CUSTOM_ICONS`, `WEATHER_ICONS` | Dicts | Spec 04 § sf-icon/data | `src/components/sf-icon/data/` |
 | `sciFiCommonStyles` | Lit CSS | Spec 03 § styles/common.ts | `src/styles/common.ts` |
 
-### Public Interface
+ ### Public Interface
 
 | Element | Consumed by | Description |
 |---|---|---|
@@ -156,7 +156,7 @@ src/
 | `<sf-editor-color-picker>` | Card editors | Color picker |
 | `<sf-editor-accordion>` | Card editors | Collapsible section |
 
-### External Invocations
+ ### External Invocations
 
 | Type | Invoked | Defined in |
 |---|---|---|
@@ -906,3 +906,7 @@ The `sensors` field in `SciFiPlugDevice` is a `Record<string, SciFiPlugSensorEnt
 | `hass.devices` unavailable | `!hass.devices` guard | `_vehiclesList` stays empty | Vehicle dropdown empty; no crash |
 | Icon list load error | `CUSTOM_ICONS` import fails | Catch at module level | Dropdown falls back to empty list |
 | `config-changed` event not received by Lovelace | `composed: true` missing | Verified by TC-1004 | Never happens if spec followed |
+
+
+## Adversarial Fixes: Migration Race Condition
+The editor MUST NOT render its interactive elements until it verifies `config.version` matches the current schema version. If it does not match, it must display a 'Migration in progress...' state or wait for `06_entry_migration` to complete to prevent saving an outdated schema back to HA.

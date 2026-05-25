@@ -38,6 +38,25 @@ const TAG = 'sci-fi-plugs';
 export class SciFiPlugsCard extends SciFiBaseCard {
   static override styles = [sciFiCommonStyles, plugStyles];
 
+  protected override getRelevantEntities(): string[] {
+    const entities = new Set<string>();
+
+    if (this.config.devices) {
+      for (const device of this.config.devices) {
+        if (device.entity_id) {
+          entities.add(device.entity_id);
+        }
+        if (device.sensors) {
+          for (const entityId of Object.keys(device.sensors)) {
+            entities.add(entityId);
+          }
+        }
+      }
+    }
+
+    return Array.from(entities);
+  }
+
   declare config: SciFiPlugsConfig;
 
   @state() private _selected_plug_id: number = 0;

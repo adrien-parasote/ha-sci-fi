@@ -23,13 +23,13 @@
 
 ## Assumptions
 
-| # | Assumption | Risk | Source Type | Validation |
+| ID | Assumption | Risk | Source Type | Validation |
 |---|---|---|---|---|
-| 1 | The `sci:stove-heat` and `sci:stove-off` icons are already registered in the custom icon set | Low | SHOW | `grep 'sci:stove-heat' src/cards/stove/sci-fi-stove.ts` → found |
+| 1 | The `sci:stove-heat` and `sci:stove-off` icons are already registered in the custom icon set | Low | SHOW | 'grep 'sci:stove-heat' src/cards/stove/sci-fi-stove.ts' → found |
 | 2 | CSS selectors `.bar-fill.pellet`, `.bar-fill.storage`, `.sensor-tile`, `.sensor-tile.warn` MUST be preserved — 4 tests depend on them | Low | SHOW | `npm test` → existing stove tests pass |
-| 3 | `sciFiCommonStyles` from `src/styles/common.ts` provides all `--sf-*` tokens used in the new styles | Low | SHOW | `grep '--sf-' src/styles/common.ts` → tokens present |
-| 4 | The header uses `staveState.attributes.friendly_name` as the name (already in prod) | Low | SHOW | `grep 'friendly_name' src/cards/stove/sci-fi-stove.ts` → usage found |
-| 5 | The stove is ON when `stoveState.state !== 'off' && stoveState.state !== 'unavailable'` | Low | SHOW | `grep '!== "off"' src/cards/stove/sci-fi-stove.ts` → logic found |
+| 3 | `sciFiCommonStyles` from `src/styles/common.ts` provides all `--sf-*` tokens used in the new styles | Low | SHOW | 'grep '--sf-' src/styles/common.ts' → tokens present |
+| 4 | The header uses `staveState.attributes.friendly_name` as the name (already in prod) | Low | SHOW | 'grep 'friendly_name' src/cards/stove/sci-fi-stove.ts' → usage found |
+| 5 | The stove is ON when `stoveState.state !== 'off' && stoveState.state !== 'unavailable'` | Low | SHOW | 'grep '!== "off"' src/cards/stove/sci-fi-stove.ts' → logic found |
 
 ---
 
@@ -45,14 +45,14 @@
 
 ## Cross-Spec Contracts
 
-### Produces
+ ### Produces
 
 | Path / Identifier | Format | Schema location | Consumers |
 |---|---|---|---|
 | `src/cards/stove/styles.ts` | Lit CSS export | This spec § styles.ts | `sci-fi-stove.ts` (import `stoveStyles`) |
 | Updated `sci-fi-stove` card | Web Component | This spec § Full render | Lovelace via `getConfigElement()` (Spec 05) |
 
-### Consumes
+ ### Consumes
 
 | Path / Identifier | Format | Schema location | Producer |
 |---|---|---|---|
@@ -61,13 +61,13 @@
 | `SciFiStoveConfig`, `SciFiStoveSensors` | TS interfaces | Spec 05 § sci-fi-stove | `src/types/config.ts` |
 | `sf-icon` | Web Component | Spec 04 § sf-icon | `src/components/sf-icon/` |
 
-### Public Interface
+ ### Public Interface
 
 | Element | Consumed by | Description |
 |---|---|---|
 | `<sci-fi-stove>` | HA Lovelace | Stove monitoring card (unchanged tag) |
 
-### External Invocations
+ ### External Invocations
 
 N/A — No third-party APIs. Internal `hass` property only:
 - `this.hass.states[entity]` — sensor state reads
@@ -75,7 +75,7 @@ N/A — No third-party APIs. Internal `hass` property only:
 - `this.hass.config?.unit_system?.pressure` — pressure unit (Pa default)
 - `this.hass.connection` — passed to `sf-icon` for icon loading
 
-### Tracked Concepts
+ ### Tracked Concepts
 
 | Concept | Status in this spec | Mentioned in |
 |---|---|---|
@@ -101,7 +101,7 @@ src/components/
 ```
 
 > [!NOTE]
-> `sf-stove-image.ts`, `sf-stack-bar.ts`, and `sf-circle-progress-bar.ts` are new files not in the original spec — they were extracted from main branch JS components as part of the TS port.
+> `sf-stove-image.ts`, `sf-stack-bar.ts`, and 'sf-circle-progress-bar.ts' are new files not in the original spec — they were extracted from main branch JS components as part of the TS port.
 
 ---
 
@@ -154,7 +154,7 @@ The header follows the same pattern as `sci-fi-climates` and `sci-fi-lights`:
 ```
 
 **CSS classes (preserved from tests):**
-- `.stove-status` — the state text line (already tested in `sci-fi-stove.test.ts` L72)
+- `.stove-status` — the state text line (already tested in 'sci-fi-stove.test.ts' L72)
 - `.stove-status.sf-state-on` — orange color when ON
 - `.stove-status.sf-state-off` — dim color when OFF (uses `--sf-accent-off` token)
 
@@ -436,7 +436,7 @@ No changes. CSS classes `.sensor-tile`, `.sensor-tile.warn`, `.bar-bg`, `.bar-fi
 ## Test Selectors — Frozen Contract
 
 > [!CAUTION]
-> The following selectors are used in `tests/cards/stove/sci-fi-stove.test.ts` and MUST NOT be changed.
+> The following selectors are used in 'tests/cards/stove/sci-fi-stove.test.ts' and MUST NOT be changed.
 
 | Selector | Test line | Assertion |
 |---|---|---|
@@ -466,8 +466,8 @@ No changes. CSS classes `.sensor-tile`, `.sensor-tile.warn`, `.bar-bg`, `.bar-fi
 | 2 | **Moving `sf-icon` inside the sensors grid** | Rendering the stove icon as a sensor tile | The icon belongs in `.header > .header-icon` |
 | 3 | **Inline CSS in `sci-fi-stove.ts`** | Re-adding `css\`...\`` block inside the card file | All card CSS goes in `styles.ts` |
 | 4 | **Hardcoding token values** | `color: #00d2ff` directly | Use `var(--sf-primary)` from `sciFiCommonStyles` |
-| 5 | **Changing the icon binding to attribute** | `icon="${...}"` instead of `.icon="${...}"` | Must use Lit property binding `.icon=` (ADR in `architecture.md` § sf-icon Binding Rule) |
-| 6 | **Duplicating `ha-card` background** | Setting background in both `sciFiCommonStyles` and `stoveStyles` without `!important` | Use `!important` in `stoveStyles` override (matches `sci-fi-lights.ts` pattern) |
+| 5 | **Changing the icon binding to attribute** | `icon="${...}"` instead of `.icon="${...}"` | Must use Lit property binding `.icon=` (ADR in 'architecture.md' § sf-icon Binding Rule) |
+| 6 | **Duplicating `ha-card` background** | Setting background in both `sciFiCommonStyles` and `stoveStyles` without `!important` | Use `!important` in `stoveStyles` override (matches 'sci-fi-lights.ts' pattern) |
 | 7 | **Breaking the sensor tile 2×N grid** | Changing to `repeat(auto-fill, minmax(120px, 1fr))` without responsive constraint | Default to 2 columns on mobile, 3 on wider; keeps compact look |
 | 8 | **Mutating config** | `this.config.entity = '...'` | Always immutable — read-only access only |
 
@@ -488,11 +488,11 @@ No changes. CSS classes `.sensor-tile`, `.sensor-tile.warn`, `.bar-bg`, `.bar-fi
 | TC-1109 | Unit | `.bar-fill.storage` null when no maximum attribute | `counter state='5', attributes={}` | `.bar-fill.storage` is null |
 | TC-1110 | Unit | `header_message` renders in `.sf-header` | `config.header_message: 'Stove Status'` | textContent includes `'Stove Status'` |
 | TC-1111 | Unit | Error message when entity not found | `entity: 'climate.missing'`, hass empty | textContent includes `'Entité poêle non trouvée'` |
-| TC-1112 | Regression | All existing `sci-fi-stove.test.ts` tests still pass | Run `npm test` | 0 failures |
+| TC-1112 | Regression | All existing 'sci-fi-stove.test.ts' tests still pass | Run `npm test` | 0 failures |
 | TC-1113 | Unit | `styles.ts` exports `stoveStyles` as a Lit CSSResult | Import check | `typeof stoveStyles === 'object'` with `cssText` property |
-| IT-1101 | Integration | `sci-fi-stove` registers correctly in `customElements` | Load `sci-fi.min.js` | `customElements.get('sci-fi-stove')` returns the class |
+| IT-1101 | Integration | `sci-fi-stove` registers correctly in `customElements` | Load 'sci-fi.min.js' | `customElements.get('sci-fi-stove')` returns the class |
 | IT-1102 | Integration | Card renders header + grid with real hass state | Mount with `state: 'heating'`, all sensors set | Header visible, `.sensor-tile` count > 0, `.header-icon sf-icon` present |
-| IT-1103 | Integration | `styles.ts` imported — no inline `css\`\`` block remains in `sci-fi-stove.ts` | Grep source file | `grep -c 'css\`' sci-fi-stove.ts` returns 0 |
+| IT-1103 | Integration | `styles.ts` imported — no inline `css\`\`` block remains in `sci-fi-stove.ts` | Grep source file | 'grep -c 'css\'' sci-fi-stove.ts` returns 0 |
 
 > [!NOTE]
 > TC-1101 through TC-1111 are **NEW** tests for the new header design.
@@ -524,3 +524,7 @@ No changes. CSS classes `.sensor-tile`, `.sensor-tile.warn`, `.bar-bg`, `.bar-fi
 | Config types contract | [Spec 05 § sci-fi-stove](./05_cards.md#sci-fi-stove) |
 | sf-icon binding rule | [architecture.md § sf-icon Binding Rule](../CODEMAPS/architecture.md#sf-icon-binding-rule) |
 | ADR-005 zero-breaking-change contract | [Spec 05 L6](./05_cards.md#L6) |
+
+
+## Adversarial Fixes: Edge Cases
+1. **Unavailable State Handling**: The card MUST disable interaction buttons and render an 'Offline' overlay or distinct visual state when `entity.state === 'unavailable' || entity.state === 'unknown'`.

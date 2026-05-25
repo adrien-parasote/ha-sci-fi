@@ -13,7 +13,7 @@ import './components/sf-toggle-switch/sf-toggle-switch.js';
 import './components/sf-toast.js'; // global toast component used by all cards
 
 // ── Cards ─────────────────────────────────────────────────────────────────────
-import './cards/hexa_tiles/sci-fi-hexa-tiles.js';
+import './cards/hexa-tiles/sci-fi-hexa-tiles.js';
 import './cards/lights/sci-fi-lights.js';
 import './cards/climates/sci-fi-climates.js';
 import './cards/plugs/sci-fi-plugs.js';
@@ -21,9 +21,9 @@ import './cards/weather/sci-fi-weather.js';
 import './cards/stove/sci-fi-stove.js';
 import './cards/vacuum/sci-fi-vacuum.js';
 import './cards/vehicles/sci-fi-vehicles.js';
-
+ 
 // ── Card Editors ──────────────────────────────────────────────────────────────
-import './cards/hexa_tiles/sci-fi-hexa-tiles-editor.js';
+import './cards/hexa-tiles/sci-fi-hexa-tiles-editor.js';
 import './cards/lights/sci-fi-lights-editor.js';
 import './cards/climates/sci-fi-climates-editor.js';
 import './cards/plugs/sci-fi-plugs-editor.js';

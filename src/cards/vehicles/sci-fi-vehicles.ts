@@ -15,7 +15,7 @@ import {
   HASS_RENAULT_SERVICE,
   HASS_RENAULT_SERVICE_ACTION_START_AC,
   HASS_RENAULT_SERVICE_ACTION_STOP_AC,
-} from './vehicle_const.js';
+} from '../../components/vehicle_const.js';
 
 import '../../components/sf-landspeeder.js';
 import '../../components/sf-wheel.js';
@@ -27,6 +27,29 @@ const TAG = 'sci-fi-vehicles';
 @customElement(TAG)
 export class SciFiVehiclesCard extends SciFiBaseCard {
   static override styles = [sciFiCommonStyles, vehicleStyles];
+
+  protected override getRelevantEntities(): string[] {
+    const entities = new Set<string>();
+
+    if (this.config.vehicles) {
+      for (const v of this.config.vehicles) {
+        if (v.charging) entities.add(v.charging);
+        if (v.lock_status) entities.add(v.lock_status);
+        if (v.location) entities.add(v.location);
+        if (v.battery_autonomy) entities.add(v.battery_autonomy);
+        if (v.fuel_autonomy) entities.add(v.fuel_autonomy);
+        if (v.battery_level) entities.add(v.battery_level);
+        if (v.location_last_activity) entities.add(v.location_last_activity);
+        if (v.charge_state) entities.add(v.charge_state);
+        if (v.plug_state) entities.add(v.plug_state);
+        if (v.mileage) entities.add(v.mileage);
+        if (v.fuel_quantity) entities.add(v.fuel_quantity);
+        if (v.charging_remaining_time) entities.add(v.charging_remaining_time);
+      }
+    }
+
+    return Array.from(entities);
+  }
 
   declare config: SciFiVehiclesConfig;
 

@@ -67,6 +67,31 @@ const PRESET_ICONS: Record<string, string> = {
 export class SciFiStoveCard extends SciFiBaseCard {
   static override styles = [sciFiCommonStyles, stoveStyles];
 
+  protected override getRelevantEntities(): string[] {
+    const entities = new Set<string>();
+
+    if (this.config.entity) {
+      entities.add(this.config.entity);
+    }
+    if (this.config.storage_counter) {
+      entities.add(this.config.storage_counter);
+    }
+    if (this.config.sensors) {
+      const s = this.config.sensors;
+      if (s.sensor_actual_power) entities.add(s.sensor_actual_power);
+      if (s.sensor_combustion_chamber_temperature) entities.add(s.sensor_combustion_chamber_temperature);
+      if (s.sensor_inside_temperature) entities.add(s.sensor_inside_temperature);
+      if (s.sensor_pellet_quantity) entities.add(s.sensor_pellet_quantity);
+      if (s.sensor_power) entities.add(s.sensor_power);
+      if (s.sensor_status) entities.add(s.sensor_status);
+      if (s.sensor_fan_speed) entities.add(s.sensor_fan_speed);
+      if (s.sensor_pressure) entities.add(s.sensor_pressure);
+      if (s.sensor_time_to_service) entities.add(s.sensor_time_to_service);
+    }
+
+    return Array.from(entities);
+  }
+
   declare config: SciFiStoveConfig;
 
   protected override renderCard(): TemplateResult {

@@ -2,8 +2,8 @@
 // @vitest-environment happy-dom
 import { expect, describe, it, beforeEach, afterEach, vi } from 'vitest';
 
-import '../../../src/cards/hexa_tiles/sci-fi-hexa-tiles.js';
-import { SciFiHexaTilesCard } from '../../../src/cards/hexa_tiles/sci-fi-hexa-tiles.js';
+import '../../../src/cards/hexa-tiles/sci-fi-hexa-tiles.js';
+import { SciFiHexaTilesCard } from '../../../src/cards/hexa-tiles/sci-fi-hexa-tiles.js';
 import { makeMockHass, makeMockEntity } from '../../fixtures/mock-hass.js';
 
 describe('sci-fi-hexa-tiles', () => {

@@ -42,7 +42,7 @@
 
 ## Assumptions
 
-| # | Assumption | Risk | Validation |
+| ID | Assumption | Risk | Validation |
 |---|---|---|---|
 | 1 | TypeScript 5.x is compatible with our dependencies | Low | → Run `npm info typescript` and `npm run typecheck` |
 | 2 | Rollup 4 builds standalone IIFE bundles | Medium | → Run `npm run build` and inspect `dist/sci-fi.min.js` |

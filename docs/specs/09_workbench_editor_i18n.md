@@ -21,7 +21,7 @@
 
 ## Assumptions
 
-| # | Assumption | Risk | Validation |
+| ID | Assumption | Risk | Validation |
 |---|---|---|---|
 | 1 | js-yaml CDN is stable | Low | SHOW: Verified. cdnjs endpoint is reliable and cached. |
 | 2 | Base classes support dynamic language setters | Low | SHOW: Verified by Spec 03 base elements code. |
@@ -47,7 +47,7 @@ Every agent executing this specification must strictly adhere to the following b
 
 | Path / Identifier | Format | Schema location | Consumers |
 |---|---|---|---|
-| `dev/workbench.html` | HTML / ESM | [dev/workbench.html](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/dev/workbench.html#L1) | Developer workbench environment |
+| 'dev/workbench.html' | HTML / ESM | [dev/workbench.html](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/dev/workbench.html#L1) | Developer workbench environment |
 
  ### Consumes
 
@@ -80,7 +80,7 @@ Every agent executing this specification must strictly adhere to the following b
 ## Implementation Details
 
 ### 1. Language Switcher (i18n)
-- **UI Element**: Add a sleek button group in the toolbar of `dev/workbench.html` to toggle between **EN** (English) and **FR** (French). Use the variables `--accent` and `--border` for glassmorphic visual highlighting of the active language.
+- **UI Element**: Add a sleek button group in the toolbar of 'dev/workbench.html' to toggle between **EN** (English) and **FR** (French). Use the variables `--accent` and `--border` for glassmorphic visual highlighting of the active language.
 - **State Handling**: Maintain a global state variable `currentLanguage = 'fr'` (default).
 - **HA Config Language Synchronization**: When loading data from a connected live Home Assistant instance, auto-detect the configuration language (`config.language`). If it is `'fr'` or `'en'`, dynamically update `currentLanguage` to match, store it in `localStorage` under `wb-lang`, toggle active UI button states, and synchronize it to the `hass` object.
 - **HASS Sync**: Whenever `currentLanguage` changes:
@@ -107,7 +107,7 @@ Every agent executing this specification must strictly adhere to the following b
   2. **📝 Éditeur de code (YAML)**: Direct code editor.
 
 ### 4. YAML Code Editor & js-yaml Integration
-- **CDN Loading**: Add `js-yaml` library asynchronously via CDN inside `dev/workbench.html`:
+- **CDN Loading**: Add `js-yaml` library asynchronously via CDN inside 'dev/workbench.html':
   ```html
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
   ```

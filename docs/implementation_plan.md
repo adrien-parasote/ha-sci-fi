@@ -1,98 +1,122 @@
-# Implementation Plan: Card Editors (Graphical Configuration UI)
+# Goal Description: Urbanisation, Performance & Code Consolidation
 
-This plan outlines the engineering steps to restore the 8 graphical card editors for the Home Assistant sci-fi dashboard. It introduces a clean, reusable set of input sub-components (`sf-editor-*`) and integrates them into a safe, immutable update cycle using unified events and infinite-loop guards.
+Comprehensive refactoring, rendering performance optimization, unit test suite merging, and documentation cleanup for the `ha-sci-fi` custom Lovelace cards package.
+
+This plan moves `ha-sci-fi` to a state-of-the-art codebase, resolving legacy folder naming duplicates, ensuring extreme rendering speed via selective entity tracking, standardizing visual component styles, and consolidating scattered test resources.
 
 ---
 
 ## User Review Required
 
 > [!IMPORTANT]
-> **Unified Event Architecture:** All custom editor inputs (`sf-editor-input`, `sf-editor-dropdown`, `sf-editor-slider`, etc.) will communicate value updates via a single unified custom event: **`input-update`** (with standard `InputUpdateDetail` payload). This eliminates the distinction between clicks and keystrokes, simplifying card editors to a single event handler `@input-update="${this._update}"`.
+> **Performance Improvements via `getRelevantEntities()`**
+> We are introducing a strict performance gate in `SciFiBaseCard`. All cards will now override `getRelevantEntities()` to return only the list of Home Assistant entity IDs they actively monitor.
+> This ensures that the cards **never** re-render when other unrelated entities in the home update (which normally triggers heavy re-renders due to HA's massive dynamic `hass` updates).
+>
+> **Urbanization and Folder Alignment**
+> We are renaming `src/cards/hexa_tiles` to `src/cards/hexa-tiles` to conform with kebab-case standards of all other card folders. All imports, tests, and bundler configurations will be updated accordingly.
 
 > [!WARNING]
-> **Immutability & Crash Protection:** To prevent UI state divergence and Lovelace crashes, `SciFiBaseEditor._getNewConfig()` will perform deep-clones, and `_dispatchChange()` will immediately update the local state `this.config = newConfig`. All sub-editors will spread nested config objects (`header`, `sensors`, `alert`, `custom_entities`) defensively before modifying fields to prevent `TypeError` crashes.
+> **Eliminating Legacy Manual Tests and Redundant folders**
+> The old `tests/icons.html` and `tests/index.html` manual test files from the pre-TS era are obsolete and dead links (they refer to non-existent JS files). We will delete them.
+> The directory `src/components/icons/` is a direct copy of the custom icons data in `src/components/sf-icon/data/`. We will route all imports to the latter and delete the former.
+
+---
+
+## Open Questions
+
+> [!NOTE]
+> 1. **Testing Consolidation**: We propose to merge all redundant `*-extended.test.ts`, `*-new.test.ts`, and `*-design.test.ts` files into a single unified test file for the card (`sci-fi-<card>.test.ts`) and its editor (`sci-fi-<card>-editor.test.ts`). Do you approve this structure?
+> 2. **Verification confirmation**: Do you approve running validation locally via the Dev Workbench (`npx serve .` on port 8888) as mandated by ADR-007 after we complete our changes?
 
 ---
 
 ## Proposed Changes
 
-### Reusable Editor Sub-Components
+---
 
-#### [NEW] [sf-editor-input.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/components/editor-inputs/sf-editor-input.ts)
-* Base custom element (`sf-editor-input`) rendering a text/number field with a dynamic floating label.
+### 1. Codebase Urbanization (Folder Structure Standard)
 
-#### [NEW] [sf-editor-dropdown.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/components/editor-inputs/sf-editor-dropdown.ts)
-* Filterable dropdown picker extending the input field. Accepts `items: any[]` dynamically.
+#### [NEW] [styles.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/lights/styles.ts)
+- Separate style definition extracted from `sci-fi-lights.ts`.
 
-#### [NEW] [sf-editor-dropdown-entity.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/components/editor-inputs/sf-editor-dropdown-entity.ts)
-* Specialized entity picker filtering `hass.states` by domain (e.g., `'light.'`, `'weather.'`).
+#### [NEW] [styles.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/weather/styles.ts)
+- Separate style definition extracted from `sci-fi-weather.ts`.
 
-#### [NEW] [sf-editor-dropdown-icon.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/components/editor-inputs/sf-editor-dropdown-icon.ts)
-* Monospaced icon picker combining `CUSTOM_ICONS` (`sf:`) and common MDI names, applying a search limit of 200 *after* query matching.
+#### [NEW] [styles.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/hexa-tiles/styles.ts)
+- Separate style definition extracted from `sci-fi-hexa-tiles.ts`.
 
-#### [NEW] [sf-editor-multi-entity.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/components/editor-inputs/sf-editor-multi-entity.ts)
-* Multi-select entity picker rendering selected chips above a filterable dropdown.
+#### [DELETE] [hexa_tiles](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/hexa_tiles)
+- Rename directory to `src/cards/hexa-tiles/` for naming consistency.
 
-#### [NEW] [sf-editor-slider.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/components/editor-inputs/sf-editor-slider.ts)
-* Clean numeric range slider.
+#### [DELETE] [icons](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/components/icons)
+- Delete redundant duplicate icons directory. All imports moved to `src/components/sf-icon/`.
 
-#### [NEW] [sf-editor-chips.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/components/editor-inputs/sf-editor-chips.ts)
-* General multi-value tag list input.
+#### [DELETE] [icons.html](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/tests/icons.html)
+- Delete obsolete pre-TS manual HTML test.
 
-#### [NEW] [sf-editor-color-picker.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/components/editor-inputs/sf-editor-color-picker.ts)
-* Styled color swatch picker.
-
-#### [NEW] [sf-editor-accordion.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/components/editor-inputs/sf-editor-accordion.ts)
-* Collapsible group panel for sub-configuration elements.
+#### [DELETE] [index.html](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/tests/index.html)
+- Delete obsolete pre-TS manual HTML index.
 
 ---
 
-### Core Base Classes
+### 2. Performance & Code Optimizations
 
-#### [MODIFY] [base-editor.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/utils/base-editor.ts)
-* Add `_getNewConfig<T>()` with fallback initialization (`this.config ? ... : {}`).
-* Add `_dispatchChange(newConfig)` with synchronous local state synchronization.
-* Add localized `getLabel(key)` dictionary using `msg()` from `@lit/localize`.
+#### [MODIFY] [base-card.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/utils/base-card.ts)
+- Ensure the `shouldUpdate` logic strictly checks array elements and works hand-in-hand with card-specific `getRelevantEntities()` overrides.
+
+#### [MODIFY] [sci-fi-hexa-tiles.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/hexa-tiles/sci-fi-hexa-tiles.ts)
+- Implement `getRelevantEntities()` to listen to weather entities, alerts, and active tile entities.
+
+#### [MODIFY] [sci-fi-lights.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/lights/sci-fi-lights.ts)
+- Implement `getRelevantEntities()` to listen to all light domain entities and `sun.sun`.
+
+#### [MODIFY] [sci-fi-climates.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/climates/sci-fi-climates.ts)
+- Implement `getRelevantEntities()` to listen to all climate domain entities and `sensor.season`.
+
+#### [MODIFY] [sci-fi-plugs.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/plugs/sci-fi-plugs.ts)
+- Implement `getRelevantEntities()` to listen to config plugs and sensor entities.
+
+#### [MODIFY] [sci-fi-weather.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/weather/sci-fi-weather.ts)
+- Implement `getRelevantEntities()` to listen to the weather forecast entity, alert entity, and `sun.sun`.
+- Move `_subscribeForecasts()` trigger to `willUpdate()` to prevent the Lit concurrent-update warning.
+
+#### [MODIFY] [sci-fi-stove.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/stove/sci-fi-stove.ts)
+- Implement `getRelevantEntities()` for stove entities and temperature sensors.
+
+#### [MODIFY] [sci-fi-vacuum.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/vacuum/sci-fi-vacuum.ts)
+- Implement `getRelevantEntities()` for vacuum entities.
+
+#### [MODIFY] [sci-fi-vehicles.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/vehicles/sci-fi-vehicles.ts)
+- Implement `getRelevantEntities()` for vehicle gauges and charge status sensors.
 
 ---
 
-### Graphical Card Editors
+### 3. Unit Test Suite Consolidation
 
-#### [NEW] [sci-fi-weather-editor.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/weather/sci-fi-weather-editor.ts)
-#### [NEW] [sci-fi-climates-editor.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/climates/sci-fi-climates-editor.ts)
-#### [NEW] [sci-fi-lights-editor.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/lights/sci-fi-lights-editor.ts)
-* Incorporate async loop guards when checking `first_floor_to_render`.
-#### [NEW] [sci-fi-plugs-editor.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/plugs/sci-fi-plugs-editor.ts)
-#### [NEW] [sci-fi-stove-editor.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/stove/sci-fi-stove-editor.ts)
-#### [NEW] [sci-fi-vacuum-editor.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/vacuum/sci-fi-vacuum-editor.ts)
-#### [NEW] [sci-fi-vehicles-editor.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/vehicles/sci-fi-vehicles-editor.ts)
-#### [NEW] [sci-fi-hexa-tiles-editor.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/hexa_tiles/sci-fi-hexa-tiles-editor.ts)
+#### [DELETE] [extended test files](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/tests/)
+- Merge all `*-extended.test.ts`, `*-new.test.ts`, `*-design.test.ts` files into their main unified test suites under `tests/cards/`.
+
+#### [MODIFY] [house.test.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/tests/selectors/house.test.ts)
+- Merge `house.selectors.test.ts` into `house.test.ts` to keep a single, clean domain selector test.
 
 ---
 
-### Integration & Setup
+### 4. Documentation Consolidation
 
-#### [MODIFY] [sci-fi.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/sci-fi.ts)
-* Import and register all 8 editors.
+#### [DELETE] [00_MASTER.md](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/docs/specs/00_MASTER.md)
+- Remove duplicate specification index to keep a single source of truth at `docs/MASTER.md`.
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-* Run the complete TypeScript test suite via Vitest to confirm coverage remains above 90%:
-  ```bash
-  npm run test
-  ```
+- Run `npm test` to ensure all 583 tests (and newly merged ones) compile and pass with green status.
+- Run `npm run typecheck` to confirm zero compilation errors in strictly typed TS decorators.
+- Run `npm run lint` to enforce formatting and import standards.
 
 ### Manual Verification
-1. Build the production package and launch the local development server:
-   ```bash
-   npm run build
-   ```
-2. Navigate to the Dev Workbench: `http://localhost:8000/dev/workbench.html`.
-3. Open `✏️ Édition` side-by-side workspace on each of the 8 cards.
-4. Interact with dropdowns, sliders, switches, and multi-entity selectors, verifying that:
-   * The live preview updates in real-time on the right.
-   * Modifying nested keys (like adding custom entity overrides or shortcut items) does not crash the UI.
-   * Switching languages dynamically (EN / FR) translates all labels and dropdown parameters instantly.
+- Compile production bundle using `npm run build`.
+- Spin up local Dev Workbench using `npx serve . --listen 8888 --cors`.
+- Open `http://localhost:8888/dev/workbench.html` and visually verify that all 8 Lovelace cards render fluidly without flicker or console warnings when simulation toggles are fired.

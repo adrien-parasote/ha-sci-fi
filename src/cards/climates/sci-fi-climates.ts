@@ -17,6 +17,19 @@ const TAG = 'sci-fi-climates';
 export class SciFiClimatesCard extends SciFiBaseCard {
   static override styles = [sciFiCommonStyles, climateStyles];
 
+  protected override getRelevantEntities(): string[] {
+    const entities = new Set<string>();
+    const excluded = this.config.entities_to_exclude ?? [];
+
+    for (const entityId of Object.keys(this.hass?.states || {})) {
+      if (entityId.startsWith('climate.') && !excluded.includes(entityId)) {
+        entities.add(entityId);
+      }
+    }
+
+    return Array.from(entities);
+  }
+
   declare config: SciFiClimatesConfig;
 
   @state() private _active_floor_id: string | null = null;

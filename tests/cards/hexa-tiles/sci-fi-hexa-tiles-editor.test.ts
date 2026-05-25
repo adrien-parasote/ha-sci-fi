@@ -1,16 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 // @vitest-environment happy-dom
-/**
- * Extended tests — sci-fi-hexa-tiles-editor.ts
- * Covers: _updateHeaderMessage, _toggleWeather, _updateWeatherField,
- * _updateTileField, _updateTileExclude, _updateTileStateOn,
- * _toggleVisibility, weather entities section, standalone tile toggle,
- * people visibility section.
- */
 import { expect, describe, it, afterEach } from 'vitest';
-
-import '../../../src/cards/hexa_tiles/sci-fi-hexa-tiles-editor.js';
-import type { SciFiHexaTilesEditor } from '../../../src/cards/hexa_tiles/sci-fi-hexa-tiles-editor.js';
+import '../../../src/cards/hexa-tiles/sci-fi-hexa-tiles-editor.js';
+import type { SciFiHexaTilesEditor } from '../../../src/cards/hexa-tiles/sci-fi-hexa-tiles-editor.js';
 import type { HomeAssistantExt } from '../../../src/types/ha.js';
 import { makeMockHass } from '../../fixtures/mock-hass.js';
 
@@ -25,10 +16,113 @@ async function createElement(): Promise<SciFiHexaTilesEditor> {
   return el;
 }
 
-describe('sci-fi-hexa-tiles-editor extended', () => {
-  afterEach(() => { document.body.replaceChildren(); });
+describe('sci-fi-hexa-tiles-editor', () => {
+  afterEach(() => {
+    document.body.replaceChildren();
+  });
 
-  // ── _updateHeaderMessage ────────────────────────────────────────────────────
+  it('renders "No config" when config is not set', async () => {
+    const el = await createElement();
+    const result = el.render();
+    expect(result).toBeDefined();
+  });
+
+  it('renders the editor structure when config is set', async () => {
+    const el = await createElement();
+    el.setConfig(makeConfig({ tiles: [] }));
+    await el.updateComplete;
+    const card = el.shadowRoot!.querySelector('.card');
+    expect(card).not.toBeNull();
+  });
+
+  it('renders add-tile button', async () => {
+    const el = await createElement();
+    el.setConfig(makeConfig({ tiles: [] }));
+    await el.updateComplete;
+    const btns = el.shadowRoot!.querySelectorAll('.add-btn');
+    expect(btns.length).toBeGreaterThan(0);
+  });
+
+  it('renders one accordion per tile', async () => {
+    const el = await createElement();
+    el.setConfig(makeConfig({
+      tiles: [
+        { entity_id: 'light.salon', name: 'Salon' },
+        { entity_id: 'switch.prise', name: 'Prise' },
+      ],
+    }));
+    await el.updateComplete;
+    const accordions = el.shadowRoot!.querySelectorAll('sf-editor-accordion');
+    expect(accordions.length).toBe(2);
+  });
+
+  it('dispatches config-changed when add-tile clicked', async () => {
+    const el = await createElement();
+    el.setConfig(makeConfig({ tiles: [] }));
+    await el.updateComplete;
+
+    const received: CustomEvent[] = [];
+    el.addEventListener('config-changed', (e) => received.push(e as CustomEvent));
+
+    const btn = el.shadowRoot!.querySelector('.add-btn') as HTMLButtonElement;
+    btn.click();
+
+    expect(received).toHaveLength(1);
+    expect(Array.isArray(received[0]!.detail.config.tiles)).toBe(true);
+    expect(received[0]!.detail.config.tiles.length).toBe(1);
+  });
+
+  it('dispatches config-changed when tile is removed', async () => {
+    const el = await createElement();
+    el.setConfig(makeConfig({
+      tiles: [{ entity_id: 'light.salon', name: 'Salon' }],
+    }));
+    await el.updateComplete;
+
+    const received: CustomEvent[] = [];
+    el.addEventListener('config-changed', (e) => received.push(e as CustomEvent));
+
+    const accordion = el.shadowRoot!.querySelector('sf-editor-accordion')!;
+    accordion.dispatchEvent(new CustomEvent('input-update', {
+      bubbles: true,
+      composed: true,
+      detail: { id: '0', kind: 'accordion', value: '0', type: 'remove' },
+    }));
+
+    expect(received).toHaveLength(1);
+    expect(received[0]!.detail.config.tiles).toHaveLength(0);
+  });
+
+  it('renders weather toggle switch when weather section exists', async () => {
+    const el = await createElement();
+    el.setConfig(makeConfig({ tiles: [], weather: {} }));
+    await el.updateComplete;
+
+    const toggle = el.shadowRoot!.querySelector('sf-toggle-switch');
+    expect(toggle).not.toBeNull();
+  });
+
+  it('loads weather and people entities from hass', async () => {
+    const el = await createElement();
+    el.setConfig(makeConfig({ tiles: [] }));
+    const mockHass = {
+      ...makeMockHass(),
+      states: {
+        'weather.home': { entity_id: 'weather.home', state: 'sunny', attributes: {} },
+        'person.adrien': { entity_id: 'person.adrien', state: 'home', attributes: { friendly_name: 'Adrien', entity_picture: null } },
+        'light.salon': { entity_id: 'light.salon', state: 'on', attributes: {} },
+      },
+      locale: { language: 'fr' },
+    } as unknown as HomeAssistantExt;
+
+    el.hass = mockHass;
+    await el.updateComplete;
+
+    expect((el as any)._weatherEntities).toHaveLength(1);
+    expect((el as any)._people).toHaveLength(1);
+  });
+
+  // ── Extended Tests ──────────────────────────────────────────────────────────
 
   it('dispatches config-changed when header message is updated', async () => {
     const el = await createElement();
@@ -68,8 +162,6 @@ describe('sci-fi-hexa-tiles-editor extended', () => {
     expect(received[0]!.detail.config.header_message).toBeUndefined();
   });
 
-  // ── _toggleWeather ──────────────────────────────────────────────────────────
-
   it('dispatches config-changed when weather toggle is switched on', async () => {
     const el = await createElement();
     el.setConfig(makeConfig({ tiles: [], weather: { activate: false } }));
@@ -97,8 +189,6 @@ describe('sci-fi-hexa-tiles-editor extended', () => {
     const accordion = el.shadowRoot!.querySelector('sf-editor-accordion[element-id="weather-detail"]');
     expect(accordion).not.toBeNull();
   });
-
-  // ── _updateWeatherField ─────────────────────────────────────────────────────
 
   it('dispatches config-changed when weather entity is updated', async () => {
     const el = await createElement();
@@ -137,13 +227,10 @@ describe('sci-fi-hexa-tiles-editor extended', () => {
     if (received.length > 0) {
       expect(received[0]!.detail.config.weather.link).toBe('http://example.com');
     } else {
-      // direct call fallback
       (el as any)._updateWeatherField('link', 'http://example.com');
       expect(el.config).toBeDefined();
     }
   });
-
-  // ── _updateTileField ────────────────────────────────────────────────────────
 
   it('dispatches config-changed when tile name is updated', async () => {
     const el = await createElement();
@@ -187,8 +274,6 @@ describe('sci-fi-hexa-tiles-editor extended', () => {
     expect(received[0]!.detail.config.tiles[0].active_icon).toBe('mdi:lightbulb-on');
   });
 
-  // ── _updateTileExclude ──────────────────────────────────────────────────────
-
   it('dispatches config-changed when entity is added to entities_to_exclude', async () => {
     const el = await createElement();
     el.setConfig(makeConfig({
@@ -230,8 +315,6 @@ describe('sci-fi-hexa-tiles-editor extended', () => {
     expect(received).toHaveLength(1);
     expect(received[0]!.detail.config.tiles[0].entities_to_exclude).not.toContain('light.avoid');
   });
-
-  // ── _updateTileStateOn ──────────────────────────────────────────────────────
 
   it('dispatches config-changed when state_on chip is added', async () => {
     const el = await createElement();
@@ -276,8 +359,6 @@ describe('sci-fi-hexa-tiles-editor extended', () => {
     expect(received[0]!.detail.config.tiles[0].state_on).toContain('playing');
   });
 
-  // ── standalone tile toggle ──────────────────────────────────────────────────
-
   it('renders entity dropdown when standalone is true', async () => {
     const el = await createElement();
     el.setConfig(makeConfig({
@@ -285,7 +366,6 @@ describe('sci-fi-hexa-tiles-editor extended', () => {
     }));
     await el.updateComplete;
 
-    // When standalone, renders sf-editor-dropdown-entity[element-id="entity"] instead of entity_kind
     const entityDropdown = el.shadowRoot!.querySelector('sf-editor-dropdown-entity[element-id="entity"]');
     expect(entityDropdown).not.toBeNull();
   });
@@ -300,16 +380,11 @@ describe('sci-fi-hexa-tiles-editor extended', () => {
     const received: CustomEvent[] = [];
     el.addEventListener('config-changed', (e) => received.push(e as CustomEvent));
 
-    // Weather section toggle is the FIRST sf-toggle-switch; the standalone tile toggle is inside the tile accordion
-    // When there is no weather config, the tile's standalone toggle might be the only/first one
-    // Use _updateTileField directly to test the branch
     (el as any)._updateTileField(0, 'standalone', true);
 
     expect(received).toHaveLength(1);
     expect(received[0]!.detail.config.tiles[0].standalone).toBe(true);
   });
-
-  // ── _toggleVisibility ──────────────────────────────────────────────────────
 
   it('renders people visibility section when person entities exist in hass', async () => {
     const el = await createElement();
@@ -398,8 +473,6 @@ describe('sci-fi-hexa-tiles-editor extended', () => {
     expect(received[0]!.detail.config.tiles[0].visibility).not.toContain('person.adrien');
   });
 
-  // ── _removeTile ─────────────────────────────────────────────────────────────
-
   it('dispatches config-changed when tile is removed via accordion', async () => {
     const el = await createElement();
     el.setConfig(makeConfig({
@@ -423,8 +496,6 @@ describe('sci-fi-hexa-tiles-editor extended', () => {
     expect(received).toHaveLength(1);
     expect(received[0]!.detail.config.tiles).toHaveLength(1);
   });
-
-  // ── person picture vs initial ────────────────────────────────────────────────
 
   it('renders person avatar with image when entity_picture is set', async () => {
     const el = await createElement();

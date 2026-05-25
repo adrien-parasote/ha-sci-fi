@@ -1,3 +1,7 @@
+> Document Type: Reference
+> YAML contract — Full implementation spec in [05_cards.md](../05_cards.md#sci-fi-climates)
+> Depends on: [Spec 02](../02_domain_selectors.md#blueprint-coverage), [Spec 03](../03_base_classes.md#blueprint-coverage)
+
 # sci-fi-climates Schema
 
 ### sci-fi-climates
@@ -68,3 +72,15 @@ mode_colors:
   eco: "#96d35f"
   comfort: "#ffff8f"
 ```
+
+## Anti-Patterns
+
+> This file is a Reference (YAML contract). Full anti-patterns are in [05_cards.md Anti-Patterns](../05_cards.md#anti-patterns).
+
+| # | Anti-Pattern | Pointer |
+|---|---|---|
+| 1 | Renaming or removing YAML fields | ADR-005 — zero breaking changes |
+| 2 | Removing `state_icons` / `state_colors` / `mode_icons` / `mode_colors` | These 4 sections are MANDATORY (05_cards.md AP#9) |
+| 3 | Using `excluded_entity_ids` instead of `entities_to_exclude` | Wrong field name — see YAML contract above |
+| 4 | Unmapped HVAC mode crashing icon/color lookup | Fallback to `off` state icon/color (05_cards.md §8) |
+| 5 | Inline HVAC state hardcoding | Use `state_icons`/`state_colors` config maps, not switch statements |

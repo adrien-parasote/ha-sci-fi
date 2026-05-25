@@ -1,4 +1,4 @@
-import { expect, describe, it, beforeEach } from 'vitest';
+import { expect, describe, it } from 'vitest';
 import {
   getFloors,
   getFloorById,
@@ -13,7 +13,7 @@ import { makeMockHass, makeMockFloor, makeMockArea, makeMockEntityEntry } from '
 
 describe('house selectors', () => {
   describe('floors', () => {
-    it('getFloors returns floors sorted by level, nulls last', () => {
+    it('TC-201: getFloors() returns floors sorted by level, nulls last', () => {
       const hass = makeMockHass({
         floors: {
           'null1': makeMockFloor({ floor_id: 'null1', level: null }),
@@ -31,9 +31,14 @@ describe('house selectors', () => {
       expect(floors[3]!.floor_id).to.equal('null2');
     });
 
-    it('getFloors returns empty array if no floors exist', () => {
+    it('TC-205: getFloors() returns [] when floors registry is empty', () => {
+      const hass = makeMockHass({ floors: {} });
+      expect(getFloors(hass)).toEqual([]);
+    });
+
+    it('getFloors returns empty array if floors property does not exist on hass', () => {
       const hass = makeMockHass();
-      delete (hass as unknown as any) /* eslint-disable-line @typescript-eslint/no-unsafe-argument */.floors; // simulate missing floors
+      delete (hass as unknown as any) /* eslint-disable-line @typescript-eslint/no-unsafe-argument */.floors;
       expect(getFloors(hass)).to.deep.equal([]);
     });
 
@@ -42,6 +47,11 @@ describe('house selectors', () => {
       const floor = getFloorById(hass, 'ground');
       expect(floor).to.exist;
       expect(floor!.floor_id).to.equal('ground');
+    });
+
+    it('getFloorById() returns undefined for unknown floor id', () => {
+      const hass = makeMockHass();
+      expect(getFloorById(hass, 'rooftop')).toBeUndefined();
     });
 
     it('getFirstFloor returns the lowest level floor', () => {
@@ -54,6 +64,11 @@ describe('house selectors', () => {
       const first = getFirstFloor(hass);
       expect(first!.floor_id).to.equal('ground');
     });
+
+    it('getFirstFloor() returns undefined when no floors registry', () => {
+      const hass = makeMockHass({ floors: {} });
+      expect(getFirstFloor(hass)).toBeUndefined();
+    });
   });
 
   describe('areas', () => {
@@ -65,11 +80,11 @@ describe('house selectors', () => {
 
     it('getAreas returns empty array if no areas exist', () => {
       const hass = makeMockHass();
-      delete (hass as unknown as any) /* eslint-disable-line @typescript-eslint/no-unsafe-argument */.areas; // simulate missing areas
+      delete (hass as unknown as any) /* eslint-disable-line @typescript-eslint/no-unsafe-argument */.areas;
       expect(getAreas(hass)).to.deep.equal([]);
     });
 
-    it('getAreasByFloor returns areas matching floor_id', () => {
+    it('TC-202: getAreasByFloor returns areas matching floor_id', () => {
       const hass = makeMockHass({
         areas: {
           'area1': makeMockArea({ area_id: 'area1', floor_id: 'floor1' }),
@@ -83,6 +98,12 @@ describe('house selectors', () => {
       expect(areas.every(a => a.floor_id === 'floor1')).to.be.true;
     });
 
+    it('TC-202b: getAreasByFloor() returns [] when floor has no areas', () => {
+      const hass = makeMockHass();
+      const areas = getAreasByFloor(hass, 'nonexistent_floor');
+      expect(areas).toEqual([]);
+    });
+
     it('getAreaById returns the correct area', () => {
       const hass = makeMockHass();
       const area = getAreaById(hass, 'living_room');
@@ -92,7 +113,7 @@ describe('house selectors', () => {
   });
 
   describe('entities', () => {
-    it('getEntitiesByArea returns entries matching area_id', () => {
+    it('TC-203: getEntitiesByArea returns entries matching area_id', () => {
       const hass = makeMockHass({
         entities: {
           'light.1': makeMockEntityEntry({ entity_id: 'light.1', area_id: 'area1' }),
@@ -107,7 +128,7 @@ describe('house selectors', () => {
 
     it('getEntitiesByArea returns empty array if no entities exist', () => {
       const hass = makeMockHass();
-      delete (hass as unknown as any) /* eslint-disable-line @typescript-eslint/no-unsafe-argument */.entities; // simulate missing entities
+      delete (hass as unknown as any) /* eslint-disable-line @typescript-eslint/no-unsafe-argument */.entities;
       expect(getEntitiesByArea(hass, 'area1')).to.deep.equal([]);
     });
 
@@ -123,6 +144,16 @@ describe('house selectors', () => {
       const lights = getEntitiesByAreaAndDomain(hass, 'area1', 'light');
       expect(lights.length).to.equal(1);
       expect(lights[0]!.entity_id).to.equal('light.1');
+    });
+  });
+
+  describe('IT-201 Integration / Immutability', () => {
+    it('IT-201: getFloors() called twice returns equal data without mutation', () => {
+      const hass = makeMockHass();
+      const floors1 = getFloors(hass);
+      const floors2 = getFloors(hass);
+      expect(floors1).toEqual(floors2);
+      expect(floors1).not.toBe(floors2); // Immutability verification
     });
   });
 });

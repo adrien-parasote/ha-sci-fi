@@ -40,7 +40,7 @@ src/
 
 ## Assumptions
 
-| # | Assumption | Risk | Validation |
+| ID | Assumption | Risk | Validation |
 |---|---|---|---|
 | 1 | `idb-keyval` is supported in browser local databases | Low | → Run IndexDB inspection inside active browser developer tools |
 | 2 | `window.customIcons['sf']` is registered before render | Medium | → Run console log verification check for customIcons during load |
@@ -76,12 +76,13 @@ src/
 | # | Anti-Pattern | Violation | Correct Behavior |
 |---|---|---|---|
 | 1 | Heavy SVG requests | Fetch MDI icon from external CDN on every render | Query `icon-cache.ts` module-level Map first; in live HA environment (if `<ha-icon>` custom element is registered), directly bypass the deprecated `'mdi'` WebSocket registry call and render `<ha-icon .icon="${this.icon}"></ha-icon>` natively — **never unpkg/jsdelivr CDN** (breaks offline HA) |
-| 2 | Hardcoded CDN URL | `fetch('https://unpkg.com/@mdi/svg/...')` | Use HA native registry or local HACS file path `hacsfiles/ha-sci-fi/icons/` — see CRITICAL-01 |
+| 2 | Hardcoded CDN URL | `fetch('https://unpkg.com/@mdi/svg/...')` | Use HA native registry or local HACS file path 'hacsfiles/ha-sci-fi/icons/' — see CRITICAL-01 |
 | 3 | Component styles leak | Global stylesheet inclusion | Define elements within scoped Lit Shadow DOM |
 | 4 | Manual event dispatching | Mutating card config values | Dispatch standard custom element events with `composed: true` |
 | 5 | Fetch flood in incognito | IndexedDB blocks in private window — fetching on every render with no rate limit | Use in-memory `Map` as volatile fallback cache + limit concurrent fetches to 5 max — see MEDIUM-03 |
 | 6 | `window.customIcons` overwrite | `window.customIcons.sf = sfIconset` (direct assignment) | Merge defensively: `window.customIcons.sf = { ...window.customIcons.sf, ...sfIconset }` |
 | 7 | Attribute binding for dynamic icons | `icon="${expression}"` (HTML attribute) for a dynamic value | Use `.icon="${expression}"` (property binding) — Lit attribute binding does NOT reflect updates after first render. Dynamic values (ternary expressions, variables) MUST use property binding `.icon=` to trigger `willUpdate()` on change |
+| 8 | **Missing `:host { display: block }`** | Omitting `display: block` on `:host` in any LitElement component | All `sf-*` custom elements have `display: inline` by default (HTML spec). `margin: auto` and flex/grid centering silently fail. Add `:host { display: block; }` as the FIRST rule in every component's `styles.ts`. (L059) |
 
 ---
 

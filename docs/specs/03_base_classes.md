@@ -36,7 +36,7 @@ src/
 
 ## Assumptions
 
-| # | Assumption | Risk | Validation |
+| ID | Assumption | Risk | Validation |
 |---|---|---|---|
 | 1 | Lit `@property({ attribute: false })` works for hass object | Low | → Run element properties check after state change events |
 | 2 | Sealed `render` executes `willUpdate` hook reactively | Medium | → Run console log check for willUpdate triggers on state change |

@@ -25,7 +25,7 @@
 
 ## Assumptions
 
-| # | Assumption | Risk | Source Type | Validation |
+| ID | Assumption | Risk | Source Type | Validation |
 |---|---|---|---|---|
 | 1 | `SciFiVehicleEntry` and `SciFiVehiclesConfig` config fields are frozen — no new fields needed | Low | SHOW | 'grep -n "SciFiVehicleEntry" src/types/config.ts' → 14 sensor fields already defined |
 | 2 | Existing CSS selectors `.vehicle-card`, `.battery-bar-fill`, `.stat-item` in existing tests must be preserved or tests must be rewritten alongside | Medium | SHOW | 'grep -n "querySelector" tests/cards/vehicles/sci-fi-vehicles.test.ts' → 4 assertions on these selectors |
@@ -50,7 +50,7 @@
 
 ## Cross-Spec Contracts
 
-### Produces
+ ### Produces
 
 | Path / Identifier | Format | Schema location | Consumers |
 |---|---|---|---|
@@ -59,7 +59,7 @@
 | `src/cards/vehicles/vehicle_const.ts` | TS constants | This spec § Constants | `components/sf-landspeeder.ts`, `vehicles/sci-fi-vehicles.ts` |
 | Updated `sci-fi-vehicles` card | Web Component | This spec § Full render | Lovelace via `getConfigElement()` (Spec 05) |
 
-### Consumes
+ ### Consumes
 
 | Path / Identifier | Format | Schema location | Producer |
 |---|---|---|---|
@@ -70,21 +70,21 @@
 | `sf-button-card` | Web Component | Spec 04 § sf-button-card | `src/components/buttons/sf-button-card.ts` |
 | `sf-icon` | Web Component | Spec 04 § sf-icon | `src/components/sf-icon/` |
 
-### Public Interface
+ ### Public Interface
 
 | Element | Consumed by | Description |
 |---|---|---|
 | `<sci-fi-vehicles>` | HA Lovelace | Vehicle monitoring card (unchanged tag) |
 | `<sf-landspeeder>` | `vehicles/sci-fi-vehicles.ts` | Internal landspeeder display component |
 
-### External Invocations
+ ### External Invocations
 
 | Service | Action | Params | When |
 |---|---|---|---|
 | `renault` | `ac_start` | `{ vehicle: v.id, temperature: selectedTemp }` | User clicks "Start AC" |
 | `renault` | `ac_cancel` | `{ vehicle: v.id }` | User clicks "Stop AC" |
 
-### Tracked Concepts
+ ### Tracked Concepts
 
 | Concept | Status in this spec | Mentioned in |
 |---|---|---|
@@ -690,7 +690,7 @@ The following `msg()` keys are **new** and must be added to `src/locales/locales
 | `'Waiting for charge'` | `'Attente de charge'` |
 
 > [!IMPORTANT]
-> Before adding: run `grep -r "msg('Temperature'" src/` to confirm `'Temperature'` is already present from the stove card. If yes, skip it. All others are likely new. Do NOT modify `src/locales/locales/fr.ts` by hand; always update translations in `xliff/fr.xlf` first and run the compilation.
+> Before adding: run 'grep -r "msg('Temperature'" src/' to confirm `'Temperature'` is already present from the stove card. If yes, skip it. All others are likely new. Do NOT modify `src/locales/locales/fr.ts` by hand; always update translations in `xliff/fr.xlf` first and run the compilation.
 
 ---
 

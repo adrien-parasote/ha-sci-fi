@@ -9,9 +9,9 @@
 
 ## Assumptions
 
-| # | Assumption | Risk | Validation |
+| ID | Assumption | Risk | Validation |
 |---|---|---|---|
-| 1 | The production dashboards use exactly the properties backed up in `"yaml backup"/*.yaml`, without undocumented parameters. | Medium | → Validated against primary config schemas and exact production YAML files. |
+| 1 | The production dashboards use exactly the properties backed up in '"yaml backup"/*.yaml', without undocumented parameters. | Medium | → Validated against primary config schemas and exact production YAML files. |
 | 2 | Home Assistant's Lovelace custom card registration system remains fully compatible with `@customElement` auto-registration. | Low | → Confirmed through standard custom element registry practices in HA developer docs. |
 | 3 | The Lit-based base classes and selectors from Spec 02, 03, and 04 satisfy all specific interface needs for these 8 cards. | Low | → Verified by dependency type definitions in `tsconfig.json` and base class test coverage. |
 | 4 | Chart.js can be bundled directly in the IIFE without violating HA's dashboard runtime limits or memory constraints. | Medium | → Profiled and tested on sample dashboards with active sensor state changes. |
@@ -37,79 +37,79 @@
 
 > [!CAUTION]
 > Les noms de champs ci-dessous sont figés. Toute divergence dans `src/types/config.ts` ou dans le code des cartes est un bug bloquant.
-> Source primaire : `config-metadata.js` de chaque card en v0.9.6.
-> Source de vérification : `"yaml backup"/*.yaml` dans le workspace HA.
+> Source primaire : 'config-metadata.js' de chaque card en v0.9.6.
+> Source de vérification : '"yaml backup"/*.yaml' dans le workspace HA.
 
 ---
 
 ### sci-fi-hexa-tiles
-
-See [hexa-tiles-schema.md](./cards/hexa-tiles-schema.md) for full config contract.
-
+ 
+See [hexa-tiles.md](./cards/hexa-tiles.md#L1) for full config contract.
+ 
 ---
-
+ 
 ### sci-fi-lights
-
-See [lights-schema.md](./cards/lights-schema.md) for full config contract.
-
+ 
+See [lights.md](./cards/lights.md#L1) for full config contract.
+ 
 ---|---|
 | `first_floor_to_render: 'rdc'` | Sélectionne 'rdc' SI l'ID existe dans `hass.floors` (même si aucune lumière) |
 | `first_floor_to_render` absent ou ID inconnu | Fallback → 1er floor avec lumières → 1er floor |
 | `first_area_to_render: 'chambre'` | Sélectionne 'chambre' SI elle est dans les areas du floor actif |
 | `first_area_to_render` absent ou area hors floor | Fallback → 1ère area avec lumières → 1ère area du floor |
-
+ 
 > [!NOTE]
 > La validation ne requiert **pas** la présence de lumières pour conserver un floor/area configuré. Cela évite un flash d'écran vide lors du 1er rendu quand le registre d'entités HA n'est pas encore chargé.
-
+ 
 **CSS selectors des éléments interactifs (pour tests E2E) :**
-
+ 
 | Élément | Sélecteur | Attribut d'état |
 |---|---|---|
 | Hexagone de floor | `.floor-hexa` | `data-selected="true/false"`, `data-active="true/false"` |
 | Hexagone d'area | `.area-hexa` | `data-selected="true/false"`, `data-active="true/false"` |
 | Bouton de lumière | `.light-btn` | classe `light-off` si éteinte |
 | Label de lumière | `.light-label` | — |
-
+ 
 **Icône jour/nuit dans le header :**
 L'icône en haut à droite du header lit l'état de `sun.sun`. Si `above_horizon` → icône animée `sf:sunny-day` ; sinon → `sf:starry-night`. Utilise `WEATHER_ICON_SET` de `sf-weather-icons.ts`.
-
+ 
 **getCardSize() :** retourne `5`.
-
+ 
 ---
-
+ 
 ### sci-fi-climates
-
-See [climates-schema.md](./cards/climates-schema.md) for full config contract.
-
+ 
+See [climates.md](./cards/climates.md#L1) for full config contract.
+ 
 ---
-
+ 
 ### sci-fi-plugs
-
-See [plugs-schema.md](./cards/plugs-schema.md) for full config contract.
-
+ 
+See [plugs.md](./cards/plugs.md#L1) for full config contract.
+ 
 ---
-
+ 
 ### sci-fi-weather
-
-See [weather-schema.md](./cards/weather-schema.md) for full config contract.
-
+ 
+See [weather.md](./cards/weather.md#L1) for full config contract.
+ 
 ---
-
+ 
 ### sci-fi-stove
-
-See [stove-schema.md](./cards/stove-schema.md) for full config contract.
-
+ 
+See [stove.md](./cards/stove.md#L1) for full config contract.
+ 
 ---
-
+ 
 ### sci-fi-vacuum
-
-See [vacuum-schema.md](./cards/vacuum-schema.md) for full config contract.
-
+ 
+See [vacuum.md](./cards/vacuum.md#L1) for full config contract.
+ 
 ---
-
+ 
 ### sci-fi-vehicles
-
-See [vehicles-schema.md](./cards/vehicles-schema.md) for full config contract.
+ 
+See [vehicle.md](./cards/vehicle.md#L1) for full config contract.
 
 ---
 
@@ -146,15 +146,15 @@ To ensure robust and correct code generation across the 8 cards, the following c
 * **Rule**: When no active lights or climate entities are found, the card must render a clear empty state message (e.g. `"Aucune lumière"`) instead of displaying an empty panel.
 * **Note (lights)**: "Aucune lumière configurée pour cet étage" is shown ONLY when `areasWithLights.length === 0` for the selected floor. A configured floor is kept (even with 0 lights) if its ID exists in `hass.floors`, preventing false empty state on initial HA load.
 
-### 8. Floor/Area Initial Selection (lights card)
+### 6. Floor/Area Initial Selection (lights card)
 * **Constraint**: `first_floor_to_render` / `first_area_to_render` may refer to floors/areas with no lights (e.g. during HA entity registry load, or misconfiguration).
 * **Rule**: Validate `first_floor_to_render` by ID existence in `hass.floors` only — NOT by light count. Validate `first_area_to_render` by presence in the active floor's area list — NOT by light count. Fallback only when ID is truly absent from HA.
 
-### 6. Selective Sensor Visibility (stove & vehicles cards)
+### 7. Selective Sensor Visibility (stove & vehicles cards)
 * **Constraint**: Electric-only, combustion-only, or custom stove sensors might omit specific gauge or state parameters.
 * **Rule**: Check for the presence of each optional sensor configuration key. If the key is omitted, hide the corresponding UI gauge or state badge dynamically, enabling clean rendering for EV-only or ICE-only vehicles.
 
-### 7. Climates HVAC Mode Fallback (climates card)
+### 8. Climates HVAC Mode Fallback (climates card)
 * **Constraint**: Unmapped HVAC modes in HA (e.g. `dry`, `fan_only`) might crash the icon/color lookups.
 * **Rule**: If a mode is not mapped in `state_icons` or `state_colors`, fall back safely to the default `off` mode icon and color.
 
@@ -164,7 +164,7 @@ To ensure robust and correct code generation across the 8 cards, the following c
 
 ```
 src/cards/
-├── hexa_tiles/
+├── hexa-tiles/
 │   ├── card.ts             [MODIFY] Rewrite TS — config YAML inchangée
 │   ├── editor.ts           [MODIFY] Migration TS — pilotée par config-metadata.ts
 │   ├── config-metadata.ts  [MODIFY] Migration TS — schéma identique
@@ -214,10 +214,10 @@ src/cards/
 
 | # | Anti-Pattern | Violation | Correct Behavior |
 |---|---|---|---|
-| 1 | **Renommer un champ YAML** | `entity_id` à la place de `entity` dans stove/vacuum | Utiliser exactement les noms de `config-metadata.js` v0.9.6 |
+| 1 | **Renommer un champ YAML** | `entity_id` à la place de `entity` dans stove/vacuum | Utiliser exactement les noms de 'config-metadata.js' v0.9.6 |
 | 2 | **Supprimer une feature** | Enlever `shortcuts` du vacuum | Toute feature de v0.9.6 doit être présente |
 | 3 | **Réduire le schéma sensors** | `sensors: {power: string, energy: string}` pour plugs | `sensors` = dict keyed par entity_id avec `show/name/power/icon` |
-| 4 | **Remplacer config-metadata** | Mettre des types TS simples à la place | Migrer `config-metadata.js` en `.ts` — ne pas supprimer |
+| 4 | **Remplacer config-metadata** | Mettre des types TS simples à la place | Migrer 'config-metadata.js' en `.ts` — ne pas supprimer |
 | 5 | **Inline styling duplication** | Redefining styles across cards | Import common classes from `common.ts` |
 | 6 | **Heavy state calculations** | Recomputing arrays in render | Delegate tasks to selector utility functions |
 | 7 | **Dynamic CDN load of Chart.js** | `import('https://cdn.jsdelivr.net/npm/chart.js')` | Bundle Chart.js in the IIFE — never load from CDN |
@@ -239,10 +239,10 @@ src/cards/
 | TC-506 | Unit | VacuumCard execute un shortcut | Click shortcut "Bureau" | `callService` avec `segments: [16]` |
 | TC-507 | Unit | StoveCard lit `sensor_inside_temperature` | Config stove complète | Température intérieure affichée |
 | TC-508 | Unit | VehiclesCard affiche `fuel_quantity` | Config vehicles avec `fuel_quantity` | Jauge carburant visible |
-| IT-501 | Integration | 8 cartes s'enregistrent | Load `sci-fi.min.js` | `customElements.get('sci-fi-*')` retourne toutes les classes |
-| IT-502 | Integration | Backup YAML `plugs.yaml` charge sans erreur | `"yaml backup"/plugs.yaml` | Card visible, 0 console error |
-| IT-503 | Integration | Backup YAML `vacuum.yaml` charge sans erreur | `"yaml backup"/vacuum.yaml` | Shortcuts Dobby visibles |
-| IT-504 | Integration | Backup YAML `climate.yaml` charge sans erreur | `"yaml backup"/climate.yaml` | Icônes et couleurs custom appliqués |
+| IT-501 | Integration | 8 cartes s'enregistrent | Load 'sci-fi.min.js' | `customElements.get('sci-fi-*')` retourne toutes les classes |
+| IT-502 | Integration | Backup YAML 'plugs.yaml' charge sans erreur | '"yaml backup"/plugs.yaml' | Card visible, 0 console error |
+| IT-503 | Integration | Backup YAML 'vacuum.yaml' charge sans erreur | '"yaml backup"/vacuum.yaml' | Shortcuts Dobby visibles |
+| IT-504 | Integration | Backup YAML 'climate.yaml' charge sans erreur | '"yaml backup"/climate.yaml' | Icônes et couleurs custom appliqués |
 | IT-505 | Integration | Editor synchronise configuration | Change toggle en editor | Dispatche `config-changed` valide |
 
 ---

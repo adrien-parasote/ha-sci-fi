@@ -38,7 +38,7 @@ src/
 
 ## Assumptions
 
-| # | Assumption | Risk | Validation |
+| ID | Assumption | Risk | Validation |
 |---|---|---|---|
 | 1 | HA state object properties are immutable at runtime | Low | → Run console query hass.states to verify read-only nature |
 | 2 | Area and Floor registries are populated in HASS ext | Medium | → Run console check hass.areas and hass.floors structures |

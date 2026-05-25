@@ -25,7 +25,7 @@
 
 > [!IMPORTANT]
 > **Avant tout refactoring, lire ces documents dans l'ordre :**
-> 1. [`discovery.txt`](./research/discovery.txt) — Audit de l'existant v0.9.6 (schémas YAML exacts, architecture, règles critiques)
+> 1. [`discovery.md`](./research/discovery.md) — Audit de l'existant v0.9.6 (schémas YAML exacts, architecture, règles critiques)
 > 2. [strategic/blueprint.md](./strategic/blueprint.md#blueprint) — stratégie + ADR (dont ADR-005 : zero breaking YAML)
 > 3. [implementation_plan.md](./implementation_plan.md#implementation-plan) — plan d'implémentation step-by-step
 > 4. [specs/05_cards.md](./specs/05_cards.md#blueprint-coverage) — contrats YAML complets par carte
@@ -119,7 +119,7 @@ Avant de lancer le BUILD, vérifier :
 This section lists reference documentation, external dependencies, and assets used by this project so they are recognized by the cross-spec validator.
 
 ├── research/
-│   ├── discovery.txt
+│   ├── discovery.md
 ├── sci-fi.min.js
 ├── plugs.yaml
 ├── vacuum.yaml

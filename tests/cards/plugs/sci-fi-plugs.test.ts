@@ -2,10 +2,7 @@
 // @vitest-environment happy-dom
 /**
  * Tests RED — Spec 13 § Plugs Card Design Update
- * TC-1301 → TC-1315 + IT-1301 → IT-1303
- *
- * OLD selectors removed: .plug-tile, .plug-name, .plug-power, .plug-btn, .sensor-row
- * NEW selectors: .header .title, .image, .sensors .sensor, .footer, .footer .number
+ * TC-1301 → TC-1315 + IT-1301 → IT-1303 + Consolidated Extended Tests
  */
 import { expect, describe, it, afterEach, vi } from 'vitest';
 
@@ -243,6 +240,317 @@ describe('sci-fi-plugs — Spec 13 redesign', () => {
     const stylesArray = (SciFiPlugsCard as any).styles;
     expect(Array.isArray(stylesArray)).to.be.true;
     expect(stylesArray.length).to.be.greaterThanOrEqual(2); // sciFiCommonStyles + plugStyles
+  });
+
+  // ── Consolidated Extended Tests ────────────────────────────────────────────
+
+  it('renders nothing for sensors when all sensors are power-only', async () => {
+    const device = {
+      device_id: 'plug1',
+      entity_id: 'switch.tv',
+      name: 'TV Plug',
+      sensors: {
+        'sensor.tv_power': { power: true, show: true },
+      },
+    };
+    const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [device] });
+    // power-only sensor is filtered out → .sensors div absent
+    const sensors = el.shadowRoot!.querySelector('.sensors');
+    expect(sensors).to.be.null;
+  });
+
+  it('renders select sensor as sf-button-card-select', async () => {
+    const device = {
+      device_id: 'plug1',
+      entity_id: 'switch.tv',
+      name: 'TV',
+      sensors: {
+        'select.mode': { show: true, power: false, name: 'Mode', icon: 'mdi:format-list-bulleted' },
+      },
+    };
+    const hass = makeMockHass({
+      states: {
+        'switch.tv': makeMockEntity({ entity_id: 'switch.tv', state: 'on' }),
+        'select.mode': makeMockEntity({
+          entity_id: 'select.mode',
+          state: 'eco',
+          attributes: { options: ['eco', 'boost'], friendly_name: 'Mode' },
+        }),
+      },
+    });
+    const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [device] }, hass);
+    const selectBtn = el.shadowRoot!.querySelector('sf-button-card-select');
+    expect(selectBtn).to.not.be.null;
+  });
+
+  it('renders lock sensor as sf-button-card toggle', async () => {
+    const device = {
+      device_id: 'plug1',
+      entity_id: 'switch.tv',
+      name: 'TV',
+      sensors: {
+        'switch.child_lock': { show: true, power: false, name: 'Lock', icon: 'mdi:lock-outline' },
+      },
+    };
+    const hass = makeMockHass({
+      states: {
+        'switch.tv': makeMockEntity({ entity_id: 'switch.tv', state: 'on' }),
+        'switch.child_lock': makeMockEntity({ entity_id: 'switch.child_lock', state: 'on', attributes: { friendly_name: 'Child Lock' } }),
+      },
+    });
+    const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [device] }, hass);
+    const lockBtn = el.shadowRoot!.querySelector('.sensors sf-button-card');
+    expect(lockBtn).to.not.be.null;
+  });
+
+  it('renders nothing for sensor with missing state', async () => {
+    const device = {
+      device_id: 'plug1',
+      entity_id: 'switch.tv',
+      name: 'TV',
+      sensors: {
+        'sensor.missing': { show: true, power: false, name: 'Missing' },
+      },
+    };
+    const hass = makeMockHass({
+      states: {
+        'switch.tv': makeMockEntity({ entity_id: 'switch.tv', state: 'on' }),
+        // sensor.missing NOT in states
+      },
+    });
+    const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [device] }, hass);
+    const sensorDivs = el.shadowRoot!.querySelectorAll('.sensors .sensor');
+    expect(sensorDivs.length).to.equal(0);
+  });
+
+  it('click image when plug is OFF triggers turn_on', async () => {
+    const mockCallService = vi.fn(() => Promise.resolve({} as any));
+    const hass = makeMockHass({
+      callService: mockCallService,
+      states: { 'switch.tv': makeMockEntity({ entity_id: 'switch.tv', state: 'off' }) },
+    });
+    const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_TV] }, hass);
+    const image = el.shadowRoot!.querySelector('.image') as HTMLElement;
+    image.click();
+    expect(mockCallService).toHaveBeenCalledWith('switch', 'turn_on', { entity_id: 'switch.tv' });
+  });
+
+  it('click image does nothing when entity state is missing', async () => {
+    const mockCallService = vi.fn(() => Promise.resolve({} as any));
+    const hass = makeMockHass({
+      callService: mockCallService,
+      states: {}, // switch.tv not in states
+    });
+    const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_TV] }, hass);
+    const image = el.shadowRoot!.querySelector('.image') as HTMLElement;
+    image.click();
+    expect(mockCallService).not.toHaveBeenCalled();
+  });
+
+  it('clicking footer selector button changes active plug', async () => {
+    const hass = makeMockHass({
+      states: {
+        'switch.tv': makeMockEntity({ entity_id: 'switch.tv', state: 'on' }),
+        'switch.lamp': makeMockEntity({ entity_id: 'switch.lamp', state: 'off' }),
+      },
+    });
+    const el = await mountCard(
+      { type: 'custom:sci-fi-plugs', devices: [DEVICE_TV, DEVICE_LAMP] },
+      hass
+    );
+    const btns = el.shadowRoot!.querySelectorAll('.footer .number sf-button');
+    const lampBtn = btns[1] as HTMLElement;
+    lampBtn.dispatchEvent(new CustomEvent('button-click', { bubbles: true, composed: true }));
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('.header .title')!.textContent).to.include('Lamp Plug');
+  });
+
+  it('_onSelectChange calls hass.callService for select entities', async () => {
+    const mockCallService = vi.fn(() => Promise.resolve({} as any));
+    const device = {
+      device_id: 'plug1',
+      entity_id: 'switch.tv',
+      name: 'TV',
+      sensors: {
+        'select.mode': { show: true, power: false, name: 'Mode' },
+      },
+    };
+    const hass = makeMockHass({
+      callService: mockCallService,
+      states: {
+        'switch.tv': makeMockEntity({ entity_id: 'switch.tv', state: 'on' }),
+        'select.mode': makeMockEntity({
+          entity_id: 'select.mode',
+          state: 'eco',
+          attributes: { options: ['eco', 'boost'] },
+        }),
+      },
+    });
+    const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [device] }, hass);
+    const selectBtn = el.shadowRoot!.querySelector('sf-button-card-select')!;
+    selectBtn.dispatchEvent(new CustomEvent('button-select', {
+      bubbles: true,
+      composed: true,
+      detail: { id: 'boost', text: 'boost', icon: 'mdi:circle-medium' },
+    }));
+    await new Promise(r => setTimeout(r, 0));
+    expect(mockCallService).toHaveBeenCalledWith('select', 'select_option', { entity_id: 'select.mode', option: 'boost' });
+  });
+
+  it('_onLockToggle turns off an ON switch lock', async () => {
+    const mockCallService = vi.fn(() => Promise.resolve({} as any));
+    const device = {
+      device_id: 'plug1',
+      entity_id: 'switch.tv',
+      name: 'TV',
+      sensors: {
+        'switch.child_lock': { show: true, power: false, name: 'Lock' },
+      },
+    };
+    const hass = makeMockHass({
+      callService: mockCallService,
+      states: {
+        'switch.tv': makeMockEntity({ entity_id: 'switch.tv', state: 'on' }),
+        'switch.child_lock': makeMockEntity({ entity_id: 'switch.child_lock', state: 'on' }),
+      },
+    });
+    const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [device] }, hass);
+    const lockBtn = el.shadowRoot!.querySelector('.sensors sf-button-card')!;
+    lockBtn.dispatchEvent(new CustomEvent('button-click', { bubbles: true, composed: true }));
+    await new Promise(r => setTimeout(r, 0));
+    expect(mockCallService).toHaveBeenCalledWith('switch', 'turn_off', { entity_id: 'switch.child_lock' });
+  });
+
+  it('_onLockToggle turns on an OFF switch lock', async () => {
+    const mockCallService = vi.fn(() => Promise.resolve({} as any));
+    const device = {
+      device_id: 'plug1',
+      entity_id: 'switch.tv',
+      name: 'TV',
+      sensors: {
+        'switch.child_lock': { show: true, power: false, name: 'Lock' },
+      },
+    };
+    const hass = makeMockHass({
+      callService: mockCallService,
+      states: {
+        'switch.tv': makeMockEntity({ entity_id: 'switch.tv', state: 'on' }),
+        'switch.child_lock': makeMockEntity({ entity_id: 'switch.child_lock', state: 'off' }),
+      },
+    });
+    const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [device] }, hass);
+    const lockBtn = el.shadowRoot!.querySelector('.sensors sf-button-card')!;
+    lockBtn.dispatchEvent(new CustomEvent('button-click', { bubbles: true, composed: true }));
+    await new Promise(r => setTimeout(r, 0));
+    expect(mockCallService).toHaveBeenCalledWith('switch', 'turn_on', { entity_id: 'switch.child_lock' });
+  });
+
+  it('shows sub-title when model and manufacturer are available', async () => {
+    const hass = makeMockHass({
+      states: { 'switch.tv': makeMockEntity({ entity_id: 'switch.tv', state: 'on' }) },
+    });
+    (hass as any).devices = {
+      plug1: { area_id: 'living', manufacturer: 'Sonoff', model: 'S26R2' },
+    };
+    (hass as any).areas = {
+      living: { icon: 'mdi:sofa', area_id: 'living', name: 'Living' },
+    };
+    const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_TV] }, hass);
+    const subTitle = el.shadowRoot!.querySelector('.header .sub-title');
+    expect(subTitle).to.not.be.null;
+    expect(subTitle!.textContent).to.include('S26R2');
+  });
+
+  it('uses friendly_name from state when device has no name', async () => {
+    const device = {
+      device_id: 'plug1',
+      entity_id: 'switch.tv',
+    };
+    const hass = makeMockHass({
+      states: {
+        'switch.tv': makeMockEntity({ entity_id: 'switch.tv', state: 'on', attributes: { friendly_name: 'My TV' } }),
+      },
+    });
+    const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [device] }, hass);
+    const title = el.shadowRoot!.querySelector('.header .title');
+    expect(title!.textContent).to.include('My TV');
+  });
+
+  it('renders value sensor with unit', async () => {
+    const el = await mountCard({
+      type: 'custom:sci-fi-plugs',
+      devices: [DEVICE_TV],
+    }, HASS_WITH_TV);
+    expect(el.shadowRoot!.textContent).to.include('kWh');
+  });
+
+  it('renders value sensor without unit when not set', async () => {
+    const device = {
+      device_id: 'plug1',
+      entity_id: 'switch.tv',
+      name: 'TV',
+      sensors: {
+        'sensor.temp': { show: true, power: false, name: 'Temp' },
+      },
+    };
+    const hass = makeMockHass({
+      states: {
+        'switch.tv': makeMockEntity({ entity_id: 'switch.tv', state: 'on' }),
+        'sensor.temp': makeMockEntity({ entity_id: 'sensor.temp', state: '22', attributes: {} }),
+      },
+    });
+    const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [device] }, hass);
+    expect(el.shadowRoot!.textContent).to.include('22');
+  });
+
+  it('_next wraps to first when at last plug', async () => {
+    const hass = makeMockHass({
+      states: {
+        'switch.tv': makeMockEntity({ entity_id: 'switch.tv', state: 'on' }),
+        'switch.lamp': makeMockEntity({ entity_id: 'switch.lamp', state: 'off' }),
+      },
+    });
+    const el = await mountCard(
+      { type: 'custom:sci-fi-plugs', devices: [DEVICE_TV, DEVICE_LAMP] },
+      hass
+    );
+    const nextBtn = el.shadowRoot!.querySelector('.footer sf-button[icon="mdi:chevron-right"]') as HTMLElement;
+    nextBtn.dispatchEvent(new CustomEvent('button-click', { bubbles: true, composed: true }));
+    await el.updateComplete;
+    const prevBtn = el.shadowRoot!.querySelector('.footer sf-button[icon="mdi:chevron-left"]') as HTMLElement;
+    prevBtn.dispatchEvent(new CustomEvent('button-click', { bubbles: true, composed: true }));
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('.header .title')!.textContent).to.include('TV Plug');
+  });
+
+  it('uses inactive_icon for image when plug is OFF', async () => {
+    const device = {
+      device_id: 'plug1',
+      entity_id: 'switch.tv',
+      name: 'TV',
+      inactive_icon: 'mdi:power-off',
+    };
+    const hass = makeMockHass({
+      states: { 'switch.tv': makeMockEntity({ entity_id: 'switch.tv', state: 'off' }) },
+    });
+    const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [device] }, hass);
+    const imageIcon = el.shadowRoot!.querySelector('.icon-container sf-icon') as any;
+    expect(imageIcon?.getAttribute('icon')).to.equal('mdi:power-off');
+  });
+
+  it('uses active_icon for image when plug is ON', async () => {
+    const device = {
+      device_id: 'plug1',
+      entity_id: 'switch.tv',
+      name: 'TV',
+      active_icon: 'mdi:power-on',
+    };
+    const hass = makeMockHass({
+      states: { 'switch.tv': makeMockEntity({ entity_id: 'switch.tv', state: 'on' }) },
+    });
+    const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [device] }, hass);
+    const imageIcon = el.shadowRoot!.querySelector('.icon-container sf-icon') as any;
+    expect(imageIcon?.getAttribute('icon')).to.equal('mdi:power-on');
   });
 
 });

@@ -36,6 +36,27 @@ const TAG = 'sci-fi-vacuum';
 export class SciFiVacuumCard extends SciFiBaseCard {
   static override styles = [sciFiCommonStyles, vacuumStyles];
 
+  protected override getRelevantEntities(): string[] {
+    const entities = new Set<string>();
+
+    if (this.config.vacuums) {
+      for (const v of this.config.vacuums) {
+        if (v.entity) {
+          entities.add(v.entity);
+        }
+        if (v.sensors) {
+          if (v.sensors.battery) entities.add(v.sensors.battery);
+          if (v.sensors.mop_intensite) entities.add(v.sensors.mop_intensite);
+          if (v.sensors.current_clean_area) entities.add(v.sensors.current_clean_area);
+          if (v.sensors.current_clean_duration) entities.add(v.sensors.current_clean_duration);
+          if (v.sensors.map) entities.add(v.sensors.map);
+        }
+      }
+    }
+
+    return Array.from(entities);
+  }
+
   declare config: SciFiVacuumConfig;
 
   @state() private _vacuum_selected_id: number = 0;

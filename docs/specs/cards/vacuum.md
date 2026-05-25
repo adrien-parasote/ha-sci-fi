@@ -19,24 +19,24 @@
 | F-VAC-D06 | Device navigation: bottom bar with chevron-left/right + dot indicators (hidden if single vacuum) | ✅ This spec § Devices |
 | F-VAC-D07 | Toast feedback on action success/failure via `<sf-toast>` | ✅ This spec § Toast |
 | F-VAC-D08 | Extract CSS into `styles.ts` (stove/vehicle/plugs pattern) | ✅ This spec § styles.ts |
-| F-VAC-D09 | `vacuum_const.ts` constants file (ported from main) | ✅ This spec § Constants |
+| F-VAC-D09 | 'vacuum_const.ts' constants file (ported from main) | ✅ This spec § Constants |
 | F-VAC-D10 | All existing vacuum tests remain GREEN (regression gate) | ✅ This spec § Test Selectors |
 
 ---
 
 ## Assumptions
 
-| # | Assumption | Risk | Source Type | Validation |
+| ID | Assumption | Risk | Source Type | Validation |
 |---|---|---|---|---|
-| 1 | `SciFiVacuumEntry` and `SciFiVacuumConfig` config fields are frozen — no new fields needed | Low | SHOW | `grep -n "SciFiVacuum" src/types/config.ts` → L184–L218 define all fields |
-| 2 | Existing CSS selectors `.vacuum-tabs`, `.vacuum-tab`, `.vacuum-main`, `.ctrl-btn`, `.fan-select`, `.shortcut-btn` in existing tests MUST be **updated** — layout changes completely | Medium | SHOW | `grep -n "querySelector" tests/cards/vacuum/sci-fi-vacuum.test.ts` → all tests reference old grid selectors |
-| 3 | `sf-button` component is already available — used in vehicles and plugs cards | Low | SHOW | `ls src/components/buttons/sf-button.ts` → present; `grep "sf-button" src/cards/vehicles/sci-fi-vehicles.ts` → imported |
-| 4 | `sf-toast` component is already available — used in plugs card | Low | SHOW | `grep "sf-toast" src/cards/plugs/sci-fi-plugs.ts` → present |
-| 5 | Fan speed in `main` is **read-only** (displayed from `entity.attributes.fan_speed`) — `set_fan_speed` action is kept as a configurable action button using `vacuum.set_fan_speed` service but no inline select | Medium | SHOW | `git show main:src/cards/vacuum/card.js` → fan speed displayed in header div, no `<select>` |
-| 6 | The `@keyframes moveAcross` animation is pure CSS, portable 1:1 from `main:src/cards/vacuum/style.js` | Low | SHOW | `git show main:src/cards/vacuum/style.js` → full CSS block, no JS animation |
-| 7 | `VACUUM_ICONS` contains custom icons `sci:vacuum-docked` and `sci:vacuum-sleep` — these must be preserved in `vacuum_const.ts` | Low | SHOW | `git show main:src/helpers/entities/vacuum/vacuum_const.js` → both icons present |
-| 8 | Battery and mop_intensite are rendered in the **header** (not in `.info` sensors), matching `main` | Low | SHOW | `git show main:src/cards/vacuum/card.js` → `__renderBattery()` and `__renderMopIntensite()` called from `__renderHeader()` |
-| 9 | Map URL is constructed with `location.protocol + '//' + location.host + entity_picture` in `main` but the TS implementation uses `attributes.entity_picture` directly — **use direct attribute** as in current TS implementation | Low | SHOW | current `sci-fi-vacuum.ts` L216: `entity_picture as string` → simpler, no protocol construction needed in TS context |
+| 1 | `SciFiVacuumEntry` and `SciFiVacuumConfig` config fields are frozen — no new fields needed | Low | SHOW | 'grep -n "SciFiVacuum" src/types/config.ts' → L184–L218 define all fields |
+| 2 | Existing CSS selectors `.vacuum-tabs`, `.vacuum-tab`, `.vacuum-main`, `.ctrl-btn`, `.fan-select`, `.shortcut-btn` in existing tests MUST be **updated** — layout changes completely | Medium | SHOW | 'grep -n "querySelector" tests/cards/vacuum/sci-fi-vacuum.test.ts' → all tests reference old grid selectors |
+| 3 | `sf-button` component is already available — used in vehicles and plugs cards | Low | SHOW | 'ls src/components/buttons/sf-button.ts' → present; 'grep "sf-button" src/cards/vehicles/sci-fi-vehicles.ts' → imported |
+| 4 | `sf-toast` component is already available — used in plugs card | Low | SHOW | 'grep "sf-toast" src/cards/plugs/sci-fi-plugs.ts' → present |
+| 5 | Fan speed in `main` is **read-only** (displayed from `entity.attributes.fan_speed`) — `set_fan_speed` action is kept as a configurable action button using `vacuum.set_fan_speed` service but no inline select | Medium | SHOW | 'git show main:src/cards/vacuum/card.js' → fan speed displayed in header div, no `<select>` |
+| 6 | The `@keyframes moveAcross` animation is pure CSS, portable 1:1 from 'main:src/cards/vacuum/style.js' | Low | SHOW | 'git show main:src/cards/vacuum/style.js' → full CSS block, no JS animation |
+| 7 | `VACUUM_ICONS` contains custom icons `sci:vacuum-docked` and `sci:vacuum-sleep` — these must be preserved in 'vacuum_const.ts' | Low | SHOW | 'git show main:src/helpers/entities/vacuum/vacuum_const.js' → both icons present |
+| 8 | Battery and mop_intensite are rendered in the **header** (not in `.info` sensors), matching `main` | Low | SHOW | 'git show main:src/cards/vacuum/card.js' → `__renderBattery()` and `__renderMopIntensite()` called from `__renderHeader()` |
+| 9 | Map URL is constructed with `location.protocol + '//' + location.host + entity_picture` in `main` but the TS implementation uses `attributes.entity_picture` directly — **use direct attribute** as in current TS implementation | Low | SHOW | current 'sci-fi-vacuum.ts' L216: `entity_picture as string` → simpler, no protocol construction needed in TS context |
 
 ---
 
@@ -52,7 +52,7 @@
 
 ## Cross-Spec Contracts
 
-### Produces
+ ### Produces
 
 | Path / Identifier | Format | Schema location | Consumers |
 |---|---|---|---|
@@ -60,7 +60,7 @@
 | `src/cards/vacuum/vacuum_const.ts` | TS constants | This spec § Constants | `vacuum/sci-fi-vacuum.ts` |
 | Updated `sci-fi-vacuum` card | Web Component | This spec § Full render | Lovelace via `getConfigElement()` (Spec 05) |
 
-### Consumes
+ ### Consumes
 
 | Path / Identifier | Format | Schema location | Producer |
 |---|---|---|---|
@@ -71,13 +71,13 @@
 | `sf-button` | Web Component | Spec 04 § sf-button | `src/components/buttons/sf-button.ts` |
 | `sf-toast` | Web Component | Spec 04 § sf-toast | `src/components/sf-toast.ts` |
 
-### Public Interface
+ ### Public Interface
 
 | Element | Consumed by | Description |
 |---|---|---|
 | `<sci-fi-vacuum>` | HA Lovelace | Robot vacuum control card (unchanged tag) |
 
-### External Invocations
+ ### External Invocations
 
 | Service | Action | Params | When |
 |---|---|---|---|
@@ -87,7 +87,7 @@
 | `vacuum` | `return_to_base` | `{ entity_id }` | User clicks base button (if `v.return_to_base !== false`) |
 | `vacuum.send_command` (or custom) | `app_segment_clean` (or custom) | `{ command, params: [{ segments }] }` | User clicks shortcut button |
 
-### Tracked Concepts
+ ### Tracked Concepts
 
 | Concept | Status in this spec | Mentioned in |
 |---|---|---|
@@ -111,7 +111,7 @@ tests/cards/vacuum/
 ```
 
 > [!NOTE]
-> No new component files needed. All layout sections are rendered inline in `sci-fi-vacuum.ts`. The editor file `sci-fi-vacuum-editor.ts` is **not modified** — its 19 tests remain GREEN untouched.
+> No new component files needed. All layout sections are rendered inline in 'sci-fi-vacuum.ts'. The editor file `sci-fi-vacuum-editor.ts` is **not modified** — its 19 tests remain GREEN untouched.
 
 ---
 
@@ -173,7 +173,7 @@ export const VACUUM_ACTIONS_ICONS: Record<string, string> = {
   [VACUUM_ACTION_SET_FAN_SPEED]:  'mdi:fan',
 };
 
-// Maps config key → VACUUM_ACTION_* for action filtering
+// Maps config key → VACUUM_ACTION_KEYS for action filtering
 export const VACUUM_ACTION_KEYS = [
   VACUUM_ACTION_START,
   VACUUM_ACTION_PAUSE,
@@ -191,7 +191,7 @@ export const VACUUM_ACTION_KEYS = [
 
 **Export name:** `vacuumStyles`
 
-Ported 1:1 from `main:src/cards/vacuum/style.js` with CSS variable adaptations:
+Ported 1:1 from 'main:src/cards/vacuum/style.js' with CSS variable adaptations:
 
 | main CSS variable | TS equivalent |
 |---|---|
@@ -873,7 +873,7 @@ private _toast(error: boolean, text: string): void {
 | TC-1524 | Unit | Toast shows error message after action failure | click start, service rejects with Error('fail') | `sf-toast.addMessage` called with `('fail', true)` |
 | IT-1501 | Integration | Card registers in `customElements` | load card | `customElements.get('sci-fi-vacuum')` returns class |
 | IT-1502 | Integration | Card full render: header + sub-header + map + actions | mount with full config | `.header`, `.sub-header`, `.map`, `.actions` all present |
-| IT-1503 | Integration | `vacuum/styles.ts` imported — no inline `css\`` in `sci-fi-vacuum.ts` | grep | `grep -c "css\`" sci-fi-vacuum.ts` returns 0 |
+| IT-1503 | Integration | `vacuum/styles.ts` imported — no inline `css\`` in 'sci-fi-vacuum.ts' | grep | 'grep -c "css\'" sci-fi-vacuum.ts` returns 0 |
 
 ---
 
@@ -906,7 +906,7 @@ private _toast(error: boolean, text: string): void {
 | `'Duration'` | `'Durée'` (fallback label for duration sensor) |
 
 > [!IMPORTANT]
-> Run `grep -r "msg('done'\|msg('No map" src/` before adding. Only add keys that are genuinely missing. Do NOT modify `src/locales/locales/fr.ts` by hand — update `xliff/fr.xlf` first, then run `npm run locale:build`.
+> Run 'grep -r "msg('done'\|msg('No map" src/' before adding. Only add keys that are genuinely missing. Do NOT modify `src/locales/locales/fr.ts` by hand — update `xliff/fr.xlf` first, then run `npm run locale:build`.
 
 ---
 
@@ -916,9 +916,9 @@ private _toast(error: boolean, text: string): void {
 |---|---|
 | Current vacuum card (to replace) | [sci-fi-vacuum.ts](../../src/cards/vacuum/sci-fi-vacuum.ts#L1) |
 | Vacuum config types (frozen) | [config.ts L184-L218](../../src/types/config.ts#L184-L218) |
-| Main branch card.js (reference) | `git show main:src/cards/vacuum/card.js` |
-| Main branch style.js (reference) | `git show main:src/cards/vacuum/style.js` |
-| Main branch vacuum_const.js | `git show main:src/helpers/entities/vacuum/vacuum_const.js` |
+| Main branch card.js (reference) | 'git show main:src/cards/vacuum/card.js' |
+| Main branch style.js (reference) | 'git show main:src/cards/vacuum/style.js' |
+| Main branch vacuum_const.js | 'git show main:src/helpers/entities/vacuum/vacuum_const.js' |
 | Plugs card (sf-toast + styles.ts pattern) | [sci-fi-plugs.ts](../../src/cards/plugs/sci-fi-plugs.ts#L1) |
 | Plugs styles pattern | [plugs/styles.ts](../../src/cards/plugs/styles.ts#L1) |
 | Vehicle card (navigation pattern) | [sci-fi-vehicles.ts](../../src/cards/vehicles/sci-fi-vehicles.ts#L1) |
@@ -930,4 +930,4 @@ private _toast(error: boolean, text: string): void {
 | Plugs spec (styles.ts + toast pattern) | [Spec 13](./13_plugs_card_design_update.md#L1) |
 | Vehicle spec (navigation pattern) | [Spec 12](./12_vehicle_card_design_update.md#L1) |
 | Stove spec (styles.ts pattern) | [Spec 11](./11_stove_card_design_update.md#L1) |
-| Screenshots (main UX) | `git show main:screenshot/vacuum.jpeg` |
+| Screenshots (main UX) | 'git show main:screenshot/vacuum.jpeg' |

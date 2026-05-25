@@ -4,10 +4,11 @@
  * ADR-005: uses entity (not entity_id) + all sensors + storage_counter + thresholds preserved.
  */
 
-import { html, css, type TemplateResult } from 'lit';
+import { html, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
+import { stoveStyles } from './styles.js';
 import type { SciFiStoveConfig, SciFiStoveSensors } from '../../types/config.js';
 
 const TAG = 'sci-fi-stove';
@@ -21,71 +22,7 @@ interface SensorTile {
 
 @customElement(TAG)
 export class SciFiStoveCard extends SciFiBaseCard {
-  static override styles = [
-    sciFiCommonStyles,
-    css`
-      .container { padding: var(--sf-spacing-md); }
-      .stove-main {
-        display: flex;
-        align-items: center;
-        gap: var(--sf-spacing-md);
-        margin-bottom: var(--sf-spacing-md);
-      }
-      .stove-status {
-        font-size: 1.5rem;
-        font-weight: 700;
-      }
-      .stove-status.sf-state-on { color: #ff6b35; }
-      .sensors-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: var(--sf-spacing-sm);
-      }
-      .sensor-tile {
-        background: var(--sf-bg-secondary);
-        border: 1px solid var(--sf-border);
-        border-radius: var(--sf-radius-sm);
-        padding: var(--sf-spacing-sm);
-        text-align: center;
-      }
-      .sensor-tile.warn {
-        border-color: #ff6b35;
-      }
-      .sensor-value {
-        font-size: var(--sf-font-size-xl);
-        font-weight: 700;
-        color: var(--sf-primary);
-      }
-      .sensor-label {
-        font-size: var(--sf-font-size-sm);
-        color: var(--sf-text-secondary);
-      }
-      .bar-bg {
-        background: rgba(255,255,255,0.1);
-        border-radius: 4px;
-        height: 8px;
-        overflow: hidden;
-        margin-top: 4px;
-      }
-      .bar-fill {
-        height: 100%;
-        border-radius: 4px;
-        transition: width var(--sf-transition-base);
-      }
-      .bar-fill.pellet { background: linear-gradient(90deg, #ff6b35, #ffd60a); }
-      .bar-fill.storage { background: linear-gradient(90deg, #669cd2, #00ff9d); }
-
-      /* ── Responsive ───────────────────────────────────────── */
-      @container sf-card (max-width: 1023px) {
-        .sensors-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
-      }
-      @container sf-card (max-width: 599px) {
-        .sensors-grid { grid-template-columns: repeat(2, 1fr); }
-        .container { padding: var(--sf-spacing-sm); }
-        .stove-status { font-size: 1.2rem; }
-      }
-    `,
-  ];
+  static override styles = [sciFiCommonStyles, stoveStyles];
 
   declare config: SciFiStoveConfig;
 
@@ -104,20 +41,20 @@ export class SciFiStoveCard extends SciFiBaseCard {
     return html`
       <ha-card>
         ${this.config.header_message ? html`<div class="sf-header">${this.config.header_message}</div>` : ''}
-        <div class="container">
-          <div class="stove-main">
+        <div class="header">
+          <div class="header-icon">
             <sf-icon
               .icon="${isOn ? 'sci:stove-heat' : 'sci:stove-off'}"
               .connection="${this.hass.connection}"
             ></sf-icon>
-            <div>
-              <div class="stove-status ${isOn ? 'sf-state-on' : 'sf-state-off'}">
-                ${stoveState.attributes.friendly_name ?? 'Poêle'}
-              </div>
-              <div class="sf-state-${isOn ? 'on' : 'off'}">${stoveState.state}</div>
-            </div>
           </div>
+          <div class="header-info">
+            <div class="stove-name">${stoveState.attributes.friendly_name ?? 'Poêle'}</div>
+            <div class="stove-status ${isOn ? 'sf-state-on' : 'sf-state-off'}">${stoveState.state}</div>
+          </div>
+        </div>
 
+        <div class="container">
           <div class="sensors-grid">
             ${tiles.map(t => t.value !== null && t.value !== undefined ? this._renderSensorTile(t) : '')}
             ${this._renderPelletBar(sensors)}

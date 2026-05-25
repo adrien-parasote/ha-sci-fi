@@ -41,8 +41,8 @@ export class SciFiStoveImage extends LitElement {
   }
 
   private _getContent(): SVGTemplateResult {
-    if (this.state === 'heat') return this._getActive();
-    if (this.state === 'cool') return this._getCool();
+    if (this.state === 'heat' || this.state === 'heating') return this._getActive();
+    if (this.state === 'cool' || this.state === 'cooling') return this._getCool();
     return this._getInactive();
   }
 

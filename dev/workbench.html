@@ -1160,6 +1160,7 @@
           'sensor.smart_energy_monitor_poele_power': { ...MOCK_STATES['sensor.smart_energy_monitor_poele_power'], state: '120' }
         }),
         'Poêle en refroidissement (cooling)': () => ({
+          'climate.clou': { ...MOCK_STATES['climate.clou'], state: 'cool', attributes: { ...MOCK_STATES['climate.clou'].attributes, hvac_mode: 'cool' }},
           'binary_sensor.clou_stove_status': { ...MOCK_STATES['binary_sensor.clou_stove_status'], state: 'cooling' },
           'sensor.clou_combustion_chamber_temperature': { ...MOCK_STATES['sensor.clou_combustion_chamber_temperature'], state: '85' },
           'sensor.clou_fan_speed': { ...MOCK_STATES['sensor.clou_fan_speed'], state: '1' },

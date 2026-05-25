@@ -92,7 +92,7 @@ describe('sci-fi-vehicles-editor', () => {
     btn.click();
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.config.vehicles).toHaveLength(1);
+    expect(received[0]!.detail.config.vehicles).toHaveLength(1);
   });
 
   it('dispatches config-changed on vehicle removal via accordion input-update', async () => {
@@ -112,7 +112,7 @@ describe('sci-fi-vehicles-editor', () => {
     }));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.config.vehicles).toHaveLength(0);
+    expect(received[0]!.detail.config.vehicles).toHaveLength(0);
   });
 
   it('ignores remove event when id is NaN', async () => {

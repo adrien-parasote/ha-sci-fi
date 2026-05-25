@@ -168,7 +168,9 @@ export class SciFiStoveCard extends SciFiBaseCard {
     const combustionTemp = s.sensor_combustion_chamber_temperature ? this.hass.states[s.sensor_combustion_chamber_temperature]?.state : undefined;
     const pressure = s.sensor_pressure ? this.hass.states[s.sensor_pressure]?.state : undefined;
     const timeToService = s.sensor_time_to_service ? this.hass.states[s.sensor_time_to_service]?.state : undefined;
-    const timeUnit = s.sensor_time_to_service ? (this.hass.states[s.sensor_time_to_service]?.attributes?.unit_of_measurement ?? 'h') : 'h';
+    const timeUnit: string = s.sensor_time_to_service
+      ? String(this.hass.states[s.sensor_time_to_service]?.attributes?.unit_of_measurement ?? 'h')
+      : 'h';
 
     return html`
       <div class="m">
@@ -265,9 +267,9 @@ export class SciFiStoveCard extends SciFiBaseCard {
           <div class="d-path"></div>
         </div>
         <div class="powers">
-          ${this._renderPower(msg('Render'), actualPower?.state, actualPower?.attributes?.unit_of_measurement)}
-          ${this._renderPower(msg('Consume'), power?.state, power?.attributes?.unit_of_measurement)}
-          ${this._renderFan(msg('Fan speed'), fanSpeed?.state, fanSpeed?.attributes?.unit_of_measurement)}
+          ${this._renderPower(msg('Render'), actualPower?.state, actualPower?.attributes?.unit_of_measurement as string | undefined)}
+          ${this._renderPower(msg('Consume'), power?.state, power?.attributes?.unit_of_measurement as string | undefined)}
+          ${this._renderFan(msg('Fan speed'), fanSpeed?.state, fanSpeed?.attributes?.unit_of_measurement as string | undefined)}
         </div>
       </div>
     `;

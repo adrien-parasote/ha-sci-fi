@@ -110,8 +110,8 @@ describe('sf-editor-dropdown', () => {
     firstItem.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.value).toBe('alpha');
-    expect(received[0].detail.id).toBe('dd2');
+    expect(received[0]!.detail.value).toBe('alpha');
+    expect(received[0]!.detail.id).toBe('dd2');
   });
 
   it('closes dropdown after item is selected', async () => {

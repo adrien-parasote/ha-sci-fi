@@ -79,6 +79,13 @@ export interface HomeAssistantExt {
     readonly name: string;
     readonly is_admin: boolean;
   };
+  readonly config?: {
+    readonly unit_system?: {
+      readonly temperature?: string;
+      readonly pressure?: string;
+      readonly [key: string]: string | undefined;
+    };
+  };
   readonly connection: {
     sendMessagePromise: <T>(message: Record<string, unknown>) => Promise<T>;
     subscribeMessage?: <T>(

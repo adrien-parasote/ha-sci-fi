@@ -81,8 +81,8 @@ describe('sf-editor-multi-entity', () => {
     deleteBtn.click();
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.type).toBe('remove');
-    expect(received[0].detail.value).toBe('0'); // index 0
+    expect(received[0]!.detail.type).toBe('remove');
+    expect(received[0]!.detail.value).toBe('0'); // index 0
   });
 
   it('excludes already-selected entities from dropdown items', async () => {
@@ -116,8 +116,8 @@ describe('sf-editor-multi-entity', () => {
     item.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.type).toBe('add');
-    expect(received[0].detail.value).toBe('light.kitchen');
+    expect(received[0]!.detail.type).toBe('add');
+    expect(received[0]!.detail.value).toBe('light.kitchen');
   });
 
   it('closes dropdown after entity selection without setting value property', async () => {

@@ -125,7 +125,7 @@ describe('sf-editor-dropdown-icon', () => {
     firstItem.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
 
     expect(received).toHaveLength(1);
-    expect(typeof received[0].detail.value).toBe('string');
+    expect(typeof received[0]!.detail.value).toBe('string');
   });
 
   it('shows icon-name span for each item in dropdown', async () => {

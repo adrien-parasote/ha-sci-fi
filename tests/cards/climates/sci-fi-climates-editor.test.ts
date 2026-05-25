@@ -76,7 +76,7 @@ describe('sci-fi-climates-editor', () => {
     }));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.config.header.display).toBe(false);
+    expect(received[0]!.detail.config.header.display).toBe(false);
   });
 
   it('dispatches config-changed on header field update', async () => {
@@ -96,7 +96,7 @@ describe('sci-fi-climates-editor', () => {
     }));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.config.header.icon_winter_state).toBe('mdi:snowflake');
+    expect(received[0]!.detail.config.header.icon_winter_state).toBe('mdi:snowflake');
   });
 
   it('dispatches config-changed on exclude entity add', async () => {
@@ -115,7 +115,7 @@ describe('sci-fi-climates-editor', () => {
     }));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.config.entities_to_exclude).toContain('climate.salon');
+    expect(received[0]!.detail.config.entities_to_exclude).toContain('climate.salon');
   });
 
   it('dispatches config-changed on exclude entity remove', async () => {
@@ -134,7 +134,7 @@ describe('sci-fi-climates-editor', () => {
     }));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.config.entities_to_exclude).toHaveLength(1);
+    expect(received[0]!.detail.config.entities_to_exclude).toHaveLength(1);
   });
 
   it('enters edit mode when edit button clicked', async () => {
@@ -205,7 +205,7 @@ describe('sci-fi-climates-editor', () => {
     }));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.config.state_icons?.heat).toBe('mdi:fire');
+    expect(received[0]!.detail.config.state_icons?.heat).toBe('mdi:fire');
   });
 
   it('loads climate entities from hass.states', async () => {

@@ -66,8 +66,8 @@ describe('sf-editor-slider', () => {
     input.dispatchEvent(new Event('input'));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.value).toBe('75');
-    expect(received[0].detail.id).toBe('slider1');
+    expect(received[0]!.detail.value).toBe('75');
+    expect(received[0]!.detail.id).toBe('slider1');
   });
 
   it('disables slider when disabled=true', async () => {

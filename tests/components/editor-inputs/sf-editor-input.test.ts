@@ -86,9 +86,9 @@ describe('sf-editor-input', () => {
     input.dispatchEvent(new Event('input'));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.value).toBe('new value');
-    expect(received[0].detail.id).toBe('test-id');
-    expect(received[0].detail.kind).toBe('text');
+    expect(received[0]!.detail.value).toBe('new value');
+    expect(received[0]!.detail.id).toBe('test-id');
+    expect(received[0]!.detail.kind).toBe('text');
   });
 
   it('input-update event does NOT include type when not provided', async () => {
@@ -100,7 +100,7 @@ describe('sf-editor-input', () => {
     input.value = 'abc';
     input.dispatchEvent(new Event('input'));
 
-    expect('type' in received[0].detail).toBe(false);
+    expect('type' in received[0]!.detail).toBe(false);
   });
 
   it('updates value property on input event', async () => {

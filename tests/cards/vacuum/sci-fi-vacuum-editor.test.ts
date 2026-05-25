@@ -55,8 +55,8 @@ describe('sci-fi-vacuum-editor', () => {
     btn.click();
 
     expect(received).toHaveLength(1);
-    expect(Array.isArray(received[0].detail.config.vacuums)).toBe(true);
-    expect(received[0].detail.config.vacuums.length).toBe(1);
+    expect(Array.isArray(received[0]!.detail.config.vacuums)).toBe(true);
+    expect(received[0]!.detail.config.vacuums.length).toBe(1);
   });
 
   it('renders vacuum panel when vacuums list is non-empty', async () => {
@@ -115,7 +115,7 @@ describe('sci-fi-vacuum-editor', () => {
     }));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.config.vacuums[0].entity).toBe('vacuum.new');
+    expect(received[0]!.detail.config.vacuums[0].entity).toBe('vacuum.new');
   });
 
   it('dispatches config-changed when action toggle is changed', async () => {
@@ -152,7 +152,7 @@ describe('sci-fi-vacuum-editor', () => {
     }));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.config.vacuums[0].sensors?.battery).toBe('sensor.battery');
+    expect(received[0]!.detail.config.vacuums[0].sensors?.battery).toBe('sensor.battery');
   });
 
   it('dispatches config-changed when add-shortcut clicked', async () => {
@@ -167,7 +167,7 @@ describe('sci-fi-vacuum-editor', () => {
     addBtn.click();
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.config.vacuums[0].shortcuts.description.length).toBe(1);
+    expect(received[0]!.detail.config.vacuums[0].shortcuts.description.length).toBe(1);
   });
 
   it('enters shortcut edit mode when add-shortcut clicked', async () => {
@@ -240,7 +240,7 @@ describe('sci-fi-vacuum-editor', () => {
     }));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.config.vacuums[0].shortcuts.description[0].name).toBe('New Name');
+    expect(received[0]!.detail.config.vacuums[0].shortcuts.description[0].name).toBe('New Name');
   });
 
   it('dispatches config-changed on shortcuts-top service update', async () => {

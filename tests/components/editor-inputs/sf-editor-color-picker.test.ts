@@ -68,8 +68,8 @@ describe('sf-editor-color-picker', () => {
     input.dispatchEvent(new Event('input'));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.value).toBe('#123456');
-    expect(received[0].detail.id).toBe('cp1');
+    expect(received[0]!.detail.value).toBe('#123456');
+    expect(received[0]!.detail.id).toBe('cp1');
   });
 
   it('renders icon slot when icon is provided', async () => {

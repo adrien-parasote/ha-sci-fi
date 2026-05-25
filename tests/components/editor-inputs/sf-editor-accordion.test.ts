@@ -79,10 +79,10 @@ describe('sf-editor-accordion', () => {
     sfButton?.dispatchEvent(new CustomEvent('button-click', { bubbles: true, composed: true }));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.type).toBe('remove');
-    expect(received[0].detail.id).toBe('my-item');
-    expect(received[0].detail.value).toBe('my-item');
-    expect(received[0].detail.kind).toBe('accordion');
+    expect(received[0]!.detail.type).toBe('remove');
+    expect(received[0]!.detail.id).toBe('my-item');
+    expect(received[0]!.detail.value).toBe('my-item');
+    expect(received[0]!.detail.kind).toBe('accordion');
   });
 
   it('renders slot for content projection', async () => {

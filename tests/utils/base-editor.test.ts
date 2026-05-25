@@ -5,6 +5,7 @@ import { html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { SciFiBaseEditor } from '../../src/utils/base-editor.js';
 import type { HomeAssistantExt } from '../../src/types/ha.js';
+import type { SciFiBaseConfig } from '../../src/types/config.js';
 import { makeMockHass } from '../fixtures/mock-hass.js';
 
 @customElement('mock-editor-v2')
@@ -87,7 +88,7 @@ describe('base-editor', () => {
     (el as any)._dispatchChange(newConfig);
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.config).toEqual(newConfig);
+    expect(received[0]!.detail.config).toEqual(newConfig);
     expect(el.config).toEqual(newConfig);
   });
 
@@ -118,22 +119,22 @@ describe('base-editor', () => {
 
   it('_dispatchConfigChanged merges patch with existing config', () => {
     const el = makeEl();
-    el.setConfig({ type: 'custom:mock', title: 'Base' });
+    el.setConfig({ type: 'custom:mock', title: 'Base' } as unknown as SciFiBaseConfig);
     const received: CustomEvent[] = [];
     el.addEventListener('config-changed', (e) => received.push(e as CustomEvent));
 
     (el as any)._dispatchConfigChanged({ extra: 'field' });
 
-    expect(received[0].detail.config.type).toBe('custom:mock');
-    expect(received[0].detail.config.title).toBe('Base');
-    expect(received[0].detail.config.extra).toBe('field');
+    expect(received[0]!.detail.config.type).toBe('custom:mock');
+    expect(received[0]!.detail.config.title).toBe('Base');
+    expect(received[0]!.detail.config.extra).toBe('field');
   });
 
   // ── _getNewConfig ─────────────────────────────────────────────────────────
 
   it('_getNewConfig returns a deep clone of config', () => {
     const el = makeEl();
-    el.setConfig({ type: 'custom:mock', title: 'Original' });
+    el.setConfig({ type: 'custom:mock', title: 'Original' } as unknown as SciFiBaseConfig);
 
     const cloned = (el as any)._getNewConfig();
     expect(cloned).not.toBe(el.config);

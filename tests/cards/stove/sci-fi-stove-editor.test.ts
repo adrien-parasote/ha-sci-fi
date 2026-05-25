@@ -53,7 +53,7 @@ describe('sci-fi-stove-editor', () => {
     }));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.config.sensors?.room_temperature).toBe('sensor.temp');
+    expect(received[0]!.detail.config.sensors?.room_temperature).toBe('sensor.temp');
   });
 
   it('dispatches config-changed on technical slider update (parses float)', async () => {
@@ -72,7 +72,7 @@ describe('sci-fi-stove-editor', () => {
     }));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.config.threshold).toBe(15.5);
+    expect(received[0]!.detail.config.threshold).toBe(15.5);
   });
 
   it('dispatches config-changed on generic field update', async () => {
@@ -91,6 +91,6 @@ describe('sci-fi-stove-editor', () => {
     }));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.config.custom_field).toBe('something');
+    expect(received[0]!.detail.config.custom_field).toBe('something');
   });
 });

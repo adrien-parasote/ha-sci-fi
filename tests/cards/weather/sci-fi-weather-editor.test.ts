@@ -87,7 +87,7 @@ describe('sci-fi-weather-editor', () => {
     }));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.config.weather_entity).toBe('weather.home');
+    expect(received[0]!.detail.config.weather_entity).toBe('weather.home');
   });
 
   it('dispatches config-changed on alert field update', async () => {
@@ -106,7 +106,7 @@ describe('sci-fi-weather-editor', () => {
     }));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.config.alert?.state_green).toBe('ok');
+    expect(received[0]!.detail.config.alert?.state_green).toBe('ok');
   });
 
   it('dispatches config-changed on chart kind update', async () => {
@@ -125,7 +125,7 @@ describe('sci-fi-weather-editor', () => {
     }));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.config.chart_first_kind_to_render).toBe('temperature');
+    expect(received[0]!.detail.config.chart_first_kind_to_render).toBe('temperature');
   });
 
   it('preserves unknown chart kind value as-is', async () => {
@@ -143,7 +143,7 @@ describe('sci-fi-weather-editor', () => {
       detail: { id: 'chart_first_kind_to_render', kind: 'chart', value: 'Unknown Kind' },
     }));
 
-    expect(received[0].detail.config.chart_first_kind_to_render).toBe('Unknown Kind');
+    expect(received[0]!.detail.config.chart_first_kind_to_render).toBe('Unknown Kind');
   });
 
   it('loads weather entities from hass.states', async () => {

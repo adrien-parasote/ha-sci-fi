@@ -105,7 +105,7 @@ describe('sf-editor-dropdown-entity', () => {
     item.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.value).toBe('light.salon');
+    expect(received[0]!.detail.value).toBe('light.salon');
   });
 
   it('uses fallback icon when entity has no icon attribute', async () => {

@@ -54,8 +54,8 @@ describe('sf-editor-chips', () => {
     deleteBtn.click();
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.type).toBe('remove');
-    expect(received[0].detail.value).toBe('1'); // index 1
+    expect(received[0]!.detail.type).toBe('remove');
+    expect(received[0]!.detail.value).toBe('1'); // index 1
   });
 
   it('dispatches input-update type:add on Enter key with non-empty value', async () => {
@@ -68,8 +68,8 @@ describe('sf-editor-chips', () => {
     input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.type).toBe('add');
-    expect(received[0].detail.value).toBe('new-tag');
+    expect(received[0]!.detail.type).toBe('add');
+    expect(received[0]!.detail.value).toBe('new-tag');
   });
 
   it('does NOT dispatch on Enter when input is empty', async () => {

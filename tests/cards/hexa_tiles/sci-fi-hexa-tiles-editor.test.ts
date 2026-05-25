@@ -64,8 +64,8 @@ describe('sci-fi-hexa-tiles-editor', () => {
     btn.click();
 
     expect(received).toHaveLength(1);
-    expect(Array.isArray(received[0].detail.config.tiles)).toBe(true);
-    expect(received[0].detail.config.tiles.length).toBe(1);
+    expect(Array.isArray(received[0]!.detail.config.tiles)).toBe(true);
+    expect(received[0]!.detail.config.tiles.length).toBe(1);
   });
 
   it('dispatches config-changed when tile is removed', async () => {
@@ -86,7 +86,7 @@ describe('sci-fi-hexa-tiles-editor', () => {
     }));
 
     expect(received).toHaveLength(1);
-    expect(received[0].detail.config.tiles).toHaveLength(0);
+    expect(received[0]!.detail.config.tiles).toHaveLength(0);
   });
 
   it('renders weather toggle switch when weather section exists', async () => {

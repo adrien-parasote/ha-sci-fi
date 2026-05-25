@@ -524,3 +524,10 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
   2. **Use attribute selector** if DOM wiring must be tested: `querySelector('[element-id="light.salon"]')` — targets the exact element.
 - **Rule**: When `element-id` is derived from dynamic data (entity IDs, indexes), the selector `[element-id="${value}"]` is the only safe DOM selection pattern. Document this in the spec's Test Case Specifications table.
 - **Scope**: All LitElement editors that render lists of configurable entities with per-row event listeners.
+
+### L072: Decouple Selection Styles from Child Component Domain-State Indicators
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi — climates card `sf-hexa-row` and `sf-hexa-tile`
+- **Evidence**: Fixed selected override in `sf-hexa-row.ts`. Removing `--icon-color: var(--sf-primary, #00d2ff) !important;` from `sf-hexa-tile.selected .item-icon sf-icon` resolved the issue where inactive room/floor icons became blue when selected, allowing them to remain grey as expected. All unit tests passed.
+- **Anti-pattern**: Forcing a nested indicator's styling (like an icon color representing active domain state, e.g. "at least one active radiator") using a parent's selection state class (`.selected` or `.item-on`). This couples selection state with domain state, rendering the domain state invisible when the item is selected.
+- **Fix**: Never force child component colors in parent selection-state rules. Let the child styling solely depend on its own domain-state classes (`.on` / `.off`), and keep parent selection styles limited to layout properties (size, scale) and container border/shadow/background styles.

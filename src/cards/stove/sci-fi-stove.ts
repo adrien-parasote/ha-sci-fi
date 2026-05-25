@@ -320,7 +320,7 @@ export class SciFiStoveCard extends SciFiBaseCard {
       <div class="bottom">
         <sf-button-card-select
           icon="${HVAC_ICONS[stoveState.state] ?? 'mdi:information-off-outline'}"
-          title="${msg('mode')}"
+          title="${msg('Mode')}"
           text="${this._getHvacLabel(stoveState.state)}"
           .items="${hvacItems}"
           position="bottom"
@@ -330,13 +330,13 @@ export class SciFiStoveCard extends SciFiBaseCard {
         <sf-wheel
           .items="${tempItems}"
           .selectedId="${String(Math.round(targetTemp))}"
-          text="${msg('Température')}"
+          text="${msg('Temperature')}"
           @wheel-change="${(e: CustomEvent) => this._onTempChange(e, stoveState.attributes.entity_id ?? this.config.entity)}"
         ></sf-wheel>
 
         <sf-button-card-select
           icon="${PRESET_ICONS[currentPreset] ?? 'mdi:circle-medium'}"
-          title="${msg('Préréglage')}"
+          title="${msg('Preset')}"
           text="${this._getPresetLabel(currentPreset)}"
           .items="${presetItems}"
           position="bottom"
@@ -347,12 +347,12 @@ export class SciFiStoveCard extends SciFiBaseCard {
   }
 
   private _getHvacLabel(state: string): string {
-    const labels: Record<string, string> = { off: msg('Éteint'), heat: msg('Chauffe'), cool: msg('Refroidit'), auto: msg('Auto') };
+    const labels: Record<string, string> = { off: msg('Off'), heat: msg('Heat'), cool: msg('Cool'), auto: msg('Auto') };
     return labels[state] ?? state;
   }
 
   private _getPresetLabel(preset: string): string {
-    const labels: Record<string, string> = { none: msg('Aucun'), eco: msg('Éco') };
+    const labels: Record<string, string> = { none: msg('None'), eco: msg('Eco') };
     return labels[preset] ?? preset;
   }
 

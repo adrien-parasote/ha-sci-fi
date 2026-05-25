@@ -858,6 +858,34 @@
   <source>Edit shortcut</source>
   <target>Modifier le raccourci</target>
 </trans-unit>
+<trans-unit id="s57ce5bc9b2b4287e">
+  <source>Preset</source>
+  <target>Préréglage</target>
+</trans-unit>
+<trans-unit id="s302cbb19bf9a174a">
+  <source>Off</source>
+  <target>Éteint</target>
+</trans-unit>
+<trans-unit id="s351c03d86108b1b3">
+  <source>Heat</source>
+  <target>Chauffe</target>
+</trans-unit>
+<trans-unit id="s36540f9d1aca1bdc">
+  <source>Cool</source>
+  <target>Refroidit</target>
+</trans-unit>
+<trans-unit id="sdb73788b3c975f16">
+  <source>Auto</source>
+  <target>Auto</target>
+</trans-unit>
+<trans-unit id="s669b18c6d2d9c95b">
+  <source>None</source>
+  <target>Aucun</target>
+</trans-unit>
+<trans-unit id="sd8d33a198debb442">
+  <source>Eco</source>
+  <target>Éco</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

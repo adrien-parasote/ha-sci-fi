@@ -217,4 +217,12 @@ export const templates: Record<string, any> = {
   sad98b54b586fc5fe: `Ajouter un raccourci`,
   sde58bd1e6137142f: `Aucun aspirateur configuré.`,
   s5cf60e0665e79b11: `Modifier le raccourci`,
+  // ── Stove bottom bar ─────────────────────────────────────────────────────
+  s57ce5bc9b2b4287e: `Préréglage`,  // Preset
+  s302cbb19bf9a174a: `Éteint`,      // Off
+  s351c03d86108b1b3: `Chauffe`,     // Heat
+  s36540f9d1aca1bdc: `Refroidit`,   // Cool
+  sdb73788b3c975f16: `Auto`,        // Auto
+  s669b18c6d2d9c95b: `Aucun`,       // None
+  sd8d33a198debb442: `Éco`,         // Eco
 };

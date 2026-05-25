@@ -26,6 +26,10 @@ describe('sf-hexa-row', () => {
     expect(tiles[0]!.classList.contains('selected')).to.be.true;
     expect(tiles[1]!.classList.contains('selected')).to.be.false;
 
+    // Verify cell.active state sets proper classes on item-icon
+    expect(tiles[0]!.querySelector('.item-icon')!.classList.contains('on')).to.be.true;
+    expect(tiles[1]!.querySelector('.item-icon')!.classList.contains('off')).to.be.true;
+
     // Click second cell
     (tiles[1]! as HTMLElement).click();
 

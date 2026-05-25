@@ -11,16 +11,16 @@
 
 | Feature ID | Description | Spec file |
 |---|---|---|
-| F-VAC-D01 | Header: vacuum name + fan speed + mop_intensite (conditional) + battery (conditional) | ✅ This spec § Header |
-| F-VAC-D02 | Sub-header: animated icon traversing card (CLEAN/RETURNING=moveAcross, DOCKED=rotate 90°, IDLE/ALERT=centered) | ✅ This spec § Sub-header |
-| F-VAC-D03 | Info sensors: `current_clean_area` + `current_clean_duration` — column cards with icon + value + unit + name | ✅ This spec § Info sensors |
-| F-VAC-D04 | Map: full-width `<img>` with border/radius; fallback text `msg('No map defined')` | ✅ This spec § Map |
-| F-VAC-D05 | Actions: `.default` row (sci-fi-button per action: start/pause/stop/return_to_base) + `.shortcuts` row (sci-fi-button per shortcut icon) | ✅ This spec § Actions |
+| F-VAC-D01 | Header: vacuum name + fan speed (clickable → cycles fan speed) + mop_intensite (conditional) + battery (conditional, with warning/critical colors) | ✅ This spec § Header |
+| F-VAC-D02 | Sub-header: animated icon traversing card (CLEAN/RETURNING=moveAcross, DOCKED=rotate 90°, IDLE/ALERT=centered) — icon 40px, sub-header height 40px | ✅ This spec § Sub-header |
+| F-VAC-D03 | Info sensors: `current_clean_area` + `current_clean_duration` — column cards with icon + value + unit + name, centered, duration rounded to integer minutes | ✅ This spec § Info sensors |
+| F-VAC-D04 | Map: full-width `<img>` with border/radius; fallback text `msg('No map defined')` — fills all remaining space between info and actions via `flex: 1` | ✅ This spec § Map |
+| F-VAC-D05 | Actions: `.default` row (sf-button for start/pause/stop/return_to_base only — **set_fan_speed excluded**) + `.shortcuts` row — pinned to bottom | ✅ This spec § Actions |
 | F-VAC-D06 | Device navigation: bottom bar with chevron-left/right + dot indicators (hidden if single vacuum) | ✅ This spec § Devices |
 | F-VAC-D07 | Toast feedback on action success/failure via `<sf-toast>` | ✅ This spec § Toast |
 | F-VAC-D08 | Extract CSS into `styles.ts` (stove/vehicle/plugs pattern) | ✅ This spec § styles.ts |
 | F-VAC-D09 | `vacuum_const.ts` constants file (ported from main) | ✅ This spec § Constants |
-| F-VAC-D10 | All existing 39 vacuum tests remain GREEN (regression gate) | ✅ This spec § Test Selectors |
+| F-VAC-D10 | All existing vacuum tests remain GREEN (regression gate) | ✅ This spec § Test Selectors |
 
 ---
 
@@ -508,9 +508,9 @@ Current vacuum: `const vacuum = this.config.vacuums[this._vacuum_selected_id]`.
 
 ```ts
 private _renderHeader(v: SciFiVacuumEntry): TemplateResult {
-  const state = this.hass.states[v.entity];
-  const name = state?.attributes.friendly_name ?? v.entity;
-  const fanSpeed = (state?.attributes as any)?.fan_speed as string | undefined;
+  const entityState = this.hass.states[v.entity];
+  const name = entityState?.attributes.friendly_name ?? v.entity;
+  const fanSpeed = (entityState?.attributes as any)?.fan_speed as string | undefined;
 
   const batteryState = v.sensors?.battery
     ? this.hass.states[v.sensors.battery]
@@ -519,12 +519,27 @@ private _renderHeader(v: SciFiVacuumEntry): TemplateResult {
     ? this.hass.states[v.sensors.mop_intensite]
     : undefined;
 
+  // Battery color thresholds (mirrors sf-landspeeder pattern)
+  const batteryLevel = batteryState ? parseFloat(batteryState.state) : NaN;
+  const batteryClass = !isNaN(batteryLevel)
+    ? batteryLevel < 20 ? 'battery-critical'
+    : batteryLevel < 30 ? 'battery-warn'
+    : ''
+    : '';
+
   return html`
     <div class="header">
       <div class="name">${name}</div>
       <div class="infoH">
-        <sf-icon icon="mdi:fan" .connection="${this.hass.connection}"></sf-icon>
-        <div>${fanSpeed ?? ''}</div>
+        ${fanSpeed ? html`
+          <sf-icon
+            icon="mdi:fan"
+            .connection="${this.hass.connection}"
+            style="cursor:pointer"
+            @click="${() => this._callAction(v.entity, VACUUM_ACTION_SET_FAN_SPEED)}"
+          ></sf-icon>
+          <div>${fanSpeed}</div>
+        ` : nothing}
         <div class="spacer"></div>
         ${mopState ? html`
           <sf-icon icon="${(mopState.attributes as any).icon ?? 'mdi:water-opacity'}" .connection="${this.hass.connection}"></sf-icon>
@@ -532,8 +547,8 @@ private _renderHeader(v: SciFiVacuumEntry): TemplateResult {
         ` : nothing}
         <div class="spacer"></div>
         ${batteryState ? html`
-          <sf-icon icon="${(batteryState.attributes as any).icon ?? 'mdi:battery'}" .connection="${this.hass.connection}"></sf-icon>
-          <div>${batteryState.state}${(batteryState.attributes as any).unit_of_measurement ?? ''}</div>
+          <sf-icon class="${batteryClass}" icon="${(batteryState.attributes as any).icon ?? 'mdi:battery'}" .connection="${this.hass.connection}"></sf-icon>
+          <div class="${batteryClass}">${batteryState.state}${(batteryState.attributes as any).unit_of_measurement ?? ''}</div>
         ` : nothing}
       </div>
     </div>
@@ -541,15 +556,18 @@ private _renderHeader(v: SciFiVacuumEntry): TemplateResult {
 }
 ```
 
+> [!IMPORTANT]
+> Fan speed icon is **clickable** — clicking cycles through `fan_speed_list` using `_callAction(set_fan_speed)`. It is **not** rendered as an action button in the action bar.
+
 ### _renderSubHeader(v)
 
 ```
-.sub-header — height: 60px, position: relative
-└── sf-icon — position: absolute, class=ACTIVITY_STATE
+.sub-header — height: 40px, position: relative
+└── sf-icon — position: absolute, --icon-width/height: 40px, class=ACTIVITY_STATE
     CLEAN / RETURNING → animation: moveAcross 20s
     DOCKED            → transform: rotate(90deg)
-    IDLE / ALERT      → left: calc(50% - 30px)
-    ALERT             → --icon-color: error-color
+    IDLE / ALERT      → left: calc(50% - 20px)
+    ALERT             → --icon-color: rgb(250, 146, 29)
 ```
 
 ```ts
@@ -569,6 +587,8 @@ private _renderSubHeader(v: SciFiVacuumEntry): TemplateResult {
 ### _renderInfo(v)
 
 Renders only `current_clean_area` and `current_clean_duration` sensors (not battery, not mop — those are in header).
+Elements are **centered** (`justify-content: center` on `.info`).
+`current_clean_duration` value is **rounded to integer** with `Math.round()` before display.
 
 ```
 .info
@@ -640,14 +660,17 @@ private _renderMap(v: SciFiVacuumEntry): TemplateResult {
 ### _renderActions(v)
 
 ```
-.actions
-├── .default  → sf-button per enabled action (start/pause/stop/return_to_base), left-aligned
+.actions — pinned to bottom via margin-top: auto on the flex column container
+├── .default  → sf-button per enabled action (start/pause/stop/return_to_base ONLY)
+│              set_fan_speed is handled by clicking the fan icon in the header
 └── .shortcuts → sf-button per shortcut description icon, right-aligned
 ```
 
 ```ts
 private _renderActions(v: SciFiVacuumEntry): TemplateResult {
-  const enabledActions = VACUUM_ACTION_KEYS
+  // set_fan_speed is excluded from the action bar — it is handled by the fan icon click in header
+  const BAR_ACTIONS = VACUUM_ACTION_KEYS.filter(k => k !== VACUUM_ACTION_SET_FAN_SPEED);
+  const enabledActions = BAR_ACTIONS
     .filter((k) => (v as any)[k] !== false)
     .map((k) => ({ key: k, icon: VACUUM_ACTIONS_ICONS[k] }));
 
@@ -800,6 +823,11 @@ private _toast(error: boolean, text: string): void {
 | 8 | **Missing sf-toast** | No feedback on action failure | `<sf-toast>` must be present inside `renderCard()` template |
 | 9 | **Missing null guards on hass.states** | `this.hass.states[v.entity].state` | Always `this.hass.states[v.entity]?.state` |
 | 10 | **Shortcut params as flat array** | `params: desc.segments` | `params: [{ segments: desc.segments }]` — matches main `_callShortcutService` signature |
+| 11 | **Fan speed as action bar button** | `<sf-button icon="mdi:fan">` in `.actions .default` | Fan speed is **header-only**: clickable `sf-icon` in `.header .infoH` cycles through `fan_speed_list` |
+| 12 | **No battery color thresholds** | Battery always cyan regardless of level | `battery-warn` class (amber) at < 30%, `battery-critical` class (orange) at < 20% |
+| 13 | **Flat flex container for .info** | `display: inline-flex` without centering | `display: flex; justify-content: center` |
+| 14 | **ha-card display:block breaks flex** | `ha-card { display: block }` from common styles | Override in vacuumStyles: `ha-card { display: flex !important; flex-direction: column }` |
+| 15 | **Duration not rounded** | `10.0666…` displayed as-is | `Math.round(parseFloat(state))` before display |
 
 ---
 
@@ -820,8 +848,8 @@ private _toast(error: boolean, text: string): void {
 | TC-1511 | Unit | Info hidden when no info sensors configured | no sensors in config | `.info` absent |
 | TC-1512 | Unit | Map image rendered when map entity present | map camera with entity_picture | `.map .image` present, `src` set |
 | TC-1513 | Unit | Map fallback text rendered when no map | no `sensors.map` | `.map .map-content` textContent includes `'No map defined'` |
-| TC-1514 | Unit | Actions: enabled action buttons rendered as sf-button | default config (all actions true) | 5 `sf-button` in `.actions .default` |
-| TC-1515 | Unit | Actions: disabled action not rendered | `start: false` | 4 `sf-button` in `.actions .default` |
+| TC-1514 | Unit | Actions: enabled action buttons rendered as sf-button | default config (all actions true) | **4** `sf-button` in `.actions .default` (set_fan_speed excluded — handled by header click) |
+| TC-1515 | Unit | Actions: disabled action not rendered | `start: false` | **3** `sf-button` in `.actions .default` |
 | TC-1516 | Unit | Actions: sf-button click calls vacuum service | click start button | `callService('vacuum', 'start', { entity_id })` called |
 | TC-1517 | Unit | Shortcuts: sf-button per shortcut description rendered | 2 shortcuts in config | 2 `sf-button` in `.actions .shortcuts` |
 | TC-1518 | Unit | Shortcuts: sf-button click calls shortcut service | click first shortcut | `callService('vacuum', 'send_command', { entity_id, command, params })` called |

@@ -531,3 +531,44 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Evidence**: Fixed selected override in `sf-hexa-row.ts`. Removing `--icon-color: var(--sf-primary, #00d2ff) !important;` from `sf-hexa-tile.selected .item-icon sf-icon` resolved the issue where inactive room/floor icons became blue when selected, allowing them to remain grey as expected. All unit tests passed.
 - **Anti-pattern**: Forcing a nested indicator's styling (like an icon color representing active domain state, e.g. "at least one active radiator") using a parent's selection state class (`.selected` or `.item-on`). This couples selection state with domain state, rendering the domain state invisible when the item is selected.
 - **Fix**: Never force child component colors in parent selection-state rules. Let the child styling solely depend on its own domain-state classes (`.on` / `.off`), and keep parent selection styles limited to layout properties (size, scale) and container border/shadow/background styles.
+
+### L062: `ha-card` Is `display: block` — Must Be Overridden for Flex Layout Children
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi — sci-fi-vacuum.ts layout session
+- **Evidence**: `.container { flex: 1 }` on a child of `ha-card` had no effect. The map section did not grow to fill the remaining space, and the action bar was not pinned to the bottom. Root cause: `ha-card` is rendered as `display: block` by the HA common styles (and by `sciFiCommonStyles`). A `flex: 1` child inside a block container has no flex context to expand into.
+- **Anti-pattern**: Adding `flex: 1` or `flex-grow` on a child of `ha-card` without verifying `ha-card` is itself a flex container.
+- **Fix**: Override `ha-card` display in the card's own stylesheet:
+  ```css
+  ha-card {
+    display: flex !important;
+    flex-direction: column;
+    height: 100%;
+  }
+  ```
+  The `!important` is required because HA injects `display: block` via its own shadow DOM styles with high specificity. Applies to any card that needs a flex-column layout (map + fixed action bar pattern, scrollable content + fixed footer, etc.).
+- **Scope**: Applies to ALL HA custom cards using `ha-card` as the root element where vertical flex layout is needed.
+
+### L063: OAuth Auth Callback From Localhost — PKCE Verifier Must Be Consumed Immediately
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi — dev/workbench.html auth flow debugging
+- **Evidence**: Clearing `localStorage` orphaned an OAuth code in the URL (`auth_callback=1&code=...`). On reload, the code was replayed without the PKCE verifier → HA returned `400 Bad Request`. The workbench kept looping: URL had the code, localStorage was empty, the code exchange failed every time.
+- **Anti-pattern**: Building a workbench OAuth flow that requires the user to manually click "Connect" again after the auth callback redirect. If `localStorage` is cleared between the redirect and the click, the PKCE verifier is gone and the code exchange always fails with 400.
+- **Fix**: Detect `auth_callback=1` at page load (not on button click) and immediately exchange the code with the PKCE verifier that is still in `sessionStorage` (not `localStorage`). After exchange, call `history.replaceState()` to remove the OAuth params from the URL before any re-render. This prevents replay attacks and stale-code loops.
+- **Rule**: PKCE verifier → store in `sessionStorage` (survives page load within same tab but not `localStorage.clear()`). Auth code → exchange immediately on page load detection, then strip from URL.
+
+### L064: Battery Warning Color Pattern — Threshold Classes vs Inline Style
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi — vacuum card battery header
+- **Evidence**: Battery level coloring (warn/critical) was missing from the vacuum card. Other cards (sf-landspeeder) used computed CSS class names (`battery-warn`, `battery-critical`) added to the element, with dedicated CSS rules for `--icon-color`, `color`, and `text-shadow`. Inline `style=` would have worked but is harder to override.
+- **Pattern**: For threshold-based color states (battery, temperature, signal), use CSS class names computed in TypeScript:
+  ```ts
+  const cls = level < 20 ? 'battery-critical' : level < 30 ? 'battery-warn' : '';
+  ```
+  Then bind the class to both the icon and the text label. Define CSS rules:
+  ```css
+  .battery-warn  { --icon-color: rgb(255, 215, 0); color: rgb(255, 215, 0); }
+  .battery-critical { --icon-color: rgb(250, 146, 29); color: rgb(250, 146, 29); }
+  ```
+  This mirrors HA's `--primary-warning-color` and `--primary-error-color` tokens.
+- **Thresholds**: `< 30%` = warn (amber), `< 20%` = critical (orange-red). Reuse these thresholds across all cards for visual consistency.
+- **Scope**: Apply to any card displaying a battery, signal strength, or fuel level percentage sensor.

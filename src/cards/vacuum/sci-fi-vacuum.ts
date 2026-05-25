@@ -1,307 +1,315 @@
 /**
- * <sci-fi-vacuum> — v1.0.0
- * Robot vacuum control: status, map display, fan speed, controls, shortcuts.
+ * <sci-fi-vacuum> — v2.0.0
+ * Robot vacuum control: animated sub-header icon, header (name + fan speed + battery + mop),
+ * info sensors (area + duration), full-width map, actions bar (sf-button), device navigation.
+ * Spec 15 — ported from main:src/cards/vacuum/card.js
  * ADR-005: uses entity (not entity_id), mop_intensite (FR), shortcuts preserved.
  */
 
-import { html, css, type TemplateResult } from 'lit';
+import { html, nothing, type TemplateResult, type PropertyValues } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { repeat } from 'lit/directives/repeat.js';
+import { msg } from '@lit/localize';
+
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
+import { vacuumStyles } from './styles.js';
 import type {
   SciFiVacuumConfig,
   SciFiVacuumEntry,
   SciFiVacuumShortcutDescription,
 } from '../../types/config.js';
+import {
+  VACUUM_ICONS,
+  VACUUM_ACTIVITY_STATE,
+  VACUUM_ACTIONS_ICONS,
+  VACUUM_ACTION_KEYS,
+  VACUUM_ACTION_SET_FAN_SPEED,
+} from './vacuum_const.js';
+
+import '../../components/sf-icon/sf-icon.js';
+import '../../components/buttons/sf-button.js';
+import '../../components/sf-toast.js';
 
 const TAG = 'sci-fi-vacuum';
 
-const FAN_SPEEDS = ['quiet', 'standard', 'strong', 'max'] as const;
-
 @customElement(TAG)
 export class SciFiVacuumCard extends SciFiBaseCard {
-  static override styles = [
-    sciFiCommonStyles,
-    css`
-      .container { padding: var(--sf-spacing-md); }
-      .vacuum-tabs {
-        display: flex;
-        gap: var(--sf-spacing-sm);
-        margin-bottom: var(--sf-spacing-md);
-        overflow-x: auto;
-      }
-      .vacuum-tab {
-        background: var(--sf-bg-secondary);
-        border: 1px solid var(--sf-border);
-        border-radius: var(--sf-radius-sm);
-        color: var(--sf-text-secondary);
-        padding: var(--sf-spacing-xs) var(--sf-spacing-sm);
-        cursor: pointer;
-        font-size: var(--sf-font-size-sm);
-        transition: all var(--sf-transition-fast);
-      }
-      .vacuum-tab[aria-selected="true"] {
-        background: var(--sf-primary-dim);
-        border-color: var(--sf-primary);
-        color: var(--sf-primary);
-      }
-      .vacuum-main {
-        display: flex;
-        gap: var(--sf-spacing-md);
-        margin-bottom: var(--sf-spacing-md);
-      }
-      .vacuum-info { flex: 1; }
-      .vacuum-state {
-        font-size: var(--sf-font-size-xl);
-        font-weight: 700;
-        margin-bottom: var(--sf-spacing-sm);
-      }
-      .sensors-row {
-        display: flex;
-        gap: var(--sf-spacing-md);
-        flex-wrap: wrap;
-        font-size: var(--sf-font-size-sm);
-        color: var(--sf-text-secondary);
-      }
-      .sensor-item { display: flex; align-items: center; gap: 4px; }
-      .map-container {
-        width: 120px;
-        height: 120px;
-        border-radius: var(--sf-radius-sm);
-        overflow: hidden;
-        border: 1px solid var(--sf-border);
-        flex-shrink: 0;
-      }
-      .map-container img { width: 100%; height: 100%; object-fit: cover; }
-      .controls {
-        display: flex;
-        gap: var(--sf-spacing-sm);
-        flex-wrap: wrap;
-        margin-bottom: var(--sf-spacing-md);
-      }
-      .ctrl-btn {
-        flex: 1 1 80px;
-        padding: var(--sf-spacing-sm);
-        border: 1px solid var(--sf-border);
-        border-radius: var(--sf-radius-sm);
-        background: var(--sf-bg-secondary);
-        color: var(--sf-text-primary);
-        cursor: pointer;
-        font-size: var(--sf-font-size-sm);
-        text-align: center;
-        transition: all var(--sf-transition-fast);
-      }
-      .ctrl-btn:hover { border-color: var(--sf-primary); background: var(--sf-primary-dim); }
-      .fan-select {
-        background: var(--sf-bg);
-        border: 1px solid var(--sf-border);
-        border-radius: var(--sf-radius-sm);
-        color: var(--sf-text-primary);
-        padding: var(--sf-spacing-xs) var(--sf-spacing-sm);
-        font-size: var(--sf-font-size-sm);
-      }
-      /* ADR-005: shortcuts section */
-      .shortcuts {
-        border-top: 1px solid var(--sf-border);
-        padding-top: var(--sf-spacing-sm);
-      }
-      .shortcuts-title {
-        font-size: var(--sf-font-size-sm);
-        color: var(--sf-text-secondary);
-        margin-bottom: var(--sf-spacing-xs);
-      }
-      .shortcuts-grid {
-        display: flex;
-        gap: var(--sf-spacing-xs);
-        flex-wrap: wrap;
-      }
-      .shortcut-btn {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        padding: var(--sf-spacing-xs) var(--sf-spacing-sm);
-        border: 1px solid var(--sf-border);
-        border-radius: var(--sf-radius-sm);
-        background: var(--sf-bg-secondary);
-        color: var(--sf-text-secondary);
-        cursor: pointer;
-        font-size: var(--sf-font-size-sm);
-        transition: all var(--sf-transition-fast);
-      }
-      .shortcut-btn:hover { border-color: var(--sf-primary); background: var(--sf-primary-dim); color: var(--sf-primary); }
-
-      /* ── Responsive ───────────────────────────────────────── */
-      @container sf-card (max-width: 599px) {
-        .vacuum-main {
-          flex-direction: column;
-          gap: var(--sf-spacing-sm);
-        }
-        .map-container {
-          width: 100%;
-          height: 160px;
-        }
-        .controls { flex-wrap: wrap; }
-        .ctrl-btn { flex: 1 1 calc(50% - var(--sf-spacing-sm)); }
-        .container { padding: var(--sf-spacing-sm); }
-      }
-    `,
-  ];
+  static override styles = [sciFiCommonStyles, vacuumStyles];
 
   declare config: SciFiVacuumConfig;
 
-  @state() private _activeIndex = 0;
+  @state() private _vacuum_selected_id: number = 0;
+
+  override willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('config')) {
+      const len = this.config.vacuums?.length ?? 0;
+      if (this._vacuum_selected_id >= len) {
+        this._vacuum_selected_id = Math.max(0, len - 1);
+      }
+    }
+  }
 
   protected override renderCard(): TemplateResult {
     const vacuums = this.config.vacuums;
-    const active = vacuums[this._activeIndex];
-
-    if (!active) {
-      return html`<ha-card><div class="container">Aucun aspirateur configuré</div></ha-card>`;
+    if (!vacuums?.length) {
+      return html`<ha-card></ha-card>`;
     }
+
+    const vacuum = vacuums[this._vacuum_selected_id]!;
 
     return html`
       <ha-card>
-        ${this.config.header_message ? html`<div class="sf-header">${this.config.header_message}</div>` : ''}
         <div class="container">
-          ${vacuums.length > 1 ? this._renderTabs(vacuums) : ''}
-          ${this._renderVacuum(active)}
+          ${this._renderHeader(vacuum)}
+          ${this._renderSubHeader(vacuum)}
+          ${this._renderInfo(vacuum)}
+          ${this._renderMap(vacuum)}
+          ${this._renderActions(vacuum)}
+          ${this._renderDevices()}
         </div>
+        <sf-toast></sf-toast>
       </ha-card>
     `;
   }
 
-  private _renderTabs(vacuums: readonly SciFiVacuumEntry[]): TemplateResult {
+  // ── Header: name + fan speed + mop_intensite + battery ──────────────────
+
+  private _renderHeader(v: SciFiVacuumEntry): TemplateResult {
+    const entityState = this.hass.states[v.entity];
+    const name = entityState?.attributes.friendly_name ?? v.entity;
+    const fanSpeed = (entityState?.attributes as any)?.fan_speed as string | undefined;
+
+    const batteryState = v.sensors?.battery
+      ? this.hass.states[v.sensors.battery]
+      : undefined;
+    const mopState = v.sensors?.mop_intensite
+      ? this.hass.states[v.sensors.mop_intensite]
+      : undefined;
+
+    // Battery color thresholds (mirrors sf-landspeeder pattern)
+    const batteryLevel = batteryState ? parseFloat(batteryState.state) : NaN;
+    const batteryClass = !isNaN(batteryLevel)
+      ? batteryLevel < 20 ? 'battery-critical'
+      : batteryLevel < 30 ? 'battery-warn'
+      : ''
+      : '';
+
     return html`
-      <div class="vacuum-tabs">
-        ${repeat(
-          vacuums,
-          (v, i) => `${v.entity}-${i}`,
-          (v, i) => {
-            // ADR-005: v.entity (not v.entity_id)
-            const name = this.hass.states[v.entity]?.attributes.friendly_name ?? v.entity;
-            return html`
-              <button
-                class="vacuum-tab"
-                aria-selected="${i === this._activeIndex}"
-                @click="${() => { this._activeIndex = i; }}"
-              >${name}</button>
-            `;
-          }
-        )}
+      <div class="header">
+        <div class="name">${name}</div>
+        <div class="infoH">
+          ${fanSpeed ? html`
+            <sf-icon
+              icon="mdi:fan"
+              .connection="${this.hass.connection}"
+              style="cursor:pointer"
+              @click="${() => this._callAction(v.entity, VACUUM_ACTION_SET_FAN_SPEED)}"
+            ></sf-icon>
+            <div>${fanSpeed}</div>
+          ` : nothing}
+          <div class="spacer"></div>
+          ${mopState ? html`
+            <sf-icon
+              icon="${(mopState.attributes as any).icon ?? 'mdi:water-opacity'}"
+              .connection="${this.hass.connection}"
+            ></sf-icon>
+            <div>${mopState.state}</div>
+          ` : nothing}
+          <div class="spacer"></div>
+          ${batteryState ? html`
+            <sf-icon
+              class="${batteryClass}"
+              icon="${(batteryState.attributes as any).icon ?? 'mdi:battery'}"
+              .connection="${this.hass.connection}"
+            ></sf-icon>
+            <div class="${batteryClass}">${batteryState.state}${(batteryState.attributes as any).unit_of_measurement ?? ''}</div>
+          ` : nothing}
+        </div>
       </div>
     `;
   }
 
-  private _renderVacuum(v: SciFiVacuumEntry): TemplateResult {
-    // ADR-005: v.entity (not v.entity_id)
-    const vacState = this.hass.states[v.entity];
-    const stateStr = vacState?.state ?? 'inconnu';
-    const battery = v.sensors?.battery
-      ? this.hass.states[v.sensors.battery]?.state
-      : undefined;
-    const area = v.sensors?.current_clean_area
-      ? this.hass.states[v.sensors.current_clean_area]?.state
-      : undefined;
-    // ADR-005: mop_intensite (FR spelling)
-    const mopIntensity = v.sensors?.mop_intensite
-      ? this.hass.states[v.sensors.mop_intensite]?.state
-      : undefined;
-    const duration = v.sensors?.current_clean_duration
-      ? this.hass.states[v.sensors.current_clean_duration]?.state
-      : undefined;
-    const mapCameraState = v.sensors?.map
+  // ── Sub-header: animated icon based on vacuum state ──────────────────────
+
+  private _renderSubHeader(v: SciFiVacuumEntry): TemplateResult {
+    const stateStr = this.hass.states[v.entity]?.state ?? 'unknown';
+    const icon = VACUUM_ICONS[stateStr] ?? 'mdi:robot-vacuum-off';
+    const activity = VACUUM_ACTIVITY_STATE[stateStr] ?? 'IDLE';
+
+    return html`
+      <div class="sub-header">
+        <sf-icon icon="${icon}" class="${activity}" .connection="${this.hass.connection}"></sf-icon>
+      </div>
+    `;
+  }
+
+  // ── Info: current_clean_area + current_clean_duration sensor cards ────────
+
+  private _formatSensorValue(raw: string, isDuration: boolean): string {
+    if (!isDuration) return raw;
+    const n = parseFloat(raw);
+    return isNaN(n) ? raw : String(Math.round(n));
+  }
+
+  private _renderInfo(v: SciFiVacuumEntry): TemplateResult {
+    const areaId     = v.sensors?.current_clean_area;
+    const durationId = v.sensors?.current_clean_duration;
+    const areaState     = areaId     ? this.hass.states[areaId]     : undefined;
+    const durationState = durationId ? this.hass.states[durationId] : undefined;
+
+    const entries = [
+      { state: areaState,     icon: 'mdi:floor-plan',    label: msg('Area'),     isDuration: false },
+      { state: durationState, icon: 'mdi:timer-outline', label: msg('Duration'), isDuration: true  },
+    ].filter((e): e is typeof e & { state: NonNullable<typeof e.state> } => e.state !== undefined);
+
+    if (entries.length === 0) return html``;
+
+    return html`
+      <div class="info">
+        ${entries.map((e) => html`
+          <div class="sensor">
+            <div class="data">
+              <sf-icon icon="${e.icon}" .connection="${this.hass.connection}"></sf-icon>
+              <div class="value">${this._formatSensorValue(e.state.state, e.isDuration)}</div>
+              <div class="unit">${(e.state.attributes as any).unit_of_measurement ?? ''}</div>
+            </div>
+            <div class="name">${(e.state.attributes as any).friendly_name ?? e.label}</div>
+          </div>
+        `)}
+      </div>
+    `;
+  }
+
+  // ── Map: full-width image or fallback text ────────────────────────────────
+
+  private _renderMap(v: SciFiVacuumEntry): TemplateResult {
+    const mapState = v.sensors?.map
       ? this.hass.states[v.sensors.map]
       : undefined;
-    const mapUrl = mapCameraState?.attributes['entity_picture'] as string | undefined;
+    const mapUrl = mapState?.attributes['entity_picture'] as string | undefined;
 
     return html`
-      <div class="vacuum-main">
-        <div class="vacuum-info">
-          <div class="vacuum-state sf-state-${stateStr === 'cleaning' ? 'on' : 'off'}">
-            <sf-icon .icon="${stateStr === 'cleaning' ? 'mdi:robot-vacuum' : 'mdi:robot-vacuum-off'}"
-              .connection="${this.hass.connection}"></sf-icon>
-            ${stateStr}
-          </div>
-          <div class="sensors-row">
-            ${battery !== null && battery !== undefined ? html`<span class="sensor-item">🔋 ${battery}%</span>` : ''}
-            ${area !== null && area !== undefined ? html`<span class="sensor-item">📐 ${area} m²</span>` : ''}
-            ${duration !== null && duration !== undefined ? html`<span class="sensor-item">⏱ ${duration}</span>` : ''}
-            ${mopIntensity !== null && mopIntensity !== undefined ? html`<span class="sensor-item">💧 ${mopIntensity}</span>` : ''}
-          </div>
-        </div>
-        ${mapUrl ? html`
-          <div class="map-container">
-            <img src="${mapUrl}" alt="Carte aspirateur" />
-          </div>
-        ` : ''}
+      <div class="map">
+        ${mapUrl
+          ? html`<img class="image" src="${mapUrl}" alt="${msg('Vacuum map')}" />`
+          : html`<div class="map-content">${msg('No map defined')}</div>`
+        }
       </div>
-
-      <div class="controls">
-        ${v.start !== false ? html`<button class="ctrl-btn" @click="${() => this._call(v.entity, 'start')}">▶ Démarrer</button>` : ''}
-        ${v.pause !== false ? html`<button class="ctrl-btn" @click="${() => this._call(v.entity, 'pause')}">⏸ Pause</button>` : ''}
-        ${v.stop !== false ? html`<button class="ctrl-btn" @click="${() => this._call(v.entity, 'stop')}">⏹ Stop</button>` : ''}
-        ${v.return_to_base !== false ? html`<button class="ctrl-btn" @click="${() => this._call(v.entity, 'return_to_base')}">🏠 Base</button>` : ''}
-        ${v.set_fan_speed !== false ? html`
-          <select class="fan-select" @change="${(e: Event) => this._setFanSpeed(v.entity, (e.target as HTMLSelectElement).value)}">
-            ${FAN_SPEEDS.map(s => html`<option value="${s}">${s}</option>`)}
-          </select>
-        ` : ''}
-      </div>
-
-      ${this._renderShortcuts(v)}
     `;
   }
 
-  /** ADR-005: shortcuts section — was entirely missing in v1.0.0-wip. */
-  private _renderShortcuts(v: SciFiVacuumEntry): TemplateResult {
-    const sc = v.shortcuts;
-    if (!sc?.description || sc.description.length === 0) return html``;
+  // ── Actions: default action buttons + shortcut buttons ───────────────────
+
+  private _renderActions(v: SciFiVacuumEntry): TemplateResult {
+    // set_fan_speed is toggled via the fan icon in the header, not the action bar
+    const BAR_ACTIONS = VACUUM_ACTION_KEYS.filter((k) => k !== VACUUM_ACTION_SET_FAN_SPEED);
+    const enabledActions = BAR_ACTIONS
+      .filter((k) => (v as any)[k] !== false)
+      .map((k) => ({ key: k, icon: VACUUM_ACTIONS_ICONS[k] ?? 'mdi:cog' }));
+
+    const shortcuts = v.shortcuts?.description ?? [];
 
     return html`
-      <div class="shortcuts">
-        <div class="shortcuts-title">Raccourcis</div>
-        <div class="shortcuts-grid">
-          ${sc.description.map(d => this._renderShortcutButton(v, d))}
+      <div class="actions">
+        <div class="default">
+          ${enabledActions.map((a) => html`
+            <sf-button
+              icon="${a.icon}"
+              @button-click="${() => this._callAction(v.entity, a.key)}"
+            ></sf-button>
+          `)}
+        </div>
+        <div class="shortcuts">
+          ${shortcuts.map((s, id) => html`
+            <sf-button
+              icon="${s.icon ?? 'mdi:broom'}"
+              @button-click="${() => this._callShortcut(v, id)}"
+            ></sf-button>
+          `)}
         </div>
       </div>
     `;
   }
 
-  private _renderShortcutButton(v: SciFiVacuumEntry, d: SciFiVacuumShortcutDescription): TemplateResult {
+  // ── Devices: bottom navigation bar (hidden for single vacuum) ─────────────
+
+  private _renderDevices(): TemplateResult {
+    if (this.config.vacuums.length <= 1) return html``;
+
     return html`
-      <button
-        class="shortcut-btn"
-        aria-label="Nettoyage : ${d.name}"
-        @click="${() => this._callShortcut(v, d)}"
-      >
-        ${d.icon ? html`<sf-icon .icon="${d.icon}" .connection="${this.hass.connection}"></sf-icon>` : ''}
-        ${d.name}
-      </button>
+      <div class="devices">
+        <sf-button icon="mdi:chevron-left" @button-click="${this._prev}"></sf-button>
+        <div class="number">
+          ${this.config.vacuums.map((_, id) => html`
+            <div class="${id === this._vacuum_selected_id ? 'active' : ''}"></div>
+          `)}
+        </div>
+        <sf-button icon="mdi:chevron-right" @button-click="${this._next}"></sf-button>
+      </div>
     `;
   }
 
-  private _call(entityId: string, service: string): void {
-    void this.hass.callService('vacuum', service, { entity_id: entityId });
+  private readonly _prev = (): void => {
+    const len = this.config.vacuums.length;
+    this._vacuum_selected_id = this._vacuum_selected_id === 0
+      ? len - 1
+      : this._vacuum_selected_id - 1;
+  };
+
+  private readonly _next = (): void => {
+    const len = this.config.vacuums.length;
+    this._vacuum_selected_id = this._vacuum_selected_id === len - 1
+      ? 0
+      : this._vacuum_selected_id + 1;
+  };
+
+  // ── Service calls ─────────────────────────────────────────────────────────
+
+  private _callAction(entityId: string, service: string): void {
+    if (service === VACUUM_ACTION_SET_FAN_SPEED) {
+      const entityState = this.hass.states[entityId];
+      const currentSpeed = (entityState?.attributes as any)?.fan_speed as string | undefined;
+      const speeds = ((entityState?.attributes as any)?.fan_speed_list as string[] | undefined)
+        ?? ['quiet', 'standard', 'strong', 'max'];
+      const nextIndex = currentSpeed
+        ? (speeds.indexOf(currentSpeed) + 1) % speeds.length
+        : 1;
+      const nextSpeed = speeds[nextIndex];
+      void this.hass.callService('vacuum', 'set_fan_speed', { entity_id: entityId, fan_speed: nextSpeed })
+        .then(() => this._toast(false, msg('done')))
+        .catch((e: Error) => this._toast(true, e.message));
+      return;
+    }
+
+    void this.hass.callService('vacuum', service, { entity_id: entityId })
+      .then(() => this._toast(false, msg('done')))
+      .catch((e: Error) => this._toast(true, e.message));
   }
 
   /**
    * ADR-005: shortcut service call per spec:
-   * service: 'vacuum.send_command', command: 'app_segment_clean', params: segments[]
+   * service: 'vacuum.send_command', command: 'app_segment_clean', params: [{ segments }]
    */
-  private _callShortcut(v: SciFiVacuumEntry, d: SciFiVacuumShortcutDescription): void {
-    const sc = v.shortcuts!;
-    const [domain, service] = (sc.service ?? 'vacuum.send_command').split('.');
+  private _callShortcut(v: SciFiVacuumEntry, idx: number): void {
+    const sc = v.shortcuts;
+    if (!sc?.service) return;
+    const [domain, service] = sc.service.split('.');
     if (!domain || !service) return;
+    const desc: SciFiVacuumShortcutDescription | undefined = sc.description?.[idx];
+    if (!desc) return;
     void this.hass.callService(domain, service, {
       entity_id: v.entity,
       command: sc.command ?? 'app_segment_clean',
-      params: d.segments,
-    });
+      params: [{ segments: desc.segments }],
+    })
+      .then(() => this._toast(false, msg('done')))
+      .catch((e: Error) => this._toast(true, e.message));
   }
 
-  private _setFanSpeed(entityId: string, speed: string): void {
-    void this.hass.callService('vacuum', 'set_fan_speed', { entity_id: entityId, fan_speed: speed });
+  private _toast(error: boolean, text: string): void {
+    const toast = this.shadowRoot?.querySelector('sf-toast') as any;
+    if (toast?.addMessage) toast.addMessage(text, error);
   }
 
   static getConfigElement(): HTMLElement {

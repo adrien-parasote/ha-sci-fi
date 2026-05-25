@@ -75,14 +75,6 @@ export class SciFiHexaTile extends LitElement {
         color: var(--sf-error);
         text-shadow: 0px 0px 5px var(--sf-error);
       }
-      :host(.selected) .hexa svg .border {
-        stroke: var(--sf-primary, #00d2ff);
-        filter: drop-shadow(0px 0px 5px var(--sf-primary, #00d2ff));
-      }
-      :host(.selected) .item-content {
-        color: var(--sf-primary, #00d2ff) !important;
-        text-shadow: 0px 0px 5px var(--sf-primary, #00d2ff) !important;
-      }
     `,
   ];
 

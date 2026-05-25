@@ -29,6 +29,7 @@ import '../../components/sf-icon/sf-icon.js';
 import '../../components/buttons/sf-button.js';
 import '../../components/buttons/sf-button-card.js';
 import '../../components/buttons/sf-button-card-select.js';
+import '../../components/sf-toast.js';
 import type { ButtonSelectItem } from '../../components/buttons/sf-button-card-select.js';
 
 const TAG = 'sci-fi-plugs';
@@ -83,7 +84,7 @@ export class SciFiPlugsCard extends SciFiBaseCard {
           ${this._renderContent(device)}
           ${this._renderFooter()}
         </div>
-        <sci-fi-toast></sci-fi-toast>
+        <sf-toast></sf-toast>
       </ha-card>
     `;
   }
@@ -505,7 +506,7 @@ export class SciFiPlugsCard extends SciFiBaseCard {
   // ── Toast ──────────────────────────────────────────────────────────────────
 
   private _toast(error: boolean, text: string): void {
-    const toast = this.shadowRoot?.querySelector('sci-fi-toast') as any;
+    const toast = this.shadowRoot?.querySelector('sf-toast') as any;
     if (toast?.addMessage) toast.addMessage(text, error);
   }
 

@@ -1573,13 +1573,23 @@
     }
   }
 
-  window.setLanguage = (lang) => {
+  window.setLanguage = async (lang) => {
     currentLanguage = lang;
     localStorage.setItem('wb-lang', lang);
     document.getElementById('btn-lang-en').classList.toggle('active', lang === 'en');
     document.getElementById('btn-lang-fr').classList.toggle('active', lang === 'fr');
     
     log(`🇬🇧 Langue basculée sur : ${lang === 'en' ? 'Anglais' : 'Français'}`, 'info');
+    
+    // Force locale change immediately (don't wait for hass setter to call setLocale)
+    // This ensures msg() returns the correct language on the next render.
+    if (window.__sciFiSetLocale) {
+      try {
+        await window.__sciFiSetLocale(lang);
+      } catch (e) {
+        // 'en' is sourceLocale — setLocale may error if locale is not a targetLocale, ignore
+      }
+    }
     
     updateHassLanguage();
   };

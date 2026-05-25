@@ -10,6 +10,7 @@
 import './components/sf-icon/sf-icon.js';
 import './components/sf-icon/sf-iconset.js'; // registers sci: namespace with HA customIconsets
 import './components/sf-toggle-switch/sf-toggle-switch.js';
+import './components/sf-toast.js'; // global toast component used by all cards
 
 // ── Cards ─────────────────────────────────────────────────────────────────────
 import './cards/hexa_tiles/sci-fi-hexa-tiles.js';
@@ -123,3 +124,15 @@ console.info(
   'color: #00d2ff; font-weight: bold; background: #1a1a2e; padding: 4px 8px; border-radius: 4px 0 0 4px;',
   'background: #00d2ff; color: #1a1a2e; font-weight: bold; padding: 4px 8px; border-radius: 0 4px 4px 0;'
 );
+
+// ── Workbench dev helper — expose setLocale for direct language switching ────────
+// Allows workbench to call window.__sciFiSetLocale('en') / window.__sciFiSetLocale('fr')
+// without waiting for the hass.locale.language async chain.
+// NOT used in HA production — safe to leave in production build.
+import { setLocale } from './locales/localization.js';
+declare global {
+  interface Window {
+    __sciFiSetLocale?: (locale: string) => Promise<void>;
+  }
+}
+window.__sciFiSetLocale = setLocale;

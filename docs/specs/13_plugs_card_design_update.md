@@ -406,7 +406,7 @@ private _chart_generation: Record<number, { datasets: unknown[]; labels: string[
     ${this._renderContent(device)}
     ${this._renderFooter()}
   </div>
-  <sci-fi-toast></sci-fi-toast>
+  <sf-toast></sf-toast>
 </ha-card>
 ```
 
@@ -787,7 +787,7 @@ private _updateChart(datasets: unknown[], labels: string[]): void {
 
 ```ts
 private _toast(error: boolean, text: string): void {
-  const toast = this.shadowRoot?.querySelector('sci-fi-toast') as any;
+  const toast = this.shadowRoot?.querySelector('sf-toast') as any;
   if (toast?.addMessage) toast.addMessage(text, error);
 }
 ```
@@ -834,7 +834,7 @@ private _toast(error: boolean, text: string): void {
 | 6 | **Chart.js outside `.chart-container`** | Appending canvas to shadowRoot directly | Canvas always appended inside `.chart-container` div |
 | 7 | **Caching `_chart` across plug changes** | Reusing same Chart instance when switching plug | Clear `this._chart = null` and `this.shadowRoot.querySelector('.chart-container').innerHTML = ''` on plug switch |
 | 8 | **Missing null guards on hass.states** | `this.hass.states[entityId].state` (no optional chain) | Always `this.hass.states[entityId]?.state` |
-| 9 | **Removing `sci-fi-toast`** | No user feedback on toggle/chart errors | `<sci-fi-toast>` must be present in `renderCard()` template |
+| 9 | **Removing `sf-toast`** | No user feedback on toggle/chart errors | `<sf-toast>` must be present in `renderCard()` template |
 | 10 | **Sensor sorted by insertion order** | Random order depending on config YAML | Sensors sorted by `entityId.localeCompare()` (matches main) |
 
 ---

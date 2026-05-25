@@ -69,7 +69,11 @@
 
 ### External Invocations
 
-N/A — This spec invokes no external interfaces. All data comes from `this.hass.states`.
+N/A — No third-party APIs. Internal `hass` property only:
+- `this.hass.states[entity]` — sensor state reads
+- `this.hass.config?.unit_system?.temperature` — temperature unit (°C default)
+- `this.hass.config?.unit_system?.pressure` — pressure unit (Pa default)
+- `this.hass.connection` — passed to `sf-icon` for icon loading
 
 ### Tracked Concepts
 

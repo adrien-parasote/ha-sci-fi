@@ -1,4 +1,4 @@
-<!-- Generated: 2026-05-24 | Files scanned: 71 | Token estimate: ~490 | Updated: post-coverage-hardening -->
+<!-- Generated: 2026-05-25 | Files scanned: 76 | Token estimate: ~500 | Updated: post-ts-fix-cycle -->
 
 # Home Assistant Sci-Fi Cards — Architecture v2
 
@@ -6,7 +6,7 @@
 
 | Layer | Path | Responsibility |
 |---|---|---|
-| Cards | `src/cards/` | 8 Lovelace custom cards — extend `SciFiBaseCard` |
+| Cards | `src/cards/` | 9 Lovelace custom cards — extend `SciFiBaseCard` (hexa_tiles, lights, climates, plugs, weather, stove, vacuum, vehicles) |
 | Components | `src/components/` | Reusable UI elements (`sf-icon`, `sf-toggle-switch`) |
 | Selectors | `src/selectors/` | Pure HA state extraction helpers — no mutations |
 | Utils | `src/utils/` | `base-card.ts`, `base-editor.ts` — Lit lifecycle base classes |
@@ -66,13 +66,15 @@ Dynamic icon values **require** Lit property binding (`.icon=`), not attribute b
 
 ## Test Coverage
 
-- **51 test files / 420 tests** — all GREEN (82.19% statements, 76.19% branches, 81.37% functions, 83.70% lines)
-- All 4 coverage thresholds pass: statements ≥ 80%, branches ≥ 75%, functions ≥ 80%, lines ≥ 80%
+- **56 test files / 471 tests** — all GREEN
+- `tsconfig.json` has `noUncheckedIndexedAccess: true` — all array index accesses in tests use `received[0]!` non-null assertion (L063)
+- `HomeAssistantExt` includes `config?: { unit_system?: { temperature?, pressure? } }` — matches HA runtime object (L064)
 - Canvas API mocked globally in `tests/setup.ts`
 - `happy-dom` history API mocked per-test via `vi.stubGlobal`
 - `window.customIcons` restored via `afterEach` cleanup
 - Pure SVG data files excluded from coverage (`sf-weather-icons.ts`, `sf-icons.ts`, `ha.ts`)
 - Branch coverage ceiling: Lit template ternaries structurally uncoverable by v8 (L023)
+- **Verify gate**: ALWAYS run `npx tsc --noEmit` AND `npx vitest run` — Vitest alone does NOT typecheck (L063)
 
 ## Dev Workbench
 

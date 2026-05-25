@@ -436,3 +436,30 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
   3. Component `:host`: `height: 100%`
   4. Fixed-size sections (actions bar): `flex-shrink: 0; justify-content: center`
 - **Scope**: Applies to any card component (stove, climate, vehicle) with a central visual element that should fill available vertical space.
+
+### L063: `noUncheckedIndexedAccess` — Always Use Non-Null Assertion on Array Index Access in Tests
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi — TypeScript fix cycle (18 test files, 54 occurrences)
+- **Evidence**: `npx tsc --noEmit` produced 54 TS2532 errors across 18 test files. All errors were `received[0].detail...` patterns where `received: CustomEvent[]`. Fixed in one batch pass with a Python regex script. Zero test failures after fix.
+- **Anti-pattern**: Writing test assertions as `received[0].detail.config.x` when `received: T[]`. With `noUncheckedIndexedAccess: true` in tsconfig, array index access returns `T | undefined` — TypeScript requires either a null check or `!` non-null assertion before accessing properties.
+- **Fix**: Standard pattern for event collection in tests:
+  ```ts
+  const received: CustomEvent[] = [];
+  el.addEventListener('my-event', (e) => received.push(e as CustomEvent));
+  // ... trigger event ...
+  expect(received).toHaveLength(1);
+  expect(received[0]!.detail.value).toBe('expected');  // ← always use !
+  ```
+  Add this pattern to all test templates. Enforce by running `npx tsc --noEmit` BEFORE committing tests (not just `vitest run`).
+- **Critical insight**: `vitest run` passes even with TS2532 errors because Vitest transpiles without typechecking. Only `tsc --noEmit` catches these. Both must be part of the verify gate.
+
+### L064: External HA Interface Types Must Match the Full Runtime Object Shape
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi — `src/types/ha.ts` + `sci-fi-stove.ts`
+- **Evidence**: `sci-fi-stove.ts` called `this.hass.config?.unit_system?.temperature` but `HomeAssistantExt` had no `config` property → 2 TS2339 errors. Fix required adding `config?: { unit_system?: { temperature?: string; pressure?: string; } }` to the interface.
+- **Anti-pattern**: Writing `HomeAssistantExt` to only include the fields you know you need right now. When a new card adds `this.hass.config`, `this.hass.user.is_owner`, or any other HA runtime property, TypeScript silently allows it at runtime (HA passes the full object) but errors at compile time. This creates a permanent drag on type accuracy.
+- **Fix**: When adding a new `this.hass.<property>` access in any card:
+  1. First grep `src/types/ha.ts` for the property
+  2. If absent, add it to `HomeAssistantExt` with the correct optional type BEFORE writing the card code
+  3. Check the real HA Home Assistant types (hass-frontend) for the correct shape
+- **Scope**: Applies to all HA custom card projects. `HomeAssistantExt` must be kept in sync with all properties accessed across all cards.

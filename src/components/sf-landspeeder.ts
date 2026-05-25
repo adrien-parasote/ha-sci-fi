@@ -26,10 +26,14 @@ export class SciFiLandspeeder extends LitElement {
   static override styles = [
     sciFiCommonStyles,
     css`
-      /* ── HOST ── flex:1 from parent → fills available vertical space */
+      /* ── HOST ── flex:1 fills parent in all modes (card/panel/PC/phone).
+         height:100% only resolves when parent has explicit px height (phone/tablet).
+         flex:1 works whether height comes from px or flex layout. */
       :host {
         display: flex;
-        height: 100%;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
         overflow: hidden;
         font-size: 12px;
         padding-top: 5px;
@@ -52,12 +56,14 @@ export class SciFiLandspeeder extends LitElement {
         width: 30px;
         flex-shrink: 0;
       }
+      /* flex:1 instead of height:100% — resolves against flex parent in all modes */
       .content {
         display: flex;
         flex-direction: column;
         position: relative;
         width: 100%;
-        height: 100%;
+        flex: 1;
+        min-height: 0;
       }
       .image {
         width: var(--speeder-width);
@@ -113,7 +119,10 @@ export class SciFiLandspeeder extends LitElement {
       .middle .lock {
         position: absolute;
         left: calc(50% - 130px);
-        top: 55%;
+        /* min() caps position at mobile design value (230px) so lock stays
+           within the car body regardless of .middle height in PC/panel mode.
+           On short screens, 55% kicks in proportionally. */
+        top: min(55%, 230px);
       }
       .middle .lock div,
       .middle .charging div,
@@ -172,7 +181,9 @@ export class SciFiLandspeeder extends LitElement {
       }
       .middle .fuel {
         position: absolute;
-        top: 70%;
+        /* min() caps at mobile design value so fuel stays at car bottom-left
+           regardless of .middle height in PC/panel mode */
+        top: min(70%, 300px);
         left: calc(50% - 179px);
       }
       .middle .fuel .h-path,
@@ -234,7 +245,9 @@ export class SciFiLandspeeder extends LitElement {
       }
       .middle .battery {
         position: absolute;
-        top: 70%;
+        /* min() caps at mobile design value so battery stays at car bottom-right
+           regardless of .middle height in PC/panel mode */
+        top: min(70%, 300px);
         left: calc(50% + 35px);
       }
       .middle .charging {

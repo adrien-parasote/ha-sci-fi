@@ -76,7 +76,7 @@ describe('sf-toast', () => {
     // The onclick handler checks if the target has .toast-close ancestor
     const event = new MouseEvent('click', { bubbles: true });
     Object.defineProperty(event, 'target', { value: closeDiv });
-    toastEl.onclick!(event);
+    toastEl.onclick!(event as unknown as PointerEvent);
 
     expect(container.children.length).toBe(0);
     vi.useRealTimers();

@@ -6,9 +6,13 @@
 import { css } from 'lit';
 
 export const vehicleStyles = css`
+  /* display:flex so ha-card can use flex:1 — works in both card mode (intrinsic
+     min-height) and panel/PC mode (workbench flex-determined height).
+     height:100% on ha-card would fail in card mode where :host only has min-height. */
   :host {
+    display: flex;
+    flex-direction: column;
     background-color: black;
-    height: 100%;
     width: 100%;
     min-height: 732px;
   }
@@ -16,10 +20,14 @@ export const vehicleStyles = css`
   ha-card {
     background: rgba(39, 40, 43, 0.3) !important;
     border: none !important;
-    height: 100%;
+    /* flex:1 fills :host regardless of whether height comes from flex or min-height */
+    flex: 1;
     width: 100%;
-    display: block;
+    display: flex;
+    flex-direction: column;
     box-sizing: border-box;
+    /* common.ts sets overflow-y:auto — override so flex children resolve height */
+    overflow: hidden !important;
   }
 
   /* ── CONTAINER ──────────────────────────────────────── */
@@ -27,7 +35,7 @@ export const vehicleStyles = css`
     display: flex;
     flex-direction: column;
     flex: 1;
-    height: 100%;
+    min-height: 0;
   }
 
   /* Speeder fills all available vertical space between header and actions */

@@ -16,16 +16,20 @@ import { css } from 'lit';
 
 export const vacuumStyles = css`
   :host {
+    display: flex;
+    flex-direction: column;
     background-color: black;
     height: 100%;
     width: 100%;
     min-height: 732px;
   }
   /* ha-card is display:block in common styles — override to flex so the chain works:
-     ha-card (flex col, height:100%) → .container (flex:1) → .map (flex:1) → .actions (bottom) */
+     :host (flex col, min-height 732px) → ha-card (flex:1 = fills host) → .container (flex:1) → .map (flex:1) */
   ha-card {
     display: flex !important;
     flex-direction: column;
+    flex: 1;
+    overflow: hidden;
   }
   .container {
     display: flex;

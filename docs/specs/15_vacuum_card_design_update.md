@@ -212,11 +212,23 @@ Ported 1:1 from `main:src/cards/vacuum/style.js` with CSS variable adaptations:
 import { css } from 'lit';
 
 export const vacuumStyles = css`
+  /* HEIGHT CHAIN (Card mode):
+     :host (flex col, min-height 732px) → ha-card (flex:1 = fills host) → .container (flex:1) → .map (flex:1)
+     Without display:flex on :host + flex:1 on ha-card, ha-card stays at auto/content height
+     and .map{flex:1} has nothing to expand into. */
   :host {
+    display: flex;
+    flex-direction: column;
     background-color: black;
     height: 100%;
     width: 100%;
     min-height: 732px;
+  }
+  ha-card {
+    display: flex !important;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
   }
   .container {
     display: flex;

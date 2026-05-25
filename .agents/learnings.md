@@ -572,3 +572,32 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
   This mirrors HA's `--primary-warning-color` and `--primary-error-color` tokens.
 - **Thresholds**: `< 30%` = warn (amber), `< 20%` = critical (orange-red). Reuse these thresholds across all cards for visual consistency.
 - **Scope**: Apply to any card displaying a battery, signal strength, or fuel level percentage sensor.
+
+### L065: Flex Height Chain in Lit Custom Elements — `:host` Must Be `display:flex` for `ha-card{flex:1}` to Work
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi — vacuum card + vehicle card Card mode layout fix
+- **Evidence**: In Card mode, `ha-card` was `height:auto` (= content height ≈200px) despite `:host{min-height:732px}`. The inner `.map{flex:1}` had nothing to expand into → empty black space below content. Fix: add `display:flex; flex-direction:column` to `:host`. Then `ha-card{flex:1}` fills `:host`'s 732px → `.container{flex:1}` fills `ha-card` → `.map{flex:1}` fills container. This is the canonical height chain.
+- **Anti-pattern**: Writing `:host{height:100%; min-height:732px}` and `ha-card{display:flex; flex-direction:column}` WITHOUT `display:flex` on `:host`. When the parent is not explicitly flex, `ha-card{flex:1}` has no flex context and reverts to `height:auto`.
+- **Pattern**:
+  ```css
+  :host { display: flex; flex-direction: column; height: 100%; min-height: 732px; }
+  ha-card { display: flex !important; flex-direction: column; flex: 1; overflow: hidden; }
+  .container { display: flex; flex-direction: column; flex: 1; }
+  .map { flex: 1; }
+  ```
+- **Root cause**: In Card mode, `#card-mount` has `height:auto`. `:host{height:100%}` resolves to 0 → `min-height:732px` kicks in. Without `display:flex` on `:host`, `ha-card` is a block child (not a flex item) → `flex:1` is ignored → height = content only.
+- **Scope**: Applies to ALL LitElement HA cards. Add `display:flex; flex-direction:column` to `:host` as a mandatory rule in every card `styles.ts`.
+
+### L066: `min()` as Upper Bound for Absolute-Positioned Indicators on Variable-Height SVG Containers
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi — sf-landspeeder.ts Panel/PC mode indicator drift
+- **Evidence**: `.lock{top:55%}`, `.fuel{top:70%}` drifted below the vehicle body on tall PC screens. The SVG container fills flex space → on 900px+ screens, 55% of container >> SVG image height → indicators in empty black space below car.
+- **Anti-pattern**: Bare percentage `top` for indicators overlaid on a fixed-size SVG inside a flex-1 container. Percentage is relative to the container, not the image — they diverge when container > image height.
+- **Fix**: `min(%, px_cap)` where `px_cap = (% / 100) × image_height`:
+  ```css
+  .lock    { top: min(55%, 230px); }
+  .fuel    { top: min(70%, 300px); }
+  .battery { top: min(70%, 300px); }
+  ```
+- **Rule**: Whenever `position:absolute` element references a fixed-size background image inside a `flex:1` container, cap all `top`/`left` with `min(%, px_equivalent)`.
+- **Scope**: Applies to any card with image+overlay indicators inside a flexible container (sf-landspeeder, sf-radiator, and future cards).

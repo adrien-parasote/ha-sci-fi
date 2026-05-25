@@ -208,7 +208,11 @@ export const VEHICLE_SENSOR_UNAVAILABLE_STATE = 'unavailable';
 import { css } from 'lit';
 
 export const vehicleStyles = css`
+  /* HEIGHT CHAIN: :host (flex col, min-height 732px) → ha-card (flex:1) → .container (flex:1) → sf-landspeeder (flex:1)
+     display:flex on :host is mandatory — without it, ha-card{flex:1} has nothing to fill in card mode. */
   :host {
+    display: flex;
+    flex-direction: column;
     background-color: black;
     height: 100%;
     width: 100%;
@@ -218,9 +222,10 @@ export const vehicleStyles = css`
   ha-card {
     background: rgba(39, 40, 43, 0.3) !important;
     border: none !important;
-    height: 100%;
-    width: 100%;
-    display: block;
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
     box-sizing: border-box;
   }
 
@@ -526,11 +531,11 @@ private _toast(error: boolean, text: string): void {
 
 ```
 .middle (relative, flex: 1)
-├── .lock       (absolute, left: calc(50% - 130px), top: 55%)
+├── .lock       (absolute, left: calc(50% - 130px), top: min(55%, 230px))
 │   └── [lock icon: green locked / orange unlocked] + .h-path + .circle
-├── .fuel       (absolute, left: calc(50% - 179px), top: 70%)
+├── .fuel       (absolute, left: calc(50% - 179px), top: min(70%, 300px))
 │   └── .components [mdi:gas-station + fuel_autonomy] [mdi:fuel + fuel_quantity]
-├── .battery    (absolute, left: calc(50% + 35px), top: 70%) — only if battery_level present
+├── .battery    (absolute, left: calc(50% + 35px), top: min(70%, 300px)) — only if battery_level present
 │   └── .components (color class: green/orange/red) [mdi:ev-station + battery_autonomy] [battery_level_icon + battery_level]
 └── .charging   (absolute, top: 10px, left: 50%) — only if charging config present
     └── .components (on/off/error class) [charge_icon + charge_state] [plug_icon + plug_state] [mdi:update + time if charging]

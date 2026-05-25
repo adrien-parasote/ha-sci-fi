@@ -58,11 +58,13 @@ export class SciFiHexaTile extends LitElement {
         text-align: center;
       }
       .item-on svg .border {
-        stroke: var(--custom-border, var(--sf-primary));
+        stroke: var(--sf-primary, #00d2ff);
+        stroke-width: 2.5px;
+        filter: drop-shadow(0 0 6px var(--sf-primary, #00d2ff));
       }
       .item-on .item-content {
-        color: var(--custom-border, var(--sf-primary));
-        text-shadow: 0px 0px 5px var(--custom-border, var(--sf-primary-dim));
+        color: var(--sf-primary, #00d2ff);
+        text-shadow: 0px 0px 5px var(--sf-primary-dim, rgba(0, 210, 255, 0.3));
       }
       .item-off .item-content {
         color: var(--custom-border, var(--sf-text-secondary));

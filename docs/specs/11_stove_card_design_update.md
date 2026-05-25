@@ -118,6 +118,7 @@ src/components/
 | C09 | `sf-wheel.ts` | Remove circular CSS var `--item-font-size: var(--item-font-size, …)` | Browser ignores circular self-reference → inherited 18px from HA body |
 | C10 | `sci-fi-stove.ts` | Wheel `selected-id` → `.selectedId` property binding + `Math.round()` | Attribute string vs property; float temps (20.5) didn't match integer item IDs |
 | C11 | `styles.ts` | Power cell icons `--icon-color: var(--primary-light-color, #6ecbf5)` | `sf-icon` uses `currentColor` → inherited grey from label color |
+| C12 | `sci-fi-stove.ts` | Bottom bar `msg()` keys changed from French → English; 7 entries added to `fr.ts` + `xliff/fr.xlf` | French source keys generate hashes absent from `fr.ts` → lit-localize falls back to raw source in all locales |
 
 ---
 

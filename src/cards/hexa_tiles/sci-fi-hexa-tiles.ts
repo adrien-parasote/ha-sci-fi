@@ -235,6 +235,35 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
         filter: drop-shadow(0 0 3px #ffd60a);
       }
 
+      /* Alert-level border colors on weather tile */
+      .hexa-tile.weather-tile[data-alert-level="yellow"] .hexa-border {
+        stroke: #ffd60a;
+        stroke-width: 2px;
+        filter: drop-shadow(0 0 6px #ffd60a);
+      }
+      .hexa-tile.weather-tile[data-alert-level="orange"] .hexa-border {
+        stroke: #ff6b35;
+        stroke-width: 2px;
+        filter: drop-shadow(0 0 6px #ff6b35);
+      }
+      .hexa-tile.weather-tile[data-alert-level="red"] .hexa-border {
+        stroke: #ff4d6d;
+        stroke-width: 2.5px;
+        filter: drop-shadow(0 0 8px #ff4d6d);
+      }
+      .hexa-tile.weather-tile[data-alert-level="yellow"] .hexa-content sf-icon {
+        --icon-color: #ffd60a;
+        filter: drop-shadow(0 0 4px #ffd60a);
+      }
+      .hexa-tile.weather-tile[data-alert-level="orange"] .hexa-content sf-icon {
+        --icon-color: #ff6b35;
+        filter: drop-shadow(0 0 4px #ff6b35);
+      }
+      .hexa-tile.weather-tile[data-alert-level="red"] .hexa-content sf-icon {
+        --icon-color: #ff4d6d;
+        filter: drop-shadow(0 0 6px #ff4d6d);
+      }
+
       .tile-label {
         font-size: 0.625rem;
         font-weight: 500;
@@ -469,32 +498,50 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     `;
   }
 
-  private _renderWeatherAlert(weather: NonNullable<SciFiHexaTilesConfig['weather']>): TemplateResult {
+  private _getAlertLevel(weather: NonNullable<SciFiHexaTilesConfig['weather']>): string {
     const alertState = weather.weather_alert_entity
       ? this.hass.states[weather.weather_alert_entity]?.state
       : null;
-    if (!alertState) return html``;
+    if (!alertState) return 'green';
 
-    const stateToLevel = (state: string): string => {
-      const lowerState = state.toLowerCase().trim();
-      const green = (weather.state_green ?? 'vert').toLowerCase().trim();
-      const yellow = (weather.state_yellow ?? 'jaune').toLowerCase().trim();
-      const orange = (weather.state_orange ?? 'orange').toLowerCase().trim();
-      const red = (weather.state_red ?? 'rouge').toLowerCase().trim();
+    const lowerState = alertState.toLowerCase().trim();
+    const green = (weather.state_green ?? 'vert').toLowerCase().trim();
+    const yellow = (weather.state_yellow ?? 'jaune').toLowerCase().trim();
+    const orange = (weather.state_orange ?? 'orange').toLowerCase().trim();
+    const red = (weather.state_red ?? 'rouge').toLowerCase().trim();
 
-      if (lowerState === green) return 'green';
-      if (lowerState === yellow) return 'yellow';
-      if (lowerState === orange) return 'orange';
-      if (lowerState === red) return 'red';
-      return 'green';
-    };
+    if (lowerState === green) return 'green';
+    if (lowerState === yellow) return 'yellow';
+    if (lowerState === orange) return 'orange';
+    if (lowerState === red) return 'red';
+    return 'green';
+  }
 
-    const level = stateToLevel(alertState);
+  private _renderWeatherAlert(weather: NonNullable<SciFiHexaTilesConfig['weather']>): TemplateResult {
+    const alertEntity = weather.weather_alert_entity
+      ? this.hass.states[weather.weather_alert_entity]
+      : null;
+    if (!alertEntity) return html``;
+
+    const level = this._getAlertLevel(weather);
     if (level === 'green') return html``; // Hidden on green state per Spec 07
+
+    // Same logic as sci-fi-weather: attribute keys are phenomenon names (e.g. "canicule"),
+    // attribute values are the alert level color (e.g. "Jaune"). Display matching keys.
+    const nonGreenValues = new Set([
+      (weather.state_yellow ?? 'jaune').toLowerCase().trim(),
+      (weather.state_orange ?? 'orange').toLowerCase().trim(),
+      (weather.state_red ?? 'rouge').toLowerCase().trim(),
+    ]);
+    const activeLabels = Object.keys(alertEntity.attributes)
+      .filter(key => nonGreenValues.has(String(alertEntity.attributes[key]).toLowerCase().trim()))
+      .join(', ');
+
+    const label = activeLabels || alertEntity.state;
 
     return html`
       <div class="weather-alert" data-level="${level}">
-        ⚠️ Alerte météo : ${alertState}
+        ⚠️ Alerte météo : ${label}
       </div>
     `;
   }
@@ -521,8 +568,17 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     const icon = `sf:${iconName}`;
     const isActive = condition !== 'clear-night';
 
+    // Compute alert level to color the tile border accordingly
+    const alertLevel = weather.weather_alert_entity ? this._getAlertLevel(weather) : 'green';
+
     return html`
-      <div class="hexa-tile weather-tile" data-active="${isActive ? 'true' : 'false'}" aria-label="${name}" @click="${() => weather.link ? this._navigate(weather.link) : undefined}">
+      <div
+        class="hexa-tile weather-tile"
+        data-active="${isActive ? 'true' : 'false'}"
+        data-alert-level="${alertLevel}"
+        aria-label="${name}"
+        @click="${() => weather.link ? this._navigate(weather.link) : undefined}"
+      >
         <svg class="hexa-svg" viewBox="0 0 132 164">
           <polygon class="hexa-bg" points="66,2 130,42 130,122 66,162 2,122 2,42" />
           <polygon class="hexa-border" points="66,4 128,43 128,121 66,160 4,121 4,43" />

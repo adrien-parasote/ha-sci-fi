@@ -333,3 +333,20 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
   In specs for projects with static data files, add a `## Coverage Exclusions` section listing files that must be excluded and the reason (SVG data, type-only, generated).
 - **Scope**: Applies to all Vitest/c8/Istanbul v8 projects with static data exports (SVG maps, icon registries, JSON-as-TS constants).
 
+### L056: HA Weather Alert Entity — State Is Color Level, Attribute Keys Are Phenomenon Names
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi — sci-fi-hexa-tiles.ts weather alert banner
+- **Evidence**: 3 iterations to find the correct label source. Tried (1) `attributes.friendly_name` → city name ("La Chapelle-sur-Erdre 44 Weather alert"), (2) `alertEntity.state` → color code ("Jaune"), (3) `Object.keys(alertEntity.attributes).filter(...)` → phenomenon name ("canicule"). Correct answer was already implemented in `sci-fi-weather.ts` — agent did not read existing code before building the new feature.
+- **Anti-pattern**: For HA Météo-France weather alert entities:
+  - `entity.state` = the MAX alert color level (e.g., `"Jaune"`) — NOT the phenomenon name
+  - `entity.attributes.friendly_name` = city name — NOT the alert type
+  - `entity.attributes.<phenomenon>` = the color level of that phenomenon (e.g., `attributes.canicule = "Jaune"`)
+- **Pattern**: To display phenomenon names (e.g., "canicule") from a weather alert entity:
+  ```typescript
+  const nonGreenValues = new Set([state_yellow, state_orange, state_red].map(v => v.toLowerCase().trim()));
+  const labels = Object.keys(alertEntity.attributes)
+    .filter(key => nonGreenValues.has(String(alertEntity.attributes[key]).toLowerCase().trim()))
+    .join(', ');
+  const label = labels || alertEntity.state; // fallback to state if no attributes match
+  ```
+- **Rule**: Before building any feature that reads an entity label, ALWAYS inspect how an existing card in the same codebase reads the same entity type. Run `grep -r "weather_alert" src/` to find prior art.

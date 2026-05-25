@@ -26,6 +26,8 @@
 | F-HEX-04 | Visible and centered custom icons in tiles | ✅ Section [Tile Content & Icons](#tile-content--icons) |
 | F-HEX-05 | Weather alert visibility band logic (hidden on green) | ✅ Section [Weather Alert Banner](#weather-alert-banner) |
 | F-HEX-06 | Fixed dimensions on all viewport sizes (priority mobile) | ✅ Section [Fixed Dimensions & Responsiveness](#fixed-dimensions--responsiveness) |
+| F-HEX-07 | Weather tile border glow matches alert severity color | ✅ Section [Weather Tile Alert Coloring](#weather-tile-alert-coloring) |
+| F-HEX-08 | Alert banner label displays phenomenon names from entity attributes | ✅ Section [Weather Alert Banner](#weather-alert-banner) |
 
 ---
 
@@ -76,7 +78,40 @@ Each hexagon uses inline SVGs (`viewBox="0 0 132 164"`) with a background polygo
 The weather alert band is displayed only when the alert state is NOT green.
 - If state matches `state_green` (case-insensitive), the alert is completely hidden.
 
+### Alert Level Detection
+
+`_getAlertLevel()` maps the entity `state` to a level string (`green` / `yellow` / `orange` / `red`) by comparing it (case-insensitive) against the configured `state_yellow`, `state_orange`, `state_red` values (defaults: `jaune`, `orange`, `rouge`).
+
+### Alert Label — Phenomenon Name from Entity Attributes
+
+The label displayed after `Alerte météo :` is **not** the entity `state` (which is the color code, e.g., `"Jaune"`). It is derived from the **entity attributes** using the same logic as `sci-fi-weather`:
+
+1. Collect the set of non-green level values (state_yellow / state_orange / state_red, lowercased).
+2. Iterate `Object.keys(alertEntity.attributes)` — each key is a phenomenon name (e.g., `"canicule"`, `"vent"`).
+3. Keep keys whose attribute value (lowercased) is in the non-green set.
+4. Join matching keys with `", "` → this is the label.
+5. Fallback to `alertEntity.state` if no attribute key matches.
+
+**Result:** `⚠️ Alerte météo : canicule` instead of `⚠️ Alerte météo : Jaune`.
+
+**Why attributes, not state:** The entity `state` is the max alert color level. The phenomenon names ("canicule", "vent", etc.) are stored as attribute keys whose values hold the corresponding color.
+
 ---
+
+## Weather Tile Alert Coloring
+
+When the weather tile is active (`data-active="true"`) and a non-green alert is present, the tile border glow matches the alert color:
+
+| `data-alert-level` | Border stroke | Drop-shadow |
+|--------------------|--------------|-------------|
+| `yellow` | `#ffd60a` | `6px` |
+| `orange` | `#ff6b35` | `6px` |
+| `red` | `#ff4d6d` | `8px` (more intense) |
+| `green` (default) | `var(--sf-primary, #00d2ff)` | standard |
+
+The `data-alert-level` attribute is set on the weather tile `<div>` by `_renderWeatherTile()` via `_getAlertLevel()`. The icon color also updates to match.
+
+**Rule of Divergence:** `_getAlertLevel()` is a single shared helper used by both `_renderWeatherTile()` and `_renderWeatherAlert()` — do not duplicate the level detection logic.
 
 ## Responsive 100% Sizing & Viewport Height Filling
 
@@ -126,6 +161,8 @@ Instead of fixed sizing, hexagons dynamically resize to fit exactly 100% of thei
 | 4 | **Swallowing or ignoring icon property updates** | Static attribute binding doesn't update when icon state changes. | Use dynamic property binding `.icon="${icon}"` on `<sf-icon>`. |
 | 5 | **Monolithic or manual grid positioning** | Absolute positioning of tiles requires complex JS coordinate math. | Use flex rows with decorative half-hexagons and negative margin vertical overlap. |
 | 6 | **Setting style properties inside the constructor** | Setting style properties inside custom element constructors blocks element upgrades and throws DOMExceptions. | Set styles/custom properties safely in `connectedCallback` or `willUpdate`. |
+| 7 | **Using entity `state` as the alert banner label** | Entity state is the color level ("Jaune"), not the phenomenon name. Displaying it gives no user-readable context. | Read `Object.keys(alertEntity.attributes)` filtered by non-green values to get phenomenon names ("canicule", "vent"). |
+| 8 | **Duplicating `_getAlertLevel()` logic** | Two independent copies diverge silently: banner and tile show different levels. | Always call the single shared `_getAlertLevel()` helper from both `_renderWeatherAlert()` and `_renderWeatherTile()`. |
 
 ---
 
@@ -138,6 +175,10 @@ Instead of fixed sizing, hexagons dynamically resize to fit exactly 100% of thei
 | TC-703 | Unit | Weather alert hidden when green | Alert state = "Vert" | Alert banner is not rendered in the DOM |
 | TC-704 | Unit | Interlocking rows structured with half-hexagons | 6 tiles configured (portrait) | Row 0 starts with Left Half-Hexagon (`HL`), Row 1 ends with Right Half-Hexagon (`HR`). Total 5 rows padded. |
 | TC-705 | Unit | Active vs Inactive tiles have correct data-active attributes | Tiles with active and inactive states | Active tile has `data-active="true"`, inactive has `data-active="false"` |
+| TC-706 | Unit | Alert banner shows phenomenon name from entity attributes | Alert entity with `attributes.canicule = 'Jaune'`, state_yellow = 'Jaune' | Banner renders `Alerte météo : canicule` |
+| TC-707 | Unit | Alert banner fallback to state when no attribute matches | Alert entity with state = 'orange', no matching attribute keys | Banner renders `Alerte météo : orange` |
+| TC-708 | Unit | Weather tile `data-alert-level` set from alert entity state | Alert entity state = 'Jaune', state_yellow = 'Jaune' | Weather tile div has `data-alert-level="yellow"` |
+| TC-709 | Unit | Weather tile `data-alert-level` defaults to green when no alert entity | No `weather_alert_entity` configured | Weather tile div has `data-alert-level="green"` |
 | IT-701 | Integration | Entire grid interlocking behaves correctly on mobile portrait | Mobile viewport width 375px | Renders 2 columns (2.5 hexagons) taking exactly 100% card width with no gaps |
 | IT-702 | Integration | Icons and text glow is rendered when tiles are active | Active switch tile config | Rendered SVG border and text-shadow reflect CSS shadow styles |
 | IT-703 | Integration | Home Assistant theme variables are applied dynamically | Dynamic state and theme updates | Elements pick up `--sf-primary` correctly |

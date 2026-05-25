@@ -1,5 +1,5 @@
 /**
- * <sci-fi-vacuum> — v2.0.0
+ * <sci-fi-vacuum> — v1.0.0
  * Robot vacuum control: animated sub-header icon, header (name + fan speed + battery + mop),
  * info sensors (area + duration), full-width map, actions bar (sf-button), device navigation.
  * Spec 15 — ported from main:src/cards/vacuum/card.js

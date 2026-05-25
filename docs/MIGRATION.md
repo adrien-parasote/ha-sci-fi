@@ -1,6 +1,6 @@
-# Migration Guide — Sci-Fi Lovelace Cards v2.0.0
+# Migration Guide — Sci-Fi Lovelace Cards v1.0.0
 
-This guide describes how to migrate your Lovelace YAML configuration from version 1.x to version 2.0.0 of the Sci-Fi Cards package.
+This guide describes how to migrate your Lovelace YAML configuration from version 0.x of the legacy JS codebase to version 1.0.0 of the new TypeScript/Lit Cards package.
 
 ---
 
@@ -18,12 +18,12 @@ If you are referencing paths directly in your Home Assistant resources configura
 
 ## 2. Configuration Schema Migrations (Feature `F-MIGR-01`)
 
-Version 2.0.0 is backward-compatible and automatically migrates legacy configuration keys internally when the card's `setConfig()` is called. However, it is highly recommended to update your YAML configurations directly to avoid depreciation warnings.
+Version 1.0.0 is backward-compatible and automatically migrates legacy configuration keys internally when the card's `setConfig()` is called. However, it is highly recommended to update your YAML configurations directly to avoid depreciation warnings.
 
 ### Hexa Tiles Card (`sci-fi-hexa-tiles`)
 * **Entity IDs**: The configuration now strictly uses standard `entity` and `weather_entity` keys instead of legacy `entity_id` and `weather_entity_id`.
 
-**Legacy YAML (v1.x):**
+**Legacy YAML (v0.x):**
 ```yaml
 type: custom:sci-fi-hexa-tiles
 header_message: "Welcome Home"
@@ -36,7 +36,7 @@ tiles:
     entity_id: light.living_room
 ```
 
-**Migrated YAML (v2.0.0):**
+**Migrated YAML (v1.0.0):**
 ```yaml
 type: custom:sci-fi-hexa-tiles
 header_message: "Welcome Home"
@@ -53,7 +53,7 @@ tiles:
 
 ## 3. Dynamic Rendering Performance (`getRelevantEntities`)
 
-Version 2.0.0 introduces extreme rendering optimizations. Cards now strictly filter and listen to updates only from entities returned by the `getRelevantEntities()` function. 
+Version 1.0.0 introduces extreme rendering optimizations. Cards now strictly filter and listen to updates only from entities returned by the `getRelevantEntities()` function. 
 
 * **Smart Re-renders**: If you have cards displaying multiple sensors, make sure all sensors you want to see updated are listed in the card's configuration. The card will ignore Home Assistant state changes for any other unrelated entities, resulting in zero-lag rendering.
 

@@ -13,7 +13,7 @@ A collection of custom Lovelace cards for a minimalist sci-fi dashboard in Home 
 The goal: a single phone entry point to control your entire home.
 
 > [!IMPORTANT]
-> **v2.0.0 — State-of-the-Art Urbanization & Performance Update** (Lit 3 · TypeScript 5 · zero CDN · 559 tests · 100% TDD coverage · selective HA rendering).  
+> **v1.0.0 — State-of-the-Art Urbanization & Performance Update** (Lit 3 · TypeScript 5 · zero CDN · 559 tests · 100% TDD coverage · selective HA rendering).  
 > Upgrading? See **[MIGRATION.md](./docs/MIGRATION.md)** for breaking changes and YAML configurations mapping.
 
 ---
@@ -152,7 +152,7 @@ To add a language:
 
 ## 📋 Changelog
 
-### v2.0.0 — 2026-05-25 *(Finalized & Urbanized)*
+### v1.0.0 — 2026-05-25 *(Finalized & Urbanized)*
 
 #### ⬡ Codebase Urbanization & Style Extraction — Major Achievements
 - **Kebab-case Folder Naming**: Renamed `hexa_tiles` to `hexa-tiles` across sources, bundlers, and tests.

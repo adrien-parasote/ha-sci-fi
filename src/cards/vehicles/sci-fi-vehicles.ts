@@ -1,5 +1,5 @@
 /**
- * sci-fi-vehicles — v2.0.0
+ * sci-fi-vehicles — v1.0.0
  * Spec 12 § sci-fi-vehicles.ts — Full reconstruction: header + landspeeder + AC actions.
  * Aligned with main branch architecture (sf-landspeeder component, Renault AC service).
  */

@@ -1,5 +1,5 @@
 /**
- * <sci-fi-stove> — v2.0.0
+ * <sci-fi-stove> — v1.0.0
  * Full reconstruction: layout matching the JS main branch original.
  * - Header: centered friendly_name
  * - Content: stove SVG image (left) + info panel (right)

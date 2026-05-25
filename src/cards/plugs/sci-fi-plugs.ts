@@ -1,5 +1,5 @@
 /**
- * <sci-fi-plugs> — v2.0.0
+ * <sci-fi-plugs> — v1.0.0
  * Spec 13 § sci-fi-plugs.ts — Full reconstruction: header + image + sensors + chart + footer.
  * Aligned with main branch architecture (single-plug-at-a-time view, footer navigation).
  *

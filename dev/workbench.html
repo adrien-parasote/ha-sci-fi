@@ -1457,6 +1457,7 @@
     if (unsubEntities) { unsubEntities(); unsubEntities = null; }
     if (unsubServices) { unsubServices(); unsubServices = null; }
     haConnection = null; haAuth = null; liveHass = null; isLive = false;
+    localStorage.removeItem('hassTokens');
     setHaStatus('offline', 'Non connecté — données mockées');
     setLiveMode(false);
     log('🔴 Déconnecté du HA — retour en mode mock', 'warn');

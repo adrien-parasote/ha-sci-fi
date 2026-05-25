@@ -8,6 +8,7 @@ export class SciFiButton extends LitElement {
     sciFiCommonStyles,
     css`
       :host {
+        display: block; /* needed for margin:auto centering to work in flex parents */
         --btn-icon-color: var(--sf-primary-icon-color, var(--sf-primary));
         --btn-icon-size: var(--btn-size, var(--sf-icon-size-md, 24px));
         --btn-icon-disabled-color: var(--sf-disabled-icon-color, var(--sf-primary-dim));

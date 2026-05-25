@@ -15,7 +15,7 @@ export class SciFiWheel extends LitElement {
     sciFiCommonStyles,
     css`
       :host {
-        --item-font-size: var(--item-font-size, var(--sf-text-sm, 12px));
+        /* --item-font-size: fallback set directly in .slider-item to avoid circular self-ref */
         --item--color: var(--wheel-item-color, var(--sf-text-secondary, #b0bec5));
         --wheel-text-color: var(--text-font-color, var(--sf-text-secondary));
         --wheel-text-size: var(--text-size, var(--sf-text-base, 14px));
@@ -45,6 +45,7 @@ export class SciFiWheel extends LitElement {
         display: flex;
         flex-direction: column;
         row-gap: 5px;
+        align-items: center; /* center arrows and slider horizontally */
       }
       .core.inline {
         flex-direction: row;
@@ -54,11 +55,13 @@ export class SciFiWheel extends LitElement {
         display: flex;
         flex-direction: column;
         justify-content: center;
+        align-items: center; /* center temperature text */
+        min-height: 24px; /* never collapse when content is show/hide */
       }
       .slider .slider-item {
         display: flex;
         flex-direction: column;
-        font-size: var(--item-font-size);
+        font-size: var(--item-font-size, var(--sf-text-sm, 12px));
         color: var(--item--color);
         font-weight: bold;
         align-items: center;
@@ -130,10 +133,13 @@ export class SciFiWheel extends LitElement {
   }
 
   private __buildSliderContent(): TemplateResult[] {
+    const hasMatch = this.items.some((el) => el.id === this.selectedId);
+    // If no item matches selectedId, show first item as fallback (prevents empty/collapsed slider)
+    const effectiveId = hasMatch ? this.selectedId : (this.items[0]?.id ?? null);
     return this.items.map(
       (el) => html`
         <div
-          class="slider-item ${el.id === this.selectedId
+          class="slider-item ${el.id === effectiveId
             ? 'show'
             : 'hide'} ${this.disabled ? 'disabled' : ''}"
         >

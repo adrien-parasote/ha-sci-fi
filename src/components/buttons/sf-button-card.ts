@@ -36,7 +36,7 @@ export class SciFiCardButton extends SciFiButton {
         align-items: center;
         text-transform: capitalize;
         min-width: var(--btn-min-width);
-        justify-content: left;
+        justify-content: center;
         column-gap: 10px;
         cursor: pointer;
       }

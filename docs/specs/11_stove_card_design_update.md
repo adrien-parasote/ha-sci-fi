@@ -84,11 +84,40 @@ N/A — This spec invokes no external interfaces. All data comes from `this.hass
 
 ```
 src/cards/stove/
-├── sci-fi-stove.ts     [MODIFY] — import stoveStyles, redesign renderCard()
-└── styles.ts           [NEW]    — extracted stove CSS (climate pattern)
+├── sci-fi-stove.ts             [MODIFY] — import stoveStyles, redesign renderCard(); wheel .selectedId property binding + Math.round()
+└── styles.ts                   [NEW]    — extracted stove CSS; header padding 5px; amber rgb(250,146,29); absolute px font-sizes
+
+src/components/
+├── sf-stove-image.ts           [NEW]    — SVG stove illustration ported 1:1 from main branch
+├── sf-wheel.ts                 [MODIFY] — align-items:center on .core/.slider; min-height:24px; fallback selected item; fix circular CSS var
+├── sf-stack-bar.ts             [NEW]    — stack bar component ported from main
+└── buttons/
+    ├── sf-button.ts            [MODIFY] — display:block on :host for centering
+    └── sf-button-card.ts       [MODIFY] — justify-content:center
 ```
 
-No other files are modified. The editor (`sci-fi-stove-editor.ts`) and tests are untouched.
+> [!NOTE]
+> `sf-stove-image.ts`, `sf-stack-bar.ts`, and `sf-circle-progress-bar.ts` are new files not in the original spec — they were extracted from main branch JS components as part of the TS port.
+
+---
+
+## Post-Spec Corrections (divergences fixed after initial implementation)
+
+> These corrections were applied during the polish phase. They are documented here to preserve reproducibility.
+
+| ID | File | Correction | Root Cause |
+|----|------|------------|------------|
+| C01 | `sf-stove-image.ts` | `_getCommons()` replaced with exact main SVG (body rect, right gradient strip, horizontal curves, wood grain paths) | Simplified stub didn't match main branch visual |
+| C02 | `styles.ts` | Header `padding: 10px → 5px` | User correction |
+| C03 | `styles.ts` | Amber color `#ffd60a → rgb(250, 146, 29)` everywhere | User-specified exact main branch color |
+| C04 | `styles.ts` | All `0.75rem` fallbacks → `12px` absolute | HA root font-size 24px → `0.75rem = 18px` not 12px |
+| C05 | `sf-wheel.ts` | `.core { align-items: center }` added | Arrows left-aligned in flex column without explicit centering |
+| C06 | `sf-button.ts` | `:host { display: block }` added | Custom element default `inline` prevented `margin:auto` centering |
+| C07 | `sf-button-card.ts` | `.btn { justify-content: center }` | `justify-content: left` was non-standard and misaligned content |
+| C08 | `sf-wheel.ts` | Fallback: show first item if `selectedId` matches nothing | All items `.hide` → slider collapses → temperature invisible |
+| C09 | `sf-wheel.ts` | Remove circular CSS var `--item-font-size: var(--item-font-size, …)` | Browser ignores circular self-reference → inherited 18px from HA body |
+| C10 | `sci-fi-stove.ts` | Wheel `selected-id` → `.selectedId` property binding + `Math.round()` | Attribute string vs property; float temps (20.5) didn't match integer item IDs |
+| C11 | `styles.ts` | Power cell icons `--icon-color: var(--primary-light-color, #6ecbf5)` | `sf-icon` uses `currentColor` → inherited grey from label color |
 
 ---
 
@@ -155,7 +184,7 @@ import { css } from 'lit';
 
 export const stoveStyles = css`
   :host {
-    font-size: var(--sf-text-sm, 12px);
+    font-size: var(--sf-font-size-sm, 0.75rem);
     height: 100%;
     width: 100%;
     background-color: rgba(39, 40, 43, 0.3);

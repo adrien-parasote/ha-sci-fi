@@ -350,3 +350,40 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
   const label = labels || alertEntity.state; // fallback to state if no attributes match
   ```
 - **Rule**: Before building any feature that reads an entity label, ALWAYS inspect how an existing card in the same codebase reads the same entity type. Run `grep -r "weather_alert" src/` to find prior art.
+
+### L057: CSS Custom Property Circular Self-Reference Is Silently Ignored by Browsers
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi — sf-wheel.ts font-size debugging
+- **Evidence**: `--item-font-size: var(--item-font-size, 12px)` in `:host` appeared correct but the browser resolved to 18px (inherited from HA body). The pattern `--x: var(--x, fallback)` IS circular — the spec says the browser must treat the property as invalid (using the inherited value), not the fallback. 3 iterations to diagnose: tried changing the fallback value, tried property binding, finally read the Chrome DevTools computed tab showing font-size came from body.
+- **Anti-pattern**: Reassigning a CSS custom property to itself with a fallback inside `:host { }`. This is a circular reference. The CSSWG spec mandates browsers resolve circular custom properties to invalid/initial, then inherit from the parent — which may be a completely unrelated value.
+- **Fix**: Remove the self-assignment. Instead, put the fallback directly on the consuming rule:
+  ```css
+  /* ❌ CIRCULAR — browser ignores */
+  :host { --x: var(--x, 12px); }
+  .el { font-size: var(--x); }
+
+  /* ✅ CORRECT */
+  .el { font-size: var(--x, 12px); }
+  ```
+  External callers (`.parent sf-component { --x: 10px }`) will still cascade in correctly.
+- **Scope**: Applies to all shadow DOM components using CSS custom properties for theming. This pattern appears in many Lit component port starters — audit `:host { }` blocks for any `--prop: var(--prop, ...)` pattern.
+
+### L058: `rem` Fallbacks in HA Custom Cards Must Be Absolute `px` Values
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi — stove card styles.ts font-size debugging
+- **Evidence**: `font-size: var(--sf-text-sm, 0.75rem)` displayed as 18px instead of 12px. HA dashboard sets `font-size: 24px` on the `:root`/`html` element (Polymer/Material Design baseline). `0.75 × 24 = 18px`. The token `--sf-text-sm` was never defined in our project — HA injects its own value but the fallback `0.75rem` still resolved relative to HA's root.
+- **Anti-pattern**: Using `rem` values as fallbacks for CSS custom property tokens in HA custom cards. If the token is not defined in the project, the `rem` fallback multiplies against HA's root font-size (24px), not the expected 16px browser default.
+- **Fix**: Always use absolute `px` values as fallbacks: `var(--sf-text-sm, 12px)` not `var(--sf-text-sm, 0.75rem)`. If a design token system defines relative values, document the HA root font-size assumption explicitly.
+- **Scope**: Applies to all HA custom card projects. Affects any CSS property using `rem` as a fallback without a defined project-level root font-size reset.
+
+### L059: Lit Custom Element `:host` Requires `display: block` for `margin: auto` Centering
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi — sf-button.ts wheel centering debugging
+- **Evidence**: `sf-button` rendered arrows left-aligned inside `sf-wheel`'s flex column despite `.btn { margin: auto }`. Root cause: custom elements have `display: inline` by default (per HTML spec). `margin: auto` on block-level children of a flex container only centers horizontally when the child itself is block-level. With `display: inline`, the element collapses to content width and `margin: auto` has no effect.
+- **Anti-pattern**: Expecting `margin: auto` or `align-self: center` to work on a custom element that hasn't declared `display: block` on its `:host`. The element's display is `inline` by default and overrides any flex centering applied by the parent.
+- **Fix**: Add `display: block` to `:host` in every LitElement component:
+  ```css
+  :host { display: block; }
+  ```
+  This is a Lit best practice — the Lit documentation explicitly recommends it. Audit all `sf-*` components: any without `display: block` on `:host` will have silent centering/layout bugs in flex/grid parents.
+- **Scope**: Applies to ALL LitElement custom elements. Add as a mandatory check in `/code-review` and spec anti-patterns for all component specs.

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 // @vitest-environment happy-dom
-import { expect, describe, it, beforeEach, afterEach } from 'vitest';
+import { expect, describe, it, afterEach } from 'vitest';
 
 import '../../../src/cards/stove/sci-fi-stove.js';
 import { SciFiStoveCard } from '../../../src/cards/stove/sci-fi-stove.js';
@@ -33,7 +33,6 @@ describe('sci-fi-stove', () => {
 
   it('renders error message if entity not found', async () => {
     const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
-    // ADR-005: entity (not entity_id)
     (el as any).setConfig({ type: 'custom:sci-fi-stove', entity: 'climate.poele' });
     el.hass = makeMockHass();
     document.body.appendChild(el);
@@ -41,95 +40,149 @@ describe('sci-fi-stove', () => {
     expect(el.shadowRoot!.textContent).to.include('Entité poêle non trouvée');
   });
 
-  it('renders correctly in ON state with all sensors', async () => {
+  it('renders header with friendly_name', async () => {
     const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
-    // ADR-005: entity (not entity_id)
+    (el as any).setConfig({ type: 'custom:sci-fi-stove', entity: 'climate.poele' });
+    el.hass = makeMockHass({
+      states: {
+        'climate.poele': makeMockEntity({
+          entity_id: 'climate.poele',
+          state: 'off',
+          attributes: { friendly_name: 'Austroflamm Clou Pellet', hvac_modes: ['off', 'heat'] }
+        }),
+      }
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+    // Header contains friendly_name
+    const header = el.shadowRoot!.querySelector('.header');
+    expect(header).not.to.be.null;
+    expect(header!.textContent).to.include('Austroflamm Clou Pellet');
+  });
+
+  it('renders stove-image component with correct state', async () => {
+    const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
+    (el as any).setConfig({ type: 'custom:sci-fi-stove', entity: 'climate.poele' });
+    el.hass = makeMockHass({
+      states: {
+        'climate.poele': makeMockEntity({
+          entity_id: 'climate.poele',
+          state: 'heat',
+          attributes: { friendly_name: 'Poêle', hvac_modes: ['off', 'heat'] }
+        }),
+      }
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+    const stoveImg = el.shadowRoot!.querySelector('sf-stove-image') as any;
+    expect(stoveImg).not.to.be.null;
+    expect(stoveImg.state).to.equal('heat');
+  });
+
+  it('renders .content with .info panel', async () => {
+    const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
+    (el as any).setConfig({ type: 'custom:sci-fi-stove', entity: 'climate.poele' });
+    el.hass = makeMockHass({
+      states: {
+        'climate.poele': makeMockEntity({
+          entity_id: 'climate.poele',
+          state: 'off',
+          attributes: { friendly_name: 'Poêle', hvac_modes: ['off'] }
+        }),
+      }
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('.content')).not.to.be.null;
+    expect(el.shadowRoot!.querySelector('.info')).not.to.be.null;
+  });
+
+  it('renders .bottom interactive section', async () => {
+    const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
+    (el as any).setConfig({ type: 'custom:sci-fi-stove', entity: 'climate.poele' });
+    el.hass = makeMockHass({
+      states: {
+        'climate.poele': makeMockEntity({
+          entity_id: 'climate.poele',
+          state: 'off',
+          attributes: {
+            friendly_name: 'Poêle',
+            hvac_modes: ['off', 'heat'],
+            preset_modes: ['none', 'eco'],
+            preset_mode: 'none',
+            temperature: 20,
+            min_temp: 15,
+            max_temp: 30,
+          }
+        }),
+      }
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('.bottom')).not.to.be.null;
+    // sf-wheel for temperature
+    expect(el.shadowRoot!.querySelector('sf-wheel')).not.to.be.null;
+    // two sf-button-card-select (hvac + preset)
+    const selects = el.shadowRoot!.querySelectorAll('sf-button-card-select');
+    expect(selects.length).to.equal(2);
+  });
+
+  it('renders sf-circle-progress-bar for pellet quantity', async () => {
+    const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-stove',
       entity: 'climate.poele',
-      header_message: 'Stove Status',
-      sensors: {
-        sensor_actual_power: 'sensor.poele_power',
-        sensor_combustion_chamber_temperature: 'sensor.poele_temp',
-        sensor_pellet_quantity: 'sensor.poele_pellets',
-      }
+      sensors: { sensor_pellet_quantity: 'sensor.poele_pellets' },
+      pellet_quantity_threshold: 0.1,
     });
-
     el.hass = makeMockHass({
       states: {
-        'climate.poele': makeMockEntity({ entity_id: 'climate.poele', state: 'heating', attributes: { friendly_name: 'Poêle Salon' } }),
-        'sensor.poele_power': makeMockEntity({ entity_id: 'sensor.poele_power', state: '1500' }),
-        'sensor.poele_temp': makeMockEntity({ entity_id: 'sensor.poele_temp', state: '120' }),
+        'climate.poele': makeMockEntity({
+          entity_id: 'climate.poele',
+          state: 'heat',
+          attributes: { friendly_name: 'Poêle', hvac_modes: ['off', 'heat'] }
+        }),
         'sensor.poele_pellets': makeMockEntity({ entity_id: 'sensor.poele_pellets', state: '75' }),
       }
     });
-
     document.body.appendChild(el);
     await el.updateComplete;
-
-    expect(el.shadowRoot!.textContent).to.include('Stove Status');
-    expect(el.shadowRoot!.textContent).to.include('Poêle Salon');
-    expect(el.shadowRoot!.textContent).to.include('heating');
-
-    // Check sensors
-    expect(el.shadowRoot!.textContent).to.include('1500 W');
-    expect(el.shadowRoot!.textContent).to.include('120°');
-    expect(el.shadowRoot!.textContent).to.include('75%');
-
-    // Check pellet bar — ADR-005: class is 'bar-fill pellet' not 'pellet-bar-fill'
-    const barFill = el.shadowRoot!.querySelector('.bar-fill.pellet') as HTMLElement;
-    expect(barFill.style.width).to.equal('75%');
-
-    // Check icon — ADR-005: sci:stove-heat when ON (not mdi:fire)
-    const icon = el.shadowRoot!.querySelector('sf-icon') as unknown as any;
-    expect(icon?.icon).to.equal('sci:stove-heat');
+    // ADR-005: pellet circle gauge must be present
+    const gauge = el.shadowRoot!.querySelector('sf-circle-progress-bar') as any;
+    expect(gauge).not.to.be.null;
+    expect(gauge.val).to.equal(75);
   });
 
-  it('renders correctly in OFF state with missing sensors', async () => {
+  it('does not render pellet gauge when state is non-numeric (NaN branch)', async () => {
     const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
-    // ADR-005: entity (not entity_id)
     (el as any).setConfig({
       type: 'custom:sci-fi-stove',
       entity: 'climate.poele',
-      sensors: {
-        // defined but missing in hass
-        sensor_actual_power: 'sensor.poele_power_missing',
-      }
+      sensors: { sensor_pellet_quantity: 'sensor.pellets' }
     });
-
     el.hass = makeMockHass({
       states: {
-        'climate.poele': makeMockEntity({ entity_id: 'climate.poele', state: 'off' }),
+        'climate.poele': makeMockEntity({ entity_id: 'climate.poele', state: 'heat', attributes: { hvac_modes: [] } }),
+        'sensor.pellets': makeMockEntity({ entity_id: 'sensor.pellets', state: 'unavailable' })
       }
     });
-
     document.body.appendChild(el);
     await el.updateComplete;
-
-    expect(el.shadowRoot!.textContent).to.include('off');
-
-    // Check icon — ADR-005: sci:stove-off when OFF (not mdi:fire-off)
-    const icon = el.shadowRoot!.querySelector('sf-icon') as unknown as any;
-    expect(icon?.icon).to.equal('sci:stove-off');
-
-    // Sensors grid should be empty or not throw error
-    const tiles = el.shadowRoot!.querySelectorAll('.sensor-tile');
-    expect(tiles.length).to.equal(0);
+    // NaN state → gauge not rendered
+    expect(el.shadowRoot!.querySelector('sf-circle-progress-bar')).to.be.null;
   });
 
-  it('renders storage_counter tile with threshold warning', async () => {
+  it('renders sf-stack-bar for storage_counter', async () => {
     const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
-    // ADR-005: storage_counter + storage_counter_threshold
     (el as any).setConfig({
       type: 'custom:sci-fi-stove',
       entity: 'climate.poele',
       storage_counter: 'counter.sacs_pellets',
       storage_counter_threshold: 0.5,
     });
-
     el.hass = makeMockHass({
       states: {
-        'climate.poele': makeMockEntity({ entity_id: 'climate.poele', state: 'heating' }),
+        'climate.poele': makeMockEntity({ entity_id: 'climate.poele', state: 'heat', attributes: { hvac_modes: [] } }),
         'counter.sacs_pellets': makeMockEntity({
           entity_id: 'counter.sacs_pellets',
           state: '2',
@@ -137,69 +190,32 @@ describe('sci-fi-stove', () => {
         }),
       }
     });
-
     document.body.appendChild(el);
     await el.updateComplete;
-
-    // 2/10 = 20% < 50% threshold → warn class
-    const counterTile = el.shadowRoot!.querySelector('.sensor-tile.warn');
-    expect(counterTile).not.to.be.null;
-    expect(el.shadowRoot!.textContent).to.include('2 / 10');
+    // ADR-005: stack bar for storage
+    const stackBar = el.shadowRoot!.querySelector('sf-stack-bar') as any;
+    expect(stackBar).not.to.be.null;
+    expect(stackBar.val).to.equal(2);
+    expect(stackBar.max).to.equal(10);
   });
 
-  it('renders storage_counter tile without maximum (no bar)', async () => {
+  it('renders .stove-status in status section', async () => {
     const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
-    // Branch coverage: pct = null when no maximum attribute → bar not rendered
     (el as any).setConfig({
       type: 'custom:sci-fi-stove',
       entity: 'climate.poele',
-      storage_counter: 'counter.sacs_pellets',
+      sensors: { sensor_status: 'sensor.poele_status' },
     });
-
     el.hass = makeMockHass({
       states: {
-        'climate.poele': makeMockEntity({ entity_id: 'climate.poele', state: 'heating' }),
-        'counter.sacs_pellets': makeMockEntity({
-          entity_id: 'counter.sacs_pellets',
-          state: '5',
-          attributes: {} // no maximum → pct = null
-        }),
+        'climate.poele': makeMockEntity({ entity_id: 'climate.poele', state: 'off', attributes: { hvac_modes: [] } }),
+        'sensor.poele_status': makeMockEntity({ entity_id: 'sensor.poele_status', state: 'off' }),
       }
     });
-
     document.body.appendChild(el);
     await el.updateComplete;
-
-    expect(el.shadowRoot!.textContent).to.include('5');
-    // No bar should be rendered when maximum is absent
-    const bar = el.shadowRoot!.querySelector('.bar-fill.storage');
-    expect(bar).to.be.null;
-    // No threshold → no warn class
-    const warnTile = el.shadowRoot!.querySelector('.sensor-tile.warn');
-    expect(warnTile).to.be.null;
-  });
-
-  it('does not render pellet bar when sensor state is non-numeric (NaN branch)', async () => {
-    const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
-    // Branch coverage: _renderPelletBar() L154 — isNaN(pct) early return
-    (el as any).setConfig({
-      type: 'custom:sci-fi-stove',
-      entity: 'climate.poele',
-      sensors: { sensor_pellet_quantity: 'sensor.pellets' }
-    });
-
-    el.hass = makeMockHass({
-      states: {
-        'climate.poele': makeMockEntity({ entity_id: 'climate.poele', state: 'heating' }),
-        'sensor.pellets': makeMockEntity({ entity_id: 'sensor.pellets', state: 'unavailable' })
-      }
-    });
-
-    document.body.appendChild(el);
-    await el.updateComplete;
-
-    // NaN → no pellet bar rendered
-    const bar = el.shadowRoot!.querySelector('.bar-fill.pellet');
-    expect(bar).to.be.null;
+    // ADR-005: .stove-status selector must exist
+    const statusEl = el.shadowRoot!.querySelector('.stove-status');
+    expect(statusEl).not.to.be.null;
   });
 });

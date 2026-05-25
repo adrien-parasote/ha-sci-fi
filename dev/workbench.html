@@ -1248,6 +1248,38 @@
   // ─── Build mock hass ─────────────────────────────────────────────────────
   function buildMockHass(stateOverrides = {}) {
     const states = { ...MOCK_STATES, ...stateOverrides };
+    const subscribeMessageMock = (cb, msg) => {
+      if (msg.type === 'weather/subscribe_forecast') {
+        if (msg.forecast_type === 'hourly') {
+          // Generate 120 hours of hourly forecast to match all days in daily forecast
+          const hourly = [];
+          const now = Date.now();
+          const conditions = ['partlycloudy', 'rainy', 'sunny', 'cloudy', 'sunny'];
+          for (let i = 0; i < 120; i++) {
+            const dt = new Date(now + i * 3600000);
+            const dayIdx = Math.floor(i / 24);
+            const hour = dt.getHours();
+            // Simulated temperature profile (colder at night, warmer in afternoon)
+            const baseTemp = 18 - dayIdx * 2;
+            const tempOffset = 6 * Math.sin((hour - 8) / 12 * Math.PI);
+            const temp = Math.round(baseTemp + tempOffset);
+            hourly.push({
+              datetime: dt.toISOString(),
+              condition: conditions[dayIdx % conditions.length],
+              temperature: temp,
+              precipitation: Math.random() > 0.75 ? parseFloat((Math.random() * 2).toFixed(1)) : 0,
+              wind_speed: Math.round(10 + Math.random() * 15),
+            });
+          }
+          setTimeout(() => cb({ forecast: hourly }), 50);
+        } else {
+          // Return unwrapped daily forecast to matching callback
+          setTimeout(() => cb({ forecast: states['weather.la_chapelle_sur_erdre']?.attributes?.forecast ?? [] }), 50);
+        }
+      }
+      return Promise.resolve(() => {});
+    };
+
     return {
       states, areas: MOCK_AREAS, floors: MOCK_FLOORS, entities: MOCK_ENTITIES,
       devices: {
@@ -1267,38 +1299,9 @@
           return {};
         },
         addEventListener: () => {}, removeEventListener: () => {},
+        subscribeMessage: subscribeMessageMock,
       },
-      subscribeMessage: (cb, msg) => {
-        if (msg.type === 'weather/subscribe_forecast') {
-          if (msg.forecast_type === 'hourly') {
-            // Generate 120 hours of hourly forecast to match all days in daily forecast
-            const hourly = [];
-            const now = Date.now();
-            const conditions = ['partlycloudy', 'rainy', 'sunny', 'cloudy', 'sunny'];
-            for (let i = 0; i < 120; i++) {
-              const dt = new Date(now + i * 3600000);
-              const dayIdx = Math.floor(i / 24);
-              const hour = dt.getHours();
-              // Simulated temperature profile (colder at night, warmer in afternoon)
-              const baseTemp = 18 - dayIdx * 2;
-              const tempOffset = 6 * Math.sin((hour - 8) / 12 * Math.PI);
-              const temp = Math.round(baseTemp + tempOffset);
-              hourly.push({
-                datetime: dt.toISOString(),
-                condition: conditions[dayIdx % conditions.length],
-                temperature: temp,
-                precipitation: Math.random() > 0.75 ? parseFloat((Math.random() * 2).toFixed(1)) : 0,
-                wind_speed: Math.round(10 + Math.random() * 15),
-              });
-            }
-            setTimeout(() => cb({ forecast: hourly }), 50);
-          } else {
-            // Return unwrapped daily forecast to matching callback
-            setTimeout(() => cb({ forecast: states['weather.la_chapelle_sur_erdre']?.attributes?.forecast ?? [] }), 50);
-          }
-        }
-        return Promise.resolve(() => {});
-      },
+      subscribeMessage: subscribeMessageMock,
       callService: (domain, service, data) => { log(`🔧 callService(${domain}.${service})`, 'ok'); return Promise.resolve(); },
       callWS: async () => ({}),
       callApi: async (method, path) => {

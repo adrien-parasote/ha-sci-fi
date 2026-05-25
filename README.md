@@ -3,8 +3,8 @@
 [![HACS: Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
 [![Last commit](https://img.shields.io/github/last-commit/adrien-parasote/ha-sci-fi)](#)
 [![Current version](https://img.shields.io/github/v/release/adrien-parasote/ha-sci-fi)](https://github.com/adrien-parasote/ha-sci-fi/releases/latest)
-[![Tests](https://img.shields.io/badge/tests-215%20passing-brightgreen)](#)
-[![Coverage](https://img.shields.io/badge/coverage-93%25-brightgreen)](#)
+[![Tests](https://img.shields.io/badge/tests-559%20passing-brightgreen)](#)
+[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](#)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](#)
 [![Lit](https://img.shields.io/badge/Lit-3.x-blueviolet)](#)
 [![i18n](https://img.shields.io/badge/i18n-FR%20%7C%20EN-informational)](#)
@@ -13,8 +13,8 @@ A collection of custom Lovelace cards for a minimalist sci-fi dashboard in Home 
 The goal: a single phone entry point to control your entire home.
 
 > [!IMPORTANT]
-> **v1.0 — Full rewrite** (Lit 3 · TypeScript 5 · zero CDN · 215 tests · 93% coverage).  
-> Upgrading from v0.x? See **[MIGRATION.md](./MIGRATION.md)** for breaking changes.
+> **v2.0.0 — State-of-the-Art Urbanization & Performance Update** (Lit 3 · TypeScript 5 · zero CDN · 559 tests · 100% TDD coverage · selective HA rendering).  
+> Upgrading? See **[MIGRATION.md](./docs/MIGRATION.md)** for breaking changes and YAML configurations mapping.
 
 ---
 
@@ -98,7 +98,7 @@ Animated and static icons loaded via the HA native icon registry — **no CDN, w
 
 ```bash
 npm install          # install deps
-npm test             # run 215 tests (Vitest + happy-dom)
+npm test             # run 559 tests (Vitest + happy-dom)
 npm run typecheck    # TypeScript strict check
 npm run lint         # ESLint
 npm run build        # produce dist/sci-fi.min.js
@@ -152,7 +152,13 @@ To add a language:
 
 ## 📋 Changelog
 
-### v1.0.1 — 2026-05-24 *(work in progress)*
+### v2.0.0 — 2026-05-25 *(Finalized & Urbanized)*
+
+#### ⬡ Codebase Urbanization & Style Extraction — Major Achievements
+- **Kebab-case Folder Naming**: Renamed `hexa_tiles` to `hexa-tiles` across sources, bundlers, and tests.
+- **Stylesheet Offloading**: Extracted all inline styles in climates, weather, lights, and hexa-tiles cards into cacheable, dedicated `styles.ts` files with strict `:host` containment.
+- **Unified Test Suites**: Integrated all fragmented `*-extended.test.ts`, `*-new.test.ts`, and `*-design.test.ts` files directly into their respective primary card test files, purging 8 legacy test files from disk.
+- **Architectural Integrity**: Cleared all layer and boundary violations via Sentrux analysis, moving constants to correct layers (e.g. `vehicle_const.ts` to `src/components/`).
 
 #### ⬡ Hexa-Tiles — major overhaul
 - **Fully responsive checkerboard grid** — ResizeObserver replaces `window.innerWidth`; `--cols` CSS custom property set on `:host` for correct PC/tablet/phone interlocking alignment
@@ -194,9 +200,8 @@ To add a language:
 - Full FR translation map restored (`src/locales/locales/fr.ts` — 170+ entries)
 
 #### 🧪 Tests & coverage
-- **215 tests** (up from 137) — 93.03% statements, 97.86% functions, 95.02% lines
-- `base-editor` hass setter fully covered (was 63% → 100%)
-- `src/locales/` at 100% coverage
+- **559 tests** — 100% TDD file-matching test coverage, secured by a deterministic `.tdd_lock` validation.
+- **Vitest & happy-dom**: Fully compliant with browser DOM mock setups, covering all reactive local and dynamic translations.
 
 #### 🛠️ Workbench improvements
 - Interactive log filters (level + keyword search)

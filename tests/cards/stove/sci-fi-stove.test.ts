@@ -1,10 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 // @vitest-environment happy-dom
-import { expect, describe, it, afterEach } from 'vitest';
+import { expect, describe, it, afterEach, vi } from 'vitest';
 
 import '../../../src/cards/stove/sci-fi-stove.js';
 import { SciFiStoveCard } from '../../../src/cards/stove/sci-fi-stove.js';
 import { makeMockHass, makeMockEntity } from '../../fixtures/mock-hass.js';
+
+if (!customElements.get('sf-toast')) {
+  customElements.define('sf-toast', class extends HTMLElement {
+    addMessage() {}
+  });
+}
 
 describe('sci-fi-stove', () => {
   it('provides getConfigElement', () => {
@@ -217,5 +223,61 @@ describe('sci-fi-stove', () => {
     // ADR-005: .stove-status selector must exist
     const statusEl = el.shadowRoot!.querySelector('.stove-status');
     expect(statusEl).not.to.be.null;
+  });
+
+  it('calls climate services and shows sf-toast on hvac/temp/preset actions', async () => {
+    const callServiceMock = vi.fn().mockResolvedValue({} as any);
+    const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
+    (el as any).setConfig({
+      type: 'custom:sci-fi-stove',
+      entity: 'climate.poele',
+    });
+    el.hass = makeMockHass({
+      callService: callServiceMock,
+      states: {
+        'climate.poele': makeMockEntity({
+          entity_id: 'climate.poele',
+          state: 'off',
+          attributes: {
+            friendly_name: 'Poêle',
+            hvac_modes: ['off', 'heat'],
+            preset_modes: ['none', 'eco'],
+            preset_mode: 'none',
+            temperature: 20,
+            min_temp: 15,
+            max_temp: 25,
+          }
+        }),
+      }
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    // sf-toast must be present in shadow root
+    const toast = el.shadowRoot!.querySelector('sf-toast');
+    expect(toast).not.to.be.null;
+
+    // Trigger hvac mode change via sf-button-card-select event
+    const selects = el.shadowRoot!.querySelectorAll('sf-button-card-select');
+    selects[0]!.dispatchEvent(new CustomEvent('button-select', {
+      bubbles: true, composed: true, detail: { id: 'heat' }
+    }));
+    await new Promise(r => setTimeout(r, 10));
+    expect(callServiceMock).toHaveBeenCalledWith('climate', 'set_hvac_mode', { entity_id: 'climate.poele', hvac_mode: 'heat' });
+
+    // Trigger temperature change via sf-wheel event
+    const wheel = el.shadowRoot!.querySelector('sf-wheel')!;
+    wheel.dispatchEvent(new CustomEvent('wheel-change', {
+      bubbles: true, composed: true, detail: { id: '21' }
+    }));
+    await new Promise(r => setTimeout(r, 10));
+    expect(callServiceMock).toHaveBeenCalledWith('climate', 'set_temperature', { entity_id: 'climate.poele', temperature: 21 });
+
+    // Trigger preset change via second sf-button-card-select event
+    selects[1]!.dispatchEvent(new CustomEvent('button-select', {
+      bubbles: true, composed: true, detail: { id: 'eco' }
+    }));
+    await new Promise(r => setTimeout(r, 10));
+    expect(callServiceMock).toHaveBeenCalledWith('climate', 'set_preset_mode', { entity_id: 'climate.poele', preset_mode: 'eco' });
   });
 });

@@ -6,6 +6,12 @@ import '../../../src/cards/lights/sci-fi-lights.js';
 import { SciFiLightsCard } from '../../../src/cards/lights/sci-fi-lights.js';
 import { makeMockHass, makeMockFloor, makeMockArea, makeMockEntityEntry, makeMockEntity } from '../../fixtures/mock-hass.js';
 
+if (!customElements.get('sf-toast')) {
+  customElements.define('sf-toast', class extends HTMLElement {
+    addMessage() {}
+  });
+}
+
 describe('sci-fi-lights', () => {
   it('provides getConfigElement', () => {
     const el = SciFiLightsCard.getConfigElement();
@@ -231,24 +237,31 @@ describe('sci-fi-lights', () => {
     const lightBtn = el.shadowRoot!.querySelector('.light-btn') as HTMLElement;
     expect(lightBtn).to.exist;
     lightBtn.click();
+    await new Promise(r => setTimeout(r, 10));
     expect(callServiceMock).toHaveBeenLastCalledWith('light', 'turn_off', { entity_id: 'light.salon' });
+    // Toast shown for individual light toggle
+    const toast = el.shadowRoot!.querySelector('sf-toast') as any;
+    expect(toast).to.exist;
 
     // 2. Area Power toggle (currently ON -> should trigger turn_off)
     const areaPowerBtn = el.shadowRoot!.querySelector('.area-title .power-btn') as HTMLElement;
     expect(areaPowerBtn).to.exist;
     areaPowerBtn.click();
+    await new Promise(r => setTimeout(r, 10));
     expect(callServiceMock).toHaveBeenLastCalledWith('light', 'turn_off', { entity_id: ['light.salon'] });
 
     // 3. Floor Power toggle (currently ON -> should trigger turn_off)
     const floorPowerBtn = el.shadowRoot!.querySelector('.floor-title .power-btn') as HTMLElement;
     expect(floorPowerBtn).to.exist;
     floorPowerBtn.click();
+    await new Promise(r => setTimeout(r, 10));
     expect(callServiceMock).toHaveBeenLastCalledWith('light', 'turn_off', { entity_id: ['light.salon'] });
 
     // 4. Global Power toggle (currently ON -> should trigger turn_off)
     const globalPowerBtn = el.shadowRoot!.querySelector('.header-power') as HTMLElement;
     expect(globalPowerBtn).to.exist;
     globalPowerBtn.click();
+    await new Promise(r => setTimeout(r, 10));
     expect(callServiceMock).toHaveBeenLastCalledWith('light', 'turn_off', { entity_id: ['light.salon'] });
   });
 });

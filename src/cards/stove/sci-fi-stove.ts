@@ -76,11 +76,14 @@ export class SciFiStoveCard extends SciFiBaseCard {
     }
 
     return html`
-      <div class="container">
-        ${this._renderHeader(stoveState.attributes.friendly_name ?? 'Poêle')}
-        ${this._renderContent(stoveState)}
-        ${this._renderBottom(stoveState)}
-      </div>
+      <ha-card>
+        <div class="container">
+          ${this._renderHeader(stoveState.attributes.friendly_name ?? 'Poêle')}
+          ${this._renderContent(stoveState)}
+          ${this._renderBottom(stoveState)}
+        </div>
+        <sf-toast></sf-toast>
+      </ha-card>
     `;
   }
 
@@ -358,19 +361,33 @@ export class SciFiStoveCard extends SciFiBaseCard {
 
   private _onHvacSelect(e: CustomEvent, entityId: string): void {
     const mode: string = e.detail.id;
-    void this.hass.callService('climate', 'set_hvac_mode', { entity_id: entityId, hvac_mode: mode });
+    void this.hass
+      .callService('climate', 'set_hvac_mode', { entity_id: entityId, hvac_mode: mode })
+      .then(() => { this._showToast(false, 'Mode HVAC modifié'); })
+      .catch((err: Error) => { this._showToast(true, err.message); });
   }
 
   private _onTempChange(e: CustomEvent, entityId: string): void {
     const temp = parseFloat(e.detail.id);
     if (!isNaN(temp)) {
-      void this.hass.callService('climate', 'set_temperature', { entity_id: entityId, temperature: temp });
+      void this.hass
+        .callService('climate', 'set_temperature', { entity_id: entityId, temperature: temp })
+        .then(() => { this._showToast(false, 'Température modifiée'); })
+        .catch((err: Error) => { this._showToast(true, err.message); });
     }
   }
 
   private _onPresetSelect(e: CustomEvent, entityId: string): void {
     const preset: string = e.detail.id;
-    void this.hass.callService('climate', 'set_preset_mode', { entity_id: entityId, preset_mode: preset });
+    void this.hass
+      .callService('climate', 'set_preset_mode', { entity_id: entityId, preset_mode: preset })
+      .then(() => { this._showToast(false, 'Preset modifié'); })
+      .catch((err: Error) => { this._showToast(true, err.message); });
+  }
+
+  private _showToast(error: boolean, text: string): void {
+    const toast = this.shadowRoot?.querySelector('sf-toast') as any;
+    if (toast?.addMessage) toast.addMessage(text, error);
   }
 
   // ── Card registration ─────────────────────────────────────────────────────

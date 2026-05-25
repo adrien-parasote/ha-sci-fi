@@ -598,6 +598,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
             ` : html`<div class="empty-state">Aucune lumière configurée pour cet étage</div>`}
           </div>
         </div>
+        <sf-toast></sf-toast>
       </ha-card>
     `;
   }
@@ -814,7 +815,10 @@ export class SciFiLightsCard extends SciFiBaseCard {
   }
 
   private _toggleLight(entityId: string, isOn: boolean): void {
-    void this.hass.callService('light', isOn ? 'turn_off' : 'turn_on', { entity_id: entityId });
+    void this.hass
+      .callService('light', isOn ? 'turn_off' : 'turn_on', { entity_id: entityId })
+      .then(() => { this._showToast(false, isOn ? 'Lumière éteinte' : 'Lumière allumée'); })
+      .catch((e: Error) => { this._showToast(true, e.message); });
   }
 
   private _toggleAreaLights(areaId: string, active: boolean): void {
@@ -823,7 +827,10 @@ export class SciFiLightsCard extends SciFiBaseCard {
       .filter(e => !ignored.includes(e.entity_id))
       .map(l => l.entity_id);
     if (entityIds.length === 0) return;
-    void this.hass.callService('light', active ? 'turn_off' : 'turn_on', { entity_id: entityIds });
+    void this.hass
+      .callService('light', active ? 'turn_off' : 'turn_on', { entity_id: entityIds })
+      .then(() => { this._showToast(false, active ? 'Pièce éteinte' : 'Pièce allumée'); })
+      .catch((e: Error) => { this._showToast(true, e.message); });
   }
 
   private _toggleFloorLights(floorId: string, active: boolean): void {
@@ -834,7 +841,10 @@ export class SciFiLightsCard extends SciFiBaseCard {
         .map(l => l.entity_id)
     );
     if (entityIds.length === 0) return;
-    void this.hass.callService('light', active ? 'turn_off' : 'turn_on', { entity_id: entityIds });
+    void this.hass
+      .callService('light', active ? 'turn_off' : 'turn_on', { entity_id: entityIds })
+      .then(() => { this._showToast(false, active ? 'Étage éteint' : 'Étage allumé'); })
+      .catch((e: Error) => { this._showToast(true, e.message); });
   }
 
   private _toggleAllLights(active: boolean): void {
@@ -847,7 +857,15 @@ export class SciFiLightsCard extends SciFiBaseCard {
       )
     );
     if (entityIds.length === 0) return;
-    void this.hass.callService('light', active ? 'turn_off' : 'turn_on', { entity_id: entityIds });
+    void this.hass
+      .callService('light', active ? 'turn_off' : 'turn_on', { entity_id: entityIds })
+      .then(() => { this._showToast(false, active ? 'Tout éteint' : 'Tout allumé'); })
+      .catch((e: Error) => { this._showToast(true, e.message); });
+  }
+
+  private _showToast(error: boolean, text: string): void {
+    const toast = this.shadowRoot?.querySelector('sf-toast') as any;
+    if (toast?.addMessage) toast.addMessage(text, error);
   }
 
   // ── Card registration ────────────────────────────────────────────────────────

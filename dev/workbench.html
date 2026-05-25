@@ -1067,6 +1067,7 @@
     'switch.nous_paillette_charlotte_child_lock': { entity_id: 'switch.nous_paillette_charlotte_child_lock', state: 'off', attributes: {}},
     'select.nous_paillette_charlotte_power_outage_memory': { entity_id: 'select.nous_paillette_charlotte_power_outage_memory', state: 'Power On', attributes: { friendly_name: 'Power outage memory', options: ['Power On', 'Power Off', 'Last State'] }},
     'climate.radiateur_salon': { entity_id: 'climate.radiateur_salon', state: 'heat', attributes: { friendly_name: 'Salon', hvac_mode: 'heat', hvac_modes: ['off', 'heat', 'cool'], current_temperature: 20.5, temperature: 21, preset_mode: 'comfort', preset_modes: ['none', 'eco'] }},
+    'climate.radiateur_salon_2': { entity_id: 'climate.radiateur_salon_2', state: 'off', attributes: { friendly_name: 'Salon 2', hvac_mode: 'off', hvac_modes: ['off', 'heat', 'cool'], current_temperature: 20, temperature: null, preset_mode: 'none', preset_modes: ['none', 'eco'] }},
     'climate.radiateur_cuisine': { entity_id: 'climate.radiateur_cuisine', state: 'auto', attributes: { friendly_name: 'Cuisine', hvac_mode: 'auto', hvac_modes: ['off', 'heat', 'cool'], current_temperature: 19, temperature: 20, preset_mode: 'eco', preset_modes: ['none', 'eco'] }},
     'climate.radiateur_chambre': { entity_id: 'climate.radiateur_chambre', state: 'off', attributes: { friendly_name: 'Chambre parents', hvac_mode: 'off', hvac_modes: ['off', 'heat', 'cool'], current_temperature: 17, temperature: null, preset_mode: 'frost_protection', preset_modes: ['none', 'eco', 'frost_protection'] }},
     'climate.radiateur_bureau': { entity_id: 'climate.radiateur_bureau', state: 'heat', attributes: { friendly_name: 'Bureau', hvac_mode: 'heat', hvac_modes: ['off', 'heat', 'cool'], current_temperature: 21, temperature: 22, preset_mode: 'comfort-1', preset_modes: ['none', 'eco', 'comfort-1'] }},
@@ -1112,6 +1113,7 @@
     'light.zbmini_l_mezzanine': { entity_id: 'light.zbmini_l_mezzanine', area_id: 'mezzanine' },
     'climate.clou': { entity_id: 'climate.clou', area_id: 'salon' },
     'climate.radiateur_salon': { entity_id: 'climate.radiateur_salon', area_id: 'salon' },
+    'climate.radiateur_salon_2': { entity_id: 'climate.radiateur_salon_2', area_id: 'salon' },
     'climate.radiateur_cuisine': { entity_id: 'climate.radiateur_cuisine', area_id: 'cuisine' },
     'climate.radiateur_chambre': { entity_id: 'climate.radiateur_chambre', area_id: 'chambre' },
     'climate.radiateur_bureau': { entity_id: 'climate.radiateur_bureau', area_id: 'bureau' },
@@ -1210,12 +1212,14 @@
         }),
         'Tout mode éco': () => ({
           'climate.radiateur_salon': { ...MOCK_STATES['climate.radiateur_salon'], state: 'auto', attributes: { ...MOCK_STATES['climate.radiateur_salon'].attributes, preset_mode: 'eco', hvac_mode: 'auto' }},
+          'climate.radiateur_salon_2': { ...MOCK_STATES['climate.radiateur_salon_2'], state: 'auto', attributes: { ...MOCK_STATES['climate.radiateur_salon_2'].attributes, preset_mode: 'eco', hvac_mode: 'auto' }},
           'climate.radiateur_cuisine': { ...MOCK_STATES['climate.radiateur_cuisine'], state: 'auto', attributes: { ...MOCK_STATES['climate.radiateur_cuisine'].attributes, preset_mode: 'eco', hvac_mode: 'auto' }},
           'climate.radiateur_bureau': { ...MOCK_STATES['climate.radiateur_bureau'], state: 'auto', attributes: { ...MOCK_STATES['climate.radiateur_bureau'].attributes, preset_mode: 'eco', hvac_mode: 'auto' }}
         }),
         'Mode boost (salon)': () => ({'climate.radiateur_salon': { ...MOCK_STATES['climate.radiateur_salon'], attributes: { ...MOCK_STATES['climate.radiateur_salon'].attributes, preset_mode: 'boost', temperature: 25 }}}),
         'Tout hors gel': () => ({
           'climate.radiateur_salon': { ...MOCK_STATES['climate.radiateur_salon'], state: 'off', attributes: { ...MOCK_STATES['climate.radiateur_salon'].attributes, hvac_mode: 'off', preset_mode: 'frost_protection', temperature: null }},
+          'climate.radiateur_salon_2': { ...MOCK_STATES['climate.radiateur_salon_2'], state: 'off', attributes: { ...MOCK_STATES['climate.radiateur_salon_2'].attributes, hvac_mode: 'off', preset_mode: 'frost_protection', temperature: null }},
           'climate.radiateur_cuisine': { ...MOCK_STATES['climate.radiateur_cuisine'], state: 'off', attributes: { ...MOCK_STATES['climate.radiateur_cuisine'].attributes, hvac_mode: 'off', preset_mode: 'frost_protection', temperature: null }},
           'climate.radiateur_bureau': { ...MOCK_STATES['climate.radiateur_bureau'], state: 'off', attributes: { ...MOCK_STATES['climate.radiateur_bureau'].attributes, hvac_mode: 'off', preset_mode: 'frost_protection', temperature: null }},
           'climate.radiateur_chambre': { ...MOCK_STATES['climate.radiateur_chambre'], state: 'off', attributes: { ...MOCK_STATES['climate.radiateur_chambre'].attributes, hvac_mode: 'off', preset_mode: 'frost_protection', temperature: null }}

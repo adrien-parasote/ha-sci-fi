@@ -44,99 +44,15 @@
 
 ### sci-fi-hexa-tiles
 
-```typescript
-interface SciFiHexaTilesWeatherConfig {
-  readonly activate?: boolean;
-  readonly weather_entity: string;          // ← "weather_entity" (PAS weather_entity_id)
-  readonly weather_alert_entity?: string;   // ← "weather_alert_entity" (PAS weather_alert_entity_id)
-  readonly link?: string;
-  readonly state_green?: string;
-  readonly state_yellow?: string;
-  readonly state_orange?: string;
-  readonly state_red?: string;
-}
-
-interface SciFiHexaTileConfig {
-  readonly standalone?: boolean;
-  readonly entity?: string;                 // ← "entity" (PAS entity_id) — pour tiles standalone
-  readonly entity_kind?: string;            // type domaine (light, climate, vacuum...)
-  readonly entities_to_exclude?: readonly string[];
-  readonly active_icon?: string;
-  readonly inactive_icon?: string;
-  readonly name?: string;
-  readonly state_on?: readonly string[];    // états considérés actifs
-  readonly state_error?: string;
-  readonly link?: string;                   // navigation (ex: "lights")
-  readonly visibility?: readonly string[];  // person entity IDs
-}
-
-interface SciFiHexaTilesConfig {
-  readonly header_message?: string;
-  readonly weather?: SciFiHexaTilesWeatherConfig;
-  readonly tiles?: readonly SciFiHexaTileConfig[];
-}
-```
-
-**Exemple de config validée (backup production) :**
-```yaml
-type: custom:sci-fi-hexa-tiles
-header_message: "Hey, welcome back !"
-weather:
-  activate: true
-  weather_entity: weather.la_chapelle_sur_erdre
-  weather_alert_entity: sensor.44_weather_alert
-  link: weather
-  state_green: Vert
-tiles:
-  - standalone: true
-    entity: climate.clou
-    active_icon: sci:stove-heat
-    inactive_icon: sci:stove-off
-    name: Poêle
-    state_on: [cool, heat]
-    link: stove
-```
+See [hexa-tiles-schema.md](./cards/hexa-tiles-schema.md) for full config contract.
 
 ---
 
 ### sci-fi-lights
 
-```typescript
-interface SciFiEntityOverride {
-  readonly name?: string;
-  readonly icon_on?: string;
-  readonly icon_off?: string;
-}
+See [lights-schema.md](./cards/lights-schema.md) for full config contract.
 
-interface SciFiLightsConfig {
-  readonly header_message?: string;
-  readonly default_icon_on?: string;        // default: mdi:lightbulb-on-outline
-  readonly default_icon_off?: string;       // default: mdi:lightbulb-outline
-  readonly first_floor_to_render?: string;
-  readonly first_area_to_render?: string;
-  readonly ignored_entities?: readonly string[];              // ← "ignored_entities" (PAS ignored_entity_ids)
-  readonly custom_entities?: Readonly<Record<string, SciFiEntityOverride>>; // ← "custom_entities" (PAS entity_overrides)
-}
-```
-
-**Exemple :**
-```yaml
-type: custom:sci-fi-lights
-header_message: Lumières
-default_icon_on: mdi:lightbulb-on-outline
-ignored_entities:
-  - light.la_boite_a_cha_day_ambient_colour
-custom_entities:
-  light.nous_salon:
-    name: "Étoile"
-    icon_on: mdi:star
-    icon_off: mdi:star-outline
-```
-
-**Comportement de sélection initiale (floor/area) :**
-
-| Config | Comportement |
-|---|---|
+---|---|
 | `first_floor_to_render: 'rdc'` | Sélectionne 'rdc' SI l'ID existe dans `hass.floors` (même si aucune lumière) |
 | `first_floor_to_render` absent ou ID inconnu | Fallback → 1er floor avec lumières → 1er floor |
 | `first_area_to_render: 'chambre'` | Sélectionne 'chambre' SI elle est dans les areas du floor actif |
@@ -163,315 +79,37 @@ L'icône en haut à droite du header lit l'état de `sun.sun`. Si `above_horizon
 
 ### sci-fi-climates
 
-```typescript
-interface SciFiClimatesHeaderConfig {
-  readonly display?: boolean;
-  readonly icon_winter_state?: string;      // default: mdi:thermometer-chevron-up
-  readonly message_winter_state?: string;   // default: 'Winter is coming'
-  readonly icon_summer_state?: string;      // default: mdi:thermometer-chevron-down
-  readonly message_summer_state?: string;   // default: 'Summer time'
-}
-
-interface SciFiStateIconsConfig {
-  readonly auto?: string;   // default: sci:radiator-auto
-  readonly off?: string;    // default: sci:radiator-off
-  readonly heat?: string;   // default: sci:radiator-heat
-}
-
-interface SciFiStateColorsConfig {
-  readonly auto?: string;   // hex — default: #669cd2
-  readonly off?: string;    // hex — default: #6c757d
-  readonly heat?: string;   // hex — default: #ff7f50
-}
-
-interface SciFiModeIconsConfig {
-  readonly frost_protection?: string;
-  readonly eco?: string;
-  readonly comfort?: string;
-  readonly 'comfort-1'?: string;
-  readonly 'comfort-2'?: string;
-  readonly boost?: string;
-}
-
-interface SciFiModeColorsConfig {
-  readonly frost_protection?: string;
-  readonly eco?: string;
-  readonly comfort?: string;
-  readonly 'comfort-1'?: string;
-  readonly 'comfort-2'?: string;
-  readonly boost?: string;
-}
-
-interface SciFiClimatesConfig {
-  readonly entities_to_exclude?: readonly string[];   // ← "entities_to_exclude" (PAS excluded_entity_ids)
-  readonly header?: SciFiClimatesHeaderConfig;
-  readonly state_icons?: SciFiStateIconsConfig;       // ← NE PAS SUPPRIMER
-  readonly state_colors?: SciFiStateColorsConfig;     // ← NE PAS SUPPRIMER
-  readonly mode_icons?: SciFiModeIconsConfig;         // ← NE PAS SUPPRIMER
-  readonly mode_colors?: SciFiModeColorsConfig;       // ← NE PAS SUPPRIMER
-}
-```
-
-**Exemple :**
-```yaml
-type: custom:sci-fi-climates
-entities_to_exclude:
-  - climate.clou
-state_icons:
-  auto: sci:radiator-auto
-  heat: sci:radiator-heat
-state_colors:
-  heat: "#ff7f50"
-mode_icons:
-  eco: mdi:leaf
-  comfort: mdi:sun-thermometer-outline
-mode_colors:
-  eco: "#96d35f"
-  comfort: "#ffff8f"
-```
+See [climates-schema.md](./cards/climates-schema.md) for full config contract.
 
 ---
 
 ### sci-fi-plugs
 
-```typescript
-interface SciFiPlugSensorEntry {
-  readonly name?: string;
-  readonly show?: boolean;   // afficher dans UI ?
-  readonly power?: boolean;  // est-ce le capteur de puissance (pour graph) ?
-  readonly icon?: string;    // (optionnel — lu depuis state HA si absent)
-}
-
-interface SciFiPlugDevice {
-  readonly device_id: string;
-  readonly entity_id: string;
-  readonly name?: string;
-  readonly active_icon?: string;    // default: mdi:power-socket-fr
-  readonly inactive_icon?: string;  // default: sci:power-socket-fr-off
-  // sensors = DICT keyed par entity_id (PAS une liste, PAS {power: string, energy: string})
-  readonly sensors?: Readonly<Record<string, SciFiPlugSensorEntry>>;
-}
-
-interface SciFiPlugsConfig {
-  readonly devices?: readonly SciFiPlugDevice[];
-}
-```
-
-**Exemple :**
-```yaml
-type: custom:sci-fi-plugs
-devices:
-  - device_id: 31428114e049a5557c8a8a05e2b7f9bd
-    entity_id: switch.nous_ventilateur_leonard
-    active_icon: mdi:fan
-    inactive_icon: mdi:fan-off
-    name: Ventilateur Léonard
-    sensors:
-      sensor.nous_ventilateur_leonard_power:
-        show: false
-        power: true
-      sensor.nous_ventilateur_leonard_energy:
-        show: true
-        name: Énergie
-        icon: mdi:lightning-bolt
-        power: false
-      switch.nous_ventilateur_leonard_child_lock:
-        show: true
-        name: Child lock
-        icon: mdi:account-lock
-        power: false
-```
+See [plugs-schema.md](./cards/plugs-schema.md) for full config contract.
 
 ---
 
 ### sci-fi-weather
 
-```typescript
-interface SciFiWeatherAlertConfig {
-  readonly entity_id: string;
-  readonly state_green?: string;
-  readonly state_yellow?: string;
-  readonly state_orange?: string;
-  readonly state_red?: string;
-}
-
-interface SciFiWeatherConfig {
-  readonly weather_entity: string;                          // ← "weather_entity" (PAS weather_entity_id)
-  readonly weather_daily_forecast_limit?: number;           // range [0, 15], default: 10
-  readonly chart_first_kind_to_render?: 'temperature' | 'precipitation' | 'wind';
-  readonly alert?: SciFiWeatherAlertConfig;                 // ← NE PAS SUPPRIMER
-}
-```
-
-**Exemple :**
-```yaml
-type: custom:sci-fi-weather
-weather_entity: weather.la_chapelle_sur_erdre
-weather_daily_forecast_limit: 10
-alert:
-  entity_id: sensor.44_weather_alert
-  state_green: Vert
-  state_yellow: Jaune
-  state_orange: Orange
-  state_red: Rouge
-```
+See [weather-schema.md](./cards/weather-schema.md) for full config contract.
 
 ---
 
 ### sci-fi-stove
 
-```typescript
-interface SciFiStoveSensors {
-  readonly sensor_actual_power?: string;
-  readonly sensor_combustion_chamber_temperature?: string;
-  readonly sensor_inside_temperature?: string;        // ← NE PAS SUPPRIMER
-  readonly sensor_pellet_quantity?: string;
-  readonly sensor_power?: string;                     // ← NE PAS SUPPRIMER
-  readonly sensor_status?: string;                    // ← NE PAS SUPPRIMER
-  readonly sensor_fan_speed?: string;                 // ← NE PAS SUPPRIMER
-  readonly sensor_pressure?: string;                  // ← NE PAS SUPPRIMER
-  readonly sensor_time_to_service?: string;           // ← NE PAS SUPPRIMER
-}
-
-interface SciFiStoveConfig {
-  readonly entity: string;                            // ← "entity" (PAS entity_id)
-  readonly sensors?: SciFiStoveSensors;
-  readonly storage_counter?: string;                  // ← NE PAS SUPPRIMER
-  readonly pellet_quantity_threshold?: number;        // range [0,1] — NE PAS SUPPRIMER
-  readonly storage_counter_threshold?: number;        // range [0,1] — NE PAS SUPPRIMER
-}
-```
-
-**Exemple :**
-```yaml
-type: custom:sci-fi-stove
-entity: climate.clou
-sensors:
-  sensor_combustion_chamber_temperature: sensor.clou_combustion_chamber_temperature
-  sensor_inside_temperature: sensor.frient_smoke_detector_salon_temperature
-  sensor_fan_speed: sensor.clou_fan_speed
-  sensor_pressure: sensor.clou_pressure
-  sensor_actual_power: sensor.clou_power
-  sensor_power: sensor.smart_energy_monitor_poele_power
-  sensor_pellet_quantity: sensor.clou_pellet_quantity
-  sensor_time_to_service: sensor.clou_time_to_service
-  sensor_status: binary_sensor.clou_stove_status
-pellet_quantity_threshold: 0.3
-storage_counter_threshold: 0.1
-storage_counter: counter.pellet_stock
-```
+See [stove-schema.md](./cards/stove-schema.md) for full config contract.
 
 ---
 
 ### sci-fi-vacuum
 
-```typescript
-interface SciFiVacuumSensors {
-  readonly map?: string;
-  readonly battery?: string;
-  readonly mop_intensite?: string;           // ← "mop_intensite" (FR, PAS mop_intensity)
-  readonly current_clean_area?: string;
-  readonly current_clean_duration?: string;
-}
-
-interface SciFiVacuumShortcutDescription {
-  readonly icon?: string;
-  readonly name: string;
-  readonly segments: readonly number[];
-}
-
-interface SciFiVacuumShortcuts {
-  readonly service?: string;
-  readonly command?: string;
-  readonly description?: readonly SciFiVacuumShortcutDescription[];
-}
-
-interface SciFiVacuumEntry {
-  readonly entity: string;                   // ← "entity" (PAS entity_id)
-  readonly start?: boolean;
-  readonly pause?: boolean;
-  readonly stop?: boolean;
-  readonly return_to_base?: boolean;
-  readonly set_fan_speed?: boolean;
-  readonly sensors?: SciFiVacuumSensors;
-  readonly shortcuts?: SciFiVacuumShortcuts; // ← NE PAS SUPPRIMER
-}
-
-interface SciFiVacuumConfig {
-  readonly vacuums: readonly SciFiVacuumEntry[];
-}
-```
-
-**Exemple :**
-```yaml
-type: custom:sci-fi-vacuum
-vacuums:
-  - entity: vacuum.dobby
-    sensors:
-      battery: sensor.s7_batterie
-      mop_intensite: select.s7_intensite_de_frottement
-      current_clean_area: sensor.s7_surface_de_nettoyage
-      map: image.s7_map_0
-    start: true
-    pause: true
-    stop: true
-    return_to_base: true
-    shortcuts:
-      service: vacuum.send_command
-      command: app_segment_clean
-      description:
-        - name: Bureau
-          icon: mdi:desk-lamp
-          segments: [16]
-        - name: Charlotte
-          icon: mdi:teddy-bear
-          segments: [18]
-```
+See [vacuum-schema.md](./cards/vacuum-schema.md) for full config contract.
 
 ---
 
 ### sci-fi-vehicles
 
-```typescript
-interface SciFiVehicleEntry {
-  readonly id: string;
-  readonly name: string;
-  readonly charging?: string;
-  readonly lock_status?: string;
-  readonly location?: string;
-  readonly battery_autonomy?: string;         // ← NE PAS SUPPRIMER
-  readonly fuel_autonomy?: string;            // ← NE PAS SUPPRIMER
-  readonly battery_level?: string;
-  readonly location_last_activity?: string;   // ← NE PAS SUPPRIMER
-  readonly charge_state?: string;             // ← NE PAS SUPPRIMER
-  readonly plug_state?: string;               // ← NE PAS SUPPRIMER
-  readonly mileage?: string;
-  readonly fuel_quantity?: string;            // ← NE PAS SUPPRIMER
-  readonly charging_remaining_time?: string;  // ← NE PAS SUPPRIMER
-}
-
-interface SciFiVehiclesConfig {
-  readonly vehicles: readonly SciFiVehicleEntry[];
-}
-```
-
-**Exemple :**
-```yaml
-type: custom:sci-fi-vehicles
-vehicles:
-  - id: b35bbd24dc8783e010d0d9da45678554
-    name: Captur II
-    charging: binary_sensor.captur_ii_en_charge
-    lock_status: binary_sensor.captur_ii_serrure
-    location: device_tracker.captur_ii_emplacement
-    battery_autonomy: sensor.captur_ii_autonomie_de_la_batterie
-    fuel_autonomy: sensor.captur_ii_autonomie_en_carburant
-    battery_level: sensor.captur_ii_batterie
-    plug_state: sensor.captur_ii_etat_du_branchement
-    mileage: sensor.captur_ii_kilometrage
-    fuel_quantity: sensor.captur_ii_quantite_de_carburant
-    charging_remaining_time: sensor.captur_ii_temps_de_charge_restant
-```
+See [vehicles-schema.md](./cards/vehicles-schema.md) for full config contract.
 
 ---
 

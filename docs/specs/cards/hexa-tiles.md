@@ -1,3 +1,61 @@
+# sci-fi-hexa-tiles Schema
+
+### sci-fi-hexa-tiles
+
+```typescript
+interface SciFiHexaTilesWeatherConfig {
+  readonly activate?: boolean;
+  readonly weather_entity: string;          // ← "weather_entity" (PAS weather_entity_id)
+  readonly weather_alert_entity?: string;   // ← "weather_alert_entity" (PAS weather_alert_entity_id)
+  readonly link?: string;
+  readonly state_green?: string;
+  readonly state_yellow?: string;
+  readonly state_orange?: string;
+  readonly state_red?: string;
+}
+
+interface SciFiHexaTileConfig {
+  readonly standalone?: boolean;
+  readonly entity?: string;                 // ← "entity" (PAS entity_id) — pour tiles standalone
+  readonly entity_kind?: string;            // type domaine (light, climate, vacuum...)
+  readonly entities_to_exclude?: readonly string[];
+  readonly active_icon?: string;
+  readonly inactive_icon?: string;
+  readonly name?: string;
+  readonly state_on?: readonly string[];    // états considérés actifs
+  readonly state_error?: string;
+  readonly link?: string;                   // navigation (ex: "lights")
+  readonly visibility?: readonly string[];  // person entity IDs
+}
+
+interface SciFiHexaTilesConfig {
+  readonly header_message?: string;
+  readonly weather?: SciFiHexaTilesWeatherConfig;
+  readonly tiles?: readonly SciFiHexaTileConfig[];
+}
+```
+
+**Exemple de config validée (backup production) :**
+```yaml
+type: custom:sci-fi-hexa-tiles
+header_message: "Hey, welcome back !"
+weather:
+  activate: true
+  weather_entity: weather.la_chapelle_sur_erdre
+  weather_alert_entity: sensor.44_weather_alert
+  link: weather
+  state_green: Vert
+tiles:
+  - standalone: true
+    entity: climate.clou
+    active_icon: sci:stove-heat
+    inactive_icon: sci:stove-off
+    name: Poêle
+    state_on: [cool, heat]
+    link: stove
+```
+
+
 # Spec 07 — Hexagonal Dashboard Card Fixes
 
 > Document Type: Implementation

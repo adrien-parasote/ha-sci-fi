@@ -1,3 +1,38 @@
+# sci-fi-weather Schema
+
+### sci-fi-weather
+
+```typescript
+interface SciFiWeatherAlertConfig {
+  readonly entity_id: string;
+  readonly state_green?: string;
+  readonly state_yellow?: string;
+  readonly state_orange?: string;
+  readonly state_red?: string;
+}
+
+interface SciFiWeatherConfig {
+  readonly weather_entity: string;                          // ← "weather_entity" (PAS weather_entity_id)
+  readonly weather_daily_forecast_limit?: number;           // range [0, 15], default: 10
+  readonly chart_first_kind_to_render?: 'temperature' | 'precipitation' | 'wind';
+  readonly alert?: SciFiWeatherAlertConfig;                 // ← NE PAS SUPPRIMER
+}
+```
+
+**Exemple :**
+```yaml
+type: custom:sci-fi-weather
+weather_entity: weather.la_chapelle_sur_erdre
+weather_daily_forecast_limit: 10
+alert:
+  entity_id: sensor.44_weather_alert
+  state_green: Vert
+  state_yellow: Jaune
+  state_orange: Orange
+  state_red: Rouge
+```
+
+
 # 08 — Sci-Fi Weather Card UI Restoration
 
 > Document Type: Implementation

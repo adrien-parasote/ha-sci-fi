@@ -54,8 +54,8 @@ type: custom:sci-fi-hexa-tiles
 header_message: "Hey, welcome back!"
 weather:
   activate: true
-  weather_entity_id: weather.home
-  weather_alert_entity_id: sensor.weather_alert
+  weather_entity: weather.home
+  weather_alert_entity: sensor.weather_alert
   link: /lovelace/weather
   state_green: "Vert"
   state_yellow: "Jaune"
@@ -67,13 +67,13 @@ persons:
 vehicles:
   - device_tracker.my_car
 tiles:
-  - entity_id: light.salon
+  - entity: light.salon
     name: Lights
     icon: mdi:lightbulb
     tap_action:
       action: navigate
       navigation_path: /lovelace/lights
-  - entity_id: vacuum.dobby
+  - entity: vacuum.dobby
     name: Dobby
     icon: sci:vacuum-sleep
     tap_action:
@@ -97,8 +97,8 @@ tiles:
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `activate` | Boolean | | Show the weather tile | `false` |
-| `weather_entity_id` | String | ✅ if activate | HA weather entity |
-| `weather_alert_entity_id` | String | | Alert sensor entity |
+| `weather_entity` | String | ✅ if activate | HA weather entity |
+| `weather_alert_entity` | String | | Alert sensor entity |
 | `link` | String | | Navigation path on click |
 | `state_green/yellow/orange/red` | String | | Alert state values |
 
@@ -106,7 +106,7 @@ tiles:
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `entity_id` | String | ✅ | Entity to track |
+| `entity` | String | ✅ | Entity to track |
 | `name` | String | | Display label |
 | `icon` | String | | `mdi:` or `sci:` icon |
 | `tap_action.action` | String | | `navigate` or `call-service` |

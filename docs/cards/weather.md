@@ -40,7 +40,7 @@
 
 ```yaml
 type: custom:sci-fi-weather
-weather_entity_id: weather.home
+weather_entity: weather.home
 ```
 
 ### Full
@@ -48,7 +48,7 @@ weather_entity_id: weather.home
 ```yaml
 type: custom:sci-fi-weather
 header_message: "Météo"
-weather_entity_id: weather.home
+weather_entity: weather.home
 weather_daily_forecast_limit: 5
 ```
 
@@ -57,6 +57,6 @@ weather_daily_forecast_limit: 5
 | Name | Type | Required | Description | Default |
 |---|---|---|---|---|
 | `type` | String | ✅ | `custom:sci-fi-weather` | |
-| `weather_entity_id` | String | ✅ | HA weather entity ID | |
+| `weather_entity` | String | ✅ | HA weather entity ID | |
 | `header_message` | String | | Card header text | |
 | `weather_daily_forecast_limit` | Integer | | Number of forecast days (0–15) | `5` |

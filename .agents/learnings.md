@@ -502,3 +502,25 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Anti-pattern**: Relying on `cardEl.hass = newHass` to transitively trigger `setLocale()` for language switching in a workbench. The locale change is async and not guaranteed to complete before the next scheduled render.
 - **Fix**: Expose `setLocale` from the bundle as `window.__sciFiSetLocale = setLocale` in `sci-fi.ts`. In the workbench, `await window.__sciFiSetLocale(lang)` BEFORE calling `updateHassLanguage()`. This guarantees the locale is resolved before hass triggers a re-render. The `hass` setter still calls `setLocale` as a safety net for real HA live mode.
 - **Scope**: Applies to all lit-localize workbench integrations where the language switch is driven by the workbench UI, not by HA's own locale system.
+
+### L070: Lit Toggle Selector Ambiguity — Multiple `sf-toggle-switch` in Shadow DOM
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi v2 — hexa-tiles-editor test coverage hardening
+- **Evidence**: Test `"dispatches config-changed when standalone is toggled"` fired `sf-toggle-change` on `el.shadowRoot.querySelector('sf-toggle-switch')` (FIRST match). But the editor renders a weather toggle first, then a per-tile standalone toggle. Firing on the first element triggered `_toggleWeather` (not `_updateTileField`). Test passed visually but asserted the wrong handler.
+- **Anti-pattern**: Using `querySelector('sf-toggle-switch')` without index/attribute qualification when the component renders multiple toggles at different semantic levels. FIRST match is not always the intended target.
+- **Fix (two valid approaches)**:
+  1. **Direct method call** (preferred for internal-state branches): `(el as any)._updateTileField(0, 'standalone', true)` — tests the branch directly, avoids DOM ambiguity.
+  2. **Attribute selector** (for DOM wiring tests): `el.shadowRoot.querySelectorAll('sf-toggle-switch')[N]` with a documented index, or `querySelector('[element-id="standalone-0"]')` if the template assigns element IDs.
+- **Rule**: When an editor renders ≥2 instances of the same custom element, ALWAYS qualify the selector. Document the selector order/index in the spec's CSS Selectors table.
+- **Scope**: All LitElement editors with multi-section layouts containing repeated sub-components (toggles, dropdowns, accordions).
+
+### L071: Dynamic `element-id` Attributes on Dropdown Entities — Use Method Calls in Tests, Not Generic Selectors
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi v2 — lights-editor rename tests coverage hardening
+- **Evidence**: `_renderCustomEntityRow(entityId)` renders `<sf-editor-dropdown-entity element-id="${entityId}">` where `entityId` is dynamic (e.g., `"light.salon"`). `querySelector('sf-editor-dropdown-entity')` returns the FIRST dropdown in the shadow DOM — but the lights editor also renders floor/area dropdowns before custom entity dropdowns. Firing `input-update` on the wrong dropdown triggered `_updateFloor` instead of `_renameCustomEntity`. Test asserted the wrong state change.
+- **Anti-pattern**: Selecting the first instance of a generic component type (`sf-editor-dropdown-entity`) when the template renders multiple instances with different semantic roles (floor, area, custom entity). The first match is context-dependent on render order.
+- **Fix**: For internal branches triggered by dynamically-identified elements:
+  1. **Call the private method directly**: `(el as any)._renameCustomEntity('light.salon', 'light.bedroom')` — covers the branch with zero selector ambiguity.
+  2. **Use attribute selector** if DOM wiring must be tested: `querySelector('[element-id="light.salon"]')` — targets the exact element.
+- **Rule**: When `element-id` is derived from dynamic data (entity IDs, indexes), the selector `[element-id="${value}"]` is the only safe DOM selection pattern. Document this in the spec's Test Case Specifications table.
+- **Scope**: All LitElement editors that render lists of configurable entities with per-row event listeners.

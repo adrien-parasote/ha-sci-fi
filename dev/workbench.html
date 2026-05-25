@@ -1022,7 +1022,7 @@
       { datetime: new Date(Date.now()+345600000).toISOString(), condition: 'sunny', temperature: 27, templow: 16 },
     ]}},
     'sensor.44_weather_alert': { entity_id: 'sensor.44_weather_alert', state: 'Vert', attributes: { friendly_name: 'Alerte météo 44' }},
-    'climate.clou': { entity_id: 'climate.clou', state: 'heat', attributes: { friendly_name: 'Clou', hvac_mode: 'heat', current_temperature: 21.5, temperature: 22, preset_mode: 'comfort' }},
+    'climate.clou': { entity_id: 'climate.clou', state: 'heat', attributes: { friendly_name: 'Clou', hvac_mode: 'heat', hvac_modes: ['off', 'heat', 'cool'], current_temperature: 21.5, temperature: 22, preset_mode: 'eco', preset_modes: ['none', 'eco'], min_temp: 15, max_temp: 30 }},
     'sensor.clou_combustion_chamber_temperature': { entity_id: 'sensor.clou_combustion_chamber_temperature', state: '340', attributes: { unit_of_measurement: '°C' }},
     'sensor.frient_smoke_detector_salon_temperature': { entity_id: 'sensor.frient_smoke_detector_salon_temperature', state: '21.5', attributes: { unit_of_measurement: '°C', friendly_name: 'Temp. salon' }},
     'sensor.clou_fan_speed': { entity_id: 'sensor.clou_fan_speed', state: '3', attributes: { unit_of_measurement: '' }},
@@ -1035,12 +1035,12 @@
     'counter.pellet_stock': { entity_id: 'counter.pellet_stock', state: '8', attributes: { friendly_name: 'Stock sacs', minimum: 0, maximum: 20 }},
     'vacuum.dobby': { entity_id: 'vacuum.dobby', state: 'docked', attributes: { friendly_name: 'Dobby' }},
     'sensor.s7_batterie': { entity_id: 'sensor.s7_batterie', state: '95', attributes: { unit_of_measurement: '%' }},
-    'select.s7_intensite_de_frottement': { entity_id: 'select.s7_intensite_de_frottement', state: 'Standard', attributes: {}},
+    'select.s7_intensite_de_frottement': { entity_id: 'select.s7_intensite_de_frottement', state: 'Standard', attributes: { friendly_name: 'Intensité frottement', options: ['Standard', 'Fort', 'Maximum', 'Doux'] }},
     'sensor.s7_surface_de_nettoyage': { entity_id: 'sensor.s7_surface_de_nettoyage', state: '47', attributes: { unit_of_measurement: 'm²' }},
     'sensor.s7_duree_de_nettoyage': { entity_id: 'sensor.s7_duree_de_nettoyage', state: '38', attributes: { unit_of_measurement: 'min' }},
     'image.s7_map_0': { entity_id: 'image.s7_map_0', state: 'idle', attributes: {}},
     'binary_sensor.captur_ii_en_charge': { entity_id: 'binary_sensor.captur_ii_en_charge', state: 'off', attributes: { friendly_name: 'Captur II en charge' }},
-    'binary_sensor.captur_ii_serrure': { entity_id: 'binary_sensor.captur_ii_serrure', state: 'off', attributes: {}},
+    'binary_sensor.captur_ii_serrure': { entity_id: 'binary_sensor.captur_ii_serrure', state: 'locked', attributes: { friendly_name: 'Serrure' }},
     'device_tracker.captur_ii_emplacement': { entity_id: 'device_tracker.captur_ii_emplacement', state: 'home', attributes: {}},
     'sensor.captur_ii_autonomie_de_la_batterie': { entity_id: 'sensor.captur_ii_autonomie_de_la_batterie', state: '42', attributes: { unit_of_measurement: 'km' }},
     'sensor.captur_ii_autonomie_en_carburant': { entity_id: 'sensor.captur_ii_autonomie_en_carburant', state: '380', attributes: { unit_of_measurement: 'km' }},
@@ -1051,7 +1051,7 @@
     'sensor.captur_ii_temps_de_charge_restant': { entity_id: 'sensor.captur_ii_temps_de_charge_restant', state: '0', attributes: { unit_of_measurement: 'min' }},
     'switch.nous_ventilateur_leonard': { entity_id: 'switch.nous_ventilateur_leonard', state: 'on', attributes: { friendly_name: 'Ventilateur Léonard' }},
     'number.nous_ventilateur_leonard_countdown': { entity_id: 'number.nous_ventilateur_leonard_countdown', state: '0', attributes: { unit_of_measurement: 'min' }},
-    'select.nous_ventilateur_leonard_power_outage_memory': { entity_id: 'select.nous_ventilateur_leonard_power_outage_memory', state: 'Power On', attributes: {}},
+    'select.nous_ventilateur_leonard_power_outage_memory': { entity_id: 'select.nous_ventilateur_leonard_power_outage_memory', state: 'Power On', attributes: { friendly_name: 'Power outage memory', options: ['Power On', 'Power Off', 'Last State'] }},
     'sensor.nous_ventilateur_leonard_power': { entity_id: 'sensor.nous_ventilateur_leonard_power', state: '18', attributes: { unit_of_measurement: 'W' }},
     'switch.nous_ventilateur_leonard_child_lock': { entity_id: 'switch.nous_ventilateur_leonard_child_lock', state: 'off', attributes: {}},
     'sensor.nous_ventilateur_leonard_energy': { entity_id: 'sensor.nous_ventilateur_leonard_energy', state: '4.87', attributes: { unit_of_measurement: 'kWh' }},
@@ -1059,14 +1059,17 @@
     'sensor.mureva_evlink_energy_corrected': { entity_id: 'sensor.mureva_evlink_energy_corrected', state: '142.5', attributes: { unit_of_measurement: 'kWh' }},
     'binary_sensor.mureva_evlink_charge': { entity_id: 'binary_sensor.mureva_evlink_charge', state: 'off', attributes: {}},
     'sensor.mureva_evlink_current': { entity_id: 'sensor.mureva_evlink_current', state: '0', attributes: { unit_of_measurement: 'A' }},
+    'select.mureva_evlink_power_on_behavior': { entity_id: 'select.mureva_evlink_power_on_behavior', state: 'Power On', attributes: { friendly_name: 'Power-on behavior', options: ['Power On', 'Power Off', 'Last State'] }},
+    'sensor.mureva_evlink_power_corrected': { entity_id: 'sensor.mureva_evlink_power_corrected', state: '0', attributes: { unit_of_measurement: 'W' }},
     'switch.nous_paillette_charlotte': { entity_id: 'switch.nous_paillette_charlotte', state: 'on', attributes: {}},
     'sensor.nous_paillette_charlotte_energy': { entity_id: 'sensor.nous_paillette_charlotte_energy', state: '0.45', attributes: { unit_of_measurement: 'kWh' }},
     'sensor.nous_paillette_charlotte_power': { entity_id: 'sensor.nous_paillette_charlotte_power', state: '11.2', attributes: { unit_of_measurement: 'W' }},
     'switch.nous_paillette_charlotte_child_lock': { entity_id: 'switch.nous_paillette_charlotte_child_lock', state: 'off', attributes: {}},
-    'climate.radiateur_salon': { entity_id: 'climate.radiateur_salon', state: 'heat', attributes: { friendly_name: 'Salon', hvac_mode: 'heat', current_temperature: 20.5, temperature: 21, preset_mode: 'comfort' }},
-    'climate.radiateur_cuisine': { entity_id: 'climate.radiateur_cuisine', state: 'auto', attributes: { friendly_name: 'Cuisine', hvac_mode: 'auto', current_temperature: 19, temperature: 20, preset_mode: 'eco' }},
-    'climate.radiateur_chambre': { entity_id: 'climate.radiateur_chambre', state: 'off', attributes: { friendly_name: 'Chambre parents', hvac_mode: 'off', current_temperature: 17, temperature: null, preset_mode: 'frost_protection' }},
-    'climate.radiateur_bureau': { entity_id: 'climate.radiateur_bureau', state: 'heat', attributes: { friendly_name: 'Bureau', hvac_mode: 'heat', current_temperature: 21, temperature: 22, preset_mode: 'comfort-1' }},
+    'select.nous_paillette_charlotte_power_outage_memory': { entity_id: 'select.nous_paillette_charlotte_power_outage_memory', state: 'Power On', attributes: { friendly_name: 'Power outage memory', options: ['Power On', 'Power Off', 'Last State'] }},
+    'climate.radiateur_salon': { entity_id: 'climate.radiateur_salon', state: 'heat', attributes: { friendly_name: 'Salon', hvac_mode: 'heat', hvac_modes: ['off', 'heat', 'cool'], current_temperature: 20.5, temperature: 21, preset_mode: 'comfort', preset_modes: ['none', 'eco'] }},
+    'climate.radiateur_cuisine': { entity_id: 'climate.radiateur_cuisine', state: 'auto', attributes: { friendly_name: 'Cuisine', hvac_mode: 'auto', hvac_modes: ['off', 'heat', 'cool'], current_temperature: 19, temperature: 20, preset_mode: 'eco', preset_modes: ['none', 'eco'] }},
+    'climate.radiateur_chambre': { entity_id: 'climate.radiateur_chambre', state: 'off', attributes: { friendly_name: 'Chambre parents', hvac_mode: 'off', hvac_modes: ['off', 'heat', 'cool'], current_temperature: 17, temperature: null, preset_mode: 'frost_protection', preset_modes: ['none', 'eco', 'frost_protection'] }},
+    'climate.radiateur_bureau': { entity_id: 'climate.radiateur_bureau', state: 'heat', attributes: { friendly_name: 'Bureau', hvac_mode: 'heat', hvac_modes: ['off', 'heat', 'cool'], current_temperature: 21, temperature: 22, preset_mode: 'comfort-1', preset_modes: ['none', 'eco', 'comfort-1'] }},
     'light.zbmini_l_salon': { entity_id: 'light.zbmini_l_salon', state: 'on', attributes: { friendly_name: 'Plafond salon' }},
     'light.zbmini_l_cuisine': { entity_id: 'light.zbmini_l_cuisine', state: 'off', attributes: {}},
     'light.zbmini_l_bureau': { entity_id: 'light.zbmini_l_bureau', state: 'on', attributes: {}},
@@ -1085,13 +1088,13 @@
   };
 
   const MOCK_AREAS = {
-    'salon': { area_id: 'salon', name: 'Salon', floor_id: 'rdc' },
-    'cuisine': { area_id: 'cuisine', name: 'Cuisine', floor_id: 'rdc' },
-    'bureau': { area_id: 'bureau', name: 'Bureau', floor_id: 'rdc' },
-    'chambre': { area_id: 'chambre', name: 'Chambre parents', floor_id: 'r1' },
-    'charlotte': { area_id: 'charlotte', name: 'Charlotte', floor_id: 'r1' },
-    'leonard': { area_id: 'leonard', name: 'Léonard', floor_id: 'r1' },
-    'mezzanine': { area_id: 'mezzanine', name: 'Mezzanine', floor_id: 'r1' },
+    'salon': { area_id: 'salon', name: 'Salon', floor_id: 'rdc', icon: 'mdi:sofa-outline' },
+    'cuisine': { area_id: 'cuisine', name: 'Cuisine', floor_id: 'rdc', icon: 'mdi:silverware-fork-knife' },
+    'bureau': { area_id: 'bureau', name: 'Bureau', floor_id: 'rdc', icon: 'mdi:desk-lamp' },
+    'chambre': { area_id: 'chambre', name: 'Chambre parents', floor_id: 'r1', icon: 'mdi:bed-king-outline' },
+    'charlotte': { area_id: 'charlotte', name: 'Charlotte', floor_id: 'r1', icon: 'mdi:lava-lamp' },
+    'leonard': { area_id: 'leonard', name: 'Léonard', floor_id: 'r1', icon: 'mdi:robot-toy' },
+    'mezzanine': { area_id: 'mezzanine', name: 'Mezzanine', floor_id: 'r1', icon: 'mdi:stairs' },
   };
   const MOCK_FLOORS = {
     'rdc': { floor_id: 'rdc', name: 'RDC', level: 0 },
@@ -1129,8 +1132,8 @@
       ]},
       scenarios: {
         'Normal': () => ({}),
-        'Alerte météo JAUNE': () => ({'sensor.44_weather_alert': { ...MOCK_STATES['sensor.44_weather_alert'], state: 'Jaune' }}),
-        'Alerte météo ROUGE': () => ({'sensor.44_weather_alert': { ...MOCK_STATES['sensor.44_weather_alert'], state: 'Rouge' }}),
+        'Alerte météo JAUNE': () => ({'sensor.44_weather_alert': { ...MOCK_STATES['sensor.44_weather_alert'], state: 'Jaune', attributes: { friendly_name: 'Alerte météo 44', vent_violent: 'Jaune', inondation: 'Vert' } }}),
+        'Alerte météo ROUGE': () => ({'sensor.44_weather_alert': { ...MOCK_STATES['sensor.44_weather_alert'], state: 'Rouge', attributes: { friendly_name: 'Alerte météo 44', orages: 'Rouge', vent_violent: 'Jaune' } }}),
         'Dobby en nettoyage': () => ({'vacuum.dobby': { ...MOCK_STATES['vacuum.dobby'], state: 'cleaning' }}),
         'Voiture en charge': () => ({'binary_sensor.captur_ii_en_charge': { ...MOCK_STATES['binary_sensor.captur_ii_en_charge'], state: 'on' }}),
       }
@@ -1140,9 +1143,9 @@
       config: { type: 'custom:sci-fi-weather', weather_entity: 'weather.la_chapelle_sur_erdre', weather_hourly_forecast_limit: 24, weather_daily_forecast_limit: 10, alert: { state_green: 'Vert', state_yellow: 'Jaune', state_orange: 'Orange', state_red: 'Rouge', entity_id: 'sensor.44_weather_alert' }},
       scenarios: {
         'Partiellement nuageux': () => ({}),
-        'Pluie + alerte jaune': () => ({ 'weather.la_chapelle_sur_erdre': { ...MOCK_STATES['weather.la_chapelle_sur_erdre'], state: 'rainy', attributes: { ...MOCK_STATES['weather.la_chapelle_sur_erdre'].attributes, temperature: 14, humidity: 89, wind_speed: 32 }}, 'sensor.44_weather_alert': { ...MOCK_STATES['sensor.44_weather_alert'], state: 'Jaune' }}),
+        'Pluie + alerte jaune': () => ({ 'weather.la_chapelle_sur_erdre': { ...MOCK_STATES['weather.la_chapelle_sur_erdre'], state: 'rainy', attributes: { ...MOCK_STATES['weather.la_chapelle_sur_erdre'].attributes, temperature: 14, humidity: 89, wind_speed: 32 }}, 'sensor.44_weather_alert': { ...MOCK_STATES['sensor.44_weather_alert'], state: 'Jaune', attributes: { friendly_name: 'Alerte météo 44', vent_violent: 'Jaune', inondation: 'Vert' } }}),
         'Grand soleil': () => ({ 'weather.la_chapelle_sur_erdre': { ...MOCK_STATES['weather.la_chapelle_sur_erdre'], state: 'sunny', attributes: { ...MOCK_STATES['weather.la_chapelle_sur_erdre'].attributes, temperature: 28, humidity: 45, wind_speed: 8 }}}),
-        'Orage + alerte rouge': () => ({ 'weather.la_chapelle_sur_erdre': { ...MOCK_STATES['weather.la_chapelle_sur_erdre'], state: 'lightning-rainy' }, 'sensor.44_weather_alert': { ...MOCK_STATES['sensor.44_weather_alert'], state: 'Rouge' }}),
+        'Orage + alerte rouge': () => ({ 'weather.la_chapelle_sur_erdre': { ...MOCK_STATES['weather.la_chapelle_sur_erdre'], state: 'lightning-rainy' }, 'sensor.44_weather_alert': { ...MOCK_STATES['sensor.44_weather_alert'], state: 'Rouge', attributes: { friendly_name: 'Alerte météo 44', orages: 'Rouge', vent_violent: 'Jaune' } }}),
       }
     },
     stove: {
@@ -1174,7 +1177,7 @@
         'À la maison, déchargé': () => ({}),
         'En charge électrique': () => ({'binary_sensor.captur_ii_en_charge': { ...MOCK_STATES['binary_sensor.captur_ii_en_charge'], state: 'on' }, 'sensor.captur_ii_temps_de_charge_restant': { ...MOCK_STATES['sensor.captur_ii_temps_de_charge_restant'], state: '45' }}),
         'Batterie faible (18%)': () => ({'sensor.captur_ii_batterie': { ...MOCK_STATES['sensor.captur_ii_batterie'], state: '18' }}),
-        'Voiture déverrouillée': () => ({'binary_sensor.captur_ii_serrure': { ...MOCK_STATES['binary_sensor.captur_ii_serrure'], state: 'on' }}),
+        'Voiture déverrouillée': () => ({'binary_sensor.captur_ii_serrure': { ...MOCK_STATES['binary_sensor.captur_ii_serrure'], state: 'unlocked' }}),
       }
     },
     climates: {
@@ -1208,7 +1211,7 @@
       scenarios: {
         'Normal': () => ({}),
         'Ventilo OFF': () => ({'switch.nous_ventilateur_leonard': { ...MOCK_STATES['switch.nous_ventilateur_leonard'], state: 'off' }}),
-        'EvLink en charge': () => ({'switch.mureva_evlink': { ...MOCK_STATES['switch.mureva_evlink'], state: 'on' }, 'binary_sensor.mureva_evlink_charge': { ...MOCK_STATES['binary_sensor.mureva_evlink_charge'], state: 'on' }, 'sensor.mureva_evlink_current': { ...MOCK_STATES['sensor.mureva_evlink_current'], state: '16' }}),
+        'EvLink en charge': () => ({'switch.mureva_evlink': { ...MOCK_STATES['switch.mureva_evlink'], state: 'on' }, 'binary_sensor.mureva_evlink_charge': { ...MOCK_STATES['binary_sensor.mureva_evlink_charge'], state: 'on' }, 'sensor.mureva_evlink_current': { ...MOCK_STATES['sensor.mureva_evlink_current'], state: '16' }, 'sensor.mureva_evlink_power_corrected': { ...MOCK_STATES['sensor.mureva_evlink_power_corrected'], state: '3600' }}),
       }
     },
     lights: {
@@ -1226,7 +1229,12 @@
   function buildMockHass(stateOverrides = {}) {
     const states = { ...MOCK_STATES, ...stateOverrides };
     return {
-      states, areas: MOCK_AREAS, floors: MOCK_FLOORS, entities: MOCK_ENTITIES, devices: {},
+      states, areas: MOCK_AREAS, floors: MOCK_FLOORS, entities: MOCK_ENTITIES,
+      devices: {
+        '31428114e049a5557c8a8a05e2b7f9bd': { id: '31428114e049a5557c8a8a05e2b7f9bd', name: 'Ventilateur Léonard', manufacturer: 'Nous', model: 'A1T', area_id: 'leonard' },
+        'a041422639f495ca70ed05e3a74ff183': { id: 'a041422639f495ca70ed05e3a74ff183', name: 'EvLink', manufacturer: 'Schneider Electric', model: 'Mureva', area_id: 'salon' },
+        '7ae536ffff7d2371aadcdbc90750108d': { id: '7ae536ffff7d2371aadcdbc90750108d', name: 'Paillette Charlotte', manufacturer: 'Nous', model: 'A1T', area_id: 'charlotte' }
+      },
       user: { name: 'Adrien', id: 'adrien', is_admin: true },
       language: currentLanguage,
       locale: { language: currentLanguage, number_format: 'comma_decimal', time_format: '24', date_format: 'DMY', time_zone: 'Europe/Paris', first_weekday: 'monday' },

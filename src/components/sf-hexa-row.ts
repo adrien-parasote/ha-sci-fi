@@ -63,6 +63,7 @@ export class SciFiHexaRow extends LitElement {
       sf-hexa-tile.selected .item-icon sf-icon {
         --icon-width: var(--row-icon-selected-width);
         --icon-height: var(--row-icon-selected-height);
+        --icon-color: var(--sf-primary, #00d2ff) !important;
       }
     `,
   ];

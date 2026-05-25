@@ -193,11 +193,12 @@ export class SciFiClimatesCard extends SciFiBaseCard {
     const floors = getFloors(this.hass).filter(f => this.__hasClimateInFloor(f.floor_id, excluded));
     
     const cells = floors.map(floor => {
+      const active = this.__isFloorActive(floor.floor_id, excluded);
       return {
         id: floor.floor_id,
-        state: this._active_floor_id === floor.floor_id ? 'on' : 'off',
+        state: active ? 'on' : 'off',
         selected: this._active_floor_id === floor.floor_id,
-        active: this.__isFloorActive(floor.floor_id, excluded) ? 'on' : 'off',
+        active: active ? 'on' : 'off',
         icon: floor.icon || 'mdi:home-floor-1',
       };
     });
@@ -246,11 +247,12 @@ export class SciFiClimatesCard extends SciFiBaseCard {
     const areas = getAreasByFloor(this.hass, this._active_floor_id).filter(a => this.__hasClimateInArea(a.area_id, excluded));
     
     const cells = areas.map(area => {
+      const active = this.__isAreaActive(area.area_id, excluded);
       return {
         id: area.area_id,
-        state: this._active_area_id === area.area_id ? 'on' : 'off',
+        state: active ? 'on' : 'off',
         selected: this._active_area_id === area.area_id,
-        active: this.__isAreaActive(area.area_id, excluded) ? 'on' : 'off',
+        active: active ? 'on' : 'off',
         icon: area.icon || 'mdi:sofa',
       };
     });

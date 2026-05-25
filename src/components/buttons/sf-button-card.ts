@@ -39,6 +39,7 @@ export class SciFiCardButton extends SciFiButton {
         justify-content: center;
         column-gap: 10px;
         cursor: pointer;
+        background-color: var(--btn-background, rgba(102, 156, 210, 0.2));
       }
       .btn.col {
         flex-direction: column;

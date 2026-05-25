@@ -25,6 +25,9 @@ export class SciFiWheel extends LitElement {
           var(--sf-border-width, 1px) solid var(--sf-border, rgba(224, 232, 255, 0.1))
         );
         --wheel-row-gap: var(--row-gap, 10px);
+        /* Pass height from flex parent to .container */
+        display: block;
+        height: 100%;
       }
       .container {
         display: flex;
@@ -34,7 +37,11 @@ export class SciFiWheel extends LitElement {
         border-radius: var(--sf-border-radius, 8px);
         padding: var(--container-padding);
         justify-content: center;
+        align-items: center;
         min-width: 90px;
+        /* Fill stretched height when parent uses align-items:stretch */
+        height: 100%;
+        box-sizing: border-box;
       }
       .text {
         font-size: var(--wheel-text-size);

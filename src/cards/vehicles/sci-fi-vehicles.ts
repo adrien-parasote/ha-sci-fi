@@ -1,191 +1,158 @@
 /**
- * <sci-fi-vehicles> — v1.0.0
- * Vehicle monitoring: charging state, battery, autonomy, location, fuel.
- * ADR-005: battery_autonomy + fuel_autonomy (not range), added 7 missing fields.
+ * sci-fi-vehicles — v2.0.0
+ * Spec 12 § sci-fi-vehicles.ts — Full reconstruction: header + landspeeder + AC actions.
+ * Aligned with main branch architecture (sf-landspeeder component, Renault AC service).
  */
 
-import { html, css, type TemplateResult } from 'lit';
-import { customElement } from 'lit/decorators.js';
-import { repeat } from 'lit/directives/repeat.js';
+import { html, nothing, type TemplateResult } from 'lit';
+import { customElement, state } from 'lit/decorators.js';
+import { msg } from '@lit/localize';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
+import { vehicleStyles } from './styles.js';
 import type { SciFiVehiclesConfig, SciFiVehicleEntry } from '../../types/config.js';
+import {
+  HASS_RENAULT_SERVICE,
+  HASS_RENAULT_SERVICE_ACTION_START_AC,
+  HASS_RENAULT_SERVICE_ACTION_STOP_AC,
+} from './vehicle_const.js';
+
+import '../../components/sf-landspeeder.js';
+import '../../components/sf-wheel.js';
+import '../../components/buttons/sf-button-card.js';
+import '../../components/buttons/sf-button.js';
 
 const TAG = 'sci-fi-vehicles';
 
-interface StatEntry {
-  label: string;
-  value: string | null | undefined;
-  unit?: string;
-  className?: string;
-}
-
 @customElement(TAG)
 export class SciFiVehiclesCard extends SciFiBaseCard {
-  static override styles = [
-    sciFiCommonStyles,
-    css`
-      .container { padding: var(--sf-spacing-md); }
-      .vehicles-list {
-        display: flex;
-        flex-direction: column;
-        gap: var(--sf-spacing-md);
-      }
-      .vehicle-card {
-        background: var(--sf-bg-secondary);
-        border: 1px solid var(--sf-border);
-        border-radius: var(--sf-radius);
-        padding: var(--sf-spacing-md);
-      }
-      .vehicle-card[data-charging="true"] {
-        border-color: #00ff9d;
-      }
-      .vehicle-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: var(--sf-spacing-sm);
-      }
-      .vehicle-name {
-        font-size: var(--sf-font-size-lg);
-        font-weight: 700;
-        color: var(--sf-text-primary);
-      }
-      .vehicle-stats {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--sf-spacing-xs) var(--sf-spacing-md);
-        font-size: var(--sf-font-size-sm);
-      }
-      .stat-item {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-      }
-      .stat-label { color: var(--sf-text-secondary); }
-      .stat-value { color: var(--sf-text-primary); font-weight: 600; }
-      .battery-bar-bg {
-        background: rgba(255,255,255,0.1);
-        border-radius: 4px;
-        height: 6px;
-        margin-top: var(--sf-spacing-sm);
-        overflow: hidden;
-      }
-      .battery-bar-fill {
-        height: 100%;
-        border-radius: 4px;
-        transition: width var(--sf-transition-base);
-      }
-      .battery-bar-fill[data-level="high"] { background: #00ff9d; }
-      .battery-bar-fill[data-level="mid"] { background: #ffd60a; }
-      .battery-bar-fill[data-level="low"] { background: #ff4d6d; }
-
-      /* ── Responsive ───────────────────────────────────────── */
-      @container sf-card (max-width: 599px) {
-        .vehicle-stats { grid-template-columns: 1fr; }
-        .container { padding: var(--sf-spacing-sm); }
-      }
-    `,
-  ];
+  static override styles = [sciFiCommonStyles, vehicleStyles];
 
   declare config: SciFiVehiclesConfig;
 
+  @state() private _active_vehicle_id: number = 0;
+  @state() private _selected_temp_id: number = 2; // default 18°C
+  @state() private _is_ac_loading: boolean = false;
+
   protected override renderCard(): TemplateResult {
-    const vehicles = this.config.vehicles;
     return html`
       <ha-card>
-        ${this.config.header_message ? html`<div class="sf-header">${this.config.header_message}</div>` : ''}
         <div class="container">
-          <div class="vehicles-list">
-            ${repeat(vehicles, v => v.id, v => this._renderVehicle(v))}
-          </div>
+          ${this._renderHeader()}
+          <sf-landspeeder
+            .vehicle="${this.config.vehicles[this._active_vehicle_id]}"
+            .hass="${this.hass}"
+          ></sf-landspeeder>
+          ${this._renderActions()}
         </div>
+        <sf-toast></sf-toast>
       </ha-card>
     `;
   }
 
-  private _getState(entityId: string | undefined): string | null {
-    if (!entityId) return null;
-    return this.hass.states[entityId]?.state ?? null;
-  }
+  // ── HEADER ────────────────────────────────────────────────────────────────
 
-  private _renderVehicle(v: SciFiVehicleEntry): TemplateResult {
-    const isCharging = v.charging
-      ? this.hass.states[v.charging]?.state === 'on'
-      : false;
-    const isLocked = v.lock_status
-      ? this.hass.states[v.lock_status]?.state === 'locked'
-      : null;
-    const battery = v.battery_level
-      ? parseFloat(this.hass.states[v.battery_level]?.state ?? '0')
-      : null;
-
-    // ADR-005: battery_autonomy + fuel_autonomy (was range in v1.0.0-wip)
-    const batteryAutonomy = this._getState(v.battery_autonomy);
-    const fuelAutonomy = this._getState(v.fuel_autonomy);
-
-    // ADR-005: newly added fields
-    const chargeState = this._getState(v.charge_state);
-    const plugState = this._getState(v.plug_state);
-    const fuelQuantity = this._getState(v.fuel_quantity);
-    const mileage = this._getState(v.mileage);
-    const location = this._getState(v.location);
-    const locationLastActivity = this._getState(v.location_last_activity);
-    const chargingTime = this._getState(v.charging_remaining_time);
-
-    const batteryLevel = battery !== null && battery !== undefined
-      ? (battery >= 60 ? 'high' : battery >= 30 ? 'mid' : 'low')
-      : 'mid';
-
-    const stats: StatEntry[] = [
-      { label: 'Batterie', value: battery !== null && battery !== undefined ? `${battery}` : null, unit: '%' },
-      { label: 'Autonomie élec.', value: batteryAutonomy, unit: 'km' },
-      { label: 'Autonomie carb.', value: fuelAutonomy, unit: 'km' },
-      { label: 'Carburant', value: fuelQuantity, unit: 'L' },
-      { label: 'Charge', value: chargeState },
-      { label: 'Prise', value: plugState },
-      { label: 'Temps charge', value: chargingTime, unit: 'min' },
-      { label: 'Kilométrage', value: mileage, unit: 'km' },
-      { label: 'Localisation', value: location },
-      { label: 'Dernière activité', value: locationLastActivity },
-      {
-        label: 'Verrouillage',
-        value: isLocked !== null ? (isLocked ? '🔒 Verrouillé' : '🔓 Déverrouillé') : null,
-        className: isLocked ? 'sf-state-on' : 'sf-state-off',
-      },
-    ].filter(s => s.value !== null && s.value !== undefined && s.value !== '');
-
+  private _renderHeader(): TemplateResult {
+    const multiple = this.config.vehicles.length > 1;
+    const v = this.config.vehicles[this._active_vehicle_id]!;
     return html`
-      <div class="vehicle-card" data-charging="${isCharging}">
-        <div class="vehicle-header">
-          <span class="vehicle-name">${v.name}</span>
-          <sf-icon
-            .icon="${isCharging ? 'mdi:ev-station' : 'mdi:car-electric'}"
-            .connection="${this.hass.connection}"
-          ></sf-icon>
+      <div class="header">
+        <div class="${multiple ? '' : 'hide'}">
+          <sf-button icon="mdi:chevron-left" @button-click="${this._prev}"></sf-button>
         </div>
-
-        <div class="vehicle-stats">
-          ${stats.map(s => html`
-            <div class="stat-item">
-              <span class="stat-label">${s.label}</span>
-              <span class="stat-value ${s.className ?? ''}">${s.value}${s.unit === '%' || s.unit === '°' ? s.unit : s.unit ? ` ${s.unit}` : ''}</span>
-            </div>
-          `)}
+        <div class="title">${v.name}</div>
+        <div class="${multiple ? '' : 'hide'}">
+          <sf-button icon="mdi:chevron-right" @button-click="${this._next}"></sf-button>
         </div>
-
-        ${battery !== null && battery !== undefined ? html`
-          <div class="battery-bar-bg">
-            <div
-              class="battery-bar-fill"
-              data-level="${batteryLevel}"
-              style="width: ${Math.max(0, Math.min(100, battery))}%"
-            ></div>
-          </div>
-        ` : ''}
       </div>
     `;
   }
+
+  private _prev = (): void => {
+    const len = this.config.vehicles.length;
+    this._active_vehicle_id = this._active_vehicle_id === 0 ? len - 1 : this._active_vehicle_id - 1;
+  };
+
+  private _next = (): void => {
+    const len = this.config.vehicles.length;
+    this._active_vehicle_id = this._active_vehicle_id === len - 1 ? 0 : this._active_vehicle_id + 1;
+  };
+
+  // ── ACTIONS ───────────────────────────────────────────────────────────────
+
+  private _renderActions(): TemplateResult {
+    const v = this.config.vehicles[this._active_vehicle_id]!;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const tempUnit = (this.hass as any).config?.unit_system?.temperature ?? '°C';
+    const tempItems = Array.from({ length: 10 }, (_, idx) => ({
+      id: String(idx),
+      text: `${idx + 16} ${tempUnit}`,
+    }));
+
+    return html`
+      <div class="actions">
+        <div class="ac">
+          <sf-wheel
+            in-line
+            .items="${tempItems}"
+            selected-id="${String(this._selected_temp_id)}"
+            text="${msg('Temperature')}"
+            @wheel-change="${this._onTempChange}"
+            ?disabled="${this._is_ac_loading}"
+          ></sf-wheel>
+          <sf-button-card
+            icon="mdi:play"
+            title="${msg('Air-cond')}"
+            text="${msg('Start')}"
+            @button-click="${() => this._startAc(v)}"
+            ?disabled="${this._is_ac_loading}"
+          ></sf-button-card>
+          <sf-button-card
+            icon="mdi:stop"
+            title="${msg('Air-cond')}"
+            text="${msg('Stop')}"
+            @button-click="${() => this._stopAc(v)}"
+            ?disabled="${this._is_ac_loading}"
+          ></sf-button-card>
+        </div>
+      </div>
+    `;
+  }
+
+  private _onTempChange = (e: CustomEvent<{ id: string }>): void => {
+    this._selected_temp_id = Number(e.detail.id);
+  };
+
+  private _startAc(v: SciFiVehicleEntry): void {
+    this._is_ac_loading = true;
+    const temperature = this._selected_temp_id + 16;
+    void this.hass
+      .callService(HASS_RENAULT_SERVICE, HASS_RENAULT_SERVICE_ACTION_START_AC, {
+        vehicle: v.id,
+        temperature,
+      })
+      .then(() => { this._showToast(false, msg('done')); })
+      .catch((e: Error) => { this._showToast(true, e.message); })
+      .finally(() => { this._is_ac_loading = false; });
+  }
+
+  private _stopAc(v: SciFiVehicleEntry): void {
+    this._is_ac_loading = true;
+    void this.hass
+      .callService(HASS_RENAULT_SERVICE, HASS_RENAULT_SERVICE_ACTION_STOP_AC, {
+        vehicle: v.id,
+      })
+      .then(() => { this._showToast(false, msg('done')); })
+      .catch((e: Error) => { this._showToast(true, e.message); })
+      .finally(() => { this._is_ac_loading = false; });
+  }
+
+  private _showToast(error: boolean, text: string): void {
+    const toast = this.shadowRoot?.querySelector('sf-toast') as any;
+    if (toast?.addMessage) toast.addMessage(text, error);
+  }
+
+  // ── STATIC CONFIG ─────────────────────────────────────────────────────────
 
   static getConfigElement(): HTMLElement {
     return document.createElement(`${TAG}-editor`);

@@ -411,3 +411,28 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
   "
   ```
 - **Scope**: Applies to ALL LitElement components using `@lit/localize`. Add this check to the VERIFY stage for any card that introduces new `msg()` calls. Add to the spec's Anti-Patterns section: "msg() source strings MUST be English."
+
+### L061: Shadow DOM Height Propagation — `height:100%` Must Chain From Host to Container
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi — sf-wheel.ts vehicle card actions bar
+- **Evidence**: Applied `align-items: stretch` on parent flex row to make `sf-wheel` match `sf-button-card` height. The host element stretched correctly (flex rules apply to the host), but the internal `.container` div ignored the height — it sized itself to content only. 3 iterations to diagnose: tried `justify-content: center` from outside (no effect through shadow boundary), tried `height: 100%` from outside (overrides host but doesn't reach `.container`). Fix: add `display: block; height: 100%` to `:host` + `height: 100%; box-sizing: border-box` to `.container` inside the shadow DOM.
+- **Anti-pattern**: Expecting `align-items: stretch` on a flex parent to automatically cascade height into a shadow DOM component's internal layout. The host element receives the height, but internal divs inside the shadow DOM only inherit height if explicitly set via `height: 100%` on both `:host` and the consuming inner element.
+- **Fix**: To make a shadow DOM component fill its flex-allocated height:
+  ```css
+  /* Inside shadow DOM */
+  :host { display: block; height: 100%; }
+  .container { height: 100%; box-sizing: border-box; }
+  ```
+  External `align-items: stretch` only sets the host's allocated size. The chain must be completed inside the shadow DOM.
+- **Scope**: Applies to ALL Lit Web Components used inside flex/grid containers where height alignment is needed. Add to `sf-button-card`, `sf-wheel`, and any future container-like components.
+
+### L062: `sf-landspeeder` Sizing — flex:1 + height:100% Enables Adaptive Card Layout
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi — vehicle card layout (spec 12)
+- **Evidence**: Fixed `height: 410px` on `sf-landspeeder :host` prevented the speeder from filling available card space. After making `.container { height: 100% }` and `sf-landspeeder { flex: 1; min-height: 0 }` in the parent CSS, plus `:host { height: 100% }` in the component, the speeder fills all space between header and actions bar. Actions bar is always pinned to the bottom via `flex-shrink: 0`.
+- **Pattern**: For full-height sub-components in flex column cards:
+  1. Parent container: `height: 100%; display: flex; flex-direction: column`
+  2. Growing component: `flex: 1; min-height: 0` in parent CSS
+  3. Component `:host`: `height: 100%`
+  4. Fixed-size sections (actions bar): `flex-shrink: 0; justify-content: center`
+- **Scope**: Applies to any card component (stove, climate, vehicle) with a central visual element that should fill available vertical space.

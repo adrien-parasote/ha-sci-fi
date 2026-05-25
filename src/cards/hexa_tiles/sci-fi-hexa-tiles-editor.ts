@@ -70,7 +70,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
       .filter(e => e.entity_id.startsWith('person.'))
       .map(e => ({
         entityId: e.entity_id,
-        friendlyName: (e.attributes['friendly_name'] as string | undefined) ?? e.entity_id,
+        friendlyName: (e.attributes['friendly_name']) ?? e.entity_id,
         entityPicture: (e.attributes['entity_picture'] as string | undefined) ?? null,
       }));
     // Avoid triggering a re-render if the list hasn't changed.
@@ -86,7 +86,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
       .map(e => ({
         entity_id: e.entity_id,
         attributes: {
-          friendly_name: e.attributes['friendly_name'] as string | undefined,
+          friendly_name: e.attributes['friendly_name'],
           icon: e.attributes['icon'] as string | undefined,
         },
       }));
@@ -98,7 +98,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         .map(e => ({
           entity_id: e.entity_id,
           attributes: {
-            friendly_name: e.attributes['friendly_name'] as string | undefined,
+            friendly_name: e.attributes['friendly_name'],
             icon: e.attributes['icon'] as string | undefined,
           },
         }));

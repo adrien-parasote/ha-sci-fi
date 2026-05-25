@@ -256,7 +256,7 @@ export class SciFiPlugsCard extends SciFiBaseCard {
     sensorState: any
   ): TemplateResult {
     const val = sensorState.state;
-    const unit = (sensorState.attributes as any)['unit_of_measurement'] as string | undefined;
+    const unit = (sensorState.attributes)['unit_of_measurement'] as string | undefined;
     const label = entry.name ?? sensorState.attributes?.friendly_name ?? entityId;
     const icon = entry.icon ?? 'mdi:information-outline';
     return html`

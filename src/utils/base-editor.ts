@@ -234,7 +234,7 @@ export abstract class SciFiBaseEditor extends LitElement {
       // ── Status text ───────────────────────────────────────────────────────
       'text-no-vacuum': msg('No vacuum configured.'),
     };
-    return (key in labels ? (labels as Record<string, string>)[key] : '') ?? '';
+    return (key in labels ? (labels)[key] : '') ?? '';
   }
 
   /**

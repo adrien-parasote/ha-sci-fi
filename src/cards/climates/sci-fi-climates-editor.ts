@@ -49,7 +49,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
       .map(e => ({
         entity_id: e.entity_id,
         attributes: {
-          friendly_name: e.attributes['friendly_name'] as string | undefined,
+          friendly_name: e.attributes['friendly_name'],
           icon: e.attributes['icon'] as string | undefined,
         },
       }));
@@ -98,7 +98,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
   private _updateEditTarget(e: CustomEvent<InputUpdateDetail>): void {
     if (!this._editTarget) return;
     const newConfig = this._getNewConfig<SciFiClimatesConfig>();
-    const group = e.detail.kind as string; // 'state_icons' | 'state_colors' | 'mode_icons' | 'mode_colors'
+    const group = e.detail.kind; // 'state_icons' | 'state_colors' | 'mode_icons' | 'mode_colors'
     (newConfig as unknown as Record<string, unknown>)[group] = {
       ...((newConfig as unknown as Record<string, unknown>)[group] as Record<string, string> ?? {}),
       [e.detail.id]: e.detail.value,

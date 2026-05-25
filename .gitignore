@@ -14,3 +14,4 @@ coverage/
 # Local secrets — never commit
 .env
 .env.local
+lint_output.txt

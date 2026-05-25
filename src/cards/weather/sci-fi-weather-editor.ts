@@ -50,7 +50,7 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
       .map(e => ({
         entity_id: e.entity_id,
         attributes: {
-          friendly_name: e.attributes['friendly_name'] as string | undefined,
+          friendly_name: e.attributes['friendly_name'],
           icon: e.attributes['icon'] as string | undefined,
         },
       }));

@@ -387,3 +387,27 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
   ```
   This is a Lit best practice — the Lit documentation explicitly recommends it. Audit all `sf-*` components: any without `display: block` on `:host` will have silent centering/layout bugs in flex/grid parents.
 - **Scope**: Applies to ALL LitElement custom elements. Add as a mandatory check in `/code-review` and spec anti-patterns for all component specs.
+
+### L060: lit-localize msg() Source MUST Be English — French Source Keys Silently Break All Locales
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi — sci-fi-stove.ts bottom bar i18n
+- **Evidence**: 9 `msg()` calls used French strings as source (e.g. `msg('Température')`, `msg('Éteint')`). lit-localize generates hash IDs from the source string. A French source generates a different hash than the English source — absent from `fr.ts`. Result: `getMsg()` finds no entry → returns raw source string. Both EN and FR locales displayed French text, but for the wrong reason. The bug was invisible in FR locale (output was correct by accident) but broken in EN locale (displayed French). Caught by user visual inspection, not by tests.
+- **Anti-pattern**: Using the target language string as the `msg()` source key (e.g. `msg('Température')` instead of `msg('Temperature')`). lit-localize uses the source string to generate the hash key. If the source is French, the hash differs from what `fr.ts` contains (keyed by English hash), so the translation lookup fails silently — the raw source string is returned.
+- **Fix (3-file coordinated change)**:
+  1. `src/cards/*.ts` — `msg('FrenchString')` → `msg('EnglishString')`
+  2. `src/locales/locales/fr.ts` — add `sHASH_OF_ENGLISH: 'FrenchTranslation'`
+  3. `xliff/fr.xlf` — add `<trans-unit id="sHASH">` with `<source>English</source><target>French</target>`
+- **Detection script**: Run this after any new `msg()` addition to verify all keys have FR coverage:
+  ```bash
+  node -e "
+  const { generateMsgId } = require('@lit/localize/internal/id-generation.js');
+  const fs = require('fs');
+  const src = fs.readFileSync('src/path/to/component.ts', 'utf8');
+  const fr = fs.readFileSync('src/locales/locales/fr.ts', 'utf8');
+  [...src.matchAll(/msg\('([^']+)'\)/g)].map(m => m[1]).forEach(str => {
+    const id = generateMsgId([str], false);
+    if (!fr.includes(id)) console.log('MISSING:', id, '->', str);
+  });
+  "
+  ```
+- **Scope**: Applies to ALL LitElement components using `@lit/localize`. Add this check to the VERIFY stage for any card that introduces new `msg()` calls. Add to the spec's Anti-Patterns section: "msg() source strings MUST be English."

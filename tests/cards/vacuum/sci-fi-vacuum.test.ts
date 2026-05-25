@@ -16,11 +16,6 @@ function setConfig(el: SciFiVacuumCard, cfg: object): void {
   (el as any).setConfig(cfg);
 }
 
-function clickSfButton(el: SciFiVacuumCard, selector: string): void {
-  const btn = el.shadowRoot!.querySelector(selector) as HTMLElement | null;
-  btn?.dispatchEvent(new CustomEvent('button-click', { bubbles: true, composed: true }));
-}
-
 // ─── Suite ────────────────────────────────────────────────────────────────────
 
 describe('sci-fi-vacuum', () => {

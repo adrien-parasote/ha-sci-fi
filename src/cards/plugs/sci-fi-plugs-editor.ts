@@ -19,7 +19,6 @@ import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
 import type {
   SciFiPlugsConfig,
   SciFiPlugDevice,
-  SciFiPlugSensorEntry,
 } from '../../types/config.js';
 import type { InputUpdateDetail } from '../../components/editor-inputs/sf-editor-input.js';
 import type { EditorHassEntity } from '../../components/editor-inputs/sf-editor-dropdown-entity.js';
@@ -45,7 +44,7 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
       .map(e => ({
         entity_id: e.entity_id,
         attributes: {
-          friendly_name: e.attributes['friendly_name'] as string | undefined,
+          friendly_name: e.attributes['friendly_name'],
           icon: (e.attributes['icon'] as string | undefined) ?? 'mdi:power-plug',
         },
       }));
@@ -54,7 +53,7 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
       .map(e => ({
         entity_id: e.entity_id,
         attributes: {
-          friendly_name: e.attributes['friendly_name'] as string | undefined,
+          friendly_name: e.attributes['friendly_name'],
           icon: (e.attributes['icon'] as string | undefined) ?? 'mdi:flash',
         },
       }));
@@ -94,7 +93,7 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
     const existingSensors = { ...(device.sensors ?? {}) };
     // Remove existing entry with same role
     for (const [key, entry] of Object.entries(existingSensors)) {
-      if ((entry as SciFiPlugSensorEntry).power === isPower) {
+      if ((entry).power === isPower) {
         delete existingSensors[key];
       }
     }
@@ -114,7 +113,7 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
   private _getPowerSensorEntityId(device: SciFiPlugDevice): string {
     if (!device.sensors) return '';
     for (const [key, entry] of Object.entries(device.sensors)) {
-      if ((entry as SciFiPlugSensorEntry).power === true) return key;
+      if ((entry).power === true) return key;
     }
     return '';
   }
@@ -122,7 +121,7 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
   private _getEnergySensorEntityId(device: SciFiPlugDevice): string {
     if (!device.sensors) return '';
     for (const [key, entry] of Object.entries(device.sensors)) {
-      if ((entry as SciFiPlugSensorEntry).power !== true) return key;
+      if ((entry).power !== true) return key;
     }
     return '';
   }

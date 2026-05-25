@@ -736,7 +736,7 @@ export class SciFiLandspeeder extends LitElement {
           <sf-icon icon="mdi:map-marker" .connection="${this.hass.connection}"></sf-icon>
           <div class="location">
             <div>${this._getLabel(location)}</div>
-            ${locationGps?.latitude != null ? html`
+            ${locationGps?.latitude !== null && locationGps?.latitude !== undefined ? html`
               <sf-button
                 icon="mdi:open-in-new"
                 @button-click="${() => this._openLocation(locationGps.latitude, locationGps.longitude)}"
@@ -756,7 +756,7 @@ export class SciFiLandspeeder extends LitElement {
   }
 
   private _openLocation(latitude: number, longitude: number): void {
-    if (latitude == null) return;
+    if (latitude === null || latitude === undefined) return;
     const isApple = /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent);
     const url = isApple
       ? `maps://?q=${latitude},${longitude}`

@@ -8,5 +8,6 @@ const localizedTemplates = new Map([['fr', templates_fr]]);
 export const { getLocale, setLocale } = configureLocalization({
   sourceLocale,
   targetLocales,
+  // eslint-disable-next-line @typescript-eslint/require-await
   loadLocale: async (locale) => localizedTemplates.get(locale)!,
 });

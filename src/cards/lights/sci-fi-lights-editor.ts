@@ -23,7 +23,6 @@ import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
 import type {
   SciFiLightsConfig,
-  SciFiEntityOverride,
 } from '../../types/config.js';
 import type { InputUpdateDetail } from '../../components/editor-inputs/sf-editor-input.js';
 import type { EditorHassEntity } from '../../components/editor-inputs/sf-editor-dropdown-entity.js';
@@ -75,7 +74,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
           allLights.push({
             entity_id: entry.entity_id,
             attributes: {
-              friendly_name: state?.attributes?.['friendly_name'] as string | undefined,
+              friendly_name: state?.attributes?.['friendly_name'],
               icon: (state?.attributes?.['icon'] as string | undefined) ?? 'mdi:lightbulb',
             },
           });
@@ -221,7 +220,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
     this._dispatchChange(newConfig);
   }
 
-  private _renderCustomEntityRow(entityId: string, override: SciFiEntityOverride): TemplateResult {
+  private _renderCustomEntityRow(entityId: string): TemplateResult {
     return html`
       <div class="entity-row">
         <sf-editor-dropdown-entity
@@ -361,7 +360,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
           <!-- Custom entities -->
           <section>
             <h1>${this.getSectionTitle('section-title-entity-light-custom')}</h1>
-            ${customEntries.map(([id, override]) => this._renderCustomEntityRow(id, override))}
+            ${customEntries.map(([id]) => this._renderCustomEntityRow(id))}
             <button class="add-btn" @click="${this._addCustomEntity}">
               + ${this.getLabel('action-add-custom-entity')}
             </button>

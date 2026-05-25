@@ -1,6 +1,5 @@
 import { css, html, type TemplateResult, type CSSResultGroup } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { sciFiCommonStyles } from '../../styles/common.js';
 import { SciFiButton } from './sf-button.js';
 
 @customElement('sf-button-card')

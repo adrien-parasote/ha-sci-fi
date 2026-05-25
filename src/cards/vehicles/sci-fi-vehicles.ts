@@ -4,7 +4,7 @@
  * Aligned with main branch architecture (sf-landspeeder component, Renault AC service).
  */
 
-import { html, nothing, type TemplateResult } from 'lit';
+import { html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { msg } from '@lit/localize';
 import { SciFiBaseCard } from '../../utils/base-card.js';

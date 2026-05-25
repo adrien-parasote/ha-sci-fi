@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { expect, describe, it, vi } from 'vitest';
+import { expect, describe, it} from 'vitest';
 
 import '../../../src/components/editor-inputs/sf-editor-accordion.js';
 import type { SfEditorAccordion } from '../../../src/components/editor-inputs/sf-editor-accordion.js';

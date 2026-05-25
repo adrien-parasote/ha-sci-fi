@@ -15,6 +15,7 @@ const ALL_CUSTOM_ICONS: Record<string, string> = {
   ...(WEATHER_ICONS as unknown as Record<string, string>),
 };
 
+// eslint-disable-next-line @typescript-eslint/require-await
 async function getIcon(name: string): Promise<{ path: string; viewBox: string } | string> {
   if (!(name in ALL_CUSTOM_ICONS)) {
     console.error(`[sf-iconset] Icon "sci:${name}" not available`);
@@ -26,9 +27,6 @@ async function getIcon(name: string): Promise<{ path: string; viewBox: string } 
   };
 }
 
-async function getIconList(): Promise<{ name: string }[]> {
-  return Object.keys(ALL_CUSTOM_ICONS).map(name => ({ name }));
-}
 
 // Register under the canonical sci: prefix used in production YAML configs
 // Only registers customIconsets (HA API for icon resolution via ha-icon).

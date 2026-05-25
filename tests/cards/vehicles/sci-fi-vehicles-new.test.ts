@@ -6,7 +6,7 @@ import { expect, describe, it, beforeEach, afterEach, vi } from 'vitest';
 
 import '../../../src/cards/vehicles/sci-fi-vehicles.js';
 import { SciFiVehiclesCard } from '../../../src/cards/vehicles/sci-fi-vehicles.js';
-import { makeMockHass, makeMockEntity } from '../../fixtures/mock-hass.js';
+import { makeMockHass } from '../../fixtures/mock-hass.js';
 
 // TC-1213 — vehicle_const.ts exports
 import {

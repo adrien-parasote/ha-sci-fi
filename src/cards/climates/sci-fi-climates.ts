@@ -1,12 +1,12 @@
 import { html, nothing, type TemplateResult } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import { msg } from '@lit/localize';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import { climateStyles } from './styles.js';
 import type { SciFiClimatesConfig } from '../../types/config.js';
 import { getClimateEntitiesExcluding, isClimateActive } from '../../selectors/climate.js';
-import { getFloors, getAreasByFloor, getEntitiesByAreaAndDomain, getFirstFloor, getFloorById, getAreaById, getAreas } from '../../selectors/house.js';
+import { getFloors, getAreasByFloor, getEntitiesByAreaAndDomain, getFloorById, getAreaById, getAreas } from '../../selectors/house.js';
 
 import '../../components/sf-hexa-row.js';
 import '../../components/sf-radiator.js';

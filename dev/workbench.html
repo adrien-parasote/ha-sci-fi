@@ -1061,6 +1061,7 @@
     'sensor.mureva_evlink_current': { entity_id: 'sensor.mureva_evlink_current', state: '0', attributes: { unit_of_measurement: 'A' }},
     'switch.nous_paillette_charlotte': { entity_id: 'switch.nous_paillette_charlotte', state: 'on', attributes: {}},
     'sensor.nous_paillette_charlotte_energy': { entity_id: 'sensor.nous_paillette_charlotte_energy', state: '0.45', attributes: { unit_of_measurement: 'kWh' }},
+    'sensor.nous_paillette_charlotte_power': { entity_id: 'sensor.nous_paillette_charlotte_power', state: '11.2', attributes: { unit_of_measurement: 'W' }},
     'switch.nous_paillette_charlotte_child_lock': { entity_id: 'switch.nous_paillette_charlotte_child_lock', state: 'off', attributes: {}},
     'climate.radiateur_salon': { entity_id: 'climate.radiateur_salon', state: 'heat', attributes: { friendly_name: 'Salon', hvac_mode: 'heat', current_temperature: 20.5, temperature: 21, preset_mode: 'comfort' }},
     'climate.radiateur_cuisine': { entity_id: 'climate.radiateur_cuisine', state: 'auto', attributes: { friendly_name: 'Cuisine', hvac_mode: 'auto', current_temperature: 19, temperature: 20, preset_mode: 'eco' }},
@@ -1190,8 +1191,19 @@
       label: '🔌 Plugs', tag: 'sci-fi-plugs',
       config: { type: 'custom:sci-fi-plugs', devices: [
         { device_id: '31428114e049a5557c8a8a05e2b7f9bd', entity_id: 'switch.nous_ventilateur_leonard', active_icon: 'mdi:fan', inactive_icon: 'mdi:fan-off', name: 'Ventilateur Léonard', sensors: { 'number.nous_ventilateur_leonard_countdown': { show: true, name: 'Countdown', icon: 'mdi:ray-vertex', power: false }, 'select.nous_ventilateur_leonard_power_outage_memory': { show: true, name: 'Power outage memory', power: false }, 'sensor.nous_ventilateur_leonard_power': { show: false, name: 'Puissance', power: true }, 'switch.nous_ventilateur_leonard_child_lock': { show: true, name: 'Child lock', icon: 'mdi:account-lock', power: false }, 'sensor.nous_ventilateur_leonard_energy': { show: true, name: 'Énergie', icon: 'mdi:lightning-bolt', power: false }}},
-        { device_id: 'a041422639f495ca70ed05e3a74ff183', entity_id: 'switch.mureva_evlink', active_icon: 'mdi:ev-plug-type2', inactive_icon: 'mdi:ev-plug-type2', name: 'EvLink', sensors: { 'sensor.mureva_evlink_energy_corrected': { show: true, name: 'Energy corrected', icon: 'mdi:lightning-bolt', power: false }, 'binary_sensor.mureva_evlink_charge': { show: true, name: 'Charge', icon: 'mdi:stop', power: false }, 'sensor.mureva_evlink_current': { show: true, name: 'Courant', power: false }}},
-        { device_id: '7ae536ffff7d2371aadcdbc90750108d', entity_id: 'switch.nous_paillette_charlotte', active_icon: 'mdi:lava-lamp', inactive_icon: 'mdi:lava-lamp', name: 'Paillette Charlotte', sensors: { 'sensor.nous_paillette_charlotte_energy': { show: true, name: 'Energy', icon: 'mdi:lightning-bolt', power: false }, 'switch.nous_paillette_charlotte_child_lock': { show: true, name: 'Child lock', icon: 'mdi:account-lock', power: false }}}
+        { device_id: 'a041422639f495ca70ed05e3a74ff183', entity_id: 'switch.mureva_evlink', active_icon: 'sci:landspeeder-plugged', inactive_icon: 'sci:landspeeder-plugged-off', name: 'EvLink', sensors: {
+          'sensor.mureva_evlink_energy_corrected':   { show: true,  name: 'Energy corrected',          icon: 'mdi:lightning-bolt', power: false },
+          'sensor.mureva_evlink_power_corrected':    { show: false, name: 'Puissance corrected',        power: true },
+          'binary_sensor.mureva_evlink_charge':      { show: true,  name: 'Charge',                     icon: 'mdi:stop',           power: false },
+          'sensor.mureva_evlink_current':            { show: true,  name: 'Courant',                    power: false },
+          'select.mureva_evlink_power_on_behavior':  { show: true,  name: 'Power-on behavior',          icon: 'mdi:power-settings', power: false },
+        }},
+        { device_id: '7ae536ffff7d2371aadcdbc90750108d', entity_id: 'switch.nous_paillette_charlotte', active_icon: 'mdi:lava-lamp', inactive_icon: 'mdi:lava-lamp', name: 'Paillette Charlotte', sensors: {
+          'sensor.nous_paillette_charlotte_power':         { show: false, name: 'Puissance',            power: true },
+          'sensor.nous_paillette_charlotte_energy':        { show: true,  name: 'Energy',               icon: 'mdi:lightning-bolt', power: false },
+          'switch.nous_paillette_charlotte_child_lock':    { show: true,  name: 'Child lock',            icon: 'mdi:account-lock',   power: false },
+          'select.nous_paillette_charlotte_power_outage_memory': { show: true, name: 'Power outage memory', icon: 'mdi:power-settings',  power: false },
+        }}
       ]},
       scenarios: {
         'Normal': () => ({}),
@@ -1236,6 +1248,20 @@
       },
       callService: (domain, service, data) => { log(`🔧 callService(${domain}.${service})`, 'ok'); return Promise.resolve(); },
       callWS: async () => ({}),
+      callApi: async (method, path) => {
+        // Mock history API for plugs power chart
+        log(`📊 callApi(${method}, ${path})`, 'info');
+        if (path.includes('history/period')) {
+          const now = Date.now();
+          // Generate 24h of mock power data (one point every 30 min)
+          const history = Array.from({ length: 48 }, (_, i) => ({
+            last_changed: new Date(now - (47 - i) * 30 * 60 * 1000).toISOString(),
+            state: String(Math.round(10 + Math.random() * 25)),
+          }));
+          return [history];
+        }
+        return [[]];
+      },
     };
   }
 
@@ -1255,6 +1281,22 @@
       subscribeMessage: (cb, msg) => {
         if (haConnection) return haConnection.subscribeMessage(cb, msg);
         return Promise.resolve(() => {});
+      },
+      callApi: async (method, path, parameters) => {
+        if (!haAuth) throw new Error('Not connected to HA');
+        const baseUrl = haAuth.data?.hassUrl ?? haAuth.hassUrl ?? '';
+        const url = `${baseUrl}/api/${path}`;
+        log(`📊 live callApi(${method}, ${path})`, 'live');
+        const res = await fetch(url, {
+          method,
+          headers: {
+            'Authorization': `Bearer ${haAuth.accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          ...(parameters ? { body: JSON.stringify(parameters) } : {}),
+        });
+        if (!res.ok) throw new Error(`HA API ${res.status}: ${path}`);
+        return res.json();
       },
     };
   }

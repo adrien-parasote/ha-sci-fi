@@ -18,7 +18,7 @@ export const climateStyles = css`
     flex-direction: row;
     border-top: var(--sf-border-width, 1px) solid var(--sf-border);
     border-bottom: var(--sf-border-width, 1px) solid var(--sf-border);
-    background-color: transparent;
+    background-color: rgba(13, 17, 23, 0.6);
     padding: 5px 10px;
     font-size: var(--sf-text-sm, 12px);
   }
@@ -95,7 +95,7 @@ export const climateStyles = css`
     border-top: var(--sf-border-width, 1px) solid var(--sf-border);
     padding: 10px;
     justify-content: center;
-    background-color: transparent;
+    background-color: rgba(13, 17, 23, 0.6);
     color: var(--sf-primary);
   }
   .floor-content .title {
@@ -149,6 +149,7 @@ export const climateStyles = css`
     flex: 1;
     align-items: start;
     flex-direction: column;
+    background-color: rgba(13, 17, 23, 0.6);
   }
   .area-content .climates {
     display: flex;

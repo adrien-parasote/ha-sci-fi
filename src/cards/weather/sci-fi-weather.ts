@@ -105,7 +105,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
           justify-content: center;
           column-gap: 20px;
           border-top: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
-          background-color: var(--primary-bg-alpha-color, transparent);
+          background-color: rgba(13, 17, 23, 0.6);
         }
         .header .weather-icon svg {
           width: var(--main-weather-icon-size, 150px);
@@ -139,7 +139,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
           display: flex;
           flex-direction: row;
           column-gap: 10px;
-          background-color: var(--primary-bg-alpha-color, transparent);
+          background-color: rgba(13, 17, 23, 0.6);
           width: 100%;
           justify-content: center;
         }
@@ -174,7 +174,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
           justify-content: center;
           flex-direction: row;
           border-bottom: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
-          background-color: var(--primary-bg-alpha-color, transparent);
+          background-color: rgba(13, 17, 23, 0.6);
           padding-bottom: 10px;
           margin-top: 0px;
         }
@@ -300,7 +300,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
           border-bottom: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
           border-top: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
           padding: 20px 10px;
-          background-color: var(--primary-bg-alpha-color, transparent);
+          background-color: rgba(13, 17, 23, 0.6);
           color: var(--secondary-light-color, #7ca8c9);
           font-weight: bold;
         }

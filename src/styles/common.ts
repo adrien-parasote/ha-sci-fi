@@ -72,6 +72,11 @@ export const sciFiCommonStyles = css`
     container-name: sf-card;
   }
 
+  /* ── Inner container (used by all sci-fi cards) ────────────────────────── */
+  .container {
+    background-color: black;
+  }
+
   /* ── Section header ────────────────────────────────────────────────────── */
   .sf-header {
     display: flex;

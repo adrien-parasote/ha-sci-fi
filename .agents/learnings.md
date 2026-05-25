@@ -463,3 +463,27 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
   2. If absent, add it to `HomeAssistantExt` with the correct optional type BEFORE writing the card code
   3. Check the real HA Home Assistant types (hass-frontend) for the correct shape
 - **Scope**: Applies to all HA custom card projects. `HomeAssistantExt` must be kept in sync with all properties accessed across all cards.
+
+### L065: CSS Custom Property Double-Dash Typo Is Silently Ignored
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi — sci-fi-plugs `styles.ts` icon color debugging
+- **Evidence**: `--icon--color` (double dash) was used throughout `styles.ts` instead of `--icon-color` (single dash). The sf-icon component exposes `color: var(--icon-color, currentColor)` — the double-dash variant is a completely different (undefined) CSS custom property. Icons rendered with `currentColor` fallback (white on dark bg) instead of the intended `rgb(102, 156, 210)`. Zero build errors, zero lint warnings, zero TypeScript errors. Only visible via manual inspection.
+- **Anti-pattern**: Mistyping CSS custom property names. CSS custom properties are case-sensitive and hyphen-sensitive. `--icon--color` and `--icon-color` are two distinct, unrelated properties. The browser silently ignores undefined custom properties and falls back to the fallback value (or `currentColor`).
+- **Fix**: (1) Run `grep -rn -- "--icon--color"` to detect double-dash variants. (2) In specs, document the exact CSS variable name of each sf-* component in a "CSS Variables Exposed" table. (3) When renaming or using CSS variables from a shared component, always verify the exact name with `grep -n "var(--" src/components/<component>/<component>.ts`.
+- **Scope**: Applies to all CSS custom property usage. Especially dangerous in large stylesheets where the correct rendering (via fallback) looks reasonable at first glance.
+
+### L066: HA CORS Must Match Workbench Exact Origin (Protocol + Hostname + Port)
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi — dev/workbench.html CORS debugging
+- **Evidence**: HA `cors_allowed_origins` had `http://localhost:8000` but workbench served on port 8888. `callApi` fetch failed with CORS error in browser console. Fix: add `http://localhost:8888` to `cors_allowed_origins` under the `http:` key (not at the root of `configuration.yaml`).
+- **Anti-pattern**: (1) Assuming the `cors_allowed_origins` list covers all localhost ports — it does not. Each port is a distinct origin. (2) Placing `cors_allowed_origins` outside the `http:` block in `configuration.yaml` — HA silently ignores it.
+- **Fix**: When the workbench runs on a different port than what's in `cors_allowed_origins`, either: (a) add the exact origin to the HA CORS list and restart HA, or (b) launch the workbench server on the already-allowed port (`python3 -m http.server 8000 --directory .`). Always verify the `http:` key nesting in `configuration.yaml`.
+- **Scope**: Applies to all HA custom card development using a standalone workbench that calls `hass.callApi()` (REST) from a browser different from HA's own origin.
+
+### L067: Workbench Card Config Must Be Derived From Real YAML — Never Invented
+- **Date**: 2026-05-25
+- **Source**: ha-sci-fi — dev/workbench.html EvLink + Paillette Charlotte config drift
+- **Evidence**: EvLink workbench config had `active_icon: 'mdi:ev-plug-type2'` (invented) instead of `sci:landspeeder-plugged` (real YAML). Paillette Charlotte was missing `sensor.nous_paillette_charlotte_power` with `power: true`. Both caused silent functional failures: wrong icon displayed, graph missing for Paillette Charlotte. Real YAML in `yaml backup/plugs.yaml` was the correct source of truth.
+- **Anti-pattern**: Inventing workbench card configs instead of deriving them verbatim from the production YAML backup. Even small differences (wrong icon prefix, missing sensor, wrong power flag) cause the workbench to test a different config than production — the workbench becomes a validation fiction.
+- **Fix**: After any card config change in the real YAML, immediately update the corresponding workbench card config from `yaml backup/*.yaml`. Use the production YAML as the single source of truth for all workbench configs. See also L027 (mock state derivation).
+- **Scope**: Applies to all HA custom card projects with a workbench and YAML-driven card configs. Any deviation between workbench config and production YAML introduces a gap between what is tested and what is shipped.

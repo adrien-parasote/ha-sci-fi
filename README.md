@@ -69,26 +69,32 @@ The goal: a single phone entry point to control your entire home.
 
 Animated and static icons loaded via the HA native icon registry — **no CDN, works offline**.
 
-| Name | HA string |
-|---|---|
-| Season winter | `sci:winter` |
-| Season spring | `sci:spring` |
-| Season autumn | `sci:autumn` |
-| Season summer | `sci:summer` |
-| Stove | `sci:stove` |
-| Stove cool | `sci:stove-cool` |
-| Stove eco | `sci:stove-eco` |
-| Stove heat | `sci:stove-heat` |
-| Stove off | `sci:stove-off` |
-| Radiator auto | `sci:radiator-auto` |
-| Radiator frost | `sci:radiator-frost-protection` |
-| Radiator heat | `sci:radiator-heat` |
-| Radiator off | `sci:radiator-off` |
-| Vacuum sleep | `sci:vacuum-sleep` |
-| Vacuum docked | `sci:vacuum-docked` |
-| Landspeeder | `sci:landspeeder` |
-| Landspeeder plugged | `sci:landspeeder-plugged` |
-| Lock unknown | `sci:lock-unknow` |
+| Name | HA string | Preview  |
+| - | - | - |
+| Season winter | `sci:winter` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/winter.svg" alt="Season winter"  height="25"/> |
+| Season spring | `sci:spring` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/spring.svg" alt="Season spring"  height="25"/> |
+| Season autumn | `sci:autumn` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/autumn.svg" alt="Season autumn"  height="25"/> |
+| Season summer | `sci:summer` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/summer.svg" alt="Season summer"  height="25"/> |
+| Stove | `sci:stove` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove.svg" alt="Stove"  height="25"/> |
+| Stove cool | `sci:stove-cool` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_cool.svg" alt="Stove cool"  height="25"/> |
+| Stove eco | `sci:stove-eco` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_eco.svg" alt="Stove eco"  height="25"/> |
+| Stove heat | `sci:stove-heat` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_heat.svg" alt="Stove heat"  height="25"/> |
+| Stove off | `sci:stove-off` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_off.svg" alt="Stove off"  height="25"/> |
+| Stove unknown | `sci:stove-unknow` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/stove_unknow.svg" alt="Stove unknown"  height="25"/> |
+| Radiator auto | `sci:radiator-auto` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_auto.svg" alt="Radiator auto"  height="25"/> |
+| Radiator frost protection | `sci:radiator-frost-protection` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_frost_protection.svg" alt="Radiator frost protection"  height="25"/> |
+| Radiator heat | `sci:radiator-heat` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_heat.svg" alt="Radiator heat"  height="25"/> |
+| Radiator off | `sci:radiator-off` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/radiator_off.svg" alt="Radiator off"  height="25"/> |
+| Sleeping vacuum | `sci:vacuum-sleep` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/sleeping_vacuum.svg" alt="Sleeping vacuum"  height="25"/> |
+| Docked vacuum | `sci:vacuum-docked` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/docked_vacuum.svg" alt="Docked vacuum"  height="25"/> |
+| Landspeeder | `sci:landspeeder` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder.svg" alt="Landspeeder"  height="25"/> |
+| Landspeeder plugged | `sci:landspeeder-plugged` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-plugged.svg" alt="Landspeeder plugged"  height="25"/> |
+| Landspeeder plugged off | `sci:landspeeder-plugged-off` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-plugged-off.svg" alt="Landspeeder plugged off"  height="25"/> |
+| Landspeeder unknown plug | `sci:landspeeder-unknown-plug` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-unknown-plug.svg" alt="Landspeeder unknown plug"  height="25"/> |
+| Landspeeder error plug | `sci:landspeeder-error-plug` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-error-plug.svg" alt="Landspeeder error plug"  height="25"/> |
+| Landspeeder plugged clock | `sci:landspeeder-plugged-clock` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/landspeeder-plugged-clock.svg" alt="Landspeeder plugged clock"  height="25"/> |
+| Power socket fr off | `sci:power-socket-fr-off` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/power-socket-fr-off.svg" alt="Power socket fr off"  height="25"/> |
+| Lock unknown | `sci:lock-unknow` | <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/lock-unknow.svg" alt="Lock unknown"  height="25"/> |
 
 **Weather animated icons** (used by Hexa-Tiles) are loaded via the `sci:` namespace and animate day/night states automatically.
 

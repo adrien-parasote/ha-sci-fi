@@ -12,7 +12,7 @@
 
 import { LitElement, html, svg, nothing, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { resolveIcon, ICON_NOT_FOUND, type HassIconConnection } from './icon-cache.js';
+import { resolveIcon, getSyncCache, ICON_NOT_FOUND, type HassIconConnection } from './icon-cache.js';
 import CUSTOM_ICONS from './data/sf-icons.js';
 import WEATHER_ICONS from './data/sf-weather-icons.js';
 
@@ -128,17 +128,24 @@ export class SfIcon extends LitElement {
 
     // 2. For MDI icons, use HA native registry (no CDN — CRITICAL-01)
     if (prefix === 'mdi') {
+      const iconKey = `mdi:${name}`;
+      const syncHit = getSyncCache(iconKey);
+      if (syncHit !== undefined) {
+        this._pathData = syncHit;
+        return;
+      }
+
       if (!this.connection) {
         console.warn('[sf-icon] No hass connection provided for MDI icon fetch');
         this._pathData = FALLBACK_MDI_PATH;
         return;
       }
       this._loading = true;
-      const result = await resolveIcon(this.connection, `mdi:${name}`, name);
+      const result = await resolveIcon(this.connection, iconKey, name);
       this._loading = false;
 
       if (result === ICON_NOT_FOUND) {
-        console.warn(`[sf-icon] Icon 'mdi:${name}' not found in HA registry`);
+        console.warn(`[sf-icon] Icon '${iconKey}' not found in HA registry`);
         this._pathData = FALLBACK_MDI_PATH; // mdi:help-circle fallback
       } else {
         this._pathData = result;

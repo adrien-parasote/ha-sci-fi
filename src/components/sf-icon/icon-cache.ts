@@ -134,6 +134,11 @@ export async function resolveIcon(
   return pathData;
 }
 
+/** Synchronous cache read to avoid loading flashes. */
+export function getSyncCache(iconKey: string): string | undefined {
+  return memCache.get(iconKey);
+}
+
 /** Clear the in-memory cache (useful for testing). */
 export function clearMemCache(): void {
   memCache.clear();

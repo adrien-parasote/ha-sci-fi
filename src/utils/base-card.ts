@@ -49,6 +49,40 @@ export abstract class SciFiBaseCard extends LitElement {
 
   // ─── Lit lifecycle ──────────────────────────────────────────────────────────
 
+  override shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.size > 1 || (changedProps.size === 1 && !changedProps.has('hass'))) {
+      return true;
+    }
+
+    if (changedProps.has('hass')) {
+      const oldHass = changedProps.get('hass') as HomeAssistantExt | undefined;
+      if (oldHass && this.hass) {
+        if (oldHass.locale?.language !== this.hass.locale?.language) {
+          return true;
+        }
+
+        const relevantEntities = this.getRelevantEntities();
+        if (!relevantEntities || relevantEntities.length === 0) {
+          return true;
+        }
+
+        return relevantEntities.some(
+          entity => oldHass.states[entity] !== this.hass.states[entity]
+        );
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Subclasses should override this to return the list of entity IDs they track.
+   * If it returns an empty array, the card re-renders on EVERY HA state change.
+   */
+  protected getRelevantEntities(): string[] {
+    return [];
+  }
+
   override willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
   }

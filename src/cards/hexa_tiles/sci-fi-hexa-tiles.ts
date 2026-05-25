@@ -330,6 +330,7 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
   override disconnectedCallback(): void {
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
+      this._resizeObserver = undefined;
     }
     super.disconnectedCallback();
   }

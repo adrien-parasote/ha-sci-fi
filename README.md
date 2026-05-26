@@ -119,22 +119,6 @@ cp dist/sci-fi.min.js /path/to/ha/config/www/ha-sci-fi/sci-fi.min.js
 
 Then bump the resource `?v=` number in HA dashboard settings and hard-reload.
 
-### Local workbench
-
-A local UI test environment is available **before** any production deployment:
-
-```bash
-npm run build
-npx serve . --listen 8888 --cors
-open http://localhost:8888/dev/workbench.html
-```
-
-The workbench features:
-- **8 card tabs** with realistic mock data (production YAML entity IDs)
-- **Mock mode** — pre-built scenarios per card (Dobby cleaning, EvLink charging, pellets low…)
-- **Live mode** — connects to a real HA instance via WebSocket (OAuth or Long-Lived Token)
-- Interactive log filters, keyword search, and copy button for debugging
-
 ---
 
 ## 👽 Language / i18n
@@ -199,7 +183,6 @@ To add a language:
 
 #### 🖼️ Custom icons
 - Custom animated SVGs and static icons restored and integrated via `sci:` namespace
-- Workbench mock `ha-icon` defined to support MDI rendering without WebSocket queries
 
 #### 🔧 sf-icon / icon-cache fixes
 - Hybrid native rendering strategy: delegates to `<ha-icon>` in production, avoiding deprecated `frontend/get_icons` WebSocket API
@@ -215,12 +198,6 @@ To add a language:
 #### 🧪 Tests & coverage
 - **566 tests** — 100% TDD file-matching test coverage (every source module has a test file), securing **86% line coverage**, validated under a strict `.tdd_lock` sequence.
 - **Vitest & happy-dom**: Fully compliant with browser DOM mock setups, covering all reactive local and dynamic translations.
-
-#### 🛠️ Workbench improvements
-- Interactive log filters (level + keyword search)
-- Copy button for filtered log output
-- Hexa tile clicks switch the active workbench tab automatically
-- Phone height chain fixed so card fills the simulated screen
 
 ---
 

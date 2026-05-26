@@ -3,7 +3,7 @@
 [![HACS: Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
 [![Last commit](https://img.shields.io/github/last-commit/adrien-parasote/ha-sci-fi)](#)
 [![Current version](https://img.shields.io/github/v/release/adrien-parasote/ha-sci-fi)](https://github.com/adrien-parasote/ha-sci-fi/releases/latest)
-[![Tests](https://img.shields.io/badge/tests-559%20passing-brightgreen)](#)
+[![Tests](https://img.shields.io/badge/tests-566%20passing-brightgreen)](#)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](#)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](#)
 [![Lit](https://img.shields.io/badge/Lit-3.x-blueviolet)](#)
@@ -13,7 +13,7 @@ A collection of custom Lovelace cards for a minimalist sci-fi dashboard in Home 
 The goal: a single phone entry point to control your entire home.
 
 > [!IMPORTANT]
-> **v1.0.0 — State-of-the-Art Urbanization & Performance Update** (Lit 3 · TypeScript 5 · zero CDN · 559 tests · 100% TDD coverage · selective HA rendering).  
+> **v1.0.0 — State-of-the-Art Urbanization & Performance Update** (Lit 3 · TypeScript 5 · zero CDN · 566 tests · 100% TDD coverage · selective HA rendering).  
 > Upgrading? See **[MIGRATION.md](./docs/MIGRATION.md)** for breaking changes and YAML configurations mapping.
 
 ---
@@ -104,7 +104,7 @@ Animated and static icons loaded via the HA native icon registry — **no CDN, w
 
 ```bash
 npm install          # install deps
-npm test             # run 559 tests (Vitest + happy-dom)
+npm test             # run 566 tests (Vitest + happy-dom)
 npm run typecheck    # TypeScript strict check
 npm run lint         # ESLint
 npm run build        # produce dist/sci-fi.min.js
@@ -158,7 +158,14 @@ To add a language:
 
 ## 📋 Changelog
 
-### v1.0.0 — 2026-05-25 *(Finalized & Urbanized)*
+### v1.0.0 — 2026-05-26 *(Finalized & Urbanized)*
+
+#### ⬡ Guidelines Compliance & Lovelace Actions Delta Remediation
+- **Lovelace Actions Support**: Implemented a lightweight, zero-dependency `fireHassAction()` event dispatcher utilizing native CustomEvent bubbling up the DOM tree, fully satisfying Lovelace tap/hold/double_tap custom action configs with zero npm package overhead (saving ~70KB+ in final IIFE bundle).
+- **Interactive triggers**: Bound click/action triggers to custom tiles in `sci-fi-hexa-tiles.ts` and card-level tap actions to the header text in `sci-fi-lights.ts`.
+- **Card Sizing Contract**: Made all 8 custom cards implement the standard `LovelaceCard` typescript interface contract and overrode `getCardSize()` with fallback guards protecting against raw unconfigured instantiation.
+- **Theme and Variable Remediation**: Wrapped climates card in `<ha-card>` for native frames and migrated season colors to CSS custom properties with fallbacks (`var(--sf-season-blue, #acd5f3)`).
+- **Style Cleanup**: Substituted hardcoded colors with `--sf-*` tokens in vacuum card styles, and enabled custom card picker `documentationURL` and HACS plugin classifications.
 
 #### ⬡ Codebase Urbanization & Style Extraction — Major Achievements
 - **Kebab-case Folder Naming**: Renamed `hexa_tiles` to `hexa-tiles` across sources, bundlers, and tests.
@@ -206,7 +213,7 @@ To add a language:
 - Full FR translation map restored (`src/locales/locales/fr.ts` — 170+ entries)
 
 #### 🧪 Tests & coverage
-- **559 tests** — 100% TDD file-matching test coverage, secured by a deterministic `.tdd_lock` validation.
+- **566 tests** — 100% TDD file-matching test coverage, secured by a deterministic `.tdd_lock` validation.
 - **Vitest & happy-dom**: Fully compliant with browser DOM mock setups, covering all reactive local and dynamic translations.
 
 #### 🛠️ Workbench improvements

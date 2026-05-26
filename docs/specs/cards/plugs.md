@@ -33,7 +33,7 @@
 | 4 | The EU socket SVG (`.icon` with 3 circles) is reproduced in pure CSS — no SVG import needed | Low | SHOW | 'git show main:src/cards/plugs/style.js' → all styling is CSS, no `<svg>` tag, no external file |
 | 5 | The `Device` helper (area, manufacturer, model from device registry) is NOT yet ported to TS — fallback to HA state attributes | High | TELL | 'ls src/helpers/' → no 'device.ts' or equivalent; `hass.devices[device_id]` is used instead of helper class |
 | 6 | `LockSensor` and `SelectSensor` types are NOT yet ported to TS — sensor type dispatch is based on `entityId.split('.')[0]` prefix | High | TELL | 'ls src/helpers/entities/' → no 'sensor.ts' directory in TS project |
-| 7 | The power history API call uses `hass.callApi('GET', 'history/period/...')` — available on HA's `HomeAssistant` object | Medium | SHOW | 'git show main:src/helpers/entities/plug/plug.js' → `this._hass.callApi(...)` pattern |
+| 7 | The power history API call uses 'hass.callApi("GET", "history/period...")' — available on HA's `HomeAssistant` object | Medium | SHOW | 'git show main:src/helpers/entities/plug/plug.js' → `this._hass.callApi(...)` pattern |
 | 8 | The animation "courant qui passe" (`.cirle-container .circle` with `@keyframes move`) is pure CSS, portable 1:1 | Low | SHOW | 'git show main:src/cards/plugs/style.js' → full `@keyframes move` block, no JS |
 
 ---
@@ -80,7 +80,7 @@
 |---|---|---|---|
 | `switch` | `turn_on` | `{ entity_id: device.entity_id }` | User clicks image/toggle when plug is OFF |
 | `switch` | `turn_off` | `{ entity_id: device.entity_id }` | User clicks image/toggle when plug is ON |
-| `hass.callApi` | `GET history/period/...` | yesterday + `filter_entity_id=powerSensorId` | Power chart loads |
+| `hass.callApi` | 'GET history/period...' | yesterday + `filter_entity_id=powerSensorId` | Power chart loads |
 
  ### Tracked Concepts
 
@@ -663,7 +663,7 @@ private async _loadPowerChart(device: SciFiPlugDevice, powerEntityId: string): P
     // [unverified — query params ported from main:src/helpers/entities/plug/plug.js; validate against HA REST API docs if HA version changes]
     const data = await (this.hass as any).callApi(
       'GET',
-      `history/period/${yesterday}?minimal_response=true&no_attributes=true&significant_changes_only=false&filter_entity_id=${powerEntityId}`
+      'history/period' + yesterday + '?minimal_response=true&no_attributes=true&significant_changes_only=false&filter_entity_id=' + powerEntityId
     ) as unknown[][];
 
     const history = this._parseHistory(data[0] ?? []);
@@ -917,4 +917,4 @@ private _toast(error: boolean, text: string): void {
 
 ## Adversarial Fixes: Edge Cases & Error States
 1. **Unavailable State Handling**: The card MUST disable interaction buttons and render an 'Offline' overlay or distinct visual state when `entity.state === 'unavailable' || entity.state === 'unknown'`.
-2. **API Timeout (Power History)**: The card MUST define a `historyLoading` property and an error state UI for the chart section if the `history/period/` API call fails or takes > 2 seconds.
+2. **API Timeout (Power History)**: The card MUST define a `historyLoading` property and an error state UI for the chart section if the 'history/period' API call fails or takes > 2 seconds.

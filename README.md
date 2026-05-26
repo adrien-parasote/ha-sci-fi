@@ -4,7 +4,7 @@
 [![Last commit](https://img.shields.io/github/last-commit/adrien-parasote/ha-sci-fi)](#)
 [![Current version](https://img.shields.io/github/v/release/adrien-parasote/ha-sci-fi)](https://github.com/adrien-parasote/ha-sci-fi/releases/latest)
 [![Tests](https://img.shields.io/badge/tests-566%20passing-brightgreen)](#)
-[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](#)
+[![Coverage](https://img.shields.io/badge/coverage-86%25-brightgreen)](#)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](#)
 [![Lit](https://img.shields.io/badge/Lit-3.x-blueviolet)](#)
 [![i18n](https://img.shields.io/badge/i18n-FR%20%7C%20EN-informational)](#)
@@ -13,7 +13,7 @@ A collection of custom Lovelace cards for a minimalist sci-fi dashboard in Home 
 The goal: a single phone entry point to control your entire home.
 
 > [!IMPORTANT]
-> **v1.0.0 — State-of-the-Art Urbanization & Performance Update** (Lit 3 · TypeScript 5 · zero CDN · 566 tests · 100% TDD coverage · selective HA rendering).  
+> **v1.0.0 — State-of-the-Art Urbanization & Performance Update** (Lit 3 · TypeScript 5 · zero CDN · 566 tests · 100% TDD file matching · 86% line coverage · selective HA rendering).  
 > Upgrading? See **[MIGRATION.md](./docs/MIGRATION.md)** for breaking changes and YAML configurations mapping.
 
 ---
@@ -213,7 +213,7 @@ To add a language:
 - Full FR translation map restored (`src/locales/locales/fr.ts` — 170+ entries)
 
 #### 🧪 Tests & coverage
-- **566 tests** — 100% TDD file-matching test coverage, secured by a deterministic `.tdd_lock` validation.
+- **566 tests** — 100% TDD file-matching test coverage (every source module has a test file), securing **86% line coverage**, validated under a strict `.tdd_lock` sequence.
 - **Vitest & happy-dom**: Fully compliant with browser DOM mock setups, covering all reactive local and dynamic translations.
 
 #### 🛠️ Workbench improvements

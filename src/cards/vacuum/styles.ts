@@ -2,14 +2,8 @@
  * styles.ts — CSS for sci-fi-vacuum card.
  * Ported 1:1 from main:src/cards/vacuum/style.js
  *
- * Color values from main:src/helpers/styles/common_style.js:
- *   --primary-light-color        = rgb(105, 211, 251)       → header text, values, active dots
- *   --secondary-light-color      = rgb(102, 156, 210)       → icons, units, dim labels
- *   --primary-light-alpha-color  = rgba(105, 211, 251, 0.5) → inactive dots
- *   --primary-error-color        = rgb(250, 146, 29)        → ALERT icon
- *   --primary-bg-alpha-color     = rgba(39, 40, 43, 0.3)    → section backgrounds
- *   --secondary-bg-color         = rgb(55, 61, 69)          → borders in map/info/actions
- *   --primary-bg-color           = rgb(39, 40, 43)          → border header/devices
+ * Fully refactored to use standard CSS custom properties and design tokens
+ * defined in src/styles/common.ts for theme compatibility.
  */
 
 import { css } from 'lit';
@@ -18,7 +12,7 @@ export const vacuumStyles = css`
   :host {
     display: flex;
     flex-direction: column;
-    background-color: black;
+    background-color: var(--sf-bg, black);
     height: 100%;
     width: 100%;
     min-height: 732px;
@@ -41,14 +35,14 @@ export const vacuumStyles = css`
   .header {
     display: flex;
     flex-direction: row;
-    border-bottom: 1px solid rgb(39, 40, 43);
-    background-color: rgba(39, 40, 43, 0.3);
+    border-bottom: 1px solid var(--sf-border);
+    background-color: var(--sf-bg-secondary);
     padding: 10px;
-    color: rgb(105, 211, 251);
+    color: var(--sf-primary);
     font-size: var(--sf-font-size-base, 14px);
   }
   .header .name {
-    text-shadow: 0px 0px 5px rgb(105, 211, 251);
+    text-shadow: 0px 0px 5px var(--sf-primary);
   }
   .header .infoH {
     display: flex;
@@ -68,25 +62,25 @@ export const vacuumStyles = css`
   /* Battery warning/critical colors — mirrors sf-landspeeder thresholds */
   .header .infoH sf-icon.battery-warn,
   .header .infoH div.battery-warn {
-    --icon-color: rgb(255, 215, 0); /* amber — --primary-warning-color */
-    color: rgb(255, 215, 0);
-    text-shadow: 0 0 5px rgb(255, 215, 0);
+    --icon-color: var(--sf-warning);
+    color: var(--sf-warning);
+    text-shadow: 0 0 5px var(--sf-warning);
   }
   .header .infoH sf-icon.battery-critical,
   .header .infoH div.battery-critical {
-    --icon-color: rgb(250, 146, 29); /* red-orange — --primary-error-color */
-    color: rgb(250, 146, 29);
-    text-shadow: 0 0 5px rgb(250, 146, 29);
+    --icon-color: var(--sf-error);
+    color: var(--sf-error);
+    text-shadow: 0 0 5px var(--sf-error);
   }
 
   /*********** DEVICES *************/
   .devices {
     display: flex;
     flex-direction: row;
-    border-top: 1px solid rgb(39, 40, 43);
-    background-color: rgba(39, 40, 43, 0.3);
+    border-top: 1px solid var(--sf-border);
+    background-color: var(--sf-bg-secondary);
     padding: 10px;
-    color: rgb(105, 211, 251);
+    color: var(--sf-primary);
     font-size: var(--sf-font-size-base, 14px);
   }
   .devices .number {
@@ -101,12 +95,12 @@ export const vacuumStyles = css`
     content: '';
     width: 10px;
     height: 10px;
-    background-color: rgba(105, 211, 251, 0.5);
+    background-color: var(--sf-primary-dim);
     text-decoration: none;
     border-radius: 50%;
   }
   .devices .number > div.active {
-    background-color: rgb(105, 211, 251);
+    background-color: var(--sf-primary);
   }
 
   /*********** SUB HEADER *************/
@@ -121,7 +115,7 @@ export const vacuumStyles = css`
     position: absolute;
     --icon-width: 40px;
     --icon-height: 40px;
-    --icon-color: rgb(105, 211, 251);
+    --icon-color: var(--sf-primary);
   }
   .sub-header sf-icon.DOCKED {
     transform: rotate(90deg);
@@ -159,7 +153,7 @@ export const vacuumStyles = css`
     left: calc(50% - 20px);
   }
   .sub-header sf-icon.ALERT {
-    --icon-color: rgb(250, 146, 29);
+    --icon-color: var(--sf-error);
   }
 
   /*********** MAP *************/
@@ -170,7 +164,7 @@ export const vacuumStyles = css`
     justify-content: center;
   }
   .map .image {
-    border: 1px solid rgb(55, 61, 69);
+    border: 1px solid var(--sf-border);
     border-radius: var(--sf-radius, 8px);
     width: auto;
     height: 100%;
@@ -178,7 +172,7 @@ export const vacuumStyles = css`
     overflow: hidden;
   }
   .map .map-content {
-    color: rgb(102, 156, 210);
+    color: var(--sf-text-secondary);
     align-self: center;
   }
 
@@ -187,9 +181,9 @@ export const vacuumStyles = css`
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    border-top: 1px solid rgb(55, 61, 69);
-    border-bottom: 1px solid rgb(55, 61, 69);
-    background-color: rgba(39, 40, 43, 0.3);
+    border-top: 1px solid var(--sf-border);
+    border-bottom: 1px solid var(--sf-border);
+    background-color: var(--sf-bg-secondary);
   }
   .info .sensor {
     width: 183px;
@@ -200,7 +194,7 @@ export const vacuumStyles = css`
     align-items: center;
   }
   .info .sensor sf-icon {
-    --icon-color: rgb(102, 156, 210);
+    --icon-color: var(--sf-text-secondary);
   }
   .info .sensor .data {
     display: flex;
@@ -209,14 +203,14 @@ export const vacuumStyles = css`
     column-gap: 5px;
   }
   .info .sensor .data .value {
-    color: rgb(105, 211, 251);
-    text-shadow: 0px 0px 5px rgb(105, 211, 251);
+    color: var(--sf-primary);
+    text-shadow: 0px 0px 5px var(--sf-primary);
   }
   .info .sensor .data .unit {
-    color: rgb(102, 156, 210);
+    color: var(--sf-text-secondary);
   }
   .info .sensor .name {
-    color: rgb(102, 156, 210);
+    color: var(--sf-text-secondary);
     font-size: var(--sf-font-size-sm, 12px);
   }
 
@@ -227,8 +221,8 @@ export const vacuumStyles = css`
     flex-direction: row;
     column-gap: 5px;
     padding: 10px 10px 15px 10px;
-    border-top: 1px solid rgb(55, 61, 69);
-    background-color: rgba(39, 40, 43, 0.3);
+    border-top: 1px solid var(--sf-border);
+    background-color: var(--sf-bg-secondary);
     justify-content: center;
     margin-top: auto;
   }

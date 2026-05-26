@@ -285,6 +285,26 @@ describe('sci-fi-climates', () => {
     expect((el as any)._active_floor_id).to.equal('ground');
     expect((el as any)._active_area_id).to.equal('living_room');
   });
+
+  // IT-112: Climates card is wrapped in ha-card
+  it('IT-112: renders climates card wrapped in ha-card element', async () => {
+    const el = document.createElement('sci-fi-climates') as SciFiClimatesCard;
+    el.setConfig(SciFiClimatesCard.getStubConfig());
+    el.hass = makeMockHass({
+      entities: {
+        'climate.salon': makeMockEntityEntry({ entity_id: 'climate.salon', area_id: 'living_room', domain: 'climate' }),
+      },
+      states: {
+        'climate.salon': makeMockEntity({ entity_id: 'climate.salon', state: 'heat', attributes: { current_temperature: 21.5 } }),
+      }
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const haCard = el.shadowRoot!.querySelector('ha-card');
+    expect(haCard).to.exist;
+    expect(haCard!.querySelector('.container')).to.exist;
+  });
 });
 
 

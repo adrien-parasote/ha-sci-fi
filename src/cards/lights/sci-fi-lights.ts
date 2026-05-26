@@ -11,6 +11,7 @@ import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import type { SciFiLightsConfig } from '../../types/config.js';
 import type { HassFloor, HassArea, HassEntityEntry } from '../../types/ha.js';
+import { fireHassAction } from '../../utils/action.js';
 import {
   getFloors,
   getAreasByFloor,
@@ -163,11 +164,19 @@ export class SciFiLightsCard extends SciFiBaseCard {
             title="${houseActive ? 'Tout éteindre' : 'Tout allumer'}"
             @click="${() => this._toggleAllLights(houseActive)}"
           >${this._powerSvg()}</button>
-          <span class="header-text">${label}</span>
+          <span class="header-text" @click="${this._handleHeaderClick}" style="${this.config.tap_action ? 'cursor: pointer;' : ''}">${label}</span>
         </div>
         <div class="weather-icon">${this._getDayNightIcon()}</div>
       </div>
     `;
+  }
+
+  private _handleHeaderClick(e: MouseEvent): void {
+    if (this.config.tap_action) {
+      e.preventDefault();
+      e.stopPropagation();
+      fireHassAction(this, this.config, 'tap');
+    }
   }
 
   // ── Floor hexagon ────────────────────────────────────────────────────────────
@@ -420,7 +429,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
   }
 
   override getCardSize(): number {
-    return 5;
+    return this.config ? 5 : 3;
   }
 }
 

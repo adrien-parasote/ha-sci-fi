@@ -85,16 +85,18 @@ export class SciFiClimatesCard extends SciFiBaseCard {
     }
 
     return html`
-      <div class="container">
-        <div class="header">${this.__displayHeader()}</div>
-        <div class="floors">${this.__displayFloors(excluded)}</div>
-        <div class="floor-content">${this.__displayFloorInfo()}</div>
-        <div class="areas">
-          <div class="area-list">${this.__displayAreas(excluded)}</div>
-          ${this.__displayAreaInfo(excluded)}
+      <ha-card>
+        <div class="container">
+          <div class="header">${this.__displayHeader()}</div>
+          <div class="floors">${this.__displayFloors(excluded)}</div>
+          <div class="floor-content">${this.__displayFloorInfo()}</div>
+          <div class="areas">
+            <div class="area-list">${this.__displayAreas(excluded)}</div>
+            ${this.__displayAreaInfo(excluded)}
+          </div>
         </div>
-      </div>
-      <sf-toast></sf-toast>
+        <sf-toast></sf-toast>
+      </ha-card>
     `;
   }
 
@@ -354,6 +356,10 @@ export class SciFiClimatesCard extends SciFiBaseCard {
     } else {
       console.warn(`Toast (${error ? 'ERROR' : 'OK'}): ${text}`);
     }
+  }
+
+  override getCardSize(): number {
+    return this.config ? 5 : 3;
   }
 
   static getConfigElement(): HTMLElement {

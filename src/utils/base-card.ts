@@ -15,7 +15,13 @@ import type { HomeAssistantExt } from '../types/ha.js';
 import type { SciFiBaseConfig } from '../types/config.js';
 import { getLocale, setLocale } from '../locales/localization.js';
 
-export abstract class SciFiBaseCard extends LitElement {
+export interface LovelaceCard extends HTMLElement {
+  hass?: any;
+  setConfig(config: any): void;
+  getCardSize?(): number;
+}
+
+export abstract class SciFiBaseCard extends LitElement implements LovelaceCard {
   private _hass!: HomeAssistantExt;
 
   get hass(): HomeAssistantExt {

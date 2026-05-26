@@ -5,7 +5,6 @@ export const climateStyles = css`
     font-size: var(--sf-text-sm, 12px);
     height: 100%;
     width: 100%;
-    background-color: rgba(39, 40, 43, 0.3);
   }
   .container {
     display: flex;
@@ -67,10 +66,10 @@ export const climateStyles = css`
     --icon-width: var(--sf-icon-size-sm, 16px);
     --icon-height: var(--sf-icon-size-sm, 16px);
   }
-  .header .season.blue sf-icon { --icon-color: #acd5f3; }
-  .header .season.green sf-icon { --icon-color: #ace1af; }
-  .header .season.yellow sf-icon { --icon-color: #fdda0d; }
-  .header .season.orange sf-icon { --icon-color: #f47b20; }
+  .header .season.blue sf-icon { --icon-color: var(--sf-season-blue, #acd5f3); }
+  .header .season.green sf-icon { --icon-color: var(--sf-season-green, #ace1af); }
+  .header .season.yellow sf-icon { --icon-color: var(--sf-season-yellow, #fdda0d); }
+  .header .season.orange sf-icon { --icon-color: var(--sf-season-orange, #f47b20); }
   
   /*********** FLOORS *************/
   .floors {

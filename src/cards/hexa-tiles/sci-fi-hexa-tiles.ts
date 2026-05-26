@@ -10,6 +10,7 @@ import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import type { SciFiHexaTilesConfig, SciFiHexaTileConfig } from '../../types/config.js';
 import type { HassEntity } from '../../types/ha.js';
+import { fireHassAction } from '../../utils/action.js';
 
 import { hexaTilesStyles } from './styles.js';
 
@@ -399,8 +400,19 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
       ? (tile.active_icon ?? state?.attributes.icon ?? defaultIcon)
       : (tile.inactive_icon ?? state?.attributes.icon ?? defaultIcon);
 
-    const handleClick = (): void => {
-      if (tile.link) this._navigate(tile.link);
+    const handleClick = (e: MouseEvent): void => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (tile.tap_action) {
+        fireHassAction(this, tile, 'tap');
+      } else if (tile.link) {
+        this._navigate(tile.link);
+      } else if (tile.entity) {
+        fireHassAction(this, {
+          entity: tile.entity,
+          tap_action: { action: 'more-info' }
+        }, 'tap');
+      }
     };
 
     return html`
@@ -433,6 +445,10 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     }
     window.history.pushState(null, '', path);
     window.dispatchEvent(new CustomEvent('location-changed', { detail: { replace: false } }));
+  }
+
+  override getCardSize(): number {
+    return this.config ? 6 : 3;
   }
 
   static getConfigElement(): HTMLElement {

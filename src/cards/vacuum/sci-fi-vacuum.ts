@@ -333,6 +333,10 @@ export class SciFiVacuumCard extends SciFiBaseCard {
     if (toast?.addMessage) toast.addMessage(text, error);
   }
 
+  override getCardSize(): number {
+    return this.config ? 6 : 3;
+  }
+
   static getConfigElement(): HTMLElement {
     return document.createElement(`${TAG}-editor`);
   }

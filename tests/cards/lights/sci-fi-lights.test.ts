@@ -37,6 +37,7 @@ describe('sci-fi-lights', () => {
 
   it('returns card size of 5', () => {
     const el = document.createElement('sci-fi-lights') as SciFiLightsCard;
+    (el as any).setConfig(SciFiLightsCard.getStubConfig());
     expect(el.getCardSize()).to.equal(5);
   });
 
@@ -263,6 +264,42 @@ describe('sci-fi-lights', () => {
     globalPowerBtn.click();
     await new Promise(r => setTimeout(r, 10));
     expect(callServiceMock).toHaveBeenLastCalledWith('light', 'turn_off', { entity_id: ['light.salon'] });
+  });
+
+  it('handles card-level tap_action when header text is clicked', async () => {
+    const el = document.createElement('sci-fi-lights') as SciFiLightsCard;
+    (el as any).setConfig({
+      type: 'custom:sci-fi-lights',
+      header_message: 'House Lights Custom',
+      tap_action: {
+        action: 'navigate',
+        navigation_path: '/lovelace/home'
+      }
+    });
+
+    el.hass = makeMockHass({
+      floors: {
+        'ground': makeMockFloor({ floor_id: 'ground', name: 'Ground Floor', level: 0 })
+      }
+    });
+
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const headerText = el.shadowRoot!.querySelector('.header-text') as HTMLElement;
+    expect(headerText).to.exist;
+    expect(headerText.style.cursor).to.equal('pointer');
+
+    const spy = vi.fn();
+    el.addEventListener('hass-action', spy);
+
+    headerText.click();
+
+    expect(spy).toHaveBeenCalledOnce();
+    const event = spy.mock.calls[0]![0] as CustomEvent;
+    expect(event.detail.action).toBe('tap');
+    expect(event.detail.config.tap_action.action).toBe('navigate');
+    expect(event.detail.config.tap_action.navigation_path).toBe('/lovelace/home');
   });
 });
 

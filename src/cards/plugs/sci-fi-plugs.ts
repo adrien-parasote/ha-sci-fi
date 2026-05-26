@@ -531,6 +531,10 @@ export class SciFiPlugsCard extends SciFiBaseCard {
 
   // ── Card registration ──────────────────────────────────────────────────────
 
+  override getCardSize(): number {
+    return this.config ? 5 : 3;
+  }
+
   static getConfigElement(): HTMLElement {
     return document.createElement(`${TAG}-editor`);
   }

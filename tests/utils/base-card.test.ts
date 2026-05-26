@@ -112,4 +112,11 @@ describe('SciFiBaseCard', () => {
     const card = new TestCard();
     expect(card.getCardSize()).toBeGreaterThan(0);
   });
+
+  it('TC-113: complies with LovelaceCard interface', () => {
+    const card = new TestCard();
+    expect(card.setConfig).toBeDefined();
+    expect(card.getCardSize).toBeDefined();
+    expect('hass' in card).toBe(true);
+  });
 });

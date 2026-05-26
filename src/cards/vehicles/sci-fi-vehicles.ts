@@ -177,6 +177,10 @@ export class SciFiVehiclesCard extends SciFiBaseCard {
 
   // ── STATIC CONFIG ─────────────────────────────────────────────────────────
 
+  override getCardSize(): number {
+    return this.config ? 5 : 3;
+  }
+
   static getConfigElement(): HTMLElement {
     return document.createElement(`${TAG}-editor`);
   }

@@ -11,6 +11,9 @@
 export interface SciFiBaseConfig {
   readonly type: string;
   readonly header_message?: string;
+  readonly tap_action?: ActionConfig;
+  readonly hold_action?: ActionConfig;
+  readonly double_tap_action?: ActionConfig;
 }
 
 // ─── sci-fi-hexa-tiles ────────────────────────────────────────────────────────
@@ -38,6 +41,9 @@ export interface SciFiHexaTileConfig {
   readonly state_error?: string;
   readonly link?: string;                    // navigation path (e.g. 'lights')
   readonly visibility?: readonly string[];   // person entity IDs
+  readonly tap_action?: ActionConfig;
+  readonly hold_action?: ActionConfig;
+  readonly double_tap_action?: ActionConfig;
 }
 
 export interface SciFiHexaTilesConfig extends SciFiBaseConfig {

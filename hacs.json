@@ -1,5 +1,6 @@
 {
-    "name": "Sci-fi cards for HA dashboard",
-    "render_readme": true,
-    "filename": "sci-fi.min.js"
-  }
+  "name": "Sci-fi cards for HA dashboard",
+  "type": "plugin",
+  "render_readme": true,
+  "filename": "sci-fi.min.js"
+}

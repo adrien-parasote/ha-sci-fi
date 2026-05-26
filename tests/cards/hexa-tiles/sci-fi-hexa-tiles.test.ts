@@ -511,5 +511,46 @@ describe('sci-fi-hexa-tiles', () => {
     const mediaTile = el.shadowRoot!.querySelectorAll('.hexa-tile[role="button"]')[0] as HTMLElement;
     expect(mediaTile.getAttribute('data-active')).to.equal('true');
   });
+
+  it('IT-111: Hexa-tiles handles custom click action and dispatches hass-action event', async () => {
+    const el = document.createElement('sci-fi-hexa-tiles') as SciFiHexaTilesCard;
+    el.setConfig({
+      type: 'custom:sci-fi-hexa-tiles',
+      tiles: [
+        {
+          entity: 'light.living_room',
+          name: 'Living Room Light',
+          tap_action: {
+            action: 'call-service',
+            service: 'light.turn_on',
+            service_data: { entity_id: 'light.living_room' }
+          }
+        }
+      ]
+    } as unknown as any);
+
+    el.hass = makeMockHass({
+      states: {
+        'light.living_room': makeMockEntity({ entity_id: 'light.living_room', state: 'off' })
+      }
+    });
+
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const tile = el.shadowRoot!.querySelector('.hexa-tile[role="button"]') as HTMLElement;
+    expect(tile).to.exist;
+
+    const spy = vi.fn();
+    el.addEventListener('hass-action', spy);
+
+    tile.click();
+
+    expect(spy).toHaveBeenCalledOnce();
+    const event = spy.mock.calls[0]![0] as CustomEvent;
+    expect(event.detail.action).toBe('tap');
+    expect(event.detail.config.entity).toBe('light.living_room');
+    expect(event.detail.config.tap_action.action).toBe('call-service');
+  });
 });
 

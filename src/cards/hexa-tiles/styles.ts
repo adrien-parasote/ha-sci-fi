@@ -2,8 +2,8 @@ import { css } from 'lit';
 
 export const hexaTilesStyles = css`
   ha-card {
-    background: #000000 !important;
-    border: none !important;
+    background: var(--ha-card-background, #000000) !important;
+    border: var(--ha-card-border, none) !important;
     padding: var(--sf-spacing-md) 0;
     display: block;
     width: 100%;
@@ -45,7 +45,7 @@ export const hexaTilesStyles = css`
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--sf-bg-secondary);
     position: relative;
   }
   .avatar img {
@@ -87,7 +87,7 @@ export const hexaTilesStyles = css`
   .header-name {
     font-size: 1.2rem;
     font-weight: bold;
-    color: #ffffff;
+    color: var(--sf-text-primary, #ffffff);
     text-shadow: 0 0 6px var(--sf-primary, #00d2ff);
   }
 
@@ -143,8 +143,8 @@ export const hexaTilesStyles = css`
     display: block;
   }
   .hexa-half svg polygon {
-    fill: rgba(16, 22, 38, 0.6);
-    stroke: rgba(224, 232, 255, 0.1);
+    fill: var(--sf-tile-inactive-bg, rgba(16, 22, 38, 0.6));
+    stroke: var(--sf-border, rgba(224, 232, 255, 0.1));
     stroke-width: 1.5px;
   }
 
@@ -164,7 +164,7 @@ export const hexaTilesStyles = css`
 
   /* Active vs Inactive tile styles */
   .hexa-tile[data-active="true"] .hexa-bg {
-    fill: rgba(0, 210, 255, 0.08);
+    fill: var(--sf-primary-dim, rgba(0, 210, 255, 0.08));
   }
   .hexa-tile[data-active="true"] .hexa-border {
     stroke: var(--sf-primary, #00d2ff);
@@ -172,10 +172,10 @@ export const hexaTilesStyles = css`
     filter: drop-shadow(0 0 4px var(--sf-primary, #00d2ff));
   }
   .hexa-tile[data-active="false"] .hexa-bg {
-    fill: rgba(16, 22, 38, 0.6);
+    fill: var(--sf-tile-inactive-bg, rgba(16, 22, 38, 0.6));
   }
   .hexa-tile[data-active="false"] .hexa-border {
-    stroke: rgba(224, 232, 255, 0.1);
+    stroke: var(--sf-border, rgba(224, 232, 255, 0.1));
     stroke-width: 1.5px;
   }
 
@@ -209,40 +209,40 @@ export const hexaTilesStyles = css`
     filter: drop-shadow(0 0 3px var(--sf-primary, #00d2ff));
   }
   .hexa-tile[data-active="false"] .hexa-content sf-icon {
-    --icon-color: rgba(224, 232, 255, 0.4);
+    --icon-color: var(--sf-text-disabled, rgba(224, 232, 255, 0.4));
   }
   .hexa-tile.weather-tile[data-active="true"] .hexa-content sf-icon {
-    --icon-color: #ffd60a;
-    filter: drop-shadow(0 0 3px #ffd60a);
+    --icon-color: var(--sf-warning, #ffd60a);
+    filter: drop-shadow(0 0 3px var(--sf-warning, #ffd60a));
   }
 
   /* Alert-level border colors on weather tile */
   .hexa-tile.weather-tile[data-alert-level="yellow"] .hexa-border {
-    stroke: #ffd60a;
+    stroke: var(--sf-warning, #ffd60a);
     stroke-width: 2px;
-    filter: drop-shadow(0 0 6px #ffd60a);
+    filter: drop-shadow(0 0 6px var(--sf-warning, #ffd60a));
   }
   .hexa-tile.weather-tile[data-alert-level="orange"] .hexa-border {
-    stroke: #ff6b35;
+    stroke: var(--sf-orange, #ff6b35);
     stroke-width: 2px;
-    filter: drop-shadow(0 0 6px #ff6b35);
+    filter: drop-shadow(0 0 6px var(--sf-orange, #ff6b35));
   }
   .hexa-tile.weather-tile[data-alert-level="red"] .hexa-border {
-    stroke: #ff4d6d;
+    stroke: var(--sf-error, #ff4d6d);
     stroke-width: 2.5px;
-    filter: drop-shadow(0 0 8px #ff4d6d);
+    filter: drop-shadow(0 0 8px var(--sf-error, #ff4d6d));
   }
   .hexa-tile.weather-tile[data-alert-level="yellow"] .hexa-content sf-icon {
-    --icon-color: #ffd60a;
-    filter: drop-shadow(0 0 4px #ffd60a);
+    --icon-color: var(--sf-warning, #ffd60a);
+    filter: drop-shadow(0 0 4px var(--sf-warning, #ffd60a));
   }
   .hexa-tile.weather-tile[data-alert-level="orange"] .hexa-content sf-icon {
-    --icon-color: #ff6b35;
-    filter: drop-shadow(0 0 4px #ff6b35);
+    --icon-color: var(--sf-orange, #ff6b35);
+    filter: drop-shadow(0 0 4px var(--sf-orange, #ff6b35));
   }
   .hexa-tile.weather-tile[data-alert-level="red"] .hexa-content sf-icon {
-    --icon-color: #ff4d6d;
-    filter: drop-shadow(0 0 6px #ff4d6d);
+    --icon-color: var(--sf-error, #ff4d6d);
+    filter: drop-shadow(0 0 6px var(--sf-error, #ff4d6d));
   }
 
   .tile-label {
@@ -263,7 +263,7 @@ export const hexaTilesStyles = css`
     text-shadow: 0 0 5px var(--sf-primary, #00d2ff);
   }
   .hexa-tile[data-active="false"] .tile-label {
-    color: rgba(224, 232, 255, 0.4);
+    color: var(--sf-text-disabled, rgba(224, 232, 255, 0.4));
   }
 
   .weather-alert {
@@ -276,8 +276,8 @@ export const hexaTilesStyles = css`
     width: calc(100% - 2 * var(--sf-spacing-md));
     box-sizing: border-box;
   }
-  .weather-alert[data-level="green"] { background: rgba(0,255,157,0.1); color: #00ff9d; }
-  .weather-alert[data-level="yellow"] { background: rgba(255,214,10,0.1); color: #ffd60a; }
-  .weather-alert[data-level="orange"] { background: rgba(255,107,53,0.1); color: #ff6b35; }
-  .weather-alert[data-level="red"] { background: rgba(255,77,109,0.15); color: #ff4d6d; }
+  .weather-alert[data-level="green"] { background: var(--sf-success-dim, rgba(0,255,157,0.1)); color: var(--sf-accent-on, #00ff9d); }
+  .weather-alert[data-level="yellow"] { background: var(--sf-warning-dim, rgba(255,214,10,0.1)); color: var(--sf-warning, #ffd60a); }
+  .weather-alert[data-level="orange"] { background: var(--sf-orange-dim, rgba(255,107,53,0.1)); color: var(--sf-orange, #ff6b35); }
+  .weather-alert[data-level="red"] { background: var(--sf-error-dim, rgba(255,77,109,0.15)); color: var(--sf-error, #ff4d6d); }
 `;

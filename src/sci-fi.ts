@@ -115,6 +115,7 @@ for (const card of CARD_REGISTRATIONS) {
     name: card.name,
     description: card.description,
     preview: card.preview,
+    documentationURL: 'https://github.com/adrien-parasote/ha-sci-fi',
   });
 }
 

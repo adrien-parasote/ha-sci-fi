@@ -419,6 +419,10 @@ export class SciFiStoveCard extends SciFiBaseCard {
 
   // ── Card registration ─────────────────────────────────────────────────────
 
+  override getCardSize(): number {
+    return this.config ? 4 : 3;
+  }
+
   static getConfigElement(): HTMLElement {
     return document.createElement(`${TAG}-editor`);
   }

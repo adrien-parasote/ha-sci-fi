@@ -586,6 +586,10 @@ export class SciFiWeatherCard extends SciFiBaseCard {
     }
   }
 
+  override getCardSize(): number {
+    return this.config ? 4 : 3;
+  }
+
   static getConfigElement(): HTMLElement {
     return document.createElement(`${TAG}-editor`);
   }

@@ -164,7 +164,8 @@ export const hexaTilesStyles = css`
 
   /* Active vs Inactive tile styles */
   .hexa-tile[data-active="true"] .hexa-bg {
-    fill: var(--sf-primary-dim, rgba(0, 210, 255, 0.08));
+    fill: var(--sf-tile-active-bg, rgba(0, 210, 255, 0.08));
+    fill: var(--sf-tile-active-bg, color-mix(in srgb, var(--sf-primary) 8%, transparent));
   }
   .hexa-tile[data-active="true"] .hexa-border {
     stroke: var(--sf-primary, #00d2ff);

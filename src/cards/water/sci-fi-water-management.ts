@@ -348,7 +348,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
               }
             </select>
           ` : html`
-            <span class="entity-state ${isOn ? 'state-active' : ''}">${isOn ? msg('ACTIVE') : msg('OFF')}</span>
+            <span class="entity-state ${isOn ? 'state-active' : ''}">${this._getStateLabel(isOn)}</span>
             <sf-toggle-switch
               .checked="${isOn}"
               @sf-toggle-change="${() => this._toggleEntity(entityEntry.entity_id, isOn, domain)}"
@@ -359,12 +359,19 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     `;
   }
 
+  private _getStateLabel(isOn: boolean): string {
+    return [msg('OFF'), msg('ACTIVE')][isOn ? 1 : 0] as string;
+  }
+
   private _toggleEntity(entityId: string, isOn: boolean, domain: string): void {
     const serviceDomain = ['switch', 'valve', 'automation', 'input_boolean'].includes(domain) ? domain : 'homeassistant';
     
     void this.hass
       .callService(serviceDomain, isOn ? 'turn_off' : 'turn_on', { entity_id: entityId })
-      .then(() => { this._showToast(false, isOn ? msg('Turned off') : msg('Turned on')); })
+      .then(() => {
+        const toastText = [msg('Turned on'), msg('Turned off')][isOn ? 1 : 0] as string;
+        this._showToast(false, toastText);
+      })
       .catch((e: Error) => { this._showToast(true, e.message); });
   }
 

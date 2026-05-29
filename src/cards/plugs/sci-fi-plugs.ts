@@ -260,7 +260,7 @@ export class SciFiPlugsCard extends SciFiBaseCard {
         <div class="value">
           <sf-button-card
             no-title
-            text="${isOn ? msg('ON') : msg('OFF')}"
+            text="${this._getPlugStateLabel(isOn)}"
             @button-click="${() => this._onLockToggle(entityId)}"
           ></sf-button-card>
         </div>
@@ -527,6 +527,10 @@ export class SciFiPlugsCard extends SciFiBaseCard {
   private _toast(error: boolean, text: string): void {
     const toast = this.shadowRoot?.querySelector('sf-toast') as any;
     if (toast?.addMessage) toast.addMessage(text, error);
+  }
+
+  private _getPlugStateLabel(isOn: boolean): string {
+    return [msg('OFF'), msg('ON')][isOn ? 1 : 0] as string;
   }
 
   // ── Card registration ──────────────────────────────────────────────────────

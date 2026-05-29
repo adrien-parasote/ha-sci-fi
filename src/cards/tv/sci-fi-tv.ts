@@ -151,7 +151,7 @@ export class SciFiTVCard extends SciFiBaseCard {
             <div class="info">
               <button
                 class="header-power ${isOff ? 'is-off' : ''}"
-                title="${isOn ? msg('Turn Off') : msg('Turn On')}"
+                title="${this._getPowerButtonTitle(isOn)}"
                 ?disabled="${isUnavailable}"
                 @click="${() => this._togglePower(isOn)}"
               >
@@ -168,11 +168,11 @@ export class SciFiTVCard extends SciFiBaseCard {
             <div class="status-segment segment-left">
               <span class="segment-indicator ${isUnavailable ? 'is-offline' : (isOff ? 'is-standby' : 'is-active')}"></span>
               <span class="segment-title">${msg('TRANSMISSION:')}</span>
-              <span class="segment-value">${isUnavailable ? msg('OFFLINE') : (isOff ? msg('STANDBY') : msg('ACTIVE'))}</span>
+              <span class="segment-value">${this._getTransmissionStatus(isUnavailable, isOff)}</span>
             </div>
             <div class="status-segment segment-right">
               <span class="segment-title">${msg('PLAYING:')}</span>
-              <span class="segment-value highlight">${isUnavailable ? msg('DISCONNECTED') : (isOff ? msg('STANDBY') : (mediaTitle || appName || sourceLabel || appId || msg('IDLE')))}</span>
+              <span class="segment-value highlight">${this._getPlayingStatus(isUnavailable, isOff, mediaTitle, appName, sourceLabel, appId)}</span>
             </div>
           </div>
 
@@ -413,7 +413,7 @@ export class SciFiTVCard extends SciFiBaseCard {
       fireHassAction(this, { tap_action: customAction }, 'tap');
     } else if (this.config.remote_entity) {
       // Default remote mapping mode (PascalCase command strings)
-      const commandString = D_PAD_KEYS[btn];
+      const commandString = D_PAD_KEYS[btn as keyof typeof D_PAD_KEYS];
       void this.hass.callService('remote', 'send_command', {
         entity_id: this.config.remote_entity,
         command: commandString,
@@ -464,6 +464,34 @@ export class SciFiTVCard extends SciFiBaseCard {
   private _showToast(text: string): void {
     const toast = this.shadowRoot?.querySelector('sf-toast') as any;
     if (toast?.addMessage) toast.addMessage(text, true);
+  }
+
+  private _getPowerButtonTitle(isOn: boolean): string {
+    return [msg('Turn On'), msg('Turn Off')][isOn ? 1 : 0] as string;
+  }
+
+  private _getTransmissionStatus(isUnavailable: boolean, isOff: boolean): string {
+    if (isUnavailable) {
+      return msg('OFFLINE');
+    }
+    return [msg('ACTIVE'), msg('STANDBY')][isOff ? 1 : 0] as string;
+  }
+
+  private _getPlayingStatus(
+    isUnavailable: boolean,
+    isOff: boolean,
+    mediaTitle: string | undefined,
+    appName: string | undefined,
+    sourceLabel: string | undefined,
+    appId: string | undefined
+  ): string {
+    if (isUnavailable) {
+      return msg('DISCONNECTED');
+    }
+    if (isOff) {
+      return msg('STANDBY');
+    }
+    return mediaTitle || appName || sourceLabel || appId || msg('IDLE');
   }
 
   // ── Element registration hooks ────────────────────────────────────────────

@@ -186,13 +186,30 @@ export const waterStyles = css`
 
   .device-header {
     color: var(--sf-color-cyan, #00d2ff);
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(0, 210, 255, 0.2);
     padding-bottom: 6px;
-    margin-bottom: 4px;
-    border-bottom: 1px solid rgba(0, 210, 255, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+  }
+  .device-header ha-icon {
+    --mdc-icon-size: 20px;
+    color: var(--sf-color-cyan, #00d2ff);
+  }
+  .device-group.collapsed .device-entities {
+    display: none;
+  }
+  .device-group.collapsed .device-header {
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
   }
 
   .entity-row {

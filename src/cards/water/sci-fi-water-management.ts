@@ -39,7 +39,15 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
 
     if (this.hass?.entities) {
       for (const [entityId, entry] of Object.entries(this.hass.entities)) {
-        if ((entry as any).labels?.includes(label) && !ignored.includes(entityId)) {
+        const ent = entry as any;
+        let hasLabel = ent.labels?.includes(label);
+        if (!hasLabel && ent.device_id && this.hass.devices?.[ent.device_id]) {
+          const device = this.hass.devices[ent.device_id] as any;
+          if (device.labels?.includes(label)) {
+            hasLabel = true;
+          }
+        }
+        if (hasLabel && !ignored.includes(entityId)) {
           entities.add(entityId);
         }
       }
@@ -58,7 +66,16 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     if (this.hass?.entities) {
       for (const [entityId, entry] of Object.entries(this.hass.entities)) {
         const ent = entry as any; // Cast for accessing labels
-        if (ent.labels?.includes(label) && !ignored.includes(entityId)) {
+        
+        let hasLabel = ent.labels?.includes(label);
+        if (!hasLabel && ent.device_id && this.hass.devices?.[ent.device_id]) {
+          const device = this.hass.devices[ent.device_id] as any;
+          if (device.labels?.includes(label)) {
+            hasLabel = true;
+          }
+        }
+
+        if (hasLabel && !ignored.includes(entityId)) {
           // Find areaId from entity, fallback to device
           let areaId = ent.area_id;
           if (!areaId && ent.device_id && this.hass.devices?.[ent.device_id]) {

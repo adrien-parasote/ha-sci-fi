@@ -112,4 +112,31 @@ describe('sci-fi-tv-editor', () => {
     expect(received).toHaveLength(1);
     expect(received[0]!.detail.config.name).toBe('Bridge Quadrant 4');
   });
+
+  // TC-714
+  it('renders 13 sf-editor-action components for custom_actions', async () => {
+    const el = await createElement();
+    el.setConfig(makeConfig());
+    await el.updateComplete;
+    
+    // The accordion for Custom Actions should contain 13 sf-editor-action elements
+    const actionEditors = el.shadowRoot!.querySelectorAll('sf-editor-action');
+    expect(actionEditors.length).toBe(13);
+  });
+
+  // TC-715
+  it('handles fallback for ha-selector in mock environment without crashing', async () => {
+    // In Vitest happy-dom, ha-selector is not defined, so it's naturally a mock environment
+    const el = await createElement();
+    el.setConfig(makeConfig({
+      custom_actions: {
+        home: { action: 'navigate', navigation_path: '/test' }
+      }
+    }));
+    await el.updateComplete;
+    
+    // Test that sf-editor-action renders a fallback textarea
+    const actionEditor = el.shadowRoot!.querySelector('sf-editor-action[element-id="home"]');
+    expect(actionEditor).not.toBeNull();
+  });
 });

@@ -191,14 +191,62 @@ The `custom:sci-fi-tv-editor` relies exclusively on the components established i
    - `<sf-editor-dropdown-entity>` for `entity`. Filtered list from `_mediaPlayers`.
 2. **Settings (Accordion)**
    - `<sf-editor-input>` for `name` (text, spaceship quadrant label).
+   - `<sf-editor-dropdown-entity>` for `volume_entity`. Filtered list from `_mediaPlayers`.
+   - `<sf-editor-dropdown-entity>` for `app_entity`. Filtered list from `_mediaPlayers`.
    - `<sf-editor-dropdown-entity>` for `remote_entity`. Filtered list from `_remotes`.
 3. **Shortcuts (Accordion)**
-   - `<sf-editor-chips>` for `sources` (e.g., HDMI 1, Netflix).
-4. **Custom Actions**
-   - Due to the complexity of Lovelace action configurations, `custom_actions` are strictly configured via YAML and are NOT exposed in the graphical editor. The editor preserves them implicitly via `SciFiBaseEditor._getNewConfig()`.
+   - Uses a new `<sf-editor-source-list>` component. Supports defining arrays of `{ name: string, action: string, service?: string, ... }`.
+   - Wraps HA's native action editor.
+4. **Custom Actions (Accordion)**
+   - Exposes 8 action selectors (`<sf-editor-action>`) corresponding to the D-pad and supplementary buttons (`up`, `down`, `left`, `right`, `confirm`, `back`, `home`, `menu`).
+5. **Action Editor Component (`<sf-editor-action>`)**
+   - A wrapper around Home Assistant's native `<ha-selector .selector=${{ action: {} }}>` to ensure 100% compatibility with the Lovelace Action schema.
+   - Includes a graceful fallback UI (JSON text area or disabled placeholder) for mock environments where `<ha-selector>` is absent.
 
 **`_update` handler logic:**
-Follows the standard `e.detail.id` / `e.detail.value` mapping directly onto the new config object before calling `this._dispatchChange(newConfig)`. For `sf-editor-chips` (sources), handle `type: 'add'` and `type: 'remove'`.
+Follows the standard `e.detail.id` / `e.detail.value` mapping directly onto the new config object before calling `this._dispatchChange(newConfig)`. For nested objects like `custom_actions`, handles deep merging safely.
+
+---
+
+## Constraints
+
+| Tier | Examples |
+|------|----------|
+| **Always do** | Use HA `<ha-selector>` for complex Action configuration editing. Maintain strict isolation between `tvState` and `appState` metadata. |
+| **Ask first** | Adding new top-level configuration options not defined in `SciFiTVConfig`. |
+| **Never do** | Rely on string-parsing for HA action definitions. Bind `pointermove` to `window` instead of the SVG element. |
+
+## Cross-Spec Contracts
+
+### Produces
+| Path / Identifier | Format | Schema location | Consumers |
+|---|---|---|---|
+| `sci-fi-tv` element | Web Component | N/A | Home Assistant Lovelace UI |
+| `sci-fi-tv-editor` element | Web Component | N/A | Home Assistant Lovelace UI |
+
+### Consumes
+| Path / Identifier | Format | Schema location | Producer |
+|---|---|---|---|
+| `SciFiBaseCard` / `SciFiBaseEditor` | Class | `base-card.ts` / `base-editor.ts` | Shared utilities |
+
+### Public Interface
+| Type | Identifier | Documented at |
+|---|---|---|
+| Lit Component | `custom:sci-fi-tv` | This spec |
+| Event | `config-changed` | `SciFiBaseEditor` |
+
+### External Invocations
+| Type | Invoked | Defined in |
+|---|---|---|
+| HA Service | `remote.send_command` | Home Assistant Core |
+| HA Service | `media_player.volume_set` | Home Assistant Core |
+| HA Service | `media_player.select_source` | Home Assistant Core |
+| Component | `<ha-selector>` | Home Assistant Frontend |
+
+### Tracked Concepts
+| Concept | Status in this spec | Mentioned in |
+|---|---|---|
+| Hybrid Metadata Extraction | Implemented for app detection | `.agents/learnings/ha_hybrid_tv_entities.md` |
 
 ---
 
@@ -233,6 +281,8 @@ Follows the standard `e.detail.id` / `e.detail.value` mapping directly onto the 
 | **TC-711** | Unit | Renders active application ID when other metadata is missing | TV state has `app_id: 'com.netflix.ninja'` | Right status segment and dial title display `"com.netflix.ninja"` |
 | **TC-712** | Unit | Uses app_entity metadata when provided | Config has `app_entity` | Prioritizes `app_entity` metadata over main TV entity for active status |
 | **TC-713** | Unit | Active source highlighting guarantees single active source | Config has multiple sources overlapping metadata | Only one source gets highlighted, prioritizing `appName` over `mediaTitle` |
+| **TC-714** | Unit | Editor UI exposes visual actions for custom_actions | Editor initialized with config | Renders 8 `<sf-editor-action>` components |
+| **TC-715** | Unit | Editor UI handles fallback for ha-selector | Editor rendered in mock environment | Disables action configuration gracefully without crashing |
 | **IT-701** | Integration | Custom elements register correctly in HA registry | Load built bundle | Elements `sci-fi-tv` and `sci-fi-tv-editor` exist |
 | **IT-702** | Integration | Workbench — Netflix active mock state renders dial at 35% | Workbench mock state `netflix_active` | Volume dial arc covers 35% of full arc; source label "Netflix" highlighted |
 | **IT-703** | Integration | Dragging orbital dial calls correct service volume | Pointer dragging to 60% position | Calls `media_player.volume_set` with `volume_level: 0.6` |

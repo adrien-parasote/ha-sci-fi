@@ -12,7 +12,8 @@ import type { EditorHassEntity } from '../../components/editor-inputs/sf-editor-
 
 import '../../components/editor-inputs/sf-editor-input.js';
 import '../../components/editor-inputs/sf-editor-dropdown-entity.js';
-import '../../components/editor-inputs/sf-editor-chips.js';
+import '../../components/editor-inputs/sf-editor-source-list.js';
+import '../../components/editor-inputs/sf-editor-action.js';
 import '../../components/editor-inputs/sf-editor-accordion.js';
 
 @customElement('sci-fi-tv-editor')
@@ -64,23 +65,33 @@ export class SciFiTVEditor extends SciFiBaseEditor {
     this._dispatchChange(newConfig);
   }
 
-  private _handleChipsUpdate(e: CustomEvent): void {
+  private _handleSourceListUpdate(e: CustomEvent): void {
     const newConfig = this._getNewConfig<SciFiTVConfig>();
-    const sources = [...(newConfig.sources ?? [])];
+    const sources = e.detail.value; // It receives the whole array from sf-editor-source-list
+    (newConfig as any)['sources'] = sources && sources.length > 0 ? sources : undefined;
+    this._dispatchChange(newConfig);
+  }
+
+  private _handleActionUpdate(e: CustomEvent): void {
+    const newConfig = this._getNewConfig<SciFiTVConfig>();
+    const actionId = e.detail.id; // 'home', 'menu', etc.
+    const actionConfig = e.detail.value;
+
+    const customActions = { ...(newConfig.custom_actions || {}) };
     
-    if (e.detail.type === 'add') {
-      const val = e.detail.value.trim();
-      if (val && !sources.includes(val)) {
-        sources.push(val);
-      }
-    } else if (e.detail.type === 'remove') {
-      const idx = parseInt(e.detail.value, 10);
-      if (!isNaN(idx)) {
-        sources.splice(idx, 1);
-      }
+    // If the action is empty or undefined, remove it from custom_actions
+    if (!actionConfig || Object.keys(actionConfig).length === 0 || actionConfig.action === 'none') {
+      delete customActions[actionId as keyof typeof customActions];
+    } else {
+      customActions[actionId as keyof typeof customActions] = actionConfig;
+    }
+
+    if (Object.keys(customActions).length === 0) {
+      delete newConfig.custom_actions;
+    } else {
+      newConfig.custom_actions = customActions;
     }
     
-    (newConfig as any)['sources'] = sources.length > 0 ? sources : undefined;
     this._dispatchChange(newConfig);
   }
 
@@ -155,17 +166,34 @@ export class SciFiTVEditor extends SciFiBaseEditor {
 
             <!-- Shortcuts Accordion (Sources) -->
             <sf-editor-accordion
-              title="${this.getLabel('section-title-media-sources')}"
+              title="${this.getSectionTitle('section-title-media-sources') ?? 'Sources'}"
               element-id="shortcuts"
               icon="mdi:link-variant"
             >
-              <sf-editor-chips
+              <sf-editor-source-list
                 element-id="sources"
-                kind="source-list"
                 label="${this.getLabel('input-media-sources')}"
-                .values="${(config.sources ?? []).map((s: any) => typeof s === 'string' ? s : (s.name || 'Unknown'))}"
-                @input-update="${this._handleChipsUpdate}"
-              ></sf-editor-chips>
+                .hass="${this.hass}"
+                .values="${config.sources ?? []}"
+                @input-update="${this._handleSourceListUpdate}"
+              ></sf-editor-source-list>
+            </sf-editor-accordion>
+
+            <!-- Custom Actions Accordion -->
+            <sf-editor-accordion
+              title="Actions Personnalisées"
+              element-id="custom_actions"
+              icon="mdi:remote-tv"
+            >
+              ${['power', 'home', 'menu', 'back', 'info', 'up', 'down', 'left', 'right', 'enter', 'volume_up', 'volume_down', 'volume_mute'].map(actionId => html`
+                <sf-editor-action
+                  element-id="${actionId}"
+                  label="Bouton ${actionId}"
+                  .hass="${this.hass}"
+                  .value="${config.custom_actions?.[actionId as keyof typeof config.custom_actions]}"
+                  @input-update="${this._handleActionUpdate}"
+                ></sf-editor-action>
+              `)}
             </sf-editor-accordion>
 
           </section>

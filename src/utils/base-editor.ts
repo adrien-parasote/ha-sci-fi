@@ -34,8 +34,9 @@ export abstract class SciFiBaseEditor extends LitElement {
         void (async () => {
           try {
             await setLocale(targetLocale);
+            this.requestUpdate();
           } catch (e) {
-            console.error(`Error loading locale ${targetLocale}: ${(e as Error).message}`);
+            console.error(`[BaseEditor] Error loading locale ${targetLocale}: ${(e as Error).message}`);
           }
         })();
       }

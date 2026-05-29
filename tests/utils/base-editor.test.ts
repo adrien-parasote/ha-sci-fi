@@ -171,6 +171,16 @@ describe('base-editor', () => {
     expect(el.getLabel('totally-unknown-key-xyz')).toBe('');
   });
 
+  it('TC-308: getLabel returns translated French string when locale is fr', async () => {
+    const el = makeEl();
+    const mockHass = {
+      locale: { language: 'fr' },
+    } as unknown as HomeAssistantExt;
+    el.hass = mockHass;
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(el.getLabel('section-title-header')).toBe('En-tête');
+  });
+
   it('getLabel covers a variety of known keys without throwing', () => {
     const el = makeEl();
     const keys = [

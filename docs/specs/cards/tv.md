@@ -228,6 +228,8 @@ Follows the standard `e.detail.id` / `e.detail.value` mapping directly onto the 
 | **TC-707** | Unit | Coordinate conversion: DOM px correctly maps to SVG viewBox | `pointermove` at DOM center of rendered SVG | Computed `svgX ≈ 100`, `svgY ≈ 100` regardless of render size |
 | **TC-708** | Unit | Orbiting planet satellite is rendered when TV is on | TV state is `'on'` | Planet orbiting satellite element exists in shadowRoot |
 | **TC-709** | Unit | Orbiting planet satellite is not rendered when TV is off | TV state is `'off'` | Planet orbiting satellite element does not exist in shadowRoot |
+| **TC-710** | Unit | Renders active application name when media title and source are missing | TV state has `app_name: 'Netflix'` | Right status segment and dial title display `"Netflix"` |
+| **TC-711** | Unit | Renders active application ID when other metadata is missing | TV state has `app_id: 'com.netflix.ninja'` | Right status segment and dial title display `"com.netflix.ninja"` |
 | **IT-701** | Integration | Custom elements register correctly in HA registry | Load built bundle | Elements `sci-fi-tv` and `sci-fi-tv-editor` exist |
 | **IT-702** | Integration | Workbench — Netflix active mock state renders dial at 35% | Workbench mock state `netflix_active` | Volume dial arc covers 35% of full arc; source label "Netflix" highlighted |
 | **IT-703** | Integration | Dragging orbital dial calls correct service volume | Pointer dragging to 60% position | Calls `media_player.volume_set` with `volume_level: 0.6` |

@@ -11,6 +11,7 @@
 - **Honeycomb hexagon quick-source selection grid** that fits compactly under the central remote display.
 - **3D Depth Orbiting Satellite**: A hardware-accelerated CSS keyframe-animated satellite that revolves around the central planet with realistic visibility occlusion when passing behind it.
 - **Offline Standby Panel styling** displaying active Warp warning colors and caution banners when the TV is `off` or `unavailable`.
+- **Intelligent Telemetry Parsing**: Automatically displays media title or source, with graceful fallback to Android TV/Bravia DRM package names (`app_name`, `app_id`) when media metadata is restricted (e.g. Netflix).
 - **Sony Bravia standard + Custom Overrides**: Maps D-pad navigation keys to default Home Assistant remote command strings or accepts custom Lovelace `tap_action` configurations per button.
 
 ---

@@ -175,41 +175,11 @@ export const waterStyles = css`
   }
 
   .device-group {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
     background: rgba(13, 17, 23, 0.4);
-    border: 1px solid rgba(0, 210, 255, 0.1);
+    border: 1px solid rgba(0, 210, 255, 0.15);
     border-radius: 8px;
-    padding: 10px;
-  }
-
-  .device-header {
-    color: var(--sf-color-cyan, #00d2ff);
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    padding: 12px;
     margin-bottom: 12px;
-    border-bottom: 1px solid rgba(0, 210, 255, 0.2);
-    padding-bottom: 6px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    user-select: none;
-  }
-  .device-header ha-icon {
-    --mdc-icon-size: 20px;
-    color: var(--sf-color-cyan, #00d2ff);
-  }
-  .device-group.collapsed .device-entities {
-    display: none;
-  }
-  .device-group.collapsed .device-header {
-    margin-bottom: 0;
-    border-bottom: none;
-    padding-bottom: 0;
   }
 
   .entity-row {

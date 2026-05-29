@@ -8,6 +8,7 @@ import type { HassFloor, HassEntityEntry } from '../../types/ha.js';
 import { fireHassAction } from '../../utils/action.js';
 import { getFloors, getAreasByFloor } from '../../selectors/house.js';
 import WEATHER_ICON_SET from '../../components/sf-icon/data/sf-weather-icons.js';
+import '../../components/editor-inputs/sf-editor-accordion.js';
 
 import { waterStyles } from './styles.js';
 
@@ -23,7 +24,6 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
   static override styles = [sciFiCommonStyles, waterStyles];
 
   @state() private _activeFloorId: string | null = null;
-  @state() private _collapsedGroups = new Set<string>();
   declare config: SciFiWaterManagementConfig;
 
   override setConfig(config: SciFiWaterManagementConfig): void {
@@ -236,31 +236,19 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
         }
       } else {
         const deviceName = this.hass.devices?.[devId]?.name || 'Équipement';
-        const isCollapsed = this._collapsedGroups.has(devId);
         groups.push(html`
-          <div class="device-group ${isCollapsed ? 'collapsed' : ''}">
-            <div class="device-header" @click="${() => this._toggleGroup(devId)}">
-              <span>${deviceName}</span>
-              <ha-icon icon="${isCollapsed ? 'mdi:chevron-down' : 'mdi:chevron-up'}"></ha-icon>
-            </div>
-            <div class="device-entities">
-              ${repeat(groupEntities, e => e.entity_id, e => this._renderEntityRow(e))}
-            </div>
-          </div>
+          <sf-editor-accordion
+            title="${deviceName}"
+            ?open="${true}"
+            style="margin-bottom: 12px; display: block;"
+          >
+            ${repeat(groupEntities, e => e.entity_id, e => this._renderEntityRow(e))}
+          </sf-editor-accordion>
         `);
       }
     }
     
     return html`${groups}`;
-  }
-
-  private _toggleGroup(devId: string): void {
-    if (this._collapsedGroups.has(devId)) {
-      this._collapsedGroups.delete(devId);
-    } else {
-      this._collapsedGroups.add(devId);
-    }
-    this.requestUpdate();
   }
 
   private _renderEntityRow(entityEntry: any): TemplateResult {

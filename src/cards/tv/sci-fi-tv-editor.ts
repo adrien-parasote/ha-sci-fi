@@ -166,7 +166,7 @@ export class SciFiTVEditor extends SciFiBaseEditor {
 
             <!-- Shortcuts Accordion (Sources) -->
             <sf-editor-accordion
-              .title=${this.getSectionTitle('section-title-media-sources') ?? 'Sources'}
+              .title=${this.getLabel('section-title-media-sources') ?? 'Sources'}
               element-id="shortcuts"
               icon="mdi:link-variant"
             >

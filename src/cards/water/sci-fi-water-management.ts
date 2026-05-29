@@ -145,16 +145,23 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     // Validate active floor or fallback
     const floorExists = !!this._activeFloorId && !!this.hass.floors?.[this._activeFloorId];
     if (!floorExists) {
-      let resolvedFloorId: string | null = null;
-      if (this._activeFloorId && this.hass.floors) {
-        const target = this._activeFloorId.toLowerCase();
-        const matched = Object.values(this.hass.floors).find(
-          f => f.floor_id.toLowerCase() === target || (f.name && f.name.toLowerCase() === target)
-        );
-        if (matched) resolvedFloorId = matched.floor_id;
-      }
+      if (!this.hass.floors) {
+        // HA floors not loaded yet, preserve config target
+        this._activeFloorId = this.config?.first_floor_to_render ?? null;
+      } else {
+        let resolvedFloorId: string | null = null;
+        const targetConfig = this.config?.first_floor_to_render;
+        
+        if (targetConfig) {
+          const target = targetConfig.toLowerCase();
+          const matched = Object.values(this.hass.floors).find(
+            f => f.floor_id.toLowerCase() === target || (f.name && f.name.toLowerCase() === target)
+          );
+          if (matched) resolvedFloorId = matched.floor_id;
+        }
 
-      this._activeFloorId = resolvedFloorId ?? floors[0]?.floor_id ?? null;
+        this._activeFloorId = resolvedFloorId ?? floors[0]?.floor_id ?? null;
+      }
     }
 
     const currentFloor = this._activeFloorId ? (this.hass.floors?.[this._activeFloorId] ?? null) : null;

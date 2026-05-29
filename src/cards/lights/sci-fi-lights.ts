@@ -87,18 +87,25 @@ export class SciFiLightsCard extends SciFiBaseCard {
     // If not (stale/missing ID or friendly name from config), fall back to first floor with lights, then any floor.
     const floorExists = !!this._activeFloorId && !!this.hass.floors?.[this._activeFloorId];
     if (!floorExists) {
-      let resolvedFloorId: string | null = null;
-      if (this._activeFloorId && this.hass.floors) {
-        const target = this._activeFloorId.toLowerCase();
-        const matched = Object.values(this.hass.floors).find(
-          f => f.floor_id.toLowerCase() === target || (f.name && f.name.toLowerCase() === target)
-        );
-        if (matched) resolvedFloorId = matched.floor_id;
-      }
+      if (!this.hass.floors) {
+        // HA floors not loaded yet, preserve config target
+        this._activeFloorId = this.config?.first_floor_to_render ?? null;
+      } else {
+        let resolvedFloorId: string | null = null;
+        const targetConfig = this.config?.first_floor_to_render;
+        
+        if (targetConfig) {
+          const target = targetConfig.toLowerCase();
+          const matched = Object.values(this.hass.floors).find(
+            f => f.floor_id.toLowerCase() === target || (f.name && f.name.toLowerCase() === target)
+          );
+          if (matched) resolvedFloorId = matched.floor_id;
+        }
 
-      this._activeFloorId = resolvedFloorId ??
-        floors.find(f => lightAreas(f.floor_id).length > 0)?.floor_id ??
-        floors[0]?.floor_id ?? null;
+        this._activeFloorId = resolvedFloorId ??
+          floors.find(f => lightAreas(f.floor_id).length > 0)?.floor_id ??
+          floors[0]?.floor_id ?? null;
+      }
     }
 
     const areasWithLights = this._activeFloorId ? lightAreas(this._activeFloorId) : [];

@@ -1,44 +1,44 @@
 # Release v1.2.3 💧🪐
 
-Cette version majeure de la branche `1.2.x` introduit le tout nouveau module de **Gestion de l'Eau (`sci-fi-water-management`)** ainsi que de nombreuses optimisations visuelles, de stabilité et une localisation robuste !
+This major release of the `1.2.x` branch introduces the brand-new **Water Management card (`sci-fi-water-management`)** along with numerous visual enhancements, stability optimizations, and robust localization!
 
-Cette note de version consolide l'ensemble des changements apportés par la nouvelle version `1.2.3` (correctif de traduction) ainsi que les versions `1.2.0`, `1.2.1` et `1.2.2`.
+This release note consolidates all changes from the new version `1.2.3` (translation fix) as well as versions `1.2.0`, `1.2.1`, and `1.2.2`.
 
-## 🚀 Nouveautés (Features)
+## 🚀 Features
 
-### 💧 Module de Gestion de l'Eau (`sci-fi-water-management`)
-Une toute nouvelle carte Lovelace complète pour contrôler et surveiller vos circuits d'eau, d'arrosage, d'hydroponie ou d'humidité du sol :
-- **Rendu Hexagonal Dynamique** : Regroupement automatique des capteurs et actionneurs sous forme d'accordéons futuristes mappés à leurs zones.
-- **Automations Dédiées** : Section isolée et stylisée pour vos automatisations (`automation.`).
-- **Écran de Personnalisation** : Interface visuelle complète pour activer ou masquer individuellement n'importe quelle entité.
-- **Filtres Globaux & Exclusions** : Support des jokers (ex: `*temperature*`) pour ignorer automatiquement les entités inutiles.
-- **Sélection du premier étage** : Configuration sans YAML pour charger l'étage ou la zone de votre choix par défaut.
-- **Support des types complexes** : Déduction intelligente des domaines d'appels HA pour supporter les entités virtuelles et physiques (`input_select`, `select`, etc.).
+### 💧 Water Management Card (`sci-fi-water-management`)
+A brand-new complete Lovelace card to control and monitor your water circuits, irrigation, hydroponics, or soil moisture:
+- **Dynamic Hexa Tiles**: Automatic grouping of sensors and actuators into futuristic accordion structures mapped to their zones.
+- **Dedicated Automations**: Distinct and styled section specifically for your Home Assistant automations (`automation.`).
+- **Customization Panel**: Complete visual configuration UI to individually show or hide any entity.
+- **Global Filters & Exclusions**: Wildcard support (e.g. `*temperature*`) to automatically ignore unnecessary entities.
+- **Default Floor Selection**: Configurable UI to load the floor or area of your choice by default.
+- **Complex Type Support**: Intelligent HA service domain inference to support both virtual and physical entities (`input_select`, `select`, etc.).
 
-### 📺 Télécommande TV (`sci-fi-tv`)
-- **Sony Bravia Validated** : Documentation mise à jour et validée pour les téléviseurs Sony Bravia via l'intégration officielle, assurant un mapping parfait des touches du D-pad.
+### 📺 TV Remote Card (`sci-fi-tv`)
+- **Sony Bravia Validated**: Updated and validated documentation for Sony Bravia TVs via the official integration, ensuring perfect mapping out-of-the-box.
 
-### 🌍 Grille Hexagonale
-- **Hexa Tiles & Water** : Ajout du support natif du filtre `water` pour regrouper ou lier le tableau de bord hexagonal directement avec vos tuiles d'eau.
-
----
-
-## 🐛 Corrections de bugs (Fixes)
-
-### 🌍 i18n & Localisation (Critique - Nouveauté v1.2.3)
-- **Minification & Terser** : Correction d'un bug de build majeur où Terser fusionnait les ternaires symétriques de `msg()` (ex: `isOn ? msg('A') : msg('B')`) en un seul appel dynamique `msg(isOn ? 'A' : 'B')`. Cette optimisation brisait le hachage statique de `lit-localize` et forçait les messages de toast et les statuts des télécommandes ou des prises à s'afficher en anglais (`Turned on`, `STANDBY`, `OFFLINE`). Les appels ont été réécrits à l'aide de tuples statiques robustes (`[msg('OFF'), msg('ON')][isOn ? 1 : 0]`) pour empêcher toute minification destructive.
-- **lit-localize extract** : Résolution du comportement silencieux du linter de build qui rejetait les traductions fr sans nœud `<target>` dans le fichier `.xlf`.
-
-### 💧 Gestion de l'Eau & Lumières (v1.2.2)
-- **Race Condition sur le premier rendu** : Résolution du chargement asynchrone de `hass.floors` qui réinitialisait la configuration utilisateur de l'étage par défaut (ex: `Extérieur`) s'il était chargé avant l'établissement complet du WebSocket.
-- **Mapping insensible à la casse** : Support total des noms conviviaux d'étages avec accents ou casses mixtes (ex: `Extérieur` ou `REZ-DE-CHAUSSÉE`).
-- **Icônes dynamiques** : Utilisation de l'icône d'état native de Home Assistant (`ha-state-icon`) pour hériter dynamiquement des icônes d'appareils (ex: batterie ou humidité) au lieu de forcer une icône statique.
-- **UI Toggle Glitch** : Correction d'un double déclenchement d'événement sur `sf-toggle-change` provoquant des sauts d'interrupteurs.
+### 🌍 Hexagonal Grid
+- **Hexa Tiles & Water**: Added native support for the `water` filter kind to group or link the hexagonal dashboard directly with your water tiles.
 
 ---
 
-## 🛠️ Technique & Dette
-- Nettoyage des promesses flottantes dans `sci-fi-water-management-editor.ts`.
-- Ajout de la documentation d'architecture au Codemap interne (`docs/CODEMAPS/frontend.md`).
-- Centralisation des apprentissages clés dans le registre continu (`.agents/learnings/L075_terser_lit_localize_collapse.md`).
-- Couverture de tests unitaires maintenue à **100% de réussite (602 tests au vert)**.
+## 🐛 Bug Fixes
+
+### 🌍 i18n & Localization (Critical - New in v1.2.3)
+- **Minification & Terser**: Fixed a major production build bug where Terser merged symmetric `msg()` ternary expressions (e.g. `isOn ? msg('A') : msg('B')`) into a single dynamic call `msg(isOn ? 'A' : 'B')`. This optimization broke `lit-localize`'s static compile-time hashing and forced toast notifications and control statuses across TV Remote, Plugs, and Water cards to display in English (e.g. `"Turned on"`, `"STANDBY"`, `"OFFLINE"`) when French was active. Calls have been rewritten using robust, un-collapsible static tuples (`[msg('OFF'), msg('ON')][isOn ? 1 : 0] as string`) to completely prevent destructive minification.
+- **lit-localize extract**: Fixed a silent linter failure that discarded French translations when the `<target>` node was missing in the XLIFF files.
+
+### 💧 Water & Lights Cards (v1.2.2)
+- **First Render Race Condition**: Fixed an asynchronous initialization issue with `hass.floors` that cleared user configuration for the default floor (e.g. `Extérieur`) if evaluated before the WebSocket registry was fully populated.
+- **Case-Insensitive Mapping**: Fully supported friendly floor names with accents or mixed cases (e.g. `Extérieur` or `REZ-DE-CHAUSSÉE`).
+- **Dynamic Icons**: Used Home Assistant's native state icon (`ha-state-icon`) to dynamically inherit device class icons (like batteries or moisture) instead of forcing a static icon.
+- **UI Toggle Glitch**: Fixed a double-fire event on `sf-toggle-change` that caused toggles to visually glitch.
+
+---
+
+## 🛠️ Technical & Tech Debt
+- Resolved floating promise warnings inside `sci-fi-water-management-editor.ts`.
+- Updated architectural codemap documentation (`docs/CODEMAPS/frontend.md`).
+- Documented lit-localize minification patterns in the continuous learning registry (`.agents/learnings/L075_terser_lit_localize_collapse.md`).
+- Maintained 100% unit test coverage (602 passing tests).

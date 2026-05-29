@@ -1623,6 +1623,10 @@
       'person.virginie': { entity_id: 'person.virginie', state: 'home', attributes: { friendly_name: 'Virginie' } },
       'person.root': { entity_id: 'person.root', state: 'home', attributes: { friendly_name: 'root' } },
       'person.mttq_adm': { entity_id: 'person.mttq_adm', state: 'not_home', attributes: { friendly_name: 'mttq_adm' } },
+      'switch.arrosage_terrasse': { entity_id: 'switch.arrosage_terrasse', state: 'off', attributes: { friendly_name: 'Arrosage Terrasse', icon: 'mdi:sprinkler' } },
+      'switch.arrosage_haie': { entity_id: 'switch.arrosage_haie', state: 'off', attributes: { friendly_name: 'Arrosage Haie', icon: 'mdi:sprinkler' } },
+      'sensor.arrosage_batterie': { entity_id: 'sensor.arrosage_batterie', state: '75', attributes: { unit_of_measurement: '%', friendly_name: 'Batterie Arrosage', icon: 'mdi:battery-70' } },
+      'water_heater.chauffe_eau': { entity_id: 'water_heater.chauffe_eau', state: 'eco', attributes: { friendly_name: 'Chauffe Eau', icon: 'mdi:water-boiler' } },
     };
 
     const MOCK_AREAS = {
@@ -1633,10 +1637,14 @@
       'charlotte': { area_id: 'charlotte', name: 'Charlotte', floor_id: 'r1', icon: 'mdi:lava-lamp' },
       'leonard': { area_id: 'leonard', name: 'Léonard', floor_id: 'r1', icon: 'mdi:robot-toy' },
       'mezzanine': { area_id: 'mezzanine', name: 'Mezzanine', floor_id: 'r1', icon: 'mdi:stairs' },
+      'terrasse': { area_id: 'terrasse', name: 'Terrasse', floor_id: 'ext', icon: 'mdi:patio' },
+      'jardin': { area_id: 'jardin', name: 'Jardin', floor_id: 'ext', icon: 'mdi:pine-tree' },
+      'garage': { area_id: 'garage', name: 'Garage', floor_id: 'rdc', icon: 'mdi:garage' },
     };
     const MOCK_FLOORS = {
       'rdc': { floor_id: 'rdc', name: 'RDC', level: 0 },
       'r1': { floor_id: 'r1', name: 'R+1', level: 1 },
+      'ext': { floor_id: 'ext', name: 'Extérieur', level: 0 },
     };
     const MOCK_ENTITIES = {
       'light.zbmini_l_salon': { entity_id: 'light.zbmini_l_salon', area_id: 'salon' },
@@ -1654,6 +1662,10 @@
       'climate.radiateur_cuisine': { entity_id: 'climate.radiateur_cuisine', area_id: 'cuisine' },
       'climate.radiateur_chambre': { entity_id: 'climate.radiateur_chambre', area_id: 'chambre' },
       'climate.radiateur_bureau': { entity_id: 'climate.radiateur_bureau', area_id: 'bureau' },
+      'switch.arrosage_terrasse': { entity_id: 'switch.arrosage_terrasse', area_id: 'terrasse', labels: ['water'] },
+      'switch.arrosage_haie': { entity_id: 'switch.arrosage_haie', area_id: 'jardin', labels: ['water'] },
+      'sensor.arrosage_batterie': { entity_id: 'sensor.arrosage_batterie', area_id: 'terrasse', labels: ['water'] },
+      'water_heater.chauffe_eau': { entity_id: 'water_heater.chauffe_eau', area_id: 'garage', labels: ['water'] },
     };
 
     // ─── Card configs (exact production YAML → JS) ──────────────────────────
@@ -1802,6 +1814,22 @@
           'Quelques lumières allumées': () => ({}),
           'Tout allumé': () => Object.fromEntries(Object.entries(MOCK_STATES).filter(([k]) => k.startsWith('light.')).map(([k, v]) => [k, { ...v, state: 'on' }])),
           'Tout éteint': () => Object.fromEntries(Object.entries(MOCK_STATES).filter(([k]) => k.startsWith('light.')).map(([k, v]) => [k, { ...v, state: 'off' }])),
+        }
+      },
+      water: {
+        label: '💧 Tactical Water', tag: 'sci-fi-water-management',
+        config: {
+          type: 'custom:sci-fi-water-management',
+          header_message: 'Water Management',
+          filter_label: 'water',
+          first_floor_to_render: 'ext'
+        },
+        scenarios: {
+          'Normal': () => ({}),
+          'En Arrosage': () => ({
+            'switch.arrosage_terrasse': { ...MOCK_STATES['switch.arrosage_terrasse'], state: 'on' },
+            'switch.arrosage_haie': { ...MOCK_STATES['switch.arrosage_haie'], state: 'on' }
+          }),
         }
       },
       tv: {

@@ -42,13 +42,19 @@ export class SfEditorSourceList extends LitElement {
       border-radius: 6px;
       padding: 12px;
       margin-bottom: 12px;
-      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .source-header {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 12px;
     }
 
     .delete-btn {
-      position: absolute;
-      top: 12px;
-      right: 12px;
       background: none;
       border: none;
       color: var(--error-color, #ff4444);
@@ -56,6 +62,10 @@ export class SfEditorSourceList extends LitElement {
       padding: 4px;
       border-radius: 4px;
       transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 24px;
     }
 
     .delete-btn:hover {
@@ -149,18 +159,20 @@ export class SfEditorSourceList extends LitElement {
 
           return html`
             <div class="source-item">
-              <button class="delete-btn" @click=${() => this._removeSource(index)} title="Remove source">
-                <sf-icon icon="mdi:delete" style="--icon-width:18px;--icon-height:18px;"></sf-icon>
-              </button>
-              
-              <sf-editor-input
-                label="Nom de la source"
-                .value=${name}
-                @input-update=${(e: CustomEvent) => {
-                  e.stopPropagation();
-                  this._updateSourceName(index, e.detail.value);
-                }}
-              ></sf-editor-input>
+              <div class="source-header">
+                <sf-editor-input
+                  label="Nom de la source"
+                  .value=${name}
+                  @input-update=${(e: CustomEvent) => {
+                    e.stopPropagation();
+                    this._updateSourceName(index, e.detail.value);
+                  }}
+                  style="flex: 1;"
+                ></sf-editor-input>
+                <button class="delete-btn" @click=${() => this._removeSource(index)} title="Remove source">
+                  <sf-icon icon="mdi:delete" style="--icon-width:18px;--icon-height:18px;"></sf-icon>
+                </button>
+              </div>
               
               <sf-editor-action
                 label="Action"

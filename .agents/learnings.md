@@ -630,3 +630,13 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Evidence**: `verify.py P7` threw a regression failure because the newly urbanized central element entrypoint `src/sci-fi.ts` registered all 8 cards, 8 editors, and components, fanning out to 19 imports and triggering the `no_god_files` limit warning.
 - **Fix**: Central registry files that dynamically bundle the codebase naturally have high fan-out coupling. Use `sentrux gate --save .` to save the new baseline once the registry files are confirmed to contain only clean import registrations, satisfying the regression gate.
 
+
+### L071: Switching to Attribute Binding for Static Web Component Properties and Scaling Hexagonal Honeycomb Grids
+- **Date**: 2026-05-29
+- **Source**: ha-sci-fi v1.1 — sci-fi-tv + honeycomb visual update
+- **Evidence**: Static icons in D-pad buttons rendered as empty squares when using `.icon="mdi:chevron-up"` property bindings because `sf-icon` updates depend on standard string attribute change notifications (`willUpdate`/`attributeChangedCallback`). Pointy-top SVG hexagons using standard `viewBox="0 0 44 51"` scaled perfectly without aspect ratio distortion when increasing width to 58px and height to 67px.
+- **Pattern**: 
+  1. For custom components that consume static text or standard asset identifiers (such as icons or static URLs), prioritize standard HTML attribute bindings (`icon="mdi:chevron-up"`) over Lit's reactive property bindings (`.icon="mdi:chevron-up"`). Attribute bindings are more robust, fully registered during custom element upgrade, and prevent empty element rendering.
+  2. To enlarge pointy-top honeycomb hexagon components without distorting their aspect ratio, maintain the standard aspect ratio formula `height = width * 1.1547` in CSS, keeping the inline SVG's `viewBox` fully unchanged. When scaling up hexagon width (e.g. from 44px to 58px), scale the font size and padding proportionally (e.g., from `0.45rem` to `0.55rem` font size and `2px` to `4px` padding) to prevent text clipping and ensure maximum visual harmony and accessibility.
+
+

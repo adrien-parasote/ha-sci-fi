@@ -36,7 +36,7 @@ Pour que vos équipements apparaissent automatiquement dans la carte, ils doiven
 ### Properties:
 - `header_message` (string, optional): Title at the top.
 - `filter_label` (string, optional): HA label to look for (default: `water`).
-- `first_floor_to_render` (string, optional): Default selected floor.
+- `first_floor_to_render` (string, optional): Default selected floor. Resolves by `floor_id` or case-insensitive floor name. Handles HA initialization delays (waits for `hass.floors` before resolving).
 - `default_icon` (string, optional): Fallback icon for entities without an explicit icon.
 - `ignored_entities` (string[], optional): List of `entity_id`s to exclude from rendering.
 

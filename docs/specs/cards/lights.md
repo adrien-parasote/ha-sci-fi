@@ -42,8 +42,8 @@ custom_entities:
 
 | Config | Comportement |
 |---|---|
-| `first_floor_to_render: 'rdc'` | Sélectionne 'rdc' SI l'ID existe dans `hass.floors` (même si aucune lumière) |
-| `first_floor_to_render` absent ou ID inconnu | Fallback → 1er floor avec lumières → 1er floor |
+| `first_floor_to_render: 'rdc'` | Sélectionne 'rdc' SI l'ID ou le nom existe dans `hass.floors` (case-insensitive) |
+| `first_floor_to_render` absent ou inconnu | Fallback → 1er floor avec lumières → 1er floor |
 | `first_area_to_render: 'chambre'` | Sélectionne 'chambre' SI elle est dans les areas du floor actif |
 | `first_area_to_render` absent ou area hors floor | Fallback → 1ère area avec lumières → 1ère area du floor |
 

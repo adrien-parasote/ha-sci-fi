@@ -1,4 +1,4 @@
-<!-- Generated: 2026-05-29 | Files scanned: ~67 | Token estimate: ~420 -->
+<!-- Generated: 2026-05-29 | Files scanned: ~69 | Token estimate: ~425 -->
 
 # ha-sci-fi Frontend Codemap
 
@@ -13,6 +13,7 @@ All cards register as standard web components and are bound in `src/sci-fi.ts`.
 - **TV Remote:** `sci-fi-tv` / `sci-fi-tv-editor`
 - **Vacuum:** `sci-fi-vacuum` / `sci-fi-vacuum-editor`
 - **Vehicles:** `sci-fi-vehicles` / `sci-fi-vehicles-editor`
+- **Water Management:** `sci-fi-water-management` / `sci-fi-water-management-editor`
 - **Weather:** `sci-fi-weather` / `sci-fi-weather-editor`
 
 ## Base Classes

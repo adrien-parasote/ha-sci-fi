@@ -180,6 +180,12 @@ export class SciFiTVCard extends SciFiBaseCard {
                   <circle cx="100" cy="100" r="18" class="planet-body" />
                   <!-- Diagonal ring front -->
                   <path d="M 68 100 A 32 6 0 0 0 132 100" transform="rotate(-25 100 100)" class="planet-ring-front" />
+                  <!-- Planet orbiting satellite -->
+                  ${isOn ? html`
+                    <g transform="rotate(-25 100 100)">
+                      <circle cx="100" cy="100" r="2.5" class="planet-orbit-satellite" />
+                    </g>
+                  ` : ''}
                 </g>
 
                 <!-- Background dial track (opening at bottom-center: starts -135deg, sweeps 270deg) -->

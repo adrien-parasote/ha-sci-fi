@@ -490,6 +490,82 @@ export const tvStyles = css`
     filter: drop-shadow(0 0 4px var(--sf-glow-red, hsl(0, 100%, 50%)));
   }
 
+  /* Planet orbiting satellite styling & 3D animation */
+  .planet-orbit-satellite {
+    fill: var(--sf-glow-cyan, hsl(190, 100%, 50%));
+    stroke: #0d1117;
+    stroke-width: 0.8px;
+    filter: drop-shadow(0 0 3px var(--sf-glow-cyan, hsl(190, 100%, 50%)));
+    animation: planet-satellite-orbit-anim 6s linear infinite;
+  }
+
+  @keyframes planet-satellite-orbit-anim {
+    0% {
+      transform: translate(32px, 0px);
+      opacity: 1;
+    }
+    10% {
+      transform: translate(25.9px, 3.5px);
+      opacity: 1;
+    }
+    20% {
+      transform: translate(9.9px, 5.7px);
+      opacity: 1;
+    }
+    30% {
+      transform: translate(-9.9px, 5.7px);
+      opacity: 1;
+    }
+    40% {
+      transform: translate(-25.9px, 3.5px);
+      opacity: 1;
+    }
+    50% {
+      transform: translate(-32px, 0px);
+      opacity: 1;
+    }
+    60% {
+      transform: translate(-25.9px, -3.5px);
+      opacity: 1;
+    }
+    65% {
+      transform: translate(-18.8px, -4.9px);
+      opacity: 1;
+    }
+    66% {
+      transform: translate(-17.1px, -5.1px);
+      opacity: 0;
+    }
+    70% {
+      transform: translate(-9.9px, -5.7px);
+      opacity: 0;
+    }
+    75% {
+      transform: translate(0px, -6px);
+      opacity: 0;
+    }
+    80% {
+      transform: translate(9.9px, -5.7px);
+      opacity: 0;
+    }
+    84% {
+      transform: translate(17.1px, -5.1px);
+      opacity: 0;
+    }
+    85% {
+      transform: translate(18.8px, -4.9px);
+      opacity: 1;
+    }
+    90% {
+      transform: translate(25.9px, -3.5px);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(32px, 0px);
+      opacity: 1;
+    }
+  }
+
   /* ── Visual Editor Styles ───────────────────────────── */
   .editor-card {
     display: flex;

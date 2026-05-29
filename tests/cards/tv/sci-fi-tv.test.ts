@@ -151,4 +151,47 @@ describe('sci-fi-tv', () => {
     expect(entities).to.include('media_player.bravia_4k_vh22');
     expect(entities).to.include('remote.bravia_4k_vh22');
   });
+
+  // TC-708: Renders orbiting planet satellite when TV is on
+  it('TC-708: renders the orbiting planet satellite when the TV is on', async () => {
+    const el = document.createElement('sci-fi-tv') as SciFiTVCard;
+    (el as any).setConfig({
+      type: 'custom:sci-fi-tv',
+      entity: 'media_player.bravia_4k_vh22',
+    });
+
+    el.hass = makeMockHass({
+      states: {
+        'media_player.bravia_4k_vh22': makeMockEntity({ entity_id: 'media_player.bravia_4k_vh22', state: 'on' })
+      }
+    });
+
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const satellite = el.shadowRoot!.querySelector('.planet-orbit-satellite');
+    expect(satellite).to.exist;
+    expect(satellite!.tagName.toLowerCase()).to.equal('circle');
+  });
+
+  // TC-709: Does not render orbiting planet satellite when TV is off
+  it('TC-709: does not render the orbiting planet satellite when the TV is off', async () => {
+    const el = document.createElement('sci-fi-tv') as SciFiTVCard;
+    (el as any).setConfig({
+      type: 'custom:sci-fi-tv',
+      entity: 'media_player.bravia_4k_vh22',
+    });
+
+    el.hass = makeMockHass({
+      states: {
+        'media_player.bravia_4k_vh22': makeMockEntity({ entity_id: 'media_player.bravia_4k_vh22', state: 'off' })
+      }
+    });
+
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const satellite = el.shadowRoot!.querySelector('.planet-orbit-satellite');
+    expect(satellite).not.to.exist;
+  });
 });

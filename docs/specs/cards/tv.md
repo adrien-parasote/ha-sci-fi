@@ -165,8 +165,15 @@ custom_actions:
 * **Service Triggers**:
   * Default mode (`remote_entity` defined, no matching key in `custom_actions`):
     * Calls `remote.send_command` with the PascalCase command string from the table above.
-    * Service call: `this.hass.callService('remote', 'send_command', { entity_id: this._config.remote_entity, command: commandString })`
   * Custom Action mode: When `this._config.custom_actions?.[btn]` is defined, trigger the action on `@click`. Import `handleAction` from `custom-card-helpers` and pass a synthetic configuration object: `handleAction(this, this.hass, { tap_action: this._config.custom_actions[btn as keyof SciFiTVCustomActions] }, 'tap')`.
+
+### 3. Central Planet Orbiting Satellite
+* **Layout**: A small satellite (`r = 2.5`) orbiting along the diagonal ellipse (`rx = 32`, `ry = 6`) rotated by `-25°` centered around the planet body (`r = 18`) at `(100, 100)`.
+* **State dependency**: Rendered only when the TV power state is `on` (`isOn === true`).
+* **3D Depth Simulation**: To simulate the satellite passing behind the planet, a custom CSS animation (`planet-satellite-orbit-anim` running at `6s linear infinite`) translates it along the unrotated ellipse path:
+  * $dx = 32 \cos(\theta)$, $dy = 6 \sin(\theta)$
+  * Behind the planet ($\theta$ between $235.8^\circ$ and $304.2^\circ$, or approx $65\%$ to $85\%$ of the animation loop), the satellite is hidden by setting `opacity: 0`.
+  * Everywhere else (front half and outside the planet sphere's width), the satellite is visible with `opacity: 1`.
 
 ---
 
@@ -219,6 +226,8 @@ Follows the standard `e.detail.id` / `e.detail.value` mapping directly onto the 
 | **TC-705** | Unit | `getRelevantEntities` returns TV and remote entities | Valid card config | Array of both entity IDs |
 | **TC-706** | Unit | Angle clamp: pointer in dead-zone snaps to nearest edge | `pointermove` at bottom center (270° shifted) | `volumeLevel = 1.0` (clamped, not NaN / >1.0) |
 | **TC-707** | Unit | Coordinate conversion: DOM px correctly maps to SVG viewBox | `pointermove` at DOM center of rendered SVG | Computed `svgX ≈ 100`, `svgY ≈ 100` regardless of render size |
+| **TC-708** | Unit | Orbiting planet satellite is rendered when TV is on | TV state is `'on'` | Planet orbiting satellite element exists in shadowRoot |
+| **TC-709** | Unit | Orbiting planet satellite is not rendered when TV is off | TV state is `'off'` | Planet orbiting satellite element does not exist in shadowRoot |
 | **IT-701** | Integration | Custom elements register correctly in HA registry | Load built bundle | Elements `sci-fi-tv` and `sci-fi-tv-editor` exist |
 | **IT-702** | Integration | Workbench — Netflix active mock state renders dial at 35% | Workbench mock state `netflix_active` | Volume dial arc covers 35% of full arc; source label "Netflix" highlighted |
 | **IT-703** | Integration | Dragging orbital dial calls correct service volume | Pointer dragging to 60% position | Calls `media_player.volume_set` with `volume_level: 0.6` |

@@ -288,8 +288,8 @@ export const tvStyles = css`
 
   .source-hexa {
     position: relative;
-    width: 44px;
-    height: 50.8px; /* 44 * 1.1547 */
+    width: 58px;
+    height: 67px; /* 58 * 1.1547 ≈ 67 */
     cursor: pointer;
     flex-shrink: 0;
     transition: transform 0.15s;
@@ -343,10 +343,10 @@ export const tvStyles = css`
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 2px;
+    padding: 4px;
     box-sizing: border-box;
     pointer-events: none;
-    font-size: 0.45rem;
+    font-size: 0.55rem;
     font-weight: 600;
     text-transform: uppercase;
     color: rgba(224, 232, 255, 0.4);

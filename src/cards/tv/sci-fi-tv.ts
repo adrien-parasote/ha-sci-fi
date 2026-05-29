@@ -182,19 +182,19 @@ export class SciFiTVCard extends SciFiBaseCard {
               <!-- Grid D-pad -->
               <div class="dpad-container">
                 <button class="dpad-btn btn-up" data-key="up" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('up')}">
-                  <sf-icon .icon="mdi:chevron-up" .connection="${this.hass.connection}"></sf-icon>
+                  <sf-icon icon="mdi:chevron-up" .connection="${this.hass.connection}"></sf-icon>
                 </button>
                 <button class="dpad-btn btn-left" data-key="left" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('left')}">
-                  <sf-icon .icon="mdi:chevron-left" .connection="${this.hass.connection}"></sf-icon>
+                  <sf-icon icon="mdi:chevron-left" .connection="${this.hass.connection}"></sf-icon>
                 </button>
                 <button class="dpad-btn btn-confirm" data-key="confirm" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('confirm')}">
-                  <sf-icon .icon="mdi:circle-outline" .connection="${this.hass.connection}"></sf-icon>
+                  <sf-icon icon="mdi:circle-outline" .connection="${this.hass.connection}"></sf-icon>
                 </button>
                 <button class="dpad-btn btn-right" data-key="right" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('right')}">
-                  <sf-icon .icon="mdi:chevron-right" .connection="${this.hass.connection}"></sf-icon>
+                  <sf-icon icon="mdi:chevron-right" .connection="${this.hass.connection}"></sf-icon>
                 </button>
                 <button class="dpad-btn btn-down" data-key="down" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('down')}">
-                  <sf-icon .icon="mdi:chevron-down" .connection="${this.hass.connection}"></sf-icon>
+                  <sf-icon icon="mdi:chevron-down" .connection="${this.hass.connection}"></sf-icon>
                 </button>
               </div>
 

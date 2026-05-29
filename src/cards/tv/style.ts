@@ -83,6 +83,68 @@ export const tvStyles = css`
     filter: drop-shadow(0 0 4px var(--sf-glow-red, hsl(0, 100%, 50%)));
   }
 
+  /* ── Telemetry Status Bar ─────────────────────────── */
+  .telemetry-status-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background: rgba(16, 22, 38, 0.4);
+    border-bottom: 1px solid var(--sf-glow-navy, hsl(230, 40%, 15%));
+    padding: 4px 12px;
+    font-size: 0.55rem;
+    font-family: monospace;
+    letter-spacing: 0.5px;
+    box-sizing: border-box;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .status-segment {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    text-transform: uppercase;
+  }
+
+  .segment-indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .segment-indicator.is-active {
+    background: var(--sf-glow-cyan, hsl(190, 100%, 50%));
+    box-shadow: 0 0 4px var(--sf-glow-cyan, hsl(190, 100%, 50%));
+  }
+
+  .segment-indicator.is-standby {
+    background: var(--sf-glow-red, hsl(0, 100%, 50%));
+    box-shadow: 0 0 4px var(--sf-glow-red, hsl(0, 100%, 50%));
+  }
+
+  .segment-indicator.is-offline {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .segment-title {
+    color: rgba(0, 210, 255, 0.4);
+  }
+
+  .segment-value {
+    color: rgba(224, 232, 255, 0.7);
+  }
+
+  .segment-value.highlight {
+    color: var(--sf-glow-cyan, hsl(190, 100%, 50%));
+    text-shadow: 0 0 4px var(--sf-glow-cyan, rgba(0, 210, 255, 0.3));
+    font-weight: bold;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   /* ── Bridge Viewport (Grid Layout) ──────────────────── */
   .bridge-layout {
     display: grid;
@@ -223,6 +285,9 @@ export const tvStyles = css`
   }
 
   .dpad-btn sf-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     --icon-width: 16px;
     --icon-height: 16px;
     --icon-color: currentColor;

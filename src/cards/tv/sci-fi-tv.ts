@@ -135,6 +135,19 @@ export class SciFiTVCard extends SciFiBaseCard {
             </div>
           </div>
 
+          <!-- Telemetry Status Bar -->
+          <div class="telemetry-status-bar">
+            <div class="status-segment segment-left">
+              <span class="segment-indicator ${isUnavailable ? 'is-offline' : (isOff ? 'is-standby' : 'is-active')}"></span>
+              <span class="segment-title">TRANSMISSION:</span>
+              <span class="segment-value">${isUnavailable ? 'OFFLINE' : (isOff ? 'STANDBY' : 'ACTIVE')}</span>
+            </div>
+            <div class="status-segment segment-right">
+              <span class="segment-title">PLAYING:</span>
+              <span class="segment-value highlight">${isUnavailable ? 'DISCONNECTED' : (isOff ? 'STANDBY' : (mediaTitle || sourceLabel || 'IDLE'))}</span>
+            </div>
+          </div>
+
           <!-- Active Workspace Viewport -->
           <div class="bridge-layout">
             

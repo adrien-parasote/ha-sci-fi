@@ -16,6 +16,11 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
     .card-config > *:last-child {
       margin-bottom: 0;
     }
+    .accordion-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
   `];
 
   protected renderEditor(): TemplateResult {
@@ -57,7 +62,7 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
             <sf-icon icon="mdi:eye-outline" style="--icon-width:16px;--icon-height:16px;"></sf-icon>
             <span>Visibilité</span>
           </h1>
-          <div class="people">
+          <div class="accordion-group">
             ${Object.entries(this._getGroupedWaterEntities()).map(([devId, entities]) => {
               let title = 'Automatisations / Sans équipement';
               let icon = 'mdi:robot';
@@ -67,8 +72,8 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
               }
 
               return html`
-                <sf-editor-accordion title="${title}" icon="${icon}" ?open=${true}>
-                  <div style="padding-top: 8px;">
+                <sf-editor-accordion title="${title}" icon="${icon}" ?open=${false}>
+                  <div class="people" style="padding-top: 8px;">
                     ${entities.map(ent => {
                       const entityId = ent.entity_id;
                       const stateObj = this.hass!.states[entityId];

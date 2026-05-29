@@ -126,6 +126,7 @@ export abstract class SciFiBaseEditor extends LitElement {
       'section-title-custom-actions': msg('Custom actions'),
       'section-title-shortcuts': msg('Shortcuts'),
       'section-title-segments': msg('Segments'),
+      'section-title-tv': msg('TV Remote'),
       'text-optional': msg('(optional)'),
       'text-required': msg('(required)'),
       'text-switch-climate-global-turn-on_off': msg('Display global turn on/off button ?'),
@@ -270,6 +271,7 @@ export abstract class SciFiBaseEditor extends LitElement {
       'section-title-custom-actions':      'mdi:gesture-tap-button',
       'section-title-shortcuts':           'mdi:lightning-bolt-outline',
       'section-title-segments':            'mdi:floor-plan',
+      'section-title-tv':                  'mdi:television',
     };
     const icon = SECTION_ICONS[key] ?? 'mdi:circle-small';
     return html`

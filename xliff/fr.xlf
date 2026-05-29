@@ -693,6 +693,10 @@
   <source>Select Source</source>
   <target>Sélectionner la Source</target>
 </trans-unit>
+<trans-unit id="se3fbf46f160b27eb">
+  <source>TV Remote</source>
+  <target>Configuration TV</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

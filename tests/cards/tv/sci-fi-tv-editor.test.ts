@@ -114,14 +114,14 @@ describe('sci-fi-tv-editor', () => {
   });
 
   // TC-714
-  it('renders 13 sf-editor-action components for custom_actions', async () => {
+  it('renders 11 sf-editor-action components for custom_actions', async () => {
     const el = await createElement();
     el.setConfig(makeConfig());
     await el.updateComplete;
     
-    // The accordion for Custom Actions should contain 13 sf-editor-action elements
+    // The accordion for Custom Actions should contain 11 sf-editor-action components
     const actionEditors = el.shadowRoot!.querySelectorAll('sf-editor-action');
-    expect(actionEditors.length).toBe(13);
+    expect(actionEditors.length).toBe(11);
   });
 
   // TC-715

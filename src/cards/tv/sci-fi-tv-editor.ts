@@ -111,7 +111,7 @@ export class SciFiTVEditor extends SciFiBaseEditor {
             <sf-editor-dropdown-entity
               element-id="entity"
               kind="media-player"
-              label="${this.getLabel('input-media-player-entity')} ${this.getLabel('text-required')}"
+              .label=${html`${this.getLabel('input-media-player-entity')} ${this.getLabel('text-required')}`}
               icon="mdi:television"
               .value="${config.entity ?? ''}"
               .items="${this._mediaPlayers}"
@@ -120,14 +120,14 @@ export class SciFiTVEditor extends SciFiBaseEditor {
 
             <!-- Settings Accordion -->
             <sf-editor-accordion
-              title="${this.getLabel('section-title-device-settings')}"
+              .title=${this.getLabel('section-title-device-settings')}
               element-id="device_settings"
               icon="mdi:cog"
             >
               <sf-editor-input
                 element-id="name"
                 kind="spaceship-label"
-                label="${this.getLabel('input-quadrant-name')}"
+                .label=${this.getLabel('input-quadrant-name')}
                 icon="mdi:cursor-text"
                 .value="${config.name ?? ''}"
                 @input-update="${this._handleInputUpdate}"
@@ -156,7 +156,7 @@ export class SciFiTVEditor extends SciFiBaseEditor {
               <sf-editor-dropdown-entity
                 element-id="remote_entity"
                 kind="remote-device"
-                label="${this.getLabel('input-remote-entity')} ${this.getLabel('text-optional')}"
+                .label=${this.getLabel('input-remote-entity') + ' ' + this.getLabel('text-optional')}
                 icon="mdi:remote"
                 .value="${config.remote_entity ?? ''}"
                 .items="${this._remotes}"
@@ -166,13 +166,13 @@ export class SciFiTVEditor extends SciFiBaseEditor {
 
             <!-- Shortcuts Accordion (Sources) -->
             <sf-editor-accordion
-              title="${this.getSectionTitle('section-title-media-sources') ?? 'Sources'}"
+              .title=${this.getSectionTitle('section-title-media-sources') ?? 'Sources'}
               element-id="shortcuts"
               icon="mdi:link-variant"
             >
               <sf-editor-source-list
                 element-id="sources"
-                label="${this.getLabel('input-media-sources')}"
+                .label=${this.getLabel('input-media-sources')}
                 .hass="${this.hass}"
                 .values="${config.sources ?? []}"
                 @input-update="${this._handleSourceListUpdate}"
@@ -185,7 +185,7 @@ export class SciFiTVEditor extends SciFiBaseEditor {
               element-id="custom_actions"
               icon="mdi:remote-tv"
             >
-              ${['power', 'home', 'menu', 'back', 'info', 'up', 'down', 'left', 'right', 'enter', 'volume_up', 'volume_down', 'volume_mute'].map(actionId => html`
+              ${['power', 'home', 'menu', 'back', 'info', 'up', 'down', 'left', 'right', 'enter', 'volume_mute'].map(actionId => html`
                 <sf-editor-action
                   element-id="${actionId}"
                   label="Bouton ${actionId}"

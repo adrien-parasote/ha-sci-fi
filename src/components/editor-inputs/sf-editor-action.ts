@@ -60,15 +60,21 @@ export class SfEditorAction extends LitElement {
     this._dispatch(e.detail.value);
   }
 
-  private _onFallbackChanged(e: Event): void {
-    const textarea = e.target as HTMLTextAreaElement;
-    try {
-      const parsed = textarea.value.trim() ? JSON.parse(textarea.value) : undefined;
-      this._fallbackError = '';
-      this._dispatch(parsed);
-    } catch (err) {
-      this._fallbackError = 'Invalid JSON';
+  private _updateFallbackField(field: string, val: string): void {
+    const newVal = { ...(this.value || {}) };
+    
+    if (field === 'action') {
+      newVal.action = val || 'none';
+    } else if (field === 'service') {
+      newVal.service = val;
+    } else if (field === 'navigation_path') {
+      newVal.navigation_path = val;
+    } else if (field === 'data.entity_id') {
+      if (!newVal.data) newVal.data = {};
+      newVal.data.entity_id = val;
     }
+    
+    this._dispatch(newVal);
   }
 
   private _dispatch(value: any): void {
@@ -101,14 +107,35 @@ export class SfEditorAction extends LitElement {
                 .value=${this.value}
                 @value-changed=${this._onSelectorChanged}
               ></ha-selector>
-            `
-          : html`
-              <textarea
-                placeholder="{ &quot;action&quot;: &quot;none&quot; }"
-                .value=${this.value ? JSON.stringify(this.value, null, 2) : ''}
-                @change=${this._onFallbackChanged}
-              ></textarea>
-              ${this._fallbackError ? html`<div class="error">${this._fallbackError}</div>` : nothing}
+            ` : html`
+              <div class="fallback-ui">
+                <sf-editor-input
+                  label="Type d'action (ex: call-service, navigate, none)"
+                  .value=${this.value?.action || ''}
+                  @input-update=${(e: CustomEvent) => this._updateFallbackField('action', e.detail.value)}
+                ></sf-editor-input>
+                
+                ${this.value?.action === 'call-service' ? html`
+                  <sf-editor-input
+                    label="Service (ex: media_player.play_media)"
+                    .value=${this.value?.service || ''}
+                    @input-update=${(e: CustomEvent) => this._updateFallbackField('service', e.detail.value)}
+                  ></sf-editor-input>
+                  <sf-editor-input
+                    label="Entity ID (data.entity_id)"
+                    .value=${this.value?.data?.entity_id || ''}
+                    @input-update=${(e: CustomEvent) => this._updateFallbackField('data.entity_id', e.detail.value)}
+                  ></sf-editor-input>
+                ` : nothing}
+                
+                ${this.value?.action === 'navigate' ? html`
+                  <sf-editor-input
+                    label="Chemin de navigation"
+                    .value=${this.value?.navigation_path || ''}
+                    @input-update=${(e: CustomEvent) => this._updateFallbackField('navigation_path', e.detail.value)}
+                  ></sf-editor-input>
+                ` : nothing}
+              </div>
             `}
       </div>
     `;

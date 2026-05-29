@@ -258,6 +258,10 @@ export interface SciFiTVCustomActions {
   readonly back?: ActionConfig;
   readonly home?: ActionConfig;
   readonly menu?: ActionConfig;
+  readonly power?: ActionConfig;
+  readonly info?: ActionConfig;
+  readonly enter?: ActionConfig;
+  readonly volume_mute?: ActionConfig;
 }
 
 export interface SciFiTVConfig extends SciFiBaseConfig {

@@ -163,7 +163,7 @@ export class SfEditorSourceList extends LitElement {
               ></sf-editor-input>
               
               <sf-editor-action
-                label="Action (Lovelace)"
+                label="Action"
                 .hass=${this.hass}
                 .value=${actionConfig}
                 @input-update=${(e: CustomEvent) => {

@@ -340,6 +340,41 @@ export const tvStyles = css`
     opacity: 0.15;
   }
 
+  /* Mute Button Row */
+  .mute-row {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 6px;
+  }
+
+  .mute-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: rgba(0, 210, 255, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s;
+    padding: 4px;
+    border-radius: 50%;
+  }
+
+  .mute-btn sf-icon {
+    --icon-width: 18px;
+    --icon-height: 18px;
+  }
+
+  .mute-btn:hover:not(:disabled) {
+    color: var(--sf-glow-cyan, hsl(190, 100%, 50%));
+  }
+
+  .mute-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.15;
+  }
+
   /* ── Hex Sources Honeycomb ──────────────────────────── */
   .sources-panel {
     display: flex;

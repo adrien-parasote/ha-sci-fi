@@ -268,7 +268,11 @@ export class SciFiTVCard extends SciFiBaseCard {
                 <button class="row-btn" data-key="back" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('back')}">${msg('Back')}</button>
                 <button class="row-btn" data-key="home" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('home')}">${msg('Home')}</button>
                 <button class="row-btn" data-key="menu" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('menu')}">${msg('Menu')}</button>
-                <button class="row-btn" data-key="volume_mute" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('volume_mute')}">
+              </div>
+
+              <!-- Mute Button Row -->
+              <div class="mute-row">
+                <button class="mute-btn" data-key="volume_mute" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('volume_mute')}">
                   <sf-icon icon="mdi:volume-off" .connection="${this.hass.connection}"></sf-icon>
                 </button>
               </div>

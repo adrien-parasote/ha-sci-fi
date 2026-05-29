@@ -108,9 +108,6 @@ custom_actions:
   home:
     action: call-service
     service: script.warp_speed_home
-  back:
-    action: navigate
-    navigation_path: /lovelace/main
 ```
 
 ---

@@ -645,3 +645,14 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Evidence:** The UI rendered `[object Object]` in the title of `sf-editor-accordion` because `getSectionTitle()` returned a `TemplateResult` (an `<sf-icon>` embedded inside HTML) instead of a raw string, and it was dynamically bound to `.title=${this.getSectionTitle()}` which expected a primitive string.
 - **Anti-pattern:** Binding a function that returns rich HTML/SVG (Lit `TemplateResult`) to a native property/attribute that only accepts a raw string. Lit automatically calls `toString()` on the object, resulting in `[object Object]`.
 - **Fix:** Strictly separate plain text labels from rich rendering components. Create dedicated string accessors (like `getLabel()`) that return pure `string` formats for attribute bindings, and reserve template-returning functions (like `renderSectionTitle()`) exclusively for inside slot rendering or HTML contexts.
+
+### L073: lit-localize Extract Silently Fails to Update Target Builds Without <target> Nodes
+- **Date:** 2026-05-29
+- **Source:** ha-sci-fi — sci-fi-water-management.ts i18n
+- **Evidence:** Added new UI labels and ran `lit-localize extract`. The build step (`lit-localize build`) produced `fr.ts` but the UI remained in English. `lit-localize extract` only adds new `<trans-unit>` entries with `<source>` tags to `fr.xlf`. If the `<target>` tag is missing entirely, `lit-localize build` silently skips the translation and falls back to the English source. The user had to point out the missing translation.
+- **Anti-pattern:** Running `lit-localize extract` followed immediately by `lit-localize build` without first injecting `<target>` translations into the `.xlf` files.
+- **Fix:** When adding new localizations:
+  1. Run `lit-localize extract`
+  2. Use a script (e.g. `python3 translate_xlf.py`) or manually inject the `<target>` node for each new `<trans-unit>` in `xliff/fr.xlf`
+  3. Run `lit-localize build`
+  Document this 3-step required sequence in the spec for any project using `lit-localize` with XLIFF files.

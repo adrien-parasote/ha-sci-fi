@@ -43,14 +43,19 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
 
   private async _fetchRegistry() {
     try {
-      const devices = await this.hass!.connection.sendMessagePromise<any[]>({ type: 'config/device_registry/list' });
-      const entities = await this.hass!.connection.sendMessagePromise<any[]>({ type: 'config/entity_registry/list' });
+      const callWS = (this.hass as any).callWS || this.hass!.connection.sendMessagePromise.bind(this.hass!.connection);
+      const devices = await callWS({ type: 'config/device_registry/list' });
+      const entities = await callWS({ type: 'config/entity_registry/list' });
       
       const deviceDict: Record<string, any> = {};
-      for (const d of devices) deviceDict[d.id] = d;
+      if (Array.isArray(devices)) {
+        for (const d of devices) deviceDict[d.id] = d;
+      }
       
       const entityDict: Record<string, any> = {};
-      for (const e of entities) entityDict[e.entity_id] = e;
+      if (Array.isArray(entities)) {
+        for (const e of entities) entityDict[e.entity_id] = e;
+      }
 
       this._devices = deviceDict;
       this._entities = entityDict;

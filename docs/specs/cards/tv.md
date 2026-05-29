@@ -169,11 +169,11 @@ custom_actions:
 
 ### 3. Central Planet Orbiting Satellite
 * **Layout**: A small satellite (`r = 2.5`) orbiting along the diagonal ellipse (`rx = 32`, `ry = 6`) rotated by `-25°` centered around the planet body (`r = 18`) at `(100, 100)`.
-* **State dependency**: Rendered only when the TV power state is `on` (`isOn === true`).
+* **State dependency**: Rendered always. When the TV power state is `off` or `unavailable`, it carries the `.is-off` class, styling it as a dim red standby beacon (`--sf-glow-red`, `opacity: 0.45`).
 * **3D Depth Simulation**: To simulate the satellite passing behind the planet, a custom CSS animation (`planet-satellite-orbit-anim` running at `6s linear infinite`) translates it along the unrotated ellipse path:
   * $dx = 32 \cos(\theta)$, $dy = 6 \sin(\theta)$
-  * Behind the planet ($\theta$ between $235.8^\circ$ and $304.2^\circ$, or approx $65\%$ to $85\%$ of the animation loop), the satellite is hidden by setting `opacity: 0`.
-  * Everywhere else (front half and outside the planet sphere's width), the satellite is visible with `opacity: 1`.
+  * Behind the planet ($\theta$ between $235.8^\circ$ and $304.2^\circ$, or approx $66\%$ to $84\%$ of the animation loop), the satellite is hidden using `visibility: hidden`.
+  * Everywhere else (front half and outside the planet sphere's width), the satellite is visible with `visibility: visible`. This decouples depth occlusion from power-state dimming.
 
 ---
 

@@ -499,70 +499,76 @@ export const tvStyles = css`
     animation: planet-satellite-orbit-anim 6s linear infinite;
   }
 
+  .planet-orbit-satellite.is-off {
+    fill: var(--sf-glow-red, hsl(0, 100%, 50%));
+    filter: drop-shadow(0 0 3px var(--sf-glow-red, hsl(0, 100%, 50%)));
+    opacity: 0.45;
+  }
+
   @keyframes planet-satellite-orbit-anim {
     0% {
       transform: translate(32px, 0px);
-      opacity: 1;
+      visibility: visible;
     }
     10% {
       transform: translate(25.9px, 3.5px);
-      opacity: 1;
+      visibility: visible;
     }
     20% {
       transform: translate(9.9px, 5.7px);
-      opacity: 1;
+      visibility: visible;
     }
     30% {
       transform: translate(-9.9px, 5.7px);
-      opacity: 1;
+      visibility: visible;
     }
     40% {
       transform: translate(-25.9px, 3.5px);
-      opacity: 1;
+      visibility: visible;
     }
     50% {
       transform: translate(-32px, 0px);
-      opacity: 1;
+      visibility: visible;
     }
     60% {
       transform: translate(-25.9px, -3.5px);
-      opacity: 1;
+      visibility: visible;
     }
     65% {
       transform: translate(-18.8px, -4.9px);
-      opacity: 1;
+      visibility: visible;
     }
     66% {
       transform: translate(-17.1px, -5.1px);
-      opacity: 0;
+      visibility: hidden;
     }
     70% {
       transform: translate(-9.9px, -5.7px);
-      opacity: 0;
+      visibility: hidden;
     }
     75% {
       transform: translate(0px, -6px);
-      opacity: 0;
+      visibility: hidden;
     }
     80% {
       transform: translate(9.9px, -5.7px);
-      opacity: 0;
+      visibility: hidden;
     }
     84% {
       transform: translate(17.1px, -5.1px);
-      opacity: 0;
+      visibility: hidden;
     }
     85% {
       transform: translate(18.8px, -4.9px);
-      opacity: 1;
+      visibility: visible;
     }
     90% {
       transform: translate(25.9px, -3.5px);
-      opacity: 1;
+      visibility: visible;
     }
     100% {
       transform: translate(32px, 0px);
-      opacity: 1;
+      visibility: visible;
     }
   }
 

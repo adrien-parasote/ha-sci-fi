@@ -172,10 +172,11 @@ describe('sci-fi-tv', () => {
     const satellite = el.shadowRoot!.querySelector('.planet-orbit-satellite');
     expect(satellite).to.exist;
     expect(satellite!.tagName.toLowerCase()).to.equal('circle');
+    expect(satellite!.classList.contains('is-off')).to.be.false;
   });
 
-  // TC-709: Does not render orbiting planet satellite when TV is off
-  it('TC-709: does not render the orbiting planet satellite when the TV is off', async () => {
+  // TC-709: Renders orbiting planet satellite in standby mode when TV is off
+  it('TC-709: renders the orbiting planet satellite in standby mode when the TV is off', async () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-tv',
@@ -192,6 +193,7 @@ describe('sci-fi-tv', () => {
     await el.updateComplete;
 
     const satellite = el.shadowRoot!.querySelector('.planet-orbit-satellite');
-    expect(satellite).not.to.exist;
+    expect(satellite).to.exist;
+    expect(satellite!.classList.contains('is-off')).to.be.true;
   });
 });

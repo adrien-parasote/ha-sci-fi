@@ -1,6 +1,6 @@
 {
   "name": "ha-sci-fi",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "A collection of custom Lovelace cards for a minimalist sci-fi dashboard in Home Assistant",
   "main": "src/sci-fi.ts",
   "scripts": {

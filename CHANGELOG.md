@@ -1,5 +1,9 @@
 # Changelog
 
+# [v1.2.3](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.2.3) - 2026-05-29
+
+## 🐛 Fixes
+- **Water & Lights cards**: fix `first_floor_to_render` not working when passing the friendly name (e.g. `Extérieur`) instead of the exact `floor_id`. Case-insensitivity and friendly-name mapping is now fully supported.
 # [v1.2.2](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.2.2) - 2026-05-29
 
 ## 🐛 Fixes

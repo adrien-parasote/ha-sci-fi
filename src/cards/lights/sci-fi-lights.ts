@@ -84,10 +84,19 @@ export class SciFiLightsCard extends SciFiBaseCard {
 
 
     // Validate _activeFloorId: must exist in hass.floors.
-    // If not (stale/missing ID), fall back to first floor with lights, then any floor.
+    // If not (stale/missing ID or friendly name from config), fall back to first floor with lights, then any floor.
     const floorExists = !!this._activeFloorId && !!this.hass.floors?.[this._activeFloorId];
     if (!floorExists) {
-      this._activeFloorId =
+      let resolvedFloorId: string | null = null;
+      if (this._activeFloorId && this.hass.floors) {
+        const target = this._activeFloorId.toLowerCase();
+        const matched = Object.values(this.hass.floors).find(
+          f => f.floor_id.toLowerCase() === target || (f.name && f.name.toLowerCase() === target)
+        );
+        if (matched) resolvedFloorId = matched.floor_id;
+      }
+
+      this._activeFloorId = resolvedFloorId ??
         floors.find(f => lightAreas(f.floor_id).length > 0)?.floor_id ??
         floors[0]?.floor_id ?? null;
     }

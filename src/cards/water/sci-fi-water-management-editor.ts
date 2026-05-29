@@ -2,6 +2,7 @@ import { html, css, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
+import '../../components/editor-inputs/sf-editor-chips.js';
 import type { SciFiWaterManagementConfig } from '../../types/config.js';
 
 const TAG = 'sci-fi-water-management-editor';
@@ -52,15 +53,39 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
           @value-changed=${this._valueChanged}
         ></sf-editor-dropdown-icon>
 
-        <sf-editor-multi-entity
-          label="Entités ignorées (optionnel)"
-          .hass=${this.hass}
-          .value=${config.ignored_entities ?? []}
+        <sf-editor-chips
+          label="Entités ignorées (motifs avec * acceptés)"
+          .values=${config.ignored_entities ?? []}
           .configValue=${'ignored_entities'}
-          @value-changed=${this._valueChanged}
-        ></sf-editor-multi-entity>
+          @input-update=${this._chipsChanged}
+        ></sf-editor-chips>
       </div>
     `;
+  }
+
+  private _chipsChanged(ev: CustomEvent): void {
+    if (!this.hass) return;
+    
+    const target = ev.target as any;
+    if (!target.configValue) return;
+
+    const detail = ev.detail;
+    let currentValues = [...((this.config as any)[target.configValue] || [])];
+
+    if (detail.type === 'add') {
+      if (!currentValues.includes(detail.value)) {
+        currentValues.push(detail.value);
+      }
+    } else if (detail.type === 'remove') {
+      const idx = parseInt(detail.value, 10);
+      if (!isNaN(idx) && idx >= 0 && idx < currentValues.length) {
+        currentValues.splice(idx, 1);
+      }
+    }
+
+    const newConfig = this._getNewConfig<SciFiWaterManagementConfig>();
+    (newConfig as any)[target.configValue] = currentValues.length > 0 ? currentValues : undefined;
+    this._dispatchChange(newConfig);
   }
 
   private _valueChanged(ev: CustomEvent): void {

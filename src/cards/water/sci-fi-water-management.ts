@@ -1,6 +1,7 @@
 import { html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
+import { msg } from '@lit/localize';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import type { SciFiWaterManagementConfig } from '../../types/config.js';
@@ -138,7 +139,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     floors = floors.filter(f => this._getWaterEntitiesForFloor(f.floor_id).length > 0);
 
     if (floors.length === 0) {
-      return html`<ha-card><div class="empty-state">Aucun étage configuré</div></ha-card>`;
+      return html`<ha-card><div class="empty-state">${msg('No floor configured')}</div></ha-card>`;
     }
 
     // Validate active floor or fallback
@@ -160,7 +161,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
           <div class="entities-section">
             ${waterEntities.length > 0 
               ? this._renderEntitiesGrouped(waterEntities)
-              : html`<div class="empty-state">Aucun équipement d'eau configuré pour cet étage</div>`
+              : html`<div class="empty-state">${msg("No water equipment configured for this floor")}</div>`
             }
           </div>
         </div>
@@ -261,7 +262,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
       if (devId === 'no_device') {
         groups.push(html`
           <sf-editor-accordion
-            title="Automatisations"
+            title=${msg("Automations")}
             ?open="${true}"
             style="margin-bottom: 12px; display: block;"
           >
@@ -269,7 +270,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
           </sf-editor-accordion>
         `);
       } else {
-        const deviceName = devicesSource[devId]?.name || 'Équipement';
+        const deviceName = devicesSource[devId]?.name || msg('Device');
         groups.push(html`
           <sf-editor-accordion
             title="${deviceName}"
@@ -316,19 +317,19 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
           ` : isSelect ? html`
             <select class="sf-select" @change="${(e: Event) => this._changeSelectEntity(entityEntry.entity_id, e)}" ?disabled="${!stateObj || stateObj.state === 'unavailable'}">
               ${!stateObj || stateObj.state === 'unavailable'
-                ? html`<option value="">Indisponible</option>`
+                ? html`<option value="">${msg('Unavailable')}</option>`
                 : (Array.isArray(stateObj.attributes?.options) 
                   ? html`
-                      ${stateObj.state === 'unknown' ? html`<option value="" disabled selected>Sélectionner...</option>` : ''}
+                      ${stateObj.state === 'unknown' ? html`<option value="" disabled selected>${msg('Select...')}</option>` : ''}
                       ${stateObj.attributes.options.map((opt: string) => html`
                         <option value="${opt}" ?selected="${opt === stateObj.state}">${opt}</option>
                       `)}
                     `
-                  : html`<option value="">Inconnu</option>`)
+                  : html`<option value="">${msg('Unknown')}</option>`)
               }
             </select>
           ` : html`
-            <span class="entity-state ${isOn ? 'state-active' : ''}">${isOn ? 'ACTIVE' : 'OFF'}</span>
+            <span class="entity-state ${isOn ? 'state-active' : ''}">${isOn ? msg('ACTIVE') : msg('OFF')}</span>
             <sf-toggle-switch
               .checked="${isOn}"
               @change="${() => this._toggleEntity(entityEntry.entity_id, isOn, domain)}"
@@ -344,7 +345,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     
     void this.hass
       .callService(serviceDomain, isOn ? 'turn_off' : 'turn_on', { entity_id: entityId })
-      .then(() => { this._showToast(false, isOn ? 'Désactivé' : 'Activé'); })
+      .then(() => { this._showToast(false, isOn ? msg('Turned off') : msg('Turned on')); })
       .catch((e: Error) => { this._showToast(true, e.message); });
   }
 
@@ -353,7 +354,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     if (!target) return;
     void this.hass
       .callService('select', 'select_option', { entity_id: entityId, option: target.value })
-      .then(() => { this._showToast(false, 'Option modifiée'); })
+      .then(() => { this._showToast(false, msg('Option changed')); })
       .catch((err: Error) => { this._showToast(true, err.message); });
   }
 

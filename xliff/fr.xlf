@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+<?xml version='1.0' encoding='utf-8'?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
 <file target-language="fr" source-language="en" original="lit-localize-inputs" datatype="plaintext">
 <body>
 <trans-unit id="s18d370b7cc048ebd">
@@ -416,7 +416,7 @@
 </trans-unit>
 <trans-unit id="s0b0a02a4470de153">
   <source>Device</source>
-  <target>Appareil</target>
+  <target>Équipement</target>
 </trans-unit>
 <trans-unit id="s1219d97b49650c05">
   <source>Visibility</source>
@@ -930,6 +930,48 @@
   <source>Quick-Select sources (Press Enter to add)</source>
   <target>Sources Quick-Select (Entrée pour ajouter)</target>
 </trans-unit>
+<trans-unit id="sadc98e3afa865a02">
+  <source>Header message (optional)</source>
+<target>Message d'en-tête (optionnel)</target></trans-unit>
+<trans-unit id="s12d58eff67ea9dea">
+  <source>HA filter label (e.g. water)</source>
+<target>Label de filtrage HA (ex: water)</target></trans-unit>
+<trans-unit id="s4476c4d962bb61de">
+  <source>Default floor (Floor ID)</source>
+<target>Étage par défaut (ID de l'étage)</target></trans-unit>
+<trans-unit id="s96c34cd5aba94917">
+  <source>Default icon</source>
+<target>Icône par défaut</target></trans-unit>
+<trans-unit id="s9a4312d74d5c493d">
+  <source>Automations / No device</source>
+<target>Automatisations / Sans équipement</target></trans-unit>
+<trans-unit id="s989d9377e68d13e0">
+  <source>No floor configured</source>
+<target>Aucun étage configuré</target></trans-unit>
+<trans-unit id="sf26ae8d883d9f7c2">
+  <source>No water equipment configured for this floor</source>
+<target>Aucun équipement d'eau configuré pour cet étage</target></trans-unit>
+<trans-unit id="scd420c6eabf1cf7b">
+  <source>Automations</source>
+<target>Automatisations</target></trans-unit>
+<trans-unit id="s43e9aef7aa01fca9">
+  <source>Unavailable</source>
+<target>Indisponible</target></trans-unit>
+<trans-unit id="s26273c258ddde0e1">
+  <source>Select...</source>
+<target>Sélectionner...</target></trans-unit>
+<trans-unit id="sc592307ea80f16b9">
+  <source>Unknown</source>
+<target>Inconnu</target></trans-unit>
+<trans-unit id="sdf079de361571536">
+  <source>Turned off</source>
+<target>Désactivé</target></trans-unit>
+<trans-unit id="sec75526fc01390fc">
+  <source>Turned on</source>
+<target>Activé</target></trans-unit>
+<trans-unit id="s2333784a4676c1b8">
+  <source>Option changed</source>
+<target>Option modifiée</target></trans-unit>
 </body>
 </file>
 </xliff>

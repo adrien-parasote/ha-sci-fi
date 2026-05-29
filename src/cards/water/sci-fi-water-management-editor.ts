@@ -1,5 +1,6 @@
 import { html, css, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
+import { msg } from '@lit/localize';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
 import type { SciFiWaterManagementConfig } from '../../types/config.js';
@@ -66,28 +67,28 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
     return html`
       <div class="card-config">
         <sf-editor-input
-          label="Message d'en-tête (optionnel)"
+          label=${msg("Header message (optional)")}
           .value=${config.header_message ?? ''}
           .configValue=${'header_message'}
           @value-changed=${this._valueChanged}
         ></sf-editor-input>
 
         <sf-editor-input
-          label="Label de filtrage HA (ex: water)"
+          label=${msg("HA filter label (e.g. water)")}
           .value=${config.filter_label ?? 'water'}
           .configValue=${'filter_label'}
           @value-changed=${this._valueChanged}
         ></sf-editor-input>
 
         <sf-editor-input
-          label="Étage par défaut (ID de l'étage)"
+          label=${msg("Default floor (Floor ID)")}
           .value=${config.first_floor_to_render ?? ''}
           .configValue=${'first_floor_to_render'}
           @value-changed=${this._valueChanged}
         ></sf-editor-input>
 
         <sf-editor-dropdown-icon
-          label="Icône par défaut"
+          label=${msg("Default icon")}
           .value=${config.default_icon ?? 'mdi:water'}
           .configValue=${'default_icon'}
           @value-changed=${this._valueChanged}
@@ -96,11 +97,11 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
         <section class="visibility-section">
           <h1 class="visibility-header">
             <sf-icon icon="mdi:eye-outline" style="--icon-width:16px;--icon-height:16px;"></sf-icon>
-            <span>Visibilité</span>
+            <span>${msg('Visibility')}</span>
           </h1>
           <div class="accordion-group">
             ${Object.entries(this._getGroupedWaterEntities()).map(([devId, entities]) => {
-              let title = 'Automatisations / Sans équipement';
+              let title = msg('Automations / No device');
               let icon = 'mdi:robot';
               const devicesSource = Object.keys(this._devices).length > 0 ? this._devices : (this.hass?.devices || {});
               

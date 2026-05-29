@@ -1616,7 +1616,8 @@
       'light.zbmini_l_mezzanine': { entity_id: 'light.zbmini_l_mezzanine', state: 'off', attributes: {} },
       'light.nous_salon': { entity_id: 'light.nous_salon', state: 'on', attributes: { friendly_name: 'Étoile salon' } },
       'light.zbmini_l_lampe_salon': { entity_id: 'light.zbmini_l_lampe_salon', state: 'off', attributes: {} },
-      'media_player.bravia_4k_vh22': { entity_id: 'media_player.bravia_4k_vh22', state: 'off', attributes: {} },
+      'media_player.bravia_4k_vh22': { entity_id: 'media_player.bravia_4k_vh22', state: 'off', attributes: { volume_level: 0.0, friendly_name: 'Bravia 4K TV' } },
+      'remote.bravia_4k_vh22': { entity_id: 'remote.bravia_4k_vh22', state: 'off', attributes: { friendly_name: 'Bravia Remote' } },
       'switch.plugs': { entity_id: 'switch.plugs', state: 'on', attributes: {} },
       'person.adrien': { entity_id: 'person.adrien', state: 'home', attributes: { friendly_name: 'Adrien' } },
       'person.virginie': { entity_id: 'person.virginie', state: 'home', attributes: { friendly_name: 'Virginie' } },
@@ -1801,6 +1802,101 @@
           'Quelques lumières allumées': () => ({}),
           'Tout allumé': () => Object.fromEntries(Object.entries(MOCK_STATES).filter(([k]) => k.startsWith('light.')).map(([k, v]) => [k, { ...v, state: 'on' }])),
           'Tout éteint': () => Object.fromEntries(Object.entries(MOCK_STATES).filter(([k]) => k.startsWith('light.')).map(([k, v]) => [k, { ...v, state: 'off' }])),
+        }
+      },
+      tv: {
+        label: '📺 TV Remote', tag: 'sci-fi-tv',
+        config: {
+          type: 'custom:sci-fi-tv',
+          entity: 'media_player.bravia_4k_vh22',
+          remote_entity: 'remote.bravia_4k_vh22',
+          name: 'PLANET ORBIT EXIT',
+          sources: ['HDMI 1', 'Netflix', 'YouTube', 'Prime Video', 'Disney+'],
+          custom_actions: {
+            home: {
+              action: 'call-service',
+              service: 'script.warp_speed_home'
+            },
+            back: {
+              action: 'navigate',
+              navigation_path: '/lovelace/main'
+            }
+          }
+        },
+        scenarios: {
+          'tv_off': () => ({
+            'media_player.bravia_4k_vh22': {
+              entity_id: 'media_player.bravia_4k_vh22',
+              state: 'off',
+              attributes: {
+                volume_level: 0.0,
+                source: null,
+                media_title: null,
+                friendly_name: 'Bravia 4K TV'
+              }
+            },
+            'remote.bravia_4k_vh22': {
+              entity_id: 'remote.bravia_4k_vh22',
+              state: 'off',
+              attributes: {
+                friendly_name: 'Bravia Remote'
+              }
+            }
+          }),
+          'netflix_active': () => ({
+            'media_player.bravia_4k_vh22': {
+              entity_id: 'media_player.bravia_4k_vh22',
+              state: 'on',
+              attributes: {
+                volume_level: 0.35,
+                source: 'Netflix',
+                media_title: 'Stranger Things',
+                friendly_name: 'Bravia 4K TV'
+              }
+            },
+            'remote.bravia_4k_vh22': {
+              entity_id: 'remote.bravia_4k_vh22',
+              state: 'on',
+              attributes: {
+                friendly_name: 'Bravia Remote'
+              }
+            }
+          }),
+          'youtube_active': () => ({
+            'media_player.bravia_4k_vh22': {
+              entity_id: 'media_player.bravia_4k_vh22',
+              state: 'on',
+              attributes: {
+                volume_level: 0.5,
+                source: 'YouTube',
+                media_title: 'Tech Review',
+                friendly_name: 'Bravia 4K TV'
+              }
+            },
+            'remote.bravia_4k_vh22': {
+              entity_id: 'remote.bravia_4k_vh22',
+              state: 'on',
+              attributes: {
+                friendly_name: 'Bravia Remote'
+              }
+            }
+          }),
+          'tv_unavailable': () => ({
+            'media_player.bravia_4k_vh22': {
+              entity_id: 'media_player.bravia_4k_vh22',
+              state: 'unavailable',
+              attributes: {
+                friendly_name: 'Bravia 4K TV'
+              }
+            },
+            'remote.bravia_4k_vh22': {
+              entity_id: 'remote.bravia_4k_vh22',
+              state: 'unavailable',
+              attributes: {
+                friendly_name: 'Bravia Remote'
+              }
+            }
+          }),
         }
       },
     };
@@ -2539,7 +2635,8 @@
       'vehicles': 'vehicles',
       'radiators': 'climates',
       'plug': 'plugs',
-      'weather': 'weather'
+      'weather': 'weather',
+      'media': 'tv'
     };
 
     const origPushState = window.history.pushState;

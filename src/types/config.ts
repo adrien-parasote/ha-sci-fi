@@ -247,6 +247,28 @@ export interface SciFiVehiclesConfig extends SciFiBaseConfig {
   readonly vehicles: readonly SciFiVehicleEntry[];
 }
 
+// ─── sci-fi-tv ───────────────────────────────────────────────────────────────
+
+export interface SciFiTVCustomActions {
+  readonly up?: ActionConfig;
+  readonly down?: ActionConfig;
+  readonly left?: ActionConfig;
+  readonly right?: ActionConfig;
+  readonly confirm?: ActionConfig;
+  readonly back?: ActionConfig;
+  readonly home?: ActionConfig;
+  readonly menu?: ActionConfig;
+}
+
+export interface SciFiTVConfig extends SciFiBaseConfig {
+  readonly type: 'custom:sci-fi-tv';
+  readonly entity: string;
+  readonly remote_entity?: string;
+  readonly name?: string;
+  readonly sources?: readonly string[];
+  readonly custom_actions?: Readonly<SciFiTVCustomActions>;
+}
+
 // ─── Lightweight type-guards (replaces Zod — ADR-006) ───────────────────────
 
 export function assertString(value: unknown, field: string): asserts value is string {

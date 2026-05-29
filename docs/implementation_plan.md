@@ -1,96 +1,89 @@
-# Implementation Plan — Guidelines Delta Remediation (ha-sci-fi)
+# Implementation Plan — Planet Orbit Exit (TV Card v1.1)
 
-This plan outlines the strategic remediation of the 5 compliance deltas identified between [guidelines.md](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/docs/cards/guidelines.md) and the 8 custom Home Assistant cards in `ha-sci-fi`. It restores 100% theme compatibility, standard Lovelace action capabilities, and HACS catalog compliance without introducing breaking changes or heavy dependencies.
+This plan outlines the design and step-by-step implementation of the new futuristic TV Card **Planet Orbit Exit** (`sci-fi-tv`) and its visual dashboard editor (`sci-fi-tv-editor`) on the newly created `1.1` branch. The card features an SVG concentric-ring orbital volume dial, a tactical command bridge D-pad, and quick-select hexagon inputs, and will be fully simulated and testable under the local `dev/workbench.html` environment.
 
 ---
 
 ## User Review Required
 
 > [!IMPORTANT]
-> **Zero-Dependency Action Handling**
-> Instead of installing the heavy `custom-card-helpers` npm package which would balloon the final bundle size (~70KB+ with sub-dependencies), we propose implementing a lightweight, standard event-based helper `fireHassAction()` in `src/utils/action.ts` (less than 20 lines of code).
-> This dispatcher will fire native `hass-action` events that the Home Assistant frontend intercepts to process `tap_action`, `hold_action`, and `double_tap_action` configurations.
+> **Universal Action Engine (ADR-011)**  
+> By default, if `remote_entity` is defined (e.g. `remote.bravia_4k_vh22`), clicking the D-pad buttons will automatically trigger standard Home Assistant remote command service calls (`remote.send_command` with payloads like `UP`, `DOWN`, `ENTER`, `BACK`, `HOME`, `MENU`).
+> If you have custom scripts or a TV brand that requires completely different service calls (e.g., LG webOS), you can easily specify `custom_actions` blocks inside your dashboard YAML to override any specific button click.
 
 > [!IMPORTANT]
-> **Climates Card Visual wrapping**
-> Wrapping `sci-fi-climates` inside `<ha-card>` will automatically apply the default Home Assistant card background, border, and border-radius. This aligns the climates card with the other 7 cards visually, resolving a visual inconsistency.
+> **Simulated Workbench Testing**  
+> We will integrate a full TV card tab in `dev/workbench.html` featuring interactive mock states:
+> * **Power On / Playing Mode**: Renders active cyan telemetry circles, glowing volume arc, active sources grid, and working D-pad.
+> * **Power Off Mode**: Dims the telemetry rings to offline red/dark navy and disables interaction with volume and D-pad.
+> * **Live HASS Connection**: Connects successfully to your Bravia 4K TV and remote entity to trigger real command calls.
 
 ---
 
 ## Open Questions
 
-No outstanding open questions. The remediation strategy is designed to be 100% backward-compatible, requiring zero YAML configuration changes for active dashboards.
+No outstanding open questions. We have established all default naming parameters and state mappings matching standard media player entities.
 
 ---
 
 ## Proposed Changes
 
-### 1. Styling Layer (P1)
-Refactor hardcoded hex/rgb values to leverage CSS design tokens from `src/styles/common.ts` or native HA theme variables to ensure 100% light/dark mode and custom theme compatibility.
+### 1. Configuration & Registry Layer
 
-#### [MODIFY] [styles.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/vacuum/styles.ts)
-- Replace all hardcoded colors (e.g. `rgb(105, 211, 251)`, `rgb(102, 156, 210)`, `rgba(39, 40, 43, 0.3)`) with `--sf-primary`, `--sf-text-secondary`, `--sf-bg-secondary` or `--sf-border` tokens.
-- Map battery thresholds (`battery-warn` and `battery-critical`) to `--sf-warning` and `--sf-error`.
-
-#### [MODIFY] [styles.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/hexa-tiles/styles.ts)
-- Change `background: #000000 !important;` on `ha-card` to `background: var(--ha-card-background, #000000) !important;` to allow dashboard theme compatibility.
-- Replace hex values on alert levels with `--sf-warning` and `--sf-error`.
-
-#### [MODIFY] [styles.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/climates/styles.ts)
-- Refactor season colors (e.g. blue, green, yellow, orange) to use customizable CSS variables with standard fallbacks: `var(--sf-season-blue, #acd5f3)`.
-- Replace hardcoded background colors with `--sf-bg-secondary`.
-
-#### [MODIFY] [sci-fi-climates.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/climates/sci-fi-climates.ts)
-- Wrap the rendered container within a `<ha-card>` element in `renderCard()` to satisfy Guideline §4.
-
----
-
-### 2. Interaction & Actions Layer (P1)
-Add support for standard tap/hold/double-tap Lovelace actions using the native Home Assistant event bus.
-
-#### [NEW] [action.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/utils/action.ts)
-- Create a lightweight event dispatcher `fireHassAction()` which fires the native `hass-action` event up to the Home Assistant dashboard runner.
+We will define the TypeScript interfaces for the TV configuration and register the card element with Home Assistant's Lovelace cards picker.
 
 #### [MODIFY] [config.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/types/config.ts)
-- Add standard action fields `tap_action`, `hold_action`, and `double_tap_action` to `SciFiHexaTileConfig` and `SciFiBaseConfig`.
+* Define `SciFiTVConfig` extending `LovelaceCardConfig` with fields `entity`, `remote_entity`, `name`, `sources`, and `custom_actions`.
 
-#### [MODIFY] [sci-fi-hexa-tiles.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/hexa-tiles/sci-fi-hexa-tiles.ts)
-- Bind mouse and touch event listeners on tiles to support both fast tap and long-press (hold).
-- Dispatch standard Lovelace actions through the new helper, falling back to custom `_navigate()` if a `link` is configured.
+#### [MODIFY] [sci-fi.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/sci-fi.ts)
+* Import the new card element (`./cards/tv/sci-fi-tv.js`) and editor element (`./cards/tv/sci-fi-tv-editor.js`).
+* Register `sci-fi-tv` in `CARD_REGISTRATIONS` array for the Home Assistant card picker.
 
 ---
 
-### 3. API & Packaging Layer (P2)
-Enforce API compliance, card sizing metrics, and standard package metadata.
+### 2. Card UI & Interaction Layer
 
-#### [MODIFY] [base-card.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/utils/base-card.ts)
-- Declare and implement `LovelaceCard` typescript interface to force compilable contract-safety.
+We will create the directory `src/cards/tv/` and write the main element class, styling, and editor component.
 
-#### [MODIFY] Card Sizing Overrides
-Implement explicit `getCardSize()` overrides for all 8 cards to reflect visual height:
-- `hexa-tiles`: Override size to `6` (or dynamic size based on tiles row count).
-- `stove`: Override size to `4`.
-- `vacuum`: Override size to `6`.
-- `vehicles`: Override size to `5`.
-- `plugs`: Override size to `5`.
-- `weather`: Override size to `4`.
-- `climates`: Override size to `5`.
+#### [NEW] [style.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/tv/style.ts)
+* Declare Lit CSS styles including the concentric circle layout, SVG volume dial glow effects, custom cross D-pad buttons, and hex grid animations.
 
-#### [MODIFY] [hacs.json](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/hacs.json)
-- Add `"type": "plugin"` to ensure full HACS catalog compatibility.
+#### [NEW] [sci-fi-tv.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/tv/sci-fi-tv.ts)
+* Implement `SciFiTV` extending `SciFiBaseCard`.
+* Build standard properties, `renderCard()` returning the complete spaceship bridge HUD.
+* Add native `PointerEvents` handling (`pointerdown`, `pointermove`, `pointerup` bounds) to trigonometry-track the volume drag.
+* Add service action dispatchers (`remote.send_command`, `media_player.select_source`, `media_player.volume_set`).
+* Implement selective rendering filter `getRelevantEntities()`.
 
-#### [MODIFY] [sci-fi.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/sci-fi.ts)
-- Add `documentationURL` pointing to the repository instructions inside each registered card configuration inside `window.customCards`.
+#### [NEW] [sci-fi-tv-editor.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/tv/sci-fi-tv-editor.ts)
+* Implement `SciFiTVEditor` extending `SciFiBaseEditor` to drive the visual entity picker in HA visual editor.
+
+---
+
+### 3. Simulation & Dev Workbench
+
+We will update the development workbench to mock and test the card's visual states instantly.
+
+#### [MODIFY] [workbench.html](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/dev/workbench.html)
+* Add a `TV Remote (1.1)` tab to the sidebar menu.
+* Build full mock scenario states:
+  * "Sony Bravia ON — HDMI 1 Active"
+  * "Sony Bravia STANDBY"
+* Map mock HASS events to print out to the in-page log when D-pad clicks or volume changes occur.
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-- Run full Vitest suite to ensure zero regressions: `npm test`
-- Write dedicated unit tests in `tests/utils/action.test.ts` to verify standard action event dispatching.
-- Add test assertions checking `getCardSize()` values and config type definitions.
+* Create unit tests in `tests/cards/sci-fi-tv.test.ts` to assert:
+  * Proper schema parsing and missing entity throws.
+  * Correct D-pad service command payloads.
+  * Hex source elements are rendered dynamically.
+* Run Vitest checks: `npm test`
+* Check TypeScript types: `npm run typecheck`
 
 ### Manual Verification
-- Compile development bundle: `npm run build`
-- Run the visual workbench local simulator: `npx serve .` (simulating entities and testing visual rendering across themes).
+* Build development package: `npm run build`
+* Start local dev server: `npx serve . --listen 8888 --cors`
+* Open `http://localhost:8888/dev/workbench.html` on your desktop/mobile to test interactive visual gestures.

@@ -21,6 +21,7 @@ import './cards/weather/sci-fi-weather.js';
 import './cards/stove/sci-fi-stove.js';
 import './cards/vacuum/sci-fi-vacuum.js';
 import './cards/vehicles/sci-fi-vehicles.js';
+import './cards/tv/sci-fi-tv.js';
  
 // ── Card Editors ──────────────────────────────────────────────────────────────
 import './cards/hexa-tiles/sci-fi-hexa-tiles-editor.js';
@@ -31,6 +32,7 @@ import './cards/weather/sci-fi-weather-editor.js';
 import './cards/stove/sci-fi-stove-editor.js';
 import './cards/vacuum/sci-fi-vacuum-editor.js';
 import './cards/vehicles/sci-fi-vehicles-editor.js';
+import './cards/tv/sci-fi-tv-editor.js';
 
 
 // ── Card registry for Lovelace (required for card picker UI) ──────────────────
@@ -103,6 +105,12 @@ export const CARD_REGISTRATIONS: ReadonlyArray<{ type: string } & CardRegistrati
     type: 'sci-fi-vehicles',
     name: 'Sci-Fi Vehicles',
     description: 'Electric vehicle monitoring',
+    preview: true,
+  },
+  {
+    type: 'sci-fi-tv',
+    name: 'Sci-Fi TV',
+    description: 'Futuristic TV remote control with orbital volume dial and bridge D-pad',
     preview: true,
   },
 ];

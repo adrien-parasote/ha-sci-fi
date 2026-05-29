@@ -2,7 +2,6 @@ import { html, css, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
-import '../../components/editor-inputs/sf-editor-chips.js';
 import type { SciFiWaterManagementConfig } from '../../types/config.js';
 
 const TAG = 'sci-fi-water-management-editor';
@@ -53,51 +52,48 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
           @value-changed=${this._valueChanged}
         ></sf-editor-dropdown-icon>
 
-        <sf-editor-chips
-          label="Entités ignorées (motifs avec * acceptés)"
-          .values=${config.ignored_entities ?? []}
-          .configValue=${'ignored_entities'}
-          @input-update=${this._chipsChanged}
-        ></sf-editor-chips>
-
         <section class="visibility-section">
           <h1 class="visibility-header">
             <sf-icon icon="mdi:eye-outline" style="--icon-width:16px;--icon-height:16px;"></sf-icon>
             <span>Visibilité</span>
           </h1>
           <div class="people">
-            ${this._getAllWaterEntities().map(entityId => {
-              const stateObj = this.hass!.states[entityId];
-              const name = stateObj?.attributes?.friendly_name || entityId;
-              const ignoredList = config.ignored_entities || [];
-              const isIgnoredExactly = ignoredList.includes(entityId);
-              const isIgnoredByWildcard = ignoredList.some(pattern => {
-                if (pattern.includes('*')) {
-                  const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');
-                  return regex.test(entityId);
-                }
-                return false;
-              });
-
-              const isHidden = isIgnoredExactly || isIgnoredByWildcard;
-              const active = !isHidden;
-              const initial = name.charAt(0).toUpperCase();
+            ${Object.entries(this._getGroupedWaterEntities()).map(([devId, entities]) => {
+              let title = 'Automatisations / Sans équipement';
+              let icon = 'mdi:robot';
+              if (devId !== 'no_device' && this.hass!.devices?.[devId]) {
+                title = (this.hass!.devices[devId] as any).name || devId;
+                icon = 'mdi:devices';
+              }
 
               return html`
-                <div class="people-row">
-                  <div class="avatar">
-                    <span class="avatar-initial">${initial}</span>
+                <sf-editor-accordion title="${title}" icon="${icon}" ?open=${true}>
+                  <div style="padding-top: 8px;">
+                    ${entities.map(ent => {
+                      const entityId = ent.entity_id;
+                      const stateObj = this.hass!.states[entityId];
+                      const name = stateObj?.attributes?.friendly_name || entityId;
+                      const ignoredList = config.ignored_entities || [];
+                      const isHidden = ignoredList.includes(entityId);
+                      const active = !isHidden;
+                      const initial = name.charAt(0).toUpperCase();
+
+                      return html`
+                        <div class="people-row">
+                          <div class="avatar">
+                            <span class="avatar-initial">${initial}</span>
+                          </div>
+                          <div class="person-name">${name}</div>
+                          <sf-button
+                            icon="${active ? 'mdi:eye-outline' : 'mdi:eye-off-outline'}"
+                            style="--btn-icon-color: ${active ? 'var(--secondary-light-color, rgb(102,156,210))' : 'rgba(224,232,255,0.3)'};"
+                            @button-click="${() => this._toggleEntityVisibility(entityId, isHidden)}"
+                          ></sf-button>
+                        </div>
+                      `;
+                    })}
                   </div>
-                  <div class="person-name">${name}</div>
-                  <sf-button
-                    icon="${active ? 'mdi:eye-outline' : 'mdi:eye-off-outline'}"
-                    style="--btn-icon-color: ${active ? 'var(--secondary-light-color, rgb(102,156,210))' : 'rgba(224,232,255,0.3)'};"
-                    @button-click="${() => {
-                      if (isIgnoredByWildcard) return;
-                      this._toggleEntityVisibility(entityId, isIgnoredExactly);
-                    }}"
-                  ></sf-button>
-                </div>
+                </sf-editor-accordion>
               `;
             })}
           </div>
@@ -106,9 +102,9 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
     `;
   }
 
-  private _getAllWaterEntities(): string[] {
-    const entities = new Set<string>();
+  private _getGroupedWaterEntities(): Record<string, any[]> {
     const label = (this.config as SciFiWaterManagementConfig).filter_label || 'water';
+    const byDevice: Record<string, any[]> = {};
 
     if (this.hass?.entities) {
       for (const [entityId, entry] of Object.entries(this.hass.entities)) {
@@ -121,11 +117,22 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
           }
         }
         if (hasLabel) {
-          entities.add(entityId);
+          const devId = ent.device_id || 'no_device';
+          if (!byDevice[devId]) byDevice[devId] = [];
+          byDevice[devId].push(ent);
         }
       }
     }
-    return Array.from(entities).sort();
+    
+    // sort entities inside groups
+    for (const devId in byDevice) {
+      byDevice[devId]!.sort((a, b) => {
+        const aName = this.hass!.states[a.entity_id]?.attributes?.friendly_name || a.entity_id;
+        const bName = this.hass!.states[b.entity_id]?.attributes?.friendly_name || b.entity_id;
+        return aName.localeCompare(bName);
+      });
+    }
+    return byDevice;
   }
 
   private _toggleEntityVisibility(entityId: string, currentlyIgnored: boolean): void {
@@ -140,31 +147,6 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
 
     const newConfig = this._getNewConfig<SciFiWaterManagementConfig>();
     newConfig.ignored_entities = currentValues.length > 0 ? currentValues : undefined;
-    this._dispatchChange(newConfig);
-  }
-
-  private _chipsChanged(ev: CustomEvent): void {
-    if (!this.hass) return;
-    
-    const target = ev.target as any;
-    if (!target.configValue) return;
-
-    const detail = ev.detail;
-    let currentValues = [...((this.config as any)[target.configValue] || [])];
-
-    if (detail.type === 'add') {
-      if (!currentValues.includes(detail.value)) {
-        currentValues.push(detail.value);
-      }
-    } else if (detail.type === 'remove') {
-      const idx = parseInt(detail.value, 10);
-      if (!isNaN(idx) && idx >= 0 && idx < currentValues.length) {
-        currentValues.splice(idx, 1);
-      }
-    }
-
-    const newConfig = this._getNewConfig<SciFiWaterManagementConfig>();
-    (newConfig as any)[target.configValue] = currentValues.length > 0 ? currentValues : undefined;
     this._dispatchChange(newConfig);
   }
 

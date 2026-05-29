@@ -6,6 +6,20 @@
  * Locale is read from hass.locale on first render (MEDIUM-02 fix — no configureLocalization overhead).
  */
 
+// ── Dev environment HMR support ────────────────────────────────────────────────
+// When the workbench reloads the bundle, it re-executes all decorators.
+// Lit's @customElement decorator calls customElements.define without checking,
+// which throws NotSupportedError. We patch define here to prevent the crash.
+const _originalDefine = customElements.define;
+customElements.define = function(name: string, constructor: CustomElementConstructor, options?: ElementDefinitionOptions) {
+  if (!customElements.get(name)) {
+    _originalDefine.call(customElements, name, constructor, options);
+  } else {
+    console.warn(`[sci-fi] Custom element ${name} is already defined. Skipping to prevent HMR crash.`);
+  }
+};
+
+
 // ── Styles & Components ────────────────────────────────────────────────────────
 import './components/sf-icon/sf-icon.js';
 import './components/sf-icon/sf-iconset.js'; // registers sci: namespace with HA customIconsets

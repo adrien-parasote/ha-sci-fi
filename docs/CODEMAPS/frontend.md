@@ -1,4 +1,4 @@
-<!-- Generated: 2026-05-25 | Files scanned: ~65 | Token estimate: ~400 -->
+<!-- Generated: 2026-05-29 | Files scanned: ~65 | Token estimate: ~400 -->
 
 # ha-sci-fi Frontend Codemap
 

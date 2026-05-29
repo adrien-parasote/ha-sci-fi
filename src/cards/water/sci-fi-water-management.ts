@@ -38,13 +38,13 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
 
   protected firstUpdated(): void {
     if (this.hass) {
-      this._fetchRegistry();
+      void this._fetchRegistry();
     }
   }
 
   private async _fetchRegistry() {
     try {
-      const callWS = (this.hass as any).callWS || this.hass!.connection.sendMessagePromise.bind(this.hass!.connection);
+      const callWS = (this.hass as any).callWS || this.hass.connection.sendMessagePromise.bind(this.hass.connection);
       const devices = await callWS({ type: 'config/device_registry/list' });
       const entities = await callWS({ type: 'config/entity_registry/list' });
       
@@ -81,10 +81,10 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     const devicesSource = Object.keys(this._devices).length > 0 ? this._devices : (this.hass?.devices || {});
 
     for (const [entityId, entry] of Object.entries(entitiesSource)) {
-      const ent = entry as any;
+      const ent = entry;
       let hasLabel = ent.labels?.includes(label);
       if (!hasLabel && ent.device_id && devicesSource[ent.device_id]) {
-        const device = devicesSource[ent.device_id] as any;
+        const device = devicesSource[ent.device_id];
         if (device.labels?.includes(label)) {
           hasLabel = true;
         }
@@ -108,11 +108,11 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     const devicesSource = Object.keys(this._devices).length > 0 ? this._devices : (this.hass?.devices || {});
     
     for (const [entityId, entry] of Object.entries(entitiesSource)) {
-      const ent = entry as any; // Cast for accessing labels
+      const ent = entry; // Cast for accessing labels
         
       let hasLabel = ent.labels?.includes(label);
       if (!hasLabel && ent.device_id && devicesSource[ent.device_id]) {
-        const device = devicesSource[ent.device_id] as any;
+        const device = devicesSource[ent.device_id];
         if (device.labels?.includes(label)) {
           hasLabel = true;
         }

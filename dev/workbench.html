@@ -1627,6 +1627,11 @@
       'switch.arrosage_haie': { entity_id: 'switch.arrosage_haie', state: 'off', attributes: { friendly_name: 'Arrosage Haie', icon: 'mdi:sprinkler' } },
       'sensor.arrosage_batterie': { entity_id: 'sensor.arrosage_batterie', state: '75', attributes: { unit_of_measurement: '%', friendly_name: 'Batterie Arrosage', icon: 'mdi:battery-70' } },
       'water_heater.chauffe_eau': { entity_id: 'water_heater.chauffe_eau', state: 'eco', attributes: { friendly_name: 'Chauffe Eau', icon: 'mdi:water-boiler' } },
+      'select.nodon_chauffe_eau_switch_type_on_off_2': { entity_id: 'select.nodon_chauffe_eau_switch_type_on_off_2', state: 'previous', attributes: { friendly_name: 'Switch Type', options: ['off', 'on', 'toggle', 'previous'] } },
+      'sensor.nodon_chauffe_eau_linkquality': { entity_id: 'sensor.nodon_chauffe_eau_linkquality', state: '255', attributes: { friendly_name: 'Linkquality', unit_of_measurement: 'lqi' } },
+      'sensor.nodon_chauffe_eau_power': { entity_id: 'sensor.nodon_chauffe_eau_power', state: '2500', attributes: { friendly_name: 'Power', unit_of_measurement: 'W' } },
+      'switch.giex_valve_water': { entity_id: 'switch.giex_valve_water', state: 'off', attributes: { friendly_name: 'Water Valve' } },
+      'sensor.giex_valve_battery': { entity_id: 'sensor.giex_valve_battery', state: '80', attributes: { friendly_name: 'Battery', unit_of_measurement: '%' } },
     };
 
     const MOCK_AREAS = {
@@ -1666,6 +1671,11 @@
       'switch.arrosage_haie': { entity_id: 'switch.arrosage_haie', area_id: 'jardin', labels: ['water'] },
       'sensor.arrosage_batterie': { entity_id: 'sensor.arrosage_batterie', area_id: 'terrasse', labels: ['water'] },
       'water_heater.chauffe_eau': { entity_id: 'water_heater.chauffe_eau', area_id: 'garage', labels: ['water'] },
+      'select.nodon_chauffe_eau_switch_type_on_off_2': { entity_id: 'select.nodon_chauffe_eau_switch_type_on_off_2', area_id: 'garage', labels: ['water'], device_id: 'nodon_chauffe_eau_device' },
+      'sensor.nodon_chauffe_eau_linkquality': { entity_id: 'sensor.nodon_chauffe_eau_linkquality', area_id: 'garage', labels: ['water'], device_id: 'nodon_chauffe_eau_device' },
+      'sensor.nodon_chauffe_eau_power': { entity_id: 'sensor.nodon_chauffe_eau_power', area_id: 'garage', labels: ['water'], device_id: 'nodon_chauffe_eau_device' },
+      'switch.giex_valve_water': { entity_id: 'switch.giex_valve_water', area_id: 'terrasse', labels: ['water'], device_id: 'giex_valve_device' },
+      'sensor.giex_valve_battery': { entity_id: 'sensor.giex_valve_battery', area_id: 'terrasse', labels: ['water'], device_id: 'giex_valve_device' },
     };
 
     // ─── Card configs (exact production YAML → JS) ──────────────────────────
@@ -2014,7 +2024,9 @@
         devices: {
           '31428114e049a5557c8a8a05e2b7f9bd': { id: '31428114e049a5557c8a8a05e2b7f9bd', name: 'Ventilateur Léonard', manufacturer: 'Nous', model: 'A1T', area_id: 'leonard' },
           'a041422639f495ca70ed05e3a74ff183': { id: 'a041422639f495ca70ed05e3a74ff183', name: 'EvLink', manufacturer: 'Schneider Electric', model: 'Mureva', area_id: 'salon' },
-          '7ae536ffff7d2371aadcdbc90750108d': { id: '7ae536ffff7d2371aadcdbc90750108d', name: 'Paillette Charlotte', manufacturer: 'Nous', model: 'A1T', area_id: 'charlotte' }
+          '7ae536ffff7d2371aadcdbc90750108d': { id: '7ae536ffff7d2371aadcdbc90750108d', name: 'Paillette Charlotte', manufacturer: 'Nous', model: 'A1T', area_id: 'charlotte' },
+          'nodon_chauffe_eau_device': { id: 'nodon_chauffe_eau_device', name: 'NodOn Chauffe Eau', manufacturer: 'NodOn', model: 'SIN-4-1-20', area_id: 'garage' },
+          'giex_valve_device': { id: 'giex_valve_device', name: 'Giex Valve', manufacturer: 'GiEX', model: 'GX02', area_id: 'terrasse' }
         },
         user: { name: 'Adrien', id: 'adrien', is_admin: true },
         language: currentLanguage,

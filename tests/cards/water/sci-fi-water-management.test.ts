@@ -41,7 +41,7 @@ describe('sci-fi-water-management', () => {
     el.hass = makeMockHass({ floors: {} });
     document.body.appendChild(el);
     await el.updateComplete;
-    expect(el.shadowRoot!.textContent).to.include('Aucun étage configuré');
+    expect(el.shadowRoot!.textContent).to.include('No floor configured');
   });
 
   it('renders floors and water entities based on labels', async () => {
@@ -116,6 +116,6 @@ describe('sci-fi-water-management', () => {
     document.body.appendChild(el);
     await el.updateComplete;
 
-    expect(el.shadowRoot!.textContent).to.include('Aucun étage configuré');
+    expect(el.shadowRoot!.textContent).to.include('No floor configured');
   });
 });

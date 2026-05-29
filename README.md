@@ -58,11 +58,12 @@ The goal: a single phone entry point to control your entire home.
 | 💡 **Lights** | Auto-discovers lights, groups by floor/area | [→ docs](./docs/cards/lights.md) |
 | 🌦️ **Weather** | Current conditions + hourly chart + daily forecast | [→ docs](./docs/cards/weather.md) |
 | 🌡️ **Climates** | Radiator controls grouped by floor/area | [→ docs](./docs/cards/climates.md) |
-| 💧 **Water** | Dynamic water management (valves, sensors) by floor/area | [→ docs](./docs/specs/cards/tactical_water_management.md) |
-| 🪵🔥 **Stove** | Pellet stove state, sensors and actions | [→ docs](./docs/cards/stove.md) |
-| 🚗 **Vehicles** | EV battery, range, charging, location | [→ docs](./docs/cards/vehicles.md) |
-| 🔌 **Plugs** | Smart plug control with power chart | [→ docs](./docs/cards/plugs.md) |
-| 🖲 **Vacuum** | Vacuum control with live map and room shortcuts | [→ docs](./docs/cards/vacuum.md) |
+| 🔌 **Plugs** | Active power usage grouped by floor/area | [→ docs](./docs/cards/plugs.md) |
+| 🔥 **Stove** | Pellet stove real-time states and dashboard | [→ docs](./docs/cards/stove.md) |
+| 📺 **TV** | Quick-select media and remote controls | [→ docs](./docs/cards/tv.md) |
+| 🧹 **Vacuum** | State tracking, segments cleaning, maintenance stats | [→ docs](./docs/cards/vacuum.md) |
+| 🚗 **Vehicles** | Battery, range, lock status and quick actions | [→ docs](./docs/cards/vehicles.md) |
+| 💧 **Water Management** | Centralized water heating and valve controls | [→ docs](./docs/cards/water.md) |
 | 📺 **TV Remote** | Concentric radar volume dial, D-pad with custom actions, and quick source select | [→ docs](./docs/cards/tv.md) |
 
 ---

@@ -159,13 +159,13 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
     const entitiesSource = Object.keys(this._entities).length > 0 ? this._entities : (this.hass?.entities || {});
     const devicesSource = Object.keys(this._devices).length > 0 ? this._devices : (this.hass?.devices || {});
 
-    for (const [entityId, entry] of Object.entries(entitiesSource)) {
-      const ent = entry as any;
+    for (const [, entry] of Object.entries(entitiesSource)) {
+      const ent = entry;
       let hasLabel = ent.labels?.includes(label);
       
       // Fallback: Check if the device has the label
       if (!hasLabel && ent.device_id && devicesSource[ent.device_id]) {
-        const device = devicesSource[ent.device_id] as any;
+        const device = devicesSource[ent.device_id];
         if (device.labels?.includes(label)) {
           hasLabel = true;
         }

@@ -4,6 +4,7 @@
 
 ## Custom Cards
 All cards register as standard web components and are bound in `src/sci-fi.ts`.
+*(Note: `src/sci-fi.ts` contains an HMR protection patch for `customElements.define` to prevent duplicate registration crashes during dev/workbench reloads)*
 - **Climates:** `sci-fi-climates` / `sci-fi-climates-editor`
 - **Hexa Tiles:** `sci-fi-hexa-tiles` / `sci-fi-hexa-tiles-editor`
 - **Lights:** `sci-fi-lights` / `sci-fi-lights-editor`

@@ -1,8 +1,8 @@
-# Release v1.2.2 💧🪐
+# Release v1.2.3 💧🪐
 
 Cette version majeure de la branche `1.2.x` introduit le tout nouveau module de **Gestion de l'Eau (`sci-fi-water-management`)** ainsi que de nombreuses optimisations visuelles, de stabilité et une localisation robuste !
 
-Cette note de version consolide l'ensemble des changements apportés par les versions `1.2.0`, `1.2.1` et `1.2.2`.
+Cette note de version consolide l'ensemble des changements apportés par la nouvelle version `1.2.3` (correctif de traduction) ainsi que les versions `1.2.0`, `1.2.1` et `1.2.2`.
 
 ## 🚀 Nouveautés (Features)
 
@@ -25,11 +25,11 @@ Une toute nouvelle carte Lovelace complète pour contrôler et surveiller vos ci
 
 ## 🐛 Corrections de bugs (Fixes)
 
-### 🌍 i18n & Localisation (Critique)
+### 🌍 i18n & Localisation (Critique - Nouveauté v1.2.3)
 - **Minification & Terser** : Correction d'un bug de build majeur où Terser fusionnait les ternaires symétriques de `msg()` (ex: `isOn ? msg('A') : msg('B')`) en un seul appel dynamique `msg(isOn ? 'A' : 'B')`. Cette optimisation brisait le hachage statique de `lit-localize` et forçait les messages de toast et les statuts des télécommandes ou des prises à s'afficher en anglais (`Turned on`, `STANDBY`, `OFFLINE`). Les appels ont été réécrits à l'aide de tuples statiques robustes (`[msg('OFF'), msg('ON')][isOn ? 1 : 0]`) pour empêcher toute minification destructive.
 - **lit-localize extract** : Résolution du comportement silencieux du linter de build qui rejetait les traductions fr sans nœud `<target>` dans le fichier `.xlf`.
 
-### 💧 Gestion de l'Eau & Lumières
+### 💧 Gestion de l'Eau & Lumières (v1.2.2)
 - **Race Condition sur le premier rendu** : Résolution du chargement asynchrone de `hass.floors` qui réinitialisait la configuration utilisateur de l'étage par défaut (ex: `Extérieur`) s'il était chargé avant l'établissement complet du WebSocket.
 - **Mapping insensible à la casse** : Support total des noms conviviaux d'étages avec accents ou casses mixtes (ex: `Extérieur` ou `REZ-DE-CHAUSSÉE`).
 - **Icônes dynamiques** : Utilisation de l'icône d'état native de Home Assistant (`ha-state-icon`) pour hériter dynamiquement des icônes d'appareils (ex: batterie ou humidité) au lieu de forcer une icône statique.

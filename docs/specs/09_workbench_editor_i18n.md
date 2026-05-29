@@ -162,6 +162,7 @@ Every agent executing this specification must strictly adhere to the following b
 | 3 | Hardcoded locale keys in cards | Override the dynamic `hass.locale.language` and let the Lit components reactive localization engine handle translations via `@lit/localize`. |
 | 4 | Bypassing the card `setConfig()` | Always call `cardEl.setConfig(config)` when a new configuration is parsed, as cards rely on it for structural initialization and validation. |
 | 5 | Writing back YAML to files via server APIs | Keep the workbench completely client-side. Rely on a premium "Copier le YAML" clipboard button. |
+| 6 | Symmetric ternary calls inside `msg()` | Avoid writing `cond ? msg('A') : msg('B')` because Rollup/Terser optimizer compiles this into a dynamic call `msg(cond ? 'A' : 'B')`, which fails static XLIFF key parsing. Use robust un-collapsible static array-tuple lookups instead: `[msg('B'), msg('A')][cond ? 1 : 0] as string`. |
 
 ---
 

@@ -4,7 +4,7 @@ import '../../../src/cards/water/sci-fi-water-management-editor.js';
 import type { SciFiWaterManagementEditor } from '../../../src/cards/water/sci-fi-water-management-editor.js';
 
 function makeConfig(overrides: Record<string, unknown> = {}) {
-  return { type: 'custom:sci-fi-water-management', ...overrides };
+  return { type: 'custom:sci-fi-water-management', ...overrides } as any;
 }
 
 async function createElement(): Promise<SciFiWaterManagementEditor> {
@@ -45,7 +45,7 @@ describe('sci-fi-water-management-editor', () => {
     el.addEventListener('config-changed', (e) => received.push(e as CustomEvent));
 
     const inputs = el.shadowRoot!.querySelectorAll('sf-editor-input');
-    const headerInput = Array.from(inputs).find(i => i.configValue === 'header_message');
+    const headerInput = Array.from(inputs).find(i => (i as any).configValue === 'header_message');
     headerInput?.dispatchEvent(new CustomEvent('value-changed', {
       bubbles: true,
       composed: true,
@@ -66,7 +66,7 @@ describe('sci-fi-water-management-editor', () => {
     el.addEventListener('config-changed', (e) => received.push(e as CustomEvent));
 
     const inputs = el.shadowRoot!.querySelectorAll('sf-editor-input');
-    const labelInput = Array.from(inputs).find(i => i.configValue === 'filter_label');
+    const labelInput = Array.from(inputs).find(i => (i as any).configValue === 'filter_label');
     labelInput?.dispatchEvent(new CustomEvent('value-changed', {
       bubbles: true,
       composed: true,

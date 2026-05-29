@@ -75,6 +75,7 @@ src/
 | 4 | No config migrations | Rejecting legacy configs | Parse and migrate YAML fields in the setter |
 | 5 | Git force push to main | Force pushing branches in prod | Isolate active work to short-lived branch `v2` |
 | 6 | `window.customIcons` unguarded access | `window.customIcons.sf = ...` when `customIcons` undefined | Always guard: `window.customIcons = window.customIcons \|\| {}` first |
+| 7 | Terser collapses symmetric ternary `msg()` calls | Optimizer compiles `isOn ? msg('A') : msg('B')` into `msg(isOn ? 'A' : 'B')`, bypassing static hashing | Use un-collapsible array-tuple lookups: `[msg('B'), msg('A')][isOn ? 1 : 0] as string` |
 
 ---
 

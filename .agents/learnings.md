@@ -656,3 +656,17 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
   2. Use a script (e.g. `python3 translate_xlf.py`) or manually inject the `<target>` node for each new `<trans-unit>` in `xliff/fr.xlf`
   3. Run `lit-localize build`
   Document this 3-step required sequence in the spec for any project using `lit-localize` with XLIFF files.
+
+### L074: Home Assistant `hass.floors` Initialization Race Condition Erases Persistent Config
+- **Date:** 2026-05-29
+- **Source:** ha-sci-fi — water and lights cards
+- **Evidence:** User configured `first_floor_to_render: 'Extérieur'`, but the card rendered 'Rez-de-chaussée' and permanently erased the 'Extérieur' config.
+- **Anti-pattern:** Evaluating fallback logic that permanently updates `this._activeFloorId` during the very first `render()` cycle. At this exact moment, `this.hass.floors` is `undefined` because Home Assistant hasn't finished loading the registry over the WebSocket. The fallback logic sees `floorExists = false` and overrides the user's config with the first available floor.
+- **Fix:** When building Lovelace cards that rely on `hass.floors` or `hass.areas`, ALWAYS check `if (!this.hass.floors)` and preserve the configured target ID/name in `this._activeFloorId` without falling back. Wait until the next `render()` cycle when `this.hass.floors` is populated before attempting to resolve IDs/names and applying permanent fallbacks.
+
+### L075: Terser Minification Collapses lit-localize Ternary Expressions and Breaks Translations
+- **Date:** 2026-05-29
+- **Source:** ha-sci-fi — water, plugs, and tv cards
+- **Evidence:** Toast messages and control titles displayed in English (e.g. "Turned on", "Turned off", "ON", "OFF", "STANDBY", "OFFLINE") even when the active locale was French.
+- **Anti-pattern:** Writing symmetric ternary expressions calling the same function, such as `isOn ? msg('Turned off') : msg('Turned on')`. During the production build phase, the Rollup/Terser optimizer compiles this into `Rt(isOn ? "Turned off" : "Turned on")` (where `Rt` is the minified name of `msg`). Because `lit-localize` uses static code analysis at compile time to hash the literal strings passed to `msg(...)`, dynamic calls like `msg(conditional)` bypass the translation lookup map, causing it to fall back to the raw source English string.
+- **Fix:** Avoid symmetric ternary calls or conditional expressions inside `msg()`. Use a robust, un-collapsible array tuple index expression instead, such as `[msg('OFF'), msg('ON')][isOn ? 1 : 0] as string`. Because this compiles to two distinct, unconditional function calls in a literal array prior to index lookup (`[Rt("OFF"), Rt("ON")][e ? 1 : 0]`), the optimizer is unable to collapse the expressions, preserving full runtime static hashing and proper localization lookup.

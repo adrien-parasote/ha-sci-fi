@@ -332,7 +332,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
             <span class="entity-state ${isOn ? 'state-active' : ''}">${isOn ? msg('ACTIVE') : msg('OFF')}</span>
             <sf-toggle-switch
               .checked="${isOn}"
-              @change="${() => this._toggleEntity(entityEntry.entity_id, isOn, domain)}"
+              @sf-toggle-change="${() => this._toggleEntity(entityEntry.entity_id, isOn, domain)}"
             ></sf-toggle-switch>
           `}
         </div>

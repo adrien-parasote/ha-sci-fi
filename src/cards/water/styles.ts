@@ -219,15 +219,19 @@ export const waterStyles = css`
     min-width: 0;
   }
 
-  .entity-info sf-icon {
+  .entity-info sf-icon, .entity-info ha-state-icon {
     --icon-width: 24px;
     --icon-height: 24px;
     --icon-color: var(--water-on-color);
+    --state-icon-color: var(--water-on-color);
+    color: var(--water-on-color);
     flex-shrink: 0;
   }
   
-  .entity-row.row-off sf-icon {
+  .entity-row.row-off sf-icon, .entity-row.row-off ha-state-icon {
     --icon-color: rgba(255,255,255,0.3);
+    --state-icon-color: rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.3);
   }
 
   .entity-name {

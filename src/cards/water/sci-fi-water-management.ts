@@ -293,7 +293,6 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     const isSensor = domain === 'sensor' || domain === 'number';
     const isSelect = domain === 'select';
     const name = stateObj?.attributes?.friendly_name || entityEntry.entity_id;
-    const icon = stateObj?.attributes?.icon || this.config.default_icon || 'mdi:water';
     
     // Formatting sensor values
     let stateDisplay = stateObj?.state || 'Unknown';
@@ -304,7 +303,10 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     return html`
       <div class="entity-row ${isOn || isSensor || isSelect ? '' : 'row-off'}">
         <div class="entity-info">
-          <sf-icon .icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
+          ${stateObj
+            ? html`<ha-state-icon .hass="${this.hass}" .stateObj="${stateObj}"></ha-state-icon>`
+            : html`<sf-icon .icon="${this.config.default_icon || 'mdi:water'}" .connection="${this.hass.connection}"></sf-icon>`
+          }
           <div class="entity-text">
             <span class="entity-name">${name}</span>
             <span class="entity-domain">${domain.toUpperCase()}</span>

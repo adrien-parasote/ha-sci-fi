@@ -1,5 +1,9 @@
 # Changelog
 
+# [v1.2.2](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.2.2) - 2026-05-29
+
+## 🐛 Fixes
+- **Water card**: use native `ha-state-icon` for sensors to correctly inherit dynamic HA device class icons (like batteries).
 # [v1.2.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.2.1) - 2026-05-29
 
 ## 🐛 Fixes

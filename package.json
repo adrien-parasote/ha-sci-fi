@@ -1,7 +1,7 @@
 {
   "name": "ha-sci-fi",
-  "version": "1.2.1",
-  "description": "Sci-fi custom Lovelace cards for Home Assistant — TypeScript rewrite",
+  "version": "1.2.2",
+  "description": "A collection of custom Lovelace cards for a minimalist sci-fi dashboard in Home Assistant",
   "main": "src/sci-fi.ts",
   "scripts": {
     "dev": "rollup -c --watch --environment NODE_ENV:development",

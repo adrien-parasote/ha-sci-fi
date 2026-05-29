@@ -31,6 +31,16 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     this._activeFloorId = config.first_floor_to_render ?? null;
   }
 
+  private _isEntityIgnored(entityId: string, ignoredPatterns: readonly string[]): boolean {
+    return ignoredPatterns.some(pattern => {
+      if (pattern.includes('*')) {
+        const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');
+        return regex.test(entityId);
+      }
+      return pattern === entityId;
+    });
+  }
+
   protected override getRelevantEntities(): string[] {
     const entities = new Set<string>();
     entities.add('sun.sun');
@@ -48,18 +58,8 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
             hasLabel = true;
           }
         }
-        if (hasLabel) {
-          const isIgnored = ignored.some(pattern => {
-            if (pattern.includes('*')) {
-              const regex = new RegExp('^' + pattern.replace(/\\*/g, '.*') + '$');
-              return regex.test(entityId);
-            }
-            return pattern === entityId;
-          });
-          
-          if (!isIgnored) {
-            entities.add(entityId);
-          }
+        if (hasLabel && !this._isEntityIgnored(entityId, ignored)) {
+          entities.add(entityId);
         }
       }
     }
@@ -86,7 +86,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
           }
         }
 
-        if (hasLabel && !ignored.includes(entityId)) {
+        if (hasLabel && !this._isEntityIgnored(entityId, ignored)) {
           // Find areaId from entity, fallback to device
           let areaId = ent.area_id;
           if (!areaId && ent.device_id && this.hass.devices?.[ent.device_id]) {

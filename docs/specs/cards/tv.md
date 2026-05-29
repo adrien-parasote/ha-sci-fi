@@ -86,9 +86,11 @@ export interface SciFiTVCustomActions {
 export interface SciFiTVConfig extends LovelaceCardConfig {
   readonly type: 'custom:sci-fi-tv';
   readonly entity: string;                    // Required: media_player (e.g. media_player.bravia_4k_vh22)
+  readonly volume_entity?: string;            // Optional: dedicated entity for volume control
+  readonly app_entity?: string;               // Optional: dedicated entity for app casting metadata
   readonly remote_entity?: string;            // Optional: remote (e.g. remote.bravia_4k_vh22)
   readonly name?: string;                     // Optional: Custom spaceship bridge quadrant label
-  readonly sources?: readonly string[];       // Optional: Array of hex button sources (e.g. ['HDMI 1', 'Netflix'])
+  readonly sources?: readonly any[];          // Optional: Array of string sources or Lovelace action objects
   readonly custom_actions?: Readonly<SciFiTVCustomActions>; // Optional: per-button Lovelace action overrides
 }
 ```
@@ -99,6 +101,8 @@ export interface SciFiTVConfig extends LovelaceCardConfig {
 ```yaml
 type: custom:sci-fi-tv
 entity: media_player.bravia_4k_vh22
+volume_entity: media_player.bravia_soundbar
+app_entity: media_player.television
 remote_entity: remote.bravia_4k_vh22
 custom_actions:
   home:
@@ -230,6 +234,8 @@ Follows the standard `e.detail.id` / `e.detail.value` mapping directly onto the 
 | **TC-709** | Unit | Orbiting planet satellite is not rendered when TV is off | TV state is `'off'` | Planet orbiting satellite element does not exist in shadowRoot |
 | **TC-710** | Unit | Renders active application name when media title and source are missing | TV state has `app_name: 'Netflix'` | Right status segment and dial title display `"Netflix"` |
 | **TC-711** | Unit | Renders active application ID when other metadata is missing | TV state has `app_id: 'com.netflix.ninja'` | Right status segment and dial title display `"com.netflix.ninja"` |
+| **TC-712** | Unit | Uses app_entity metadata when provided | Config has `app_entity` | Prioritizes `app_entity` metadata over main TV entity for active status |
+| **TC-713** | Unit | Active source highlighting guarantees single active source | Config has multiple sources overlapping metadata | Only one source gets highlighted, prioritizing `appName` over `mediaTitle` |
 | **IT-701** | Integration | Custom elements register correctly in HA registry | Load built bundle | Elements `sci-fi-tv` and `sci-fi-tv-editor` exist |
 | **IT-702** | Integration | Workbench — Netflix active mock state renders dial at 35% | Workbench mock state `netflix_active` | Volume dial arc covers 35% of full arc; source label "Netflix" highlighted |
 | **IT-703** | Integration | Dragging orbital dial calls correct service volume | Pointer dragging to 60% position | Calls `media_player.volume_set` with `volume_level: 0.6` |

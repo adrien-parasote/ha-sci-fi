@@ -1808,19 +1808,61 @@
         label: '📺 TV Remote', tag: 'sci-fi-tv',
         config: {
           type: 'custom:sci-fi-tv',
-          entity: 'media_player.bravia_4k_vh22',
-          remote_entity: 'remote.bravia_4k_vh22',
+          entity: 'media_player.sony_kd_55x75wl',
+          app_entity: 'media_player.television',
           name: 'PLANET ORBIT EXIT',
-          sources: ['HDMI 1', 'Netflix', 'YouTube', 'Prime Video', 'Disney+'],
-          custom_actions: {
-            home: {
+          sources: [
+            {
+              name: 'Netflix',
               action: 'call-service',
-              service: 'script.warp_speed_home'
+              service: 'media_player.play_media',
+              data: {
+                entity_id: 'media_player.bravia_4k_vh22',
+                media_content_type: 'app',
+                media_content_id: 'com.netflix.ninja'
+              }
             },
-            back: {
-              action: 'navigate',
-              navigation_path: '/lovelace/main'
-            }
+            {
+              name: 'YouTube',
+              action: 'call-service',
+              service: 'media_player.play_media',
+              data: {
+                entity_id: 'media_player.bravia_4k_vh22',
+                media_content_type: 'app',
+                media_content_id: 'com.google.android.youtube.tv'
+              }
+            },
+            {
+              name: 'Prime Video',
+              action: 'call-service',
+              service: 'media_player.play_media',
+              data: {
+                entity_id: 'media_player.bravia_4k_vh22',
+                media_content_type: 'app',
+                media_content_id: 'com.amazon.amazonvideo.livingroom'
+              }
+            },
+            {
+              name: 'Disney+',
+              action: 'call-service',
+              service: 'media_player.play_media',
+              data: {
+                entity_id: 'media_player.bravia_4k_vh22',
+                media_content_type: 'app',
+                media_content_id: 'com.disney.disneyplus'
+              }
+            },
+            'HDMI 1'
+          ],
+          custom_actions: {
+            up: { action: 'call-service', service: 'remote.send_command', data: { entity_id: 'remote.bravia_4k_vh22', command: 'DPAD_UP' } },
+            down: { action: 'call-service', service: 'remote.send_command', data: { entity_id: 'remote.bravia_4k_vh22', command: 'DPAD_DOWN' } },
+            left: { action: 'call-service', service: 'remote.send_command', data: { entity_id: 'remote.bravia_4k_vh22', command: 'DPAD_LEFT' } },
+            right: { action: 'call-service', service: 'remote.send_command', data: { entity_id: 'remote.bravia_4k_vh22', command: 'DPAD_RIGHT' } },
+            confirm: { action: 'call-service', service: 'remote.send_command', data: { entity_id: 'remote.bravia_4k_vh22', command: 'DPAD_CENTER' } },
+            back: { action: 'call-service', service: 'remote.send_command', data: { entity_id: 'remote.bravia_4k_vh22', command: 'BACK' } },
+            home: { action: 'call-service', service: 'remote.send_command', data: { entity_id: 'remote.bravia_4k_vh22', command: 'HOME' } },
+            menu: { action: 'call-service', service: 'remote.send_command', data: { entity_id: 'remote.bravia_4k_vh22', command: 'MENU' } }
           }
         },
         scenarios: {

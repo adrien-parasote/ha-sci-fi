@@ -262,4 +262,80 @@ describe('sci-fi-tv', () => {
     expect(dialTitle).to.exist;
     expect(dialTitle!.textContent).to.include('com.netflix.ninja');
   });
+  // TC-712: uses app_entity metadata when provided
+  it('TC-712: uses app_entity metadata when provided', async () => {
+    const el = document.createElement('sci-fi-tv') as SciFiTVCard;
+    (el as any).setConfig({
+      type: 'custom:sci-fi-tv',
+      entity: 'media_player.sony_kd_55x75wl',
+      app_entity: 'media_player.television'
+    });
+
+    el.hass = makeMockHass({
+      states: {
+        'media_player.sony_kd_55x75wl': makeMockEntity({
+          entity_id: 'media_player.sony_kd_55x75wl',
+          state: 'on',
+          attributes: {
+            source: 'HDMI 1',
+            media_title: 'Smart TV'
+          }
+        }),
+        'media_player.television': makeMockEntity({
+          entity_id: 'media_player.television',
+          state: 'playing',
+          attributes: {
+            app_name: 'Netflix'
+          }
+        })
+      }
+    });
+
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const playingSegment = el.shadowRoot!.querySelector('.segment-right .segment-value');
+    expect(playingSegment).to.exist;
+    expect(playingSegment!.textContent).to.equal('Netflix');
+  });
+
+  // TC-713: active source highlighting guarantees only one source is highlighted, prioritizing appName
+  it('TC-713: active source highlighting guarantees only one source is highlighted, prioritizing appName', async () => {
+    const el = document.createElement('sci-fi-tv') as SciFiTVCard;
+    (el as any).setConfig({
+      type: 'custom:sci-fi-tv',
+      entity: 'media_player.sony_kd_55x75wl',
+      app_entity: 'media_player.television',
+      sources: ['Netflix', 'HDMI 1']
+    });
+
+    el.hass = makeMockHass({
+      states: {
+        'media_player.sony_kd_55x75wl': makeMockEntity({
+          entity_id: 'media_player.sony_kd_55x75wl',
+          state: 'on',
+          attributes: { source: 'HDMI 1' }
+        }),
+        'media_player.television': makeMockEntity({
+          entity_id: 'media_player.television',
+          state: 'playing',
+          attributes: { app_name: 'Netflix' }
+        })
+      }
+    });
+
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const sourceHexas = el.shadowRoot!.querySelectorAll('.source-hexa');
+    expect(sourceHexas.length).to.equal(2);
+    
+    // Netflix should be active (prioritized)
+    expect(sourceHexas[0]!.textContent).to.include('Netflix');
+    expect(sourceHexas[0]!.getAttribute('data-active')).to.equal('true');
+    
+    // HDMI 1 should NOT be active, even though sourceLabel matches
+    expect(sourceHexas[1]!.textContent).to.include('HDMI 1');
+    expect(sourceHexas[1]!.getAttribute('data-active')).to.equal('false');
+  });
 });

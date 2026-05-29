@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { describe, it, expect, vi } from 'vitest';
 import { SciFiBaseCard } from '../../src/utils/base-card.js';
 import type { SciFiBaseConfig } from '../../src/types/config.js';

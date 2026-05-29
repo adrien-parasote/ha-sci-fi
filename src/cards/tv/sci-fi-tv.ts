@@ -49,6 +49,7 @@ export class SciFiTVCard extends SciFiBaseCard {
   protected override getRelevantEntities(): string[] {
     return [
       this.config.entity,
+      this.config.volume_entity,
       this.config.remote_entity
     ].filter((e): e is string => e !== undefined && e !== null && e !== '');
   }
@@ -77,9 +78,12 @@ export class SciFiTVCard extends SciFiBaseCard {
     const isOff = stateStr === 'off';
     const isOn = !isOff && !isUnavailable;
 
-    // Get current volume
-    const currentVolume = tvState.attributes.volume_level !== undefined 
-      ? Number(tvState.attributes.volume_level) 
+    // Get current volume from volume_entity if configured, otherwise fallback to main entity
+    const volEntityId = this.config.volume_entity || entityId;
+    const volState = this.hass.states[volEntityId];
+    
+    const currentVolume = volState?.attributes?.volume_level !== undefined 
+      ? Number(volState.attributes.volume_level) 
       : 0.0;
     
     const displayVolume = this._isDragging && this._localVolume !== null
@@ -88,11 +92,22 @@ export class SciFiTVCard extends SciFiBaseCard {
 
     const volumePercent = Math.round(displayVolume * 100);
 
-    // Get title/source text
-    const sourceLabel = tvState.attributes.source as string | undefined;
-    const mediaTitle = tvState.attributes.media_title as string | undefined;
-    const appName = tvState.attributes.app_name as string | undefined;
-    const appId = tvState.attributes.app_id as string | undefined;
+    const appEntityId = this.config.app_entity || entityId;
+    const appState = this.hass.states[appEntityId];
+    
+    // Extract metadata from the app entity first
+    let sourceLabel = appState?.attributes?.source as string | undefined;
+    let mediaTitle = appState?.attributes?.media_title as string | undefined;
+    let appName = appState?.attributes?.app_name as string | undefined;
+    let appId = appState?.attributes?.app_id as string | undefined;
+    
+    // If app entity provides nothing (e.g. idle cast), fallback to volume/main entity
+    if (!sourceLabel && !mediaTitle && !appName && !appId) {
+      sourceLabel = (volState?.attributes?.source || tvState.attributes.source) as string | undefined;
+      mediaTitle = (volState?.attributes?.media_title || tvState.attributes.media_title) as string | undefined;
+      appName = (volState?.attributes?.app_name || tvState.attributes.app_name) as string | undefined;
+      appId = (volState?.attributes?.app_id || tvState.attributes.app_id) as string | undefined;
+    }
     
     let subtext = msg('SYSTEM ONLINE');
     if (isUnavailable) {
@@ -260,24 +275,36 @@ export class SciFiTVCard extends SciFiBaseCard {
           <!-- Honeycomb Quick-Select Panel -->
           ${this.config.sources && this.config.sources.length > 0 ? html`
             <div class="sources-panel">
-              ${this.config.sources.map(src => {
-                const isActive = sourceLabel === src;
-                return html`
+              ${(() => {
+                const activeLabels = [appName, sourceLabel, appId, mediaTitle].filter(Boolean).map(v => v!.toLowerCase());
+                const activeSourceIndex = this.config.sources.findIndex(src => {
+                  const srcName = typeof src === 'string' ? src : src.name;
+                  const srcId = typeof src === 'object' && ((src as any).data?.media_content_id || (src as any).service_data?.media_content_id);
+                  return activeLabels.some(val => 
+                    val === srcName.toLowerCase() || (srcId && val === srcId.toLowerCase())
+                  );
+                });
+
+                return this.config.sources.map((src, index) => {
+                  const srcName = typeof src === 'string' ? src : src.name;
+                  const isActive = index === activeSourceIndex;
+                  return html`
                   <div
                     class="source-hexa"
                     data-active="${isActive}"
                     data-disabled="${!isOn}"
-                    title="${msg('Select Source')}: ${src}"
+                    title="${msg('Select Source')}: ${srcName}"
                     @click="${() => { if (isOn) this._selectSource(src); }}"
                   >
                     <svg viewBox="0 0 44 51">
                       <polygon class="hexa-bg" points="${HEXA_BG}"/>
                       <polygon class="hexa-border" points="${HEXA_BORDER}"/>
                     </svg>
-                    <div class="hexa-content">${src}</div>
+                    <div class="hexa-content">${srcName}</div>
                   </div>
                 `;
-              })}
+                });
+              })()}
             </div>
           ` : ''}
 
@@ -352,7 +379,8 @@ export class SciFiTVCard extends SciFiBaseCard {
     const volumeLevel = Math.round((clampedDeg / 270) * 100) / 100;
 
     this._localVolume = volumeLevel;
-    this._throttleVolumeCall(this.config.entity, volumeLevel);
+    const volEntityId = this.config.volume_entity || this.config.entity;
+    this._throttleVolumeCall(volEntityId, volumeLevel);
   }
 
   private _throttleVolumeCall(entityId: string, volume: number): void {
@@ -388,13 +416,34 @@ export class SciFiTVCard extends SciFiBaseCard {
     }
   }
 
-  private _selectSource(source: string): void {
-    void this.hass.callService('media_player', 'select_source', {
-      entity_id: this.config.entity,
-      source,
-    }).catch((err: Error) => {
-      this._showToast(err.message);
-    });
+  private _selectSource(source: string | Record<string, any>): void {
+    if (typeof source === 'string') {
+      const targetEntityId = this.config.volume_entity || this.config.entity;
+      void this.hass.callService('media_player', 'select_source', {
+        entity_id: targetEntityId,
+        source,
+      }).catch((err: Error) => {
+        this._showToast(err.message);
+      });
+    } else {
+      // Direct service execution for 'call-service' or 'perform-action'
+      if (source.action === 'call-service' || source.action === 'perform-action') {
+        const [domain, srv] = (source.service || source.perform_action || '').split('.');
+        if (domain && srv) {
+          const payload = { 
+            ...(source.data || source.service_data || {}),
+            ...(source.target || {})
+          };
+          void this.hass.callService(domain, srv, payload).catch((err: Error) => {
+            this._showToast(err.message);
+          });
+          return;
+        }
+      }
+      
+      // Fallback for other actions (navigate, url, etc.)
+      fireHassAction(this, { tap_action: source as any }, 'tap');
+    }
   }
 
   private _togglePower(isOn: boolean): void {

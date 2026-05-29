@@ -123,6 +123,16 @@ export class SciFiTVEditor extends SciFiBaseEditor {
               ></sf-editor-input>
 
               <sf-editor-dropdown-entity
+                element-id="volume_entity"
+                kind="media-player"
+                label="Entité Volume (Optionnel)"
+                icon="mdi:volume-high"
+                .value="${config.volume_entity ?? ''}"
+                .items="${this._mediaPlayers}"
+                @input-update="${this._handleDropdownUpdate}"
+              ></sf-editor-dropdown-entity>
+
+              <sf-editor-dropdown-entity
                 element-id="remote_entity"
                 kind="remote-device"
                 label="${this.getLabel('input-remote-entity')} ${this.getLabel('text-optional')}"

@@ -263,9 +263,11 @@ export interface SciFiTVCustomActions {
 export interface SciFiTVConfig extends SciFiBaseConfig {
   readonly type: 'custom:sci-fi-tv';
   readonly entity: string;
+  readonly volume_entity?: string;
   readonly remote_entity?: string;
+  readonly app_entity?: string;
   readonly name?: string;
-  readonly sources?: readonly string[];
+  readonly sources?: readonly (string | (ActionConfig & { name: string }))[];
   readonly custom_actions?: Readonly<SciFiTVCustomActions>;
 }
 

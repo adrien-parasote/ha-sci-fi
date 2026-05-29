@@ -36,6 +36,7 @@ import './cards/stove/sci-fi-stove.js';
 import './cards/vacuum/sci-fi-vacuum.js';
 import './cards/vehicles/sci-fi-vehicles.js';
 import './cards/tv/sci-fi-tv.js';
+import './cards/water/sci-fi-water-management.js';
  
 // ── Card Editors ──────────────────────────────────────────────────────────────
 import './cards/hexa-tiles/sci-fi-hexa-tiles-editor.js';
@@ -47,6 +48,7 @@ import './cards/stove/sci-fi-stove-editor.js';
 import './cards/vacuum/sci-fi-vacuum-editor.js';
 import './cards/vehicles/sci-fi-vehicles-editor.js';
 import './cards/tv/sci-fi-tv-editor.js';
+import './cards/water/sci-fi-water-management-editor.js';
 
 
 // ── Card registry for Lovelace (required for card picker UI) ──────────────────
@@ -125,6 +127,12 @@ export const CARD_REGISTRATIONS: ReadonlyArray<{ type: string } & CardRegistrati
     type: 'sci-fi-tv',
     name: 'Sci-Fi TV',
     description: 'Futuristic TV remote control with orbital volume dial and bridge D-pad',
+    preview: true,
+  },
+  {
+    type: 'sci-fi-water-management',
+    name: 'Sci-Fi Water Management',
+    description: 'Dynamic floor-based dashboard for water management entities',
     preview: true,
   },
 ];

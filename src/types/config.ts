@@ -275,6 +275,16 @@ export interface SciFiTVConfig extends SciFiBaseConfig {
   readonly custom_actions?: Readonly<SciFiTVCustomActions>;
 }
 
+// ─── sci-fi-water-management ──────────────────────────────────────────────────
+
+export interface SciFiWaterManagementConfig extends SciFiBaseConfig {
+  readonly type: 'custom:sci-fi-water-management';
+  readonly filter_label?: string;          // HA label used to find water entities (default: 'water')
+  readonly first_floor_to_render?: string;
+  readonly ignored_entities?: readonly string[];
+  readonly default_icon?: string;
+}
+
 // ─── Lightweight type-guards (replaces Zod — ADR-006) ───────────────────────
 
 export function assertString(value: unknown, field: string): asserts value is string {

@@ -153,7 +153,7 @@ export class SciFiTVEditor extends SciFiBaseEditor {
                 element-id="sources"
                 kind="source-list"
                 label="${this.getLabel('input-media-sources')}"
-                .values="${config.sources ?? []}"
+                .values="${(config.sources ?? []).map((s: any) => typeof s === 'string' ? s : (s.name || 'Unknown'))}"
                 @input-update="${this._handleChipsUpdate}"
               ></sf-editor-chips>
             </sf-editor-accordion>

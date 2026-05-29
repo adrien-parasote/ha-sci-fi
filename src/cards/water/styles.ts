@@ -229,6 +229,22 @@ export const waterStyles = css`
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.2;
+  }
+  
+  .entity-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .entity-domain {
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: 2px;
   }
   
   .entity-row.row-off .entity-name {

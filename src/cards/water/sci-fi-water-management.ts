@@ -59,8 +59,13 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
       for (const [entityId, entry] of Object.entries(this.hass.entities)) {
         const ent = entry as any; // Cast for accessing labels
         if (ent.labels?.includes(label) && !ignored.includes(entityId)) {
+          // Find areaId from entity, fallback to device
+          let areaId = ent.area_id;
+          if (!areaId && ent.device_id && this.hass.devices?.[ent.device_id]) {
+            areaId = this.hass.devices[ent.device_id]!.area_id;
+          }
           // Check if entity is assigned to an area that is on this floor
-          if (ent.area_id && floorAreas.includes(ent.area_id)) {
+          if (areaId && floorAreas.includes(areaId)) {
             matched.push(ent);
           }
         }
@@ -189,7 +194,10 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
       <div class="entity-row ${isOn || isSensor ? '' : 'row-off'}">
         <div class="entity-info">
           <sf-icon .icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
-          <span class="entity-name">${name}</span>
+          <div class="entity-text">
+            <span class="entity-name">${name}</span>
+            <span class="entity-domain">${entityEntry.domain.toUpperCase()}</span>
+          </div>
         </div>
         
         <div class="entity-controls">

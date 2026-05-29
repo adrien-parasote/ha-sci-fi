@@ -1,5 +1,5 @@
 import { html, css, type TemplateResult } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
 import type { SciFiWaterManagementConfig } from '../../types/config.js';
@@ -8,6 +8,37 @@ const TAG = 'sci-fi-water-management-editor';
 
 @customElement(TAG)
 export class SciFiWaterManagementEditor extends SciFiBaseEditor {
+  @state() private _devices: Record<string, any> = {};
+  @state() private _entities: Record<string, any> = {};
+
+  public setConfig(config: SciFiWaterManagementConfig): void {
+    this.config = config;
+  }
+
+  protected firstUpdated(): void {
+    if (this.hass) {
+      this._fetchRegistry();
+    }
+  }
+
+  private async _fetchRegistry() {
+    try {
+      const devices = await this.hass!.connection.sendMessagePromise<any[]>({ type: 'config/device_registry/list' });
+      const entities = await this.hass!.connection.sendMessagePromise<any[]>({ type: 'config/entity_registry/list' });
+      
+      const deviceDict: Record<string, any> = {};
+      for (const d of devices) deviceDict[d.id] = d;
+      
+      const entityDict: Record<string, any> = {};
+      for (const e of entities) entityDict[e.entity_id] = e;
+
+      this._devices = deviceDict;
+      this._entities = entityDict;
+    } catch (e) {
+      console.warn('Sci-Fi Water: Failed to fetch HA registry', e);
+    }
+  }
+
   static override styles = [sciFiEditorCommonStyles, css`
     .card-config > * {
       margin-bottom: 16px;
@@ -66,8 +97,10 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
             ${Object.entries(this._getGroupedWaterEntities()).map(([devId, entities]) => {
               let title = 'Automatisations / Sans équipement';
               let icon = 'mdi:robot';
-              if (devId !== 'no_device' && this.hass!.devices?.[devId]) {
-                title = (this.hass!.devices[devId] as any).name || devId;
+              const devicesSource = Object.keys(this._devices).length > 0 ? this._devices : (this.hass?.devices || {});
+              
+              if (devId !== 'no_device' && devicesSource[devId]) {
+                title = devicesSource[devId].name || devId;
                 icon = 'mdi:devices';
               }
 
@@ -117,21 +150,26 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
     const label = (this.config as SciFiWaterManagementConfig).filter_label || 'water';
     const byDevice: Record<string, any[]> = {};
 
-    if (this.hass?.entities) {
-      for (const [entityId, entry] of Object.entries(this.hass.entities)) {
-        const ent = entry as any;
-        let hasLabel = ent.labels?.includes(label);
-        if (!hasLabel && ent.device_id && this.hass.devices?.[ent.device_id]) {
-          const device = this.hass.devices[ent.device_id] as any;
-          if (device.labels?.includes(label)) {
-            hasLabel = true;
-          }
+    const entitiesSource = Object.keys(this._entities).length > 0 ? this._entities : (this.hass?.entities || {});
+    const devicesSource = Object.keys(this._devices).length > 0 ? this._devices : (this.hass?.devices || {});
+
+    for (const [entityId, entry] of Object.entries(entitiesSource)) {
+      const ent = entry as any;
+      let hasLabel = ent.labels?.includes(label);
+      
+      // Fallback: Check if the device has the label
+      if (!hasLabel && ent.device_id && devicesSource[ent.device_id]) {
+        const device = devicesSource[ent.device_id] as any;
+        if (device.labels?.includes(label)) {
+          hasLabel = true;
         }
-        if (hasLabel) {
-          const devId = ent.device_id || 'no_device';
-          if (!byDevice[devId]) byDevice[devId] = [];
-          byDevice[devId].push(ent);
-        }
+      }
+
+      // If either the entity or its device has the label, include it
+      if (hasLabel) {
+        const devId = ent.device_id || 'no_device';
+        if (!byDevice[devId]) byDevice[devId] = [];
+        byDevice[devId].push(ent);
       }
     }
     

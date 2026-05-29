@@ -24,7 +24,40 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
   static override styles = [sciFiCommonStyles, waterStyles];
 
   @state() private _activeFloorId: string | null = null;
+  @state() private _devices: Record<string, any> = {};
+  @state() private _entities: Record<string, any> = {};
   declare config: SciFiWaterManagementConfig;
+
+  static override get properties() {
+    return {
+      hass: { type: Object },
+      config: { type: Object }
+    };
+  }
+
+  protected firstUpdated(): void {
+    if (this.hass) {
+      this._fetchRegistry();
+    }
+  }
+
+  private async _fetchRegistry() {
+    try {
+      const devices = await this.hass!.connection.sendMessagePromise<any[]>({ type: 'config/device_registry/list' });
+      const entities = await this.hass!.connection.sendMessagePromise<any[]>({ type: 'config/entity_registry/list' });
+      
+      const deviceDict: Record<string, any> = {};
+      for (const d of devices) deviceDict[d.id] = d;
+      
+      const entityDict: Record<string, any> = {};
+      for (const e of entities) entityDict[e.entity_id] = e;
+
+      this._devices = deviceDict;
+      this._entities = entityDict;
+    } catch (e) {
+      console.warn('Sci-Fi Water: Failed to fetch HA registry', e);
+    }
+  }
 
   override setConfig(config: SciFiWaterManagementConfig): void {
     super.setConfig(config);
@@ -38,19 +71,20 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     const label = this.config.filter_label || 'water';
     const ignored = this.config.ignored_entities || [];
 
-    if (this.hass?.entities) {
-      for (const [entityId, entry] of Object.entries(this.hass.entities)) {
-        const ent = entry as any;
-        let hasLabel = ent.labels?.includes(label);
-        if (!hasLabel && ent.device_id && this.hass.devices?.[ent.device_id]) {
-          const device = this.hass.devices[ent.device_id] as any;
-          if (device.labels?.includes(label)) {
-            hasLabel = true;
-          }
+    const entitiesSource = Object.keys(this._entities).length > 0 ? this._entities : (this.hass?.entities || {});
+    const devicesSource = Object.keys(this._devices).length > 0 ? this._devices : (this.hass?.devices || {});
+
+    for (const [entityId, entry] of Object.entries(entitiesSource)) {
+      const ent = entry as any;
+      let hasLabel = ent.labels?.includes(label);
+      if (!hasLabel && ent.device_id && devicesSource[ent.device_id]) {
+        const device = devicesSource[ent.device_id] as any;
+        if (device.labels?.includes(label)) {
+          hasLabel = true;
         }
-        if (hasLabel && !ignored.includes(entityId)) {
-          entities.add(entityId);
-        }
+      }
+      if (hasLabel && !ignored.includes(entityId)) {
+        entities.add(entityId);
       }
     }
 
@@ -64,28 +98,29 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     const floorAreas = getAreasByFloor(this.hass, floorId).map(a => a.area_id);
     
     const matched: HassEntityEntry[] = [];
-    if (this.hass?.entities) {
-      for (const [entityId, entry] of Object.entries(this.hass.entities)) {
-        const ent = entry as any; // Cast for accessing labels
+    const entitiesSource = Object.keys(this._entities).length > 0 ? this._entities : (this.hass?.entities || {});
+    const devicesSource = Object.keys(this._devices).length > 0 ? this._devices : (this.hass?.devices || {});
+    
+    for (const [entityId, entry] of Object.entries(entitiesSource)) {
+      const ent = entry as any; // Cast for accessing labels
         
-        let hasLabel = ent.labels?.includes(label);
-        if (!hasLabel && ent.device_id && this.hass.devices?.[ent.device_id]) {
-          const device = this.hass.devices[ent.device_id] as any;
-          if (device.labels?.includes(label)) {
-            hasLabel = true;
-          }
+      let hasLabel = ent.labels?.includes(label);
+      if (!hasLabel && ent.device_id && devicesSource[ent.device_id]) {
+        const device = devicesSource[ent.device_id] as any;
+        if (device.labels?.includes(label)) {
+          hasLabel = true;
         }
+      }
 
-        if (hasLabel && !ignored.includes(entityId)) {
-          // Find areaId from entity, fallback to device
-          let areaId = ent.area_id;
-          if (!areaId && ent.device_id && this.hass.devices?.[ent.device_id]) {
-            areaId = this.hass.devices[ent.device_id]!.area_id;
-          }
-          // Check if entity is assigned to an area that is on this floor
-          if (areaId && floorAreas.includes(areaId)) {
-            matched.push(ent);
-          }
+      if (hasLabel && !ignored.includes(entityId)) {
+        // Find areaId from entity, fallback to device
+        let areaId = ent.area_id;
+        if (!areaId && ent.device_id && devicesSource[ent.device_id]) {
+          areaId = devicesSource[ent.device_id]!.area_id;
+        }
+        // Check if entity is assigned to an area that is on this floor
+        if (areaId && floorAreas.includes(areaId)) {
+          matched.push(ent);
         }
       }
     }
@@ -214,6 +249,8 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
       return 0;
     });
 
+    const devicesSource = Object.keys(this._devices).length > 0 ? this._devices : (this.hass?.devices || {});
+
     for (const devId of sortedDeviceIds) {
       const groupEntities = grouped.get(devId)!;
       if (devId === 'no_device') {
@@ -227,7 +264,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
           </sf-editor-accordion>
         `);
       } else {
-        const deviceName = this.hass.devices?.[devId]?.name || 'Équipement';
+        const deviceName = devicesSource[devId]?.name || 'Équipement';
         groups.push(html`
           <sf-editor-accordion
             title="${deviceName}"

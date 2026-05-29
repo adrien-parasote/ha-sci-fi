@@ -1,4 +1,4 @@
-<!-- Generated: 2026-05-29 | Files scanned: ~65 | Token estimate: ~400 -->
+<!-- Generated: 2026-05-29 | Files scanned: ~67 | Token estimate: ~420 -->
 
 # ha-sci-fi Frontend Codemap
 
@@ -30,6 +30,8 @@ All cards register as standard web components and are bound in `src/sci-fi.ts`.
   - `sf-editor-slider` → Range input
   - `sf-editor-color-picker` → Color selection
   - `sf-editor-multi-entity` → Multi-select for entities
+  - `sf-editor-action` → Lovelace action configurator
+  - `sf-editor-source-list` → Repeatable source configuration list
 - **Visuals**
   - `sf-circle-progress-bar`, `sf-stack-bar`, `sf-wheel` → Data visualization
   - `sf-hexa-tile`, `sf-hexa-row` → Core honeycomb layout components

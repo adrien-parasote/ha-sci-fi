@@ -639,4 +639,9 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
   1. For custom components that consume static text or standard asset identifiers (such as icons or static URLs), prioritize standard HTML attribute bindings (`icon="mdi:chevron-up"`) over Lit's reactive property bindings (`.icon="mdi:chevron-up"`). Attribute bindings are more robust, fully registered during custom element upgrade, and prevent empty element rendering.
   2. To enlarge pointy-top honeycomb hexagon components without distorting their aspect ratio, maintain the standard aspect ratio formula `height = width * 1.1547` in CSS, keeping the inline SVG's `viewBox` fully unchanged. When scaling up hexagon width (e.g. from 44px to 58px), scale the font size and padding proportionally (e.g., from `0.45rem` to `0.55rem` font size and `2px` to `4px` padding) to prevent text clipping and ensure maximum visual harmony and accessibility.
 
-
+### L072: Lit Object to String Conversion Bug (`[object Object]`)
+- **Date:** 2026-05-29
+- **Source:** ha-sci-fi v1.1 — sci-fi-tv editor accordion
+- **Evidence:** The UI rendered `[object Object]` in the title of `sf-editor-accordion` because `getSectionTitle()` returned a `TemplateResult` (an `<sf-icon>` embedded inside HTML) instead of a raw string, and it was dynamically bound to `.title=${this.getSectionTitle()}` which expected a primitive string.
+- **Anti-pattern:** Binding a function that returns rich HTML/SVG (Lit `TemplateResult`) to a native property/attribute that only accepts a raw string. Lit automatically calls `toString()` on the object, resulting in `[object Object]`.
+- **Fix:** Strictly separate plain text labels from rich rendering components. Create dedicated string accessors (like `getLabel()`) that return pure `string` formats for attribute bindings, and reserve template-returning functions (like `renderSectionTitle()`) exclusively for inside slot rendering or HTML contexts.

@@ -305,8 +305,12 @@ export const waterStyles = css`
     background: #0d1117;
     color: #fff;
   }
-  select.sf-select:hover, select.sf-select:focus {
+  select.sf-select:hover:not([disabled]), select.sf-select:focus:not([disabled]) {
     border-color: rgba(0, 210, 255, 0.8);
+  }
+  select.sf-select[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   /* ── Footer / Actions ────────────────────────────── */

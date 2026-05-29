@@ -264,10 +264,15 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
           ${isSensor ? html`
             <span class="entity-state">${stateDisplay}</span>
           ` : isSelect ? html`
-            <select class="sf-select" @change="${(e: Event) => this._changeSelectEntity(entityEntry.entity_id, e)}">
-              ${Array.isArray(stateObj?.attributes?.options) ? stateObj.attributes.options.map((opt: string) => html`
-                <option value="${opt}" ?selected="${opt === stateObj?.state}">${opt}</option>
-              `) : ''}
+            <select class="sf-select" @change="${(e: Event) => this._changeSelectEntity(entityEntry.entity_id, e)}" ?disabled="${!stateObj}">
+              ${stateObj 
+                ? (Array.isArray(stateObj.attributes?.options) 
+                  ? stateObj.attributes.options.map((opt: string) => html`
+                      <option value="${opt}" ?selected="${opt === stateObj.state}">${opt}</option>
+                    `) 
+                  : html`<option value="">Inconnu</option>`)
+                : html`<option value="">Indisponible</option>`
+              }
             </select>
           ` : html`
             <span class="entity-state ${isOn ? 'state-active' : ''}">${isOn ? 'ACTIVE' : 'OFF'}</span>

@@ -88,7 +88,10 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
                           <div class="avatar">
                             <span class="avatar-initial">${initial}</span>
                           </div>
-                          <div class="person-name">${name}</div>
+                          <div class="person-name" style="display:flex; flex-direction:column;">
+                            <span>${name}</span>
+                            <span style="font-size: 0.7em; opacity: 0.6; line-height: 1; margin-top: 2px;">${entityId}</span>
+                          </div>
                           <sf-button
                             icon="${active ? 'mdi:eye-outline' : 'mdi:eye-off-outline'}"
                             style="--btn-icon-color: ${active ? 'var(--secondary-light-color, rgb(102,156,210))' : 'rgba(224,232,255,0.3)'};"

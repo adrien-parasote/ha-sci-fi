@@ -175,11 +175,11 @@ export class SciFiTVCard extends SciFiBaseCard {
                 <!-- Central sci-fi planet with ring -->
                 <g class="planet-group">
                   <!-- Diagonal ring backing -->
-                  <ellipse cx="100" cy="100" rx="36" ry="8" transform="rotate(-25 100 100)" class="planet-ring-back" />
+                  <ellipse cx="100" cy="100" rx="32" ry="6" transform="rotate(-25 100 100)" class="planet-ring-back" />
                   <!-- Planet body -->
-                  <circle cx="100" cy="100" r="22" class="planet-body" />
+                  <circle cx="100" cy="100" r="18" class="planet-body" />
                   <!-- Diagonal ring front -->
-                  <path d="M 67.36 84.78 A 36 8 0 0 0 132.64 115.22" transform="rotate(-25 100 100)" class="planet-ring-front" />
+                  <path d="M 68 100 A 32 6 0 0 0 132 100" transform="rotate(-25 100 100)" class="planet-ring-front" />
                 </g>
 
                 <!-- Background dial track (opening at bottom-center: starts -135deg, sweeps 270deg) -->

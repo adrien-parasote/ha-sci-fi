@@ -213,6 +213,7 @@ export const tvStyles = css`
     align-items: center;
     justify-content: center;
     pointer-events: none;
+    transform: translateY(42px);
   }
 
   .dial-value {

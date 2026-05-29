@@ -1,4 +1,4 @@
-import { html, type TemplateResult } from 'lit';
+import { html, css, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
@@ -8,7 +8,15 @@ const TAG = 'sci-fi-water-management-editor';
 
 @customElement(TAG)
 export class SciFiWaterManagementEditor extends SciFiBaseEditor {
-  static override styles = [sciFiEditorCommonStyles];
+  static override styles = [sciFiEditorCommonStyles, css`
+    .card-config > * {
+      margin-bottom: 16px;
+      display: block;
+    }
+    .card-config > *:last-child {
+      margin-bottom: 0;
+    }
+  `];
 
   protected renderEditor(): TemplateResult {
     const config = this.config as SciFiWaterManagementConfig;

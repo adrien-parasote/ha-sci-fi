@@ -70,7 +70,10 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
   }
 
   protected override renderCard(): TemplateResult {
-    const floors = getFloors(this.hass);
+    let floors = getFloors(this.hass);
+    // Only keep floors that have at least one water entity
+    floors = floors.filter(f => this._getWaterEntitiesForFloor(f.floor_id).length > 0);
+
     if (floors.length === 0) {
       return html`<ha-card><div class="empty-state">Aucun étage configuré</div></ha-card>`;
     }

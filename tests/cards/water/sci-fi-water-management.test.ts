@@ -80,7 +80,7 @@ describe('sci-fi-water-management', () => {
 
     // Default selection: ground floor
     const floorHexas = el.shadowRoot!.querySelectorAll('.floor-hexa');
-    expect(floorHexas.length).to.equal(2);
+    expect(floorHexas.length).to.equal(1);
     expect(floorHexas[0]!.getAttribute('data-selected')).to.equal('true');
 
     // Water entities should be rendered
@@ -93,7 +93,7 @@ describe('sci-fi-water-management', () => {
     expect(rows[1]!.textContent).to.include('75%');
   });
 
-  it('renders empty message if no water entities are on the selected floor', async () => {
+  it('renders empty message if no water entities exist in the house', async () => {
     const el = document.createElement('sci-fi-water-management') as SciFiWaterManagementCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-water-management',
@@ -116,6 +116,6 @@ describe('sci-fi-water-management', () => {
     document.body.appendChild(el);
     await el.updateComplete;
 
-    expect(el.shadowRoot!.textContent).to.include('Aucun équipement');
+    expect(el.shadowRoot!.textContent).to.include('Aucun étage configuré');
   });
 });

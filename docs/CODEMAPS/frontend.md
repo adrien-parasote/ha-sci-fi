@@ -9,6 +9,7 @@ All cards register as standard web components and are bound in `src/sci-fi.ts`.
 - **Lights:** `sci-fi-lights` / `sci-fi-lights-editor`
 - **Plugs:** `sci-fi-plugs` / `sci-fi-plugs-editor`
 - **Stove:** `sci-fi-stove` / `sci-fi-stove-editor`
+- **TV Remote:** `sci-fi-tv` / `sci-fi-tv-editor`
 - **Vacuum:** `sci-fi-vacuum` / `sci-fi-vacuum-editor`
 - **Vehicles:** `sci-fi-vehicles` / `sci-fi-vehicles-editor`
 - **Weather:** `sci-fi-weather` / `sci-fi-weather-editor`

@@ -1680,7 +1680,8 @@
             { standalone: true, active_icon: 'mdi:television-play', inactive_icon: 'mdi:television', name: 'Télévision', state_on: ['on'], state_error: null, link: 'media', entity: 'media_player.bravia_4k_vh22', visibility: ['person.virginie', 'person.adrien'], entities_to_exclude: [] },
             { standalone: false, entity_kind: 'climate', active_icon: 'sci:radiator-heat', inactive_icon: 'sci:radiator-off', name: 'Chauffage', state_on: ['auto', 'heat'], state_error: '', link: 'radiators', entities_to_exclude: ['climate.clou'], visibility: ['person.adrien'] },
             { standalone: true, active_icon: 'sci:landspeeder', inactive_icon: 'sci:landspeeder', name: 'Cars', state_on: ['on'], state_error: null, link: 'vehicles', entity: 'binary_sensor.captur_ii_en_charge', visibility: ['person.adrien'] },
-            { entity_kind: '', entities_to_exclude: [], active_icon: 'mdi:power-plug-outline', inactive_icon: 'mdi:power-plug-off-outline', name: 'Plug', state_on: ['on'], state_error: null, link: 'plug', visibility: ['person.adrien'], standalone: true, entity: 'switch.plugs' }
+            { entity_kind: '', entities_to_exclude: [], active_icon: 'mdi:power-plug-outline', inactive_icon: 'mdi:power-plug-off-outline', name: 'Plug', state_on: ['on'], state_error: null, link: 'plug', visibility: ['person.adrien'], standalone: true, entity: 'switch.plugs' },
+            { standalone: true, active_icon: 'mdi:water', inactive_icon: 'mdi:water-outline', name: 'Hydro', state_on: ['on'], state_error: null, link: 'water', entity: 'switch.arrosage_terrasse', visibility: ['person.adrien', 'person.virginie'] }
           ]
         },
         scenarios: {

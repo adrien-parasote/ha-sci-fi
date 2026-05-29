@@ -11,6 +11,19 @@ A dynamic, spaceship-style dashboard component designed to display and manage wa
    - `sensor`: Rendered with its value and unit of measurement (e.g., `75%`, `12°C`).
 4. **Resilient UI**: Gracefully handles states where no floors exist, or no water entities are present on the selected floor.
 
+## Configuration & Tags (Étiquettes)
+Pour que vos équipements apparaissent automatiquement dans la carte, ils doivent :
+1. Avoir le label configuré (par défaut : `water`).
+2. Être assignés à une **Pièce (Area)**, elle-même assignée à un **Étage (Floor)**.
+
+**Exemples d'entités à tagguer avec `water` :**
+- `switch.0x4c97a1fffeefd20f_valve_1` (Vanne d'arrosage 1)
+- `switch.0x4c97a1fffeefd20f_valve_2` (Vanne d'arrosage 2)
+- `sensor.0x4c97a1fffeefd20f_battery` (Batterie vanne d'arrosage)
+- `number.0x4c97a1fffeefd20f_countdown_1` / `_2` (Minuteur d'arrosage)
+- `switch.nodon_chauffe_eau` / `switch.zbmini_l_chauffe_eau` (Chauffe-eau)
+- `sensor.nodon_chauffe_eau_power` / `_energy` (Consommation chauffe-eau)
+
 ## Visuals
 - Matches the overarching Sci-Fi theme: glowing neon borders (`var(--sf-primary)`), dark translucent backgrounds, sci-fi toggles, and customized SVG corner cutouts on entity rows.
 - Dynamic Island / Hexagonal tabs with `scale` transforms on selection/hover.

@@ -440,6 +440,55 @@ export const tvStyles = css`
     text-shadow: 0 0 4px var(--sf-glow-red, hsl(0, 100%, 50%));
   }
 
+  /* ── Central Planet & Ring styles ──────────────────── */
+  .planet-group {
+    pointer-events: none;
+  }
+
+  .planet-body {
+    fill: rgba(13, 17, 23, 0.9);
+    stroke: var(--sf-glow-navy, hsl(230, 40%, 15%));
+    stroke-width: 1.5px;
+    transition: stroke 0.2s;
+  }
+
+  .dial-svg:hover .planet-body {
+    stroke: var(--sf-glow-cyan, hsl(190, 100%, 50%));
+    filter: drop-shadow(0 0 3px var(--sf-glow-cyan, hsl(190, 100%, 50%)));
+  }
+
+  .planet-ring-back, .planet-ring-front {
+    fill: none;
+    stroke: rgba(0, 210, 255, 0.15);
+    stroke-width: 2px;
+    stroke-dasharray: 4, 2;
+    transition: stroke 0.2s;
+  }
+
+  .planet-ring-front {
+    stroke: rgba(0, 210, 255, 0.35);
+    stroke-dasharray: none;
+  }
+
+  .dial-svg:hover .planet-ring-front {
+    stroke: var(--sf-glow-cyan, hsl(190, 100%, 50%));
+    filter: drop-shadow(0 0 3px var(--sf-glow-cyan, hsl(190, 100%, 50%)));
+  }
+
+  /* Dial Satellite */
+  .dial-satellite {
+    fill: var(--sf-glow-cyan, hsl(190, 100%, 50%));
+    stroke: #0d1117;
+    stroke-width: 1px;
+    filter: drop-shadow(0 0 4px var(--sf-glow-cyan, hsl(190, 100%, 50%)));
+    transition: transform 0.1s linear;
+  }
+
+  .dial-active.is-off ~ .dial-satellite {
+    fill: var(--sf-glow-red, hsl(0, 100%, 50%));
+    filter: drop-shadow(0 0 4px var(--sf-glow-red, hsl(0, 100%, 50%)));
+  }
+
   /* ── Visual Editor Styles ───────────────────────────── */
   .editor-card {
     display: flex;

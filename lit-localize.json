@@ -5,16 +5,16 @@
     "fr"
   ],
   "inputFiles": [
-    "src/*.js",
-    "src/**/*.js",
-    "src/**/**/*.js",
-    "src/**/**/**/*.js",
-    "src/**/**/**/**/*.js"
+    "src/*.ts",
+    "src/**/*.ts",
+    "src/**/**/*.ts",
+    "src/**/**/**/*.ts",
+    "src/**/**/**/**/*.ts"
   ],
   "output": {
     "mode": "runtime",
     "outputDir": "./src/locales/locales",
-    "localeCodesModule": "./src/locales/locale-codes.js"
+    "localeCodesModule": "./src/locales/locale-codes.ts"
   },
   "interchange": {
     "format": "xliff",

@@ -5,6 +5,7 @@
 
 import { html, type TemplateResult } from 'lit';
 import { customElement, state, query } from 'lit/decorators.js';
+import { msg } from '@lit/localize';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import { tvStyles } from './style.js';
@@ -66,7 +67,7 @@ export class SciFiTVCard extends SciFiBaseCard {
     if (!tvState) {
       return html`
         <ha-card>
-          <div class="offline-banner">TACTICAL BRIDGE DISCONNECTED</div>
+          <div class="offline-banner">${msg('TACTICAL BRIDGE DISCONNECTED')}</div>
         </ha-card>
       `;
     }
@@ -91,11 +92,11 @@ export class SciFiTVCard extends SciFiBaseCard {
     const sourceLabel = tvState.attributes.source as string | undefined;
     const mediaTitle = tvState.attributes.media_title as string | undefined;
     
-    let subtext = 'SYSTEM ONLINE';
+    let subtext = msg('SYSTEM ONLINE');
     if (isUnavailable) {
-      subtext = 'SYSTEM OFFLINE';
+      subtext = msg('SYSTEM OFFLINE');
     } else if (isOff) {
-      subtext = 'STANDBY';
+      subtext = msg('STANDBY');
     } else if (mediaTitle) {
       subtext = mediaTitle;
     } else if (sourceLabel) {
@@ -115,6 +116,12 @@ export class SciFiTVCard extends SciFiBaseCard {
     const activeSweep = normalizedVol * strokeLength;
     const dashOffset = strokeLength - activeSweep;
 
+    // Orbit satellite coordinates along circular track
+    const angleDegrees = 225 - normalizedVol * 270;
+    const angleRad = (angleDegrees * Math.PI) / 180;
+    const satelliteX = 100 + 75 * Math.cos(angleRad);
+    const satelliteY = 100 - 75 * Math.sin(angleRad);
+
     return html`
       <ha-card>
         <div class="container">
@@ -123,7 +130,7 @@ export class SciFiTVCard extends SciFiBaseCard {
             <div class="info">
               <button
                 class="header-power ${isOff ? 'is-off' : ''}"
-                title="${isOn ? 'Turn Off' : 'Turn On'}"
+                title="${isOn ? msg('Turn Off') : msg('Turn On')}"
                 ?disabled="${isUnavailable}"
                 @click="${() => this._togglePower(isOn)}"
               >
@@ -139,12 +146,12 @@ export class SciFiTVCard extends SciFiBaseCard {
           <div class="telemetry-status-bar">
             <div class="status-segment segment-left">
               <span class="segment-indicator ${isUnavailable ? 'is-offline' : (isOff ? 'is-standby' : 'is-active')}"></span>
-              <span class="segment-title">TRANSMISSION:</span>
-              <span class="segment-value">${isUnavailable ? 'OFFLINE' : (isOff ? 'STANDBY' : 'ACTIVE')}</span>
+              <span class="segment-title">${msg('TRANSMISSION:')}</span>
+              <span class="segment-value">${isUnavailable ? msg('OFFLINE') : (isOff ? msg('STANDBY') : msg('ACTIVE'))}</span>
             </div>
             <div class="status-segment segment-right">
-              <span class="segment-title">PLAYING:</span>
-              <span class="segment-value highlight">${isUnavailable ? 'DISCONNECTED' : (isOff ? 'STANDBY' : (mediaTitle || sourceLabel || 'IDLE'))}</span>
+              <span class="segment-title">${msg('PLAYING:')}</span>
+              <span class="segment-value highlight">${isUnavailable ? msg('DISCONNECTED') : (isOff ? msg('STANDBY') : (mediaTitle || sourceLabel || msg('IDLE')))}</span>
             </div>
           </div>
 
@@ -165,6 +172,16 @@ export class SciFiTVCard extends SciFiBaseCard {
                 <circle cx="100" cy="100" r="95" class="dial-grid" stroke-dasharray="2, 6"/>
                 <circle cx="100" cy="100" r="55" class="dial-grid" stroke-dasharray="1, 4"/>
                 
+                <!-- Central sci-fi planet with ring -->
+                <g class="planet-group">
+                  <!-- Diagonal ring backing -->
+                  <ellipse cx="100" cy="100" rx="36" ry="8" transform="rotate(-25 100 100)" class="planet-ring-back" />
+                  <!-- Planet body -->
+                  <circle cx="100" cy="100" r="22" class="planet-body" />
+                  <!-- Diagonal ring front -->
+                  <path d="M 67.36 84.78 A 36 8 0 0 0 132.64 115.22" transform="rotate(-25 100 100)" class="planet-ring-front" />
+                </g>
+
                 <!-- Background dial track (opening at bottom-center: starts -135deg, sweeps 270deg) -->
                 <path 
                   d="M 46.97 153.03 A 75 75 0 1 1 153.03 153.03" 
@@ -179,12 +196,22 @@ export class SciFiTVCard extends SciFiBaseCard {
                   stroke-dashoffset="${dashOffset}"
                   opacity="${isOff || isUnavailable ? 0.2 : (displayVolume <= 0.0 ? 0.4 : 1.0)}"
                 />
+
+                <!-- Orbit Satellite Marker -->
+                ${isOn ? html`
+                  <circle 
+                    cx="${satelliteX}" 
+                    cy="${satelliteY}" 
+                    r="5" 
+                    class="dial-satellite"
+                  />
+                ` : ''}
               </svg>
               
               <!-- Core volume state reading -->
               <div class="dial-label-container">
                 <span class="dial-value ${isOff || isUnavailable ? 'is-off' : ''}">
-                  ${isUnavailable ? '---' : (isOff ? 'OFF' : `${volumePercent}%`)}
+                  ${isUnavailable ? '---' : (isOff ? msg('OFF') : `${volumePercent}%`)}
                 </span>
                 <span class="dial-title">${subtext}</span>
               </div>
@@ -213,9 +240,9 @@ export class SciFiTVCard extends SciFiBaseCard {
 
               <!-- Supplementary Buttons Row -->
               <div class="remote-row">
-                <button class="row-btn" data-key="back" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('back')}">Back</button>
-                <button class="row-btn" data-key="home" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('home')}">Home</button>
-                <button class="row-btn" data-key="menu" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('menu')}">Menu</button>
+                <button class="row-btn" data-key="back" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('back')}">${msg('Back')}</button>
+                <button class="row-btn" data-key="home" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('home')}">${msg('Home')}</button>
+                <button class="row-btn" data-key="menu" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('menu')}">${msg('Menu')}</button>
               </div>
             </div>
           </div>
@@ -230,7 +257,7 @@ export class SciFiTVCard extends SciFiBaseCard {
                     class="source-hexa"
                     data-active="${isActive}"
                     data-disabled="${!isOn}"
-                    title="Select Source: ${src}"
+                    title="${msg('Select Source')}: ${src}"
                     @click="${() => { if (isOn) this._selectSource(src); }}"
                   >
                     <svg viewBox="0 0 44 51">
@@ -245,7 +272,7 @@ export class SciFiTVCard extends SciFiBaseCard {
           ` : ''}
 
           <!-- Offline / Standsby caution bar -->
-          ${isUnavailable ? html`<div class="offline-banner">TACTICAL BRIDGE DISCONNECTED</div>` : ''}
+          ${isUnavailable ? html`<div class="offline-banner">${msg('TACTICAL BRIDGE DISCONNECTED')}</div>` : ''}
         </div>
         <sf-toast></sf-toast>
       </ha-card>

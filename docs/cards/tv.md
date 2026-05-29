@@ -25,6 +25,8 @@
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/tv_2.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/tv_3.jpeg" width="300">
 <img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/tv_edit.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/tv_edit1.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/tv_edit2.jpeg" width="300">
 
 </details>
 
@@ -50,18 +52,24 @@ entity: media_player.bravia_4k_vh22
 remote_entity: remote.bravia_4k_vh22
 name: "PLANET ORBIT EXIT"
 sources:
+  - name: "Netflix"
+    action: call-service
+    service: media_player.play_media
+    data:
+      entity_id: media_player.bravia_4k_vh22
+      media_content_id: "com.netflix.ninja"
+      media_content_type: "app"
   - HDMI 1
-  - Netflix
-  - YouTube
-  - Prime Video
-  - Disney+
 custom_actions:
   confirm:
     action: call-service
     service: script.my_custom_confirm_script
-  back:
-    action: navigate
-    navigation_path: /lovelace/home
+  volume_mute:
+    action: call-service
+    service: media_player.volume_mute
+    data:
+      entity_id: media_player.bravia_4k_vh22
+      is_volume_muted: false
 ```
 
 ---
@@ -76,12 +84,12 @@ custom_actions:
 | `entity` | String | ✅ | Target `media_player` entity ID | |
 | `remote_entity` | String | | Target `remote` entity ID for sending D-pad commands | |
 | `name` | String | | Card display name | |
-| `sources` | List\<String\> | | Quick-select media sources list | `[]` |
+| `sources` | List\<String \| Object\> | | Quick-select media sources list | `[]` |
 | `custom_actions` | Object | | D-pad button action overrides | |
 
 ### Options — `custom_actions` (per entry)
 
-Each key can be one of the following D-pad buttons: `up`, `down`, `left`, `right`, `confirm`, `back`, `home`, `menu`.
+Each key can be one of the following buttons: `up`, `down`, `left`, `right`, `confirm`, `back`, `home`, `menu`, `power`, `info`, `enter`, `volume_mute`.
 
 Values must conform to standard Lovelace action configurations:
 

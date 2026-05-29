@@ -1823,7 +1823,15 @@
           type: 'custom:sci-fi-water-management',
           header_message: 'Water Management',
           filter_label: 'water',
-          first_floor_to_render: 'ext'
+          first_floor_to_render: 'ext',
+          ignored_entities: [
+            '*_linkquality',
+            '*_impulse_mode',
+            '*_energy',
+            '*_power',
+            '*_power_on_behavior',
+            'update.*'
+          ]
         },
         scenarios: {
           'Normal': () => ({}),

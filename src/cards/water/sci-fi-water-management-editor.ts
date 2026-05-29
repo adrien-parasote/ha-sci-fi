@@ -18,7 +18,7 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
 
   protected firstUpdated(): void {
     if (this.hass) {
-      this._fetchRegistry();
+      void this._fetchRegistry();
     }
   }
 

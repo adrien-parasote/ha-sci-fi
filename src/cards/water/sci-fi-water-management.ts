@@ -198,7 +198,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     const stateObj = this.hass.states[entityEntry.entity_id];
     const isOn = stateObj?.state === 'on';
     const domain = entityEntry.entity_id.split('.')[0];
-    const isSensor = domain === 'sensor';
+    const isSensor = domain === 'sensor' || domain === 'number';
     const name = stateObj?.attributes?.friendly_name || entityEntry.entity_id;
     const icon = stateObj?.attributes?.icon || this.config.default_icon || 'mdi:water';
     

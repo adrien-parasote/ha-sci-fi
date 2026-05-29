@@ -153,7 +153,7 @@ export const waterStyles = css`
   .floor-title {
     font-size: 0.9rem;
     font-weight: bold;
-    padding-bottom: 5px;
+    padding: 5px 0;
     margin-bottom: 8px;
     width: 100%;
     position: relative;

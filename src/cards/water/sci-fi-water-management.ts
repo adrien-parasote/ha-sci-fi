@@ -177,10 +177,11 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     `;
   }
 
-  private _renderEntityRow(entityEntry: HassEntityEntry): TemplateResult {
+  private _renderEntityRow(entityEntry: any): TemplateResult {
     const stateObj = this.hass.states[entityEntry.entity_id];
     const isOn = stateObj?.state === 'on';
-    const isSensor = entityEntry.domain === 'sensor';
+    const domain = entityEntry.entity_id.split('.')[0];
+    const isSensor = domain === 'sensor';
     const name = stateObj?.attributes?.friendly_name || entityEntry.entity_id;
     const icon = stateObj?.attributes?.icon || this.config.default_icon || 'mdi:water';
     
@@ -196,7 +197,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
           <sf-icon .icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
           <div class="entity-text">
             <span class="entity-name">${name}</span>
-            <span class="entity-domain">${entityEntry.domain.toUpperCase()}</span>
+            <span class="entity-domain">${domain.toUpperCase()}</span>
           </div>
         </div>
         
@@ -207,7 +208,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
             <span class="entity-state ${isOn ? 'state-active' : ''}">${isOn ? 'ACTIVE' : 'OFF'}</span>
             <sf-toggle-switch
               .checked="${isOn}"
-              @change="${() => this._toggleEntity(entityEntry.entity_id, isOn, entityEntry.domain)}"
+              @change="${() => this._toggleEntity(entityEntry.entity_id, isOn, domain)}"
             ></sf-toggle-switch>
           `}
         </div>

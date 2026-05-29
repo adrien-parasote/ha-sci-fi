@@ -82,6 +82,7 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
                       const isHidden = ignoredList.includes(entityId);
                       const active = !isHidden;
                       const initial = name.charAt(0).toUpperCase();
+                      const domain = entityId.split('.')[0].toUpperCase();
 
                       return html`
                         <div class="people-row">
@@ -90,7 +91,9 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
                           </div>
                           <div class="person-name" style="display:flex; flex-direction:column;">
                             <span>${name}</span>
-                            <span style="font-size: 0.7em; opacity: 0.6; line-height: 1; margin-top: 2px;">${entityId}</span>
+                            <span style="font-size: 0.7em; opacity: 0.6; line-height: 1; margin-top: 2px;">
+                              <strong style="color: var(--secondary-color, #4facfe);">${domain}</strong> • ${entityId}
+                            </span>
                           </div>
                           <sf-button
                             icon="${active ? 'mdi:eye-outline' : 'mdi:eye-off-outline'}"

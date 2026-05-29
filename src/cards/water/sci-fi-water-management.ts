@@ -272,13 +272,16 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
           ${isSensor ? html`
             <span class="entity-state">${stateDisplay}</span>
           ` : isSelect ? html`
-            <select class="sf-select" @change="${(e: Event) => this._changeSelectEntity(entityEntry.entity_id, e)}" ?disabled="${!stateObj || stateObj.state === 'unavailable' || stateObj.state === 'unknown'}">
-              ${!stateObj || stateObj.state === 'unavailable' || stateObj.state === 'unknown'
-                ? html`<option value="">${!stateObj || stateObj.state === 'unavailable' ? 'Indisponible' : 'Inconnu'}</option>`
+            <select class="sf-select" @change="${(e: Event) => this._changeSelectEntity(entityEntry.entity_id, e)}" ?disabled="${!stateObj || stateObj.state === 'unavailable'}">
+              ${!stateObj || stateObj.state === 'unavailable'
+                ? html`<option value="">Indisponible</option>`
                 : (Array.isArray(stateObj.attributes?.options) 
-                  ? stateObj.attributes.options.map((opt: string) => html`
-                      <option value="${opt}" ?selected="${opt === stateObj.state}">${opt}</option>
-                    `) 
+                  ? html`
+                      ${stateObj.state === 'unknown' ? html`<option value="" disabled selected>Sélectionner...</option>` : ''}
+                      ${stateObj.attributes.options.map((opt: string) => html`
+                        <option value="${opt}" ?selected="${opt === stateObj.state}">${opt}</option>
+                      `)}
+                    `
                   : html`<option value="">Inconnu</option>`)
               }
             </select>

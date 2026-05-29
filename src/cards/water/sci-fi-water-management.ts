@@ -48,8 +48,18 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
             hasLabel = true;
           }
         }
-        if (hasLabel && !ignored.includes(entityId)) {
-          entities.add(entityId);
+        if (hasLabel) {
+          const isIgnored = ignored.some(pattern => {
+            if (pattern.includes('*')) {
+              const regex = new RegExp('^' + pattern.replace(/\\*/g, '.*') + '$');
+              return regex.test(entityId);
+            }
+            return pattern === entityId;
+          });
+          
+          if (!isIgnored) {
+            entities.add(entityId);
+          }
         }
       }
     }

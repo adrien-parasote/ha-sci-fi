@@ -17,62 +17,6 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
     .card-config > *:last-child {
       margin-bottom: 0;
     }
-    .visibility-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 16px;
-    }
-    .visibility-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 12px;
-      background: rgba(255, 255, 255, 0.04);
-      border-radius: 6px;
-      border: 1px solid rgba(0, 210, 255, 0.1);
-    }
-    .entity-info {
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      flex: 1;
-      padding-right: 12px;
-    }
-    .entity-info .name {
-      font-size: 0.9rem;
-      color: var(--primary-text-color, #e0e8ff);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .entity-info .id {
-      font-size: 0.75rem;
-      color: var(--secondary-text-color, rgba(224, 232, 255, 0.6));
-    }
-    .visibility-toggle {
-      color: var(--primary-color, #00d2ff);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 4px;
-      border-radius: 4px;
-      transition: background 0.2s, color 0.2s;
-    }
-    .visibility-toggle:hover {
-      background: rgba(0, 210, 255, 0.1);
-    }
-    .visibility-toggle.is-hidden {
-      color: var(--secondary-text-color, rgba(224, 232, 255, 0.4));
-    }
-    .visibility-toggle.is-disabled {
-      cursor: not-allowed;
-      opacity: 0.5;
-    }
-    .visibility-toggle.is-disabled:hover {
-      background: transparent;
-    }
   `];
 
   protected renderEditor(): TemplateResult {
@@ -116,8 +60,12 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
           @input-update=${this._chipsChanged}
         ></sf-editor-chips>
 
-        <sf-editor-accordion title="Visibilité des entités" ?open=${true}>
-          <div class="visibility-list">
+        <section class="visibility-section">
+          <h1 class="visibility-header">
+            <sf-icon icon="mdi:eye-outline" style="--icon-width:16px;--icon-height:16px;"></sf-icon>
+            <span>Visibilité</span>
+          </h1>
+          <div class="people">
             ${this._getAllWaterEntities().map(entityId => {
               const stateObj = this.hass!.states[entityId];
               const name = stateObj?.attributes?.friendly_name || entityId;
@@ -132,28 +80,28 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
               });
 
               const isHidden = isIgnoredExactly || isIgnoredByWildcard;
+              const active = !isHidden;
+              const initial = name.charAt(0).toUpperCase();
 
               return html`
-                <div class="visibility-item">
-                  <div class="entity-info">
-                    <span class="name">${name}</span>
-                    <span class="id">${entityId}</span>
+                <div class="people-row">
+                  <div class="avatar">
+                    <span class="avatar-initial">${initial}</span>
                   </div>
-                  <div 
-                    class="visibility-toggle ${isHidden ? 'is-hidden' : ''} ${isIgnoredByWildcard ? 'is-disabled' : ''}"
-                    title=${isIgnoredByWildcard ? 'Masqué par un motif global (*)' : 'Basculer la visibilité'}
-                    @click=${() => {
+                  <div class="person-name">${name}</div>
+                  <sf-button
+                    icon="${active ? 'mdi:eye-outline' : 'mdi:eye-off-outline'}"
+                    style="--btn-icon-color: ${active ? 'var(--secondary-light-color, rgb(102,156,210))' : 'rgba(224,232,255,0.3)'};"
+                    @button-click="${() => {
                       if (isIgnoredByWildcard) return;
                       this._toggleEntityVisibility(entityId, isIgnoredExactly);
-                    }}
-                  >
-                    <ha-icon icon=${isHidden ? 'mdi:eye-off' : 'mdi:eye'}></ha-icon>
-                  </div>
+                    }}"
+                  ></sf-button>
                 </div>
               `;
             })}
           </div>
-        </sf-editor-accordion>
+        </section>
       </div>
     `;
   }

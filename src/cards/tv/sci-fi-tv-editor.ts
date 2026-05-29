@@ -100,7 +100,7 @@ export class SciFiTVEditor extends SciFiBaseEditor {
             <sf-editor-dropdown-entity
               element-id="entity"
               kind="media-player"
-              label="Entité Média Player (requis)"
+              label="${this.getLabel('input-media-player-entity')} ${this.getLabel('text-required')}"
               icon="mdi:television"
               .value="${config.entity ?? ''}"
               .items="${this._mediaPlayers}"
@@ -109,14 +109,14 @@ export class SciFiTVEditor extends SciFiBaseEditor {
 
             <!-- Settings Accordion -->
             <sf-editor-accordion
-              title="Paramètres de l'appareil"
+              title="${this.getLabel('section-title-device-settings')}"
               element-id="device_settings"
               icon="mdi:cog"
             >
               <sf-editor-input
                 element-id="name"
                 kind="spaceship-label"
-                label="Nom du Quadrant"
+                label="${this.getLabel('input-quadrant-name')}"
                 icon="mdi:cursor-text"
                 .value="${config.name ?? ''}"
                 @input-update="${this._handleInputUpdate}"
@@ -125,7 +125,7 @@ export class SciFiTVEditor extends SciFiBaseEditor {
               <sf-editor-dropdown-entity
                 element-id="remote_entity"
                 kind="remote-device"
-                label="Entité Remote (optionnel)"
+                label="${this.getLabel('input-remote-entity')} ${this.getLabel('text-optional')}"
                 icon="mdi:remote"
                 .value="${config.remote_entity ?? ''}"
                 .items="${this._remotes}"
@@ -135,14 +135,14 @@ export class SciFiTVEditor extends SciFiBaseEditor {
 
             <!-- Shortcuts Accordion (Sources) -->
             <sf-editor-accordion
-              title="Sources de Média"
+              title="${this.getLabel('section-title-media-sources')}"
               element-id="shortcuts"
               icon="mdi:link-variant"
             >
               <sf-editor-chips
                 element-id="sources"
                 kind="source-list"
-                label="Sources Quick-Select (Entrée pour ajouter)"
+                label="${this.getLabel('input-media-sources')}"
                 .values="${config.sources ?? []}"
                 @input-update="${this._handleChipsUpdate}"
               ></sf-editor-chips>

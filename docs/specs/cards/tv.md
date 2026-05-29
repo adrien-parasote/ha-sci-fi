@@ -179,7 +179,7 @@ custom_actions:
 
 ## Editor Architecture
 
-The `custom:sci-fi-tv-editor` relies exclusively on the components established in Spec 10. It extends `SciFiBaseEditor`.
+The `custom:sci-fi-tv-editor` relies exclusively on the components established in Spec 10. It extends `SciFiBaseEditor` and uses localized labels (`this.getLabel()`) for all section headers, accordions, and input elements to support dynamic language switching (e.g. French).
 
 **State loaded from hass:**
 - `_mediaPlayers: HassEntity[]` — `Object.values(hass.states).filter(e => e.entity_id.startsWith('media_player.'))`

@@ -206,6 +206,12 @@ describe('base-editor', () => {
       'input-switch-entity',
       'input-vacuum-entity',
       'text-no-vacuum',
+      'section-title-device-settings',
+      'section-title-media-sources',
+      'input-media-player-entity',
+      'input-quadrant-name',
+      'input-remote-entity',
+      'input-media-sources',
     ];
     for (const key of keys) {
       const result = el.getLabel(key);

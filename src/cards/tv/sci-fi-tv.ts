@@ -91,6 +91,8 @@ export class SciFiTVCard extends SciFiBaseCard {
     // Get title/source text
     const sourceLabel = tvState.attributes.source as string | undefined;
     const mediaTitle = tvState.attributes.media_title as string | undefined;
+    const appName = tvState.attributes.app_name as string | undefined;
+    const appId = tvState.attributes.app_id as string | undefined;
     
     let subtext = msg('SYSTEM ONLINE');
     if (isUnavailable) {
@@ -99,8 +101,12 @@ export class SciFiTVCard extends SciFiBaseCard {
       subtext = msg('STANDBY');
     } else if (mediaTitle) {
       subtext = mediaTitle;
+    } else if (appName) {
+      subtext = appName;
     } else if (sourceLabel) {
       subtext = sourceLabel;
+    } else if (appId) {
+      subtext = appId;
     }
 
     // Render volume arc math
@@ -151,7 +157,7 @@ export class SciFiTVCard extends SciFiBaseCard {
             </div>
             <div class="status-segment segment-right">
               <span class="segment-title">${msg('PLAYING:')}</span>
-              <span class="segment-value highlight">${isUnavailable ? msg('DISCONNECTED') : (isOff ? msg('STANDBY') : (mediaTitle || sourceLabel || msg('IDLE')))}</span>
+              <span class="segment-value highlight">${isUnavailable ? msg('DISCONNECTED') : (isOff ? msg('STANDBY') : (mediaTitle || appName || sourceLabel || appId || msg('IDLE')))}</span>
             </div>
           </div>
 

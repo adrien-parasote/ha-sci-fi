@@ -906,6 +906,30 @@
   <source>TV Remote</source>
   <target>Télécommande TV</target>
 </trans-unit>
+<trans-unit id="s57ff855a6211a5b4">
+  <source>Device settings</source>
+  <target>Paramètres de l'appareil</target>
+</trans-unit>
+<trans-unit id="s3461b25a54ecc115">
+  <source>Media sources</source>
+  <target>Sources de Média</target>
+</trans-unit>
+<trans-unit id="sd6be3b16d690da57">
+  <source>Media Player entity</source>
+  <target>Entité Lecteur Média</target>
+</trans-unit>
+<trans-unit id="saa53727736ea0bdc">
+  <source>Quadrant name</source>
+  <target>Nom du Quadrant</target>
+</trans-unit>
+<trans-unit id="sbeb088c9b0d9803e">
+  <source>Remote entity</source>
+  <target>Entité Télécommande</target>
+</trans-unit>
+<trans-unit id="se183f7716fc601eb">
+  <source>Quick-Select sources (Press Enter to add)</source>
+  <target>Sources Quick-Select (Entrée pour ajouter)</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

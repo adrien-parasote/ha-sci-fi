@@ -196,4 +196,70 @@ describe('sci-fi-tv', () => {
     expect(satellite).to.exist;
     expect(satellite!.classList.contains('is-off')).to.be.true;
   });
+
+  // TC-710: Renders the active application name when media title and source are missing
+  it('TC-710: renders active application name (app_name) when media title and source are missing', async () => {
+    const el = document.createElement('sci-fi-tv') as SciFiTVCard;
+    (el as any).setConfig({
+      type: 'custom:sci-fi-tv',
+      entity: 'media_player.bravia_4k_vh22',
+    });
+
+    el.hass = makeMockHass({
+      states: {
+        'media_player.bravia_4k_vh22': makeMockEntity({
+          entity_id: 'media_player.bravia_4k_vh22',
+          state: 'on',
+          attributes: {
+            app_name: 'Netflix',
+            friendly_name: 'Bravia 4K TV'
+          }
+        })
+      }
+    });
+
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const playingSegment = el.shadowRoot!.querySelector('.segment-right .segment-value');
+    expect(playingSegment).to.exist;
+    expect(playingSegment!.textContent).to.equal('Netflix');
+
+    const dialTitle = el.shadowRoot!.querySelector('.dial-title');
+    expect(dialTitle).to.exist;
+    expect(dialTitle!.textContent).to.include('Netflix');
+  });
+
+  // TC-711: Renders the active application ID when app_name, media title, and source are missing
+  it('TC-711: renders active application ID (app_id) when other metadata is missing', async () => {
+    const el = document.createElement('sci-fi-tv') as SciFiTVCard;
+    (el as any).setConfig({
+      type: 'custom:sci-fi-tv',
+      entity: 'media_player.bravia_4k_vh22',
+    });
+
+    el.hass = makeMockHass({
+      states: {
+        'media_player.bravia_4k_vh22': makeMockEntity({
+          entity_id: 'media_player.bravia_4k_vh22',
+          state: 'on',
+          attributes: {
+            app_id: 'com.netflix.ninja',
+            friendly_name: 'Bravia 4K TV'
+          }
+        })
+      }
+    });
+
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const playingSegment = el.shadowRoot!.querySelector('.segment-right .segment-value');
+    expect(playingSegment).to.exist;
+    expect(playingSegment!.textContent).to.equal('com.netflix.ninja');
+
+    const dialTitle = el.shadowRoot!.querySelector('.dial-title');
+    expect(dialTitle).to.exist;
+    expect(dialTitle!.textContent).to.include('com.netflix.ninja');
+  });
 });

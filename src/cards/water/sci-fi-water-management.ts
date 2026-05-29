@@ -352,8 +352,10 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
   private _changeSelectEntity(entityId: string, e: Event): void {
     const target = e.target as HTMLSelectElement;
     if (!target) return;
+    const domain = entityId.split('.')[0];
+    const serviceDomain = domain === 'input_select' ? 'input_select' : 'select';
     void this.hass
-      .callService('select', 'select_option', { entity_id: entityId, option: target.value })
+      .callService(serviceDomain, 'select_option', { entity_id: entityId, option: target.value })
       .then(() => { this._showToast(false, msg('Option changed')); })
       .catch((err: Error) => { this._showToast(true, err.message); });
   }

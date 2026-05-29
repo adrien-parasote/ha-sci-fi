@@ -205,9 +205,11 @@ describe('sci-fi-vacuum', () => {
   it('TC-1513 — map fallback text rendered when no map sensor configured', async () => {
     const el = makeEl();
     setConfig(el, { type: 'custom:sci-fi-vacuum', vacuums: [{ entity: 'vacuum.bot' }] });
-    el.hass = makeMockHass({
+    const hass = makeMockHass({
       states: { 'vacuum.bot': makeMockEntity({ entity_id: 'vacuum.bot', state: 'docked' }) },
     });
+    (hass as any).locale = { language: 'en' };
+    el.hass = hass;
     document.body.appendChild(el);
     await el.updateComplete;
     const mapContent = el.shadowRoot!.querySelector('.map .map-content');

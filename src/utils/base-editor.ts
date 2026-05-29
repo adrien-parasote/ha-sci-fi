@@ -26,14 +26,19 @@ export abstract class SciFiBaseEditor extends LitElement {
   @property({ attribute: false })
   set hass(hass: HomeAssistantExt | undefined) {
     this._hassInternal = hass;
-    if (hass?.locale?.language && hass.locale.language !== getLocale()) {
-      void (async () => {
-        try {
-          await setLocale(hass.locale.language);
-        } catch (e) {
-          console.error(`Error loading locale ${hass.locale.language}: ${(e as Error).message}`);
-        }
-      })();
+    const lang = hass?.locale?.language;
+    if (typeof lang === 'string') {
+      const cleanLang = (lang.split('-')[0] ?? '').toLowerCase();
+      const targetLocale = cleanLang === 'fr' ? 'fr' : 'en';
+      if (targetLocale !== getLocale()) {
+        void (async () => {
+          try {
+            await setLocale(targetLocale);
+          } catch (e) {
+            console.error(`Error loading locale ${targetLocale}: ${(e as Error).message}`);
+          }
+        })();
+      }
     }
   }
 

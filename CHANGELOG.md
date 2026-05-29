@@ -1,5 +1,30 @@
 # Changelog
 
+# [v1.2.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.2.1) - 2026-05-29
+
+## 🐛 Fixes
+- Water card: fix double-fire event on `sf-toggle-change` causing UI toggle glitches
+- Water card: support `input_select` virtual entities in dropdowns (like filtration modes) by dynamically inferring HA service domain
+- Hexa tiles: add native support for the `water` entity kind to allow aggregating water cards into standalone tiles
+- Localize: update target tag requirements for `lit-localize` compilation
+
+# [v1.2.0](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.2.0) - 2026-05-29
+
+## 🆕 What's New
+
+**Splashdown**: adding tactical water management 💧 card.
+
+This major release introduces a brand new card dedicated entirely to managing your pools, spas, ponds, or garden irrigation.
+
+🚰 Water Management card (`sci-fi-water-management`)
+- **Smart Grouping**: automatically discovers your HA devices and groups entities (pumps, switches, filters) logically by device (e.g. "Pool filtration").
+- **Floor & Area Context**: filters devices according to the selected floor or area.
+- **Standalone Automations**: beautifully distinct cards specifically for Home Assistant automations (`automation.`), grouped together.
+- **Dropdown Modes**: full support for `select` domains, displayed as native UI dropdowns for selecting equipment modes.
+- **Entity Visibility Editor**: exhaustive visual editor list allowing you to easily toggle the visibility of specific sensors/switches without code.
+- **Wildcard Exclusions**: support for wildcards (e.g., `*temperature*`) to dynamically ignore irrelevant entities and keep the UI clean.
+- **Dynamic Localization**: i18n support integrated out-of-the-box (English and French).
+
 # [v0.9.6](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/0.9.6) - 2025-12-09
 
 ## 🐛 Fixes

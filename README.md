@@ -62,6 +62,7 @@ The goal: a single phone entry point to control your entire home.
 | 🚗 **Vehicles** | EV battery, range, charging, location | [→ docs](./docs/cards/vehicles.md) |
 | 🔌 **Plugs** | Smart plug control with power chart | [→ docs](./docs/cards/plugs.md) |
 | 🖲 **Vacuum** | Vacuum control with live map and room shortcuts | [→ docs](./docs/cards/vacuum.md) |
+| 📺 **TV Remote** | Concentric radar volume dial, D-pad, and quick source select | [→ docs](./docs/cards/tv.md) |
 
 ---
 

@@ -170,8 +170,29 @@ export const waterStyles = css`
     flex: 1;
     padding: 10px 15px;
     background-color: black;
-    gap: 10px;
+    gap: 15px;
     overflow-y: auto;
+  }
+
+  .device-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: rgba(13, 17, 23, 0.4);
+    border: 1px solid rgba(0, 210, 255, 0.1);
+    border-radius: 8px;
+    padding: 10px;
+  }
+
+  .device-header {
+    color: var(--sf-color-cyan, #00d2ff);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding-bottom: 6px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid rgba(0, 210, 255, 0.15);
   }
 
   .entity-row {
@@ -265,11 +286,30 @@ export const waterStyles = css`
   .entity-controls {
     display: flex;
     align-items: center;
-    gap: 10px;
-    flex-shrink: 0;
+    min-width: 40px;
+    text-align: right;
+  }
+  
+  select.sf-select {
+    background: rgba(0, 0, 0, 0.5);
+    color: var(--sf-color-cyan, #00d2ff);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-family: var(--sf-font-body, monospace);
+    font-size: 0.8rem;
+    outline: none;
+    cursor: pointer;
+  }
+  select.sf-select option {
+    background: #0d1117;
+    color: #fff;
+  }
+  select.sf-select:hover, select.sf-select:focus {
+    border-color: rgba(0, 210, 255, 0.8);
   }
 
-  /* ── Shared: power button ─────────────────────────────── */
+  /* ── Footer / Actions ────────────────────────────── */
   .power-btn {
     background: none;
     border: none;

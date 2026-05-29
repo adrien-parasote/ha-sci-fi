@@ -118,7 +118,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
           ${currentFloor ? this._renderFloorInfo(currentFloor) : ''}
           <div class="entities-section">
             ${waterEntities.length > 0 
-              ? repeat(waterEntities, e => e.entity_id, e => this._renderEntityRow(e))
+              ? this._renderEntitiesGrouped(waterEntities)
               : html`<div class="empty-state">Aucun équipement d'eau configuré pour cet étage</div>`
             }
           </div>
@@ -194,11 +194,53 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     `;
   }
 
+  private _renderEntitiesGrouped(entities: any[]): TemplateResult {
+    const grouped = new Map<string, any[]>();
+    for (const e of entities) {
+      const devId = e.device_id || 'no_device';
+      if (!grouped.has(devId)) {
+        grouped.set(devId, []);
+      }
+      grouped.get(devId)!.push(e);
+    }
+
+    const groups: TemplateResult[] = [];
+    
+    // Sort so devices come first, then standalone entities
+    const sortedDeviceIds = Array.from(grouped.keys()).sort((a, b) => {
+      if (a === 'no_device') return 1;
+      if (b === 'no_device') return -1;
+      return 0;
+    });
+
+    for (const devId of sortedDeviceIds) {
+      const groupEntities = grouped.get(devId)!;
+      if (devId === 'no_device') {
+        groups.push(html`
+          <div class="device-group">
+            ${repeat(groupEntities, e => e.entity_id, e => this._renderEntityRow(e))}
+          </div>
+        `);
+      } else {
+        const deviceName = this.hass.devices?.[devId]?.name || 'Équipement';
+        groups.push(html`
+          <div class="device-group">
+            <div class="device-header">${deviceName}</div>
+            ${repeat(groupEntities, e => e.entity_id, e => this._renderEntityRow(e))}
+          </div>
+        `);
+      }
+    }
+    
+    return html`${groups}`;
+  }
+
   private _renderEntityRow(entityEntry: any): TemplateResult {
     const stateObj = this.hass.states[entityEntry.entity_id];
     const isOn = stateObj?.state === 'on';
     const domain = entityEntry.entity_id.split('.')[0];
     const isSensor = domain === 'sensor' || domain === 'number';
+    const isSelect = domain === 'select';
     const name = stateObj?.attributes?.friendly_name || entityEntry.entity_id;
     const icon = stateObj?.attributes?.icon || this.config.default_icon || 'mdi:water';
     
@@ -209,7 +251,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     }
 
     return html`
-      <div class="entity-row ${isOn || isSensor ? '' : 'row-off'}">
+      <div class="entity-row ${isOn || isSensor || isSelect ? '' : 'row-off'}">
         <div class="entity-info">
           <sf-icon .icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
           <div class="entity-text">
@@ -221,6 +263,12 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
         <div class="entity-controls">
           ${isSensor ? html`
             <span class="entity-state">${stateDisplay}</span>
+          ` : isSelect ? html`
+            <select class="sf-select" @change="${(e: Event) => this._changeSelectEntity(entityEntry.entity_id, e)}">
+              ${Array.isArray(stateObj?.attributes?.options) ? stateObj.attributes.options.map((opt: string) => html`
+                <option value="${opt}" ?selected="${opt === stateObj?.state}">${opt}</option>
+              `) : ''}
+            </select>
           ` : html`
             <span class="entity-state ${isOn ? 'state-active' : ''}">${isOn ? 'ACTIVE' : 'OFF'}</span>
             <sf-toggle-switch
@@ -240,6 +288,15 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
       .callService(serviceDomain, isOn ? 'turn_off' : 'turn_on', { entity_id: entityId })
       .then(() => { this._showToast(false, isOn ? 'Désactivé' : 'Activé'); })
       .catch((e: Error) => { this._showToast(true, e.message); });
+  }
+
+  private _changeSelectEntity(entityId: string, e: Event): void {
+    const target = e.target as HTMLSelectElement;
+    if (!target) return;
+    void this.hass
+      .callService('select', 'select_option', { entity_id: entityId, option: target.value })
+      .then(() => { this._showToast(false, 'Option modifiée'); })
+      .catch((err: Error) => { this._showToast(true, err.message); });
   }
 
   private _showToast(error: boolean, text: string): void {

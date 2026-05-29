@@ -58,6 +58,7 @@ The goal: a single phone entry point to control your entire home.
 | 💡 **Lights** | Auto-discovers lights, groups by floor/area | [→ docs](./docs/cards/lights.md) |
 | 🌦️ **Weather** | Current conditions + hourly chart + daily forecast | [→ docs](./docs/cards/weather.md) |
 | 🌡️ **Climates** | Radiator controls grouped by floor/area | [→ docs](./docs/cards/climates.md) |
+| 💧 **Water** | Dynamic water management (valves, sensors) by floor/area | [→ docs](./docs/specs/cards/tactical_water_management.md) |
 | 🪵🔥 **Stove** | Pellet stove state, sensors and actions | [→ docs](./docs/cards/stove.md) |
 | 🚗 **Vehicles** | EV battery, range, charging, location | [→ docs](./docs/cards/vehicles.md) |
 | 🔌 **Plugs** | Smart plug control with power chart | [→ docs](./docs/cards/plugs.md) |

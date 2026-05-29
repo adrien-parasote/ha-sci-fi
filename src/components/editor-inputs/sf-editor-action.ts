@@ -53,6 +53,12 @@ export class SfEditorAction extends LitElement {
       font-size: 0.75rem;
       margin-top: 4px;
     }
+
+    .fallback-ui {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
   `;
 
   private _onSelectorChanged(e: CustomEvent): void {

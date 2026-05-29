@@ -227,13 +227,15 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     for (const devId of sortedDeviceIds) {
       const groupEntities = grouped.get(devId)!;
       if (devId === 'no_device') {
-        for (const e of groupEntities) {
-          groups.push(html`
-            <div class="device-group">
-              ${this._renderEntityRow(e)}
-            </div>
-          `);
-        }
+        groups.push(html`
+          <sf-editor-accordion
+            title="Automatisations"
+            ?open="${true}"
+            style="margin-bottom: 12px; display: block;"
+          >
+            ${repeat(groupEntities, e => e.entity_id, e => this._renderEntityRow(e))}
+          </sf-editor-accordion>
+        `);
       } else {
         const deviceName = this.hass.devices?.[devId]?.name || 'Équipement';
         groups.push(html`

@@ -1,0 +1,13 @@
+export default {
+  id: 'lights',
+  label: '💡 Lights',
+  tag: 'sci-fi-lights',
+  config: {
+    type: 'custom:sci-fi-lights', default_icon_on: 'mdi:lightbulb-on-outline', default_icon_off: 'mdi:lightbulb-outline', first_floor_to_render: 'rdc', first_area_to_render: 'chambre', ignored_entities: ['light.la_boite_a_cha_day_ambient_colour', 'light.la_boite_a_cha_night_ambient_colour', 'light.la_boite_a_nard_day_ambient_colour', 'light.la_boite_a_nard_night_ambient_colour'], custom_entities: { 'light.nous_salon': { name: 'Étoile', icon_on: 'mdi:star', icon_off: 'mdi:star-outline' }, 'light.zbmini_l_lampe_salon': { name: 'Lampe', icon_on: 'mdi:desk-lamp-on', icon_off: 'mdi:desk-lamp' }, 'light.zbmini_l_salon': { name: 'Plafond', icon_on: 'mdi:ceiling-light-outline', icon_off: 'mdi:ceiling-light' }, 'light.zbmini_l_dressing_parent': { name: 'Dressing', icon_on: 'mdi:light-recessed', icon_off: 'mdi:light-recessed' }, 'light.zbmini_l_parent': { name: 'Plafond', icon_on: 'mdi:ceiling-light-outline', icon_off: 'mdi:ceiling-light' }, 'light.zbmini_l_douche_parent': { name: 'Douche', icon_on: 'mdi:light-recessed', icon_off: 'mdi:light-recessed' }, 'light.zbmini_l_lavabo_parent': { name: 'Lavabo', icon_on: 'mdi:light-recessed', icon_off: 'mdi:light-recessed' }, 'light.zbmini_l_cuisine': { name: 'Plafond', icon_on: 'mdi:ceiling-light-outline', icon_off: 'mdi:ceiling-light' }, 'light.zbmini_l_bureau': { name: 'Plafond', icon_on: 'mdi:ceiling-light-outline', icon_off: 'mdi:ceiling-light' }, 'light.zbmini_l_charlotte': { name: 'Plafond', icon_on: 'mdi:ceiling-light-outline', icon_off: 'mdi:ceiling-light' }, 'light.zbmini_l_leonard': { name: 'Plafond', icon_on: 'mdi:ceiling-light-outline', icon_off: 'mdi:ceiling-light' }, 'light.zbmini_l_mezzanine': { name: 'Mezzanine', icon_on: 'mdi:light-recessed', icon_off: 'mdi:light-recessed' } }, header_message: 'Lumières'
+  },
+  scenarios: {
+    'Quelques lumières allumées': {},
+    'Tout allumé': { '$match:light.*': { state: 'on' } },
+    'Tout éteint': { '$match:light.*': { state: 'off' } },
+  }
+};

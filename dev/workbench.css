@@ -1,0 +1,1169 @@
+    :root {
+      --bg: #0d0d1a;
+      --surface: #111827;
+      --surface2: #1a2235;
+      --border: #2a3a5c;
+      --accent: #00d4ff;
+      --accent2: #7c3aed;
+      --text: #e2e8f0;
+      --text-muted: #64748b;
+      --success: #22c55e;
+      --warn: #f59e0b;
+      --error: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ===== TOOLBAR ===== */
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13, 13, 26, 0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-logo {
+      font-size: 18px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      white-space: nowrap;
+    }
+
+    .toolbar-sep {
+      flex: 1;
+      min-width: 8px;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .badge.ok {
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    .badge.warn {
+      border-color: var(--warn);
+      color: var(--warn);
+    }
+
+    .badge.err {
+      border-color: var(--error);
+      color: var(--error);
+    }
+
+    .badge.live {
+      border-color: var(--accent);
+      color: var(--accent);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.85;
+    }
+
+    .btn-ghost {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid var(--error);
+      color: var(--error);
+    }
+
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* ===== CONNECT PANEL ===== */
+    .connect-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .connect-modal.open {
+      display: flex;
+    }
+
+    .connect-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      width: 420px;
+      max-width: 95vw;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
+    }
+
+    .connect-box h2 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .connect-box p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .connect-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .connect-field label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .connect-field input {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      transition: border-color 0.15s;
+    }
+
+    .connect-field input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .connect-field input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .connect-btns {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .connect-btns .btn {
+      flex: 1;
+      padding: 10px;
+    }
+
+    .connect-note {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 14px;
+      padding: 10px 12px;
+      background: var(--surface2);
+      border-radius: 8px;
+      line-height: 1.6;
+    }
+
+    /* ===== TABS ===== */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      padding: 14px 20px 0;
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tab {
+      padding: 7px 16px;
+      border-radius: 8px 8px 0 0;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .tab:hover {
+      color: var(--text);
+      background: var(--surface2);
+    }
+
+    .tab.active {
+      color: var(--accent);
+      border-color: var(--border);
+      border-bottom-color: var(--bg);
+      background: var(--bg);
+    }
+
+    /* ===== MAIN LAYOUT ===== */
+    /* height (not just min-height) is required so grid items can resolve height:100%
+       in panel/desktop mode — percentage heights need a definite parent height */
+    .main {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      min-height: calc(100vh - 105px);
+      height: calc(100vh - 105px);
+      overflow: hidden;
+    }
+
+    /* ===== PREVIEW ===== */
+    .preview-area {
+      padding: 28px;
+      overflow-y: auto;
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .preview-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .card-wrapper {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+
+    .card-wrapper:hover {
+      border-color: var(--accent);
+    }
+
+    .loading-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(13, 13, 26, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .loading-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .error-banner {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid var(--error);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      color: var(--error);
+      display: none;
+    }
+
+    .error-banner.visible {
+      display: block;
+    }
+
+    /* ===== PANEL MODE (card view toggle) ===== */
+    /* Card mode: constrained width, centered, with background */
+    .preview-area.mode-card .card-wrapper {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* Panel mode: fill the entire preview area height, no max-width */
+    .preview-area.mode-panel {
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      /* height:100% anchors the flex chain so device-viewport→#card-mount→card
+         all resolve their heights in desktop panel mode */
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .preview-area.mode-panel .preview-header {
+      padding: 12px 20px;
+      margin-bottom: 0;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .preview-area.mode-panel .error-banner {
+      margin: 8px 20px 0;
+    }
+
+    /* Panel mode: fill the entire preview area height, no max-width */
+    .preview-area.mode-panel .card-wrapper {
+      flex: 1;
+      border-radius: 0;
+      border: none;
+      border-top: 1px solid var(--border);
+      min-height: 0;
+      /* CRITICAL: display:flex so device-viewport {flex:1} inside actually works.
+         Without this, card-wrapper is display:block and flex:1 on device-viewport
+         is ignored — the entire height chain collapses to 0 in desktop panel mode. */
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .preview-area.mode-panel .card-wrapper:hover {
+      border-color: var(--border);
+    }
+
+    /* Desktop panel: card-mount fills height as flex column */
+    .preview-area.mode-panel #card-mount {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .preview-area.mode-panel #card-mount>* {
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* Phone device in panel mode: same as base phone rule — card fills device-screen. */
+    .preview-area.mode-panel .dev-phone #card-mount {
+      height: 100%;
+      min-height: 0;
+      flex: none;
+    }
+
+    .preview-area.mode-panel .dev-phone #card-mount>* {
+      flex: none;
+      min-height: 0;
+      height: 100%;
+    }
+
+    .preview-area.mode-panel .dev-tablet #card-mount {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .preview-area.mode-panel .dev-tablet #card-mount>* {
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* Mode toggle button */
+    .mode-toggle {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      gap: 0;
+    }
+
+    .mode-toggle-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .mode-toggle-btn:first-child {
+      border-right: 1px solid var(--border);
+    }
+
+    .mode-toggle-btn.active {
+      background: rgba(0, 212, 255, 0.12);
+      color: var(--accent);
+    }
+
+    .mode-toggle-btn:hover:not(.active) {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    /* ===== DEVICE SIZE SIMULATOR ===== */
+    /* Only visible in Panel mode */
+    .device-toggle {
+      display: none;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .device-toggle.visible {
+      display: flex;
+    }
+
+    .device-toggle-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 6px 11px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .device-toggle-btn:not(:last-child) {
+      border-right: 1px solid var(--border);
+    }
+
+    .device-toggle-btn.active {
+      background: rgba(0, 212, 255, 0.12);
+      color: var(--accent);
+    }
+
+    .device-toggle-btn:hover:not(.active) {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    /* ── Viewport container ───────────────────────────────────────── */
+    .preview-area.mode-panel .device-viewport {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: auto;
+      min-height: 0;
+      /* dark stage behind device frames */
+      background: #07070f;
+      padding: 32px 24px;
+      gap: 12px;
+    }
+
+    .preview-area.mode-panel .device-viewport.dev-desktop {
+      padding: 0;
+      background: transparent;
+    }
+
+    /* ── Device outer shell (the physical frame) ─────────────────── */
+    .device-outer {
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ─ DESKTOP: no frame, just fill the space ─ */
+    .dev-desktop .device-outer {
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+    }
+
+    .dev-desktop .device-screen {
+      flex: 1;
+      min-height: 0;
+    }
+
+    .dev-desktop .device-home-bar {
+      display: none;
+    }
+
+    /* ─ iPHONE 15 Pro Max frame (430 × 932 logical px) ─ */
+    .dev-phone .device-outer {
+      position: relative;
+      background: linear-gradient(155deg, #2c2c3c 0%, #18181e 60%, #222230 100%);
+      border-radius: 54px;
+      padding: 14px 11px 10px;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.09),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+        inset 1px 0 0 rgba(255, 255, 255, 0.05),
+        inset -1px 0 0 rgba(255, 255, 255, 0.05),
+        0 0 0 1px rgba(0, 0, 0, 0.7),
+        0 40px 80px rgba(0, 0, 0, 0.8),
+        0 0 80px rgba(0, 180, 255, 0.04);
+      width: 452px;
+      max-width: calc(100vw - 80px);
+    }
+
+    /* Dynamic Island */
+    .dev-phone .device-outer::before {
+      content: '';
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 126px;
+      height: 36px;
+      background: #070709;
+      border-radius: 18px;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+        0 2px 8px rgba(0, 0, 0, 0.6);
+      z-index: 10;
+    }
+
+    /* Power button (right side) */
+    .dev-phone .device-outer::after {
+      content: '';
+      position: absolute;
+      right: -3px;
+      top: 150px;
+      width: 3px;
+      height: 80px;
+      background: linear-gradient(#222232, #2e2e40, #222232);
+      border-radius: 0 3px 3px 0;
+      box-shadow: 1px 0 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .dev-phone .device-vol-left {
+      position: absolute;
+      left: -3px;
+      top: 110px;
+      width: 3px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .dev-phone .device-vol-left span {
+      display: block;
+      width: 3px;
+      height: 40px;
+      background: linear-gradient(#222232, #2e2e40, #222232);
+      border-radius: 3px 0 0 3px;
+    }
+
+    .dev-phone .device-screen {
+      width: 430px;
+      max-width: 100%;
+      height: 932px;
+      max-height: 85vh;
+      border-radius: 46px;
+      /* Scroll inside the phone like a real device */
+      overflow-y: auto;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      /* hide scrollbar — feels like real phone */
+      position: relative;
+      background: #0a0a14;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+      /* iOS safe area: push content below Dynamic Island (~52px from screen top) */
+      padding-top: 52px;
+      box-sizing: border-box;
+    }
+
+    /* Phone: card fills the device-screen content area (below Dynamic Island).
+       device-screen has box-sizing:border-box + padding-top:52px, so
+       100% = screen-height − 52px, which is exactly the visible area. */
+    .dev-phone #card-mount {
+      height: 100%;
+      min-height: 0;
+    }
+
+    .dev-phone #card-mount {
+      display: block !important;
+      /* cancel panel-mode flex */
+    }
+
+    .dev-phone #card-mount>* {
+      height: 100%;
+      min-height: 0;
+    }
+
+    .dev-phone .device-home-bar {
+      display: block;
+      width: 130px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.24);
+      border-radius: 3px;
+      margin: 8px auto 4px;
+    }
+
+    /* ─ iPAD AIR 11" portrait frame (820 × 1180 logical px) ─ */
+    .dev-tablet .device-outer {
+      position: relative;
+      background: linear-gradient(150deg, #282838 0%, #16161e 60%, #202030 100%);
+      border-radius: 24px;
+      padding: 28px 22px 18px;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.03),
+        0 0 0 1px rgba(0, 0, 0, 0.65),
+        0 40px 80px rgba(0, 0, 0, 0.75),
+        0 0 100px rgba(0, 180, 255, 0.03);
+      width: 864px;
+      max-width: calc(100vw - 80px);
+    }
+
+    /* Front camera (centered top) */
+    .dev-tablet .device-outer::before {
+      content: '';
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 10px;
+      background: #09090f;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.07),
+        inset 0 0 4px rgba(0, 0, 0, 0.9);
+    }
+
+    /* Power button (top-right side) */
+    .dev-tablet .device-outer::after {
+      content: '';
+      position: absolute;
+      right: -3px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 60px;
+      background: linear-gradient(#1e1e2c, #2a2a3c, #1e1e2c);
+      border-radius: 0 3px 3px 0;
+    }
+
+    .dev-tablet .device-screen {
+      width: 820px;
+      max-width: 100%;
+      /* 1000px target → on a 900px monitor, 92vh=828px > 820px width = portrait ✓
+         Content scrolls inside when taller than the screen. */
+      height: 1000px;
+      max-height: 92vh;
+      border-radius: 8px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      position: relative;
+      background: #0a0a14;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+      /* Status bar safe area */
+      padding-top: 24px;
+      box-sizing: border-box;
+    }
+
+    /* iPad: fixed height → height:100% chain resolves, card fills the frame.
+       Keep panel-mode flex so the web component stretches to fill height. */
+    .dev-tablet #card-mount {
+      height: 100% !important;
+    }
+
+    .dev-tablet #card-mount {
+      display: flex !important;
+      flex-direction: column !important;
+    }
+
+    .dev-tablet #card-mount>* {
+      flex: 1 !important;
+      min-height: 0 !important;
+    }
+
+    .dev-tablet .device-home-bar {
+      display: block;
+      width: 80px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.18);
+      border-radius: 2px;
+      margin: 8px auto 4px;
+    }
+
+    /* Device name label below the frame */
+    .device-name-label {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.2);
+      text-align: center;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    .device-name-label.hidden {
+      display: none;
+    }
+
+    /* Shared screen wrapper — must NOT be display:contents so the width
+       chain from device-screen → card-mount-wrap → card-mount is explicit */
+    #card-mount-wrap {
+      display: block;
+      width: 100%;
+    }
+
+    /* ===== PANEL RIGHT ===== */
+    .panel {
+      border-left: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .panel-section {
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-section-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    /* ===== HA CONNECTION STATUS ===== */
+    .ha-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ha-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .ha-dot.live {
+      background: var(--success);
+      box-shadow: 0 0 6px var(--success);
+    }
+
+    .ha-dot.connecting {
+      background: var(--warn);
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    .ha-dot.error {
+      background: var(--error);
+    }
+
+    .ha-status-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      flex: 1;
+    }
+
+    .ha-btns {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .ha-btns .btn {
+      flex: 1;
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+
+    /* ===== SCENARIOS ===== */
+    .scenario-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .scenario-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.15s;
+      text-align: left;
+    }
+
+    .scenario-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .scenario-btn.active {
+      border-color: var(--accent);
+      background: rgba(0, 212, 255, 0.08);
+      color: var(--accent);
+    }
+
+    .scenario-btn .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      flex-shrink: 0;
+    }
+
+    .live-mode-note {
+      font-size: 11px;
+      color: var(--accent);
+      margin-top: 8px;
+      padding: 8px 10px;
+      background: rgba(0, 212, 255, 0.06);
+      border-radius: 6px;
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      line-height: 1.5;
+    }
+
+    .live-mode-note.hidden {
+      display: none;
+    }
+
+    /* ===== CONSOLE ===== */
+    .console-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      max-height: 240px;
+    }
+
+    .console-line {
+      font-size: 11px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      padding: 2px 5px;
+      border-radius: 3px;
+      margin-bottom: 2px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .console-line.info {
+      color: #60a5fa;
+    }
+
+    .console-line.warn {
+      color: var(--warn);
+      background: rgba(245, 158, 11, 0.08);
+    }
+
+    .console-line.error {
+      color: var(--error);
+      background: rgba(239, 68, 68, 0.08);
+    }
+
+    .console-line.ok {
+      color: var(--success);
+    }
+
+    .console-line.live {
+      color: var(--accent);
+    }
+
+    .console-filter-btn {
+      padding: 3px 8px;
+      font-size: 10px;
+      font-weight: 600;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .console-filter-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .console-filter-btn.active {
+      border-color: var(--accent);
+      background: rgba(0, 212, 255, 0.1);
+      color: var(--accent);
+    }
+
+    @media (max-width: 900px) {
+      .main {
+        grid-template-columns: 1fr;
+      }
+
+      .panel {
+        border-left: none;
+        border-top: 1px solid var(--border);
+      }
+    }
+
+    /* ===== WORK MODE / EDIT VIEWPORT ===== */
+    .edit-viewport {
+      display: flex;
+      gap: 20px;
+      height: calc(100vh - 165px);
+      min-height: 500px;
+      padding: 0 10px;
+      box-sizing: border-box;
+    }
+
+    .edit-left-panel {
+      flex: 1;
+      min-width: 380px;
+      max-width: 600px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .edit-right-panel {
+      flex: 1;
+      background: #07070f;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow: auto;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .edit-preview-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 16px;
+      align-self: flex-start;
+    }
+
+    .edit-preview-mount-wrap {
+      width: 100%;
+      max-width: 500px;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .edit-preview-mount-wrap>* {
+      width: 100%;
+    }
+
+    /* ===== EDIT TABS ===== */
+    .edit-tabs {
+      display: flex;
+      align-items: center;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      padding: 4px 10px;
+      gap: 4px;
+    }
+
+    .edit-tab {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .edit-tab:hover {
+      color: var(--text);
+    }
+
+    .edit-tab.active {
+      background: rgba(0, 212, 255, 0.1);
+      color: var(--accent);
+      border-color: rgba(0, 212, 255, 0.2);
+    }
+
+    /* ===== TAB CONTENTS ===== */
+    .edit-tab-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .yaml-textarea {
+      flex: 1;
+      background: #080812;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #38bdf8;
+      font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      padding: 16px;
+      resize: none;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .yaml-textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 10px rgba(0, 212, 255, 0.15);
+    }
+
+    /* ===== YAML ERROR BANNER ===== */
+    .yaml-error-banner {
+      background: rgba(239, 68, 68, 0.1);
+      border-top: 1px solid var(--error);
+      color: var(--error);
+      font-size: 12px;
+      font-family: 'SF Mono', monospace;
+      padding: 10px 16px;
+      display: none;
+      white-space: pre-wrap;
+    }
+
+    .yaml-error-banner.visible {
+      display: block;
+    }
+
+    /* ===== FALLBACK GRAPHICAL UI PANEL ===== */
+    .gui-fallback-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      height: 100%;
+      color: var(--text-muted);
+      padding: 40px 20px;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      background: rgba(13, 13, 26, 0.3);
+    }
+
+    .gui-fallback-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+
+    .gui-fallback-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .gui-fallback-text {
+      font-size: 12px;
+      line-height: 1.5;
+      max-width: 320px;
+    }

@@ -78,7 +78,7 @@ Dynamic icon values **require** Lit property binding (`.icon=`), not attribute b
 
 ## Dev Workbench
 
-Localhost UI test environment — run BEFORE any production deployment:
+Modular UI test environment — run BEFORE any production deployment:
 
 ```bash
 # Step 1 — build
@@ -91,9 +91,39 @@ npx serve . --listen 8888 --cors
 open http://localhost:8888/dev/workbench.html
 ```
 
+**Architecture (modular ES modules):**
+
+```
+dev/
+├── workbench.html          ← HTML shell (~200 lines, zero inline JS/CSS)
+├── workbench.css           ← All styles
+├── cards/                  ← Declarative card definitions (1 file = 1 card)
+│   ├── _registry.js        ← Auto-import of all cards
+│   ├── hexa.js, weather.js, stove.js, vacuum.js, vehicles.js
+│   ├── climates.js, plugs.js, lights.js, water.js, tv.js
+└── modules/                ← Engine modules
+    ├── workbench-app.js    ← Main entry point — init, tabs, renderCard, navigation
+    ├── mock-data.js        ← MOCK_STATES, MOCK_AREAS, MOCK_FLOORS, MOCK_ENTITIES, MOCK_DEVICES
+    ├── mock-hass.js        ← buildMockHass (declarative merge engine), buildLiveHass
+    ├── ha-connection.js    ← connectToHA, disconnectHA, OAuth/token auto-reconnect
+    ├── console.js          ← Console proxy, filters, search, copy
+    ├── editor.js           ← GUI/YAML editor, config sync
+    ├── view-modes.js       ← Card/Panel mode, device simulator
+    ├── ui-helpers.js       ← HA status, live mode toggle, modals
+    └── ha-icon.js          ← Mock ha-icon custom element
+```
+
+**Adding a new card (declarative):**
+1. Create `dev/cards/my-card.js` → `export default { id, label, tag, config, scenarios }`
+2. Add 1 import line in `dev/cards/_registry.js`
+3. Zero engine modifications
+
+**Scenario format:** Pure data objects (deep-merged with MOCK_STATES). `$match:light.*` syntax for bulk overrides.
+
 **Features:**
-- 8 card tabs (all cards, production YAML configs)
-- Mock mode: pre-built scenarios per card (Dobby cleaning, EvLink charging, pellets low…)
+- 10 card tabs (all cards, production YAML configs)
+- Mock mode: declarative scenarios per card (Dobby cleaning, EvLink charging, pellets low…)
 - Live mode: connects to real HA instance via `home-assistant-js-websocket` (OAuth or Long-Lived Token)
 - Auto-reconnect from `localStorage` tokens
 - In-browser console log for `callService` calls and state changes
+

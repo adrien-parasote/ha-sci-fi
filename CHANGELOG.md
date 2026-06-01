@@ -1,6 +1,26 @@
 # Changelog
 
-# [v1.2.3](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.2.3) - 2026-05-29
+# [v1.2.4](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.2.4) - 2026-06-01
+
+## 💫 Enhancement
+
+### 💧 Water Management Card — Execution Logs
+
+- **Per-accordion execution logs**: every accordion (Automations and each device group) now displays its own filtered execution history showing only the state changes relevant to that accordion's entities.
+- **HA Recorder API**: migrated from `logbook/get_events` to `history/history_during_period` (recorder database). Returns full state-change history regardless of logbook domain exclusions. Falls back to logbook API on older HA versions.
+- **Manual sync button**: replaced automatic refetch-on-open with a single fetch at floor load and a `mdi:refresh` button in the floor bar. Refresh icon spins during loading.
+- **Mobile layout fix**: execution log entries no longer truncate on narrow screens — timestamp+badge on one line, entity name and state on the next, with full text wrapping.
+- **Floor bar alignment**: floor name and sync button are now correctly vertically centered in a horizontal row.
+
+## 🐛 Fixes
+
+- **Accordion double-click bug**: opening an accordion required two clicks due to a conflict between the native browser `label+checkbox` toggle and the `@click` host listener that re-applied the same state. Fixed by dispatching a `sf-accordion-toggle` custom event from the checkbox `@change` handler — parent components now listen to this event instead.
+- **Independent accordion state**: each accordion tracks its own open/closed state via `_expandedMap: Map<string, boolean>` instead of a shared `expanded` boolean — switching floors correctly resets all accordion states.
+
+## 🔧 Dev / Workbench
+
+- Workbench refactored into modular ES modules (separate session).
+
 
 ## 🐛 Fixes
 - **i18n & Localization**: fix critical minification bug where Terser optimized and collapsed symmetric `msg(...)` ternary calls into a single call with conditional arguments, which bypassed `lit-localize` static parsing and caused toast notifications and status values to always display in English (e.g. `"Turned on"`, `"OFFLINE"`) when French was active. Introduced robust array tuple mapping helpers (`[msg('OFF'), msg('ON')][isOn ? 1 : 0]`) to completely prevent Terser collapsing and ensure proper localization across TV Remote, Water Management, and Plugs cards.

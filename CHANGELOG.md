@@ -21,6 +21,7 @@
 
 - Workbench refactored into modular ES modules (separate session).
 
+# [v1.2.3](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.2.3) - 2026-05-29
 
 ## 🐛 Fixes
 - **i18n & Localization**: fix critical minification bug where Terser optimized and collapsed symmetric `msg(...)` ternary calls into a single call with conditional arguments, which bypassed `lit-localize` static parsing and caused toast notifications and status values to always display in English (e.g. `"Turned on"`, `"OFFLINE"`) when French was active. Introduced robust array tuple mapping helpers (`[msg('OFF'), msg('ON')][isOn ? 1 : 0]`) to completely prevent Terser collapsing and ensure proper localization across TV Remote, Water Management, and Plugs cards.

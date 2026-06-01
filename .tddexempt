@@ -1,0 +1,2 @@
+# Exempt CSS-only styles files from TDD checks
+src/cards/water/styles.ts

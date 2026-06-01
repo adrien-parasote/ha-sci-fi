@@ -17,5 +17,11 @@ export default {
       'switch.arrosage_terrasse': { state: 'on' },
       'switch.arrosage_haie': { state: 'on' }
     },
+    'Fuite active (Alerte)': {
+      'sensor.leak_kitchen': { state: 'on' }
+    },
+    'Vanne en panne (Alerte)': {
+      'switch.valve_main': { state: 'unavailable' }
+    }
   }
 };

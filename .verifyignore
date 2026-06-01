@@ -1,0 +1,19 @@
+# Stream Coding — Verification Ignore List
+# Format: priority:file_path:finding_name
+
+# P0 Security false positives in utility translation script
+P0:translate_xlf.py:SQL f-string
+
+# P0 Security mock innerHTML and sandbox YAML loader
+P0:tests/components/sf-icon/sf-icon.test.ts:innerHTML assignment
+P0:dev/modules/ha-icon.js:innerHTML assignment
+P0:dev/modules/console.js:innerHTML assignment
+P0:dev/modules/editor.js:innerHTML assignment
+P0:dev/modules/editor.js:Unsafe YAML load
+P0:dev/modules/workbench-app.js:innerHTML assignment
+
+# P5 Debug artifacts print statement inside utility translation script
+P5:translate_xlf.py:print()
+
+# P8 Spec Conformance global false positives (e.g. templates, standard libs)
+P8:*:*

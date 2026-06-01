@@ -109,6 +109,9 @@ export function buildMockHass(scenarioOverrides = {}, language = 'fr') {
       subscribeEvents: () => () => { },
       sendMessagePromise: async (msg) => {
         if (msg.type === 'weather/subscribe_forecast') return { forecast: states['weather.la_chapelle_sur_erdre']?.attributes?.forecast ?? [] };
+        if (msg && msg.type === 'logbook/get_events') {
+          return mockLogbookEvents(scenarioOverrides);
+        }
         return {};
       },
       addEventListener: () => { },
@@ -117,7 +120,12 @@ export function buildMockHass(scenarioOverrides = {}, language = 'fr') {
     },
     subscribeMessage: subscribeMessageMock,
     callService: (domain, service, _data) => { log(`🔧 callService(${domain}.${service})`, 'ok'); return Promise.resolve(); },
-    callWS: async () => ({}),
+    callWS: async (msg) => {
+      if (msg && msg.type === 'logbook/get_events') {
+        return mockLogbookEvents(scenarioOverrides);
+      }
+      return {};
+    },
     callApi: async (method, path) => {
       // Mock history API for plugs power chart
       log(`📊 callApi(${method}, ${path})`, 'info');
@@ -175,4 +183,53 @@ export function buildLiveHass(baseHass, language = 'fr', haConnection, haAuth) {
       return res.json();
     },
   };
+}
+
+/**
+ * Helper to generate mock logbook events matching active scenario state.
+ */
+function mockLogbookEvents(scenarioOverrides = {}) {
+  const now = Date.now();
+  const baseLogs = [
+    { entity_id: 'switch.valve_main', state: 'on', when: new Date(now - 15 * 60 * 1000).toISOString(), name: 'Vanne Principale' },
+    { entity_id: 'switch.arrosage_terrasse', state: 'off', when: new Date(now - 30 * 60 * 1000).toISOString(), name: 'Arrosage Terrasse' },
+    { entity_id: 'switch.arrosage_haie', state: 'off', when: new Date(now - 45 * 60 * 1000).toISOString(), name: 'Arrosage Haie' },
+  ];
+  
+  if (scenarioOverrides['switch.arrosage_terrasse']?.state === 'on') {
+    baseLogs.unshift({
+      entity_id: 'switch.arrosage_terrasse',
+      state: 'on',
+      when: new Date(now - 5 * 60 * 1000).toISOString(),
+      name: 'Arrosage Terrasse'
+    });
+  }
+  if (scenarioOverrides['switch.arrosage_haie']?.state === 'on') {
+    baseLogs.unshift({
+      entity_id: 'switch.arrosage_haie',
+      state: 'on',
+      when: new Date(now - 2 * 60 * 1000).toISOString(),
+      name: 'Arrosage Haie'
+    });
+  }
+
+  if (scenarioOverrides['sensor.leak_kitchen']?.state === 'on') {
+    baseLogs.unshift({
+      entity_id: 'sensor.leak_kitchen',
+      state: 'on',
+      when: new Date(now - 3 * 60 * 1000).toISOString(),
+      name: 'Fuite Cuisine',
+      device_class: 'moisture'
+    });
+  }
+  if (scenarioOverrides['switch.valve_main']?.state === 'unavailable') {
+    baseLogs.unshift({
+      entity_id: 'switch.valve_main',
+      state: 'unavailable',
+      when: new Date(now - 1 * 60 * 1000).toISOString(),
+      name: 'Vanne Principale'
+    });
+  }
+  
+  return baseLogs;
 }

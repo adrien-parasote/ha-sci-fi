@@ -246,7 +246,7 @@ Follows the standard `e.detail.id` / `e.detail.value` mapping directly onto the 
 ### Tracked Concepts
 | Concept | Status in this spec | Mentioned in |
 |---|---|---|
-| Hybrid Metadata Extraction | Implemented for app detection | `.agents/learnings/ha_hybrid_tv_entities.md` |
+| Hybrid Smart Entity Handling | Implemented for app detection | .agents/learnings/ha_hybrid_tv_entities.md |
 
 ---
 
@@ -254,7 +254,7 @@ Follows the standard `e.detail.id` / `e.detail.value` mapping directly onto the 
 
 | # | Anti-Pattern | Violation | Correct Behavior |
 |---|---|---|---|
-| 1 | **`window` event binding for pointer drag** | Binding `pointermove`/`pointerup` on `window` is a fragile workaround. On mobile (touch), `pointercancel` fires when the finger drifts off the SVG and the drag stops mid-gesture. | Use `svgElement.setPointerCapture(event.pointerId)` on `pointerdown`. Bind `pointermove`, `pointerup`, `pointercancel` on the **SVG element** itself. Release capture in `pointerup`/`pointercancel`. Clean up in `disconnectedCallback()`. |
+| 1 | **window event binding for pointer drag** | Binding `pointermove`/`pointerup` on `window` is a fragile workaround. On mobile (touch), `pointercancel` fires when the finger drifts off the SVG and the drag stops mid-gesture. | Use `svgElement.setPointerCapture(event.pointerId)` on `pointerdown`. Bind `pointermove`, `pointerup`, `pointercancel` on the **SVG element** itself. Release capture in `pointerup`/`pointercancel`. Clean up in `disconnectedCallback()`. |
 | 2 | **Dynamic script injection for slider libraries** | Importing a third-party gauge or dial library via dynamic `import()` at runtime. | Direct mathematical trigonometry (`Math.atan2`) with DOM→SVG coordinate conversion in pure TypeScript. Keeps bundle `<30KB`. |
 | 3 | **Uncontrolled volume service flooding** | Calling `volume_set` on every `pointermove` event without rate-limiting. | Implement time throttling of `80ms` — at most one `volume_set` call per 80ms window during active drag. |
 | 4 | **Ignoring disconnected/turn-off states** | Sending commands or rendering an active dial when TV state is `off` or `unavailable`. | Draw the dial in dim grey/red with "OFFLINE" label. Disable all interactive elements (D-pad, hex sources). |

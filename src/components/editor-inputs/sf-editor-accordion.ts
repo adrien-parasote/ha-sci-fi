@@ -193,6 +193,15 @@ export class SfEditorAccordion extends LitElement {
               name="accordion-1"
               id="${checkboxId}"
               ?checked="${this.open}"
+              @change="${(e: Event) => {
+                const checked = (e.target as HTMLInputElement).checked;
+                this.open = checked;
+                this.dispatchEvent(new CustomEvent('sf-accordion-toggle', {
+                  bubbles: true,
+                  composed: true,
+                  detail: { open: checked },
+                }));
+              }}"
             />
             <label class="label" for="${checkboxId}">
               <div class="label-left">

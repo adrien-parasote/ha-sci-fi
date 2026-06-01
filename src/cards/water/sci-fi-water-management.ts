@@ -27,12 +27,28 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
   @state() private _activeFloorId: string | null = null;
   @state() private _devices: Record<string, any> = {};
   @state() private _entities: Record<string, any> = {};
+  @state() private _rawLogs: any[] = [];
+  @state() private _historyLogs: any[] = [];
+  @state() private _historyLogsLoading: boolean = false;
+  @state() private _activeFilter: 'all' | 'alerts' = 'all';
+  @state() private _expandedMap: Map<string, boolean> = new Map();
+
   declare config: SciFiWaterManagementConfig;
+  declare entityIds: string[];
+  private _fetchId: number = 0;
+
+  constructor() {
+    super();
+    this.entityIds = [];
+  }
+
 
   static override get properties() {
     return {
       hass: { type: Object },
-      config: { type: Object }
+      config: { type: Object },
+      entityIds: { type: Array },
+      expanded: { type: Boolean }
     };
   }
 
@@ -41,6 +57,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
       void this._fetchRegistry();
     }
   }
+
 
   private async _fetchRegistry() {
     try {
@@ -69,6 +86,270 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     super.setConfig(config);
     this._activeFloorId = config.first_floor_to_render ?? null;
   }
+
+  override willUpdate(changedProperties: Map<string | number | symbol, unknown>): void {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('_activeFloorId') || changedProperties.has('_entities') || changedProperties.has('_devices') || changedProperties.has('hass')) {
+      if (changedProperties.has('_activeFloorId')) {
+        // Floor changed: clear stale logs and reset accordion states
+        this._rawLogs = [];
+        this._historyLogs = [];
+        this._expandedMap = new Map();
+      }
+      if (this._activeFloorId) {
+        const waterEntities = this._getWaterEntitiesForFloor(this._activeFloorId);
+        const newEntityIds = waterEntities.map(e => e.entity_id);
+        if (JSON.stringify(this.entityIds) !== JSON.stringify(newEntityIds)) {
+          this.entityIds = newEntityIds;
+        }
+      }
+    }
+  }
+
+  protected override updated(changedProperties: Map<string | number | symbol, unknown>): void {
+    super.updated(changedProperties);
+    // Fetch history ONCE when floor changes or entityIds first becomes non-empty.
+    // Not triggered on accordion open — refresh is manual via the sync button.
+    const floorChanged = changedProperties.has('_activeFloorId');
+    const oldEntityIds = changedProperties.get('entityIds') as string[] | undefined;
+    const entityIdsPopulated = changedProperties.has('entityIds') &&
+      (!oldEntityIds || oldEntityIds.length === 0) && this.entityIds.length > 0;
+
+    if ((floorChanged || entityIdsPopulated) && this.entityIds.length > 0) {
+      void this._fetchHistoryLogs();
+    }
+  }
+
+  private _syncLogs(): void {
+    void this._fetchHistoryLogs();
+  }
+
+
+  async _fetchHistoryLogs(): Promise<void> {
+    // Clear old logs immediately to prevent stale state display while fetching or on floor switch
+    this._rawLogs = [];
+    this._historyLogs = [];
+
+    if (!this.hass) {
+      // Local Development Sandbox Mock Mode
+      this._historyLogsLoading = true;
+      await new Promise(resolve => setTimeout(resolve, 500)); // Simulated network latency
+      
+      this._rawLogs = [
+        { name: 'Arrosage Jardin', entity_id: 'switch.arrosage_terrasse', state: 'off', when: new Date(Date.now() - 15 * 60 * 1000).toISOString() },
+        { name: 'Fuite Cuisine', entity_id: 'sensor.leak_kitchen', state: 'on', when: new Date(Date.now() - 45 * 60 * 1000).toISOString(), device_class: 'moisture' },
+        { name: 'Vanne Principale', entity_id: 'switch.arrosage_haie', state: 'unavailable', when: new Date(Date.now() - 2 * 3600 * 1000).toISOString() },
+        { name: 'Remplissage Cuve', entity_id: 'switch.arrosage_terrasse', state: 'on', when: new Date(Date.now() - 4 * 3600 * 1000).toISOString() }
+      ];
+      this._historyLogsLoading = false;
+      this._applyFiltersAndLimit();
+      return;
+    }
+
+    if (!this.entityIds || this.entityIds.length === 0) {
+      this._historyLogsLoading = false;
+      return;
+    }
+
+    this._fetchId = (this._fetchId || 0) + 1;
+    const currentFetchId = this._fetchId;
+    this._historyLogsLoading = true;
+
+    // Domains that produce meaningful execution events for water management.
+    // sensor IS included: when switch/automation are excluded from recorder (common config),
+    // power/energy sensors are the best proxy for device activity (e.g. water heater on/off).
+    const MEANINGFUL_DOMAINS = new Set(['switch', 'valve', 'automation', 'binary_sensor', 'input_boolean', 'sensor']);
+
+    try {
+      const startTime = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      const callWS = (this.hass as any).callWS || this.hass.connection.sendMessagePromise.bind(this.hass.connection);
+
+      // Filter entityIds to only meaningful domains before querying
+      const queryIds = this.entityIds.filter(id => MEANINGFUL_DOMAINS.has((id.split('.')[0] as string)));
+
+      if (queryIds.length === 0) {
+        this._historyLogsLoading = false;
+        this._applyFiltersAndLimit();
+        return;
+      }
+
+      let logs: any[] = [];
+
+      try {
+        // Primary: history/history_during_period (recorder DB — records all state changes).
+        // significant_changes_only=true avoids sensor noise: only meaningful threshold crossings
+        // are returned (e.g. water heater power: 5W standby → 2000W heating).
+        const result = await callWS({
+          type: 'history/history_during_period',
+          start_time: startTime,
+          entity_ids: queryIds,
+          no_attributes: true,
+          minimal_response: true,
+          significant_changes_only: true,
+        }) as Record<string, any[]>;
+
+        for (const [entityId, states] of Object.entries(result)) {
+          if (!Array.isArray(states)) continue;
+          const stateObj = this.hass.states[entityId];
+          const name = stateObj?.attributes?.friendly_name || entityId;
+          const deviceClass = stateObj?.attributes?.device_class;
+          for (const entry of states) {
+            // minimal_response uses 's' for state, 'lu' for last_updated (Unix float)
+            const state = entry.s ?? entry.state ?? '';
+            const when = entry.lu
+              ? new Date(entry.lu * 1000).toISOString()
+              : (entry.last_changed || entry.last_updated || '');
+            if (state && when) {
+              logs.push({ entity_id: entityId, state, when, name, device_class: deviceClass });
+            }
+          }
+        }
+      } catch (histErr) {
+        // Fallback: logbook/get_events (older HA or if history API unavailable)
+        console.warn('[SciWater] history API failed, falling back to logbook:', histErr);
+        const events = await callWS({
+          type: 'logbook/get_events',
+          start_time: startTime,
+          entity_ids: queryIds,
+        });
+        if (Array.isArray(events)) {
+          logs = events.map((e: any) => ({
+            entity_id: e.entity_id,
+            state: e.state,
+            when: e.when,
+            name: e.name || this.hass.states[e.entity_id]?.attributes?.friendly_name || e.entity_id,
+            device_class: e.device_class || this.hass.states[e.entity_id]?.attributes?.device_class,
+          }));
+        }
+      }
+
+      if (this._fetchId !== currentFetchId) return; // Discard superseded response
+      this._rawLogs = logs;
+
+    } catch (err) {
+      console.warn('Sci-Fi Water: Failed to fetch history', err);
+    } finally {
+      if (this._fetchId === currentFetchId) {
+        this._historyLogsLoading = false;
+        this._applyFiltersAndLimit();
+      }
+    }
+  }
+
+  _applyFiltersAndLimit(): void {
+    let filtered = [...this._rawLogs];
+    
+    if (this._activeFilter === 'alerts') {
+      filtered = filtered.filter(log => {
+        const isWarningState = ['unavailable', 'unknown', 'problem'].includes(log.state);
+        const deviceClass = this.hass?.states[log.entity_id]?.attributes?.device_class || log.device_class;
+        const isMoistureAlert = (log.entity_id.startsWith('binary_sensor.') || log.entity_id.startsWith('sensor.')) && deviceClass === 'moisture' && log.state === 'on';
+        return isWarningState || isMoistureAlert;
+      });
+    }
+
+    // Sort in reverse-chronological order (newest first)
+    filtered.sort((a, b) => new Date(b.when).getTime() - new Date(a.when).getTime());
+
+    // Apply the 50 limit *after* filtering
+    this._historyLogs = filtered.slice(0, 50);
+  }
+
+  private _setFilter(filter: 'all' | 'alerts'): void {
+    this._activeFilter = filter;
+    this._applyFiltersAndLimit();
+  }
+
+  private _getLogStatus(log: any): 'success' | 'running' | 'warning' {
+    const isWarningState = ['unavailable', 'unknown', 'problem'].includes(log.state);
+    const deviceClass = this.hass?.states[log.entity_id]?.attributes?.device_class || log.device_class;
+    const isMoistureAlert = (log.entity_id.startsWith('binary_sensor.') || log.entity_id.startsWith('sensor.')) && deviceClass === 'moisture' && log.state === 'on';
+    
+    if (isWarningState || isMoistureAlert) {
+      return 'warning';
+    }
+    if (['on', 'active', 'open'].includes(log.state)) {
+      return 'running';
+    }
+    return 'success';
+  }
+
+  private _getLogBadge(log: any): string {
+    const status = this._getLogStatus(log);
+    if (status === 'warning') return 'WARN';
+    if (status === 'running') return 'RUN';
+    return 'OK';
+  }
+
+  private _formatTimestamp(when: string): string {
+    try {
+      const date = new Date(when);
+      const dd = String(date.getDate()).padStart(2, '0');
+      const mo = String(date.getMonth() + 1).padStart(2, '0');
+      const hh = String(date.getHours()).padStart(2, '0');
+      const mm = String(date.getMinutes()).padStart(2, '0');
+      return `${dd}/${mo} ${hh}:${mm}`;
+    } catch {
+      return '00/00 00:00';
+    }
+  }
+
+  // Render history logs filtered to a specific set of entity_ids
+  private _renderHistoryLogs(filterEntityIds: string[]): TemplateResult {
+    const filterSet = new Set(filterEntityIds);
+
+    let filtered = this._rawLogs.filter(log => filterSet.has(log.entity_id));
+    if (this._activeFilter === 'alerts') {
+      filtered = filtered.filter(log => {
+        const isWarningState = ['unavailable', 'unknown', 'problem'].includes(log.state);
+        const deviceClass = this.hass?.states[log.entity_id]?.attributes?.device_class || log.device_class;
+        const isMoistureAlert = (log.entity_id.startsWith('binary_sensor.') || log.entity_id.startsWith('sensor.')) && deviceClass === 'moisture' && log.state === 'on';
+        return isWarningState || isMoistureAlert;
+      });
+    }
+    filtered.sort((a, b) => new Date(b.when).getTime() - new Date(a.when).getTime());
+    const logs = filtered.slice(0, 50);
+
+    return html`
+      <div class="log-console">
+        <div class="log-header">
+          <span class="log-title">${msg("LOGS D'EXÉCUTION")}</span>
+          <div class="log-filters">
+            <button class="log-filter-btn ${this._activeFilter === 'all' ? 'active' : ''}" @click="${() => this._setFilter('all')}">${msg("Tout")}</button>
+            <button class="log-filter-btn ${this._activeFilter === 'alerts' ? 'active' : ''}" @click="${() => this._setFilter('alerts')}">${msg("Alertes")}</button>
+          </div>
+        </div>
+        
+        ${this._historyLogsLoading ? html`
+          <div class="log-scanner">
+            <div class="scanner-bar"></div>
+            <span>${msg("SYSTEM SCANNING...")}</span>
+          </div>
+        ` : logs.length === 0 ? html`
+          <div class="empty-log">${msg("Aucun événement enregistré.")}</div>
+        ` : html`
+          <div class="log-timeline">
+            ${logs.map(log => {
+              const status = this._getLogStatus(log);
+              const badge = this._getLogBadge(log);
+              return html`
+                <div class="log-entry" data-status="${status}">
+                  <div class="log-meta">
+                    <span class="log-time">[${this._formatTimestamp(log.when)}]</span>
+                    <span class="log-badge">${badge}</span>
+                  </div>
+                  <div class="log-content">
+                    <span class="log-text">${log.name} -> ${log.state.toUpperCase()}</span>
+                  </div>
+                </div>
+              `;
+            })}
+          </div>
+        `}
+      </div>
+    `;
+  }
+
 
   protected override getRelevantEntities(): string[] {
     const entities = new Set<string>();
@@ -249,6 +530,13 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
             ${floor.name}
           </div>
         </div>
+        <button
+          class="floor-sync-btn ${this._historyLogsLoading ? 'syncing' : ''}"
+          title="${msg('Rafraîchir les logs')}"
+          @click="${() => this._syncLogs()}"
+        >
+          <ha-icon icon="mdi:refresh"></ha-icon>
+        </button>
       </div>
     `;
   }
@@ -276,14 +564,21 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
 
     for (const devId of sortedDeviceIds) {
       const groupEntities = grouped.get(devId)!;
+      const groupEntityIds = groupEntities.map((e: any) => e.entity_id);
+      const isExpanded = this._expandedMap.get(devId) ?? false;
+
       if (devId === 'no_device') {
         groups.push(html`
           <sf-editor-accordion
             title=${msg("Automations")}
-            ?open="${true}"
+            ?open="${isExpanded}"
+            @sf-accordion-toggle="${(e: CustomEvent<{open: boolean}>) => {
+              this._expandedMap = new Map(this._expandedMap).set(devId, e.detail.open);
+            }}"
             style="margin-bottom: 12px; display: block;"
           >
-            ${repeat(groupEntities, e => e.entity_id, e => this._renderEntityRow(e))}
+            ${repeat(groupEntities, (e: any) => e.entity_id, (e: any) => this._renderEntityRow(e))}
+            ${this._renderHistoryLogs(groupEntityIds)}
           </sf-editor-accordion>
         `);
       } else {
@@ -291,10 +586,14 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
         groups.push(html`
           <sf-editor-accordion
             title="${deviceName}"
-            ?open="${true}"
+            ?open="${isExpanded}"
+            @sf-accordion-toggle="${(e: CustomEvent<{open: boolean}>) => {
+              this._expandedMap = new Map(this._expandedMap).set(devId, e.detail.open);
+            }}"
             style="margin-bottom: 12px; display: block;"
           >
-            ${repeat(groupEntities, e => e.entity_id, e => this._renderEntityRow(e))}
+            ${repeat(groupEntities, (e: any) => e.entity_id, (e: any) => this._renderEntityRow(e))}
+            ${this._renderHistoryLogs(groupEntityIds)}
           </sf-editor-accordion>
         `);
       }

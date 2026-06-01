@@ -159,11 +159,16 @@ export async function connectToHA(onLiveUpdate) {
     haConnection = await createConnection({ auth });
     haAuth = auth;
 
-    // Persist long-lived token for auto-reconnect (never expires unlike OAuth)
+    // Persist credentials for auto-reconnect on page reload
     if (tokenInput) {
+      // Long-lived token: save token + URL
       localStorage.setItem('hassToken', tokenInput);
-      localStorage.setItem('hassUrl', hassUrl);
+    } else {
+      // OAuth: only save the URL (tokens are saved by getAuth via saveTokens callback)
+      localStorage.removeItem('hassToken');
     }
+    // Always save hassUrl regardless of auth method
+    localStorage.setItem('hassUrl', hassUrl);
 
     for (const ev of ['disconnected', 'ready', 'reconnect-error']) {
       haConnection.addEventListener(ev, () => {
@@ -198,10 +203,18 @@ export function disconnectHA(onDisconnect) {
   haAuth = null;
   liveHass = null;
   isLive = false;
+  // Clear all stored credentials on explicit user disconnect
   localStorage.removeItem('hassTokens');
+  localStorage.removeItem('hassToken');
+  localStorage.removeItem('hassUrl');
+  // Clear pre-filled modal fields
+  const urlEl = document.getElementById('ha-url');
+  const tokenEl = document.getElementById('ha-token');
+  if (urlEl) urlEl.value = '';
+  if (tokenEl) tokenEl.value = '';
   setHaStatus('offline', 'Non connecté — données mockées');
   setLiveMode(false);
-  log('🔴 Déconnecté du HA — retour en mode mock', 'warn');
+  log('🔴 Déconnecté du HA — credentials effacés', 'warn');
   if (onDisconnect) onDisconnect();
 }
 
@@ -247,31 +260,73 @@ export function tryAutoReconnect(onLiveUpdate) {
         setHaStatus('offline', 'Non connecté — données mockées');
       }
     }, 100);
-  } else {
-    // Case 2: Long-lived token saved — reconnect silently
-    const savedToken = localStorage.getItem('hassToken');
-    const savedUrl = localStorage.getItem('hassUrl');
-    if (savedToken && savedUrl) {
-      log('🔄 Token long-lived trouvé — reconnexion auto…', 'info');
-      document.getElementById('ha-url').value = savedUrl;
-      document.getElementById('ha-token').value = savedToken;
-      setTimeout(async () => {
-        try {
-          const auth = {
-            data: { hassUrl: savedUrl, access_token: savedToken },
-            accessToken: savedToken,
-            expired: false,
-            refreshAccessToken: async () => { },
-          };
-          haConnection = await createConnection({ auth });
-          haAuth = auth;
-          await loadLiveData(onLiveUpdate);
-        } catch (err) {
-          log(`ℹ️ Reconnexion auto échouée : ${err} — mode mock`, 'warn');
-        }
-      }, 500);
-    }
+    return;
   }
+
+  // Case 2: Long-lived token saved — reconnect silently on page load
+  const savedToken = localStorage.getItem('hassToken');
+  const savedUrl = localStorage.getItem('hassUrl');
+
+  if (savedToken && savedUrl) {
+    // Pre-fill the modal fields so the user can click once if auto-reconnect fails
+    const urlEl = document.getElementById('ha-url');
+    const tokenEl = document.getElementById('ha-token');
+    if (urlEl) urlEl.value = savedUrl;
+    if (tokenEl) tokenEl.value = savedToken;
+
+    log('🔄 Token long-lived trouvé — reconnexion auto…', 'info');
+    setHaStatus('connecting', 'Reconnexion auto…');
+
+    setTimeout(async () => {
+      try {
+        const auth = {
+          data: { hassUrl: savedUrl, access_token: savedToken },
+          accessToken: savedToken,
+          expired: false,
+          refreshAccessToken: async () => { },
+        };
+        haConnection = await createConnection({ auth });
+        haAuth = auth;
+        log('✅ Reconnexion auto (token) réussie', 'ok');
+        await loadLiveData(onLiveUpdate);
+      } catch (err) {
+        log(`⚠️ Reconnexion auto échouée (${err}) — modal pré-rempli, clique "Se connecter"`, 'warn');
+        setHaStatus('offline', 'Non connecté — credentials sauvegardés');
+        const modal = document.getElementById('connect-modal');
+        if (modal) modal.classList.add('open');
+      }
+    }, 200);
+    return;
+  }
+
+  // Case 3: OAuth tokens saved — reconnect without re-authentication
+  // hassTokens contains the refresh token, getAuth() will use it to get a new access token.
+  const savedOAuthRaw = localStorage.getItem('hassTokens');
+  const savedOAuthUrl = savedUrl || localStorage.getItem('hassUrl');
+  if (!savedOAuthRaw || !savedOAuthUrl) return;
+
+  // Pre-fill only the URL field (no token to show for OAuth)
+  const urlEl2 = document.getElementById('ha-url');
+  if (urlEl2) urlEl2.value = savedOAuthUrl;
+
+  log('🔄 Tokens OAuth trouvés — reconnexion auto…', 'info');
+  setHaStatus('connecting', 'Reconnexion auto (OAuth)…');
+
+  setTimeout(async () => {
+    try {
+      const authOptions = getAuthOptions(savedOAuthUrl, null);
+      const auth = await getAuth(authOptions);
+      haConnection = await createConnection({ auth });
+      haAuth = auth;
+      log('✅ Reconnexion auto (OAuth) réussie', 'ok');
+      await loadLiveData(onLiveUpdate);
+    } catch (err) {
+      log(`⚠️ Reconnexion OAuth auto échouée (${err}) — clique "Se connecter"`, 'warn');
+      setHaStatus('offline', 'Non connecté — données mockées');
+      const modal = document.getElementById('connect-modal');
+      if (modal) modal.classList.add('open');
+    }
+  }, 200);
 }
 
 /** @returns {boolean} Whether currently in live mode */

@@ -1,6 +1,7 @@
 import { configureLocalization } from '@lit/localize';
 
 import { sourceLocale, targetLocales } from './locale-codes.js';
+// @ts-expect-error - generated JS file from lit-localize
 import { templates as frTemplates } from './locales/fr.js';
 
 const localizedTemplates = new Map([['fr', { templates: frTemplates }]]);

@@ -255,5 +255,10 @@
 'sfb44c671d9b9ac33': `Kilométrage`,
 'sfcb8f68fb0d89d5f': `Risque de grêle`,
 'sffb149ace1105624': `Autonomie de la batterie`,
+'sf1fba6284b519393': `LOGS D'EXÉCUTION`,
+'s5a86ddfb3a2500b5': `Tout`,
+'s1e540ef066e896e5': `Alertes`,
+'sa927ed3da4162c8b': `SYSTEM SCANNING...`,
+'s6e4e347a655e8aa2': `Aucun événement enregistré.`,
     };
   

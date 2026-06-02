@@ -6,18 +6,26 @@
  * Locale is read from hass.locale on first render (MEDIUM-02 fix — no configureLocalization overhead).
  */
 
-// ── Dev environment HMR support ────────────────────────────────────────────────
-// When the workbench reloads the bundle, it re-executes all decorators.
-// Lit's @customElement decorator calls customElements.define without checking,
-// which throws NotSupportedError. We patch define here to prevent the crash.
-const _originalDefine = customElements.define;
-customElements.define = function(name: string, constructor: CustomElementConstructor, options?: ElementDefinitionOptions) {
-  if (!customElements.get(name)) {
-    _originalDefine.call(customElements, name, constructor, options);
-  } else {
-    console.warn(`[sci-fi] Custom element ${name} is already defined. Skipping to prevent HMR crash.`);
-  }
-};
+// ── Dev environment HMR support (workbench only) ───────────────────────────────
+// In dev mode, the workbench may reload the bundle, re-executing all decorators.
+// Lit's @customElement calls customElements.define without checking first,
+// which throws NotSupportedError. We patch define ONLY in dev to prevent the crash.
+//
+// ⚠️  MUST NOT run in production: HA uses a scoped custom element registry in
+// hui-card-picker. If we intercept define globally, our wrapper sees the element
+// as "already defined" (global registry) and skips the scoped registration.
+// Result: "Custom element not found" in the card picker UI (cards can't be
+// selected from the picker, only created manually via YAML).
+if (__DEV__) {
+  const _originalDefine = customElements.define.bind(customElements);
+  customElements.define = function(name: string, constructor: CustomElementConstructor, options?: ElementDefinitionOptions) {
+    if (!customElements.get(name)) {
+      _originalDefine(name, constructor, options);
+    } else {
+      console.warn(`[sci-fi] Custom element ${name} is already defined. Skipping to prevent HMR crash.`);
+    }
+  };
+}
 
 
 // ── Styles & Components ────────────────────────────────────────────────────────

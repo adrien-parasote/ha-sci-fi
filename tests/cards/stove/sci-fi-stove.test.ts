@@ -555,7 +555,6 @@ describe('sci-fi-stove', () => {
     document.body.appendChild(el);
     await el.updateComplete;
     // No .temperature.off from pressure (only from temperature undefined)
-    const allOff = Array.from(el.shadowRoot!.querySelectorAll('.temperature.off'));
     // Temperature tiles without temp data render as .off — but the pressure tile should not
     expect(el.shadowRoot!.querySelector('sf-icon[icon="mdi:gauge"]')).not.to.be.null;
   });

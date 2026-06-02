@@ -5,6 +5,7 @@ import { log } from './console.js';
 
 let viewMode = 'card';
 let deviceSize = 'desktop';
+let orientation = 'portrait';
 
 const DEVICE_LABELS = {
   desktop: { label: null, btn: '🖥️ PC' },
@@ -19,6 +20,7 @@ const DEVICE_LABELS = {
 export function initViewModes() {
   viewMode = localStorage.getItem('wb-view-mode') || 'card';
   deviceSize = localStorage.getItem('wb-device-size') || 'desktop';
+  orientation = localStorage.getItem('wb-orientation') || 'portrait';
   return { viewMode, deviceSize };
 }
 
@@ -53,6 +55,9 @@ export function setViewMode(mode) {
   document.getElementById('btn-mode-panel').classList.toggle('active', mode === 'panel');
   // Show/hide device toggle only in Panel mode
   document.getElementById('device-toggle').classList.toggle('visible', mode === 'panel');
+  // Sync orientation toggle: only visible in panel + non-desktop
+  const showOrient = mode === 'panel' && deviceSize !== 'desktop';
+  document.getElementById('orientation-toggle').classList.toggle('visible', showOrient);
   applyDeviceHeight();
   log(`🖥️ Mode ${mode === 'panel' ? 'Panel (plein écran)' : 'Card (normal)'}`, 'info');
 }
@@ -81,9 +86,26 @@ export function setDeviceSize(size) {
   }
   const volLeft = document.getElementById('device-vol-left');
   if (volLeft) volLeft.style.display = size === 'phone' ? 'flex' : 'none';
+  // Show/hide orientation toggle (only for phone/tablet)
+  const showOrient = viewMode === 'panel' && size !== 'desktop';
+  document.getElementById('orientation-toggle').classList.toggle('visible', showOrient);
   // Sync inline height now that device has changed
   applyDeviceHeight();
-  log(`📐 Appareil : ${meta.label || 'PC — plein écran'}`, 'info');
+  log(`💰 Appareil : ${meta.label || 'PC — plein écran'}`, 'info');
+}
+
+/**
+ * Toggle device orientation (portrait / landscape).
+ * @param {'portrait'|'landscape'} orient
+ */
+export function setOrientation(orient) {
+  orientation = orient;
+  localStorage.setItem('wb-orientation', orient);
+  const viewport = document.getElementById('device-viewport');
+  viewport.classList.toggle('landscape', orient === 'landscape');
+  document.getElementById('btn-orient-portrait').classList.toggle('active', orient === 'portrait');
+  document.getElementById('btn-orient-landscape').classList.toggle('active', orient === 'landscape');
+  log(`🔄 Orientation : ${orient === 'landscape' ? 'Paysage' : 'Portrait'}`, 'info');
 }
 
 /** @returns {string} Current view mode */

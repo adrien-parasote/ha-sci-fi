@@ -1,7 +1,7 @@
 /**
  * sci-fi.ts — Entry point for sci-fi Lovelace cards v2
  *
- * Registers all 8 custom elements and declares the card types with Lovelace.
+ * Registers all 11 custom elements and declares the card types with Lovelace.
  * Chart.js is tree-shaken via Rollup (HIGH-01 fix — no CDN, no runtime require).
  * Locale is read from hass.locale on first render (MEDIUM-02 fix — no configureLocalization overhead).
  */
@@ -22,6 +22,7 @@ customElements.define = function(name: string, constructor: CustomElementConstru
 
 // ── Styles & Components ────────────────────────────────────────────────────────
 import './components/sf-icon/sf-icon.js';
+import './components/sf-icon/sci-icon.js'; // public-facing <sci-icon> element (available outside sci-fi cards)
 import './components/sf-icon/sf-iconset.js'; // registers sci: namespace with HA customIconsets
 import './components/sf-toggle-switch/sf-toggle-switch.js';
 import './components/sf-toast.js'; // global toast component used by all cards
@@ -37,6 +38,7 @@ import './cards/vacuum/sci-fi-vacuum.js';
 import './cards/vehicles/sci-fi-vehicles.js';
 import './cards/tv/sci-fi-tv.js';
 import './cards/water/sci-fi-water-management.js';
+import './cards/bridge/sci-fi-bridge.js';
  
 // ── Card Editors ──────────────────────────────────────────────────────────────
 import './cards/hexa-tiles/sci-fi-hexa-tiles-editor.js';
@@ -49,6 +51,7 @@ import './cards/vacuum/sci-fi-vacuum-editor.js';
 import './cards/vehicles/sci-fi-vehicles-editor.js';
 import './cards/tv/sci-fi-tv-editor.js';
 import './cards/water/sci-fi-water-management-editor.js';
+import './cards/bridge/sci-fi-bridge-editor.js';
 
 
 // ── Card registry for Lovelace (required for card picker UI) ──────────────────
@@ -133,6 +136,12 @@ export const CARD_REGISTRATIONS: ReadonlyArray<{ type: string } & CardRegistrati
     type: 'sci-fi-water-management',
     name: 'Sci-Fi Water Management',
     description: 'Dynamic floor-based dashboard for water management entities',
+    preview: true,
+  },
+  {
+    type: 'sci-fi-bridge',
+    name: 'Sci-Fi Bridge Overview',
+    description: 'Home dashboard overview — crew presence, alerts, access points, automations, appliances, stove, EV charging, and call kids',
     preview: true,
   },
 ];

@@ -742,3 +742,9 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Fix:** All editor labels must go through `this.getLabel('en_key')` via `SciFiBaseEditor.getLabel()`. The EN source in `msg()` inside `base-editor.ts` must be English. The FR target in `xliff/fr.xlf` must be French. Never use `msg('string_fr')` directly in an editor template.
 - **Spec enforcement:** Bridge spec §i18n and §Constraints updated to document this rule. Future editor specs must include: "Editor labels: `this.getLabel('key')` only. Never `msg('string')` in editor templates."
 
+### L085: Eliminating Custom Redundant Config Keys in Favor of Generic Panels
+- **Date:** 2026-06-02
+- **Source:** ha-sci-fi — sci-fi-bridge refactor
+- **Evidence:** Deleted `src/cards/bridge/sections/sf-bridge-call-kids.ts` and `tests/cards/bridge/sections/sf-bridge-call-kids.test.ts`. Refactored `sci-fi-bridge.ts` and `sci-fi-bridge-editor.ts` to cleanly use `actions` instead of `call_kids`. All 967 tests green.
+- **Anti-pattern:** Keeping dedicated configuration keys and custom elements for high-specificity components (e.g. `call_kids`) when a generic, modular configuration block (e.g. `actions` buttons panel) exists. This creates code duplication, multiple paths for similar UI components (buttons), and bloats the YAML schema.
+- **Fix:** Identify specialized "single-action" config components and completely sunset them. Replace them with the generic panel in the YAML schema and documentation. Update all editor schemas, cards, and test cases to use the generic layout with custom parameters (e.g. custom entity IDs, icons, and colors) in the array. Coordinate test modifications with `.tdd_lock` re-hashing to satisfy the TDD lock verification gate (`P10`).

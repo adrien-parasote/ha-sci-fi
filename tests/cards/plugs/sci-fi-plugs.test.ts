@@ -665,7 +665,6 @@ describe('sci-fi-plugs — Chart Private Methods', () => {
       'sensor.tv_power'
     );
     // No chart — history empty means no _drawChart canvas created, just msg
-    const msgContainer = card.shadowRoot!.querySelector('.msg-container');
     // It may or may not have text depending on DOM availability
     expect(card).not.to.be.null;
   });

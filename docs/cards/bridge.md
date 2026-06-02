@@ -1,6 +1,6 @@
 # 🏠 Bridge Overview (`sci-fi-bridge`)
 
-Carte dashboard maison. Affiche le statut global de la maison en temps réel — présence de l'équipage, alertes critiques, points d'accès, automatisations, électroménager, poêle, voiture et bouton d'appel enfants.
+Carte dashboard maison. Affiche le statut global de la maison en temps réel — présence de l'équipage, alertes critiques, points d'accès, automatisations, électroménager, poêle, voiture et panneau d'actions rapides.
 
 > Spec complète : [docs/specs/cards/bridge.md](../specs/cards/bridge.md)
 
@@ -24,8 +24,11 @@ type: custom:sci-fi-bridge
 type: custom:sci-fi-bridge
 persons:
   - entity: person.adrien
-call_kids:
-  entity: input_button.call_kids
+actions:
+  items:
+    - entity: input_button.call_kids
+      name: "Appeler enfants"
+      icon: "mdi:bullhorn"
 ```
 
 ### Exemple complet
@@ -92,10 +95,18 @@ vehicle:
   icon: mdi:ev-station            # optionnel
   power_sensor: sensor.ev_power
 
-call_kids:
-  entity: input_button.call_kids
-  name: Appel enfants
-  icon: mdi:bullhorn
+
+
+actions:
+  icon: mdi:lightning-bolt        # optionnel
+  items:
+    - entity: script.run_cleanup
+      name: Nettoyage
+      icon: mdi:broom
+      color: "#ff9800"            # optionnel (couleur active)
+    - entity: automation.trigger_alarm
+      name: Alarme
+      icon: mdi:alarm-light
 ```
 
 ---
@@ -113,7 +124,7 @@ Toutes les sections sont **optionnelles** — absente du YAML = non affichée (z
 | Électroménager | `appliances` | Cycles en cours (lave-linge…) + consommables (sel, rinçage…) |
 | Poêle | `stove` | Quantité pellets (barre progression), stock, état poêle |
 | Voiture | `vehicle` | Puissance de charge EV (lecture seule) |
-| Call Kids | `call_kids` | Bouton `input_button` — appuie sur un bouton HA |
+| Actions | `actions` | Panel de boutons d'actions rapides (scripts, automatisations, boutons, etc.) |
 
 ---
 

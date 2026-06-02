@@ -17,6 +17,7 @@ export class SciFiCircleProgressBar extends LitElement {
       :host {
         display: flex;
         justify-content: center;
+        background: transparent;
       }
       .container {
         display: flex;
@@ -25,6 +26,7 @@ export class SciFiCircleProgressBar extends LitElement {
         color: var(--sf-text-secondary);
         font-size: var(--sf-font-size-sm, 0.75rem);
         position: relative;
+        background: transparent;
       }
       .text {
         text-align: center;

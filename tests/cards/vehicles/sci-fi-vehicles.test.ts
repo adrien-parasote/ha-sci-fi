@@ -12,7 +12,7 @@ import { makeMockHass, makeMockEntity } from '../../fixtures/mock-hass.js';
 
 if (!customElements.get('sf-toast')) {
   customElements.define('sf-toast', class extends HTMLElement {
-    addMessage(_text: string, _error: boolean) {}
+    addMessage() {}
   });
 }
 
@@ -447,7 +447,7 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
     const el = await mountCard([V1], makeHass(mockCallService));
 
     const toast = el.shadowRoot!.querySelector('sf-toast') as any;
-    if (!toast.addMessage) toast.addMessage = (_t: string, _e: boolean) => {};
+    if (!toast.addMessage) toast.addMessage = () => {};
     const addMessageSpy = vi.spyOn(toast, 'addMessage');
 
     const startBtn = el.shadowRoot!.querySelector('sf-button-card[icon="mdi:play"]')!;
@@ -464,7 +464,7 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
     const el = await mountCard([V1], makeHass(mockCallService));
 
     const toast = el.shadowRoot!.querySelector('sf-toast') as any;
-    if (!toast.addMessage) toast.addMessage = (_t: string, _e: boolean) => {};
+    if (!toast.addMessage) toast.addMessage = () => {};
     const addMessageSpy = vi.spyOn(toast, 'addMessage');
 
     const startBtn = el.shadowRoot!.querySelector('sf-button-card[icon="mdi:play"]')!;
@@ -481,7 +481,7 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
     const el = await mountCard([V1], makeHass(mockCallService));
 
     const toast = el.shadowRoot!.querySelector('sf-toast') as any;
-    if (!toast.addMessage) toast.addMessage = (_t: string, _e: boolean) => {};
+    if (!toast.addMessage) toast.addMessage = () => {};
     const addMessageSpy = vi.spyOn(toast, 'addMessage');
 
     const stopBtn = el.shadowRoot!.querySelector('sf-button-card[icon="mdi:stop"]')!;

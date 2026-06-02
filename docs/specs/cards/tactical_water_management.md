@@ -14,7 +14,7 @@ A dynamic, spaceship-style dashboard component designed to display and manage wa
 4. **Grouped Accordions**: Entities are grouped by device. Each device gets its own `sf-editor-accordion`. Entities without a device (automations, standalone switches) are grouped under a dedicated "Automations" accordion. Each accordion manages its own expanded/collapsed state independently.
 5. **Execution Log per Accordion**: Every accordion (Automations + each device) shows a filtered execution log displaying state changes for that accordion's entities only.
 6. **History Fetch Strategy**:
-   - Fetches history **once per floor load** using `history/history_during_period` (HA recorder API, 7-day window).
+   - Fetches history **once per floor load** using `history/history_during_period` (HA recorder API). Payload must specify `start_time` as `now - 7 days` (e.g., `new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()`) and omit `end_time` to fetch up to now.
    - Falls back to `logbook/get_events` if the recorder API is unavailable.
    - Only queries meaningful domains: `switch`, `valve`, `automation`, `binary_sensor`, `sensor`.
    - Uses `significant_changes_only: true` to suppress high-frequency sensor noise.
@@ -85,6 +85,12 @@ Pour que vos équipements apparaissent automatiquement dans la carte, ils doiven
 | Ignoring missing state | Failing to render when no floors or water entities exist. | Render a graceful fallback UI. |
 
 ## Cross-Spec Contracts
+### File Tree
+```
+├── history/history_during_period [EXTERNAL]
+└── logbook/get_events [EXTERNAL]
+```
+
 ### Produces
 - None
 ### Consumes

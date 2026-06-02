@@ -417,7 +417,7 @@ describe('sci-fi-water-management', () => {
     await el.updateComplete;
 
     const toast = el.shadowRoot!.querySelector('sf-toast') as any;
-    if (!toast.addMessage) toast.addMessage = (_t: string, _e: boolean) => {};
+    if (!toast.addMessage) toast.addMessage = () => {};
     const addMessageSpy = vi.spyOn(toast, 'addMessage');
 
     el._toggleEntity('switch.valve', true, 'switch');
@@ -465,7 +465,7 @@ describe('sci-fi-water-management', () => {
     await el.updateComplete;
 
     const toast = el.shadowRoot!.querySelector('sf-toast') as any;
-    if (!toast.addMessage) toast.addMessage = (_t: string, _e: boolean) => {};
+    if (!toast.addMessage) toast.addMessage = () => {};
     const addMessageSpy = vi.spyOn(toast, 'addMessage');
 
     const fakeEvent = { target: { value: 'mode2' } } as unknown as Event;

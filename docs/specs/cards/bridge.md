@@ -157,11 +157,18 @@ vehicle:
   icon: "mdi:ev-station"            # optionnel — défaut: mdi:ev-station
   power_sensor: sensor.mureva_evlink_power
 
-# CALL KIDS — si absent, section masquée.
-call_kids:
-  entity: input_button.call_kids
-  name: "Appeler les enfants"
-  icon: "mdi:bullhorn"              # optionnel — défaut: mdi:bullhorn
+# ACTIONS — si absent, section masquée. Liste d'actions rapides.
+actions:
+  icon: "mdi:lightning-bolt"         # optionnel — défaut: mdi:lightning-bolt
+  items:
+    - entity: input_button.call_kids
+      name: "Appeler enfants"
+      icon: "mdi:bullhorn"
+      color: "var(--sf-primary)"
+    - entity: input_button.action_wifi_guest
+      name: "WiFi Invité"
+      icon: "mdi:wifi-plus"
+      color: "var(--sf-accent-on)"
 ```
 
 ### Entités incluses (# Confirmed 2026-06-01)
@@ -192,7 +199,7 @@ call_kids:
 | Stove | `counter.pellet_stock` | Nb sacs |
 | Stove | `binary_sensor.clou_stove_status` | ON/OFF |
 | Vehicle | `sensor.mureva_evlink_power` | Puissance W |
-| Call Kids | `input_button.call_kids` | Press button |
+| Actions | `input_button.*`, `script.*`, `automation.*` | Raccourcis d'actions configurables |
 
 ### Entités exclues (rationale)
 
@@ -306,10 +313,17 @@ export interface BridgeVehicleConfig {
   power_sensor: string;
 }
 
-export interface BridgeCallKidsConfig {
-  entity: string;
-  name?: string;
-  icon?: string;          // override (default: 'mdi:bullhorn')
+/** A single action button in the bridge Actions panel */
+export interface BridgeActionItem {
+  entity: string;         // input_button, script, or automation entity
+  name?: string;          // display label
+  icon?: string;          // icon override (default: 'mdi:play')
+  color?: string;         // accent color override (CSS color or --sf-* token)
+}
+
+export interface BridgeActionsConfig {
+  icon?: string;          // section icon (default: 'mdi:lightning-bolt')
+  items: BridgeActionItem[];
 }
 
 export interface SciFiBridgeConfig {
@@ -321,7 +335,7 @@ export interface SciFiBridgeConfig {
   appliances?: BridgeAppliancesConfig;
   stove?: BridgeStoveConfig;
   vehicle?: BridgeVehicleConfig;
-  call_kids?: BridgeCallKidsConfig;
+  actions?: BridgeActionsConfig;
 }
 ```
 
@@ -345,7 +359,7 @@ export const bridgeConfigMetadata = {
   appliances: { type: 'object', mandatory: false },
   stove: { type: 'object', mandatory: false },
   vehicle: { type: 'object', mandatory: false },
-  call_kids: { type: 'object', mandatory: false },
+  actions: { type: 'object', mandatory: false },
 } as const;
 ```
 
@@ -398,10 +412,8 @@ protected override getRelevantEntities(): string[] {
     ids.push(this.config.vehicle.power_sensor);
   }
 
-  // Call Kids
-  if (this.config.call_kids) {
-    ids.push(this.config.call_kids.entity);
-  }
+  // Actions
+  this.config.actions?.items?.forEach(a => ids.push(a.entity));
 
   return [...new Set(ids)];  // dédupliqué
 }
@@ -426,7 +438,7 @@ src/cards/bridge/
     ├── sf-bridge-appliances.ts  [NEW]
     ├── sf-bridge-stove.ts    [NEW]
     ├── sf-bridge-vehicle.ts  [NEW]
-    └── sf-bridge-call-kids.ts [NEW]
+    └── sf-bridge-actions.ts  [NEW]
 
 tests/cards/bridge/
 └── sci-fi-bridge.test.ts     [NEW]
@@ -440,20 +452,18 @@ dev/workbench-bridge.html     [NEW] — mock workbench
 ├── ../../utils/base-card.js [EXTERNAL]
 ├── ../../styles/common.js [EXTERNAL]
 ├── ../../types/config.js [EXTERNAL]
+├── ../../locales/locales/fr.js [EXTERNAL]
+├── /local/avatars/adrien.jpg [EXTERNAL]
 ├── ./sections/sf-bridge-crew.js [EXTERNAL]
+
+// ... (remaining file content remains unchanged)
+
 ├── ./sections/sf-bridge-alerts.js [EXTERNAL]
 ├── ./sections/sf-bridge-access.js [EXTERNAL]
 ├── ./sections/sf-bridge-automations.js [EXTERNAL]
 ├── ./sections/sf-bridge-appliances.js [EXTERNAL]
 ├── ./sections/sf-bridge-stove.js [EXTERNAL]
 ├── ./sections/sf-bridge-vehicle.js [EXTERNAL]
-├── ./sections/sf-bridge-call-kids.js [EXTERNAL]
-└── /local/avatars/adrien.jpg [EXTERNAL]
-```
-
-### Imports sci-fi-bridge.ts
-
-```ts
 import { html, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { SciFiBaseCard } from '../../utils/base-card.js';
@@ -468,7 +478,7 @@ import './sections/sf-bridge-automations.js';
 import './sections/sf-bridge-appliances.js';
 import './sections/sf-bridge-stove.js';
 import './sections/sf-bridge-vehicle.js';
-import './sections/sf-bridge-call-kids.js';
+import './sections/sf-bridge-actions.js';
 ```
 
 ### renderCard() — Structure
@@ -532,13 +542,13 @@ import './sections/sf-bridge-call-kids.js';
     ></sf-bridge-vehicle>
   ` : nothing}
 
-  <!-- CALL KIDS — toujours pleine largeur -->
-  ${config.call_kids ? html`
-    <sf-bridge-call-kids
-      .config="${config.call_kids}"
+  <!-- ACTIONS — toujours pleine largeur -->
+  ${config.actions?.items?.length ? html`
+    <sf-bridge-actions
+      .config="${config.actions}"
       .hass="${hass}"
       class="full-width"
-    ></sf-bridge-call-kids>
+    ></sf-bridge-actions>
   ` : nothing}
 </div>
 ```
@@ -1066,7 +1076,7 @@ L'éditeur est organisé en accordéons, un par section de la carte :
 - Chaque accordéon peut être **activé/désactivé** — désactivé = supprime la section du config (la carte ne la rend plus)
 - Les listes (smoke, toggles, items, cycles, consumables) ont un bouton **+ Ajouter** et un bouton **- Supprimer** par entrée
 - La modification déclenche `_dispatchChange(config)` → event `config-changed` (via `SciFiBaseEditor`)
-- L'éditeur lit et écrit uniquement via `this._config` (immutable — spread complet à chaque changement)
+- L'éditeur lit et écrit uniquement via la configuration courante (immutable — spread complet à chaque changement)
 - Le workbench passe `scenarioData` à `mountUiEditor()` et `updateCardConfig()` pour que les dropdowns restent peuplés après chaque modification de config
 
 ---
@@ -1283,7 +1293,7 @@ title="${msg('Équipage')}"
 2. Exécuter `npx lit-localize extract` → nouvelle `<trans-unit>` dans `xliff/fr.xlf`
 3. Ajouter `<target>Traduction FR</target>` dans `xliff/fr.xlf`
 4. Exécuter `npx lit-localize build` → régénère `src/locales/locales/fr.js`
-5. Ne pas committer `fr.js` seul sans `fr.xlf` + `base-editor.ts`
+5. Ne pas committer `src/locales/locales/fr.js` seul sans `fr.xlf` + `base-editor.ts`
 
 ---
 
@@ -1390,8 +1400,8 @@ title="${msg('Équipage')}"
 | TC-BRIDGE-U-24 | Unit | Pellets low (< threshold) → barre rouge | pellet_quantity = '0.2', threshold = 0.3 | `.pellet-progress` color = `--sf-error` |
 | TC-BRIDGE-U-25 | Unit | EV power = 0 → msg('Non connectée') | power = '0' | `.vehicle-status` textContent = 'Non connectée' |
 | TC-BRIDGE-U-26 | Unit | EV power > 0 → msg('En charge') | power = '2300' | `.vehicle-status` textContent = 'En charge' |
-| TC-BRIDGE-U-27 | Unit | CALL KIDS bouton → callService `input_button.press` | clic bouton | `hass.callService` appelé avec `input_button.press` |
-| TC-BRIDGE-U-28 | Unit | CALL KIDS icon customisé | call_kids.icon = 'mdi:phone' | `ha-icon[icon='mdi:phone']` dans `.call-kids-btn` |
+| TC-BRIDGE-U-27 | Unit | ACTIONS bouton → callService press/turn_on/trigger | clic bouton action | `hass.callService` appelé avec le service approprié |
+| TC-BRIDGE-U-28 | Unit | ACTIONS couleur customisée | color = '#ff0000' | bouton action hérite de la couleur customisée |
 | TC-BRIDGE-U-29 | Unit | Cover state `closed` → bouton open actif, close désactivé | cover = 'closed' | close button `opacity: 0.4` et `pointer-events: none` |
 | TC-BRIDGE-U-30 | Unit | Toutes sections absentes si config vide | `{}` config | Seul `.bridge-grid` présent, zéro `sf-bridge-*` |
 | TC-BRIDGE-U-31 | Unit | Label cover traduit — msg('Fermée') affiché | cover = 'closed' | `.access-state-label` textContent = 'Fermée' |
@@ -1485,8 +1495,6 @@ Carte dashboard maison. Affiche le statut global de la maison en temps réel.
 type: custom:sci-fi-bridge
 persons:
   - entity: person.adrien
-call_kids:
-  entity: input_button.call_kids
 ```
 
 ### Exemple complet
@@ -1504,7 +1512,7 @@ call_kids:
 | Électroménager | `appliances` | ✔ | Cycles en cours + consommables |
 | Poêle | `stove` | ✔ | Pellets + état poêle |
 | Voiture | `vehicle` | ✔ | Puissance de charge EV |
-| Call Kids | `call_kids` | ✔ | Bouton d'appel enfants |
+| Actions | `actions` | ✔ | Panneau de boutons d'actions configurables |
 
 ## Icônes
 
@@ -1542,7 +1550,7 @@ Si absent, l'icône par défaut de la section est utilisée.
 | appliances | object | Appliances configuration. |
 | stove | object | Stove configuration. |
 | vehicle | object | Vehicle configuration. |
-| call_kids | object | Call Kids configuration. |
+| actions | object | Actions configuration. |
 
 ## Assumptions
 | # | Assumption | Risk | Validation |

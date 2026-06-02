@@ -35,6 +35,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
 
   declare config: SciFiWaterManagementConfig;
   declare entityIds: string[];
+  declare expanded?: boolean;
   private _fetchId: number = 0;
 
   constructor() {
@@ -108,14 +109,16 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
 
   protected override updated(changedProperties: Map<string | number | symbol, unknown>): void {
     super.updated(changedProperties);
-    // Fetch history ONCE when floor changes or entityIds first becomes non-empty.
-    // Not triggered on accordion open — refresh is manual via the sync button.
-    const floorChanged = changedProperties.has('_activeFloorId');
-    const oldEntityIds = changedProperties.get('entityIds') as string[] | undefined;
-    const entityIdsPopulated = changedProperties.has('entityIds') &&
-      (!oldEntityIds || oldEntityIds.length === 0) && this.entityIds.length > 0;
 
-    if ((floorChanged || entityIdsPopulated) && this.entityIds.length > 0) {
+    const floorChanged = changedProperties.has('_activeFloorId');
+    const entityIdsChanged = changedProperties.has('entityIds');
+    const expandedChanged = changedProperties.has('expanded');
+
+    const shouldFetch = 
+      (expandedChanged && this.expanded === true) ||
+      (this.expanded !== false && (floorChanged || entityIdsChanged));
+
+    if (shouldFetch) {
       void this._fetchHistoryLogs();
     }
   }
@@ -535,7 +538,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
           title="${msg('Rafraîchir les logs')}"
           @click="${() => this._syncLogs()}"
         >
-          <ha-icon icon="mdi:refresh"></ha-icon>
+          <sf-icon icon="mdi:refresh" style="--icon-width:18px;--icon-height:18px;" .connection="${this.hass.connection}"></sf-icon>
         </button>
       </div>
     `;

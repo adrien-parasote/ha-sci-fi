@@ -1,69 +1,90 @@
-# Implementation Plan — Spec 12: Tactical Water Management History Log
+# Goal: Remove "call_kids" and exclusively adopt the generic "actions" section
 
-This document describes the steps to implement a futuristic, monospace automation history log within the `sci-fi-water-management` card.
+This plan describes the steps to refactor the `sci-fi-bridge` card to completely remove the dedicated, hard-coded `call_kids` component and YAML section, replacing it entirely with the more flexible, generic `actions` section (which is already implemented but needs to be the sole way of handling quick actions/buttons).
 
----
+## User Review Required
+
+> [!IMPORTANT]
+> **Breaking Change for YAML:** This completely removes the `call_kids` configuration key from the YAML schema. Any existing configuration utilizing `call_kids:` will no longer render that section. Instead, users must use the `actions:` block to define their quick buttons (including calling the kids).
+>
+> **Example Migration:**
+> ```yaml
+> # Old Configuration
+> call_kids:
+>   entity: input_button.call_kids
+>   name: "Appeler les enfants"
+>   icon: "mdi:bullhorn"
+> 
+> # New Migrated Configuration
+> actions:
+>   items:
+>     - entity: input_button.call_kids
+>       name: "Appeler enfants"
+>       icon: "mdi:bullhorn"
+>       color: "var(--sf-primary)"
+> ```
 
 ## Proposed Changes
 
-### Tactical Water Card Component
+### Configuration & Types
 
-#### [MODIFY] [sci-fi-water-management.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/water/sci-fi-water-management.ts)
-- Add reactive state properties:
-  - `@state() private _historyLogs: any[] = [];`
-  - `@state() private _historyLogsLoading: boolean = false;`
-  - `@state() private _activeFilter: 'all' | 'alerts' = 'all';`
-- Implement `_fetchHistoryLogs()` method:
-  - Fetch logs for water-labeled entities via HA `hass.callWS` using `logbook/get_events` for the past 24 hours.
-  - Filter out malformed events, limit log size to 50 entries, and sort in reverse-chronological order (newest first).
-  - Add mock events fallback when running in local development mode (no HA connection).
-- Integrate `_renderHistoryLogs()` rendering panel inside the `"Automations"` accordion.
-- Handle reactive trigger: call logbook query on active floor switch or accordion expand.
+#### [MODIFY] [config.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/types/config.ts)
+- Remove `call_kids?: BridgeCallKidsConfig;` from `SciFiBridgeConfig`.
+- Remove `BridgeCallKidsConfig` interface.
 
-#### [MODIFY] [styles.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/water/styles.ts)
-- Append all timeline, console, filters, and status badges styling:
-  - `.log-console` dashed border and glassmorphic translucent dark background.
-  - Glowing timeline vertical line and colored timeline dot bullets.
-  - Monospace font alignments and glowing color classes for status types (`[ OK ]`, `[ RUN ]`, `[ WARN ]`).
+#### [MODIFY] [config-metadata.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/bridge/config-metadata.ts)
+- Remove `call_kids` metadata key.
 
-#### [MODIFY] [water.js](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/dev/cards/water.js)
-- Extend mock scenario configurations to include realistic simulated log data for local sandbox verification.
+### Components
 
----
+#### [MODIFY] [sci-fi-bridge.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/bridge/sci-fi-bridge.ts)
+- Remove import of `./sections/sf-bridge-call-kids.js`.
+- Remove `call_kids` block from `getRelevantEntities()`.
+- Remove `call_kids` template from `renderCard()`.
+- Remove `call_kids` size offset from `getCardSize()`.
 
-## Task List Checklist (Step-by-Step)
+#### [MODIFY] [sci-fi-bridge-editor.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/bridge/sci-fi-bridge-editor.ts)
+- Remove `_renderCallKidsSection()` from `renderEditor()`.
+- Remove `_renderCallKidsSection` method completely.
 
-### Step 1: Types & API Query Interface
-- [ ] Define dynamic log interfaces in `src/types/ha.ts` or local signatures.
-- [ ] Implement robust WebSocket `logbook/get_events` call filtering by selected floor's entities.
+#### [DELETE] [sf-bridge-call-kids.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/bridge/sections/sf-bridge-call-kids.ts)
+- Delete the file entirely as the component is no longer needed.
 
-### Step 2: Styling Assets
-- [ ] Append cybernetic styled layouts for the timeline console to `src/cards/water/styles.ts`.
+### Workbench Scenario Data
 
-### Step 3: Card Integration & Client Filters
-- [ ] Implement reactive `@state` variables and UI bindings in `sci-fi-water-management.ts`.
-- [ ] Write client-side filtering logic for "All" / "Alerts" controls.
-- [ ] Implement fallback mock history data.
+#### [MODIFY] [bridge.js](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/dev/cards/bridge.js)
+- Remove mock entity `input_button.call_kids` if no longer used, or keep standard actions in `BASE_ENTITIES`.
+- Remove `call_kids` block from `scenarioMinimal._config`.
+- Remove `call_kids` block from default `config`.
+- Ensure `actions` is the sole panel with mock actions configured.
 
-### Step 4: Verification Loop
-- [ ] Write Vitest unit tests for filters, empty states, and accordion queries.
-- [ ] Launch development workbench and verify visual micro-animations and layouts.
+#### [MODIFY] [hexa.js](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/dev/cards/hexa.js)
+- If necessary, adjust any references to `input_button.call_kids` link to point to `bridge` without depending on `call_kids` section.
+
+### Specifications & Documentation
+
+#### [MODIFY] [bridge.md (Spec)](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/docs/specs/cards/bridge.md)
+- Remove `call_kids` from YAML schemas, TypeScript Interfaces, config-metadata, `getRelevantEntities`, renderCard, file tree, and Shared Artifact Schema.
+- Remove F-BR-11 and related test cases / assumptions.
+
+#### [MODIFY] [bridge.md (User Doc)](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/docs/cards/bridge.md)
+- Update user configuration guides, examples, and features table to remove `call_kids` and show the `actions` alternative instead.
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-- **Run Vitest command**:
+- Run full Vitest suite to ensure zero regressions:
   ```bash
-  npx vitest run src/cards/water
+  npx vitest run
   ```
-- **Tests covered**:
-  - Filter logic correctly displays/hides event statuses.
-  - State changes correctly trigger clean log refreshes.
-  - Time format conversions execute smoothly.
 
 ### Manual Verification
-- Deploy to local Workbench sandbox via `npm run dev`.
-- Select `Tactical Water` card tab.
-- Click and expand `Automations` accordion to inspect glowing console logs and toggle filter controls.
+- Launch local development Workbench:
+  ```bash
+  npm run dev
+  ```
+- Verify that the `Bridge Overview` card is displayed cleanly.
+- Verify that the `Call Kids` distinct panel is gone, and only the generic `Actions` panel at the bottom is shown.
+- Open the card editor and confirm the "Appeler les enfants" accordion section is gone, leaving only the "Actions" section.

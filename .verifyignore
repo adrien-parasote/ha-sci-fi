@@ -15,5 +15,8 @@ P0:dev/modules/workbench-app.js:innerHTML assignment
 # P5 Debug artifacts print statement inside utility translation script
 P5:translate_xlf.py:print()
 
+# P6 Stub Detection false positive in bridge editor
+P6:src/cards/bridge/sci-fi-bridge-editor.ts:Returns empty object
+
 # P8 Spec Conformance global false positives (e.g. templates, standard libs)
 P8:*:*

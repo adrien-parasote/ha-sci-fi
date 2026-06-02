@@ -12,7 +12,7 @@ export default {
       { standalone: true, active_icon: 'sci:landspeeder', inactive_icon: 'sci:landspeeder', name: 'Cars', state_on: ['on'], state_error: null, link: 'vehicles', entity: 'binary_sensor.captur_ii_en_charge', visibility: ['person.adrien'] },
       { entity: 'binary_sensor.eau_active', name: 'Eau', active_icon: 'mdi:water', inactive_icon: 'mdi:water-off', state_on: ['on'], link: 'water-management', standalone: true, visibility: ['person.adrien', 'person.virginie'] },
       { entity_kind: '', entities_to_exclude: [], active_icon: 'mdi:power-plug-outline', inactive_icon: 'mdi:power-plug-off-outline', name: 'Plug', state_on: ['on'], state_error: null, link: 'plug', visibility: ['person.adrien'], standalone: true, entity: 'switch.plugs' },
-      { standalone: true, active_icon: 'mdi:water', inactive_icon: 'mdi:water-outline', name: 'Hydro', state_on: ['on'], state_error: null, link: 'water', entity: 'switch.arrosage_terrasse', visibility: ['person.adrien', 'person.virginie'] }
+      { standalone: true, entity: 'input_button.call_kids', name: 'Maison', active_icon: 'mdi:home-account', inactive_icon: 'mdi:home-outline', state_on: ['unknown', 'on', 'off', 'home', 'unavailable'], state_error: null, link: 'bridge', visibility: ['person.adrien', 'person.virginie'] },
     ]
   },
   scenarios: {

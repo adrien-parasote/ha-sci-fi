@@ -17,6 +17,7 @@ export class SciFiStackBar extends LitElement {
       :host {
         display: flex;
         justify-content: center;
+        background: transparent;
       }
       .container {
         display: flex;
@@ -24,6 +25,7 @@ export class SciFiStackBar extends LitElement {
         gap: 5px;
         color: var(--secondary-bg-color, rgba(224, 232, 255, 0.6));
         font-size: var(--sf-text-sm, 12px);
+        background: transparent;
       }
       /* dark = disabled bar — matches main --secondary-light-alpha-color */
       .path {

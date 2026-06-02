@@ -63,10 +63,10 @@ const FULL_CONFIG = {
   vehicle: {
     power_sensor: 'sensor.mureva_evlink_power',
   },
-  call_kids: {
-    entity: 'input_button.call_kids',
-    name: 'Appeler',
-    icon: 'mdi:bullhorn',
+  actions: {
+    items: [
+      { entity: 'input_button.call_kids', name: 'Appeler', icon: 'mdi:bullhorn', color: 'var(--sf-primary)' },
+    ],
   },
 };
 
@@ -308,25 +308,25 @@ describe('sci-fi-bridge', () => {
     expect(el.shadowRoot!.querySelector('sf-bridge-vehicle')).not.to.be.null;
   });
 
-  it('does NOT render sf-bridge-call-kids when call_kids is absent', async () => {
+  it('does NOT render sf-bridge-actions when actions is absent', async () => {
     const el = document.createElement('sci-fi-bridge') as SciFiBridgeCard;
     (el as any).setConfig({ type: 'custom:sci-fi-bridge' });
     el.hass = makeMockHass();
     document.body.appendChild(el);
     await el.updateComplete;
-    expect(el.shadowRoot!.querySelector('sf-bridge-call-kids')).to.be.null;
+    expect(el.shadowRoot!.querySelector('sf-bridge-actions')).to.be.null;
   });
 
-  it('renders sf-bridge-call-kids when call_kids is present', async () => {
+  it('renders sf-bridge-actions when actions is present', async () => {
     const el = document.createElement('sci-fi-bridge') as SciFiBridgeCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-bridge',
-      call_kids: { entity: 'input_button.call_kids', name: 'Appeler' },
+      actions: { items: [{ entity: 'input_button.call_kids' }] },
     });
     el.hass = makeFullHass();
     document.body.appendChild(el);
     await el.updateComplete;
-    expect(el.shadowRoot!.querySelector('sf-bridge-call-kids')).not.to.be.null;
+    expect(el.shadowRoot!.querySelector('sf-bridge-actions')).not.to.be.null;
   });
 
   // ── Full render ───────────────────────────────────────────────────────────────
@@ -339,7 +339,7 @@ describe('sci-fi-bridge', () => {
     await el.updateComplete;
     const grid = el.shadowRoot!.querySelector('.bridge-grid');
     expect(grid).not.to.be.null;
-    // All 8 section components rendered
+    // All 8 section components rendered (crew + 6 columns + actions)
     expect(el.shadowRoot!.querySelector('sf-bridge-crew')).not.to.be.null;
     expect(el.shadowRoot!.querySelector('sf-bridge-alerts')).not.to.be.null;
     expect(el.shadowRoot!.querySelector('sf-bridge-automations')).not.to.be.null;
@@ -347,19 +347,19 @@ describe('sci-fi-bridge', () => {
     expect(el.shadowRoot!.querySelector('sf-bridge-appliances')).not.to.be.null;
     expect(el.shadowRoot!.querySelector('sf-bridge-stove')).not.to.be.null;
     expect(el.shadowRoot!.querySelector('sf-bridge-vehicle')).not.to.be.null;
-    expect(el.shadowRoot!.querySelector('sf-bridge-call-kids')).not.to.be.null;
+    expect(el.shadowRoot!.querySelector('sf-bridge-actions')).not.to.be.null;
   });
 
-  it('sf-bridge-crew and sf-bridge-call-kids have class full-width', async () => {
+  it('sf-bridge-crew and sf-bridge-actions have class full-width', async () => {
     const el = document.createElement('sci-fi-bridge') as SciFiBridgeCard;
     (el as any).setConfig(FULL_CONFIG);
     el.hass = makeFullHass();
     document.body.appendChild(el);
     await el.updateComplete;
     const crew = el.shadowRoot!.querySelector('sf-bridge-crew');
-    const callKids = el.shadowRoot!.querySelector('sf-bridge-call-kids');
+    const actions = el.shadowRoot!.querySelector('sf-bridge-actions');
     expect(crew?.classList.contains('full-width')).to.be.true;
-    expect(callKids?.classList.contains('full-width')).to.be.true;
+    expect(actions?.classList.contains('full-width')).to.be.true;
   });
 
   // ── getCardSize ───────────────────────────────────────────────────────────────

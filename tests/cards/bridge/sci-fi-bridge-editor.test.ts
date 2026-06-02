@@ -121,7 +121,6 @@ describe('sci-fi-bridge-editor', () => {
         },
         stove: { pellet_quantity: 'sensor.pellet', pellet_stock: 'counter.stock', status: 'binary_sensor.smoke_salon' },
         vehicle: { power_sensor: 'sensor.pellet' },
-        call_kids: { entity: 'input_button.call_kids', name: 'Appeler' },
         actions: { items: [{ entity: 'input_button.call_kids' }] },
       });
       el.hass = makeEditorHass();
@@ -611,45 +610,6 @@ describe('sci-fi-bridge-editor', () => {
     it('renders vehicle section when vehicle is in config', async () => {
       const el = makeEditorEl();
       el.setConfig({ type: 'custom:sci-fi-bridge', vehicle: { power_sensor: 'sensor.pellet' } });
-      el.hass = makeEditorHass();
-      document.body.appendChild(el);
-      await el.updateComplete;
-      expect(el.shadowRoot).not.to.be.null;
-    });
-  });
-
-  // ── 11. Call Kids ─────────────────────────────────────────────────────────────
-
-  describe('Call Kids', () => {
-    it('_enableSection("call_kids") dispatches config with call_kids section initialized', async () => {
-      const el = makeEditorEl();
-      el.setConfig({ type: 'custom:sci-fi-bridge' });
-      el.hass = makeEditorHass();
-
-      const received = await mountAndListen(el, (e) =>
-        e._enableSection('call_kids', { entity: '' })
-      );
-
-      expect(received.call_kids).not.to.be.undefined;
-      expect(received.call_kids.entity).to.equal('');
-    });
-
-    it('_disableSection("call_kids") dispatches config without call_kids key', async () => {
-      const el = makeEditorEl();
-      el.setConfig({ type: 'custom:sci-fi-bridge', call_kids: { entity: 'input_button.call_kids' } });
-      el.hass = makeEditorHass();
-
-      const received = await mountAndListen(el, (e) => e._disableSection('call_kids'));
-
-      expect(received.call_kids).to.be.undefined;
-    });
-
-    it('renders call_kids section when call_kids is in config', async () => {
-      const el = makeEditorEl();
-      el.setConfig({
-        type: 'custom:sci-fi-bridge',
-        call_kids: { entity: 'input_button.call_kids', name: 'Appeler' },
-      });
       el.hass = makeEditorHass();
       document.body.appendChild(el);
       await el.updateComplete;

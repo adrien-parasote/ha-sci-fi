@@ -199,7 +199,6 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
         ${this._renderAppliancesSection()}
         ${this._renderStoveSection()}
         ${this._renderVehicleSection()}
-        ${this._renderCallKidsSection()}
         ${this._renderActionsSection()}
       </div>
     `;
@@ -214,7 +213,7 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
       .filter(e => e.entity_id.startsWith('person.'))
       .map(e => ({
         entityId: e.entity_id,
-        friendlyName: (e.attributes['friendly_name'] as string | undefined) ?? e.entity_id,
+        friendlyName: (e.attributes['friendly_name']) ?? e.entity_id,
         entityPicture: (e.attributes['entity_picture'] as string | undefined) ?? null,
       }));
   }
@@ -795,45 +794,7 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
     `;
   }
 
-  // ── CALL KIDS ───────────────────────────────────────────────────────────────
 
-  private _renderCallKidsSection(): TemplateResult {
-    const callKids = this._config.call_kids;
-    const enabled = !!callKids;
-    const buttons = this._entitiesByDomain('input_button');
-
-    return html`
-      <sf-editor-accordion title="${this.getLabel('action-call-children')}" icon="mdi:bullhorn" ?open="${enabled}">
-        <div class="panel">
-          ${enabled && callKids ? html`
-            <sf-editor-dropdown-entity
-              .label="${this.getLabel('input-input-button-entity')}"
-              .value="${callKids.entity}"
-              .items="${buttons}"
-              @input-update="${(e: CustomEvent) => { const c = this._getNewConfig<SciFiBridgeConfig>(); this._dispatch({ ...c, call_kids: { ...c.call_kids!, entity: e.detail.value } }); }}"
-            ></sf-editor-dropdown-entity>
-            <div class="field-row">
-              <sf-editor-input
-                .label="${this.getLabel('input-button-text')}"
-                .value="${callKids.name ?? ''}"
-                @input-update="${(e: CustomEvent) => { const c = this._getNewConfig<SciFiBridgeConfig>(); this._dispatch({ ...c, call_kids: { ...c.call_kids!, name: e.detail.value || undefined } }); }}"
-              ></sf-editor-input>
-              <sf-editor-dropdown-icon
-                .label="${this.getLabel('input-icon-optional')}"
-                .value="${callKids.icon ?? ''}"
-                @input-update="${(e: CustomEvent) => { const c = this._getNewConfig<SciFiBridgeConfig>(); this._dispatch({ ...c, call_kids: { ...c.call_kids!, icon: e.detail.value || undefined } }); }}"
-              ></sf-editor-dropdown-icon>
-            </div>
-            <div class="btn-row">
-              <button class="btn-action" @click="${() => this._disableSection('call_kids')}">✕ ${this.getLabel('action-disable')}</button>
-            </div>
-          ` : html`
-            <button class="btn-add" @click="${() => this._enableSection('call_kids', { entity: '' })}">▶ ${this.getLabel('action-enable-section')}</button>
-          `}
-        </div>
-      </sf-editor-accordion>
-    `;
-  }
 
   // ── ACTIONS ─────────────────────────────────────────────────────────────────
 

@@ -1406,15 +1406,9 @@ Après la ligne `| 💧 **Water Management** | ... |`, ajouter :
 | 🛠️ **Bridge Overview** | Dashboard maison — équipage, alertes, accès, automatisations, électroménager, poêle, voiture | [→ docs](./docs/cards/bridge.md) |
 ```
 
-#### 2. Mettre à jour les badges tests + coverage
+#### 2. Badges tests + coverage — ✅ Complété (2026-06-02)
 
-Les deux badges en haut du README font référence à un nombre de tests fixé (`566 passing`) et un taux de coverage (`86%`). Après les tests Bridge :
-
-- Mettre à jour `tests-566%20passing` avec le nouveau total (`npm test -- --reporter=verbose 2>&1 | grep "tests"` pour récupérer le chiffre)
-- Mettre à jour `coverage-86%25` avec le nouveau taux (`npm run test:coverage` → ligne Summary)
-
-> [!NOTE]
-> Le format du badge est `![Tests](https://img.shields.io/badge/tests-<N>%20passing-brightgreen)`. Remplacer `<N>` par le compte exact après le build.
+> Badges mis à jour dans `README.md` : `tests-953%20passing` et `coverage-87%25`.
 
 ### CHANGELOG.md — À modifier
 
@@ -1423,7 +1417,7 @@ Les deux badges en haut du README font référence à un nombre de tests fixé (
 Ajouter une section v1.3 en tête du CHANGELOG (après l'en-tête, avant la section v1.2 ou v1.0 existante) :
 
 ```markdown
-## v1.3 — 2026-XX-XX *(Bridge Overview)*
+## v1.3 — 2026-06-02 *(Bridge Overview)*
 
 ### 🏠 Bridge Overview — nouvelle carte
 
@@ -1436,9 +1430,9 @@ Ajouter une section v1.3 en tête du CHANGELOG (après l'en-tête, avant la sect
 - **Workbench** : 5 scénarios mockés (Normal, Alerte, Absent, Déconnecté, Minimal). Le workbench passe `scenarioData` à l'éditeur pour maintenir les entités après chaque modification de config.
 ```
 
-### docs/cards/bridge.md — À créer
+### docs/cards/bridge.md — ✅ Créé (2026-06-02)
 
-**Fichier :** `docs/cards/bridge.md` (NEW)
+**Fichier :** `docs/cards/bridge.md` (créé le 2026-06-02)
 
 La page de documentation utilisateur (référencée depuis README). Elle doit contenir :
 

@@ -78,7 +78,7 @@ Merge v1.0.0-wip → main + tag v1.0.0
 | Spec 02 | Spec 03, 04, 05 | `types/ha.ts`, `types/config.ts`, `selectors/*.ts` |
 | Spec 03 | Spec 04, 05 | `SciFiBaseCard`, `SciFiBaseEditor`, styles partagés |
 | Spec 04 | Spec 05 | `sf-icon`, `sf-radiator` (4 composants), `sf-toggle-switch`, etc. |
-| Spec 05 | Spec 06 | 8 cards auto-enregistrées via `@customElement` |
+| Spec 05 | Spec 06 | 11 cards auto-enregistrées via `customElements.define` (HMR-safe guard dans `sci-fi.ts`) |
 | Spec 06 | HA Dashboard | `dist/sci-fi.min.js` |
 
 ---

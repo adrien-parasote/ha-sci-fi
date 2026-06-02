@@ -3,8 +3,8 @@
 [![HACS: Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
 [![Last commit](https://img.shields.io/github/last-commit/adrien-parasote/ha-sci-fi)](#)
 [![Current version](https://img.shields.io/github/v/release/adrien-parasote/ha-sci-fi)](https://github.com/adrien-parasote/ha-sci-fi/releases/latest)
-[![Tests](https://img.shields.io/badge/tests-566%20passing-brightgreen)](#)
-[![Coverage](https://img.shields.io/badge/coverage-86%25-brightgreen)](#)
+[![Tests](https://img.shields.io/badge/tests-953%20passing-brightgreen)](#)
+[![Coverage](https://img.shields.io/badge/coverage-87%25-brightgreen)](#)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](#)
 [![Lit](https://img.shields.io/badge/Lit-3.x-blueviolet)](#)
 [![i18n](https://img.shields.io/badge/i18n-FR%20%7C%20EN-informational)](#)
@@ -13,7 +13,7 @@ A collection of custom Lovelace cards for a minimalist sci-fi dashboard in Home 
 The goal: a single phone entry point to control your entire home.
 
 > [!IMPORTANT]
-> **v1.0.0 — State-of-the-Art Urbanization & Performance Update** (Lit 3 · TypeScript 5 · zero CDN · 566 tests · 100% TDD file matching · 86% line coverage · selective HA rendering).  
+> **v1.3.0 — Bridge Overview + Water Management + i18n full** (Lit 3 · TypeScript 5 · zero CDN · 953 tests · 87% line coverage · Bridge Overview card with 8 optional sections · Water Management card).  
 > Upgrading? See **[MIGRATION.md](./docs/MIGRATION.md)** for breaking changes and YAML configurations mapping.
 
 ---
@@ -54,17 +54,17 @@ The goal: a single phone entry point to control your entire home.
 
 | Card | Description | Docs |
 |---|---|---|
+| 🏠 **Bridge Overview** | Home dashboard — crew, alerts, access, automations, appliances, stove, vehicle, call kids | [→ docs](./docs/cards/bridge.md) |
 | ⬡ **Hexa-Tiles** | Hexagonal dashboard overview — person, weather, entity tiles | [→ docs](./docs/cards/hexa-tiles.md) |
 | 💡 **Lights** | Auto-discovers lights, groups by floor/area | [→ docs](./docs/cards/lights.md) |
 | 🌦️ **Weather** | Current conditions + hourly chart + daily forecast | [→ docs](./docs/cards/weather.md) |
 | 🌡️ **Climates** | Radiator controls grouped by floor/area | [→ docs](./docs/cards/climates.md) |
 | 🔌 **Plugs** | Active power usage grouped by floor/area | [→ docs](./docs/cards/plugs.md) |
 | 🔥 **Stove** | Pellet stove real-time states and dashboard | [→ docs](./docs/cards/stove.md) |
-| 📺 **TV** | Quick-select media and remote controls | [→ docs](./docs/cards/tv.md) |
+| 📺 **TV Remote** | Concentric radar volume dial, D-pad with custom actions, quick source select | [→ docs](./docs/cards/tv.md) |
 | 🧹 **Vacuum** | State tracking, segments cleaning, maintenance stats | [→ docs](./docs/cards/vacuum.md) |
 | 🚗 **Vehicles** | Battery, range, lock status and quick actions | [→ docs](./docs/cards/vehicles.md) |
 | 💧 **Water Management** | Centralized water heating and valve controls | [→ docs](./docs/cards/water.md) |
-| 📺 **TV Remote** | Concentric radar volume dial, D-pad with custom actions, and quick source select | [→ docs](./docs/cards/tv.md) |
 
 ---
 
@@ -107,7 +107,7 @@ Animated and static icons loaded via the HA native icon registry — **no CDN, w
 
 ```bash
 npm install          # install deps
-npm test             # run 566 tests (Vitest + happy-dom)
+npm test             # run 953 tests (Vitest + happy-dom)
 npm run typecheck    # TypeScript strict check
 npm run lint         # ESLint
 npm run build        # produce dist/sci-fi.min.js
@@ -199,7 +199,7 @@ To add a language:
 - Full FR translation map restored (`src/locales/locales/fr.ts` — 170+ entries)
 
 #### 🧪 Tests & coverage
-- **566 tests** — 100% TDD file-matching test coverage (every source module has a test file), securing **86% line coverage**, validated under a strict `.tdd_lock` sequence.
+- **953 tests** — 87 test files, 100% TDD file-matching (every source module has a test file), securing **87% line coverage** / **75.5% branch coverage** / **82.6% function coverage**, validated under a strict `.tdd_lock` sequence.
 - **Vitest & happy-dom**: Fully compliant with browser DOM mock setups, covering all reactive local and dynamic translations.
 
 ---

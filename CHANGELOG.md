@@ -1,30 +1,34 @@
 # Changelog
 
-# [1.3.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.3.1) - 2026-06-02
+# [1.3.0](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.3.0) - 2026-06-02
 
-## 🐛 Fixes
-- **Bridge editor — workbench blank panel**: GUI editor was empty when navigating to Bridge Overview in Edit mode. Two root causes fixed: (1) mock hass states did not include `entity_id` as a property on each state object — any editor calling `Object.values(hass.states).filter(e => e.entity_id…)` crashed with `TypeError: Cannot read properties of undefined ('startsWith')`; (2) switching from YAML tab back to GUI tab did not remount the editor.
-- **Workbench — mock-hass entity_id**: `buildMockHass` now normalizes all states to always include `entity_id` on each entry (matching real HA `hass.states` behaviour). Fixes all current and future editors that read `entity_id` from entity objects.
-- **Workbench — GUI editor remount**: clicking "Éditeur graphique" tab now remounts the editor if `gui-editor-mount` is empty (e.g. after switching to YAML tab or on page reload in Edit mode).
+## 🆕 What's New
 
-## 📚 Docs
-- `docs/cards/bridge.md` created — user documentation page for the Bridge Overview card (was referenced by README but missing).
-- README updated: tests 566→953, coverage 86%→87%, v1.0.0→v1.3.0 callout, cards table corrected (11 cards, Bridge added, duplicate TV removed).
-
+- **Workbench — Icon Browser**: new integrated icon browser in the workbench dev tool. Browse and copy `sci:` custom icons and `mdi:` icons inline without leaving the page. Includes the HA entity picker API integration.
 
 ## 💫 Enhancements
-- **Water card — per-accordion execution logs**: every accordion (Automations and each device group) now displays its own filtered execution history, showing only state changes relevant to that section's entities.
-- **Water card — HA Recorder API**: migrated from `logbook/get_events` to `history/history_during_period` (recorder database). Bypasses domain-level logbook exclusions and returns full state-change history for switches, automations, valves, and sensors. Falls back to logbook API on older HA versions.
-- **Water card — manual sync button**: replaced automatic refetch-on-accordion-open with a single fetch at floor load and a `mdi:refresh` button in the floor bar. Icon spins during loading.
-- **Water card — mobile layout**: execution log entries no longer truncate on narrow screens — timestamp+badge on one line, entity name and state on the next, with full word wrapping.
-- **Water card — floor bar alignment**: floor name and sync button are now correctly vertically centered in a horizontal row.
+
+- **Bridge card — actions section**: removed legacy `call_kids` component; replaced by a clean, decoupled `actions` section in the YAML config.
 
 ## 🐛 Fixes
-- **Water card**: fix accordion double-click bug caused by a conflict between the native `label+checkbox` toggle and the Lit `@click` listener. Fixed by dispatching a `sf-accordion-toggle` custom event from the checkbox `@change` handler.
-- **Water card**: each accordion now tracks its own open/closed state via `_expandedMap: Map<string, boolean>` instead of a shared boolean — switching floors correctly resets all accordion states independently.
+
+- **i18n — Bridge editor**: migrate all FR `msg()` calls to `getLabel()` with EN keys. Adds 55 missing FR translation entries.
+- **i18n — Stove**: add missing `section-title-stove` key to the `getLabel` dictionary.
+- **Workbench — mock hass `entity_id`**: `buildMockHass` now injects `entity_id` on all mock state objects, fixing editors that call `Object.values(hass.states).filter(e => e.entity_id…)`.
+- **Workbench — GUI editor remount**: switching back from YAML tab to GUI tab now correctly remounts the editor.
 
 ## 🛠️ Technical
-- Workbench refactored into modular ES modules.
+
+- Coverage: tests added to meet 80%/75% branch/function thresholds.
+- Codemaps updated for Bridge v1.3 cycle.
+
+## 📚 Docs
+
+- Full documentation audit: language consistency (EN), urbanization, and structural alignment across all specs, ADRs, blueprints, cards, and codemaps.
+- All card docs (`docs/cards/`) rewritten with accurate field names (verified against `src/types/config.ts`), complete options tables, and standard format.
+- `docs/cards/guidelines.md` relocated to `docs/guidelines.md` (developer reference, not a card usage doc).
+- Spec Gate: 202 PASS / 0 PARTIAL / 0 FAIL across all 202 spec checks.
+
 
 # [1.2.3](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.2.3) - 2026-05-29
 

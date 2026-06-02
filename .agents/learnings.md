@@ -684,3 +684,27 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Evidence:** Subagent used `querySelector('#connect-modal .btn-ghost')` to find the cancel button, but the HTML template already had `id="btn-connect-cancel"` on that element. The `.btn-ghost` selector is fragile — any CSS refactoring that changes the class name silently breaks the listener. Bug caught during review.
 - **Anti-pattern:** Using `querySelector()` with CSS class selectors to bind event listeners when the target element already has a unique ID. Class selectors couple JS behavior to CSS styling — renaming a class for visual reasons silently breaks functionality.
 - **Fix:** When binding event listeners in modular JS (not inline `onclick`), always use `getElementById('btn-xxx')` over `querySelector('.class')` when the element has an ID. IDs express intent ("this is the cancel button") while classes express presentation ("this button looks ghostly"). Reserve `querySelector` for cases where no ID exists or when selecting by structural position.
+
+### L078: Workbench Editor Breaks After Config Update When `scenarioData` Is Not Passed to `mountUiEditor`
+- **Date:** 2026-06-02
+- **Source:** ha-sci-fi — sci-fi-bridge-editor + workbench editor.js
+- **Evidence:** After every GUI config change in the workbench, all entity dropdowns emptied and the card preview reset to "empty state". Root cause: `updateCardConfig` rebuilt `mockHass` with `{}` instead of the current `scenarioData`. Reproduced consistently, fixed by threading `currentScenarioData` through `workbench-app.js → editor.js → updateCardConfig → mountUiEditor`.
+- **Anti-pattern:** Calling `mountUiEditor(cardTag, config)` or `updateCardConfig(config)` without passing the current scenario's mock entity states. The function reinitializes `mockHass` from scratch — any scenario state is lost, causing all `sf-editor-dropdown-entity` fields to appear empty and the card to render its empty-state fallback.
+- **Fix:** Store `currentScenarioData` at module level in `workbench-app.js`. Pass it to every call of `mountUiEditor` and `updateCardConfig`. Signature: `mountUiEditor(cardTag, config, scenarioData)` / `updateCardConfig(newConfig, scenarioData)`. Document this contract in the workbench spec: *"Every GUI-triggered config update MUST forward scenarioData or the editor will visually break."*
+- **Scope:** Applies to all future workbench card editors. Add to `docs/specs/09_workbench_editor_i18n.md` as an anti-pattern.
+
+### L079: happy-dom Clamps `input[type=range]` Invalid Values — Test NaN Guards via Direct Method Call
+- **Date:** 2026-06-02
+- **Source:** ha-sci-fi — sf-bridge-automations test (NaN slider guard)
+- **Evidence:** Test attempted `input.value = 'not_a_number'` on a `<input type="range">` in happy-dom. happy-dom (like real browsers) silently clamps any invalid value to the nearest valid number (min or mid). The NaN guard in `_onSliderInput` (`if (isNaN(val)) return;`) was never exercised, leaving a coverage gap.
+- **Anti-pattern:** Writing tests for input validation guards by setting `.value` on `<input type="range">` to an invalid string. The DOM clamps the value before the JS handler fires — the guard is never reached via this method.
+- **Fix:** Call the handler directly with a synthetic event object carrying the invalid value: `(el as any)._onSliderInput({ target: { value: 'NaN' } })`. This bypasses DOM clamping and exercises the guard. Document in specs: *"For `<input type=range>` NaN guards: test via direct method call with synthetic event, not via DOM `.value` assignment."*
+- **Scope:** Applies to all LitElement components with `<input type="range">` + NaN/invalid input guards. Reproducible in vitest/happy-dom and jsdom.
+
+### L080: Spec Drift Accumulates Silently When Editor Components Are Migrated Mid-Cycle
+- **Date:** 2026-06-02
+- **Source:** ha-sci-fi — docs/specs/cards/bridge.md + /doc-update
+- **Evidence:** bridge.md §Editor listed `<ha-entity-picker>`, `<ha-textfield>`, `<ha-select>`, `<ha-expansion-panel>` — all HA native components. The actual implementation used `<sf-editor-dropdown-entity>`, `<sf-editor-input>`, `<sf-editor-dropdown-icon>`, `<sf-editor-dropdown>`, `<sf-editor-accordion>` (migrated during the session). The spec was never updated. Discovered only during /doc-update.
+- **Anti-pattern:** Migrating editor component implementations (HA native → SF custom) without immediately updating the spec's "Components Used" table. The spec becomes fiction within 1 commit. Future agents reading the spec will implement new editors using the wrong (stale) components.
+- **Fix:** When migrating the component family used by an editor (e.g., from `ha-*` to `sf-editor-*`), the spec update MUST be part of the same commit as the implementation change. Add to the HARDEN checklist: *"If editor components changed: update spec §Components table in same PR."* The /doc-update at end-of-session is a safety net, not a substitute.
+- **Scope:** Universal — applies to any project where a spec documents the UI component library used by an editor or form.

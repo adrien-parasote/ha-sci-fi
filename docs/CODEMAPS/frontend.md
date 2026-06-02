@@ -1,10 +1,11 @@
-<!-- Generated: 2026-05-29 | Files scanned: ~69 | Token estimate: ~425 -->
+<!-- Generated: 2026-06-02 | Files scanned: ~95 | Token estimate: ~450 -->
 
 # ha-sci-fi Frontend Codemap
 
 ## Custom Cards
 All cards register as standard web components and are bound in `src/sci-fi.ts`.
 *(Note: `src/sci-fi.ts` contains an HMR protection patch for `customElements.define` to prevent duplicate registration crashes during dev/workbench reloads)*
+- **Bridge Overview:** `sci-fi-bridge` / `sci-fi-bridge-editor` — 8 sections indépendantes dans `src/cards/bridge/sections/`
 - **Climates:** `sci-fi-climates` / `sci-fi-climates-editor`
 - **Hexa Tiles:** `sci-fi-hexa-tiles` / `sci-fi-hexa-tiles-editor`
 - **Lights:** `sci-fi-lights` / `sci-fi-lights-editor`
@@ -17,8 +18,8 @@ All cards register as standard web components and are bound in `src/sci-fi.ts`.
 - **Weather:** `sci-fi-weather` / `sci-fi-weather-editor`
 
 ## Base Classes
-- `BaseCard` (in `src/utils/base-card.ts`) → Core Home Assistant `hass` state proxy, error boundaries, Lit `update()` overrides.
-- `BaseEditor` (in `src/utils/base-editor.ts`) → HA form schema wrapper, configuration dispatcher (`config-changed` event).
+- `SciFiBaseCard` (in `src/utils/base-card.ts`) → Core Home Assistant `hass` state proxy, error boundaries, Lit `update()` overrides.
+- `SciFiBaseEditor` (in `src/utils/base-editor.ts`) → Configuration dispatcher (`config-changed` via `_dispatchChange()`). All editors extend this class.
 
 ## Components Hierarchy
 - **Icons (`sf-icon/`)**

@@ -708,3 +708,19 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Anti-pattern:** Migrating editor component implementations (HA native → SF custom) without immediately updating the spec's "Components Used" table. The spec becomes fiction within 1 commit. Future agents reading the spec will implement new editors using the wrong (stale) components.
 - **Fix:** When migrating the component family used by an editor (e.g., from `ha-*` to `sf-editor-*`), the spec update MUST be part of the same commit as the implementation change. Add to the HARDEN checklist: *"If editor components changed: update spec §Components table in same PR."* The /doc-update at end-of-session is a safety net, not a substitute.
 - **Scope:** Universal — applies to any project where a spec documents the UI component library used by an editor or form.
+
+### L081: Mock Hass States Missing `entity_id` Property Causes Editor Crash
+- **Date:** 2026-06-02
+- **Source:** ha-sci-fi — sci-fi-bridge-editor + dev/modules/mock-hass.js
+- **Evidence:** Bridge editor rendered blank. Console error: `TypeError: Cannot read properties of undefined (reading 'startsWith')` in `_hassPersons` getter. Root cause: `buildMockHass` constructed state objects as `{ state, attributes }` without `entity_id` as a property — the entity ID was only the dict key. Real HA `hass.states` always includes `entity_id` on each entity object. The hexa-tiles editor didn't crash because it accessed states by key (not by iterating values with `.entity_id`).
+- **Anti-pattern:** Building mock `hass.states` where state objects lack `entity_id` as a property. Any component that calls `Object.values(hass.states).filter(e => e.entity_id.startsWith(...))` will crash with `TypeError` at runtime — silently, in a Lit async render, making the editor appear blank with no visible error in the workbench console.
+- **Fix:** In `buildMockHass`, normalize ALL states after `resolveScenario` to inject `entity_id: key` on every entry that doesn't already have it. Use: `Object.fromEntries(Object.entries(rawStates).map(([id, s]) => [id, s?.entity_id ? s : { ...s, entity_id: id }]))`. Mirror real HA: every `hass.states[entityId]` object includes `entity_id` as a field.
+- **Scope:** Applies to any workbench mock hass implementation. Add to `dev/modules/mock-hass.js` contract: *"All state objects MUST include `entity_id` as a property (not just as a dict key)."* Pattern to reproduce: always normalize states at the `buildMockHass` output boundary.
+
+### L082: GUI Editor Tab Switch Does Not Remount Editor When Panel Was Populated by a Different Code Path
+- **Date:** 2026-06-02
+- **Source:** ha-sci-fi — dev/modules/workbench-app.js + editor.js
+- **Evidence:** Bridge editor was blank after switching from YAML tab back to GUI tab. `mountUiEditor` was only called inside `renderCard` (triggered on card/scenario change). Clicking "Éditeur graphique" called only `setEditTab('gui')` — which showed the `gui-editor-mount` div, but it was empty because no editor had been mounted for that code path.
+- **Anti-pattern:** Calling `mountUiEditor` only from the card render path, assuming the GUI tab will always be entered fresh after a card change. Any code path that shows the GUI panel without going through `renderCard` (e.g., tab switch, page reload with persisted state) leaves `gui-editor-mount` empty.
+- **Fix:** On GUI tab click, check if `gui-editor-mount.firstChild` is null. If empty, call `mountUiEditor` with current `currentCard`, `activeConfig`, and `currentScenarioData`. This covers: (1) switching from YAML tab, (2) initial load in edit mode when no card change has been triggered.
+- **Scope:** Applies to any workbench-style editor where multiple tabs share a lazy-mounted panel. Pattern: *"Tab activation handlers must defensively check if their lazy mount point is populated, and remount if empty."*

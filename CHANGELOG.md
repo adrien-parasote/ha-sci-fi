@@ -1,6 +1,16 @@
 # Changelog
 
-# [1.2.4](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.2.4) - 2026-06-01
+# [1.3.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.3.1) - 2026-06-02
+
+## 🐛 Fixes
+- **Bridge editor — workbench blank panel**: GUI editor was empty when navigating to Bridge Overview in Edit mode. Two root causes fixed: (1) mock hass states did not include `entity_id` as a property on each state object — any editor calling `Object.values(hass.states).filter(e => e.entity_id…)` crashed with `TypeError: Cannot read properties of undefined ('startsWith')`; (2) switching from YAML tab back to GUI tab did not remount the editor.
+- **Workbench — mock-hass entity_id**: `buildMockHass` now normalizes all states to always include `entity_id` on each entry (matching real HA `hass.states` behaviour). Fixes all current and future editors that read `entity_id` from entity objects.
+- **Workbench — GUI editor remount**: clicking "Éditeur graphique" tab now remounts the editor if `gui-editor-mount` is empty (e.g. after switching to YAML tab or on page reload in Edit mode).
+
+## 📚 Docs
+- `docs/cards/bridge.md` created — user documentation page for the Bridge Overview card (was referenced by README but missing).
+- README updated: tests 566→953, coverage 86%→87%, v1.0.0→v1.3.0 callout, cards table corrected (11 cards, Bridge added, duplicate TV removed).
+
 
 ## 💫 Enhancements
 - **Water card — per-accordion execution logs**: every accordion (Automations and each device group) now displays its own filtered execution history, showing only state changes relevant to that section's entities.

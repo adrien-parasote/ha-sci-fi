@@ -971,33 +971,6 @@
 <trans-unit id="s2333784a4676c1b8">
   <source>Option changed</source>
 <target>Option modifiée</target></trans-unit>
-<trans-unit id="s329484f40510c195">
-  <source>Activer la section</source>
-<target>Activer la section</target></trans-unit>
-<trans-unit id="scc29a96b1e53b79d">
-  <source>Icône section</source>
-<target>Icône section</target></trans-unit>
-<trans-unit id="s28c56923061b7dc5">
-  <source>Détecteurs fumée</source>
-<target>Détecteurs fumée</target></trans-unit>
-<trans-unit id="s3763ff19c347baf5">
-  <source>Nom</source>
-<target>Nom</target></trans-unit>
-<trans-unit id="s9b5892dadc0cae56">
-  <source>Icône</source>
-<target>Icône</target></trans-unit>
-<trans-unit id="sadb323d8f614cb46">
-  <source>Switch sirènes (optionnel)</source>
-<target>Switch sirènes (optionnel)</target></trans-unit>
-<trans-unit id="sac860d9b9c955a70">
-  <source>Toggles alertes</source>
-<target>Toggles alertes</target></trans-unit>
-<trans-unit id="s7cee5ba04dd0b5b7">
-  <source>Verrou (optionnel)</source>
-<target>Verrou (optionnel)</target></trans-unit>
-<trans-unit id="s8dedd12d7c5ca3d1">
-  <source>Désactiver</source>
-<target>Désactiver</target></trans-unit>
 <trans-unit id="s2729d39ee6c0cca5">
   <source>Toggle</source>
 <target>Toggle</target></trans-unit>
@@ -1010,51 +983,6 @@
 <trans-unit id="sd9994f251f1280cf">
   <source>Step</source>
 <target>Step</target></trans-unit>
-<trans-unit id="s0b37a6b50ce6ffea">
-  <source>Unité</source>
-<target>Unité</target></trans-unit>
-<trans-unit id="sb5fc63a9a508fd08">
-  <source>Appareils</source>
-<target>Appareils</target></trans-unit>
-<trans-unit id="sa2c080606d2891e7">
-  <source>Consommables (optionnel)</source>
-<target>Consommables (optionnel)</target></trans-unit>
-<trans-unit id="s22f76d030b465f67">
-  <source>Capteur quantité pellets</source>
-<target>Capteur quantité pellets</target></trans-unit>
-<trans-unit id="s18ad76bd3144abfa">
-  <source>Compteur stock sacs</source>
-<target>Compteur stock sacs</target></trans-unit>
-<trans-unit id="s2b9936468de8cb49">
-  <source>Capteur statut ON/OFF</source>
-<target>Capteur statut ON/OFF</target></trans-unit>
-<trans-unit id="s910c1ab9bdf6a91f">
-  <source>Seuil bas pellets (0.0–1.0)</source>
-<target>Seuil bas pellets (0.0–1.0)</target></trans-unit>
-<trans-unit id="sa0d4daefd3001e88">
-  <source>Capteur puissance (W)</source>
-<target>Capteur puissance (W)</target></trans-unit>
-<trans-unit id="s5f496977f4efd937">
-  <source>Entité input_button</source>
-<target>Entité input_button</target></trans-unit>
-<trans-unit id="saf22f244d85fe79f">
-  <source>Accès</source>
-<target>Accès</target></trans-unit>
-<trans-unit id="sef5b4e93c63eba2a">
-  <source>Électroménager</source>
-<target>Électroménager</target></trans-unit>
-<trans-unit id="sdf018068b29c8ab6">
-  <source>Automatisations</source>
-<target>Automatisations</target></trans-unit>
-<trans-unit id="s07e12f84e86320f6">
-  <source>Équipage</source>
-<target>Équipage</target></trans-unit>
-<trans-unit id="s3d423a945ef96f69">
-  <source>Poêle</source>
-<target>Poêle</target></trans-unit>
-<trans-unit id="sefc7ac0594b15fc3">
-  <source>Voiture</source>
-<target>Voiture</target></trans-unit>
 <trans-unit id="s383de319c4012f21">
   <source>N/A</source>
 <target>N/A</target></trans-unit>
@@ -1151,54 +1079,9 @@
   <source>Not connected</source>
 <target>Non connectée</target>
 </trans-unit>
-<trans-unit id="s237d6e18cb38a056">
-  <source>Entité binary_sensor</source>
-<target>Entité binary_sensor</target></trans-unit>
-<trans-unit id="s3daca0f88a2f27e6">
-  <source>Icône (opt.)</source>
-<target>Icône (opt.)</target></trans-unit>
-<trans-unit id="s846a3c8f0ebd68ec">
-  <source>Retirer</source>
-<target>Retirer</target></trans-unit>
-<trans-unit id="s1a0be6c29c59e039">
-  <source>Fumée</source>
-<target>Fumée</target></trans-unit>
-<trans-unit id="s7579bc2248bfc52a">
-  <source>Entité</source>
-<target>Entité</target></trans-unit>
-<trans-unit id="sea5e136f819b1e01">
-  <source>Entité occupancy (opt.)</source>
-<target>Entité occupancy (opt.)</target></trans-unit>
-<trans-unit id="s8f5e0baf518bbfdd">
-  <source>Entité cover</source>
-<target>Entité cover</target></trans-unit>
 <trans-unit id="sd2223afb7d6b100d">
   <source>Type</source>
 <target>Type</target></trans-unit>
-<trans-unit id="s555a4b5ca2d69301">
-  <source>Automatisation</source>
-<target>Automatisation</target></trans-unit>
-<trans-unit id="saaebd8e424473aab">
-  <source>Appareil</source>
-<target>Appareil</target></trans-unit>
-<trans-unit id="sbe9483f10875ee74">
-  <source>OK quand</source>
-<target>OK quand</target></trans-unit>
-<trans-unit id="sffa91f4d97d45a5b">
-  <source>Consommable</source>
-<target>Consommable</target></trans-unit>
-<trans-unit id="sb3e54aa9fef9648f">
-  <source>Appeler enfants</source>
-<target>Appeler enfants</target></trans-unit>
-<trans-unit id="s96ff406719d2a58c">
-  <source>Texte bouton (opt.)</source>
-<target>Texte bouton (opt.)</target></trans-unit>
-<trans-unit id="sda4a5bd7f5a82a82">
-  <source>Entité (input_button / script / automation)</source>
-<target>Entité (input_button / script / automation)</target></trans-unit>
-<trans-unit id="s7733567fa749d52a">
-  <source>Couleur (opt.)</source>
-<target>Couleur (opt.)</target></trans-unit>
 <trans-unit id="sa442044b586ec8bf">
   <source>Action</source>
 <target>Action</target></trans-unit>
@@ -1208,6 +1091,90 @@
 <trans-unit id="sa45a194b58837e4f">
   <source>Active</source>
 <target>Active</target></trans-unit>
+<trans-unit id="s5b168ab1cad7dce5">
+  <source>Enable section</source>
+<target>Activer la section</target></trans-unit>
+<trans-unit id="s10c8e4cae4e11503">
+  <source>Disable</source>
+<target>Désactiver</target></trans-unit>
+<trans-unit id="sea4f08110bb8f15d">
+  <source>Remove</source>
+<target>Retirer</target></trans-unit>
+<trans-unit id="se6982bd921a6a106">
+  <source>Smoke</source>
+<target>Fumée</target></trans-unit>
+<trans-unit id="sf68a1f6e1c0a4b84">
+  <source>Appliance</source>
+<target>Appareil</target></trans-unit>
+<trans-unit id="s9839775f1bfecdd2">
+  <source>Consumable</source>
+<target>Consommable</target></trans-unit>
+<trans-unit id="sc88c98daa5ce1614">
+  <source>Call children</source>
+<target>Appeler enfants</target></trans-unit>
+<trans-unit id="s2c6f8fc63e3acf05">
+  <source>Section icon</source>
+<target>Icône section</target></trans-unit>
+<trans-unit id="s47937dbed803a545">
+  <source>Smoke sensors</source>
+<target>Détecteurs fumée</target></trans-unit>
+<trans-unit id="s3435a5ae16f52f4a">
+  <source>binary_sensor entity</source>
+<target>Entité binary_sensor</target></trans-unit>
+<trans-unit id="sbb2c3e65f422123c">
+  <source>Icon (opt.)</source>
+<target>Icône (opt.)</target></trans-unit>
+<trans-unit id="s62cc9c30d5d3d981">
+  <source>Siren switch (optional)</source>
+<target>Switch sirènes (optionnel)</target></trans-unit>
+<trans-unit id="sbf2483691ae92b24">
+  <source>Alert toggles</source>
+<target>Toggles alertes</target></trans-unit>
+<trans-unit id="s5bc5f422799d8c7b">
+  <source>Occupancy entity (opt.)</source>
+<target>Entité occupancy (opt.)</target></trans-unit>
+<trans-unit id="scdedea049faae4db">
+  <source>Cover entity</source>
+<target>Entité cover</target></trans-unit>
+<trans-unit id="s735564e1bca6e671">
+  <source>Lock (optional)</source>
+<target>Verrou (optionnel)</target></trans-unit>
+<trans-unit id="sf5e22e7b6629d903">
+  <source>input_button entity</source>
+<target>Entité input_button</target></trans-unit>
+<trans-unit id="sc9707b8a6e40fb52">
+  <source>Entity (input_button / script / automation)</source>
+<target>Entité (input_button / script / automation)</target></trans-unit>
+<trans-unit id="s94bb12b36b913b14">
+  <source>Color (opt.)</source>
+<target>Couleur (opt.)</target></trans-unit>
+<trans-unit id="s910c55f047789df0">
+  <source>Button text (opt.)</source>
+<target>Texte bouton (opt.)</target></trans-unit>
+<trans-unit id="s8f26e0f086cc2787">
+  <source>Unit</source>
+<target>Unité</target></trans-unit>
+<trans-unit id="s79f2b25464fc837e">
+  <source>Consumables (optional)</source>
+<target>Consommables (optionnel)</target></trans-unit>
+<trans-unit id="s28e1428ce5cfd688">
+  <source>Power sensor (W)</source>
+<target>Capteur puissance (W)</target></trans-unit>
+<trans-unit id="seb852340a954227e">
+  <source>Pellet quantity sensor</source>
+<target>Capteur quantité pellets</target></trans-unit>
+<trans-unit id="s7b4210bd9fa13356">
+  <source>ON/OFF status sensor</source>
+<target>Capteur statut ON/OFF</target></trans-unit>
+<trans-unit id="s2bc5f15a69db0c5b">
+  <source>Bag stock counter</source>
+<target>Compteur stock sacs</target></trans-unit>
+<trans-unit id="s10cf773b0a17f6e1">
+  <source>Pellet low threshold (0.0–1.0)</source>
+<target>Seuil bas pellets (0.0–1.0)</target></trans-unit>
+<trans-unit id="s6555b06b10891271">
+  <source>OK when</source>
+<target>OK quand</target></trans-unit>
 </body>
 </file>
 </xliff>

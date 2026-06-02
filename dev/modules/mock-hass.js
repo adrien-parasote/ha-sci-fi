@@ -25,6 +25,7 @@ export function resolveScenario(overrides) {
           states[stateKey] = {
             ...MOCK_STATES[stateKey],
             ...overrides[key],
+            entity_id: stateKey, // always inject — HA hass.states always has entity_id on each entity
             attributes: {
               ...(MOCK_STATES[stateKey]?.attributes || {}),
               ...(overrides[key]?.attributes || {}),
@@ -37,15 +38,12 @@ export function resolveScenario(overrides) {
       states[key] = {
         ...MOCK_STATES[key],
         ...overrides[key],
+        entity_id: key, // always inject — HA hass.states always has entity_id on each entity
         attributes: {
           ...(MOCK_STATES[key]?.attributes || {}),
           ...(overrides[key]?.attributes || {}),
         },
       };
-      // Preserve entity_id from MOCK_STATES if it exists
-      if (MOCK_STATES[key]?.entity_id) {
-        states[key].entity_id = MOCK_STATES[key].entity_id;
-      }
     }
   }
 
@@ -60,7 +58,16 @@ export function resolveScenario(overrides) {
  * @returns {Object} Mock hass object
  */
 export function buildMockHass(scenarioOverrides = {}, language = 'fr') {
-  const states = resolveScenario(scenarioOverrides);
+  const rawStates = resolveScenario(scenarioOverrides);
+
+  // Normalize: inject entity_id on every state entry (matches real HA behaviour).
+  // MOCK_STATES uses entity IDs as dict keys but not as properties on the object.
+  const states = Object.fromEntries(
+    Object.entries(rawStates).map(([id, state]) => [
+      id,
+      state?.entity_id ? state : { ...state, entity_id: id },
+    ])
+  );
 
   const subscribeMessageMock = (cb, msg) => {
     if (msg.type === 'weather/subscribe_forecast') {
@@ -119,7 +126,32 @@ export function buildMockHass(scenarioOverrides = {}, language = 'fr') {
       subscribeMessage: subscribeMessageMock,
     },
     subscribeMessage: subscribeMessageMock,
-    callService: (domain, service, _data) => { log(`🔧 callService(${domain}.${service})`, 'ok'); return Promise.resolve(); },
+    callService: (domain, service, data) => {
+      log(`🔧 callService(${domain}.${service})`, 'ok');
+
+      // Simulate state mutation for common services so UI toggles/sliders respond
+      const entityId = data?.entity_id;
+      if (entityId && states[entityId]) {
+        const s = states[entityId];
+        if (service === 'turn_on')  { states[entityId] = { ...s, state: 'on' }; }
+        else if (service === 'turn_off') { states[entityId] = { ...s, state: 'off' }; }
+        else if (service === 'toggle') {
+          states[entityId] = { ...s, state: s.state === 'on' ? 'off' : 'on' };
+        }
+        else if (service === 'open_cover')  { states[entityId] = { ...s, state: 'open' }; }
+        else if (service === 'close_cover') { states[entityId] = { ...s, state: 'closed' }; }
+        else if (service === 'set_value' && data?.value !== undefined) {
+          states[entityId] = { ...s, state: String(data.value) };
+        }
+        else if (service === 'press') {
+          // input_button: keep state as is, no visual change needed
+        }
+        // Notify cards of state change via a custom event on the hass object
+        window.dispatchEvent(new CustomEvent('mock-hass-state-changed', { detail: { states } }));
+      }
+
+      return Promise.resolve();
+    },
     callWS: async (msg) => {
       if (msg && msg.type === 'logbook/get_events') {
         return mockLogbookEvents(scenarioOverrides);

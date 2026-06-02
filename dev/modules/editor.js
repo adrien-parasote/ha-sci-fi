@@ -92,15 +92,17 @@ export async function copyConfigYaml() {
  * @param {Object|null} haConnection - HA connection
  * @param {Object|null} haAuth - HA auth
  * @param {string} language - Current language
+ * @param {Object} [scenarioData={}] - Current scenario data to build mock hass with correct entities
  */
-export function updateCardConfig(config, cardEl, isLive, liveHass, haConnection, haAuth, language) {
+export function updateCardConfig(config, cardEl, isLive, liveHass, haConnection, haAuth, language, scenarioData = {}) {
   const errorBanner = document.getElementById('yaml-error-banner');
   try {
     if (cardEl) {
       cardEl.setConfig(config);
+      // Use scenarioData (not {}) so mock entities are preserved after a GUI editor change.
       const hass = isLive && liveHass
         ? buildLiveHass(liveHass, language, haConnection, haAuth)
-        : buildMockHass({}, language);
+        : buildMockHass(scenarioData, language);
       cardEl.hass = hass;
       errorBanner.classList.remove('visible');
     }
@@ -122,9 +124,10 @@ export function updateCardConfig(config, cardEl, isLive, liveHass, haConnection,
  * @param {Object|null} params.haConnection - HA connection
  * @param {Object|null} params.haAuth - HA auth
  * @param {string} params.language - Current language
+ * @param {Object} [params.scenarioData={}] - Current scenario data to build mock hass with correct entities
  * @param {function} params.onConfigChanged - Callback on config-changed event
  */
-export function mountUiEditor({ currentCard, CARDS, activeConfig, cardEl, isLive, liveHass, haConnection, haAuth, language, onConfigChanged }) {
+export function mountUiEditor({ currentCard, CARDS, activeConfig, cardEl, isLive, liveHass, haConnection, haAuth, language, scenarioData = {}, onConfigChanged }) {
   const container = document.getElementById('gui-editor-mount');
   container.innerHTML = '';
   editorEl = null;
@@ -140,7 +143,7 @@ export function mountUiEditor({ currentCard, CARDS, activeConfig, cardEl, isLive
       editorEl = document.createElement(editorTag);
       const hass = isLive && liveHass
         ? buildLiveHass(liveHass, language, haConnection, haAuth)
-        : buildMockHass({}, language);
+        : buildMockHass(scenarioData, language); // use scenarioData so entity dropdowns are populated
 
       editorEl.hass = hass;
       editorEl.setConfig(activeConfig);

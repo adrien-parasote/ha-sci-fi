@@ -1,5 +1,20 @@
 # Changelog
 
+# [1.3.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.3.1) - 2026-06-02
+
+## 🐛 Fixes
+
+- **Card picker UI**: cards can now be selected from the HA card picker dialog when creating a new card via the UI. The `customElements.define` guard (added for workbench HMR) was active in production, blocking HA's scoped custom element registry used by `hui-card-picker`. Elements appeared registered globally but were invisible in the picker scope, producing "Custom element not found" errors. Guard is now `dev`-only — Terser eliminates it entirely from the production bundle.
+- **Version banner**: console banner now shows the correct release version (`v1.3.1`) instead of the hardcoded `v1.0.0` stale string. Version is now injected at build time via `@rollup/plugin-replace` from `package.json`.
+
+## 🛠️ Technical
+
+- `rollup.config.mjs`: reads `package.json` version and injects `__VERSION__` compile-time constant via `@rollup/plugin-replace`.
+- `vitest.config.ts`: adds `define` block for `__DEV__` and `__VERSION__` so tests resolve rollup compile-time constants (previously caused `ReferenceError`).
+- `src/types/globals.d.ts`: TypeScript declarations for `__VERSION__` and `__DEV__`.
+- `docs/adr/ADR-002_rollup4.md`: documents `__DEV__`/`__VERSION__` constants and the critical HA scoped registry constraint.
+- `docs/specs/06_entry_migration.md`: adds anti-patterns 8 (global define patch) and 9 (hardcoded version).
+
 # [1.3.0](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.3.0) - 2026-06-02
 
 ## 🆕 What's New

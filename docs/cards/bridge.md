@@ -6,9 +6,13 @@ Main dashboard card. Displays the overall status of the home in real time — cr
 
 ## Screenshots
 
-![Bridge card — compact mode](../../screenshot/bridge_1.jpeg)
+<details>
+<summary>Show</summary>
 
-![Bridge card — full mode](../../screenshot/bridge_2.jpeg)
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/bridge_1.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/bridge_2.jpeg" width="300">
+
+</details>
 
 ---
 

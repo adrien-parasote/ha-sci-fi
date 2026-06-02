@@ -32,7 +32,7 @@
 > 1. [`discovery.md`](./research/discovery.md) — Audit of v0.9.6 (exact YAML schemas, architecture, critical rules)
 > 2. [strategic/blueprint.md](./strategic/blueprint.md) — strategy + ADR summary index (full ADRs in [docs/adr/](./adr/))
 > 4. [specs/05_cards.md](./specs/05_cards.md#blueprint-coverage) — full YAML contracts per card
-> 5. [cards/guidelines.md](./cards/guidelines.md) — complete card development and urbanization guide
+> 5. [guidelines.md](./guidelines.md) — complete card development and urbanization guide
 > 6. [release-process.md](./release-process.md) — release process (versioning, build, tag, draft release, wiki)
 > 7. [`.agents/learnings.md`](../.agents/learnings.md) — 85 project-specific learnings (L012-L085 + L086+)
 > 8. [`docs/adr/`](./adr/) — 15 Architectural Decision Records (ADR-001 to ADR-015)

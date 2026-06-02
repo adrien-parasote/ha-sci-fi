@@ -96,8 +96,8 @@ hacs.json                       [MODIFY] Add plugin type
 
 | Concept | Status in this spec | Mentioned in |
 |---|---|---|
-| Lovelace Actions | Handled via CustomEvent | [guidelines.md](../cards/guidelines.md#L237) |
-| Card Sizing | Restructured via `getCardSize()` | [guidelines.md](../cards/guidelines.md#L48) |
+| Lovelace Actions | Handled via CustomEvent | [guidelines.md](../guidelines.md#L237) |
+| Card Sizing | Restructured via `getCardSize()` | [guidelines.md](../guidelines.md#L48) |
 
 ---
 

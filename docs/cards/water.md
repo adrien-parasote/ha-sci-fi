@@ -16,10 +16,15 @@
 
 ## Screenshots
 
-| Card View | Configuration UI |
-|---|---|
-| ![Card](../../screenshot/water_1.jpeg) | ![Config 1](../../screenshot/water_edit1.jpeg) |
-| ![Card Active](../../screenshot/water_2.jpeg) | ![Config 2](../../screenshot/water_edit2.jpeg) |
+<details>
+<summary>Show</summary>
+
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/water_1.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/water_2.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/water_edit1.jpeg" width="300">
+<img src="https://github.com/adrien-parasote/ha-sci-fi/blob/main/screenshot/water_edit2.jpeg" width="300">
+
+</details>
 
 ---
 

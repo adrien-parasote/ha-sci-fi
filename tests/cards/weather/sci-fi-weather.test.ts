@@ -283,5 +283,58 @@ describe('sci-fi-weather', () => {
       (globalThis as any).__mockChartShouldThrow = false;
       consoleWarnSpy.mockRestore();
     });
+
+    it('IT-005: _renderIcon falls back to sf-icon when icon not in WEATHER_ICON_SET (line 389)', async () => {
+      // Invoke _renderIcon directly with a key not in the weather icon set (plain mdi name)
+      const result: any = (el as any)._renderIcon('unknown-weather-icon');
+      // It should be a TemplateResult containing 'sf-icon' (the fallback branch at line 389)
+      expect(String(result?.strings ?? '')).to.include('sf-icon');
+    });
+
+    it('IT-006: _getChartData covers precipitation and wind_speed branches (lines 501-503)', () => {
+      // Seed hourly forecast with precipitation and wind_speed data
+      (el as any)._hourlyForecast = [
+        { datetime: '2026-05-24T12:00:00Z', temperature: 22, precipitation: 3.5, wind_speed: 45, condition: 'rainy' },
+      ];
+      (el as any)._dailyForecast = [
+        { datetime: '2026-05-24T00:00:00Z', temperature: 25, templow: 15 },
+      ];
+      (el as any)._day_selected = 0;
+
+      // Test precipitation branch (line 501)
+      (el as any)._chartDataKind = 'precipitation';
+      const precipData = (el as any)._getChartData();
+      expect(precipData.datasets[0].data[0]).to.equal(3.5);
+
+      // Test wind_speed branch (line 502)
+      (el as any)._chartDataKind = 'wind_speed';
+      const windData = (el as any)._getChartData();
+      expect(windData.datasets[0].data[0]).to.equal(45);
+
+      // Restore to valid kind
+      (el as any)._chartDataKind = 'temperature';
+    });
+
+    it('IT-007: _selectChartDataKind updates chart when already initialized (line 419)', async () => {
+      // Force a real chart to be present so the if (this._chart) branch fires
+      (el as any)._chartDataKind = 'temperature';
+      (el as any)._hourlyForecast = [
+        { datetime: '2026-05-24T12:00:00Z', temperature: 22, precipitation: 1, wind_speed: 30, condition: 'sunny' },
+      ];
+      (el as any)._dailyForecast = [{ datetime: '2026-05-24T00:00:00Z', temperature: 25, templow: 15 }];
+
+      // Simulate chart already initialized (by setting a stub object with update spy)
+      const updateSpy = vi.fn();
+      (el as any)._chart = { data: { datasets: [] }, options: {}, update: updateSpy, destroy: vi.fn() };
+
+      // Fire _selectChartDataKind with a mock event
+      const mockEvent = new Event('click');
+      mockEvent.preventDefault = vi.fn();
+      mockEvent.stopPropagation = vi.fn();
+      (el as any)._selectChartDataKind(mockEvent, 'precipitation');
+
+      expect((el as any)._chartDataKind).to.equal('precipitation');
+      expect(updateSpy).toHaveBeenCalled();
+    });
   });
 });

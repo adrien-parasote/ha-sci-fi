@@ -521,4 +521,172 @@ describe('sci-fi-vacuum', () => {
     expect(Array.isArray(styles)).to.be.true;
     expect(styles.length).to.be.greaterThan(1);
   });
+
+  // ── TC-1525 — fan speed cycling via header fan icon ─────────────────────
+
+  it('TC-1525 — clicking fan icon cycles to next fan speed', async () => {
+    const el = makeEl();
+    const mockCallService = vi.fn().mockResolvedValue(undefined);
+    setConfig(el, { type: 'custom:sci-fi-vacuum', vacuums: [{ entity: 'vacuum.bot' }] });
+    el.hass = makeMockHass({
+      callService: mockCallService,
+      states: {
+        'vacuum.bot': makeMockEntity({
+          entity_id: 'vacuum.bot',
+          state: 'docked',
+          attributes: {
+            fan_speed: 'quiet',
+            fan_speed_list: ['quiet', 'standard', 'strong', 'max'],
+          },
+        }),
+      },
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const fanIcon = el.shadowRoot!.querySelector('.infoH sf-icon') as HTMLElement | null;
+    fanIcon?.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+
+    expect(mockCallService).toHaveBeenCalledWith('vacuum', 'set_fan_speed', {
+      entity_id: 'vacuum.bot',
+      fan_speed: 'standard', // next after 'quiet'
+    });
+  });
+
+  // ── TC-1526 — fan speed: no current speed → defaults to index 1 ──────────
+
+  it('TC-1526 — fan speed cycling defaults to index 1 when no current speed', async () => {
+    const el = makeEl();
+    const mockCallService = vi.fn().mockResolvedValue(undefined);
+    setConfig(el, { type: 'custom:sci-fi-vacuum', vacuums: [{ entity: 'vacuum.bot' }] });
+    el.hass = makeMockHass({
+      callService: mockCallService,
+      states: {
+        'vacuum.bot': makeMockEntity({
+          entity_id: 'vacuum.bot',
+          state: 'cleaning',
+          // no fan_speed attribute
+          attributes: { fan_speed_list: ['silent', 'balanced', 'turbo'] },
+        }),
+      },
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    // Directly invoke _callAction since the fan icon isn't rendered without fan_speed
+    (el as any)._callAction('vacuum.bot', 'set_fan_speed');
+    expect(mockCallService).toHaveBeenCalledWith('vacuum', 'set_fan_speed', {
+      entity_id: 'vacuum.bot',
+      fan_speed: 'balanced', // index 1
+    });
+  });
+
+  // ── TC-1527 — fan speed: fan_speed_list absent → uses default list ────────
+
+  it('TC-1527 — fan speed uses default list when fan_speed_list is absent', async () => {
+    const el = makeEl();
+    const mockCallService = vi.fn().mockResolvedValue(undefined);
+    setConfig(el, { type: 'custom:sci-fi-vacuum', vacuums: [{ entity: 'vacuum.bot' }] });
+    el.hass = makeMockHass({
+      callService: mockCallService,
+      states: {
+        'vacuum.bot': makeMockEntity({
+          entity_id: 'vacuum.bot',
+          state: 'docked',
+          attributes: { fan_speed: 'quiet' }, // no fan_speed_list
+        }),
+      },
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    (el as any)._callAction('vacuum.bot', 'set_fan_speed');
+    // default list: ['quiet', 'standard', 'strong', 'max'] → quiet at index 0 → next = standard
+    expect(mockCallService).toHaveBeenCalledWith('vacuum', 'set_fan_speed', {
+      entity_id: 'vacuum.bot',
+      fan_speed: 'standard',
+    });
+  });
+
+  // ── TC-1528 — action call error toast ─────────────────────────────────────
+
+  it('TC-1528 — _callAction shows error toast on callService rejection', async () => {
+    const el = makeEl();
+    const mockCallService = vi.fn().mockRejectedValue(new Error('service failed'));
+    setConfig(el, {
+      type: 'custom:sci-fi-vacuum',
+      vacuums: [{ entity: 'vacuum.bot', pause: false, stop: false, return_to_base: false }],
+    });
+    el.hass = makeMockHass({
+      callService: mockCallService,
+      states: { 'vacuum.bot': makeMockEntity({ entity_id: 'vacuum.bot', state: 'docked' }) },
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const btn = el.shadowRoot!.querySelector('.actions .default sf-button') as HTMLElement | null;
+    btn?.dispatchEvent(new CustomEvent('button-click', { bubbles: true, composed: true }));
+    // Flush microtask queue to let the rejected promise propagate
+    await new Promise(resolve => setTimeout(resolve, 0));
+    // callService was called — error path executed without throwing
+    expect(mockCallService).toHaveBeenCalled();
+  });
+
+  // ── TC-1529 — _callShortcut: no sc.service → early return ────────────────
+
+  it('TC-1529 — _callShortcut ignores click when shortcuts.service is absent', async () => {
+    const el = makeEl();
+    const mockCallService = vi.fn();
+    setConfig(el, {
+      type: 'custom:sci-fi-vacuum',
+      vacuums: [{
+        entity: 'vacuum.bot',
+        shortcuts: {
+          // no service
+          command: 'app_segment_clean',
+          description: [{ name: 'Salon', segments: [16] }],
+        } as any,
+      }],
+    });
+    el.hass = makeMockHass({
+      callService: mockCallService,
+      states: { 'vacuum.bot': makeMockEntity({ entity_id: 'vacuum.bot', state: 'docked' }) },
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    (el as any)._callShortcut(
+      { entity: 'vacuum.bot', shortcuts: { command: 'clean', description: [{ segments: [1] }] } },
+      0
+    );
+    expect(mockCallService).not.toHaveBeenCalled();
+  });
+
+  // ── TC-1530 — willUpdate: resets selected id if > vacuums length ──────────
+
+  it('TC-1530 — willUpdate resets _vacuum_selected_id when vacuums list shrinks', async () => {
+    const el = makeEl();
+    setConfig(el, {
+      type: 'custom:sci-fi-vacuum',
+      vacuums: [{ entity: 'vacuum.v1' }, { entity: 'vacuum.v2' }],
+    });
+    el.hass = makeMockHass({
+      states: {
+        'vacuum.v1': makeMockEntity({ entity_id: 'vacuum.v1', state: 'docked' }),
+        'vacuum.v2': makeMockEntity({ entity_id: 'vacuum.v2', state: 'cleaning' }),
+      },
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    // Navigate to last vacuum
+    (el as any)._vacuum_selected_id = 1;
+
+    // Shrink config to 1 vacuum
+    setConfig(el, { type: 'custom:sci-fi-vacuum', vacuums: [{ entity: 'vacuum.v1' }] });
+    await el.updateComplete;
+
+    // Should reset to 0
+    expect((el as any)._vacuum_selected_id).to.equal(0);
+  });
 });

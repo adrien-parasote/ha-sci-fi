@@ -7,7 +7,7 @@ import { CARD_REGISTRATIONS } from '../src/sci-fi.js';
 describe('sci-fi entry point', () => {
   it('TC-114: registers custom cards to window.customCards with documentationURL', () => {
     expect(CARD_REGISTRATIONS).to.exist;
-    expect(CARD_REGISTRATIONS.length).to.equal(10);
+    expect(CARD_REGISTRATIONS.length).to.equal(11);
 
     expect(window.customCards).to.exist;
     expect(window.customCards!.length).to.be.greaterThan(0);

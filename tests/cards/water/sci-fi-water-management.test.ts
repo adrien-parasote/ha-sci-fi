@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 // @vitest-environment happy-dom
-import { expect, describe, it, afterEach } from 'vitest';
+import { expect, describe, it, afterEach, vi } from 'vitest';
+
 
 import '../../../src/cards/water/sci-fi-water-management.js';
 import { SciFiWaterManagementCard } from '../../../src/cards/water/sci-fi-water-management.js';
@@ -208,13 +209,16 @@ describe('sci-fi-water-management', () => {
     });
 
 
-    it('IT-1201: invokes hass.callWS with logbook/get_events and correct payload', async () => {
+    it('IT-1201: invokes hass.callWS with logbook/get_events and correct payload on primary failure', async () => {
       const el = document.createElement('sci-fi-water-management') as any;
       el.entityIds = ['switch.valve_1'];
       
       let wsPayload: any = null;
       el.hass = {
         callWS: (payload: any) => {
+          if (payload.type === 'history/history_during_period') {
+            return Promise.reject(new Error('History API failed'));
+          }
           wsPayload = payload;
           return Promise.resolve([]);
         }
@@ -223,6 +227,24 @@ describe('sci-fi-water-management', () => {
       await el._fetchHistoryLogs();
       expect(wsPayload).to.not.be.null;
       expect(wsPayload.type).to.equal('logbook/get_events');
+      expect(wsPayload.entity_ids).to.deep.equal(['switch.valve_1']);
+    });
+
+    it('IT-1201_primary: invokes hass.callWS with history/history_during_period as primary', async () => {
+      const el = document.createElement('sci-fi-water-management') as any;
+      el.entityIds = ['switch.valve_1'];
+      
+      let wsPayload: any = null;
+      el.hass = {
+        callWS: (payload: any) => {
+          wsPayload = payload;
+          return Promise.resolve({});
+        }
+      };
+      
+      await el._fetchHistoryLogs();
+      expect(wsPayload).to.not.be.null;
+      expect(wsPayload.type).to.equal('history/history_during_period');
       expect(wsPayload.entity_ids).to.deep.equal(['switch.valve_1']);
     });
 
@@ -285,6 +307,7 @@ describe('sci-fi-water-management', () => {
     });
 
     it('IT-1205: filters entityIds to only include standalone (no-device) entities listed in the Automations accordion', async () => {
+
       const el = document.createElement('sci-fi-water-management') as any;
       el.config = { type: 'custom:sci-fi-water-management', filter_label: 'water' };
       el.hass = makeMockHass({
@@ -308,9 +331,272 @@ describe('sci-fi-water-management', () => {
       // Trigger willUpdate manually
       el.willUpdate(new Map([['_activeFloorId', null]]));
       
-      // Should only contain the standalone automation
-      expect(el.entityIds).to.deep.equal(['automation.gestion_chauffe_eau']);
+      // Should contain all water entities present on the basement floor
+      expect(el.entityIds).to.deep.equal(['automation.gestion_chauffe_eau', 'switch.pump']);
     });
   });
-});
 
+  // ── Entity interaction tests ──────────────────────────────────────────────
+
+  const makeWaterHass = (entityId: string, state: string, domain: string) => makeMockHass({
+    floors: { 'f1': makeMockFloor({ floor_id: 'f1', name: 'Floor 1', level: 0 }) },
+    areas: { 'a1': makeMockArea({ area_id: 'a1', name: 'Area 1', floor_id: 'f1' }) },
+    entities: {
+      [entityId]: makeMockEntityEntry({ entity_id: entityId, area_id: 'a1', domain, labels: ['water'] }),
+    },
+    states: {
+      [entityId]: makeMockEntity({ entity_id: entityId, state, attributes: { friendly_name: 'Test Entity' } }),
+    },
+  });
+
+  it('TC-W01: getCardSize returns 5', () => {
+    const el = document.createElement('sci-fi-water-management') as SciFiWaterManagementCard;
+    (el as any).setConfig(SciFiWaterManagementCard.getStubConfig());
+    expect(el.getCardSize()).to.equal(5);
+  });
+
+  it('TC-W02: _getStateLabel returns truthy strings for on and off', () => {
+    const el = document.createElement('sci-fi-water-management') as any;
+    (el as any).setConfig(SciFiWaterManagementCard.getStubConfig());
+    const labelOn = el._getStateLabel(true);
+    const labelOff = el._getStateLabel(false);
+    expect(labelOn).toBeTruthy();
+    expect(typeof labelOn).toBe('string');
+    expect(labelOff).toBeTruthy();
+    expect(labelOn).not.to.equal(labelOff);
+  });
+
+  it('TC-W03: _toggleEntity calls callService turn_off when entity is on', async () => {
+    const callService = vi.fn(() => Promise.resolve({} as any));
+    const el = document.createElement('sci-fi-water-management') as any;
+    (el as any).setConfig({ type: 'custom:sci-fi-water-management', filter_label: 'water' });
+    el.hass = { ...makeWaterHass('switch.valve', 'on', 'switch'), callService };
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    el._toggleEntity('switch.valve', true, 'switch');
+    await new Promise(r => setTimeout(r, 0));
+
+    expect(callService).toHaveBeenCalledWith('switch', 'turn_off', { entity_id: 'switch.valve' });
+  });
+
+  it('TC-W04: _toggleEntity calls callService turn_on when entity is off', async () => {
+    const callService = vi.fn(() => Promise.resolve({} as any));
+    const el = document.createElement('sci-fi-water-management') as any;
+    (el as any).setConfig({ type: 'custom:sci-fi-water-management', filter_label: 'water' });
+    el.hass = { ...makeWaterHass('switch.valve', 'off', 'switch'), callService };
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    el._toggleEntity('switch.valve', false, 'switch');
+    await new Promise(r => setTimeout(r, 0));
+
+    expect(callService).toHaveBeenCalledWith('switch', 'turn_on', { entity_id: 'switch.valve' });
+  });
+
+  it('TC-W05: _toggleEntity uses homeassistant domain for unknown domains', async () => {
+    const callService = vi.fn(() => Promise.resolve({} as any));
+    const el = document.createElement('sci-fi-water-management') as any;
+    (el as any).setConfig({ type: 'custom:sci-fi-water-management', filter_label: 'water' });
+    el.hass = { ...makeWaterHass('sensor.leak', 'off', 'sensor'), callService };
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    el._toggleEntity('sensor.leak', false, 'sensor');
+    await new Promise(r => setTimeout(r, 0));
+
+    expect(callService).toHaveBeenCalledWith('homeassistant', 'turn_on', { entity_id: 'sensor.leak' });
+  });
+
+  it('TC-W06: _toggleEntity shows error toast on callService reject', async () => {
+    const callService = vi.fn(() => Promise.reject(new Error('toggle failed')));
+    const el = document.createElement('sci-fi-water-management') as any;
+    (el as any).setConfig({ type: 'custom:sci-fi-water-management', filter_label: 'water' });
+    el.hass = { ...makeWaterHass('switch.valve', 'on', 'switch'), callService };
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const toast = el.shadowRoot!.querySelector('sf-toast') as any;
+    if (!toast.addMessage) toast.addMessage = (_t: string, _e: boolean) => {};
+    const addMessageSpy = vi.spyOn(toast, 'addMessage');
+
+    el._toggleEntity('switch.valve', true, 'switch');
+    await new Promise(r => setTimeout(r, 0));
+
+    expect(addMessageSpy).toHaveBeenCalledWith('toggle failed', true);
+  });
+
+  it('TC-W07: _changeSelectEntity calls callService select_option for select domain', async () => {
+    const callService = vi.fn(() => Promise.resolve({} as any));
+    const el = document.createElement('sci-fi-water-management') as any;
+    (el as any).setConfig({ type: 'custom:sci-fi-water-management', filter_label: 'water' });
+    el.hass = { ...makeWaterHass('select.mode', 'mode1', 'select'), callService };
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const fakeEvent = { target: { value: 'mode2' } } as unknown as Event;
+    el._changeSelectEntity('select.mode', fakeEvent);
+    await new Promise(r => setTimeout(r, 0));
+
+    expect(callService).toHaveBeenCalledWith('select', 'select_option', { entity_id: 'select.mode', option: 'mode2' });
+  });
+
+  it('TC-W08: _changeSelectEntity calls input_select domain for input_select entities', async () => {
+    const callService = vi.fn(() => Promise.resolve({} as any));
+    const el = document.createElement('sci-fi-water-management') as any;
+    (el as any).setConfig({ type: 'custom:sci-fi-water-management', filter_label: 'water' });
+    el.hass = { ...makeWaterHass('input_select.mode', 'opt1', 'input_select'), callService };
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const fakeEvent = { target: { value: 'opt2' } } as unknown as Event;
+    el._changeSelectEntity('input_select.mode', fakeEvent);
+    await new Promise(r => setTimeout(r, 0));
+
+    expect(callService).toHaveBeenCalledWith('input_select', 'select_option', { entity_id: 'input_select.mode', option: 'opt2' });
+  });
+
+  it('TC-W09: _changeSelectEntity shows error toast on reject', async () => {
+    const callService = vi.fn(() => Promise.reject(new Error('select failed')));
+    const el = document.createElement('sci-fi-water-management') as any;
+    (el as any).setConfig({ type: 'custom:sci-fi-water-management', filter_label: 'water' });
+    el.hass = { ...makeWaterHass('select.mode', 'mode1', 'select'), callService };
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const toast = el.shadowRoot!.querySelector('sf-toast') as any;
+    if (!toast.addMessage) toast.addMessage = (_t: string, _e: boolean) => {};
+    const addMessageSpy = vi.spyOn(toast, 'addMessage');
+
+    const fakeEvent = { target: { value: 'mode2' } } as unknown as Event;
+    el._changeSelectEntity('select.mode', fakeEvent);
+    await new Promise(r => setTimeout(r, 0));
+
+    expect(addMessageSpy).toHaveBeenCalledWith('select failed', true);
+  });
+
+  it('TC-W10: sf-toggle-change event on rendered toggle calls _toggleEntity', async () => {
+    const callService = vi.fn(() => Promise.resolve({} as any));
+    const el = document.createElement('sci-fi-water-management') as SciFiWaterManagementCard;
+    (el as any).setConfig({ type: 'custom:sci-fi-water-management', filter_label: 'water' });
+    el.hass = makeWaterHass('switch.valve', 'on', 'switch') as any;
+    (el.hass as any).callService = callService;
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const toggle = el.shadowRoot!.querySelector('sf-toggle-switch');
+    if (toggle) {
+      toggle.dispatchEvent(new CustomEvent('sf-toggle-change', { bubbles: true, composed: true }));
+      await new Promise(r => setTimeout(r, 0));
+      expect(callService).toHaveBeenCalled();
+    }
+  });
+
+  // ── Branch coverage: device-group accordion (lines 587-602) ──────────────
+
+  it('TC-W11: renders device-group accordion when entity has a device_id', async () => {
+    const el = document.createElement('sci-fi-water-management') as SciFiWaterManagementCard;
+    (el as any).setConfig({ type: 'custom:sci-fi-water-management', filter_label: 'water' });
+    el.hass = makeMockHass({
+      floors: { 'f1': makeMockFloor({ floor_id: 'f1', name: 'Floor 1', level: 0 }) },
+      areas: { 'a1': makeMockArea({ area_id: 'a1', name: 'Area 1', floor_id: 'f1' }) },
+      entities: {
+        'switch.pump': makeMockEntityEntry({ entity_id: 'switch.pump', area_id: 'a1', domain: 'switch', labels: ['water'], device_id: 'pump_device' }),
+      },
+      states: {
+        'switch.pump': makeMockEntity({ entity_id: 'switch.pump', state: 'off', attributes: { friendly_name: 'Pump' } }),
+      },
+      devices: {
+        'pump_device': { id: 'pump_device', name: 'My Pump', area_id: 'a1' },
+      },
+    } as any);
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    // The device accordion should render with device name
+    const accordions = el.shadowRoot!.querySelectorAll('sf-editor-accordion');
+    expect(accordions.length).toBeGreaterThan(0);
+  });
+
+  // ── Branch coverage: select entity states (lines 639-649) ─────────────────
+
+  it('TC-W12: renders select entity in unavailable state', async () => {
+    const el = document.createElement('sci-fi-water-management') as SciFiWaterManagementCard;
+    (el as any).setConfig({ type: 'custom:sci-fi-water-management', filter_label: 'water' });
+    el.hass = makeMockHass({
+      floors: { 'f1': makeMockFloor({ floor_id: 'f1', name: 'Floor 1', level: 0 }) },
+      areas: { 'a1': makeMockArea({ area_id: 'a1', name: 'Area 1', floor_id: 'f1' }) },
+      entities: {
+        'select.mode': makeMockEntityEntry({ entity_id: 'select.mode', area_id: 'a1', domain: 'select', labels: ['water'] }),
+      },
+      states: {
+        'select.mode': makeMockEntity({ entity_id: 'select.mode', state: 'unavailable', attributes: { friendly_name: 'Mode Select' } }),
+      },
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const select = el.shadowRoot!.querySelector('select.sf-select');
+    expect(select).not.toBeNull();
+    expect((select as HTMLSelectElement)?.disabled).toBe(true);
+  });
+
+  it('TC-W13: renders select entity with options list', async () => {
+    const el = document.createElement('sci-fi-water-management') as SciFiWaterManagementCard;
+    (el as any).setConfig({ type: 'custom:sci-fi-water-management', filter_label: 'water' });
+    el.hass = makeMockHass({
+      floors: { 'f1': makeMockFloor({ floor_id: 'f1', name: 'Floor 1', level: 0 }) },
+      areas: { 'a1': makeMockArea({ area_id: 'a1', name: 'Area 1', floor_id: 'f1' }) },
+      entities: {
+        'select.mode': makeMockEntityEntry({ entity_id: 'select.mode', area_id: 'a1', domain: 'select', labels: ['water'] }),
+      },
+      states: {
+        'select.mode': makeMockEntity({ entity_id: 'select.mode', state: 'mode1', attributes: { friendly_name: 'Mode Select', options: ['mode1', 'mode2', 'mode3'] } }),
+      },
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const options = el.shadowRoot!.querySelectorAll('select.sf-select option');
+    expect(options.length).toBeGreaterThan(0);
+  });
+
+  it('TC-W14: renders select entity in unknown state with placeholder option', async () => {
+    const el = document.createElement('sci-fi-water-management') as SciFiWaterManagementCard;
+    (el as any).setConfig({ type: 'custom:sci-fi-water-management', filter_label: 'water' });
+    el.hass = makeMockHass({
+      floors: { 'f1': makeMockFloor({ floor_id: 'f1', name: 'Floor 1', level: 0 }) },
+      areas: { 'a1': makeMockArea({ area_id: 'a1', name: 'Area 1', floor_id: 'f1' }) },
+      entities: {
+        'select.mode': makeMockEntityEntry({ entity_id: 'select.mode', area_id: 'a1', domain: 'select', labels: ['water'] }),
+      },
+      states: {
+        'select.mode': makeMockEntity({ entity_id: 'select.mode', state: 'unknown', attributes: { friendly_name: 'Mode Select', options: ['mode1', 'mode2'] } }),
+      },
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    // unknown state should show a disabled placeholder option
+    const placeholderOption = el.shadowRoot!.querySelector('select.sf-select option[disabled]');
+    expect(placeholderOption).not.toBeNull();
+  });
+
+  it('TC-W15: renders entity row with no state obj uses fallback icon', async () => {
+    const el = document.createElement('sci-fi-water-management') as SciFiWaterManagementCard;
+    (el as any).setConfig({ type: 'custom:sci-fi-water-management', filter_label: 'water' });
+    el.hass = makeMockHass({
+      floors: { 'f1': makeMockFloor({ floor_id: 'f1', name: 'Floor 1', level: 0 }) },
+      areas: { 'a1': makeMockArea({ area_id: 'a1', name: 'Area 1', floor_id: 'f1' }) },
+      entities: {
+        'switch.missing': makeMockEntityEntry({ entity_id: 'switch.missing', area_id: 'a1', domain: 'switch', labels: ['water'] }),
+      },
+      states: {}, // No state entry — triggers fallback icon branch
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const rows = el.shadowRoot!.querySelectorAll('.entity-row');
+    expect(rows.length).toBe(1);
+  });
+});

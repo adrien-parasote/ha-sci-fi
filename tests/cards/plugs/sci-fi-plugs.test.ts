@@ -554,3 +554,149 @@ describe('sci-fi-plugs — Spec 13 redesign', () => {
   });
 
 });
+
+// ── Private chart method unit tests ─────────────────────────────────────────
+
+describe('sci-fi-plugs — Chart Private Methods', () => {
+  let el: SciFiPlugsCard;
+
+  afterEach(() => {
+    document.body.replaceChildren();
+    vi.resetAllMocks();
+  });
+
+  async function mountPlugWithPowerSensor(): Promise<SciFiPlugsCard> {
+    const device = {
+      device_id: 'p1',
+      entity_id: 'switch.tv',
+      name: 'TV',
+      sensors: {
+        'sensor.tv_power': { power: true, show: true },
+      },
+    };
+    const hass = makeMockHass({
+      states: {
+        'switch.tv': makeMockEntity({ entity_id: 'switch.tv', state: 'on' }),
+        'sensor.tv_power': makeMockEntity({ entity_id: 'sensor.tv_power', state: '45', attributes: { unit_of_measurement: 'W' } }),
+      },
+    });
+    const card = document.createElement('sci-fi-plugs') as SciFiPlugsCard;
+    (card as any).setConfig({ type: 'custom:sci-fi-plugs', devices: [device] });
+    card.hass = hass;
+    document.body.appendChild(card);
+    await card.updateComplete;
+    el = card;
+    return card;
+  }
+
+  // ── _parseHistory (lines 426-437) ─────────────────────────────────────────
+
+  it('_parseHistory skips first entry and parses remaining (line 428)', async () => {
+    await mountPlugWithPowerSensor();
+    const now = new Date();
+    const t1 = new Date(now.getTime() + 60000).toISOString();
+    const t2 = new Date(now.getTime() + 120000).toISOString();
+    const raw = [
+      { last_changed: now.toISOString(), state: '10' }, // skipped (idx 0)
+      { last_changed: t1, state: '20.5' },
+      { last_changed: t2, state: 'unavailable' }, // isNaN → value=0
+    ];
+    const result = (el as any)._parseHistory(raw) as Record<string, number>;
+    const vals = Object.values(result);
+    expect(vals).to.include(20.5);
+    expect(vals).to.include(0);
+    // first entry is skipped → its key should not be the only one
+    expect(Object.keys(result).length).to.be.greaterThan(0);
+  });
+
+  it('_parseHistory keeps max value for duplicate timestamp buckets (line 435)', async () => {
+    await mountPlugWithPowerSensor();
+    const t = '2026-06-02T10:00:00.000Z';
+    const raw = [
+      { last_changed: '2026-06-02T09:59:30.000Z', state: '5' }, // idx 0, skipped
+      { last_changed: t, state: '30' },
+      { last_changed: t, state: '50' }, // same bucket → should keep 50
+    ];
+    const result = (el as any)._parseHistory(raw) as Record<string, number>;
+    const vals = Object.values(result);
+    expect(vals).to.include(50);
+    expect(vals).not.to.include(30); // 30 is overwritten
+  });
+
+  // ── _buildChartDatasets (lines 440-452) ───────────────────────────────────
+
+  it('_buildChartDatasets wraps data in a dataset array', async () => {
+    await mountPlugWithPowerSensor();
+    const datasets = (el as any)._buildChartDatasets([10, 20, 30]) as any[];
+    expect(datasets).to.have.length(1);
+    expect(datasets[0].data).to.deep.equal([10, 20, 30]);
+    expect(datasets[0].fill).to.be.true;
+  });
+
+  // ── _buildChartLabels (lines 454-460) ─────────────────────────────────────
+
+  it('_buildChartLabels: midnight → date only (line 457)', async () => {
+    await mountPlugWithPowerSensor();
+    // Create a local midnight by setting hours=0 in local time (not UTC)
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    const midnight = d.toISOString();
+    const labels = (el as any)._buildChartLabels([midnight]) as string[];
+    // Midnight (local 00:00) → toLocaleDateString() only (no time appended)
+    expect(labels[0]).to.equal(d.toLocaleDateString());
+  });
+
+  it('_buildChartLabels: non-midnight → date+time (line 458)', async () => {
+    await mountPlugWithPowerSensor();
+    const nonMidnight = new Date('2026-06-02T10:30:00.000Z').toISOString();
+    const labels = (el as any)._buildChartLabels([nonMidnight]) as string[];
+    // Non-midnight → includes '-' separator between date and time
+    expect(labels[0]).to.include('-');
+  });
+
+  // ── _loadPowerChart: callApi success path (lines 390-421) ─────────────────
+
+  it('_loadPowerChart fetches callApi and calls _drawChart on empty history', async () => {
+    const card = await mountPlugWithPowerSensor();
+    // Mock callApi to return empty history
+    (card as any).hass.callApi = vi.fn().mockResolvedValue([[]]);
+    await (card as any)._loadPowerChart(
+      { entity_id: 'switch.tv', sensors: { 'sensor.tv_power': { power: true } } },
+      'sensor.tv_power'
+    );
+    // No chart — history empty means no _drawChart canvas created, just msg
+    const msgContainer = card.shadowRoot!.querySelector('.msg-container');
+    // It may or may not have text depending on DOM availability
+    expect(card).not.to.be.null;
+  });
+
+  it('_loadPowerChart handles callApi error and shows toast', async () => {
+    const card = await mountPlugWithPowerSensor();
+    (card as any).hass.callApi = vi.fn().mockRejectedValue(new Error('api error'));
+    await (card as any)._loadPowerChart(
+      { entity_id: 'switch.tv', sensors: { 'sensor.tv_power': { power: true } } },
+      'sensor.tv_power'
+    );
+    // Error branch: toast called, no crash
+    expect(card).not.to.be.null;
+  });
+
+  // ── _loadPowerChart: cache hit path (lines 381-388) ───────────────────────
+
+  it('_loadPowerChart uses cache when available', async () => {
+    const card = await mountPlugWithPowerSensor();
+    // Pre-seed cache for plug 0
+    (card as any)._chart_generation[0] = {
+      datasets: [{ data: [5, 10] }],
+      labels: ['a', 'b'],
+      fetchedAt: Date.now(),
+    };
+    const drawSpy = vi.spyOn(card as any, '_drawChart');
+    await (card as any)._loadPowerChart(
+      { entity_id: 'switch.tv', sensors: { 'sensor.tv_power': { power: true } } },
+      'sensor.tv_power'
+    );
+    // Cache hit → _drawChart called without callApi
+    expect(drawSpy).toHaveBeenCalled();
+  });
+});

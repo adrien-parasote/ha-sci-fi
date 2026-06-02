@@ -10,6 +10,12 @@ import '../../../src/cards/vehicles/sci-fi-vehicles.js';
 import { SciFiVehiclesCard } from '../../../src/cards/vehicles/sci-fi-vehicles.js';
 import { makeMockHass, makeMockEntity } from '../../fixtures/mock-hass.js';
 
+if (!customElements.get('sf-toast')) {
+  customElements.define('sf-toast', class extends HTMLElement {
+    addMessage(_text: string, _error: boolean) {}
+  });
+}
+
 // Constant imports from vehicle_const
 import {
   HASS_RENAULT_SERVICE,
@@ -356,5 +362,140 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
     const el = await mountCard([V1]);
     const wheel = el.shadowRoot!.querySelector('sf-wheel') as any;
     expect(wheel?.items?.length).toBe(10);
+  });
+
+  // ── TC-V01 / getRelevantEntities covers all sensor fields ──────────────────
+
+  it('TC-V01: getRelevantEntities includes all defined sensor fields', () => {
+    const el = document.createElement('sci-fi-vehicles') as SciFiVehiclesCard;
+    (el as any).setConfig({
+      type: 'custom:sci-fi-vehicles',
+      vehicles: [{
+        id: 'v1',
+        name: 'Test',
+        charging: 'switch.charging',
+        lock_status: 'lock.v1',
+        location: 'device_tracker.v1',
+        battery_autonomy: 'sensor.range',
+        fuel_autonomy: 'sensor.fuel_range',
+        battery_level: 'sensor.battery',
+        location_last_activity: 'sensor.last_activity',
+        charge_state: 'sensor.charge_state',
+        plug_state: 'sensor.plug_state',
+        mileage: 'sensor.mileage',
+        fuel_quantity: 'sensor.fuel_qty',
+        charging_remaining_time: 'sensor.charge_time',
+      }]
+    });
+
+    const ids = (el as any).getRelevantEntities() as string[];
+    expect(ids).to.include('switch.charging');
+    expect(ids).to.include('lock.v1');
+    expect(ids).to.include('device_tracker.v1');
+    expect(ids).to.include('sensor.range');
+    expect(ids).to.include('sensor.fuel_range');
+    expect(ids).to.include('sensor.battery');
+    expect(ids).to.include('sensor.last_activity');
+    expect(ids).to.include('sensor.charge_state');
+    expect(ids).to.include('sensor.plug_state');
+    expect(ids).to.include('sensor.mileage');
+    expect(ids).to.include('sensor.fuel_qty');
+    expect(ids).to.include('sensor.charge_time');
+  });
+
+  // ── TC-V02 / getRelevantEntities with multiple vehicles ───────────────────
+
+  it('TC-V02: getRelevantEntities includes sensors from multiple vehicles', () => {
+    const el = document.createElement('sci-fi-vehicles') as SciFiVehiclesCard;
+    (el as any).setConfig({
+      type: 'custom:sci-fi-vehicles',
+      vehicles: [
+        { id: 'v1', name: 'Car1', battery_level: 'sensor.v1_battery' },
+        { id: 'v2', name: 'Car2', fuel_quantity: 'sensor.v2_fuel' },
+      ]
+    });
+
+    const ids = (el as any).getRelevantEntities() as string[];
+    expect(ids).to.include('sensor.v1_battery');
+    expect(ids).to.include('sensor.v2_fuel');
+  });
+
+  // ── TC-V03 / getRelevantEntities returns empty for vehicle without sensors ─
+
+  it('TC-V03: getRelevantEntities returns empty array when no sensors configured', () => {
+    const el = document.createElement('sci-fi-vehicles') as SciFiVehiclesCard;
+    (el as any).setConfig({
+      type: 'custom:sci-fi-vehicles',
+      vehicles: [{ id: 'v1', name: 'Simple Car' }]
+    });
+
+    const ids = (el as any).getRelevantEntities() as string[];
+    expect(ids).to.have.length(0);
+  });
+
+  // ── TC-V04 / getCardSize ───────────────────────────────────────────────────
+
+  it('TC-V04: getCardSize returns 5 when config is set', async () => {
+    const el = await mountCard([V1]);
+    expect(el.getCardSize()).to.equal(5);
+  });
+
+  // ── TC-V05 / _startAc toast on success ────────────────────────────────────
+
+  it('TC-V05: _startAc shows success toast after resolve', async () => {
+    const mockCallService = vi.fn(() => Promise.resolve({} as any));
+    const el = await mountCard([V1], makeHass(mockCallService));
+
+    const toast = el.shadowRoot!.querySelector('sf-toast') as any;
+    if (!toast.addMessage) toast.addMessage = (_t: string, _e: boolean) => {};
+    const addMessageSpy = vi.spyOn(toast, 'addMessage');
+
+    const startBtn = el.shadowRoot!.querySelector('sf-button-card[icon="mdi:play"]')!;
+    startBtn.dispatchEvent(new CustomEvent('button-click', { bubbles: true, composed: true }));
+    await new Promise(r => setTimeout(r, 0));
+
+    expect(addMessageSpy).toHaveBeenCalledWith(expect.any(String), false);
+  });
+
+  // ── TC-V06 / _startAc toast on error ──────────────────────────────────────
+
+  it('TC-V06: _startAc shows error toast on reject', async () => {
+    const mockCallService = vi.fn(() => Promise.reject(new Error('AC failure')));
+    const el = await mountCard([V1], makeHass(mockCallService));
+
+    const toast = el.shadowRoot!.querySelector('sf-toast') as any;
+    if (!toast.addMessage) toast.addMessage = (_t: string, _e: boolean) => {};
+    const addMessageSpy = vi.spyOn(toast, 'addMessage');
+
+    const startBtn = el.shadowRoot!.querySelector('sf-button-card[icon="mdi:play"]')!;
+    startBtn.dispatchEvent(new CustomEvent('button-click', { bubbles: true, composed: true }));
+    await new Promise(r => setTimeout(r, 0));
+
+    expect(addMessageSpy).toHaveBeenCalledWith('AC failure', true);
+  });
+
+  // ── TC-V07 / _stopAc toast on success ─────────────────────────────────────
+
+  it('TC-V07: _stopAc shows success toast after resolve', async () => {
+    const mockCallService = vi.fn(() => Promise.resolve({} as any));
+    const el = await mountCard([V1], makeHass(mockCallService));
+
+    const toast = el.shadowRoot!.querySelector('sf-toast') as any;
+    if (!toast.addMessage) toast.addMessage = (_t: string, _e: boolean) => {};
+    const addMessageSpy = vi.spyOn(toast, 'addMessage');
+
+    const stopBtn = el.shadowRoot!.querySelector('sf-button-card[icon="mdi:stop"]')!;
+    stopBtn.dispatchEvent(new CustomEvent('button-click', { bubbles: true, composed: true }));
+    await new Promise(r => setTimeout(r, 0));
+
+    expect(addMessageSpy).toHaveBeenCalledWith(expect.any(String), false);
+  });
+
+  // ── TC-V08 / getCardSize without config ───────────────────────────────────
+
+  it('TC-V08: getCardSize returns 3 when config is not set', () => {
+    const el = document.createElement('sci-fi-vehicles') as SciFiVehiclesCard;
+    // Do not call setConfig
+    expect(el.getCardSize()).to.equal(3);
   });
 });

@@ -87,4 +87,22 @@ describe('sf-editor-slider', () => {
     const iconSlot = el.shadowRoot!.querySelector('.icon-slot');
     expect(iconSlot).toBeNull();
   });
+
+  it('falls back to min in value-display when value is null', async () => {
+    const el = await createElement({ min: 7 });
+    (el as any).value = null;
+    await el.updateComplete;
+    const display = el.shadowRoot!.querySelector('.value-display');
+    // null triggers the ?? branch: renders min value (7)
+    expect(display?.textContent?.trim()).toBe('7');
+  });
+
+  it('falls back to min in range input value when value is undefined', async () => {
+    const el = await createElement({ min: 12 });
+    (el as any).value = undefined;
+    await el.updateComplete;
+    const input = el.shadowRoot!.querySelector('input[type="range"]') as HTMLInputElement;
+    // undefined triggers the ?? branch: range is set to min (12)
+    expect(input.value).toBe('12');
+  });
 });

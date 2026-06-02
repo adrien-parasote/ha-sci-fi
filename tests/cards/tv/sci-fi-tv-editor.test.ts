@@ -139,4 +139,109 @@ describe('sci-fi-tv-editor', () => {
     const actionEditor = el.shadowRoot!.querySelector('sf-editor-action[element-id="home"]');
     expect(actionEditor).not.toBeNull();
   });
+
+  // TC-716: _handleSourceListUpdate dispatches with non-empty sources
+  it('TC-716: dispatches config-changed with sources when source-list-update fires with items', async () => {
+    const el = await createElement();
+    el.setConfig(makeConfig());
+    await el.updateComplete;
+
+    const received: CustomEvent[] = [];
+    el.addEventListener('config-changed', (e) => received.push(e as CustomEvent));
+
+    const sourceList = el.shadowRoot!.querySelector('sf-editor-source-list');
+    expect(sourceList).not.toBeNull();
+    sourceList!.dispatchEvent(new CustomEvent('input-update', {
+      bubbles: true,
+      composed: true,
+      detail: { value: ['HDMI 1', 'Netflix'] }
+    }));
+
+    expect(received).toHaveLength(1);
+    expect(received[0]!.detail.config.sources).toEqual(['HDMI 1', 'Netflix']);
+  });
+
+  // TC-717: _handleSourceListUpdate clears sources when empty array
+  it('TC-717: dispatches config-changed with undefined sources when source list is empty', async () => {
+    const el = await createElement();
+    el.setConfig(makeConfig({ sources: ['HDMI 1'] }));
+    await el.updateComplete;
+
+    const received: CustomEvent[] = [];
+    el.addEventListener('config-changed', (e) => received.push(e as CustomEvent));
+
+    const sourceList = el.shadowRoot!.querySelector('sf-editor-source-list');
+    sourceList!.dispatchEvent(new CustomEvent('input-update', {
+      bubbles: true,
+      composed: true,
+      detail: { value: [] }
+    }));
+
+    expect(received).toHaveLength(1);
+    expect(received[0]!.detail.config.sources).toBeUndefined();
+  });
+
+  // TC-718: _handleActionUpdate sets custom_action
+  it('TC-718: dispatches config-changed with updated custom_action when action-update fires', async () => {
+    const el = await createElement();
+    el.setConfig(makeConfig());
+    await el.updateComplete;
+
+    const received: CustomEvent[] = [];
+    el.addEventListener('config-changed', (e) => received.push(e as CustomEvent));
+
+    const actionEditor = el.shadowRoot!.querySelector('sf-editor-action[element-id="home"]');
+    expect(actionEditor).not.toBeNull();
+    actionEditor!.dispatchEvent(new CustomEvent('input-update', {
+      bubbles: true,
+      composed: true,
+      detail: { id: 'home', value: { action: 'navigate', navigation_path: '/test' } }
+    }));
+
+    expect(received).toHaveLength(1);
+    expect(received[0]!.detail.config.custom_actions?.home).toEqual({ action: 'navigate', navigation_path: '/test' });
+  });
+
+  // TC-718b: _handleActionUpdate removes custom_action when set to 'none'
+  it('TC-718b: dispatches config-changed without custom_action when action is none', async () => {
+    const el = await createElement();
+    el.setConfig(makeConfig({
+      custom_actions: { home: { action: 'navigate', navigation_path: '/test' } }
+    }));
+    await el.updateComplete;
+
+    const received: CustomEvent[] = [];
+    el.addEventListener('config-changed', (e) => received.push(e as CustomEvent));
+
+    const actionEditor = el.shadowRoot!.querySelector('sf-editor-action[element-id="home"]');
+    actionEditor!.dispatchEvent(new CustomEvent('input-update', {
+      bubbles: true,
+      composed: true,
+      detail: { id: 'home', value: { action: 'none' } }
+    }));
+
+    expect(received).toHaveLength(1);
+    expect(received[0]!.detail.config.custom_actions).toBeUndefined();
+  });
+
+  // TC-719: volume_entity dropdown dispatches config change
+  it('TC-719: dispatches config-changed when volume_entity changes', async () => {
+    const el = await createElement();
+    el.setConfig(makeConfig());
+    await el.updateComplete;
+
+    const received: CustomEvent[] = [];
+    el.addEventListener('config-changed', (e) => received.push(e as CustomEvent));
+
+    const dropdown = el.shadowRoot!.querySelector('sf-editor-dropdown-entity[element-id="volume_entity"]');
+    expect(dropdown).not.toBeNull();
+    dropdown!.dispatchEvent(new CustomEvent('input-update', {
+      bubbles: true,
+      composed: true,
+      detail: { id: 'volume_entity', value: 'media_player.sony_vol' }
+    }));
+
+    expect(received).toHaveLength(1);
+    expect(received[0]!.detail.config.volume_entity).toBe('media_player.sony_vol');
+  });
 });

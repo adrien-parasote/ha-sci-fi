@@ -44,7 +44,7 @@ type: custom:sci-fi-climates
 
 ```yaml
 type: custom:sci-fi-climates
-header_message: "Radiateurs"
+header_message: "Radiators"
 entities_to_exclude:
   - climate.excluded_radiator
 ```

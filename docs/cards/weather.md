@@ -47,7 +47,7 @@ weather_entity: weather.home
 
 ```yaml
 type: custom:sci-fi-weather
-header_message: "Météo"
+header_message: "Weather"
 weather_entity: weather.home
 weather_daily_forecast_limit: 5
 ```

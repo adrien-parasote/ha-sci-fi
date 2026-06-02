@@ -955,12 +955,6 @@ private _setSliderValue(entity: string, value: number): void {
     └── .vehicle-status (msg('En charge') | msg('Non connectée'), 0.75rem)
 ```
 
----
-
-> [!NOTE]
-> **`sf-bridge-call-kids` (removed):** This component was deleted in v1.3.1 (see [ADR-005](../../adr/ADR-005_zero-breaking-yaml.md), [L085](../../.agents/../.agents/learnings.md)). It has been replaced by the generic `sf-bridge-actions` section — any `input_button` entity can now be added to the `actions.items[]` array with a custom `name`, `icon`, and `color`. See § sf-bridge-actions above.
-
----
 
 ## Editor
 

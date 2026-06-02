@@ -16,10 +16,7 @@ Each tile shows an entity state, an aggregated kind state (e.g. "any light on?")
 - Visibility filter per person
 
 > [!CAUTION]
-> Designed for smartphone / single-panel HA. Tiles are not yet fully responsive.
-
-> [!CAUTION]
-> Requires the default HA `sun.sun` entity for weather tiles.
+> Requires the default HA `sun.sun` entity for weather tile rendering (day/night phase).
 
 ---
 

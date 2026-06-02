@@ -46,7 +46,7 @@ vehicles:
 
 ```yaml
 type: custom:sci-fi-vehicles
-header_message: "Véhicules"
+header_message: "Vehicles"
 vehicles:
   - id: my_vehicle
     name: My Car

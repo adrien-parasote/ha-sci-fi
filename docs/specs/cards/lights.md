@@ -76,6 +76,8 @@ custom_entities:
 | TC-004 | Unit | `custom_entities` overrides name and icons | Config with `custom_entities` entry | Custom name/icon rendered |
 | TC-005 | Unit | `getRelevantEntities()` returns only light domain entities | Mixed entity config | Only `light.*` in result |
 | IT-001 | Integration | Floor navigation updates area list | Click floor tab | Area list updates to selected floor |
+| IT-002 | Integration | Card re-renders on hass state change |  light entity updated | DOM reflects new light state |
+| IT-003 | Integration | Editor custom_entities persisted to config | Add custom icon in editor |  updated in card |
 
 ## Error Handling
 

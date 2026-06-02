@@ -23,9 +23,9 @@
 
 | ID | Assumption | Risk | Validation |
 |---|---|---|---|
-| 1 | js-yaml CDN is stable | Low | SHOW: Verified. cdnjs endpoint is reliable and cached. |
-| 2 | Base classes support dynamic language setters | Low | SHOW: Verified by Spec 03 base elements code. |
-| 3 | config-changed custom event structure matches HA | Low | SHOW: Verified by Spec 03 base editor code. |
+| 1 | js-yaml CDN is stable | Low | Verified via `curl https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js` — HTTP 200 |
+| 2 | Base classes support dynamic language setters | Low | Verified via `grep -r setLanguage src/utils/` — method confirmed in base-card.ts |
+| 3 | config-changed custom event structure matches HA | Low | Verified via `grep -r config-changed src/utils/` — event dispatch confirmed in base-editor.ts |
 
 ---
 

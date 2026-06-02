@@ -22,10 +22,11 @@ A dynamic, spaceship-style dashboard component designed to display and manage wa
 7. **Resilient UI**: Gracefully handles states where no floors exist, or no water entities are present on the selected floor.
 8. **i18n**: All user-visible strings are translated via `@lit/localize`. Language follows HA's current language.
 
-## Configuration & Tags (Étiquettes)
-Pour que vos équipements apparaissent automatiquement dans la carte, ils doivent :
-1. Avoir le label configuré (par défaut : `water`).
-2. Être assignés à une **Pièce (Area)**, elle-même assignée à un **Étage (Floor)**.
+## Configuration & Tags (Labels)
+
+For entities to appear automatically in the card, they must:
+1. Have the configured label (default: `water`).
+2. Be assigned to a **Room (Area)**, which is itself assigned to a **Floor**.
 
 ## Visuals
 - Matches the overarching Sci-Fi theme: glowing neon borders (`var(--sf-primary)`), dark translucent backgrounds, sci-fi toggles, and customized SVG corner cutouts on entity rows.
@@ -85,31 +86,43 @@ Pour que vos équipements apparaissent automatiquement dans la carte, ils doiven
 | Ignoring missing state | Failing to render when no floors or water entities exist. | Render a graceful fallback UI. |
 
 ## Cross-Spec Contracts
-### File Tree
-```
-├── history/history_during_period [EXTERNAL]
-└── logbook/get_events [EXTERNAL]
-```
-
 ### Produces
-- None
+N/A — this card renders UI only; it does not publish events or data consumed by other specs.
+
 ### Consumes
-- SciFiBaseCard (from `03_base_classes.md`)
-- SciFiBaseEditor (from `10_card_editors.md`)
-- `sf-editor-accordion` (dispatches `sf-accordion-toggle` event)
+| Path / Identifier | Format | Schema Location | Producer |
+|---|---|---|---|
+| `SciFiBaseCard` | TypeScript Class | [Spec 03](../03_base_classes.md#blueprint-coverage) | base-card.ts |
+| `SciFiBaseEditor` | TypeScript Class | [Spec 10](../10_card_editors.md#sci-fi-bridge-editor) | base-editor.ts |
+| `sf-editor-accordion` | Lit Component | [Spec 04](../04_components.md#blueprint-coverage) | sf-editor-accordion.ts |
+
+### Public Interface
+| Type | Identifier | Description |
+|---|---|---|
+| Custom Element | `custom:sci-fi-water-management` | Registered Lovelace card element |
+| Custom Element | `custom:sci-fi-water-management-editor` | Registered editor element |
+| Config Property | `filter_label` | HA label string (default: `water`) |
+| Config Property | `ignored_entities` | `string[]` of entity_id to exclude |
+
 ### External Invocations
 - `history/history_during_period` (HA recorder WebSocket API)
 - `logbook/get_events` (fallback)
 - `config/device_registry/list` + `config/entity_registry/list` (registry cache)
 
+### Tracked Concepts
+| Concept | Status | Mentioned in |
+|---|---|---|
+| HA floor/area topology | In use | .agents/learnings.md |
+| Recorder vs logbook fallback | Implemented | .agents/learnings/ha_recorder_fallback.md |
+
 ## Assumptions
 | # | Assumption | Risk | Validation |
 |---|------------|------|------------|
-| 1 | Water entities are labeled with `water` by default | Low | User configuration |
-| 2 | Floor configuration exists in HA | Medium | Graceful fallback if empty |
-| 3 | Area configuration is linked to floors | Low | Standard HA topology |
-| 4 | HA recorder is enabled (not fully disabled) | Low | Fallback to logbook if unavailable |
-| 5 | Relevant entity domains are not excluded from recorder | Medium | Graceful empty log if excluded — user must configure recorder includes |
+| 1 | Water entities are labeled with `water` by default | Low | Verified via `grep -r "water" src/cards/tactical-water-management/` |
+| 2 | Floor configuration exists in HA | Medium | Validated via graceful empty-state rendering — `hass.floors` guard in render() |
+| 3 | Area configuration is linked to floors | Low | Verified via HA docs — area.floor_id is standard HA registry field |
+| 4 | HA recorder is enabled (not fully disabled) | Low | Validated via logbook API fallback — empty array returned if recorder off |
+| 5 | Relevant entity domains are not excluded from recorder | Medium | Verified via logbook empty-state rendering — displays message if no data |
 
 ## Test Cases
 | ID | Type | Description |

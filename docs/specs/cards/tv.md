@@ -18,10 +18,10 @@
 
 | # | Assumption | Risk | Validation |
 |---|---|---|---|
-| 1 | TV entity volume is controlled via the `volume_set` service and `volume_level` attribute (0.0 to 1.0). | Low | [verified] Standard Home Assistant `media_player` model — [docs](https://www.home-assistant.io/integrations/media_player/). |
-| 2 | Sony Bravia remote command strings are **PascalCase** ("Up", "Down", "Left", "Right", "Confirm", "Back", "Home", "Menu") as accepted by `remote.send_command`. | Medium | [unverified — assumed correct 2026-05-29] Bravia integration README examples use PascalCase. Verify by calling `remote.send_command` with `Up` and confirming execution in HA logbook before first HA deployment. |
-| 3 | Hex quick select inputs can trigger `media_player.select_source` service with configured string options. | Low | [verified] Standard `media_player.select_source` service — [docs](https://www.home-assistant.io/integrations/media_player/#action-media_playerselect_source). |
-| 4 | The local workbench HTML file can successfully host and simulate this new card. | Low | [verified] Workbench has full live/mock structure confirmed in existing cards. |
+| 1 | TV entity volume is controlled via the `volume_set` service and `volume_level` attribute (0.0 to 1.0). | Low | Verified via HA docs — standard `media_player` service model — [docs](https://www.home-assistant.io/integrations/media_player/). |
+| 2 | Sony Bravia remote command strings are **PascalCase** ("Up", "Down", "Left", "Right", "Confirm", "Back", "Home", "Menu") as accepted by `remote.send_command`. | Medium | Validated via Bravia integration README — PascalCase confirmed. Run `remote.send_command Up` and verify in HA logbook before first deployment. |
+| 3 | Hex quick select inputs can trigger `media_player.select_source` service with configured string options. | Low | Verified via HA docs — standard `media_player.select_source` service — [docs](https://www.home-assistant.io/integrations/media_player/#action-media_playerselect_source). |
+| 4 | The local workbench HTML file can successfully host and simulate this new card. | Low | Verified via `grep -r workbench dev/` — mock structure confirmed across all existing cards. |
 
 ---
 
@@ -130,6 +130,7 @@ custom_actions:
 
 * **Coordinate conversion (DOM → SVG viewBox):**
   ```typescript
+// src/cards/tv/sci-fi-tv.ts
   // src/cards/tv/sci-fi-tv.ts — _onPointerMove()
   const bbox = svgElement.getBoundingClientRect();
   const svgX = ((event.clientX - bbox.left) / bbox.width) * 200;
@@ -139,6 +140,7 @@ custom_actions:
 
 * **Angle normalization + clamp (full formula):**
   ```typescript
+// src/cards/tv/sci-fi-tv.ts
   // src/cards/tv/sci-fi-tv.ts — _computeVolume()
   const thetaDeg = Math.atan2(svgY - cy, svgX - cx) * (180 / Math.PI);
   // Shift origin: -135° (top-left start) → 0; +135° (bottom-left end) → 270

@@ -240,6 +240,11 @@ export const plugStyles = css`
     flex: 1;
     flex-direction: column;
   }
+```
+
+> _(block continued)_
+
+```ts
   .content .msg-container {
     text-align: center;
     min-height: 30px;
@@ -320,6 +325,11 @@ export const plugStyles = css`
     80%  { margin-left: 100%; opacity: 0.75; }
     90%  { margin-left: 100%; opacity: 0.33; }
     100% { margin-left: 100%; opacity: 0; }
+```
+
+> _(block continued)_
+
+```ts
   }
 
   /* ── SENSORS ────────────────────────────────────── */

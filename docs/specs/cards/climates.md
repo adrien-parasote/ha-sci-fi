@@ -98,6 +98,8 @@ mode_colors:
 | TC-004 | Unit | `state_colors` overrides HVAC color | `state_colors.heat: "#ff0000"` | Custom color applied to heat state |
 | TC-005 | Unit | Unmapped HVAC mode falls back to `off` | Mode not present in `mode_icons` | `off` icon/color used, no crash |
 | IT-001 | Integration | Temperature update re-renders card | `hass.states` updated with new temp | Current temp updated in DOM |
+| IT-002 | Integration | Editor emits config-changed on entity exclude | User removes entity in editor | config.entities_to_exclude updated |
+| IT-003 | Integration | Card updates on HVAC mode change | hass.states mode change event | Icon and color update in DOM |
 
 ## Error Handling
 

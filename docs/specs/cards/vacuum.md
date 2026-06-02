@@ -289,6 +289,11 @@ export const vacuumStyles = css`
     height: 10px;
     background-color: var(--sf-text-secondary);
     text-decoration: none;
+```
+
+> _(block continued)_
+
+```ts
     border-radius: 50%;
   }
   .devices .number > div.active {
@@ -369,6 +374,11 @@ export const vacuumStyles = css`
 
   /*********** INFO *************/
   .info {
+```
+
+> _(block continued)_
+
+```ts
     display: inline-flex;
     flex-wrap: wrap;
     border-top: 1px solid var(--sf-bg-secondary);

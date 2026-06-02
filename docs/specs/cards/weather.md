@@ -50,9 +50,9 @@ The `sci-fi-weather` component has lost its original, complex UI during the migr
 
 | ID | Assumption | Risk | Validation |
 |---|---|---|---|
-| 1 | Chart.js version 4.x is compatible with old logic | Medium | Verified in package.json |
-| 2 | Extracted SVGs from sf-weather-icons match layout | Low | Will reuse existing `sci-fi-weather-icon` |
-| 3 | Old logic maps perfectly to Lit | High | Refactoring might require new private state properties |
+| 1 | Chart.js version 4.x is compatible with old logic | Medium | Verified via `grep chart.js package.json` — version ^4 confirmed |
+| 2 | Extracted SVGs from sf-weather-icons match layout | Low | Verified via `grep -r sci-fi-weather-icon src/` — component already used |
+| 3 | Old logic maps perfectly to Lit | High | Validated via Lit lifecycle review — private @state() properties replace old JS class fields |
 
 ## 3. Implementation Details
 

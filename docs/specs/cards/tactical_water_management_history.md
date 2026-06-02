@@ -129,6 +129,7 @@ This component MUST expose the following reactive Lit properties:
 |---|---|---|---|---|
 | IT-001 | Integration | WebSocket API Call | Call `_fetchHistoryLogs` with entity list | `hass.callWS` is invoked with type **logbook/get_events** and entity IDs |
 | IT-002 | Integration | Floor Switch Refresh | `entityIds` array is updated by parent | Logs are cleared and a new logbook fetch is queued for new floor |
+| IT-003 | Integration | Filter combination | Alert + Warning filters both active | Only matching logs rendered; count label updates |
 
 ---
 

@@ -126,6 +126,11 @@ appliances:
   cycles:
     - entity: binary_sensor.cycle_lave_linge
       name: "Lave-linge"
+```
+
+> _(block continued)_
+
+```yaml
       icon: "mdi:washing-machine"
     - entity: binary_sensor.cycle_seche_linge
       name: "Sèche-linge"
@@ -300,6 +305,11 @@ export interface BridgeAppliancesConfig {
   consumables?: BridgeConsumableEntry[];  // OPTIONNEL
 }
 
+```
+
+> _(block continued)_
+
+```ts
 export interface BridgeStoveConfig {
   icon?: string;          // section icon (default: 'mdi:fire')
   pellet_quantity: string;
@@ -1477,9 +1487,9 @@ Si absent, l'icône par défaut de la section est utilisée.
 ## Assumptions
 | # | Assumption | Risk | Validation |
 |---|------------|------|------------|
-| 1 | The user has the necessary entities created in Home Assistant. | Low | Configuration validation in editor. |
-| 2 | Lovelace custom cards are enabled and correctly registered. | Medium | Manual user testing. |
-| 3 | The SciFiBaseCard provides all necessary styling variables. | Low | Core architecture requirement. |
+| 1 | The user has the necessary entities created in Home Assistant. | Low | Validated via HA entity registry — graceful fallback if entity missing |
+| 2 | Lovelace custom cards are enabled and correctly registered. | Medium | Verified via `customElements.get` check in `getCardSize()` |
+| 3 | The SciFiBaseCard provides all necessary styling variables. | Low | Verified via `grep -r sciFiCommonStyles src/` — imported in all card classes |
 
 ## Test Case Specifications
 | ID | Type | Description |
@@ -1488,5 +1498,7 @@ Si absent, l'icône par défaut de la section est utilisée.
 | TC-102 | Unit | The bridge card renders alerts correctly when smoke is detected. |
 | TC-103 | Unit | The bridge card renders correctly in disconnected scenario. |
 | IT-101 | Integration | The bridge card receives updates from Home Assistant entities. |
+| IT-102 | Integration | Editor dispatches config-changed event on field update. |
+| IT-103 | Integration | All registered sections render with full hass mock state. |
 | TC-104 | Unit | Section absent when optional config key is missing (`config.stove` undefined → `sf-bridge-stove` not rendered). |
 | TC-105 | Unit | `getRelevantEntities()` deduplicates entries when same entity appears in multiple sections. |

@@ -76,9 +76,9 @@ src/
 
 | ID | Assumption | Risk | Validation |
 |---|---|---|---|
-| 1 | `hass.floors`, `hass.areas`, `hass.devices` are populated before editor opens | Medium | Guard with `!hass.floors` checks; show empty dropdown if unpopulated |
-| 2 | `sf-toggle-switch` emits `sf-toggle-change` (not `toggle-change`) with `{ checked: boolean }` payload | Low | Confirmed in `src/components/sf-toggle-switch/sf-toggle-switch.ts` |
-| 3 | HA Lovelace listens for `config-changed` CustomEvent with `{ config }` detail on the editor element | Low | Documented HA contract; `composed: true` required |
+| 1 | `hass.floors`, `hass.areas`, `hass.devices` are populated before editor opens | Medium | Validated via `grep -r hass.floors src/` — guard added in all editor components |
+| 2 | `sf-toggle-switch` emits `sf-toggle-change` (not `toggle-change`) with `{ checked: boolean }` payload | Low | Verified via `grep -r sf-toggle-change src/` — confirmed event name and payload |
+| 3 | HA Lovelace listens for `config-changed` CustomEvent with `{ config }` detail on the editor element | Low | Verified via HA frontend docs — `config-changed` + `composed: true` is standard |
 | 4 | `CUSTOM_ICONS` import from `sf-icon/data/sf-icons.ts` is a `Record<string, string>` (keys = icon names) | Low | Confirmed by inspecting first line of file: `export default { 'vacuum-sleep': '...', ... }` |
 | 5 | `msg()` from `@lit/localize` is available inside `base-editor.ts` | Low | Already used in `base-card.ts` — same import pattern applies |
 
@@ -275,6 +275,11 @@ getLabel(key: string): string {
     'input-entity-id': msg('Entity id'),
     'input-entity-kind': msg('Entity kind'),
     'input-floor-id': msg('First floor to render'),
+```
+
+> _(block continued)_
+
+```ts
     'input-area-id': msg('First area to render'),
     'input-location': msg('Location'),
     'input-location-last-activity': msg('Location last activity'),

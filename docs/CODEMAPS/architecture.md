@@ -55,8 +55,8 @@ src/cards/bridge/sections/
   sf-bridge-appliances.ts   ← cycles + consumables
   sf-bridge-stove.ts        ← pellets progress + stock counter
   sf-bridge-vehicle.ts      ← EV power sensor read-only
-  sf-bridge-call-kids.ts    ← input_button action
   sf-bridge-actions.ts      ← quick actions
+
 ```
 
 All sections are optional — absent from YAML → not rendered (zero errors).

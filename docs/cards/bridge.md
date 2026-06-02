@@ -4,6 +4,13 @@ Carte dashboard maison. Affiche le statut global de la maison en temps réel —
 
 > Spec complète : [docs/specs/cards/bridge.md](../specs/cards/bridge.md)
 
+## Aperçus
+
+![Aperçu de la carte Bridge - Mode compact](../../screenshot/bridge_1.jpeg)
+
+![Aperçu de la carte Bridge - Mode complet](../../screenshot/bridge_2.jpeg)
+
+
 ---
 
 ## Installation

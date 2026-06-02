@@ -160,7 +160,7 @@ for (const card of CARD_REGISTRATIONS) {
 
 // ── Version banner ─────────────────────────────────────────────────────────────
 console.info(
-  '%c SCI-FI CARDS %c v1.0.0 ',
+  `%c SCI-FI CARDS %c v${__VERSION__} `,
   'color: #00d2ff; font-weight: bold; background: #1a1a2e; padding: 4px 8px; border-radius: 4px 0 0 4px;',
   'background: #00d2ff; color: #1a1a2e; font-weight: bold; padding: 4px 8px; border-radius: 0 4px 4px 0;'
 );

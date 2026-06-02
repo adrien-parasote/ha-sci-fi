@@ -2,6 +2,10 @@ import typescript from '@rollup/plugin-typescript';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 import terser from '@rollup/plugin-terser';
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+const { version } = require('./package.json');
 
 const dev = process.env.NODE_ENV !== 'production';
 
@@ -19,6 +23,7 @@ export default {
       values: {
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV ?? 'production'),
         '__DEV__': String(dev),
+        '__VERSION__': JSON.stringify(version),
       },
     }),
     resolve({ browser: true }),

@@ -8,6 +8,8 @@ import plugs from './plugs.js';
 import lights from './lights.js';
 import water from './water.js';
 import tv from './tv.js';
+import bridge from './bridge.js';
+import icons from './icons.js';
 
 export const CARDS = {
   [hexa.id]: hexa,
@@ -20,4 +22,6 @@ export const CARDS = {
   [lights.id]: lights,
   [water.id]: water,
   [tv.id]: tv,
+  [bridge.id]: bridge,
+  [icons.id]: icons,
 };

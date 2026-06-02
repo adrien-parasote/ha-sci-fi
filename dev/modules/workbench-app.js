@@ -20,6 +20,7 @@ import {
   getCurrentLanguage,
   setCurrentLanguage,
 } from './ha-connection.js';
+import { mountIconBrowser } from './icon-browser.js';
 
 // ─── Register mock ha-icon ───────────────────────────────────────────────────
 registerMockHaIcon();
@@ -108,6 +109,15 @@ async function renderCard(cardKey, scenarioKey) {
 
   try {
     await loadBundle();
+
+    // ── Icon browser (special panel — no Lit card) ──────────────────────────
+    if (card.type === 'iconpicker') {
+      mount.innerHTML = '';
+      overlay.classList.add('hidden');
+      await mountIconBrowser(mount);
+      return;
+    }
+
     mount.innerHTML = '';
 
     const hass = isLiveMode() && getLiveHass()
@@ -183,6 +193,14 @@ function buildScenarios(cardKey) {
   const card = CARDS[cardKey];
   const list = document.getElementById('scenario-list');
   list.innerHTML = '';
+
+  // iconpicker has no scenarios
+  if (card.type === 'iconpicker') {
+    list.innerHTML = '<em style="color:var(--text-dim);font-size:12px;padding:4px 0;">Aucun scénario</em>';
+    currentScenario = null;
+    return;
+  }
+
   Object.keys(card.scenarios).forEach((name, i) => {
     const btn = document.createElement('button');
     btn.className = 'scenario-btn' + (i === 0 ? ' active' : '');

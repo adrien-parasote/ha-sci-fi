@@ -3,7 +3,7 @@
 [![HACS: Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
 [![Last commit](https://img.shields.io/github/last-commit/adrien-parasote/ha-sci-fi)](#)
 [![Current version](https://img.shields.io/github/v/release/adrien-parasote/ha-sci-fi)](https://github.com/adrien-parasote/ha-sci-fi/releases/latest)
-[![Tests](https://img.shields.io/badge/tests-953%20passing-brightgreen)](#)
+[![Tests](https://img.shields.io/badge/tests-967%20passing-brightgreen)](#)
 [![Coverage](https://img.shields.io/badge/coverage-87%25-brightgreen)](#)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](#)
 [![Lit](https://img.shields.io/badge/Lit-3.x-blueviolet)](#)
@@ -54,7 +54,7 @@ The goal: a single phone entry point to control your entire home.
 
 | Card | Description | Docs |
 |---|---|---|
-| 🏠 **Bridge Overview** | Home dashboard — crew, alerts, access, automations, appliances, stove, vehicle, call kids | [→ docs](./docs/cards/bridge.md) |
+| 🏠 **Bridge Overview** | Home dashboard — crew, alerts, access, automations, appliances, stove, vehicle, call kids, actions | [→ docs](./docs/cards/bridge.md) |
 | ⬡ **Hexa-Tiles** | Hexagonal dashboard overview — person, weather, entity tiles | [→ docs](./docs/cards/hexa-tiles.md) |
 | 💡 **Lights** | Auto-discovers lights, groups by floor/area | [→ docs](./docs/cards/lights.md) |
 | 🌦️ **Weather** | Current conditions + hourly chart + daily forecast | [→ docs](./docs/cards/weather.md) |
@@ -101,18 +101,34 @@ Animated and static icons loaded via the HA native icon registry — **no CDN, w
 
 **Weather animated icons** (used by Hexa-Tiles) are loaded via the `sci:` namespace and animate day/night states automatically.
 
+> [!TIP]
+> **Use sci-fi icons in your own cards or components**: the `<sci-icon>` custom element is available globally once the bundle is loaded. Use it anywhere in your HA dashboard:
+> ```html
+> <sci-icon icon="sci:stove" style="--icon-width:32px;--icon-color:#00d2ff"></sci-icon>
+> <sci-icon icon="mdi:home"></sci-icon>
+> ```
+> CSS custom properties: `--icon-width` (default 24px) · `--icon-height` (default 24px) · `--icon-color` (default `currentColor`).
+
 ---
 
 ## 🔧 Developer setup
 
 ```bash
 npm install          # install deps
-npm test             # run 953 tests (Vitest + happy-dom)
+npm test             # run 967 tests (Vitest + happy-dom)
 npm run typecheck    # TypeScript strict check
 npm run lint         # ESLint
 npm run build        # produce dist/sci-fi.min.js
 npm run test:coverage  # coverage report (target: ≥90%)
 ```
+
+Workbench (dev preview):
+
+```bash
+npx serve dev -p 8888   # serves dev/workbench.html
+```
+
+The **🎨 Icons** tab in the workbench shows all `sci:` icons dynamically loaded from the bundle — search, resize, color-pick, and copy `sci:name` to clipboard.
 
 Copy to HA after build:
 
@@ -145,63 +161,4 @@ To add a language:
 
 ## 📋 Changelog
 
-### v1.0.0 — 2026-05-26 *(Finalized & Urbanized)*
-
-#### ⬡ Guidelines Compliance & Lovelace Actions Delta Remediation
-- **Lovelace Actions Support**: Implemented a lightweight, zero-dependency `fireHassAction()` event dispatcher utilizing native CustomEvent bubbling up the DOM tree, fully satisfying Lovelace tap/hold/double_tap custom action configs with zero npm package overhead (saving ~70KB+ in final IIFE bundle).
-- **Interactive triggers**: Bound click/action triggers to custom tiles in `sci-fi-hexa-tiles.ts` and card-level tap actions to the header text in `sci-fi-lights.ts`.
-- **Card Sizing Contract**: Made all 8 custom cards implement the standard `LovelaceCard` typescript interface contract and overrode `getCardSize()` with fallback guards protecting against raw unconfigured instantiation.
-- **Theme and Variable Remediation**: Wrapped climates card in `<ha-card>` for native frames and migrated season colors to CSS custom properties with fallbacks (`var(--sf-season-blue, #acd5f3)`).
-- **Style Cleanup**: Substituted hardcoded colors with `--sf-*` tokens in vacuum card styles, and enabled custom card picker `documentationURL` and HACS plugin classifications.
-
-#### ⬡ Codebase Urbanization & Style Extraction — Major Achievements
-- **Kebab-case Folder Naming**: Renamed `hexa_tiles` to `hexa-tiles` across sources, bundlers, and tests.
-- **Stylesheet Offloading**: Extracted all inline styles in climates, weather, lights, and hexa-tiles cards into cacheable, dedicated `styles.ts` files with strict `:host` containment.
-- **Unified Test Suites**: Integrated all fragmented `*-extended.test.ts`, `*-new.test.ts`, and `*-design.test.ts` files directly into their respective primary card test files, purging 8 legacy test files from disk.
-- **Architectural Integrity**: Cleared all layer and boundary violations via Sentrux analysis, moving constants to correct layers (e.g. `vehicle_const.ts` to `src/components/`).
-
-#### ⬡ Hexa-Tiles — major overhaul
-- **Fully responsive checkerboard grid** — ResizeObserver replaces `window.innerWidth`; `--cols` CSS custom property set on `:host` for correct PC/tablet/phone interlocking alignment
-- **Animated weather icons** — custom `sci:` namespace animated SVGs replace MDI icons; day/night states animate automatically; city name displayed instead of temperature
-- **Tile aggregation** — tiles now group entities by `kind/group`; media player `playing` state supported
-- **Dynamic day/night active states** — sun tile highlights yellow during daytime
-- **Avatar status badge** — resized and repositioned; circle background removed
-- **Hover effects** — smooth scale + glow on hexagon hover (floor selectors and area tiles)
-
-#### 🌦️ Weather — full restoration
-- Legacy layout and Chart.js integration fully restored
-- Forecast WebSocket subscription reconnected
-- Background/border removed for seamless card integration
-- Solid fallback colors for HA legacy theme variables
-
-#### 🌡️ Climates — UI restoration
-- Full legacy sci-fi UI and radiator controls restored
-- Dropdown opens **downward** (`position=bottom`); anchored `right: 0` to prevent overflow
-- Wheel anchored to radiator white square; connector line aligned
-- Preset and HVAC mode buttons: spacing, borders, colors unified with lights card
-
-#### 💡 Lights
-- Robust floor/area validation — validates by ID existence, not light count (avoids false negatives on first HA load)
-- Hexagon hover: improved spacing and scale effect
-
-#### 🖼️ Custom icons
-- Custom animated SVGs and static icons restored and integrated via `sci:` namespace
-
-#### 🔧 sf-icon / icon-cache fixes
-- Hybrid native rendering strategy: delegates to `<ha-icon>` in production, avoiding deprecated `frontend/get_icons` WebSocket API
-- Race condition on startup resolved (connection property update now triggers icon re-fetch)
-- Concurrent fetch rate limiter fixed; `registryPromise` decoupled per connection object
-
-#### 🌐 i18n — restored
-- `@lit/localize` runtime i18n system re-integrated after refacto had removed it
-- `SciFiBaseCard` and `SciFiBaseEditor`: `hass` setter calls `setLocale()` when language changes; `updateWhenLocaleChanges(this)` in constructors
-- `sf-radiator`: all preset/HVAC mode labels (`heat`, `cool`, `comfort`, `eco`, `frost protection`…) now use `msg()` for reactive translation
-- Full FR translation map restored (`src/locales/locales/fr.ts` — 170+ entries)
-
-#### 🧪 Tests & coverage
-- **953 tests** — 87 test files, 100% TDD file-matching (every source module has a test file), securing **87% line coverage** / **75.5% branch coverage** / **82.6% function coverage**, validated under a strict `.tdd_lock` sequence.
-- **Vitest & happy-dom**: Fully compliant with browser DOM mock setups, covering all reactive local and dynamic translations.
-
----
-
-*Previous releases: see [GitHub Releases](https://github.com/adrien-parasote/ha-sci-fi/releases)*
+See [CHANGELOG.md](./CHANGELOG.md) for the full release history.

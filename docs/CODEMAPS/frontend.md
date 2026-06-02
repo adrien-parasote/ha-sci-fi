@@ -1,4 +1,4 @@
-<!-- Generated: 2026-06-02 | Files scanned: ~95 | Token estimate: ~450 -->
+<!-- Generated: 2026-06-02 | Files scanned: ~110 | Token estimate: ~520 -->
 
 # ha-sci-fi Frontend Codemap
 
@@ -23,9 +23,10 @@ All cards register as standard web components and are bound in `src/sci-fi.ts`.
 
 ## Components Hierarchy
 - **Icons (`sf-icon/`)**
-  - `sf-icon` → Renders MDI SVGs
+  - `sf-icon` → Renders MDI SVGs and custom sci-fi icons (internal element, used by built-in cards)
+  - `sci-icon` → Public-facing `<sci-icon>` element — same API as `sf-icon`, usable in any HA component (`sci:`, `sf:`, `mdi:` prefixes; CSS props: `--icon-width`, `--icon-height`, `--icon-color`)
+  - `sf-iconset` → Registers `sci:` namespace via `window.customIconsets` (`<ha-icon>`) + `window.customIcons.sci` with `getIconList()`/`getIcon()` (`<ha-icon-picker>` search integration)
   - `icon-cache` → LRU in-memory + IndexedDB fallback + HA native WebSocket bridge
-  - `sf-iconset` → Local icon registry
 - **Inputs (`editor-inputs/`)**
   - `sf-editor-input` → Text/Number fields
   - `sf-editor-dropdown` / `sf-editor-dropdown-entity` / `sf-editor-dropdown-icon` → Selectors
@@ -50,3 +51,16 @@ All cards register as standard web components and are bound in `src/sci-fi.ts`.
 - **Dictionaries:** `src/locales/locales/fr.js` (Target, generated — do not edit manually), `xliff/fr.xlf` (Source translation file, edit this)
 - **Pattern:** All editor labels use `this.getLabel('key')` via `SciFiBaseEditor.getLabel()` — never `msg('string')` directly in editor templates.
 - **Workflow:** `npx lit-localize extract` → edit `xliff/fr.xlf` → `npx lit-localize build` → `fr.js` is regenerated.
+
+## Workbench Dev Tools (`dev/`)
+
+| File | Role |
+|---|---|
+| `dev/workbench.html` | Entry point — tab layout, toolbar, preview area |
+| `dev/modules/workbench-app.js` | Main orchestrator — card loading, scenarios, live/mock hass |
+| `dev/modules/icon-browser.js` | Icon browser panel — dynamically reads `window.customIcons.sci.getIconList()`, renders all `sci:` icons in an isolated-shadow-root grid with search, size slider, color picker |
+| `dev/cards/_registry.js` | Card registry — imports all card modules + the special `icons` panel |
+| `dev/cards/icons.js` | Icon browser card entry (`type: 'iconpicker'`) — triggers `mountIconBrowser()` instead of a Lit card mount |
+| `dev/cards/hexa.js` … `bridge.js` | One module per card — provides `tag`, `config`, `scenarios` |
+
+**Icon Browser rendering contract:** weather icons (`SVGTemplateResult` with `<symbol>` IDs) are rendered inside an isolated Shadow Root per cell to prevent SVG symbol ID conflicts in the flat workbench DOM. This is workbench-only — production cards are unaffected.

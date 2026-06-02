@@ -14,6 +14,8 @@
 | F-COMP-02 | `sf-radiator` → 4 sub-composants | ✅ 4 sub-composants in `sf-radiator/` |
 | F-COMP-03 | Shared components migrated TypeScript | ✅ `sf-accordion`, `sf-tabs`, `sf-toggle-switch` |
 | F-COMP-04 | Iconset custom fallback | ✅ `sf-icon.ts` fallback |
+| F-COMP-05 | `sci-icon` public element | ✅ `sci-icon.ts` — global `<sci-icon>` usable in any HA card |
+| F-COMP-06 | HA icon-picker integration | ✅ `sf-iconset.ts` — `window.customIcons.sci.getIconList()` + `getIcon()` |
 
 ---
 
@@ -23,17 +25,20 @@
 src/
 └── components/
     ├── sf-icon/
-    │   ├── sf-icon.ts              [NEW] Icon rendering element
-    │   ├── icon-cache.ts           [NEW] idb-keyval icon cache
+    │   ├── sf-icon.ts              Icon rendering element (internal, used by sci-fi cards)
+    │   ├── sci-icon.ts             Public-facing <sci-icon> element (usable in any HA card)
+    │   ├── sf-iconset.ts           Registers sci: namespace via window.customIconsets (ha-icon)
+    │   │                           + window.customIcons.sci with getIconList()/getIcon() (ha-icon-picker)
+    │   ├── icon-cache.ts           idb-keyval icon cache (in-memory + IndexedDB)
     │   └── data/
-    │       ├── sf-icons.ts         [NEW] Custom static SVGs
-    │       └── sf-weather-icons.ts [NEW] Animated weather SVGs
+    │       ├── sf-icons.ts         Custom static SVG path strings
+    │       └── sf-weather-icons.ts Animated weather SVG TemplateResults
     ├── sf-radiator/
-    │   ├── sf-radiator.ts          [NEW] Main radiator container
-    │   ├── sf-radiator-button.ts   [NEW] Mode select buttons
-    │   ├── sf-radiator-gauge.ts    [NEW] Heat circular gauge
-    │   └── sf-radiator-temp.ts     [NEW] Target temp selector
-    └── sf-toggle-switch.ts         [NEW] Custom switch component
+    │   ├── sf-radiator.ts          Main radiator container
+    │   ├── sf-radiator-button.ts   Mode select buttons
+    │   ├── sf-radiator-gauge.ts    Heat circular gauge
+    │   └── sf-radiator-temp.ts     Target temp selector
+    └── sf-toggle-switch.ts         Custom switch component
 ```
 
 ---
@@ -65,9 +70,26 @@ src/
  ### Public Interface
 | Element | Consumed by | Description |
 |---|---|---|
-| `<sf-icon>` | Lovelace Cards | Resolves and displays SVGs from package or MDI |
+| `<sf-icon>` | Lovelace Cards (internal) | Resolves and displays SVGs from package or MDI |
+| `<sci-icon>` | Any HA component or card | Public-facing icon element — identical to `<sf-icon>` but stable public tag name. Supports `sci:`, `sf:`, `mdi:` prefixes and `--icon-width`, `--icon-height`, `--icon-color` CSS custom properties |
 | `<sf-toggle-switch>` | Card Editors | Toggles switch boolean configurations |
 | `<sf-radiator>` | Climates Card | Climate entity thermostat rendering |
+
+### HA Icon Picker API
+
+`sf-iconset.ts` registers two objects on `window`:
+
+| Object | Key | Purpose |
+|---|---|---|
+| `window.customIconsets['sci']` | `sci` | Used by `<ha-icon icon="sci:name">` — returns `{ path, viewBox }` for direct resolution |
+| `window.customIcons['sci']` | `sci` | Used by `<ha-icon-picker>` search — exposes `getIcon(name)` and `getIconList()` |
+
+**`getIconList()` contract:** `() => Promise<{name: string, keywords?: string[]}[]>`
+- Returns all `sci:` icon names (static + animated weather icons)
+- Non-enumerable on the map (does not pollute icon path lookups in `sf-icon.ts`)
+
+**`getIcon(name)` contract:** `(name: string) => Promise<{ path: string; viewBox: string }>`
+- Used by HA to preview an icon before selection
 
 ---
 
@@ -95,6 +117,9 @@ src/
 | TC-403 | Unit | icon-cache saves icons successfully | Fetch and cache request | Stores SVG in idb-keyval cache |
 | TC-404 | Unit | sf-radiator compiles correctly | Active climate configuration | Renders nested radiator elements |
 | TC-405 | Unit | sf-toggle-switch dispatch events | Click active element | Dispatches custom change event |
+| TC-406 | Unit | sci-icon mirrors sf-icon API | sci: / sf: / mdi: icon | Renders correctly for each prefix |
+| TC-407 | Unit | getIconList() returns all sci: icons | Call getIconList() | Returns array with name for each registered icon |
+| TC-408 | Unit | getIcon() returns path+viewBox | Call getIcon('stove') | Returns `{ path: string, viewBox: '0 0 24 24' }` |
 | IT-401 | Integration | Icon cache hit avoids server queries | Load cached icon again | Loads from DB without fetch requests |
 | IT-402 | Integration | Radiator buttons update HA states | Click radiator buttons | Dispatches climate service call event |
 | IT-403 | Integration | Components render on state update | Modify entity state | Component updates view immediately |

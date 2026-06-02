@@ -79,14 +79,19 @@ This generates `dist/sci-fi.min.js` with the exact signature of version `X.Y.Z`.
 
 ## Step 4 — Commit, Tag & Push (`ha-sci-fi`)
 
+> ⛔ **Tag convention: NO `v` prefix.** All tags use bare `X.Y.Z` (e.g. `1.3.1`), NOT `v1.3.1`. Every existing tag confirms this: `1.2.2`, `1.2.3`, `1.3.0`. Using `v` prefix is a violation.
+
 The agent runs:
 
 ```bash
 git add package.json CHANGELOG.md dist/sci-fi.min.js
-./scripts/sc-commit.sh "chore(release): bump version to vX.Y.Z"
-git tag vX.Y.Z
+cat > /tmp/commit_msg.txt << 'EOF'
+chore(release): bump version to X.Y.Z
+EOF
+./scripts/sc-commit.sh -F /tmp/commit_msg.txt && rm /tmp/commit_msg.txt
+git tag X.Y.Z
 git push origin main
-git push origin vX.Y.Z
+git push origin X.Y.Z
 ```
 
 HACS automatically detects the new release from the GitHub tag.
@@ -126,7 +131,7 @@ curl -s -X POST \
   -H "Accept: application/vnd.github.v3+json" \
   https://api.github.com/repos/adrien-parasote/ha-sci-fi/releases \
   -d "$(jq -n \
-    --arg tag 'vX.Y.Z' \
+    --arg tag 'X.Y.Z' \
     --arg name '<Thematic name + icons>' \
     --arg body "$BODY" \
     '{tag_name: $tag, name: $name, body: $body, draft: true}')" 

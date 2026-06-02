@@ -1,7 +1,7 @@
 # 🎯 STRATEGY — ha-sci-fi v1.0.0 Blueprint
 
 > Document Type: Strategic
-> Stream Coding · STRATEGY gate · Révisé 2026-05-24
+> Stream Coding · STRATEGY gate · Revised 2026-05-24
 > Decision: **Full rewrite TypeScript — ZERO breaking YAML changes**
 > Implementation specs: [Spec 01](./specs/01_infrastructure.md) · [Spec 02](./specs/02_domain_selectors.md) · [Spec 03](./specs/03_base_classes.md) · [Spec 04](./specs/04_components.md) · [Spec 05](./specs/05_cards.md) · [Spec 06](./specs/06_entry_migration.md)
 
@@ -200,80 +200,26 @@
 
 ## Architecture Decision Records
 
-### ADR-001 : Full Rewrite vs Incremental Refactoring
-- **Decision :** Full rewrite
-- **Status :** Accepted
-- **Context :** 8 cartes, 0 tests, stack EOL, bugs critiques, architecture non typée
-- **Rationale :** TypeScript strict + tests reproductibles + architecture green-field. Refactoring incrémental préserve les anti-patterns structurels JS.
-- **Consequences :** Les 8 cartes sont indisponibles pendant la migration sur la branche `v1.0.0-wip`. Main reste stable sur v0.9.6.
+> Full ADR files live in [`docs/adr/`](../adr/). This table is a summary index.
 
-### ADR-002 : Rollup 4 (pas Vite)
-- **Decision :** Rollup 4
-- **Status :** Accepted
-- **Context :** HA custom cards requièrent un bundle IIFE single-file. Vite génère nativement des ES modules pour SPA.
-- **Rationale :** Rollup est le standard communauté (boilerplate-card, Mushroom). Migration 2→4 documentée. Vite + IIFE = configuration non standard.
-- **Consequences :** Dev server = `@web/dev-server`. Acceptable.
+| ADR | Decision | Status |
+|-----|----------|---------|
+| [ADR-001](../adr/ADR-001_full-rewrite.md) | Full Rewrite TypeScript | ✅ Accepted |
+| [ADR-002](../adr/ADR-002_rollup4.md) | Rollup 4 (not Vite) | ✅ Accepted |
+| [ADR-003](../adr/ADR-003_lodash-removed.md) | lodash-es removed | ✅ Accepted |
+| [ADR-004](../adr/ADR-004_domain-first-tests.md) | Domain-first tests (not E2E) | ✅ Accepted |
+| [ADR-005](../adr/ADR-005_zero-breaking-yaml.md) | **Zero Breaking YAML Changes** | ✅ Accepted — **CRITICAL** |
+| [ADR-006](../adr/ADR-006_config-metadata.md) | config-metadata.ts kept (not zod) | ✅ Accepted |
+| [ADR-007](../adr/ADR-007_workbench-mandatory.md) | Local workbench mandatory before release | ✅ Accepted |
+| [ADR-008](../adr/ADR-008_selective-rendering.md) | Selective rendering via getRelevantEntities() | ✅ Accepted |
+| [ADR-009](../adr/ADR-009_urbanization.md) | Unified card structure + styles urbanization | ✅ Accepted |
+| [ADR-010](../adr/ADR-010_test-consolidation.md) | Consolidated unit test suites | ✅ Accepted |
+| [ADR-011](../adr/ADR-011_tv-dpad-mapping.md) | TV D-pad remote mapping | ✅ Accepted |
+| [ADR-012](../adr/ADR-012_bridge-sections.md) | Bridge: independent section components | ✅ Accepted |
+| [ADR-013](../adr/ADR-013_container-queries.md) | Bridge: container queries for responsive | ✅ Accepted |
+| [ADR-014](../adr/ADR-014_crew-actions-fullwidth.md) | Bridge: CREW + ACTIONS always full width | ✅ Accepted |
+| [ADR-015](../adr/ADR-015_persons-dynamic.md) | Bridge: dynamic persons from hass.states | ✅ Accepted |
 
-### ADR-003 : lodash-es supprimé
-- **Decision :** Supprimer lodash-es
-- **Status :** Accepted
-- **Context :** Utilisé uniquement pour `isEqual` sur les domain objects.
-- **Rationale :** Lit `@state()` déclenche le re-render quand la référence change. Si le domain object est reconstruit à chaque `hass` update (nouvel objet → nouvelle référence), Lit re-rendra. `isEqual` n'est plus nécessaire.
-- **Consequences :** Gain ~70KB dans le bundle. Si perf issue → ADR à réviser après mesure.
-
-### ADR-004 : Tests domain-first (pas E2E)
-- **Decision :** `@web/test-runner` + `@open-wc/testing` pour domain + composants. Pas de tests E2E dans HA réel.
-- **Status :** Accepted
-- **Context :** Tester dans HA réel requiert une instance dédiée (devcontainer) et des fixtures complexes.
-- **Rationale :** 80% de la valeur des tests est dans le domain model (pure TS, testable sans browser). Les composants Lit sont testés avec `fixture()` et un `hass` mocké.
-- **Consequences :** Les interactions réseau réelles (appels `callService`) ne sont pas testées. Acceptable pour usage personnel.
-
-### ADR-005 : Zero Breaking YAML Changes ⚠️ NOUVEAU — CRITIQUE
-- **Decision :** Aucun champ YAML de config ne peut être renommé ou supprimé.
-- **Status :** Accepted
-- **Context :** La v1.0.0-wip a renommé 8 champs YAML et supprimé des features entières, cassant les dashboards en production.
-- **Rationale :** Les noms de champs YAML sont un **contrat public** entre les cards et les dashboards utilisateur. Changer ces noms sans contrôle brise silencieusement les configurations existantes. Usage personnel ne signifie pas "sans coût de migration" — au contraire, l'utilisateur n'a pas d'équipe pour absorber ce coût.
-- **Source de vérité :** `docs/research/discovery.md` §2 (inventaire exhaustif) + `src/cards/*/config-metadata` v0.9.6.
-- **Règle de validation :** Avant chaque PR, diff les champs TypeScript dans `src/types/config.ts` contre `docs/research/discovery.md` §2. Tout champ absent ou renommé bloque le merge.
-- **Consequences :**
-  - Pas de MIGRATION.md nécessaire (pas de breaking change).
-  - `config-metadata.ts` migré en TS mais schéma inchangé.
-  - Si un champ DOIT vraiment changer → nouvelle majeure (v2.0.0) avec MIGRATION.md et période de deprecated.
-
-### ADR-006 : config-metadata.ts conservé (pas remplacé par zod)
-- **Decision :** Migrer `config-metadata` en TypeScript typé, ne pas le remplacer par zod.
-- **Status :** Accepted
-- **Context :** La v1.0.0-wip a remplacé `config-metadata` par des interfaces TypeScript simples dans `types/config.ts`, perdant la validation dynamique et l'éditeur HA.
-- **Rationale :** `config-metadata` fait 3 choses simultanément : (1) valide la config YAML, (2) applique les valeurs par défaut, (3) pilote l'UI de l'éditeur HA. Ces 3 responsabilités sont intrinsèquement liées au schéma. zod ferait (1) mais pas (2)+(3) sans duplication.
-- **Consequences :** `config-metadata.ts` est migré en TypeScript avec types stricts pour les valeurs `type`, `mandatory`, `default`. L'éditeur HA continue à être piloté par ce schéma déclaratif.
-
-### ADR-007 : Workbench local obligatoire avant déploiement prod
-- **Decision :** L'utilisation du workbench local (dev/workbench.html) est obligatoire pour toute validation visuelle avant release.
-- **Status :** Accepted
-- **Context :** Les déploiements en production ont provoqué des régressions visuelles non détectées par les tests unitaires headless.
-- **Rationale :** LitElement repose sur un cycle de rendu asynchrone complexe et des styles CSS injectés qui peuvent se comporter différemment dans HA. Une validation visuelle systématique dans un workbench simulant des entités dynamiques est indispensable.
-- **Consequences :** Tout changement doit être testé manuellement en mode Mock ET Live dans `dev/workbench.html` via `npx serve .` avant d'être livré.
-
-### ADR-008 : Rendu sélectif par carte (getRelevantEntities) ⚠️ NOUVEAU
-- **Decision :** Implémenter la fonction `getRelevantEntities()` sur l'ensemble des 8 cartes pour filtrer le cycle `shouldUpdate`.
-- **Status :** Accepted
-- **Context :** Home Assistant injecte l'énorme dictionnaire d'états `hass` en permanence. Si aucune restriction n'est en place, chaque changement de n'importe quel capteur de la maison provoque le re-render complet des 8 cartes de la page.
-- **Rationale :** Restreindre le cycle de rendu uniquement aux entités suivies par la configuration de chaque carte élimine le lag CPU et fluidifie le chargement et les animations.
-- **Consequences :** Chaque carte doit maintenir une liste propre d'entités d'intérêt dérivée de ses paramètres de configuration.
-
-### ADR-009 : Uniformisation de la structure et des feuilles de style (Urbanisation) ⚠️ NOUVEAU
-- **Decision :** Adopter une arborescence strictement standardisée pour les cartes, renommer `hexa_tiles` en `hexa-tiles` et déporter tous les CSS en ligne dans des fichiers `styles.ts` autonomes.
-- **Status :** Accepted
-- **Context :** Incohérences dans les noms de répertoires (mélange snake_case/kebab-case) et styles CSS déclarés inline dans le code pour 3 cartes (`lights`, `weather`, `hexa_tiles`).
-- **Rationale :** L'urbanisation et la cohésion facilitent la maintenance et la portabilité des cartes dans le futur.
-- **Consequences :** Création de `styles.ts` pour toutes les cartes et renommage des dossiers associés dans `src/` et `tests/`.
-
-### ADR-010 : Consolidation de la suite de tests unitaires ⚠️ NOUVEAU
-- **Decision :** Fusionner les fichiers de tests secondaires éparpillés (`*-extended.test.ts`, `*-new.test.ts`, `*-design.test.ts`) dans les suites unifiées `sci-fi-<card>.test.ts` et `sci-fi-<card>-editor.test.ts`.
-- **Status :** Accepted
-- **Context :** La suite de tests a enflé jusqu'à 64 fichiers, dupliquant inutilement les configurations et mocks de HASS.
-- **Rationale :** Avoir exactement un fichier test par composant carte et un fichier test par éditeur simplifie l'exécution locale de Vitest et les re-runs.
-- **Consequences :** Restructuration et regroupement complet dans `tests/cards/`.
 
 ---
 

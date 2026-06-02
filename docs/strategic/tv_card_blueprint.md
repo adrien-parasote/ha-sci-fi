@@ -68,6 +68,6 @@ The visual and strategic design treats the television as the main viewing viewpo
 
 We will produce:
 1. `docs/strategic/tv_card_blueprint.md` (This document)
-2. `docs/strategic/adr_tv_remote_mapping.md` (ADR-011 on D-pad execution models)
+2. `docs/adr/ADR-011_tv-dpad-mapping.md` (ADR-011 on D-pad execution models)
 3. `docs/specs/cards/tv.md` (Full AI-Ready Spec)
 4. Implementation files (`src/cards/tv/...`) and Workbench simulation states.

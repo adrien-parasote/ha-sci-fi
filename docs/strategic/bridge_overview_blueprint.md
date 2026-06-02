@@ -142,38 +142,20 @@ Une carte de tableau de bord unique — la "passerelle" — affichant en temps r
 | ❌ Nouvelles couleurs / tokens CSS | Palette `common.ts` uniquement — cohérence design |
 | ❌ Portail (futur NodOn) en dur | Extensible via config YAML — sera ajouté en YAML quand disponible |
 | ❌ Notifications push / TTS depuis la carte | Hors scope carte dashboard |
-| ❌ Section d'appel enfants en dur (`call_kids`) | Remplacée par la section générique `actions` plus flexible |
 
 ---
 
 ## Architecture Decision Records
 
-### ADR-B01 : Composants sections indépendants
+> Full ADR files live in [`docs/adr/`](../adr/). This table is a summary index.
 
-- **Decision :** Chaque section de la Bridge Overview est un composant Lit `@customElement` dédié.
-- **Status :** Accepted
-- **Rationale :** Testabilité individuelle de chaque section, `shouldUpdate()` ciblé par section, extensibilité sans toucher la carte principale.
-- **Consequences :** 8 composants sections (crew, alerts, access, automations, appliances, stove, vehicle, actions) + 1 carte orchestratrice. Chaque composant < 200 lignes.
+| ADR | Decision | Status |
+|-----|----------|---------|
+| [ADR-012](../adr/ADR-012_bridge-sections.md) | Independent section components | ✅ Accepted |
+| [ADR-013](../adr/ADR-013_container-queries.md) | Container queries for responsive (not media queries) | ✅ Accepted |
+| [ADR-014](../adr/ADR-014_crew-actions-fullwidth.md) | CREW + ACTIONS always full width | ✅ Accepted |
+| [ADR-015](../adr/ADR-015_persons-dynamic.md) | Dynamic persons from hass.states | ✅ Accepted |
 
-### ADR-B02 : Container queries pour responsive (pas media queries)
-
-- **Decision :** Le responsive utilise `@container sf-card (min-width: 600px)` — pas `@media`.
-- **Status :** Accepted
-- **Rationale :** La carte peut être placée dans une colonne étroite même sur desktop. Container queries réagissent à la largeur du conteneur carte, pas du viewport.
-- **Consequences :** `common.ts` fournit déjà `container-type: inline-size; container-name: sf-card`. Zéro config supplémentaire.
-
-### ADR-B03 : Sections CREW et ACTIONS toujours pleine largeur
-
-- **Decision :** CREW (présence) et ACTIONS (boutons génériques) ignorent le grid 2 colonnes — toujours `grid-column: 1 / -1`.
-- **Status :** Accepted
-- **Rationale :** CREW est la section la plus importante (lisibilité immédiate). ACTIONS regroupe les raccourcis d'action rapides qui nécessitent une largeur complète pour s'aligner sous forme de grille adaptative.
-
-### ADR-B04 : Persons dynamiques depuis `hass.states`
-
-- **Decision :** La carte lit tous les `person.*` depuis `config.persons` (liste YAML). Le state de chaque person contient la zone (`home`, `work`, `school`, `not_home`, etc.).
-- **Status :** Accepted
-- **Rationale :** `hass.states['person.adrien'].state` = nom de la zone. `entity_picture` = avatar natif HA. Pas de template custom nécessaire.
-- **Consequences :** Quand Adrien ajoute un enfant dans HA + dans la config YAML, il apparaît automatiquement dans la carte.
 
 ---
 

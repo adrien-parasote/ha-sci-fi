@@ -55,7 +55,7 @@ src/cards/bridge/sections/
   sf-bridge-appliances.ts   ← cycles + consumables
   sf-bridge-stove.ts        ← pellets progress + stock counter
   sf-bridge-vehicle.ts      ← EV power sensor read-only
-  sf-bridge-actions.ts      ← quick actions
+  sf-bridge-actions.ts      ← quick-action buttons panel
 
 ```
 
@@ -99,7 +99,7 @@ Dynamic icon values **require** Lit property binding (`.icon=`), not attribute b
 
 ## Test Coverage
 
-- **87 test files / 953 tests** — all GREEN
+- **87 test files / 954 tests** — all GREEN
 - Global: Lines 86.3% | Branches 75.49% | Functions 82.62% | Statements 87.95%
 - Thresholds: lines/statements/functions ≥ 80%, branches ≥ 75%
 - `tsconfig.json` has `noUncheckedIndexedAccess: true` — array accesses use `!` non-null assertion

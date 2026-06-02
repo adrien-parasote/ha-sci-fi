@@ -1,7 +1,7 @@
 # Spec 11 — Guidelines Delta Remediation
 
 > Document Type: Implementation
-> Covers: [implementation_plan.md](../implementation_plan.md#L1)
+> Covers: [MASTER.md](../MASTER.md)
 > Depends on: [Spec 01](./01_infrastructure.md#L1), [Spec 03](./03_base_classes.md#L1), [Spec 05](./05_cards.md#L1)
 
 ---

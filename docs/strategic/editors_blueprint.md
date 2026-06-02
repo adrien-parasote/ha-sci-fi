@@ -65,7 +65,7 @@ src/cards/vacuum/
 src/cards/vehicles/
 └── sci-fi-vehicles-editor.ts          # @customElement('sci-fi-vehicles-editor')
 
-src/cards/hexa_tiles/
+src/cards/hexa-tiles/
 └── sci-fi-hexa-tiles-editor.ts        # @customElement('sci-fi-hexa-tiles-editor')
 ```
 

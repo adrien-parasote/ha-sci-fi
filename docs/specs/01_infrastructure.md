@@ -1,7 +1,7 @@
 # Spec 01 — Infrastructure & Tooling
 
 > Document Type: Implementation
-> Covers: Step 1 (Infra) from [implementation_plan.md](../implementation_plan.md#L1)
+> Covers: Step 1 (Infra) from [MASTER.md](../MASTER.md)
 > Branch: `v2`
 
 ---
@@ -35,7 +35,7 @@
 ├── .devcontainer/devcontainer.json [NEW] DevContainer settings
 ├── .devcontainer/docker-compose.yml[NEW] Home Assistant dev compose
 ├── .github/workflows/ci.yml        [NEW] GitHub Actions CI pipeline
-└── docs/implementation_plan.md     [NEW] Project roadmap
+└── docs/current-work.md        Active in-flight work (replaces implementation_plan.md)
 ```
 
 ---
@@ -60,7 +60,7 @@
  ### Consumes
 | Artefact | Provider | Description |
 |---|---|---|
-| `docs/implementation_plan.md` | Master Spec | Feature lists and implementation order |
+| `docs/current-work.md` | Master Spec | Active in-flight work (replaces implementation_plan.md) |
 
  ### Public Interface
 | Element | Consumed by | Description |

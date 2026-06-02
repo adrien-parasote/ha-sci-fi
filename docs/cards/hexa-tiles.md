@@ -61,11 +61,6 @@ weather:
   state_yellow: "Jaune"
   state_orange: "Orange"
   state_red: "Rouge"
-persons:
-  - person.alice
-  - person.bob
-vehicles:
-  - device_tracker.my_car
 tiles:
   - entity: light.salon
     name: Lights
@@ -88,8 +83,6 @@ tiles:
 | `type` | String | ✅ | `custom:sci-fi-hexa-tiles` | |
 | `header_message` | String | | Text displayed at the top | `''` |
 | `weather` | Object | | Weather tile config | |
-| `persons` | List\<String\> | | Person entity IDs | `[]` |
-| `vehicles` | List\<String\> | | Device tracker entity IDs | `[]` |
 | `tiles` | List\<Object\> | | Custom tile definitions | `[]` |
 
 ### Options — `weather`

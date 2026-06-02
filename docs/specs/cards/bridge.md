@@ -4,7 +4,7 @@
 > Covers: F-BR-01 → F-BR-15 (see Blueprint Coverage below)
 > Depends on: [Spec 03 — Base Classes](../03_base_classes.md) · [Spec 04 — Components](../04_components.md) · [Strategic Blueprint](../../strategic/bridge_overview_blueprint.md)
 > ADR-005: Zero breaking YAML changes — all config field names frozen at first release.
-> ADR-B01: Section components independent. ADR-B02: Container queries. ADR-B03: Crew + Call Kids full-width.
+> ADR-012: Section components independent. ADR-013: Container queries. ADR-014: Crew + ACTIONS always full-width.
 
 ---
 
@@ -22,7 +22,7 @@
 | F-BR-08 | `sf-bridge-access` — cover + lock controls (extensible list) | This spec § sf-bridge-access |
 | F-BR-09 | `sf-bridge-automations` — toggles + slider (extensible list) | This spec § sf-bridge-automations |
 | F-BR-10 | `sf-bridge-appliances` — cycles + consumables (extensible list) | This spec § sf-bridge-appliances |
-| F-BR-11 | `sf-bridge-call-kids` — input_button action | This spec § sf-bridge-call-kids |
+| F-BR-11 | `sf-bridge-actions` — quick-action buttons panel (scripts, automations, input_buttons) | This spec § sf-bridge-actions |
 | F-BR-12 | `sci-fi-bridge` card — orchestrator + CSS Grid responsive layout | This spec § sci-fi-bridge Card |
 | F-BR-13 | `sci-fi-bridge-editor` — HA config editor | This spec § Editor |
 | F-BR-14 | Tests ≥ 80% coverage — domain + composants | This spec § Test Cases |
@@ -33,7 +33,7 @@
 
 ## Context
 
-La carte `sci-fi-bridge` est la carte dashboard maison de la release v1.3 (Bridge Overview). Elle affiche le statut global de la maison en temps réel : présence de l'équipage, alertes critiques, points d'accès, automatisations, électroménager, poêle, voiture, et un bouton d'appel enfants.
+La carte `sci-fi-bridge` est la carte dashboard maison de la release v1.3 (Bridge Overview). Elle affiche le statut global de la maison en temps réel : présence de l'équipage, alertes critiques, points d'accès, automatisations, électroménager, poêle, voiture, et un panneau d'actions rapides configurables.
 
 **Tag custom element :** `sci-fi-bridge`
 **Répertoire :** `src/cards/bridge/`
@@ -571,7 +571,7 @@ export const bridgeStyles = css`
     }
   }
 
-  /* CREW + CALL KIDS : toujours pleine largeur */
+  /* CREW + ACTIONS : toujours pleine largeur */
   .full-width {
     grid-column: 1 / -1;
   }
@@ -957,76 +957,8 @@ private _setSliderValue(entity: string, value: number): void {
 
 ---
 
-### sf-bridge-call-kids
-
-**Tag :** `sf-bridge-call-kids`
-**Classe CSS :** `full-width` (imposée par le parent)
-
-**Properties :**
-
-| Property | Type |
-|----------|------|
-| `config` | `BridgeCallKidsConfig` |
-| `hass` | `HomeAssistant` |
-
-**Reactive state :**
-
-```ts
-@state() private _loading: boolean = false;
-```
-
-**Action :**
-
-```ts
-private _press(): void {
-  this._loading = true;
-  void this.hass.callService('input_button', 'press', {
-    entity_id: this.config.entity,
-  }).finally(() => { this._loading = false; });
-}
-```
-
-**Render layout :**
-
-```
-.call-kids-btn (button, full width, height: 48px)
-├── ha-icon (config.icon ?? 'mdi:bullhorn', left)
-├── text: config.name ?? msg('Appeler les enfants')
-└── [si _loading] mdi:loading (spin animation)
-```
-
-**Styles bouton :**
-
-```css
-.call-kids-btn {
-  width: 100%;
-  height: 48px;
-  background: transparent;
-  border: 1px solid var(--sf-primary);
-  border-radius: var(--sf-radius);
-  color: var(--sf-primary);
-  font-size: var(--sf-font-size-base);
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--sf-spacing-sm);
-  transition: background var(--sf-transition-fast);
-}
-.call-kids-btn:hover {
-  background: var(--sf-primary-dim);
-}
-.call-kids-btn:active {
-  background: color-mix(in srgb, var(--sf-primary) 25%, transparent);
-}
-.call-kids-btn[disabled] {
-  opacity: 0.5;
-  pointer-events: none;
-}
-```
+> [!NOTE]
+> **`sf-bridge-call-kids` (removed):** This component was deleted in v1.3.1 (see [ADR-005](../../adr/ADR-005_zero-breaking-yaml.md), [L085](../../.agents/../.agents/learnings.md)). It has been replaced by the generic `sf-bridge-actions` section — any `input_button` entity can now be added to the `actions.items[]` array with a custom `name`, `icon`, and `color`. See § sf-bridge-actions above.
 
 ---
 
@@ -1093,7 +1025,6 @@ Le workbench expose **5 scénarios nommés** sélectionnables via un sélecteur 
 const BASE_ENTITIES = {
   'person.adrien':   { state: 'home', attributes: { friendly_name: 'Adrien', entity_picture: '/local/avatars/adrien.jpg' } },
   'person.virginie': { state: 'home', attributes: { friendly_name: 'Virginie', entity_picture: null } },
-  'input_button.call_kids': { state: 'unknown' },
 };
 ```
 
@@ -1195,11 +1126,10 @@ const scenarioDisconnected = {
   'counter.pellet_stock':                { state: 'unavailable' },
   'binary_sensor.clou_stove_status':     { state: 'unavailable' },
   'sensor.mureva_evlink_power':          { state: 'unavailable', attributes: { unit_of_measurement: 'W' } },
-  'input_button.call_kids':              { state: 'unavailable' },
 };
 ```
 
-### Scénario 5 — Config Partielle (CREW + CALL KIDS uniquement)
+### Scénario 5 — Config Partielle (CREW uniquement)
 
 > **Objectif :** vérifier qu'une config minimale fonctionne sans sections intermédiaires.
 
@@ -1208,13 +1138,11 @@ const scenarioDisconnected = {
 // type: custom:sci-fi-bridge
 // persons:
 //   - entity: person.adrien
-// call_kids:
-//   entity: input_button.call_kids
 
 const scenarioMinimal = {
   ...BASE_ENTITIES,
 };
-// → La carte doit afficher CREW + CALL KIDS uniquement, sans section vide visible.
+// → La carte doit afficher CREW uniquement, sans section vide visible.
 ```
 
 ---

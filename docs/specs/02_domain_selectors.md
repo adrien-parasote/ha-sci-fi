@@ -1,7 +1,7 @@
 # Spec 02 — Domain Selectors & Types
 
 > Document Type: Implementation
-> Covers: Step 2 from [implementation_plan.md](../implementation_plan.md#L1)
+> Covers: Step 2 from [MASTER.md](../MASTER.md)
 > Depends on: [Spec 01](./01_infrastructure.md#L1)
 
 ---

@@ -1,7 +1,7 @@
 # Spec 04 — Shared Components
 
 > Document Type: Implementation
-> Covers: Step 4 from [implementation_plan.md](../implementation_plan.md#L1)
+> Covers: Step 4 from [MASTER.md](../MASTER.md)
 > Depends on: [Spec 01](./01_infrastructure.md#L1), [Spec 02](./02_domain_selectors.md#L1), [Spec 03](./03_base_classes.md#L1)
 
 ---

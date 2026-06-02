@@ -748,3 +748,78 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Evidence:** Deleted `src/cards/bridge/sections/sf-bridge-call-kids.ts` and `tests/cards/bridge/sections/sf-bridge-call-kids.test.ts`. Refactored `sci-fi-bridge.ts` and `sci-fi-bridge-editor.ts` to cleanly use `actions` instead of `call_kids`. All 967 tests green.
 - **Anti-pattern:** Keeping dedicated configuration keys and custom elements for high-specificity components (e.g. `call_kids`) when a generic, modular configuration block (e.g. `actions` buttons panel) exists. This creates code duplication, multiple paths for similar UI components (buttons), and bloats the YAML schema.
 - **Fix:** Identify specialized "single-action" config components and completely sunset them. Replace them with the generic panel in the YAML schema and documentation. Update all editor schemas, cards, and test cases to use the generic layout with custom parameters (e.g. custom entity IDs, icons, and colors) in the array. Coordinate test modifications with `.tdd_lock` re-hashing to satisfy the TDD lock verification gate (`P10`).
+
+### L086: HA Hybrid TV Entities — Hardware + Cast Dual Entity Pattern
+- **Date:** 2026-06-01
+- **Source:** ha-sci-fi — sci-fi-tv card
+- **Anti-pattern:** Using only the hardware TV entity (`media_player.tv`) for state extraction. Sony Bravia integrations expose HDMI inputs but NOT active app metadata. Using a single entity misses `app_name` / `media_title` for streaming apps.
+- **Pattern:** Declare two entities in the TV card config:
+  - `entity`: main hardware entity → power, volume, HDMI source control
+  - `app_entity`: Cast/software entity → `app_name`, `media_title` extraction only
+- **Key rule:** When `app_entity` is active (has `app_name`), NEVER fall back to the main entity for missing fields like `media_title`. The hardware entity's generic `media_title` (e.g. "Smart TV") will bleed over and override the app metadata.
+- **Fix:** Prioritize `app_entity` for metadata extraction. Only fall back to main entity if `app_entity` provides NOTHING (all null/undefined):
+```typescript
+// Extract from app entity first
+let sourceLabel = appState?.attributes?.source;
+let mediaTitle = appState?.attributes?.media_title;
+let appName = appState?.attributes?.app_name;
+// Only fall back if app entity provides nothing
+if (!sourceLabel && !mediaTitle && !appName) {
+  sourceLabel = tvState.attributes.source;
+  mediaTitle = tvState.attributes.media_title;
+  appName = tvState.attributes.app_name;
+}
+```
+
+### L087: i18n + HMR Double Registration and TypeScript Resolution Conflict
+- **Date:** 2026-06-01
+- **Source:** ha-sci-fi — dev workbench + Rollup build
+- **Issue 1 (HMR):** Lit's `@customElement` calls `customElements.define` unconditionally. In HMR environments (workbench hot-reload), the bundle is re-executed, causing `NotSupportedError` on duplicate element registration.
+- **Fix (HMR):** Patch `customElements.define` at the bundle entry point to guard against re-registration:
+```typescript
+const _originalDefine = customElements.define;
+customElements.define = function(name, constructor, options) {
+  if (!customElements.get(name)) {
+    _originalDefine.call(customElements, name, constructor, options);
+  }
+};
+```
+- **Issue 2 (TypeScript resolution):** `@rollup/plugin-typescript` overrides explicit `.js` extensions — `import './locales/fr.js'` resolves to `fr.ts` if both exist. Silently bundles wrong file.
+- **Fix (TypeScript):** Ensure translation source is `.ts` only, or delete the conflicting `.ts` file if `.js` is the intended source.
+
+### L088: HA Service Domain Inference — Never Hardcode Domain from Entity Kind
+- **Date:** 2026-06-01
+- **Source:** ha-sci-fi — editor components
+- **Anti-pattern:** Hardcoding `select.select_option` when the entity might be `input_select.foo`. Fails silently because the domain is wrong.
+- **Pattern:** Always infer the service domain from the entity ID string:
+```typescript
+const domain = entityId.split('.')[0];
+// Different HA helpers use different service domains for the same concept
+const serviceDomain = domain === 'input_select' ? 'input_select' : 'select';
+this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, option: target.value });
+```
+- **Applies to:** `select_option`, `turn_on`/`turn_off` for `input_boolean` vs `switch`, slider for `input_number` vs `number`.
+
+### L089: Hexa-Tiles Unsupported Domains — Use HA Backend Aggregation
+- **Date:** 2026-06-01
+- **Source:** ha-sci-fi — sci-fi-hexa-tiles card
+- **Anti-pattern:** Adding arbitrary domains (e.g. `water_heater`, `binary_sensor`) to `ENTITY_KINDS` constant in the card. Creates frontend bloat and forces fetching all entity states.
+- **Pattern:** Use HA backend aggregation via Template Binary Sensor, then map a single `binary_sensor` entity to a standalone tile in YAML:
+```yaml
+# Home Assistant configuration.yaml (Template Binary Sensor)
+# template:
+#   - binary_sensor:
+#       - name: "Aggregated State"
+#         state: "{{ is_state('water_heater.nodon', 'on') or is_state('switch.valve', 'on') }}"
+
+# Hexa-Tiles YAML config (manual via Show Code Editor — not in GUI)
+tiles:
+  - entity: binary_sensor.aggregated_state
+    name: Water Heating
+    active_icon: mdi:water
+    inactive_icon: mdi:water-off
+    state_on: ["on"]
+    link: target-view
+    standalone: true
+```
+- **Why:** `sci-fi-hexa-tiles` stays agnostic of custom domain logic. HA handles the aggregation. The GUI editor will not show `binary_sensor` tiles (not in `ENTITY_KINDS`), so users must use YAML mode for these.

@@ -724,3 +724,21 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 - **Anti-pattern:** Calling `mountUiEditor` only from the card render path, assuming the GUI tab will always be entered fresh after a card change. Any code path that shows the GUI panel without going through `renderCard` (e.g., tab switch, page reload with persisted state) leaves `gui-editor-mount` empty.
 - **Fix:** On GUI tab click, check if `gui-editor-mount.firstChild` is null. If empty, call `mountUiEditor` with current `currentCard`, `activeConfig`, and `currentScenarioData`. This covers: (1) switching from YAML tab, (2) initial load in edit mode when no card change has been triggered.
 - **Scope:** Applies to any workbench-style editor where multiple tabs share a lazy-mounted panel. Pattern: *"Tab activation handlers must defensively check if their lazy mount point is populated, and remount if empty."*
+
+### L083: `getLabel()` Returns Empty String Silently for Unknown Keys — Always Visual-Verify After Migration
+- **Date:** 2026-06-02
+- **Source:** ha-sci-fi — sci-fi-bridge-editor i18n migration
+- **Evidence:** After migrating the bridge editor from `msg(FR)` to `getLabel(key)`, the Stove accordion rendered with an empty title. `getLabel('section-title-stove')` returned `''` because the key was omitted from `base-editor.ts`. 953/953 tests passed, build succeeded, no TypeScript error — the failure was invisible to all automated gates.
+- **Anti-pattern:** Trusting that a `getLabel()` migration is complete because tests and build pass. `getLabel()` fails silently: `key not in dict → return ''`. A missing key = invisible empty string in the UI.
+- **Fix:** After any `msg()` → `getLabel()` migration, visually verify in the running app that **every accordion/section has a visible title**. Add an assertion in tests: `expect(el.getLabel('section-title-stove')).to.not.equal('')` for each new key.
+- **Spec rule to add:** "After adding new `getLabel()` keys, manually verify in workbench that all accordion titles render non-empty. Automated tests cannot catch `getLabel()` key omissions."
+
+### L084: `msg('string_fr')` as EN Source Creates Locale Lock — Editor Labels Must Use `getLabel(key)` Pattern
+- **Date:** 2026-06-02
+- **Source:** ha-sci-fi — sci-fi-bridge-editor i18n bug cycle
+- **Evidence:** Bridge editor was the only editor using `msg('Équipage')`, `msg('Alertes')`, etc. — raw French strings as the EN source locale. When the user switched to EN, lit-localize served the raw source = French. The FR locale was also French (target == source). Both locales displayed French regardless of the language setting.
+- **Anti-pattern:** Using `msg('traduction_fr')` in an editor template when the component should support locale switching. lit-localize treats the `msg()` argument as the EN source. If the source is French, EN locale = French.
+- **Root cause:** The bridge editor was created from a French-first spec that documented labels as FR strings. The spec's i18n section listed `msg('Alertes')` as the correct pattern, which was accurate for the card template (where FR strings are fine as EN sources for untranslated items) but wrong for the editor (which must support EN/FR switching via `getLabel()`).
+- **Fix:** All editor labels must go through `this.getLabel('en_key')` via `SciFiBaseEditor.getLabel()`. The EN source in `msg()` inside `base-editor.ts` must be English. The FR target in `xliff/fr.xlf` must be French. Never use `msg('string_fr')` directly in an editor template.
+- **Spec enforcement:** Bridge spec §i18n and §Constraints updated to document this rule. Future editor specs must include: "Editor labels: `this.getLabel('key')` only. Never `msg('string')` in editor templates."
+

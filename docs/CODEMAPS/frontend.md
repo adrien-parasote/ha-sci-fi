@@ -19,7 +19,7 @@ All cards register as standard web components and are bound in `src/sci-fi.ts`.
 
 ## Base Classes
 - `SciFiBaseCard` (in `src/utils/base-card.ts`) → Core Home Assistant `hass` state proxy, error boundaries, Lit `update()` overrides.
-- `SciFiBaseEditor` (in `src/utils/base-editor.ts`) → Configuration dispatcher (`config-changed` via `_dispatchChange()`). All editors extend this class.
+- `SciFiBaseEditor` (in `src/utils/base-editor.ts`) → Configuration dispatcher (`config-changed` via `_dispatchChange()`). Exposes `getLabel(key)` for i18n — all editor labels go through this method, never via direct `msg()`. All editors extend this class.
 
 ## Components Hierarchy
 - **Icons (`sf-icon/`)**
@@ -47,4 +47,6 @@ All cards register as standard web components and are bound in `src/sci-fi.ts`.
 ## Localization
 - **Tool:** `@lit/localize`
 - **Logic:** `src/locales/localization.ts` (Dynamic loader)
-- **Dictionaries:** `src/locales/locales/fr.ts` (Target), `xliff/fr.xlf` (Source translation)
+- **Dictionaries:** `src/locales/locales/fr.js` (Target, generated — do not edit manually), `xliff/fr.xlf` (Source translation file, edit this)
+- **Pattern:** All editor labels use `this.getLabel('key')` via `SciFiBaseEditor.getLabel()` — never `msg('string')` directly in editor templates.
+- **Workflow:** `npx lit-localize extract` → edit `xliff/fr.xlf` → `npx lit-localize build` → `fr.js` is regenerated.

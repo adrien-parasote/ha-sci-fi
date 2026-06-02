@@ -1212,42 +1212,78 @@ const scenarioMinimal = {
 ## i18n
 
 **Framework :** `@lit/localize` — même pattern que toutes les cartes existantes.
-**Règle :** Ne jamais modifier `src/locales/locales/fr.ts` à la main. Toujours passer par `xliff/fr.xlf` + `npm run locale:build`.
+**Règle :** Ne jamais modifier `src/locales/locales/fr.js` à la main. Toujours passer par `xliff/fr.xlf` + `npx lit-localize build`.
 
-### Clés msg() nouvelles requises
+### Pattern éditeur
 
-| Clé anglaise `msg()` | Traduction FR | Section |
-|----------------------|---------------|----------|
-| `'Crew'` | `'Équipage'` | Titre section |
-| `'Alertes'` | `'Alertes'` | Titre section |
-| `'Accès'` | `'Accès'` | Titre section |
-| `'Automatisations'` | `'Automatisations'` | Titre section |
-| `'Électroménager'` | `'Électroménager'` | Titre section |
-| `'Poêle'` | `'Poêle'` | Titre section |
-| `'Voiture'` | `'Voiture'` | Titre section |
-| `'Appeler les enfants'` | `'Appeler les enfants'` | Call Kids bouton |
-| `'Occupée'` | `'Occupée'` | Occupancy badge |
-| `'Vide'` | `'Vide'` | Occupancy badge |
-| `'En cours'` | `'En cours'` | Cycle status |
-| `'Inactif'` | `'Inactif'` | Cycle status |
-| `'En charge'` | `'En charge'` | Vehicle status |
-| `'Non connectée'` | `'Non connectée'` | Vehicle status |
-| `'Fermée'` | `'Fermée'` | Cover state |
-| `'Ouverte'` | `'Ouverte'` | Cover state |
-| `'En mouvement…'` | `'En mouvement…'` | Cover state |
-| `'Indisponible'` | `'Indisponible'` | Fallback unavailable |
-| `'ON'` | `'ON'` | Stove status chip |
-| `'OFF'` | `'OFF'` | Stove status chip |
+L'éditeur bridge utilise **exclusivement** `this.getLabel('key')` via `SciFiBaseEditor` — jamais `msg('string_fr')` directement dans les templates. Les clés sont en anglais, les traductions FR sont dans `base-editor.ts` et `xliff/fr.xlf`.
+
+```ts
+// ✅ Correct
+title="${this.getLabel('section-title-crew')}"
+// ⛔ Interdit dans l'éditeur
+title="${msg('Équipage')}"
+```
+
+### Clés `getLabel()` bridge (dans `src/utils/base-editor.ts`)
+
+| Clé | EN source | FR target |
+|-----|-----------|----------|
+| `section-title-crew` | `Crew` | `Équipage` |
+| `section-title-alerts` | `Alerts` | `Alertes` |
+| `section-title-access` | `Access` | `Accès` |
+| `section-title-automations` | `Automations` | `Automatisations` |
+| `section-title-appliances` | `Appliances` | `Électroménager` |
+| `section-title-stove` | `Stove` | `Poêle` |
+| `section-title-vehicle` | `Vehicle` | `Véhicule` |
+| `section-title-actions` | `Actions` | `Actions` |
+| `section-title-action` | `Action` | `Action` |
+| `action-enable-section` | `Enable section` | `Activer la section` |
+| `action-disable` | `Disable` | `Désactiver` |
+| `action-remove` | `Remove` | `Retirer` |
+| `action-add-smoke` | `Smoke` | `Fumée` |
+| `action-add-toggle` | `Toggle` | `Toggle` |
+| `action-add-appliance` | `Appliance` | `Appareil` |
+| `action-add-consumable` | `Consumable` | `Consommable` |
+| `action-call-children` | `Call children` | `Appeler enfants` |
+| `input-icon-section` | `Section icon` | `Icône section` |
+| `input-smoke-sensors` | `Smoke sensors` | `Détecteurs fumée` |
+| `input-binary-sensor-entity` | `binary_sensor entity` | `Entité binary_sensor` |
+| `input-icon-optional` | `Icon (opt.)` | `Icône (opt.)` |
+| `input-siren-switch` | `Siren switch (optional)` | `Switch sirènes (optionnel)` |
+| `input-alert-toggles` | `Alert toggles` | `Toggles alertes` |
+| `input-occupancy-entity` | `Occupancy entity (opt.)` | `Entité occupancy (opt.)` |
+| `input-cover-entity` | `Cover entity` | `Entité cover` |
+| `input-lock-optional` | `Lock (optional)` | `Verrou (optionnel)` |
+| `input-input-button-entity` | `input_button entity` | `Entité input_button` |
+| `input-action-entity` | `Entity (input_button / script / automation)` | `Entité (input_button / script / automation)` |
+| `input-color-optional` | `Color (opt.)` | `Couleur (opt.)` |
+| `input-button-text` | `Button text (opt.)` | `Texte bouton (opt.)` |
+| `input-type` | `Type` | `Type` |
+| `input-min` | `Min` | `Min` |
+| `input-max` | `Max` | `Max` |
+| `input-step` | `Step` | `Step` |
+| `input-unit` | `Unit` | `Unité` |
+| `input-appliances` | `Appliances` | `Appareils` |
+| `input-consumables` | `Consumables (optional)` | `Consommables (optionnel)` |
+| `input-power-sensor` | `Power sensor (W)` | `Capteur puissance (W)` |
+| `input-pellet-qty-sensor` | `Pellet quantity sensor` | `Capteur quantité pellets` |
+| `input-status-sensor` | `ON/OFF status sensor` | `Capteur statut ON/OFF` |
+| `input-bag-counter` | `Bag stock counter` | `Compteur stock sacs` |
+| `input-pellet-low-threshold` | `Pellet low threshold (0.0–1.0)` | `Seuil bas pellets (0.0–1.0)` |
+| `input-ok-when` | `OK when` | `OK quand` |
 
 > [!IMPORTANT]
-> Avant d'ajouter une clé, vérifier avec `grep -r "msg('En cours'" src/` qu'elle n'existe pas déjà dans une autre carte (stove, vehicles, etc.). Si elle existe → réutiliser, ne pas redupliquer dans `fr.xlf`.
+> Pour les labels de la **carte** (pas de l'éditeur), `msg()` direct reste valide dans les templates Lit : `msg('En cours')`, `msg('Inactif')`, `msg('En charge')`, etc.
+> Pour les labels de l'**éditeur**, utiliser exclusivement `this.getLabel('key')`.
 
-### Protocole d'ajout de traduction
+### Protocole d'ajout de traduction éditeur
 
-1. Ajouter dans `xliff/fr.xlf` : `<trans-unit id="hash"><source>En cours</source><target>En cours</target></trans-unit>`
-2. Exécuter `npm run locale:build` → régénère `src/locales/locales/fr.ts`
-3. Vérifier que `fr.ts` contient la nouvelle clé
-4. Ne pas committer `fr.ts` seul sans `fr.xlf`
+1. Ajouter la clé EN dans `src/utils/base-editor.ts` → `getLabel()` : `'ma-cle': msg('English label')`
+2. Exécuter `npx lit-localize extract` → nouvelle `<trans-unit>` dans `xliff/fr.xlf`
+3. Ajouter `<target>Traduction FR</target>` dans `xliff/fr.xlf`
+4. Exécuter `npx lit-localize build` → régénère `src/locales/locales/fr.js`
+5. Ne pas committer `fr.js` seul sans `fr.xlf` + `base-editor.ts`
 
 ---
 
@@ -1255,8 +1291,8 @@ const scenarioMinimal = {
 
 | Tier | Examples |
 |------|----------|
-| **Always do** | Utiliser uniquement les tokens `--sf-*` de `common.ts`; implémenter `getRelevantEntities()`; exporter les styles depuis `styles.ts`; garder chaque composant section < 200 lignes; utiliser `container-type: inline-size` pour le responsive; utiliser `msg()` pour tous les labels visibles (jamais de string hardcodée FR/EN dans le template) |
-| **Ask first** | Ajouter une nouvelle dépendance npm; modifier les noms de champs YAML après premier déploiement (ADR-005); changer le breakpoint responsive (600px); ajouter une nouvelle clé msg() non listée dans § i18n |
+| **Always do** | Utiliser uniquement les tokens `--sf-*` de `common.ts`; implémenter `getRelevantEntities()`; exporter les styles depuis `styles.ts`; garder chaque composant section < 200 lignes; utiliser `container-type: inline-size` pour le responsive; utiliser `this.getLabel('key')` pour tous les labels de l'éditeur (jamais `msg('string_fr')` dans les templates éditeur); utiliser `msg()` direct pour les labels de la carte |
+| **Ask first** | Ajouter une nouvelle dépendance npm; modifier les noms de champs YAML après premier déploiement (ADR-005); changer le breakpoint responsive (600px); ajouter une nouvelle clé `getLabel()` non listée dans § i18n |
 | **Never do** | Utiliser `@media` queries (utiliser `@container` à la place); hardcoder une couleur hors palette `--sf-*`; muter `this.config` ou `this.hass`; appeler `callService` sans `.catch()`; afficher une stack trace à l'utilisateur; hardcoder une string FR/EN dans le template sans `msg()` |
 
 ---

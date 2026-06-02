@@ -35,7 +35,6 @@
 ├── .devcontainer/devcontainer.json [NEW] DevContainer settings
 ├── .devcontainer/docker-compose.yml[NEW] Home Assistant dev compose
 ├── .github/workflows/ci.yml        [NEW] GitHub Actions CI pipeline
-└── docs/current-work.md        Active in-flight work (replaces implementation_plan.md)
 ```
 
 ---
@@ -60,7 +59,6 @@
  ### Consumes
 | Artefact | Provider | Description |
 |---|---|---|
-| `docs/current-work.md` | Master Spec | Active in-flight work (replaces implementation_plan.md) |
 
  ### Public Interface
 | Element | Consumed by | Description |

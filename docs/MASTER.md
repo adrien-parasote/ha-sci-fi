@@ -31,7 +31,6 @@
 > **Before any refactoring, read these documents in order:**
 > 1. [`discovery.md`](./research/discovery.md) — Audit of v0.9.6 (exact YAML schemas, architecture, critical rules)
 > 2. [strategic/blueprint.md](./strategic/blueprint.md) — strategy + ADR summary index (full ADRs in [docs/adr/](./adr/))
-> 3. [current-work.md](./current-work.md) — active in-flight work (empty = project at rest)
 > 4. [specs/05_cards.md](./specs/05_cards.md#blueprint-coverage) — full YAML contracts per card
 > 5. [cards/guidelines.md](./cards/guidelines.md) — complete card development and urbanization guide
 > 6. [release-process.md](./release-process.md) — release process (versioning, build, tag, draft release, wiki)

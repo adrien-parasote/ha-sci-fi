@@ -1,5 +1,18 @@
 # Changelog
 
+# [1.3.2](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.3.2) - 2026-06-02
+
+## 🐛 Fixes
+
+- **Card picker UI (root cause fix)**: cards can now be selected from the HA card picker dialog in all versions. The actual root cause was a double `custom:` prefix in `window.customCards` registration — `src/sci-fi.ts` was pushing `type: "custom:sci-fi-lights"` but HA's `hui-card-picker` prepends `custom:` internally when resolving elements. This caused `customElements.get("custom:sci-fi-lights")` to return `undefined` (element is registered as `"sci-fi-lights"`), producing "Custom element not found" since v1.0.0. Fixed by removing the `custom:` prefix from the push: `type: card.type` (bare tag name). Covered by new regression guard TC-116.
+
+## 🛠️ Technical
+
+- `src/sci-fi.ts`: `window.customCards.push` now uses `type: card.type` (bare name, no `custom:` prefix) — matches HA official developer documentation pattern.
+- `tests/sci-fi.test.ts`: adds TC-116 regression guard asserting no `custom:` prefix in `window.customCards` entries.
+- `docs/CODEMAPS/frontend.md`: documents the `window.customCards.type` constraint and the corrected HMR guard scope.
+- `docs/adr/ADR-007_workbench-mandatory.md`: documents exact workbench server command (`npx serve@14 . -p 8888` from project root).
+
 # [1.3.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.3.1) - 2026-06-02
 
 ## 🐛 Fixes

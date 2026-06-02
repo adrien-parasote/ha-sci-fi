@@ -158,7 +158,7 @@ export const CARD_REGISTRATIONS: ReadonlyArray<{ type: string } & CardRegistrati
 window.customCards = window.customCards ?? [];
 for (const card of CARD_REGISTRATIONS) {
   window.customCards.push({
-    type: `custom:${card.type}`,
+    type: card.type,
     name: card.name,
     description: card.description,
     preview: card.preview,

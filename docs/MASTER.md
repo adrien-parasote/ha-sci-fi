@@ -2,7 +2,7 @@
 
 > Document Type: Strategic
 > Stream Coding · SPEC Stage · Revised 2026-06-02
-> Current stable: `v1.3.1` on `main`
+> Current stable: `v1.3.2` on `main`
 
 ---
 

@@ -4,7 +4,7 @@
 
 ## Custom Cards
 All cards register as standard web components and are bound in `src/sci-fi.ts`.
-*(Note: `src/sci-fi.ts` contains an HMR protection patch for `customElements.define` to prevent duplicate registration crashes during dev/workbench reloads)*
+*(Note: `src/sci-fi.ts` contains an HMR protection patch for `customElements.define` — guarded by `if (__DEV__)`, dead-code-eliminated by Terser in production. ⚠️ `window.customCards.type` MUST be the bare tag name e.g. `'sci-fi-lights'` — HA prepends `custom:` internally. Double-prefixing breaks `hui-card-picker` lookup since v1.0.0 fix in v1.3.2.)*
 - **Bridge Overview:** `sci-fi-bridge` / `sci-fi-bridge-editor` — 8 sections indépendantes dans `src/cards/bridge/sections/`
 - **Climates:** `sci-fi-climates` / `sci-fi-climates-editor`
 - **Hexa Tiles:** `sci-fi-hexa-tiles` / `sci-fi-hexa-tiles-editor`

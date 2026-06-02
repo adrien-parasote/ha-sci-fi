@@ -12,13 +12,14 @@ describe('sci-fi entry point', () => {
     expect(window.customCards).to.exist;
     expect(window.customCards!.length).to.be.greaterThan(0);
 
-    const hexaCard = window.customCards!.find(c => c.type === 'custom:sci-fi-hexa-tiles');
+    const hexaCard = window.customCards!.find(c => c.type === 'sci-fi-hexa-tiles');
     expect(hexaCard).to.exist;
     expect(hexaCard!.name).to.equal('Sci-Fi Hexa Tiles');
 
-    // Assert every card has documentationURL
+    // Assert every card has documentationURL and correct type format
     for (const card of window.customCards!) {
       expect(card.documentationURL).to.equal('https://github.com/adrien-parasote/ha-sci-fi');
+      expect(card.type).to.not.contain('custom:');
     }
   });
 
@@ -29,5 +30,11 @@ describe('sci-fi entry point', () => {
 
     expect(hacsJson).to.have.property('type');
     expect(hacsJson.type).to.equal('plugin');
+  });
+
+  it('TC-116: ensures card types do not contain custom: prefix', () => {
+    for (const card of window.customCards!) {
+      expect(card.type).to.not.contain('custom:');
+    }
   });
 });

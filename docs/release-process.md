@@ -95,7 +95,17 @@ HACS automatically detects the new release from the GitHub tag.
 
 ## Step 5 — Create Draft Release on GitHub
 
-The agent calls the GitHub API using the `GITHUB_TOKEN` from `.env`, using the entry generated in `CHANGELOG.md` as the release body.
+The agent calls the GitHub API using the `GITHUB_TOKEN` from `.env`.
+
+### Release Naming Rules
+
+| Rule | Example |
+|------|---------|
+| **Major/minor release** (`X.Y.0`) | Title = thematic name + icons from `Release-plan.md` → `"Bridge Overview 🛸🎛️"` |
+| **Patch release** (`X.Y.Z`, Z > 0) | Title = same thematic name as the `X.Y.0` release → `"Bridge Overview 🛸🎛️"` |
+| **Body content** | Always accumulates **all** changelogs since `X.Y.0` inclusive. `1.2.2` body = changelog of `1.2.2` + `1.2.1` + `1.2.0`. |
+
+To find the thematic name for a patch: read `Release-plan.md` and match the `X.Y` minor version entry.
 
 ```bash
 source .env
@@ -103,7 +113,11 @@ curl -s -X POST \
   -H "Authorization: Bearer $GITHUB_TOKEN" \
   -H "Accept: application/vnd.github.v3+json" \
   https://api.github.com/repos/adrien-parasote/ha-sci-fi/releases \
-  -d "{ \"tag_name\": \"vX.Y.Z\", \"name\": \"vX.Y.Z — <Thematic name>\", \"body\": \"<CHANGELOG entry>\", \"draft\": true }"
+  -d "$(jq -n \
+    --arg tag 'vX.Y.Z' \
+    --arg name '<Thematic name + icons>' \
+    --arg body '<Accumulated CHANGELOG from X.Y.0 to X.Y.Z>' \
+    '{tag_name: $tag, name: $name, body: $body, draft: true}')" 
 ```
 
 > Publishing the release (`"draft": false`) makes it visible to HACS users.

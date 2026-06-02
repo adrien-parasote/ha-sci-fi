@@ -3,6 +3,7 @@
 ### sci-fi-weather
 
 ```typescript
+// src/types/config.ts
 interface SciFiWeatherAlertConfig {
   readonly entity_id: string;
   readonly state_green?: string;
@@ -12,10 +13,10 @@ interface SciFiWeatherAlertConfig {
 }
 
 interface SciFiWeatherConfig {
-  readonly weather_entity: string;                          // ← "weather_entity" (PAS weather_entity_id)
+  readonly weather_entity: string;                          // ← "weather_entity" (NOT weather_entity_id)
   readonly weather_daily_forecast_limit?: number;           // range [0, 15], default: 10
   readonly chart_first_kind_to_render?: 'temperature' | 'precipitation' | 'wind';
-  readonly alert?: SciFiWeatherAlertConfig;                 // ← NE PAS SUPPRIMER
+  readonly alert?: SciFiWeatherAlertConfig;                 // ← DO NOT REMOVE
 }
 ```
 
@@ -40,10 +41,10 @@ alert:
 ## 1. Description & Goal
 The `sci-fi-weather` component has lost its original, complex UI during the migration to Lit and TypeScript. The goal is to strictly restore the original design, functionality, and styling from the legacy codebase while respecting the new architecture.
 
-## 2. Deep Links
-- **Source Component**: [sci-fi-weather.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/cards/weather/sci-fi-weather.ts#L1)
-- **Base Class**: [base-card.ts](file:///Users/adrien.parasote/Documents/perso/HA/ha-sci-fi/src/utils/base-card.ts#L1)
-- **Original JS (Reference)**: [card.js](file:///tmp/old_weather_card.js#L1), [style.js](file:///tmp/old_weather_style.js#L1), [const.js](file:///tmp/old_weather_const.js#L1), [weather.js](file:///tmp/old_weather_entity.js#L1), [person.js](file:///tmp/old_person.js#L1)
+## Deep Links
+- **Source Component**: [sci-fi-weather.ts](../../src/cards/weather/sci-fi-weather.ts#L1)
+- **Base Class**: [base-card.ts](../../src/utils/base-card.ts#L1)
+- **Types**: [config.ts `SciFiWeatherConfig`](../../src/types/config.ts#L1)
 
 ## Assumptions
 
@@ -76,7 +77,7 @@ The `sci-fi-weather` component has lost its original, complex UI during the migr
 - The full CSS from 'old_weather_style.js' must be ported to the Lit `styles` getter.
 - Use CSS variables (`--primary-bg-color`, `--secondary-light-color`) as defined in the global design system.
 
-## 4. Cross-spec Contracts
+## Cross-Spec Contracts
 
  ### Produces
 | Path / Identifier | Format | Schema location | Consumers |
@@ -112,7 +113,7 @@ The `sci-fi-weather` component has lost its original, complex UI during the migr
 | `weather_alert_entity` attribute keys as phenomenon names | hexa-tiles.md | Both cards read phenomenon names from alert entity attribute keys |
 
 
-## 5. Anti-patterns
+## Anti-Patterns
 
 | # | Anti-Pattern | Violation | Correct Behavior |
 |---|---|---|---|
@@ -122,14 +123,14 @@ The `sci-fi-weather` component has lost its original, complex UI during the migr
 | 4 | Duplicating SVG icons | Wasted bundle size | Import from 'sci-fi-weather-icons.js' as in original |
 | 5 | Polluting Home Assistant entity | Anti-pattern to add props to Hass objects | Create local wrapper or mapping dictionary |
 
-## 6. Error Handling
+## Error Handling
 
 | Error | Detection | Response | Fallback |
 |---|---|---|---|
 | Missing `this.hass` or config | Null check in `render()` | Return `nothing` | Blank render |
 | Missing weather entity | `hass.states[config.weather_entity]` is undefined | Skip rendering sensor data | Empty state icons / N/A text |
 
-## 7. Test Cases
+## Test Case Specifications
 
 | ID | Description | Preconditions | Action | Expected Result |
 |---|---|---|---|---|

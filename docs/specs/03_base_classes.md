@@ -1,7 +1,7 @@
 # Spec 03 — Base Classes & Styles
 
 > Document Type: Implementation
-> Covers: Step 3 from [MASTER.md](../MASTER.md)
+> Covers: Step 3 from [MASTER.md](../MASTER.md#spec-gate-pre-checklist)
 > Depends on: [Spec 01](./01_infrastructure.md#L1), [Spec 02](./02_domain_selectors.md#L1)
 
 ---

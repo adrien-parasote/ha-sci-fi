@@ -1,7 +1,7 @@
 # Spec 01 — Infrastructure & Tooling
 
 > Document Type: Implementation
-> Covers: Step 1 (Infra) from [MASTER.md](../MASTER.md)
+> Covers: Step 1 (Infra) from [MASTER.md](../MASTER.md#spec-gate-pre-checklist)
 > Branch: `v2`
 
 ---

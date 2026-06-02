@@ -2,7 +2,7 @@
 
 > Document Type: Implementation
 > Covers: F-BR-01 → F-BR-15 (see Blueprint Coverage below)
-> Depends on: [Spec 03 — Base Classes](../03_base_classes.md) · [Spec 04 — Components](../04_components.md) · [Strategic Blueprint](../../strategic/bridge_overview_blueprint.md)
+> Depends on: [Spec 03 — Base Classes](../03_base_classes.md#blueprint-coverage) · [Spec 04 — Components](../04_components.md#blueprint-coverage) · [Strategic Blueprint](../../strategic/bridge_overview_blueprint.md#q1--what)
 > ADR-005: Zero breaking YAML changes — all config field names frozen at first release.
 > ADR-012: Section components independent. ADR-013: Container queries. ADR-014: Crew + ACTIONS always full-width.
 
@@ -37,7 +37,7 @@ La carte `sci-fi-bridge` est la carte dashboard maison de la release v1.3 (Bridg
 
 **Tag custom element :** `sci-fi-bridge`
 **Répertoire :** `src/cards/bridge/`
-**Extends :** `SciFiBaseCard` ([Spec 03 § SciFiBaseCard](../03_base_classes.md))
+**Extends :** `SciFiBaseCard` ([Spec 03 § SciFiBaseCard](../03_base_classes.md#blueprint-coverage))
 
 ---
 
@@ -963,7 +963,7 @@ private _setSliderValue(entity: string, value: number): void {
 
 **Tag :** `sci-fi-bridge-editor`
 **Extends :** `SciFiBaseEditor`
-**Pattern :** Suit [Spec 10 § SciFiBaseEditor](../10_card_editors.md) — accordion par section.
+**Pattern :** Suit [Spec 10 § SciFiBaseEditor](../10_card_editors.md#sci-fi-bridge-editor) — accordion par section.
 
 > [!IMPORTANT]
 > L'éditeur visuel est **MANDATORY** (pas de YAML direct). Chaque section de la carte a son propre bloc d'édition dans l'éditeur.
@@ -1242,9 +1242,9 @@ title="${msg('Équipage')}"
 
 | Path / Identifier | Format | Schema location | Producer |
 |---|---|---|---|
-| `sciFiCommonStyles` | Lit CSS | [Spec 03 § styles](../03_base_classes.md) | `src/styles/common.ts` |
-| `SciFiBaseCard` | Abstract class | [Spec 03 § SciFiBaseCard](../03_base_classes.md) | `src/utils/base-card.ts` |
-| `SciFiBaseEditor` | Abstract class | [Spec 10 § SciFiBaseEditor](../10_card_editors.md) | `src/utils/base-editor.ts` |
+| `sciFiCommonStyles` | Lit CSS | [Spec 03 § styles](../03_base_classes.md#blueprint-coverage) | `src/styles/common.ts` |
+| `SciFiBaseCard` | Abstract class | [Spec 03 § SciFiBaseCard](../03_base_classes.md#blueprint-coverage) | `src/utils/base-card.ts` |
+| `SciFiBaseEditor` | Abstract class | [Spec 10 § SciFiBaseEditor](../10_card_editors.md#sci-fi-bridge-editor) | `src/utils/base-editor.ts` |
 
 ### Public Interface
 
@@ -1268,7 +1268,7 @@ title="${msg('Équipage')}"
 
 | Concept | Status in this spec | Mentioned in |
 |---|---|---|
-| `getRelevantEntities()` | Défini ici — collecte toutes les entity_ids | [Spec 03 § shouldUpdate](../03_base_classes.md), [Blueprint ADR-008](../../strategic/blueprint.md#adr-008) |
+| `getRelevantEntities()` | Défini ici — collecte toutes les entity_ids | [Spec 03 § shouldUpdate](../03_base_classes.md#blueprint-coverage), [Blueprint ADR-008](../../strategic/blueprint.md#adr-008) |
 | Zone → couleur mapping | Défini ici § sf-bridge-crew | N/A — utilisé uniquement ici |
 
 ---
@@ -1292,7 +1292,7 @@ title="${msg('Équipage')}"
 
 ---
 
-## Test Cases
+## Test Case Specifications
 
 | Test ID | Type | Description | Input | Expected Output |
 |---|---|---|---|---|
@@ -1364,14 +1364,14 @@ title="${msg('Équipage')}"
 
 ### README.md — À modifier
 
-**Fichier :** [`README.md`](../../../README.md)
+**Fichier :** [`README.md`](../../../README.md#blueprint-coverage)
 
 #### 1. Ajouter la carte dans la table `## 🧩 Available cards`
 
 Après la ligne `| 💧 **Water Management** | ... |`, ajouter :
 
 ```markdown
-| 🛠️ **Bridge Overview** | Dashboard maison — équipage, alertes, accès, automatisations, électroménager, poêle, voiture | [→ docs](./docs/cards/bridge.md) |
+| 🛠️ **Bridge Overview** | Dashboard maison — équipage, alertes, accès, automatisations, électroménager, poêle, voiture | [→ docs](./docs/cards/bridge.md#installation) |
 ```
 
 #### 2. Badges tests + coverage — ✅ Complété (2026-06-02)
@@ -1380,7 +1380,7 @@ Après la ligne `| 💧 **Water Management** | ... |`, ajouter :
 
 ### CHANGELOG.md — À modifier
 
-**Fichier :** [`CHANGELOG.md`](../../../CHANGELOG.md)
+**Fichier :** [`CHANGELOG.md`](../../../CHANGELOG.md#blueprint-coverage)
 
 Ajouter une section v1.3 en tête du CHANGELOG (après l'en-tête, avant la section v1.2 ou v1.0 existante) :
 
@@ -1421,7 +1421,7 @@ persons:
 
 ### Exemple complet
 
-[Voir la spec → § YAML Configuration Schema](../../docs/specs/cards/bridge.md)
+[Voir la spec → § YAML Configuration Schema](../../docs/specs/cards/bridge.md#blueprint-coverage)
 
 ## Sections disponibles
 
@@ -1448,16 +1448,16 @@ Si absent, l'icône par défaut de la section est utilisée.
 
 | Reference | Location |
 |---|---|
-| Strategic Blueprint Bridge | [bridge_overview_blueprint.md](../../strategic/bridge_overview_blueprint.md) |
-| SciFiBaseCard | [03_base_classes.md](../03_base_classes.md) |
-| SciFiBaseEditor | [10_card_editors.md](../10_card_editors.md) |
-| Common styles tokens | [src/styles/common.ts](../../../src/styles/common.ts) |
-| config.ts (à modifier) | [src/types/config.ts](../../../src/types/config.ts) |
-| Stove spec (pattern styles) | [stove.md](./stove.md) |
-| Vehicle spec (pattern services) | [vehicle.md](./vehicle.md) |
-| Water Management spec (pattern structure) | [tactical_water_management.md](./tactical_water_management.md) |
-| Mock workbench pattern | [dev/workbench.html](../../../dev/workbench.html) |
-| sci-fi.ts entry point (enregistrement carte) | [src/sci-fi.ts](../../../src/sci-fi.ts) |
+| Strategic Blueprint Bridge | [bridge_overview_blueprint.md](../../strategic/bridge_overview_blueprint.md#blueprint-coverage) |
+| SciFiBaseCard | [03_base_classes.md](../03_base_classes.md#blueprint-coverage) |
+| SciFiBaseEditor | [10_card_editors.md](../10_card_editors.md#blueprint-coverage) |
+| Common styles tokens | [src/styles/common.ts](../../../src/styles/common.ts#L1) |
+| config.ts (à modifier) | [src/types/config.ts](../../../src/types/config.ts#L1) |
+| Stove spec (pattern styles) | [stove.md](./stove.md#blueprint-coverage) |
+| Vehicle spec (pattern services) | [vehicle.md](./vehicle.md#blueprint-coverage) |
+| Water Management spec (pattern structure) | [tactical_water_management.md](./tactical_water_management.md#blueprint-coverage) |
+| Mock workbench pattern | [dev/workbench.html](../../../dev/workbench.html#L1) |
+| sci-fi.ts entry point (enregistrement carte) | [src/sci-fi.ts](../../../src/sci-fi.ts#L1) |
 
 ## Shared Artifact Schema
 
@@ -1481,10 +1481,12 @@ Si absent, l'icône par défaut de la section est utilisée.
 | 2 | Lovelace custom cards are enabled and correctly registered. | Medium | Manual user testing. |
 | 3 | The SciFiBaseCard provides all necessary styling variables. | Low | Core architecture requirement. |
 
-## Test Cases
+## Test Case Specifications
 | ID | Type | Description |
 |---|---|---|
 | TC-101 | Unit | The bridge card renders correctly with normal scenario. |
 | TC-102 | Unit | The bridge card renders alerts correctly when smoke is detected. |
 | TC-103 | Unit | The bridge card renders correctly in disconnected scenario. |
 | IT-101 | Integration | The bridge card receives updates from Home Assistant entities. |
+| TC-104 | Unit | Section absent when optional config key is missing (`config.stove` undefined → `sf-bridge-stove` not rendered). |
+| TC-105 | Unit | `getRelevantEntities()` deduplicates entries when same entity appears in multiple sections. |

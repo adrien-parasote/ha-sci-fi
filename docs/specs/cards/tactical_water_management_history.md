@@ -117,18 +117,18 @@ This component MUST expose the following reactive Lit properties:
 
 | ID | Type | Scenario | Setup / Given | Expected Result |
 |---|---|---|---|---|
-| TC-1201 | Unit | Toggling the "Alerts" filter | Click 'Alerts' button with 3 success and 2 warning logs | Only the 2 warning logs are rendered; others hidden |
-| TC-1202 | Unit | Accordion expansion triggers fetch | Automations accordion is expanded by user | `_fetchHistoryLogs` is called exactly once |
-| TC-1203 | Unit | Empty history rendering | `_historyLogs` is an empty array | Renders text `"Aucun événement enregistré."` |
-| TC-1204 | Unit | Loading state rendering | `_historyLogsLoading` is set to `true` | Renders a pulsing digital scanner animation placeholder |
-| TC-1205 | Unit | Timestamp formatting | Log time is `2026-06-01T08:26:35Z` | Text content displays `[08:26]` (or local timezone equivalent) |
+| TC-001 | Unit | Toggling the "Alerts" filter | Click 'Alerts' button with 3 success and 2 warning logs | Only the 2 warning logs are rendered; others hidden |
+| TC-002 | Unit | Accordion expansion triggers fetch | Automations accordion is expanded by user | `_fetchHistoryLogs` is called exactly once |
+| TC-003 | Unit | Empty history rendering | `_historyLogs` is an empty array | Renders text `"Aucun événement enregistré."` |
+| TC-004 | Unit | Loading state rendering | `_historyLogsLoading` is set to `true` | Renders a pulsing digital scanner animation placeholder |
+| TC-005 | Unit | Timestamp formatting | Log time is `2026-06-01T08:26:35Z` | Text content displays `[08:26]` (or local timezone equivalent) |
 
 ### Integration Tests
 
 | ID | Type | Scenario | Setup / Given | Expected Result |
 |---|---|---|---|---|
-| IT-1201 | Integration | WebSocket API Call | Call `_fetchHistoryLogs` with entity list | `hass.callWS` is invoked with type **logbook/get_events** and entity IDs |
-| IT-1202 | Integration | Floor Switch Refresh | `entityIds` array is updated by parent | Logs are cleared and a new logbook fetch is queued for new floor |
+| IT-001 | Integration | WebSocket API Call | Call `_fetchHistoryLogs` with entity list | `hass.callWS` is invoked with type **logbook/get_events** and entity IDs |
+| IT-002 | Integration | Floor Switch Refresh | `entityIds` array is updated by parent | Logs are cleared and a new logbook fetch is queued for new floor |
 
 ---
 

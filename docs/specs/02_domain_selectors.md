@@ -1,7 +1,7 @@
 # Spec 02 — Domain Selectors & Types
 
 > Document Type: Implementation
-> Covers: Step 2 from [MASTER.md](../MASTER.md)
+> Covers: Step 2 from [MASTER.md](../MASTER.md#spec-gate-pre-checklist)
 > Depends on: [Spec 01](./01_infrastructure.md#L1)
 
 ---

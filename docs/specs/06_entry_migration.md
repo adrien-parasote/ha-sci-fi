@@ -1,7 +1,7 @@
 # Spec 06 — Entry Point & Migration
 
 > Document Type: Implementation
-> Covers: Step 6 (Entry) from [MASTER.md](../MASTER.md)
+> Covers: Step 6 (Entry) from [MASTER.md](../MASTER.md#spec-gate-pre-checklist)
 > Depends on: [Spec 01](./01_infrastructure.md#L1), [Spec 02](./02_domain_selectors.md#L1), [Spec 03](./03_base_classes.md#L1), [Spec 04](./04_components.md#L1), [Spec 05](./05_cards.md#L1)
 
 ---

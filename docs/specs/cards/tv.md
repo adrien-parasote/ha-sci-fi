@@ -72,6 +72,7 @@ To ensure perfect HUD cyber-deck aesthetics without visual drift:
 ## YAML Config Contract
 
 ```typescript
+// src/types/config.ts
 export interface SciFiTVCustomActions {
   readonly up?: LovelaceAction;
   readonly down?: LovelaceAction;
@@ -129,6 +130,7 @@ custom_actions:
 
 * **Coordinate conversion (DOM → SVG viewBox):**
   ```typescript
+  // src/cards/tv/sci-fi-tv.ts — _onPointerMove()
   const bbox = svgElement.getBoundingClientRect();
   const svgX = ((event.clientX - bbox.left) / bbox.width) * 200;
   const svgY = ((event.clientY - bbox.top) / bbox.height) * 200;
@@ -137,6 +139,7 @@ custom_actions:
 
 * **Angle normalization + clamp (full formula):**
   ```typescript
+  // src/cards/tv/sci-fi-tv.ts — _computeVolume()
   const thetaDeg = Math.atan2(svgY - cy, svgX - cx) * (180 / Math.PI);
   // Shift origin: -135° (top-left start) → 0; +135° (bottom-left end) → 270
   const shiftedDeg = ((thetaDeg + 135 + 360) % 360);

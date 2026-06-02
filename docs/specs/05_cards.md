@@ -1,7 +1,7 @@
 # Spec 05 — Cards Rewrite (8 cartes)
 
 > Document Type: Implementation
-> Covers: Step 5 from [MASTER.md](../MASTER.md)
+> Covers: Step 5 from [MASTER.md](../MASTER.md#spec-gate-pre-checklist)
 > Depends on: [Spec 01](./01_infrastructure.md#blueprint-coverage), [Spec 02](./02_domain_selectors.md#blueprint-coverage), [Spec 03](./03_base_classes.md#blueprint-coverage), [Spec 04](./04_components.md#blueprint-coverage)
 > **ADR-005 : Zero breaking YAML changes — champs gelés, features gelées**
 

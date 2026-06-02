@@ -7,6 +7,7 @@
 ### sci-fi-lights
 
 ```typescript
+// src/types/config.ts
 interface SciFiEntityOverride {
   readonly name?: string;
   readonly icon_on?: string;
@@ -19,37 +20,37 @@ interface SciFiLightsConfig {
   readonly default_icon_off?: string;       // default: mdi:lightbulb-outline
   readonly first_floor_to_render?: string;
   readonly first_area_to_render?: string;
-  readonly ignored_entities?: readonly string[];              // ← "ignored_entities" (PAS ignored_entity_ids)
-  readonly custom_entities?: Readonly<Record<string, SciFiEntityOverride>>; // ← "custom_entities" (PAS entity_overrides)
+  readonly ignored_entities?: readonly string[];              // ← "ignored_entities" (NOT ignored_entity_ids)
+  readonly custom_entities?: Readonly<Record<string, SciFiEntityOverride>>; // ← "custom_entities" (NOT entity_overrides)
 }
 ```
 
-**Exemple :**
+**Example:**
 ```yaml
 type: custom:sci-fi-lights
-header_message: Lumières
+header_message: Lights
 default_icon_on: mdi:lightbulb-on-outline
 ignored_entities:
-  - light.la_boite_a_cha_day_ambient_colour
+  - light.ambient_colour
 custom_entities:
-  light.nous_salon:
-    name: "Étoile"
+  light.living_room:
+    name: "Star lamp"
     icon_on: mdi:star
     icon_off: mdi:star-outline
 ```
 
-**Comportement de sélection initiale (floor/area) :**
+**Floor/Area initial selection behavior:**
 
-| Config | Comportement |
+| Config | Behavior |
 |---|---|
-| `first_floor_to_render: 'rdc'` | Sélectionne 'rdc' SI l'ID ou le nom existe dans `hass.floors` (case-insensitive) |
-| `first_floor_to_render` absent ou inconnu | Fallback → 1er floor avec lumières → 1er floor |
-| `first_area_to_render: 'chambre'` | Sélectionne 'chambre' SI elle est dans les areas du floor actif |
-| `first_area_to_render` absent ou area hors floor | Fallback → 1ère area avec lumières → 1ère area du floor |
+| `first_floor_to_render: 'ground'` | Selects 'ground' if ID or name exists in `hass.floors` (case-insensitive) |
+| `first_floor_to_render` absent or unknown | Fallback → first floor with lights → first floor |
+| `first_area_to_render: 'bedroom'` | Selects 'bedroom' if it is in the active floor's areas |
+| `first_area_to_render` absent or area outside floor | Fallback → first area with lights → first area of floor |
 
 > [!NOTE]
-> La validation ne requiert **pas** la présence de lumières pour conserver un floor/area configuré. Cela évite un flash d'écran vide lors du 1er rendu quand le registre d'entités HA n'est pas encore chargé (L042).
-> Valider `first_floor_to_render` par existence d'ID dans `hass.floors` UNIQUEMENT — PAS par le nombre de lumières.
+> Validation does **not** require lights to be present to keep a configured floor/area. This prevents an empty screen flash on first render when the HA entity registry is not yet loaded (L042).
+> Validate `first_floor_to_render` by ID existence in `hass.floors` ONLY — NOT by light count.
 
 ## Anti-Patterns
 
@@ -59,7 +60,36 @@ custom_entities:
 |---|---|---|
 | 1 | Renaming YAML fields (`custom_entities` → `entity_overrides`, `ignored_entities` → `ignored_entity_ids`) | ADR-005 — field names frozen |
 | 2 | Validating `first_floor_to_render` by light count (not ID existence) | L042 — validate by `hass.floors[id]` existence only |
-| 3 | Skipping empty state rendering | When no lights in floor/area → show "Aucune lumière" message |
-| 4 | Using `window.location.assign()` for HA navigation | Use `history.pushState()` + `location-changed` (AP#8 in 05_cards.md) |
+| 3 | Skipping empty state rendering | When no lights in floor/area → show empty state message |
+| 4 | Using `window.location.assign()` for HA navigation | Use `history.pushState()` + `location-changed` ([05_cards.md#anti-patterns](../05_cards.md#anti-patterns) AP#8) |
 | 5 | Attribute binding for dynamic properties (`.icon=` vs `icon=`) | L016 — property binding required for reactive updates |
 
+## Test Case Specifications
+
+> Full test suite in [tests/cards/lights/](../../tests/cards/lights/#L1).
+
+| ID | Type | Description | Input | Expected Output |
+|---|---|---|---|---|
+| TC-001 | Unit | Renders empty state when no lights in area | Config with ignored all entities | Empty state message rendered |
+| TC-002 | Unit | `first_floor_to_render` resolved by ID not light count | `first_floor_to_render: 'rdc'`, floor exists but has no lights | `rdc` floor still selected |
+| TC-003 | Unit | `ignored_entities` hides listed entities | Config with entity in `ignored_entities` | Entity not present in DOM |
+| TC-004 | Unit | `custom_entities` overrides name and icons | Config with `custom_entities` entry | Custom name/icon rendered |
+| TC-005 | Unit | `getRelevantEntities()` returns only light domain entities | Mixed entity config | Only `light.*` in result |
+| IT-001 | Integration | Floor navigation updates area list | Click floor tab | Area list updates to selected floor |
+
+## Error Handling
+
+| Error | Detection | Response | Fallback |
+|---|---|---|---|
+| No `hass` object | Null check in `render()` | Return `nothing` | Blank render |
+| `first_floor_to_render` not in `hass.floors` | ID lookup fails | Fallback to first floor with lights | First floor of registry |
+| All entities ignored | Post-filter empty array | Empty state message | N/A |
+
+## Cross-Spec Contracts
+
+| Concept | Shared with | Contract |
+|---|---|---|
+| `SciFiBaseCard` abstract class | [Spec 03](../03_base_classes.md#blueprint-coverage) | `setConfig`, `getCardSize`, `getRelevantEntities` required |
+| `SciFiEntityOverride` | [Spec 05](../05_cards.md#sci-fi-lights) | YAML field names frozen — `icon_on`/`icon_off`/`name` |
+| `hass.floors` / `hass.areas` | [Spec 02](../02_domain_selectors.md#blueprint-coverage) | HA registry selectors — floor/area hierarchy |
+| `sciFiCommonStyles` | [Spec 03](../03_base_classes.md#blueprint-coverage) | Shared CSS tokens — import, do not redefine |

@@ -38,7 +38,7 @@
 ```yaml
 type: custom:sci-fi-vacuum
 vacuums:
-  entity: vacuum.my_vacuum
+  - entity: vacuum.my_vacuum
 ```
 
 ### Full
@@ -47,7 +47,7 @@ vacuums:
 type: custom:sci-fi-vacuum
 header_message: "Dobby"
 vacuums:
-  entity: vacuum.my_vacuum
+  - entity: vacuum.my_vacuum
   start: true
   pause: true
   stop: true
@@ -79,7 +79,7 @@ vacuums:
 |---|---|---|---|
 | `type` | String | ✅ | `custom:sci-fi-vacuum` |
 | `header_message` | String | | Card header text |
-| `vacuums` | Object | ✅ | Vacuum config |
+| `vacuums` | List\<Object\> | ✅ | List of vacuum configurations |
 
 ### Options — `vacuums`
 

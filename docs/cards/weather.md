@@ -50,6 +50,13 @@ type: custom:sci-fi-weather
 header_message: "Weather"
 weather_entity: weather.home
 weather_daily_forecast_limit: 5
+chart_first_kind_to_render: temperature
+alert:
+  entity_id: sensor.weather_alert
+  state_green: ok
+  state_yellow: low
+  state_orange: medium
+  state_red: high
 ```
 
 ### Options
@@ -59,4 +66,16 @@ weather_daily_forecast_limit: 5
 | `type` | String | ✅ | `custom:sci-fi-weather` | |
 | `weather_entity` | String | ✅ | HA weather entity ID | |
 | `header_message` | String | | Card header text | |
-| `weather_daily_forecast_limit` | Integer | | Number of forecast days (0–15) | `5` |
+| `weather_daily_forecast_limit` | Integer | | Number of forecast days (0–15) | `10` |
+| `chart_first_kind_to_render` | String | | First chart tab: `temperature`, `precipitation`, or `wind` | `temperature` |
+| `alert` | Object | | Alert banner configuration | |
+
+### `alert` options
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `entity_id` | String | ✅ | HA sensor entity that holds the alert state |
+| `state_green` | String | | State value that maps to green (no alert) |
+| `state_yellow` | String | | State value that maps to yellow (low alert) |
+| `state_orange` | String | | State value that maps to orange (medium alert) |
+| `state_red` | String | | State value that maps to red (high alert) |

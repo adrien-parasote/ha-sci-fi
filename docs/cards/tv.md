@@ -55,7 +55,7 @@ sources:
   - name: "Netflix"
     action: call-service
     service: media_player.play_media
-    data:
+    service_data:
       entity_id: media_player.bravia_4k_vh22
       media_content_id: "com.netflix.ninja"
       media_content_type: "app"
@@ -67,7 +67,7 @@ custom_actions:
   volume_mute:
     action: call-service
     service: media_player.volume_mute
-    data:
+    service_data:
       entity_id: media_player.bravia_4k_vh22
       is_volume_muted: false
 ```
@@ -85,6 +85,8 @@ custom_actions:
 | `remote_entity` | String | | Target `remote` entity ID for sending D-pad commands | |
 | `name` | String | | Card display name | |
 | `sources` | List\<String \| Object\> | | Quick-select media sources list | `[]` |
+| `volume_entity` | String | | Dedicated `media_player` entity for volume control (if different from `entity`) | |
+| `app_entity` | String | | Entity used for app/source metadata display | |
 | `custom_actions` | Object | | D-pad button action overrides | |
 
 ### Options — `custom_actions` (per entry)

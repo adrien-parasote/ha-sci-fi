@@ -10,9 +10,10 @@
 ## Features
 
 - Battery level bar (green / yellow / red thresholds)
-- Charging state with dynamic icon (`mdi:ev-station` vs `mdi:car-electric`)
+- Charging state with dynamic icons (plug state + charge state from HA entities)
 - Range, mileage, location, lock state
 - Multiple vehicles supported
+- AC control: Start / Stop air conditioning (Renault integration via HA services)
 
 ---
 

@@ -1,4 +1,4 @@
-# ⬡ Hexa-Tiles card
+# ⬡ Hexa-Tiles Card
 
 **`custom:sci-fi-hexa-tiles`** — Main dashboard card with hexagonal tiles.
 
@@ -12,10 +12,10 @@ Each tile shows an entity state, an aggregated kind state (e.g. "any light on?")
 - Weather tile (condition icon + temperature + optional alert banner)
 - Custom tiles:
   - **standalone** → tracks a single entity
-  - **kind** → aggregates entities of a given type
+  - **kind** → aggregates entities of a given domain type
 - Visibility filter per person
 
-> [!CAUTION]
+> [!NOTE]
 > Requires the default HA `sun.sun` entity for weather tile rendering (day/night phase).
 
 ---
@@ -53,24 +53,27 @@ weather:
   activate: true
   weather_entity: weather.home
   weather_alert_entity: sensor.weather_alert
-  link: /lovelace/weather
-  state_green: "Vert"
-  state_yellow: "Jaune"
-  state_orange: "Orange"
-  state_red: "Rouge"
+  link: weather
+  state_green: "ok"
+  state_yellow: "low"
+  state_orange: "medium"
+  state_red: "high"
 tiles:
-  - entity: light.salon
+  - entity: light.living_room
+    standalone: true
     name: Lights
-    icon: mdi:lightbulb
-    tap_action:
-      action: navigate
-      navigation_path: /lovelace/lights
-  - entity: vacuum.dobby
-    name: Dobby
-    icon: sci:vacuum-sleep
-    tap_action:
-      action: navigate
-      navigation_path: /lovelace/vacuum
+    active_icon: mdi:lightbulb-on-outline
+    inactive_icon: mdi:lightbulb-outline
+    state_on:
+      - "on"
+    link: lights
+  - entity_kind: vacuum
+    name: Vacuum
+    active_icon: sci:vacuum-clean
+    inactive_icon: sci:vacuum-sleep
+    link: vacuum
+    visibility:
+      - person.john
 ```
 
 ### Options — root
@@ -84,22 +87,35 @@ tiles:
 
 ### Options — `weather`
 
-| Name | Type | Required | Description |
-|---|---|---|---|
+| Name | Type | Required | Description | Default |
+|---|---|---|---|---|
 | `activate` | Boolean | | Show the weather tile | `false` |
-| `weather_entity` | String | ✅ if activate | HA weather entity |
-| `weather_alert_entity` | String | | Alert sensor entity |
-| `link` | String | | Navigation path on click |
-| `state_green/yellow/orange/red` | String | | Alert state values |
+| `weather_entity` | String | ✅ if activate | HA weather entity | |
+| `weather_alert_entity` | String | | Alert sensor entity ID | |
+| `link` | String | | Navigation path on click (e.g. `weather`) | |
+| `state_green` | String | | Entity state value mapping to green (no alert) | |
+| `state_yellow` | String | | Entity state value mapping to yellow | |
+| `state_orange` | String | | Entity state value mapping to orange | |
+| `state_red` | String | | Entity state value mapping to red | |
+
+> [!NOTE]
+> `state_green/yellow/orange/red` must match the exact state strings returned by your alert sensor entity.
 
 ### Options — `tiles[]`
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `entity` | String | ✅ | Entity to track |
+| `entity` | String | | Entity ID (for `standalone` tiles) |
+| `entity_kind` | String | | Domain type for aggregated tiles (e.g. `light`, `climate`, `vacuum`) |
+| `standalone` | Boolean | | `true` = single entity, `false` = aggregates by `entity_kind` | `false` |
 | `name` | String | | Display label |
-| `icon` | String | | `mdi:` or `sci:` icon |
-| `tap_action.action` | String | | `navigate` or `call-service` |
-| `tap_action.navigation_path` | String | | Path when action = navigate |
-| `tap_action.service` | String | | Service when action = call-service |
-| `tap_action.service_data` | Object | | Service call data |
+| `active_icon` | String | | `mdi:` or `sci:` icon when active/on |
+| `inactive_icon` | String | | `mdi:` or `sci:` icon when inactive/off |
+| `state_on` | List\<String\> | | State values considered active (e.g. `["on", "playing"]`) |
+| `state_error` | String | | State value rendered as error |
+| `link` | String | | Navigation target (Lovelace view name, e.g. `lights`) |
+| `entities_to_exclude` | List\<String\> | | Entity IDs to ignore in kind aggregation |
+| `visibility` | List\<String\> | | Person entity IDs — tile only shown for these persons |
+| `tap_action` | Object | | Full LovelaceAction override (overrides `link`) |
+| `hold_action` | Object | | LovelaceAction on long press |
+| `double_tap_action` | Object | | LovelaceAction on double tap |

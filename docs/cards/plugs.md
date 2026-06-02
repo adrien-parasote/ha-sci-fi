@@ -42,10 +42,10 @@ devices: []
 
 ```yaml
 type: custom:sci-fi-plugs
-header_message: "Prises"
+header_message: "Smart Plugs"
 devices:
   - device_id: my_plug_device_id
-    entity: switch.my_plug
+    entity_id: switch.my_plug
     name: My Plug
     active_icon: mdi:power-plug-outline
     inactive_icon: mdi:power-plug-off-outline
@@ -73,10 +73,10 @@ devices:
 | Name | Type | Required | Description | Default |
 |---|---|---|---|---|
 | `device_id` | String | ✅ | HA device ID | |
-| `entity` | String | ✅ | `switch` entity ID | |
+| `entity_id` | String | ✅ | `switch` entity ID | |
 | `name` | String | | Display name | |
 | `active_icon` | String | | MDI icon when on | `mdi:power-socket-fr` |
-| `inactive_icon` | String | | MDI icon when off | `mdi:power-socket-fr-off` |
+| `inactive_icon` | String | | MDI icon when off | `sci:power-socket-fr-off` |
 | `sensors` | Object | | Sensor map (entity ID as key) | |
 
 ### Options — `sensors` (per entry)
@@ -85,4 +85,5 @@ devices:
 |---|---|---|---|---|
 | `show` | Boolean | ✅ | Display this sensor in the card | `false` |
 | `name` | String | | Custom label | entity name |
+| `icon` | String | | Override icon for this sensor | `mdi:information-outline` |
 | `power` | Boolean | ✅ | Link to plug power (used for chart) | `false` |

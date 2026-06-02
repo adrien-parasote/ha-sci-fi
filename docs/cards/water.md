@@ -1,6 +1,18 @@
 # 💧 Water Management Card
 
-The Water Management card provides a centralized interface for monitoring and controlling water-related entities such as water heaters, smart valves, and leak sensors. Devices are automatically grouped by floor and area.
+**`custom:sci-fi-water-management`** — Dynamic dashboard card for monitoring and controlling water-related entities. Devices are automatically grouped by floor and area based on HA labels.
+
+---
+
+## Features
+
+- **Auto-Discovery**: Automatically discovers entities by floor/area or specified HA label (default: `water`).
+- **Water Heaters & Valves**: Unified ON/OFF controls for all water equipment.
+- **Sensor Grouping**: Sensors are grouped logically under their parent device.
+- **Execution Log**: Per-accordion history log with filter (All / Alerts).
+- **Manual Sync**: Refresh button to re-fetch history without reloading the page.
+
+---
 
 ## Screenshots
 
@@ -9,52 +21,65 @@ The Water Management card provides a centralized interface for monitoring and co
 | ![Card](../../screenshot/water_1.jpeg) | ![Config 1](../../screenshot/water_edit1.jpeg) |
 | ![Card Active](../../screenshot/water_2.jpeg) | ![Config 2](../../screenshot/water_edit2.jpeg) |
 
-## Features
-- **Auto-Discovery**: Automatically discovers entities by floor/area or specified HA label.
-- **Water Heaters & Valves**: Unified ON/OFF controls for all water equipment.
-- **Visibility Toggles**: Easily hide or show individual sensors inside the configuration UI.
-- **Sensor Grouping**: Sensors are grouped logically under their parent device (e.g., Nodon Water Heater, Giex Valve).
+---
 
-## YAML Configuration
+## Configuration
+
+> [!TIP]
+> This card can be configured through the HA UI editor.
+
+### Minimal
 
 ```yaml
 type: custom:sci-fi-water-management
-header: Water Management
-label: water
-default_floor: rdc
+```
+
+### Full
+
+```yaml
+type: custom:sci-fi-water-management
+header_message: Water Management
+filter_label: water
+first_floor_to_render: ground_floor
+default_icon: mdi:water
+ignored_entities:
+  - switch.irrigation_bypass
 ```
 
 ### Options
 
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| `type` | `string` | **required** | `custom:sci-fi-water-management` |
-| `header` | `string` | *optional* | Custom title for the card. |
-| `label` | `string` | *optional* | HA filter label used to group and auto-discover entities. |
-| `default_floor` | `string` | *optional* | The ID of the floor to open by default. |
-| `default_icon` | `string` | `mdi:floor-plan` | The fallback icon for floors. |
-| `visibility` | `object` | `{}` | A dictionary of entity IDs mapped to boolean indicating whether they should be shown. Designed to be configured via the UI. |
+| Name | Type | Required | Description | Default |
+|------|------|----------|-------------|---------|
+| `type` | String | ✅ | `custom:sci-fi-water-management` | |
+| `header_message` | String | | Custom title for the card. | |
+| `filter_label` | String | | HA label used to auto-discover entities. | `water` |
+| `first_floor_to_render` | String | | Floor ID to display by default. | First floor found |
+| `default_icon` | String | | Fallback icon for entities without an explicit icon. | `mdi:floor-plan` |
+| `ignored_entities` | List\<String\> | | List of `entity_id`s to exclude from rendering. | `[]` |
+
+---
 
 ## Integration with Hexa-Tiles
 
-If you want to add a tile in your main `sci-fi-hexa-tiles` dashboard that navigates to the Water Management subview, and lights up when *any* water device is active, you should create a **Template Binary Sensor** in Home Assistant to aggregate their states.
+To add a tile on your `sci-fi-hexa-tiles` dashboard that navigates to the Water Management subview and lights up when any water device is active, create a **Template Binary Sensor** in Home Assistant.
 
-### 1. Create a Global Template Sensor (Home Assistant)
-Go to Settings > Devices & Services > Helpers > Create Helper > Template > Template a binary sensor.
+### 1. Create a Template Binary Sensor (Home Assistant)
+
+Go to **Settings › Devices & Services › Helpers › Create Helper › Template › Template a binary sensor**.
 
 ```yaml
-# State template example:
-{{ is_state('water_heater.nodon', 'on') or is_state('switch.giex_valve', 'on') }}
+# State template example — adapt entity IDs to your setup:
+{{ is_state('water_heater.my_water_heater', 'on') or is_state('switch.my_valve', 'on') }}
 ```
-Name it "Eau Active" (Entity ID will be `binary_sensor.eau_active`).
 
-### 2. Configure Hexa-Tiles (YAML Mode)
-Since `binary_sensor` is not currently aggregated natively in the Hexa-Tiles visual editor, you must add it via the **Code Editor** in Lovelace:
+Name it `Water Active` (entity ID: `binary_sensor.water_active`).
+
+### 2. Configure Hexa-Tiles (YAML)
 
 ```yaml
 tiles:
-  - entity: binary_sensor.eau_active
-    name: Eau
+  - entity: binary_sensor.water_active
+    name: Water
     active_icon: mdi:water
     inactive_icon: mdi:water-off
     state_on:

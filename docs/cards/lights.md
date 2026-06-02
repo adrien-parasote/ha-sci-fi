@@ -64,6 +64,10 @@ custom_entities:
 | `type` | String | ✅ | `custom:sci-fi-lights` | |
 | `header_message` | String | | Card header text | |
 | `ignored_entities` | List\<String\> | | Light entity IDs to hide | `[]` |
+| `first_floor_to_render` | String | | Floor ID to display by default | First floor found |
+| `first_area_to_render` | String | | Area ID to expand by default | First area found |
+| `default_icon_on` | String | | Fallback icon when a light is on | `mdi:lightbulb-on-outline` |
+| `default_icon_off` | String | | Fallback icon when a light is off | `mdi:lightbulb-outline` |
 | `custom_entities` | Object | | Per-entity name/icon overrides | |
 
 ### Options — `custom_entities` (per entry)

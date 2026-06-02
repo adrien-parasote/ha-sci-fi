@@ -6,7 +6,7 @@ import { registerMockHaIcon } from './ha-icon.js';
 import { setupConsoleProxy, log, setConsoleFilter, filterConsoleLines, clearConsole, copyFilteredConsole } from './console.js';
 import { buildMockHass, buildLiveHass } from './mock-hass.js';
 import { setHaStatus, setLiveMode, openConnectModal, closeConnectModal } from './ui-helpers.js';
-import { initViewModes, setViewMode, setDeviceSize, getViewMode } from './view-modes.js';
+import { initViewModes, setViewMode, setDeviceSize, setOrientation, getViewMode } from './view-modes.js';
 import { setEditTab, handleYamlInput, copyConfigYaml, updateCardConfig, mountUiEditor, getEditorEl } from './editor.js';
 import {
   connectToHA,
@@ -30,8 +30,10 @@ setupConsoleProxy();
 // ─── Module state ────────────────────────────────────────────────────────────
 let currentCard = 'hexa';
 let currentScenario = null;
+let lastScenarioKey = null; // track which scenario set the config last
 let cardEl = null;
 let activeConfig = null;
+let currentScenarioData = {}; // current scenario states — passed to updateCardConfig to preserve mock hass
 let bundleLoaded = false;
 let workMode = localStorage.getItem('wb-work-mode') || 'view';
 let currentLanguage = localStorage.getItem('wb-lang') || 'fr';
@@ -69,9 +71,14 @@ function updateCardHass(hass) {
 }
 
 function updateHassLanguage() {
+  // Use current scenario data so states are preserved when switching language
+  const card = CARDS[currentCard];
+  const scenarioData = (card && currentScenario && card.scenarios?.[currentScenario])
+    ? card.scenarios[currentScenario]
+    : {};
   const hass = isLiveMode() && getLiveHass()
     ? buildLiveHass(getLiveHass(), currentLanguage, getHaConnection(), getHaAuth())
-    : buildMockHass({}, currentLanguage);
+    : buildMockHass(scenarioData, currentLanguage);
 
   if (cardEl) {
     cardEl.hass = hass;
@@ -107,8 +114,18 @@ async function renderCard(cardKey, scenarioKey) {
       ? buildLiveHass(getLiveHass(), currentLanguage, getHaConnection(), getHaAuth())
       : buildMockHass(scenarioKey && card.scenarios[scenarioKey] ? card.scenarios[scenarioKey] : {}, currentLanguage);
 
-    if (!activeConfig || currentCard !== cardKey) {
-      activeConfig = { ...card.config };
+    // Scenario-level config override: if scenario has a `_config` property, use it.
+    // Always recompute when card or scenario changes to avoid stale config.
+    const scenarioData = scenarioKey && card.scenarios[scenarioKey] ? card.scenarios[scenarioKey] : {};
+    const scenarioConfig = scenarioData._config ?? null;
+    currentScenarioData = scenarioData; // keep in sync for onConfigChanged
+
+    const cardChanged = currentCard !== cardKey;
+    const scenarioChanged = lastScenarioKey !== scenarioKey;
+
+    if (!activeConfig || cardChanged || scenarioChanged) {
+      activeConfig = scenarioConfig ? { ...scenarioConfig } : { ...card.config };
+      lastScenarioKey = scenarioKey;
       if (window.jsyaml) {
         document.getElementById('yaml-textarea').value = jsyaml.dump(activeConfig);
       }
@@ -131,9 +148,10 @@ async function renderCard(cardKey, scenarioKey) {
         haConnection: getHaConnection(),
         haAuth: getHaAuth(),
         language: currentLanguage,
+        scenarioData: currentScenarioData,
         onConfigChanged: (newConfig) => {
           activeConfig = newConfig;
-          updateCardConfig(newConfig, cardEl, isLiveMode(), getLiveHass(), getHaConnection(), getHaAuth(), currentLanguage);
+          updateCardConfig(newConfig, cardEl, isLiveMode(), getLiveHass(), getHaConnection(), getHaAuth(), currentLanguage, currentScenarioData);
         },
       });
     }
@@ -293,6 +311,10 @@ function setupEventListeners() {
   document.getElementById('btn-dev-tablet').addEventListener('click', () => setDeviceSize('tablet'));
   document.getElementById('btn-dev-phone').addEventListener('click', () => setDeviceSize('phone'));
 
+  // Orientation buttons
+  document.getElementById('btn-orient-portrait').addEventListener('click', () => setOrientation('portrait'));
+  document.getElementById('btn-orient-landscape').addEventListener('click', () => setOrientation('landscape'));
+
   // Language buttons
   document.getElementById('btn-lang-en').addEventListener('click', () => setLanguage('en'));
   document.getElementById('btn-lang-fr').addEventListener('click', () => setLanguage('fr'));
@@ -316,8 +338,29 @@ function setupEventListeners() {
   // Close connect modal
   document.getElementById('btn-connect-cancel').addEventListener('click', () => closeConnectModal());
 
-  // Edit tab buttons
-  document.getElementById('btn-edit-tab-gui').addEventListener('click', () => setEditTab('gui', activeConfig));
+  // Edit tab buttons — remount GUI editor if panel is empty (e.g. after YAML tab or page reload)
+  document.getElementById('btn-edit-tab-gui').addEventListener('click', () => {
+    setEditTab('gui', activeConfig);
+    const guiMount = document.getElementById('gui-editor-mount');
+    if (guiMount && !guiMount.firstChild) {
+      mountUiEditor({
+        currentCard,
+        CARDS,
+        activeConfig,
+        cardEl,
+        isLive: isLiveMode(),
+        liveHass: getLiveHass(),
+        haConnection: getHaConnection(),
+        haAuth: getHaAuth(),
+        language: currentLanguage,
+        scenarioData: currentScenarioData,
+        onConfigChanged: (newConfig) => {
+          activeConfig = newConfig;
+          updateCardConfig(newConfig, cardEl, isLiveMode(), getLiveHass(), getHaConnection(), getHaAuth(), currentLanguage, currentScenarioData);
+        },
+      });
+    }
+  });
   document.getElementById('btn-edit-tab-yaml').addEventListener('click', () => setEditTab('yaml', activeConfig));
 
   // Copy YAML button
@@ -353,6 +396,17 @@ function setupEventListeners() {
 function onLiveUpdate(hass) {
   updateCardHass(hass);
 }
+
+// ─── Mock state-change callback (triggered by callService mock mutations) ─────
+window.addEventListener('mock-hass-state-changed', (e) => {
+  if (isLiveMode()) return; // no-op in live mode — HA handles it
+  if (!cardEl) return;
+  // Shallow-clone the existing hass so Lit detects a reference change and re-renders.
+  // Keep the same callService closure (which already references the mutated states object).
+  // Do NOT call buildMockHass() — that would create a new closure with fresh base states,
+  // which is what caused the first-click bug (click 1 worked but the new closure reset to base).
+  cardEl.hass = { ...cardEl.hass, states: e.detail.states };
+});
 
 // ─── Init sequence ───────────────────────────────────────────────────────────
 const { viewMode: initialViewMode, deviceSize: initialDeviceSize } = initViewModes();

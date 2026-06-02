@@ -252,6 +252,7 @@ export abstract class SciFiBaseEditor extends LitElement {
       'section-title-access': msg('Access'),
       'section-title-automations': msg('Automations'),
       'section-title-appliances': msg('Appliances'),
+      'section-title-stove': msg('Stove'),
       'section-title-action': msg('Action'),
       'section-title-actions': msg('Actions'),
       'action-enable-section': msg('Enable section'),

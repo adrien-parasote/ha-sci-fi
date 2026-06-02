@@ -107,6 +107,18 @@ The agent calls the GitHub API using the `GITHUB_TOKEN` from `.env`.
 
 To find the thematic name for a patch: read `Release-plan.md` and match the `X.Y` minor version entry.
 
+> ⛔ **Anti-pattern — do NOT rewrite the body**: the agent must never paraphrase or reconstruct the changelog. Extract the exact text from `CHANGELOG.md` using `sed` and pass it verbatim. Adding headers like `# v1.3.1 + v1.3.0 — ...` or `---` separators is a violation.
+
+The body is extracted with:
+
+```bash
+# Find the line numbers of the two relevant version headings in CHANGELOG.md
+# e.g. for a 1.3.1 release: extract from "# [1.3.1]" to the line before "# [1.2.3]"
+BODY=$(sed -n '/^\# \[X\.Y\.Z\]/,/^\# \[PREV\]/{ /^\# \[PREV\]/!p }' CHANGELOG.md)
+# Or for a simple contiguous block (e.g. lines 3-45):
+BODY=$(sed -n '3,45p' CHANGELOG.md)
+```
+
 ```bash
 source .env
 curl -s -X POST \
@@ -116,7 +128,7 @@ curl -s -X POST \
   -d "$(jq -n \
     --arg tag 'vX.Y.Z' \
     --arg name '<Thematic name + icons>' \
-    --arg body '<Accumulated CHANGELOG from X.Y.0 to X.Y.Z>' \
+    --arg body "$BODY" \
     '{tag_name: $tag, name: $name, body: $body, draft: true}')" 
 ```
 

@@ -76,6 +76,8 @@ src/
 | 5 | Git force push to main | Force pushing branches in prod | Isolate active work to short-lived branch `v2` |
 | 6 | `window.customIcons` unguarded access | `window.customIcons.sf = ...` when `customIcons` undefined | Always guard: `window.customIcons = window.customIcons \|\| {}` first |
 | 7 | Terser collapses symmetric ternary `msg()` calls | Optimizer compiles `isOn ? msg('A') : msg('B')` into `msg(isOn ? 'A' : 'B')`, bypassing static hashing | Use un-collapsible array-tuple lookups: `[msg('B'), msg('A')][isOn ? 1 : 0] as string` |
+| 8 | Global `customElements.define` patch in production | Wrapping `customElements.define` globally blocks HA's scoped element registry (used by `hui-card-picker`) — cards appear registered in global scope but are invisible to the picker dialog scope → "Custom element not found" at card creation | Wrap in `if (__DEV__)` — Rollup injects `__DEV__=false` in production, Terser dead-code-eliminates the block entirely |
+| 9 | Hardcoded version string in console banner | `'%c SCI-FI CARDS %c v1.0.0 '` hardcoded — never updates on release | Use `__VERSION__` compile-time constant injected by `@rollup/plugin-replace` from `package.json` at build time: `` `v${__VERSION__}` `` |
 
 ---
 

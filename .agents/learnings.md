@@ -823,3 +823,17 @@ tiles:
     standalone: true
 ```
 - **Why:** `sci-fi-hexa-tiles` stays agnostic of custom domain logic. HA handles the aggregation. The GUI editor will not show `binary_sensor` tiles (not in `ENTITY_KINDS`), so users must use YAML mode for these.
+
+### L090: HA Scoped Custom Element Registry — Global define Patch Must Be Dev-Only
+**Date**: 2026-06-02
+**Source**: ha-sci-fi v1.3.0 bugfix — card picker "Custom element not found"
+**Evidence**: All 11 sci-fi cards visible on existing dashboards but selector showed zero. DevTools logged "Custom element not found: custom:sci-fi-*" from hui-card-picker. Root cause: global customElements.define wrapper intercepted HA's scoped registry calls.
+**Anti-pattern**: Wrapping `customElements.define` globally (even for legitimate HMR reasons) silently breaks `hui-card-picker`. HA uses a scoped custom element registry in that dialog. The global interceptor checks `customElements.get(name)` (global scope → found) and skips the `define()` call. The scoped registry never gets the element → "Custom element not found" when picker tries to render a preview.
+**Correct pattern**: Guard with `if (__DEV__)`. Rollup's `@rollup/plugin-replace` injects `__DEV__=false` in production. Terser dead-code-eliminates the entire block (zero bytes, zero overhead in prod bundle). HMR protection preserved in workbench.
+
+### L091: Rollup compile-time constants must be mirrored in vitest.config.ts define block
+**Date**: 2026-06-02
+**Source**: ha-sci-fi v1.3.0 — sci-fi.test.ts ReferenceError after __DEV__ guard introduction
+**Evidence**: After adding `if (__DEV__)` to `src/sci-fi.ts`, `tests/sci-fi.test.ts` threw `ReferenceError: __DEV__ is not defined` at line 19.
+**Root cause**: Vitest uses Vite internally — it does NOT process files through `rollup.config.mjs`. Any constant injected via `@rollup/plugin-replace` is unknown to Vitest unless explicitly declared in the `define` block of `vitest.config.ts`.
+**Correct pattern**: For every value added to `rollup.config.mjs` `replace({ values: { ... } })`, add a parallel entry to `vitest.config.ts` `define: { ... }`. Also declare in `src/types/globals.d.ts` for TypeScript. Checklist: rollup `values` → vitest `define` → TypeScript `globals.d.ts`.

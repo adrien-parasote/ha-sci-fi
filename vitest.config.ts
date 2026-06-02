@@ -1,6 +1,14 @@
 import { defineConfig } from 'vitest/config';
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+const { version } = require('./package.json');
 
 export default defineConfig({
+  define: {
+    __DEV__: true,          // test environment = dev mode (enables HMR guard)
+    __VERSION__: JSON.stringify(version),
+  },
   test: {
     globals: true,
     setupFiles: ['./tests/setup.ts'],

@@ -9,7 +9,7 @@
 
 **Everything is delegated to the agent.** Just say:
 
-> *"Release vX.Y.Z"*
+> *"Release X.Y.Z"*
 
 The agent runs all steps below in order.
 
@@ -51,29 +51,18 @@ If the work was done on a feature/release branch, the agent merges it into `main
 
 ```bash
 git checkout main
-git merge --no-ff <branch-name> -m "chore(release): merge <branch-name> into main for vX.Y.Z"
+git merge --no-ff <branch-name> -m "chore(release): merge <branch-name> into main for X.Y.Z"
 ```
 
 > If already on `main`, this step is skipped.
 
 ---
 
-## Step 3 — Production Build
+## Step 3 — Production Build (Automated)
 
-The agent runs:
+> 🤖 **GitHub Actions now handles this automatically.**
 
-```bash
-# 1. Type check (Vitest does NOT typecheck)
-npx tsc --noEmit
-
-# 2. Full test suite — must be 100% green before building
-npx vitest run
-
-# 3. Production bundle
-npm run build
-```
-
-This generates `dist/sci-fi.min.js` with the exact signature of version `X.Y.Z`.
+The `release.yml` workflow will automatically run the type checks, tests, and build the production bundle (`dist/sci-fi.min.js`) once the tag is pushed to GitHub.
 
 ---
 
@@ -84,7 +73,7 @@ This generates `dist/sci-fi.min.js` with the exact signature of version `X.Y.Z`.
 The agent runs:
 
 ```bash
-git add package.json CHANGELOG.md dist/sci-fi.min.js
+git add package.json CHANGELOG.md
 cat > /tmp/commit_msg.txt << 'EOF'
 chore(release): bump version to X.Y.Z
 EOF
@@ -94,51 +83,20 @@ git push origin main
 git push origin X.Y.Z
 ```
 
-HACS automatically detects the new release from the GitHub tag.
+Pushing the tag triggers the `release.yml` GitHub Action, which builds the code and creates the release automatically.
 
 ---
 
-## Step 5 — Create Draft Release on GitHub
+## Step 5 — Create Release on GitHub (Automated)
 
-The agent calls the GitHub API using the `GITHUB_TOKEN` from `.env`.
+> 🤖 **GitHub Actions now handles this automatically.**
 
-### Release Naming Rules
+Once the tag is pushed in Step 4, the `release.yml` workflow automatically:
+1. Extracts the exact release notes from `CHANGELOG.md` for the current tag.
+2. Creates the GitHub Release.
+3. Attaches the `dist/sci-fi.min.js` asset to the release.
 
-| Rule | Example |
-|------|---------|
-| **Major/minor release** (`X.Y.0`) | Title = thematic name + icons from `Release-plan.md` → `"Bridge Overview 🛸🎛️"` |
-| **Patch release** (`X.Y.Z`, Z > 0) | Title = same thematic name as the `X.Y.0` release → `"Bridge Overview 🛸🎛️"` |
-| **Body content** | Always accumulates **all** changelogs since `X.Y.0` inclusive. `1.2.2` body = changelog of `1.2.2` + `1.2.1` + `1.2.0`. |
-
-To find the thematic name for a patch: read `Release-plan.md` and match the `X.Y` minor version entry.
-
-> ⛔ **Anti-pattern — do NOT rewrite the body**: the agent must never paraphrase or reconstruct the changelog. Extract the exact text from `CHANGELOG.md` using `sed` and pass it verbatim. Adding headers like `# v1.3.1 + v1.3.0 — ...` or `---` separators is a violation.
-
-The body is extracted with:
-
-```bash
-# Find the line numbers of the two relevant version headings in CHANGELOG.md
-# e.g. for a 1.3.1 release: extract from "# [1.3.1]" to the line before "# [1.2.3]"
-BODY=$(sed -n '/^\# \[X\.Y\.Z\]/,/^\# \[PREV\]/{ /^\# \[PREV\]/!p }' CHANGELOG.md)
-# Or for a simple contiguous block (e.g. lines 3-45):
-BODY=$(sed -n '3,45p' CHANGELOG.md)
-```
-
-```bash
-source .env
-curl -s -X POST \
-  -H "Authorization: Bearer $GITHUB_TOKEN" \
-  -H "Accept: application/vnd.github.v3+json" \
-  https://api.github.com/repos/adrien-parasote/ha-sci-fi/releases \
-  -d "$(jq -n \
-    --arg tag 'X.Y.Z' \
-    --arg name '<Thematic name + icons>' \
-    --arg body "$BODY" \
-    '{tag_name: $tag, name: $name, body: $body, draft: true}')" 
-```
-
-> Publishing the release (`"draft": false`) makes it visible to HACS users.
-> Publish only after validating in real conditions if needed.
+The release is published automatically and becomes visible to HACS users immediately.
 
 ---
 
@@ -149,7 +107,7 @@ The agent reads `../ha-sci-fi-wiki/Release-plan.md`, checks the matching line (`
 ```bash
 cd ../ha-sci-fi-wiki
 git add Release-plan.md
-git commit -m "docs(wiki): check vX.Y.Z as launched in release plan"
+git commit -m "docs(wiki): check X.Y.Z as launched in release plan"
 git push origin master
 ```
 
@@ -162,7 +120,7 @@ git push origin master
 | 1a | **Agent** | Receives version from prompt → updates `package.json` |
 | 1b | **Agent** | Reads commits since last tag → inserts entry into `CHANGELOG.md` |
 | 2 | **Agent** | If on a branch: `git checkout main && git merge --no-ff <branch>` |
-| 3 | **Agent** | `npm run build` |
-| 4 | **Agent** | `git add` + `sc-commit.sh` + `git tag` + `git push` |
-| 5 | **Agent** | GitHub API call → draft release with CHANGELOG body |
+| 3 | **GitHub** | `npm run build` (Triggered automatically) |
+| 4 | **Agent** | `git add package.json CHANGELOG.md` + `sc-commit.sh` + `git tag` + `git push` |
+| 5 | **GitHub** | GitHub API call → create release with CHANGELOG body + asset |
 | 6 | **Agent** | Checks + moves line in `Release-plan.md`, commit + push wiki |

@@ -11,7 +11,7 @@
 
 | Feature ID | Description | Spec file |
 |---|---|---|
-| F-VAC-D01 | Header: vacuum name + fan speed (clickable → cycles fan speed) + mop_intensite (conditional) + battery (conditional, with warning/critical colors) | ✅ This spec § Header |
+| F-VAC-D01 | Header: vacuum name + fan speed (dropdown → uses sf-button-card-select) + mop_intensite (conditional) + battery (conditional, with warning/critical colors) | ✅ This spec § Header |
 | F-VAC-D02 | Sub-header: animated icon traversing card (CLEAN/RETURNING=moveAcross, DOCKED=rotate 90°, IDLE/ALERT=centered) — icon 40px, sub-header height 40px | ✅ This spec § Sub-header |
 | F-VAC-D03 | Info sensors: `current_clean_area` + `current_clean_duration` — column cards with icon + value + unit + name, centered, duration rounded to integer minutes | ✅ This spec § Info sensors |
 | F-VAC-D04 | Map: full-width `<img>` with border/radius; fallback text `msg('No map defined')` — fills all remaining space between info and actions via `flex: 1` | ✅ This spec § Map |
@@ -32,7 +32,7 @@
 | 2 | Existing CSS selectors `.vacuum-tabs`, `.vacuum-tab`, `.vacuum-main`, `.ctrl-btn`, `.fan-select`, `.shortcut-btn` in existing tests MUST be **updated** — layout changes completely | Medium | SHOW | 'grep -n "querySelector" tests/cards/vacuum/sci-fi-vacuum.test.ts' → all tests reference old grid selectors |
 | 3 | `sf-button` component is already available — used in vehicles and plugs cards | Low | SHOW | 'ls src/components/buttons/sf-button.ts' → present; 'grep "sf-button" src/cards/vehicles/sci-fi-vehicles.ts' → imported |
 | 4 | `sf-toast` component is already available — used in plugs card | Low | SHOW | 'grep "sf-toast" src/cards/plugs/sci-fi-plugs.ts' → present |
-| 5 | Fan speed in `main` is **read-only** (displayed from `entity.attributes.fan_speed`) — `set_fan_speed` action is kept as a configurable action button using `vacuum.set_fan_speed` service but no inline select | Medium | SHOW | 'git show main:src/cards/vacuum/card.js' → fan speed displayed in header div, no `<select>` |
+| 5 | Fan speed in `main` is read-only (no dropdown). **Issue #43 replaces this** with `sf-button-card-select` dropdown in the header — `fan_speed_list` confirmed as `string[]` via MCP (see § _renderHeader) | Medium | SHOW | MCP `ha_get_state` on `vacuum.dobby` → `fan_speed_list: ["quiet","balanced","turbo","max","off","custom"]` verified 2026-06-03 |
 | 6 | The `@keyframes moveAcross` animation is pure CSS, portable 1:1 from 'main:src/cards/vacuum/style.js' | Low | SHOW | 'git show main:src/cards/vacuum/style.js' → full CSS block, no JS animation |
 | 7 | `VACUUM_ICONS` contains custom icons `sci:vacuum-docked` and `sci:vacuum-sleep` — these must be preserved in 'vacuum_const.ts' | Low | SHOW | 'git show main:src/helpers/entities/vacuum/vacuum_const.js' → both icons present |
 | 8 | Battery and mop_intensite are rendered in the **header** (not in `.info` sensors), matching `main` | Low | SHOW | 'git show main:src/cards/vacuum/card.js' → `__renderBattery()` and `__renderMopIntensite()` called from `__renderHeader()` |
@@ -472,6 +472,7 @@ import {
 
 import '../../components/sf-icon/sf-icon.js';
 import '../../components/buttons/sf-button.js';
+import '../../components/buttons/sf-button-card-select.js';
 import '../../components/sf-toast.js';
 ```
 
@@ -531,7 +532,7 @@ Current vacuum: `const vacuum = this.config.vacuums[this._vacuum_selected_id]`.
 ```ts
 private _renderHeader(v: SciFiVacuumEntry): TemplateResult {
   const entityState = this.hass.states[v.entity];
-  const name = entityState?.attributes.friendly_name ?? v.entity;
+  const name = entityState?.attributes?.friendly_name ?? v.entity;
   const fanSpeed = (entityState?.attributes as any)?.fan_speed as string | undefined;
 
   const batteryState = v.sensors?.battery
@@ -554,13 +555,15 @@ private _renderHeader(v: SciFiVacuumEntry): TemplateResult {
       <div class="name">${name}</div>
       <div class="infoH">
         ${fanSpeed ? html`
-          <sf-icon
+          <sf-button-card-select
+            position="bottom"
             icon="mdi:fan"
-            .connection="${this.hass.connection}"
-            style="cursor:pointer"
-            @click="${() => this._callAction(v.entity, VACUUM_ACTION_SET_FAN_SPEED)}"
-          ></sf-icon>
-          <div>${fanSpeed}</div>
+            no-title
+            text="${fanSpeed}"
+            .items="${this._getFanSpeedItems(v.entity, fanSpeed)}"
+            @button-select="${(e: CustomEvent) => this._setFanSpeed(v.entity, e.detail.id)}"
+            class="fan-select"
+          ></sf-button-card-select>
         ` : nothing}
         <div class="spacer"></div>
         ${mopState ? html`
@@ -579,7 +582,7 @@ private _renderHeader(v: SciFiVacuumEntry): TemplateResult {
 ```
 
 > [!IMPORTANT]
-> Fan speed icon is **clickable** — clicking cycles through `fan_speed_list` using `_callAction(set_fan_speed)`. It is **not** rendered as an action button in the action bar.
+> Fan speed uses `sf-button-card-select` dropdown in the header. Selecting an item dispatches `button-select` → `_setFanSpeed()`. It is **not** rendered as an action button in the action bar. Do NOT use a cyclic click via `_callAction` — that is the old `main` branch behavior, replaced by Issue #43.
 
 ### _renderSubHeader(v)
 
@@ -628,24 +631,30 @@ private _renderInfo(v: SciFiVacuumEntry): TemplateResult {
     : undefined;
 
   const sensors = [
-    { state: areaState, icon: 'mdi:floor-plan', label: msg('Area') },
-    { state: durationState, icon: 'mdi:timer-outline', label: msg('Duration') },
+    { state: areaState, icon: 'mdi:floor-plan', label: msg('Area'), round: false },
+    { state: durationState, icon: 'mdi:timer-outline', label: msg('Duration'), round: true },
   ].filter((s) => s.state !== undefined);
 
   if (sensors.length === 0) return html``;
 
   return html`
     <div class="info">
-      ${sensors.map((s) => html`
+      ${sensors.map((s) => {
+        // Duration: round to integer minutes (Math.round required — raw value is e.g. 10.0666…)
+        const displayValue = s.round
+          ? String(Math.round(parseFloat(s.state!.state)))
+          : s.state!.state;
+        return html`
         <div class="sensor">
           <div class="data">
             <sf-icon icon="${s.icon}" .connection="${this.hass.connection}"></sf-icon>
-            <div class="value">${s.state!.state}</div>
+            <div class="value">${displayValue}</div>
             <div class="unit">${(s.state!.attributes as any).unit_of_measurement ?? ''}</div>
           </div>
           <div class="name">${(s.state!.attributes as any).friendly_name ?? s.label}</div>
         </div>
-      `)}
+      `;
+      })}
     </div>
   `;
 }
@@ -760,19 +769,26 @@ private readonly _next = (): void => {
 ### Service calls
 
 ```ts
+private _getFanSpeedItems(entityId: string, currentFanSpeed: string | undefined) {
+  const state = this.hass.states[entityId];
+  const speeds = ((state?.attributes as any)?.fan_speed_list as string[] | undefined)
+    ?? ['quiet', 'standard', 'strong', 'max'];
+  return speeds.map(speed => ({
+    id: speed,
+    text: speed,
+    icon: 'mdi:fan',
+    // Highlight the active speed in accent color so user sees current selection
+    color: speed === currentFanSpeed ? 'var(--sf-accent-on, #00ff9d)' : undefined,
+  }));
+}
+
+private _setFanSpeed(entityId: string, fanSpeed: string): void {
+  void this.hass.callService('vacuum', 'set_fan_speed', { entity_id: entityId, fan_speed: fanSpeed })
+    .then(() => this._toast(false, msg('done')))
+    .catch((e: Error) => this._toast(true, e.message));
+}
+
 private _callAction(entityId: string, service: string): void {
-  if (service === 'set_fan_speed') {
-    const state = this.hass.states[entityId];
-    const currentSpeed = (state?.attributes as any)?.fan_speed as string | undefined;
-    const speeds = ((state?.attributes as any)?.fan_speed_list as string[] | undefined)
-      ?? ['quiet', 'standard', 'strong', 'max'];
-    const nextIndex = currentSpeed ? (speeds.indexOf(currentSpeed) + 1) % speeds.length : 1;
-    const nextSpeed = speeds[nextIndex];
-    void this.hass.callService('vacuum', 'set_fan_speed', { entity_id: entityId, fan_speed: nextSpeed })
-      .then(() => this._toast(false, msg('done')))
-      .catch((e: Error) => this._toast(true, e.message));
-    return;
-  }
 
   void this.hass.callService('vacuum', service, { entity_id: entityId })
     .then(() => this._toast(false, msg('done')))
@@ -818,8 +834,11 @@ private _toast(error: boolean, text: string): void {
 | `.sensors-row` | sensor items | `.info .sensor` |
 | `.map-container` | 120x120 map | `.map .image` |
 | `.ctrl-btn` | `querySelectorAll` count | N/A — replaced by `sf-button` in `.actions .default` |
-| `.fan-select` | `<select>` element | N/A — fan speed is read-only in `.header .infoH` |
+| `.fan-select` | `<select>` element | `sf-button-card-select` dropdown in `.header .infoH` |
 | `.shortcut-btn` | text button | N/A — replaced by `sf-button` in `.actions .shortcuts` |
+
+> [!NOTE]
+> The old cyclic click tests (`TC-1525`, `TC-1526`, `TC-1527` in `sci-fi-vacuum.test.ts`) must be completely deleted or replaced with the new tests. The old error toast test (`TC-1528`) remains valid but corresponds to spec `TC-1524`. `TC-1529` (malformed shortcut) and `TC-1530` (willUpdate reset) are preserved.
 
 > [!IMPORTANT]
 > The following selectors are **preserved** and must remain GREEN:
@@ -837,7 +856,7 @@ private _toast(error: boolean, text: string): void {
 |---|---|---|---|
 | 1 | **Keeping the tabs layout** | `.vacuum-tab[aria-selected]` tab row for navigation | Full replacement: `.devices` bottom bar with dots + sf-button chevrons |
 | 2 | **Using `<button>` for actions** | `<button class="ctrl-btn">▶ Démarrer</button>` | `<sf-button icon="mdi:play-circle-outline">` in `.actions .default` |
-| 3 | **Using `<select>` for fan speed** | `<select class="fan-select">` | Fan speed is **read-only** in header: `entity.attributes.fan_speed` |
+| 3 | **Using raw `<select>` for fan speed** | `<select class="fan-select">` | Use `sf-button-card-select` in `.header .infoH` with `.items` from `_getFanSpeedItems()` |
 | 4 | **Putting battery/mop in `.info` sensors** | Emoji `🔋 85%` in `.sensors-row` | Battery + mop_intensite in `.header .infoH` via sf-icon + text |
 | 5 | **Putting battery/mop in `.info` card grid** | `.info .sensor` for battery | Only `current_clean_area` and `current_clean_duration` go in `.info` |
 | 6 | **Side-by-side map** | Map 120×120px next to info | Map is **full-width** in its own `.map` section (flex: 1) |
@@ -845,11 +864,13 @@ private _toast(error: boolean, text: string): void {
 | 8 | **Missing sf-toast** | No feedback on action failure | `<sf-toast>` must be present inside `renderCard()` template |
 | 9 | **Missing null guards on hass.states** | `this.hass.states[v.entity].state` | Always `this.hass.states[v.entity]?.state` |
 | 10 | **Shortcut params as flat array** | `params: desc.segments` | `params: [{ segments: desc.segments }]` — matches main `_callShortcutService` signature |
-| 11 | **Fan speed as action bar button** | `<sf-button icon="mdi:fan">` in `.actions .default` | Fan speed is **header-only**: clickable `sf-icon` in `.header .infoH` cycles through `fan_speed_list` |
+| 11 | **Fan speed as action bar button** | `<sf-button icon="mdi:fan">` in `.actions .default` | Fan speed is **header-only**: `sf-button-card-select` in `.header .infoH` — `button-select` event → `_setFanSpeed()` |
 | 12 | **No battery color thresholds** | Battery always cyan regardless of level | `battery-warn` class (amber) at < 30%, `battery-critical` class (orange) at < 20% |
 | 13 | **Flat flex container for .info** | `display: inline-flex` without centering | `display: flex; justify-content: center` |
 | 14 | **ha-card display:block breaks flex** | `ha-card { display: block }` from common styles | Override in vacuumStyles: `ha-card { display: flex !important; flex-direction: column }` |
-| 15 | **Duration not rounded** | `10.0666…` displayed as-is | `Math.round(parseFloat(state))` before display |
+| 15 | **Duration not rounded** | `10.0666…` displayed as-is | `Math.round(parseFloat(state))` before display — use `round: true` flag in sensor map |
+| 16 | **Active fan speed not highlighted** | All speeds same color in dropdown | Pass `color: 'var(--sf-accent-on, #00ff9d)'` for speed matching `fanSpeed` in `_getFanSpeedItems()` |
+| 17 | **Cyclic click on sf-icon for fan speed** | `_callAction(set_fan_speed)` on icon click | That is the old `main` branch behavior — Issue #43 replaces it with `sf-button-card-select` dropdown |
 
 ---
 
@@ -881,6 +902,8 @@ private _toast(error: boolean, text: string): void {
 | TC-1522 | Unit | Next navigation cycles correctly | 2 vacuums at idx 1, click next | `_vacuum_selected_id` becomes 0 |
 | TC-1523 | Unit | Toast shows success message after action | click start, service resolves | `sf-toast.addMessage` called with `('done', false)` |
 | TC-1524 | Unit | Toast shows error message after action failure | click start, service rejects with Error('fail') | `sf-toast.addMessage` called with `('fail', true)` |
+| TC-1525 | Unit | `sf-button-card-select` present in header when fan_speed_list non-empty | state with `fan_speed_list: ['quiet','turbo']` + `fan_speed: 'quiet'` | `.header sf-button-card-select` present; `.items` count = 2; active item has accent color |
+| TC-1526 | Unit | Fan speed dropdown selection calls set_fan_speed service | user selects 'turbo' from sf-button-card-select | `callService('vacuum', 'set_fan_speed', { entity_id, fan_speed: 'turbo' })` called |
 | IT-1501 | Integration | Card registers in `customElements` | load card | `customElements.get('sci-fi-vacuum')` returns class |
 | IT-1502 | Integration | Card full render: header + sub-header + map + actions | mount with full config | `.header`, `.sub-header`, `.map`, `.actions` all present |
 | IT-1503 | Integration | `vacuum/styles.ts` imported — no inline `css\`` in 'sci-fi-vacuum.ts' | grep | 'grep -c "css\'" sci-fi-vacuum.ts` returns 0 |
@@ -901,7 +924,7 @@ private _toast(error: boolean, text: string): void {
 | Shortcut service missing or malformed | `!sc?.service` or `!domain \|\| !service` after split | Early return, no service call | Nothing happens |
 | Shortcut description missing at index | `!desc` guard | Early return, no service call | Nothing happens |
 | Action service call fails | `.catch((e) => this._toast(true, e.message))` | Toast error message shown | Toast shown |
-| `_vacuum_selected_id` out of bounds | Can't happen: prev/next bounded to `vacuums.length - 1` | — | — |
+| `_vacuum_selected_id >= vacuums.length` after config update (e.g. last vacuum removed while selected) | `willUpdate()` detects via `changedProperties.has('config')` | `_vacuum_selected_id = Math.max(0, len - 1)` | Index clamped to valid range |
 
 ---
 

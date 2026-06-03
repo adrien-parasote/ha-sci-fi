@@ -88,8 +88,8 @@ describe('sci-fi-vacuum', () => {
     });
     document.body.appendChild(el);
     await el.updateComplete;
-    const infoH = el.shadowRoot!.querySelector('.header .infoH');
-    expect(infoH?.textContent).to.include('Standard');
+    const select = el.shadowRoot!.querySelector('.header .infoH sf-button-card-select');
+    expect(select?.getAttribute('text')).to.equal('Standard');
   });
 
   // ── TC-1507 — sub-header DOCKED class ───────────────────────────────────
@@ -522,21 +522,19 @@ describe('sci-fi-vacuum', () => {
     expect(styles.length).to.be.greaterThan(1);
   });
 
-  // ── TC-1525 — fan speed cycling via header fan icon ─────────────────────
+  // ── TC-1525 — sf-button-card-select present in header ──────────────────
 
-  it('TC-1525 — clicking fan icon cycles to next fan speed', async () => {
+  it('TC-1525 — sf-button-card-select present in header when fan_speed_list non-empty', async () => {
     const el = makeEl();
-    const mockCallService = vi.fn().mockResolvedValue(undefined);
     setConfig(el, { type: 'custom:sci-fi-vacuum', vacuums: [{ entity: 'vacuum.bot' }] });
     el.hass = makeMockHass({
-      callService: mockCallService,
       states: {
         'vacuum.bot': makeMockEntity({
           entity_id: 'vacuum.bot',
           state: 'docked',
           attributes: {
             fan_speed: 'quiet',
-            fan_speed_list: ['quiet', 'standard', 'strong', 'max'],
+            fan_speed_list: ['quiet', 'turbo'],
           },
         }),
       },
@@ -544,18 +542,17 @@ describe('sci-fi-vacuum', () => {
     document.body.appendChild(el);
     await el.updateComplete;
 
-    const fanIcon = el.shadowRoot!.querySelector('.infoH sf-icon') as HTMLElement | null;
-    fanIcon?.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
-
-    expect(mockCallService).toHaveBeenCalledWith('vacuum', 'set_fan_speed', {
-      entity_id: 'vacuum.bot',
-      fan_speed: 'standard', // next after 'quiet'
-    });
+    const select = el.shadowRoot!.querySelector('.header sf-button-card-select') as any;
+    expect(select).not.to.be.null;
+    expect(select.items.length).to.equal(2);
+    // Active item has accent color
+    const activeItem = select.items.find((i: any) => i.id === 'quiet');
+    expect(activeItem.color).to.equal('var(--sf-accent-on, #00ff9d)');
   });
 
-  // ── TC-1526 — fan speed: no current speed → defaults to index 1 ──────────
+  // ── TC-1526 — Fan speed dropdown selection calls set_fan_speed service ──
 
-  it('TC-1526 — fan speed cycling defaults to index 1 when no current speed', async () => {
+  it('TC-1526 — Fan speed dropdown selection calls set_fan_speed service', async () => {
     const el = makeEl();
     const mockCallService = vi.fn().mockResolvedValue(undefined);
     setConfig(el, { type: 'custom:sci-fi-vacuum', vacuums: [{ entity: 'vacuum.bot' }] });
@@ -565,46 +562,19 @@ describe('sci-fi-vacuum', () => {
         'vacuum.bot': makeMockEntity({
           entity_id: 'vacuum.bot',
           state: 'cleaning',
-          // no fan_speed attribute
-          attributes: { fan_speed_list: ['silent', 'balanced', 'turbo'] },
+          attributes: { fan_speed: 'balanced', fan_speed_list: ['silent', 'balanced', 'turbo'] },
         }),
       },
     });
     document.body.appendChild(el);
     await el.updateComplete;
 
-    // Directly invoke _callAction since the fan icon isn't rendered without fan_speed
-    (el as any)._callAction('vacuum.bot', 'set_fan_speed');
+    const select = el.shadowRoot!.querySelector('.header sf-button-card-select') as any;
+    select?.dispatchEvent(new CustomEvent('button-select', { detail: { id: 'turbo' } }));
+
     expect(mockCallService).toHaveBeenCalledWith('vacuum', 'set_fan_speed', {
       entity_id: 'vacuum.bot',
-      fan_speed: 'balanced', // index 1
-    });
-  });
-
-  // ── TC-1527 — fan speed: fan_speed_list absent → uses default list ────────
-
-  it('TC-1527 — fan speed uses default list when fan_speed_list is absent', async () => {
-    const el = makeEl();
-    const mockCallService = vi.fn().mockResolvedValue(undefined);
-    setConfig(el, { type: 'custom:sci-fi-vacuum', vacuums: [{ entity: 'vacuum.bot' }] });
-    el.hass = makeMockHass({
-      callService: mockCallService,
-      states: {
-        'vacuum.bot': makeMockEntity({
-          entity_id: 'vacuum.bot',
-          state: 'docked',
-          attributes: { fan_speed: 'quiet' }, // no fan_speed_list
-        }),
-      },
-    });
-    document.body.appendChild(el);
-    await el.updateComplete;
-
-    (el as any)._callAction('vacuum.bot', 'set_fan_speed');
-    // default list: ['quiet', 'standard', 'strong', 'max'] → quiet at index 0 → next = standard
-    expect(mockCallService).toHaveBeenCalledWith('vacuum', 'set_fan_speed', {
-      entity_id: 'vacuum.bot',
-      fan_speed: 'standard',
+      fan_speed: 'turbo',
     });
   });
 

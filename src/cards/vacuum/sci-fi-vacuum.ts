@@ -28,6 +28,7 @@ import {
 
 import '../../components/sf-icon/sf-icon.js';
 import '../../components/buttons/sf-button.js';
+import '../../components/buttons/sf-button-card-select.js';
 import '../../components/sf-toast.js';
 
 const TAG = 'sci-fi-vacuum';
@@ -121,13 +122,15 @@ export class SciFiVacuumCard extends SciFiBaseCard {
         <div class="name">${name}</div>
         <div class="infoH">
           ${fanSpeed ? html`
-            <sf-icon
+            <sf-button-card-select
+              position="bottom"
               icon="mdi:fan"
-              .connection="${this.hass.connection}"
-              style="cursor:pointer"
-              @click="${() => this._callAction(v.entity, VACUUM_ACTION_SET_FAN_SPEED)}"
-            ></sf-icon>
-            <div>${fanSpeed}</div>
+              no-title
+              text="${fanSpeed}"
+              .items="${this._getFanSpeedItems(v.entity, fanSpeed)}"
+              @button-select="${(e: CustomEvent) => this._setFanSpeed(v.entity, e.detail.id)}"
+              class="fan-select"
+            ></sf-button-card-select>
           ` : nothing}
           <div class="spacer"></div>
           ${mopState ? html`
@@ -287,22 +290,25 @@ export class SciFiVacuumCard extends SciFiBaseCard {
 
   // ── Service calls ─────────────────────────────────────────────────────────
 
-  private _callAction(entityId: string, service: string): void {
-    if (service === VACUUM_ACTION_SET_FAN_SPEED) {
-      const entityState = this.hass.states[entityId];
-      const currentSpeed = (entityState?.attributes as any)?.fan_speed as string | undefined;
-      const speeds = ((entityState?.attributes as any)?.fan_speed_list as string[] | undefined)
-        ?? ['quiet', 'standard', 'strong', 'max'];
-      const nextIndex = currentSpeed
-        ? (speeds.indexOf(currentSpeed) + 1) % speeds.length
-        : 1;
-      const nextSpeed = speeds[nextIndex];
-      void this.hass.callService('vacuum', 'set_fan_speed', { entity_id: entityId, fan_speed: nextSpeed })
-        .then(() => this._toast(false, msg('done')))
-        .catch((e: Error) => this._toast(true, e.message));
-      return;
-    }
+  private _getFanSpeedItems(entityId: string, currentFanSpeed: string | undefined) {
+    const state = this.hass.states[entityId];
+    const speeds = ((state?.attributes as any)?.fan_speed_list as string[] | undefined)
+      ?? ['quiet', 'standard', 'strong', 'max'];
+    return speeds.map(speed => ({
+      id: speed,
+      text: speed,
+      icon: 'mdi:fan',
+      color: speed === currentFanSpeed ? 'var(--sf-accent-on, #00ff9d)' : undefined,
+    }));
+  }
 
+  private _setFanSpeed(entityId: string, fanSpeed: string): void {
+    void this.hass.callService('vacuum', 'set_fan_speed', { entity_id: entityId, fan_speed: fanSpeed })
+      .then(() => this._toast(false, msg('done')))
+      .catch((e: Error) => this._toast(true, e.message));
+  }
+
+  private _callAction(entityId: string, service: string): void {
     void this.hass.callService('vacuum', service, { entity_id: entityId })
       .then(() => this._toast(false, msg('done')))
       .catch((e: Error) => this._toast(true, e.message));

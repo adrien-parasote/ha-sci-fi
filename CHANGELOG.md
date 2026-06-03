@@ -4,6 +4,7 @@
 
 ## 🐛 Fixes
 
+- **Build**: fix GitHub Actions build failure by adding `@types/node` declaration to `tsconfig.json`
 - **Security**: resolve CodeQL alerts (XSS in icon-browser) and HACS validation errors (`hacs.json` type removal)
 - **Core**: fix `hacs.json` schema test conformance (`TC-115`)
 

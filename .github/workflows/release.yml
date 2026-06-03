@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Extract Release Notes
+        run: |
+          PREFIX=$(echo "${{ github.ref_name }}" | cut -d. -f1,2)
+          awk -v tag="${{ github.ref_name }}" -v prefix="^# \\\[$PREFIX\\\\." '
+            $0 ~ "^# \\[" tag "\\]" {flag=1; next}
+            /^# \[/ {
+              if (flag && $0 !~ prefix) exit
+            }
+            flag
+          ' CHANGELOG.md > release_notes.md
+
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create ${{ github.ref_name }} \
+            dist/sci-fi.min.js \
+            --title "Release ${{ github.ref_name }}" \
+            --notes-file release_notes.md

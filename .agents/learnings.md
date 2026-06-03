@@ -847,3 +847,10 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 **Source**: ha-sci-fi — learnings.md optimization (876 lines, 96 entries)
 **Evidence**: Attempted subagent (8 min, blocked). Python script: parse → deduplicate → renumber → normalize → write → verify in one 10-second execution. Result: 0 bugs, correct output first pass.
 **Pattern**: For structural rewrites of large files (deduplication, renumbering, format normalization across N entries), write a Python script that: (1) parses the file into logical blocks via regex, (2) applies all transforms in memory, (3) writes the result atomically. This is more reliable than multi_replace (can't handle N occurrences), subagents (permission issues), or manual chunk edits (context drift). Script lives in `.agents/` scratch if not reusable, or in `scripts/` if it has recurring value.
+
+### L110: UI Component CSS Layout Contract Mismatch
+- **Date:** 2026-06-03
+- **Source:** ha-sci-fi — vacuum card spec
+- **Evidence:** `sf-button-card-select` was chosen for logic but broke the flex header layout. Required creating `sf-dropdown` instead.
+- **Anti-pattern:** Reusing a UI component based purely on its logical interface (events/props) without checking its CSS layout contract (block vs inline) against the target container.
+- **Fix:** In the STRATEGY/SPEC phase, when reusing a component, explicitly verify its layout behavior matches the container context. If it is a card-level block and you need an inline element, extract the logic into a new inline component.

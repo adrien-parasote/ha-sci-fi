@@ -16,7 +16,6 @@ import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
 import type {
   SciFiClimatesConfig,
-  SciFiClimatesHeaderConfig,
 } from '../../types/config.js';
 import type { InputUpdateDetail } from '../../components/editor-inputs/sf-editor-input.js';
 import type { EditorHassEntity } from '../../components/editor-inputs/sf-editor-dropdown-entity.js';
@@ -60,7 +59,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
     newConfig.header = {
       ...(newConfig.header ?? {}),
       display: e.detail.checked,
-    } as SciFiClimatesHeaderConfig;
+    };
     this._dispatchChange(newConfig);
   }
 
@@ -69,7 +68,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
     newConfig.header = {
       ...(newConfig.header ?? {}),
       [e.detail.id]: e.detail.value,
-    } as SciFiClimatesHeaderConfig;
+    };
     this._dispatchChange(newConfig);
   }
 
@@ -100,7 +99,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
     const newConfig = this._getNewConfig<SciFiClimatesConfig>();
     const group = e.detail.kind; // 'state_icons' | 'state_colors' | 'mode_icons' | 'mode_colors'
     (newConfig as unknown as Record<string, unknown>)[group] = {
-      ...((newConfig as unknown as Record<string, unknown>)[group] as Record<string, string> ?? {}),
+      ...((newConfig as unknown as Record<string, unknown>)[group] ?? {}),
       [e.detail.id]: e.detail.value,
     };
     this._dispatchChange(newConfig);

@@ -17,7 +17,6 @@ import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
 import type {
   SciFiVacuumConfig,
   SciFiVacuumEntry,
-  SciFiVacuumSensors,
   SciFiVacuumShortcutDescription,
 } from '../../types/config.js';
 import type { InputUpdateDetail } from '../../components/editor-inputs/sf-editor-input.js';
@@ -81,7 +80,7 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
     const vacuums = ([...(newConfig.vacuums ?? [])].map(v => ({ ...v })) as unknown as SciFiVacuumEntry[]);
     vacuums[vacuumIndex] = ({
       ...vacuums[vacuumIndex],
-      sensors: { ...(vacuums[vacuumIndex]!.sensors ?? {}), [field]: value } as SciFiVacuumSensors,
+      sensors: { ...(vacuums[vacuumIndex]!.sensors ?? {}), [field]: value },
     } as unknown as SciFiVacuumEntry);
     (newConfig as unknown as Record<string, unknown>)['vacuums'] = vacuums;
     this._dispatchChange(newConfig);
@@ -177,7 +176,7 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
     const vacuum = { ...vacuums[vacuumIndex] };
     const shortcuts = { ...(vacuum.shortcuts ?? {}) };
     const descriptions = [...(shortcuts.description ?? [])];
-    descriptions.push({ name: '', segments: [] } as typeof descriptions[0]);
+    descriptions.push({ name: '', segments: [] });
     shortcuts.description = descriptions;
     vacuum.shortcuts = shortcuts;
     vacuums[vacuumIndex] = vacuum as unknown as SciFiVacuumEntry;
@@ -206,7 +205,7 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
   private _addVacuum(): void {
     const newConfig = this._getNewConfig<SciFiVacuumConfig>();
     const vacuums = ([...(newConfig.vacuums ?? [])].map(v => ({ ...v })) as unknown as SciFiVacuumEntry[]);
-    vacuums.push({ entity: '' } as typeof vacuums[0]);
+    vacuums.push({ entity: '' });
     (newConfig as unknown as Record<string, unknown>)['vacuums'] = vacuums;
     this._activeVacuum = vacuums.length - 1;
     this._dispatchChange(newConfig);

@@ -12,7 +12,7 @@ import { html, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
-import type { SciFiStoveConfig, SciFiStoveSensors } from '../../types/config.js';
+import type { SciFiStoveConfig } from '../../types/config.js';
 import type { InputUpdateDetail } from '../../components/editor-inputs/sf-editor-input.js';
 
 import '../../components/editor-inputs/sf-editor-input.js';
@@ -28,7 +28,7 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
     const { id, kind, value } = e.detail;
 
     if (kind === 'sensor') {
-      newConfig.sensors = { ...(newConfig.sensors ?? {}), [id]: value } as SciFiStoveSensors;
+      newConfig.sensors = { ...(newConfig.sensors ?? {}), [id]: value };
     } else if (kind === 'technical') {
       (newConfig as unknown as Record<string, unknown>)[id] = parseFloat(value);
     } else {

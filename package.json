@@ -20,7 +20,7 @@
   "dependencies": {
     "@lit/localize": "^0.12.2",
     "@lit/task": "^1.0.2",
-    "chart.js": "^4.4.7",
+    "chart.js": "^4.5.1",
     "home-assistant-js-websocket": "^9.6.0",
     "idb-keyval": "^6.2.1",
     "lit": "^3.2.1"

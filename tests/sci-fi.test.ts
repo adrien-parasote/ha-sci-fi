@@ -23,13 +23,13 @@ describe('sci-fi entry point', () => {
     }
   });
 
-  it('TC-115: hacs.json includes required plugin classification', () => {
+  it('TC-115: hacs.json conforms to HACS 2.0 schema (no type field)', () => {
     const hacsPath = path.resolve(__dirname, '../hacs.json');
     const hacsContent = fs.readFileSync(hacsPath, 'utf8');
     const hacsJson = JSON.parse(hacsContent);
 
-    expect(hacsJson).to.have.property('type');
-    expect(hacsJson.type).to.equal('plugin');
+    expect(hacsJson).to.not.have.property('type');
+    expect(hacsJson).to.have.property('name');
   });
 
   it('TC-116: ensures card types do not contain custom: prefix', () => {

@@ -555,15 +555,13 @@ private _renderHeader(v: SciFiVacuumEntry): TemplateResult {
       <div class="name">${name}</div>
       <div class="infoH">
         ${fanSpeed ? html`
-          <sf-button-card-select
-            position="bottom"
+          <sf-dropdown
             icon="mdi:fan"
-            no-title
             text="${fanSpeed}"
             .items="${this._getFanSpeedItems(v.entity, fanSpeed)}"
-            @button-select="${(e: CustomEvent) => this._setFanSpeed(v.entity, e.detail.id)}"
+            @dropdown-select="${(e: CustomEvent) => this._setFanSpeed(v.entity, e.detail.id)}"
             class="fan-select"
-          ></sf-button-card-select>
+          ></sf-dropdown>
         ` : nothing}
         <div class="spacer"></div>
         ${mopState ? html`

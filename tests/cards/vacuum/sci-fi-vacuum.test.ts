@@ -88,7 +88,7 @@ describe('sci-fi-vacuum', () => {
     });
     document.body.appendChild(el);
     await el.updateComplete;
-    const select = el.shadowRoot!.querySelector('.header .infoH sf-button-card-select');
+    const select = el.shadowRoot!.querySelector('.header .infoH sf-dropdown');
     expect(select?.getAttribute('text')).to.equal('Standard');
   });
 
@@ -522,9 +522,9 @@ describe('sci-fi-vacuum', () => {
     expect(styles.length).to.be.greaterThan(1);
   });
 
-  // ── TC-1525 — sf-button-card-select present in header ──────────────────
+  // ── TC-1525 — sf-dropdown present in header ──────────────────
 
-  it('TC-1525 — sf-button-card-select present in header when fan_speed_list non-empty', async () => {
+  it('TC-1525 — sf-dropdown present in header when fan_speed_list non-empty', async () => {
     const el = makeEl();
     setConfig(el, { type: 'custom:sci-fi-vacuum', vacuums: [{ entity: 'vacuum.bot' }] });
     el.hass = makeMockHass({
@@ -542,7 +542,7 @@ describe('sci-fi-vacuum', () => {
     document.body.appendChild(el);
     await el.updateComplete;
 
-    const select = el.shadowRoot!.querySelector('.header sf-button-card-select') as any;
+    const select = el.shadowRoot!.querySelector('.header sf-dropdown') as any;
     expect(select).not.to.be.null;
     expect(select.items.length).to.equal(2);
     // Active item has accent color
@@ -569,8 +569,8 @@ describe('sci-fi-vacuum', () => {
     document.body.appendChild(el);
     await el.updateComplete;
 
-    const select = el.shadowRoot!.querySelector('.header sf-button-card-select') as any;
-    select?.dispatchEvent(new CustomEvent('button-select', { detail: { id: 'turbo' } }));
+    const select = el.shadowRoot!.querySelector('.header sf-dropdown') as any;
+    select?.dispatchEvent(new CustomEvent('dropdown-select', { detail: { id: 'turbo' } }));
 
     expect(mockCallService).toHaveBeenCalledWith('vacuum', 'set_fan_speed', {
       entity_id: 'vacuum.bot',

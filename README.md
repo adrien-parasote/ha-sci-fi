@@ -12,9 +12,6 @@
 A collection of custom Lovelace cards for a minimalist sci-fi dashboard in Home Assistant.  
 The goal: a single phone entry point to control your entire home.
 
-> [!IMPORTANT]
-> **v1.3.0 — Bridge Overview + Water Management + i18n full** (Lit 3 · TypeScript 5 · zero CDN · 953 tests · 87% line coverage · Bridge Overview card with 8 optional sections · Water Management card).  
-> Upgrading? See **[MIGRATION.md](./docs/MIGRATION.md)** for breaking changes and YAML configurations mapping.
 
 ---
 

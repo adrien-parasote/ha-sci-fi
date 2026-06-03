@@ -97,6 +97,8 @@
 
 | L108 | `self` Subagent Does Not Inherit Parent Write Permissions | anti-pattern | methodology | 2026-06-02 |
 | L109 | Large File Rewrites >200 lines = Python script, not subagent | pattern | methodology | 2026-06-02 |
+| L110 | UI Component CSS Layout Contract Mismatch | anti-pattern | css, methodology | 2026-06-03 |
+| L111 | SED vs AWK cross-platform behavior in GitHub Actions | anti-pattern | ci-cd, methodology | 2026-06-03 |
 
 ---
 
@@ -854,3 +856,10 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 - **Evidence:** `sf-button-card-select` was chosen for logic but broke the flex header layout. Required creating `sf-dropdown` instead.
 - **Anti-pattern:** Reusing a UI component based purely on its logical interface (events/props) without checking its CSS layout contract (block vs inline) against the target container.
 - **Fix:** In the STRATEGY/SPEC phase, when reusing a component, explicitly verify its layout behavior matches the container context. If it is a card-level block and you need an inline element, extract the logic into a new inline component.
+
+### L111: SED vs AWK cross-platform behavior in GitHub Actions
+- **Date:** 2026-06-03
+- **Source:** ha-sci-fi — release.yml CI configuration
+- **Evidence:** Using advanced `sed` commands with brace chaining `{cmd; cmd;}` for multiline extraction caused unexpected EOF errors on macOS (BSD sed), while passing on Ubuntu (GNU sed).
+- **Anti-pattern:** Relying on complex `sed` syntax in CI/CD scripts that developers also test locally. The BSD vs GNU syntax difference leads to "works on my machine" or "works on CI but fails locally" divergence.
+- **Fix:** For multiline string parsing (e.g. changelog extraction), use `awk` instead of `sed`. `awk` handles stateful extraction (`flag=1`) identically across macOS and Linux, ensuring the script behaves perfectly in both environments.

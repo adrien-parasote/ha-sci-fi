@@ -23,7 +23,7 @@
     "chart.js": "^4.4.7",
     "home-assistant-js-websocket": "^9.6.0",
     "idb-keyval": "^6.2.1",
-    "lit": "^3.2.1"
+    "lit": "^3.3.3"
   },
   "devDependencies": {
     "@lit/localize-tools": "0.8.2",

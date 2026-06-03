@@ -52,7 +52,27 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          wget https://raw.githubusercontent.com/adrien-parasote/ha-sci-fi-wiki/master/Release-plan.md -O release-plan.md || true
+          TITLE=$(python3 -c "
+          import sys, re
+          try:
+              ref = sys.argv[1]
+              major_minor = '.'.join(ref.split('.')[:2])
+              with open('release-plan.md', 'r') as f:
+                  for line in f.read().splitlines():
+                      if f'\`{major_minor}\`' in line and '- [' in line:
+                          match = re.search(r'- \[[x ]\] \`([^\`]+)\`', line)
+                          if match:
+                              name = match.group(1).strip()
+                              emojis = ''.join(c for c in line.split(' - ')[-1] if ord(c) > 127).strip()
+                              print(f'{name} {emojis}'.strip())
+                              sys.exit(0)
+          except Exception:
+              pass
+          print(f'Release {sys.argv[1]}')
+          " "${{ github.ref_name }}")
+          
           gh release create ${{ github.ref_name }} \
             dist/sci-fi.min.js \
-            --title "Release ${{ github.ref_name }}" \
+            --title "$TITLE" \
             --notes-file release_notes.md

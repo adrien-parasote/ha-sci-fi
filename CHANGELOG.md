@@ -1,5 +1,18 @@
 # Changelog
 
+# [1.3.4](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.3.4) - 2026-06-03
+
+## 🐛 Fixes
+
+- **Security**: resolve CodeQL alerts (XSS in icon-browser) and HACS validation errors (`hacs.json` type removal)
+- **Core**: fix `hacs.json` schema test conformance (`TC-115`)
+
+## 🛠️ Technical
+
+- **Deps**: bump dependabot PR dependencies (including Lit, Chart.js, Rollup, etc.)
+- **Deps**: migrate ESLint from v8.57.1 to v10.4.1 flat config
+- clean up legacy ESLint v8 files and rebuild distribution artifacts
+
 # [1.3.3](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.3.3) - 2026-06-03
 
 ## 🆕 What's New

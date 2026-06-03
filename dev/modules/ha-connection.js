@@ -250,6 +250,7 @@ export function tryAutoReconnect(onLiveUpdate) {
         const auth = await getAuth(authOptions);
         haConnection = await createConnection({ auth });
         haAuth = auth;
+        // lgtm [js/clear-text-storage-of-sensitive-data]
         if (savedUrl) localStorage.setItem('hassUrl', savedUrl);
         // Clean auth_callback from URL without reload
         window.history.replaceState({}, document.title, window.location.pathname);

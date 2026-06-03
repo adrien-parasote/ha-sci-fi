@@ -96,7 +96,12 @@ export async function mountIconBrowser(mount) {
     grid.innerHTML = '';
 
     if (filtered.length === 0) {
-      grid.innerHTML = `<div class="ib-empty">Aucune icône pour "<em>${q}</em>"</div>`;
+      const emptyDiv = document.createElement('div');
+      emptyDiv.className = 'ib-empty';
+      const em = document.createElement('em');
+      em.textContent = q;
+      emptyDiv.append('Aucune icône pour "', em, '"');
+      grid.appendChild(emptyDiv);
       return;
     }
 

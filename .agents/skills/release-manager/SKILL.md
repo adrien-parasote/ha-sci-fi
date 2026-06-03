@@ -23,9 +23,18 @@ Always execute the following steps in order.
 
 Present a summary of these 3 points to the user and **wait for their explicit approval** before moving to Step 2.
 
-### Step 2 — Versioning & Changelog
+### Step 2 — Merge Branch to Main & Close Issues
+If the user specified a branch, you MUST merge it into `main` FIRST.
+```bash
+git checkout main
+git merge --no-ff <branch-name> -m "chore(release): merge <branch-name> into main for X.Y.Z. Closes #<issue-id>"
+```
+*Note: Include `Closes #XXX` for each linked issue to trigger GitHub's automatic issue closure. If already on `main` and no branch was specified, skip the merge.*
+
+### Step 3 — Versioning & Changelog (Done on `main`)
+Now that you are on `main` and the branch is merged:
 1. **package.json**: Update the `"version"` field to the target version.
-2. **CHANGELOG.md**: Read the git commits on the target branch since the last tag. Categorize them (`feat`, `fix`, `refactor`, `docs`) and generate a formatted entry inserted at the top.
+2. **CHANGELOG.md**: Read the git commits since the last tag. Categorize them (`feat`, `fix`, `refactor`, `docs`) and generate a formatted entry inserted at the top.
    *Format:*
    ```markdown
    # [X.Y.Z](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/X.Y.Z) - YYYY-MM-DD
@@ -42,14 +51,6 @@ Present a summary of these 3 points to the user and **wait for their explicit ap
    ## 🛠️ Technical
    - ...
    ```
-
-### Step 3 — Merge Branch to Main & Close Issues
-If the work was done on a feature/release branch, merge it into `main` with a commit message that automatically closes the linked issues.
-```bash
-git checkout main
-git merge --no-ff <branch-name> -m "chore(release): merge <branch-name> into main for X.Y.Z. Closes #<issue-id>"
-```
-*Note: Include `Closes #XXX` for each linked issue to trigger GitHub's automatic issue closure.*
 
 ### Step 4 — Commit, Tag & Push
 > ⛔ **Tag convention: NO `v` prefix.** All tags use bare `X.Y.Z` (e.g. `1.3.1`), NOT `v1.3.1`. Every existing tag confirms this.

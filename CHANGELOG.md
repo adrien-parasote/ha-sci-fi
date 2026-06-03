@@ -1,5 +1,29 @@
 # Changelog
 
+# [1.3.3](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.3.3) - 2026-06-03
+
+## 🆕 What's New
+
+- **Vacuum card**: introduce sf-dropdown component for inline fan speed selection
+- **Vacuum card**: replace fan speed cyclic action with dropdown selection
+- **Release Manager**: migrate release process to automated stream-coding skill
+
+## 🐛 Fixes
+
+- **Release Manager**: swap merge and changelog generation steps
+
+## 📚 Docs
+
+- add learnings regarding UI component CSS contracts and cross-platform CI/CD script compatibility
+- **Core**: remove v1.3.0 important block from README
+- **Core**: migrate user docs to wiki
+
+## 🛠️ Technical
+
+- update distribution files to include minified bundle wrapper and headers
+- **CI**: automate release process via GitHub Actions
+- merge issue_43 into main for 1.3.3. Closes #43
+
 # [1.3.2](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.3.2) - 2026-06-02
 
 ## 🐛 Fixes

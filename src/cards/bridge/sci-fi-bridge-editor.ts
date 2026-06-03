@@ -177,7 +177,7 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
 
   private get _hassEntities(): Record<string, { entity_id: string; attributes: { friendly_name?: string; icon?: string } }> {
     if (!this.hass?.states) return {};
-    return this.hass.states as any;
+    return this.hass.states;
   }
 
   /** Filter hass entities by domain prefix(es) */

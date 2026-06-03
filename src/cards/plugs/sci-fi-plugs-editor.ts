@@ -62,7 +62,7 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
   private _addDevice(): void {
     const newConfig = this._getNewConfig<SciFiPlugsConfig>();
     const devices = ([...(newConfig.devices ?? [])].map(d => ({ ...d })) as unknown as SciFiPlugDevice[]);
-    devices.push({ device_id: '', entity_id: '' } as typeof devices[0]);
+    devices.push({ device_id: '', entity_id: '' });
     (newConfig as unknown as Record<string, unknown>)['devices'] = devices;
     this._dispatchChange(newConfig);
   }

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
+ 
 // @vitest-environment happy-dom
 /**
  * Consolidated tests — Spec 12 § Vehicles Card Design Update

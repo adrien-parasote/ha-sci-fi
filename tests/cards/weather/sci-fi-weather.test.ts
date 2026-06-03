@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
+ 
 // @vitest-environment happy-dom
 import { expect, describe, it, beforeEach, afterEach, vi } from 'vitest';
 import '../../../src/cards/weather/sci-fi-weather.js';

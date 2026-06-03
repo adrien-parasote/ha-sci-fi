@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
+ 
 // @vitest-environment happy-dom
 /**
  * Tests — sf-bridge-actions

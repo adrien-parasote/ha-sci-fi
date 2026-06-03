@@ -58,7 +58,7 @@ export class SciFiVehiclesEditor extends SciFiBaseEditor {
   private _addVehicle(): void {
     const newConfig = this._getNewConfig<SciFiVehiclesConfig>();
     const vehicles = [...(newConfig.vehicles ?? [])].map(v => ({ ...v }));
-    vehicles.push({ id: '', name: '' } as typeof vehicles[0]);
+    vehicles.push({ id: '', name: '' });
     (newConfig as unknown as Record<string, unknown>)['vehicles'] = vehicles;
     this._dispatchChange(newConfig);
   }

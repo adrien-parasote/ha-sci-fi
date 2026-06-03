@@ -62,7 +62,7 @@ describe('light selectors', () => {
 
     expect(hasActiveLights(hass, 'area1')).to.be.false;
 
-    (hass as unknown as any) /* eslint-disable-line @typescript-eslint/no-unsafe-argument */.states = { ...hass.states, 'light.1': makeMockEntity({ entity_id: 'light.1', state: 'on' }) };
+    (hass as unknown as any)  .states = { ...hass.states, 'light.1': makeMockEntity({ entity_id: 'light.1', state: 'on' }) };
     expect(hasActiveLights(hass, 'area1')).to.be.true;
   });
 });

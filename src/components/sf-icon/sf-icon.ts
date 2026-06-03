@@ -98,10 +98,10 @@ export class SfIcon extends LitElement {
     if (typeof window === 'undefined') return;
     window.customIcons = window.customIcons || {};
     if (!window.customIcons.sf || !(window.customIcons.sf as Record<string, unknown>)['stove']) {
-      window.customIcons.sf = { ...(window.customIcons.sf as object | undefined), ...CUSTOM_ICONS, ...(WEATHER_ICONS as unknown as object) } as Record<string, string>;
+      window.customIcons.sf = { ...(window.customIcons.sf as object | undefined), ...CUSTOM_ICONS, ...(WEATHER_ICONS as unknown as object) };
     }
     if (!window.customIcons.sci || !(window.customIcons.sci as Record<string, unknown>)['stove']) {
-      window.customIcons.sci = { ...(window.customIcons.sci as object | undefined), ...CUSTOM_ICONS, ...(WEATHER_ICONS as unknown as object) } as Record<string, string>;
+      window.customIcons.sci = { ...(window.customIcons.sci as object | undefined), ...CUSTOM_ICONS, ...(WEATHER_ICONS as unknown as object) };
     }
   }
 
@@ -200,7 +200,7 @@ export class SfIcon extends LitElement {
   }
 
   protected override createRenderRoot(): HTMLElement {
-    return this as unknown as HTMLElement;
+    return this;
   }
 }
 

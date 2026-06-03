@@ -119,7 +119,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
     newConfig.weather = ({
       ...(newConfig.weather ?? { weather_entity: '' }),
       activate: e.detail.checked,
-    } as unknown as SciFiHexaTilesWeatherConfig);
+    });
     this._dispatchChange(newConfig);
   }
 
@@ -136,7 +136,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   private _updateTileField(index: number, field: string, value: unknown): void {
     const newConfig = this._getNewConfig<SciFiHexaTilesConfig>();
     const tiles = ([...(newConfig.tiles ?? [])].map(t => ({ ...t })) as unknown as SciFiHexaTileConfig[]);
-    tiles[index] = { ...tiles[index], [field]: value } as unknown as SciFiHexaTileConfig;
+    tiles[index] = { ...tiles[index], [field]: value };
     (newConfig as unknown as Record<string, unknown>)['tiles'] = tiles;
     this._dispatchChange(newConfig);
   }
@@ -150,7 +150,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
     } else if (e.detail.type === 'remove') {
       current.splice(parseInt(e.detail.value, 10), 1);
     }
-    tiles[index] = { ...tiles[index], entities_to_exclude: current } as unknown as SciFiHexaTileConfig;
+    tiles[index] = { ...tiles[index], entities_to_exclude: current };
     (newConfig as unknown as Record<string, unknown>)['tiles'] = tiles;
     this._dispatchChange(newConfig);
   }
@@ -164,7 +164,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
     } else if (e.detail.type === 'remove') {
       current.splice(parseInt(e.detail.value, 10), 1);
     }
-    tiles[index] = { ...tiles[index], state_on: current } as unknown as SciFiHexaTileConfig;
+    tiles[index] = { ...tiles[index], state_on: current };
     (newConfig as unknown as Record<string, unknown>)['tiles'] = tiles;
     this._dispatchChange(newConfig);
   }
@@ -180,7 +180,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
     } else {
       current.splice(idx, 1);
     }
-    tiles[index] = { ...tile, visibility: current } as unknown as SciFiHexaTileConfig;
+    tiles[index] = { ...tile, visibility: current };
     (newConfig as unknown as Record<string, unknown>)['tiles'] = tiles;
     this._dispatchChange(newConfig);
   }
@@ -196,7 +196,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
       name: 'Lights',
       state_on: ['on'],
       visibility: [],
-    } as unknown as SciFiHexaTileConfig);
+    });
     (newConfig as unknown as Record<string, unknown>)['tiles'] = tiles;
     this._dispatchChange(newConfig);
   }

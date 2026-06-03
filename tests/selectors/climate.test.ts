@@ -24,7 +24,7 @@ describe('climate selectors', () => {
 
   it('getClimateEntities returns empty array if no entities exist', () => {
     const hass = makeMockHass();
-    delete (hass as unknown as any) /* eslint-disable-line @typescript-eslint/no-unsafe-argument */.entities; // simulate missing entities
+    delete (hass as unknown as any)  .entities; // simulate missing entities
     expect(getClimateEntities(hass)).to.deep.equal([]);
   });
 

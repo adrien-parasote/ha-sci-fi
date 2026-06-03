@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument */
+ 
 const originalWarn = console.warn;
 console.warn = (...args: any[]) => {
   if (args[0] && typeof args[0] === 'string') {

@@ -61,7 +61,7 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
     const { id, kind, value } = e.detail;
 
     if (kind === 'alert') {
-      newConfig.alert = { ...(newConfig.alert ?? { entity_id: '' }), [id]: value } as SciFiWeatherConfig['alert'];
+      newConfig.alert = { ...(newConfig.alert ?? { entity_id: '' }), [id]: value };
     } else if (kind === 'chart') {
       (newConfig as unknown as Record<string, unknown>)['chart_first_kind_to_render'] = CHART_KINDS[value] ?? value;
     } else {

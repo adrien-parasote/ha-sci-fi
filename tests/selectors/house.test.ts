@@ -38,7 +38,7 @@ describe('house selectors', () => {
 
     it('getFloors returns empty array if floors property does not exist on hass', () => {
       const hass = makeMockHass();
-      delete (hass as unknown as any) /* eslint-disable-line @typescript-eslint/no-unsafe-argument */.floors;
+      delete (hass as unknown as any)  .floors;
       expect(getFloors(hass)).to.deep.equal([]);
     });
 
@@ -80,7 +80,7 @@ describe('house selectors', () => {
 
     it('getAreas returns empty array if no areas exist', () => {
       const hass = makeMockHass();
-      delete (hass as unknown as any) /* eslint-disable-line @typescript-eslint/no-unsafe-argument */.areas;
+      delete (hass as unknown as any)  .areas;
       expect(getAreas(hass)).to.deep.equal([]);
     });
 
@@ -128,7 +128,7 @@ describe('house selectors', () => {
 
     it('getEntitiesByArea returns empty array if no entities exist', () => {
       const hass = makeMockHass();
-      delete (hass as unknown as any) /* eslint-disable-line @typescript-eslint/no-unsafe-argument */.entities;
+      delete (hass as unknown as any)  .entities;
       expect(getEntitiesByArea(hass, 'area1')).to.deep.equal([]);
     });
 

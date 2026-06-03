@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any */
+ 
 import { expect, describe, beforeEach, it } from 'vitest';
 import { resolveIcon, ICON_NOT_FOUND, clearMemCache } from '../../../src/components/sf-icon/icon-cache.js';
 

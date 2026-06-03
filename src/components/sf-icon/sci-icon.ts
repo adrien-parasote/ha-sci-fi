@@ -101,14 +101,14 @@ export class SciIcon extends LitElement {
         ...(window.customIcons.sf as object | undefined),
         ...CUSTOM_ICONS,
         ...(WEATHER_ICONS as unknown as object),
-      } as Record<string, string>;
+      };
     }
     if (!window.customIcons.sci || !(window.customIcons.sci as Record<string, unknown>)['stove']) {
       window.customIcons.sci = {
         ...(window.customIcons.sci as object | undefined),
         ...CUSTOM_ICONS,
         ...(WEATHER_ICONS as unknown as object),
-      } as Record<string, string>;
+      };
     }
   }
 
@@ -207,7 +207,7 @@ export class SciIcon extends LitElement {
   }
 
   protected override createRenderRoot(): HTMLElement {
-    return this as unknown as HTMLElement;
+    return this;
   }
 }
 

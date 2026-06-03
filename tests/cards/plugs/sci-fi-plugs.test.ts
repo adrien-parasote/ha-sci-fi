@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
+ 
 // @vitest-environment happy-dom
 /**
  * Tests RED — Spec 13 § Plugs Card Design Update

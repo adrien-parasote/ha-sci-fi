@@ -98,7 +98,9 @@ describe('entity selectors', () => {
   });
 
   // IT-202: performance — 500 entities
-  it('IT-202: getLightEntities() completes under 5ms for 500 entities', () => {
+  // Threshold set to 10ms (not 5ms) to avoid flakiness on shared GitHub Actions runners.
+  // A regression to O(n²) would still be caught: 500² iterations would take >> 10ms.
+  it('IT-202: getLightEntities() completes under 10ms for 500 entities', () => {
     const entities: Record<string, ReturnType<typeof makeMockEntityEntry>> = {};
     for (let i = 0; i < 500; i++) {
       const id = `light.entity_${i}`;
@@ -112,6 +114,6 @@ describe('entity selectors', () => {
     const start = performance.now();
     getLightEntities(hass, 'living_room');
     const elapsed = performance.now() - start;
-    expect(elapsed).toBeLessThan(5);
+    expect(elapsed).toBeLessThan(10);
   });
 });

@@ -11,7 +11,7 @@
 | Feature ID | Description | Covered here |
 |---|---|---|
 | F-COMP-01 | `sf-icon` — cache encapsulé | ✅ `sf-icon.ts` + `icon-cache.ts` |
-| F-COMP-02 | `sf-radiator` → 4 sub-composants | ✅ 4 sub-composants in `sf-radiator/` |
+| F-COMP-02 | `sf-radiator` → 4 sub-composants | ⚠️ **NOT IMPLEMENTED** — `sf-radiator` is a single 554-line file, never split. Relocated to `src/cards/climates/` by ADR-017 (single consumer); the 4-way split is filed as follow-up, out of ADR-017 scope. |
 | F-COMP-03 | Shared components migrated TypeScript | ✅ `sf-accordion`, `sf-tabs`, `sf-toggle-switch` |
 | F-COMP-04 | Iconset custom fallback | ✅ `sf-icon.ts` fallback |
 | F-COMP-05 | `sci-icon` public element | ✅ `sci-icon.ts` — global `<sci-icon>` usable in any HA card |
@@ -20,6 +20,11 @@
 ---
 
 ## File Tree
+
+> **ADR-017 — membership rule.** `src/components/` holds components with **two
+> or more consumers**. A component used by a single card lives in that card's
+> directory (`src/cards/<card>/`), not here. This is what makes the
+> `components ↛ cards` boundary in `.sentrux/rules.toml` meaningful.
 
 ```
 src/
@@ -33,13 +38,38 @@ src/
     │   └── data/
     │       ├── sf-icons.ts         Custom static SVG path strings
     │       └── sf-weather-icons.ts Animated weather SVG TemplateResults
-    ├── sf-radiator/
-    │   ├── sf-radiator.ts          Main radiator container
-    │   ├── sf-radiator-button.ts   Mode select buttons
-    │   ├── sf-radiator-gauge.ts    Heat circular gauge
-    │   └── sf-radiator-temp.ts     Target temp selector
-    └── sf-toggle-switch.ts         Custom switch component
+    ├── sf-toggle-switch/
+    │   └── sf-toggle-switch.ts     Custom switch component
+    ├── buttons/
+    │   ├── sf-button.ts            Base action button
+    │   ├── sf-button-card.ts       Card-styled button
+    │   └── sf-button-card-select.ts Card-styled select button
+    ├── editor-inputs/              Editor field components (see Spec 10)
+    │   ├── sf-editor-accordion.ts      sf-editor-action.ts
+    │   ├── sf-editor-chips.ts          sf-editor-color-picker.ts
+    │   ├── sf-editor-dropdown.ts       sf-editor-dropdown-entity.ts
+    │   ├── sf-editor-dropdown-icon.ts  sf-editor-input.ts
+    │   ├── sf-editor-multi-entity.ts   sf-editor-slider.ts
+    │   └── sf-editor-source-list.ts
+    ├── sf-circle-progress-bar.ts   Circular progress indicator
+    ├── sf-dropdown.ts              Generic dropdown
+    ├── sf-hexa-row.ts              Hexagonal tile row
+    ├── sf-hexa-tile.ts             Hexagonal tile
+    ├── sf-radiator.ts              Radiator display        [MOVES → cards/climates/ — ADR-017 step 2]
+    ├── sf-stack-bar.ts             Stacked bar display
+    ├── sf-stove-image.ts           Stove SVG display       [MOVES → cards/stove/ — ADR-017 step 2]
+    ├── sf-toast.ts                 Global toast element
+    └── sf-wheel.ts                 Radial dial (stove + vehicles — stays shared)
 ```
+
+Relocated by ADR-017 (single-consumer components):
+
+| File | Was | Now | Sole consumer |
+|---|---|---|---|
+| `sf-landspeeder.ts` | `src/components/` | `src/cards/vehicles/` | vehicles card |
+| `vehicle_const.ts` | `src/components/` | `src/cards/vehicles/` | vehicles card |
+| `sf-radiator.ts` | `src/components/` | `src/cards/climates/` | climates card |
+| `sf-stove-image.ts` | `src/components/` | `src/cards/stove/` | stove card |
 
 ---
 
@@ -58,8 +88,8 @@ src/
 | Artefact | Consumer | Description |
 |---|---|---|
 | `sf-icon` | Spec 05 | Rendering MDI or custom package icons |
-| `sf-radiator` | Spec 05 | Multi-radiator climate interface |
 | `sf-toggle-switch` | Spec 05 | Shared styled switch component |
+| `sf-wheel` | Spec 05 | Radial dial — stove + vehicles |
 
  ### Consumes
 | Artefact | Provider | Description |
@@ -73,7 +103,10 @@ src/
 | `<sf-icon>` | Lovelace Cards (internal) | Resolves and displays SVGs from package or MDI |
 | `<sci-icon>` | Any HA component or card | Public-facing icon element — identical to `<sf-icon>` but stable public tag name. Supports `sci:`, `sf:`, `mdi:` prefixes and `--icon-width`, `--icon-height`, `--icon-color` CSS custom properties |
 | `<sf-toggle-switch>` | Card Editors | Toggles switch boolean configurations |
-| `<sf-radiator>` | Climates Card | Climate entity thermostat rendering |
+
+> `<sf-radiator>` and `<sf-landspeeder>` were listed here as shared public
+> interfaces. They have exactly one consumer each and are card-private as of
+> ADR-017 — see Spec 05 § Climates / Vehicles.
 
 ### HA Icon Picker API
 

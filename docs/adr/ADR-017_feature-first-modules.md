@@ -145,12 +145,19 @@ Explicitly OUT OF SCOPE:
 Big-bang is not needed: no step depends on the next, and every step is a pure
 relocation the compiler fully checks.
 
+The component moves come *first*, before the config split, on purpose:
+`sf-landspeeder.ts` imports `SciFiVehicleEntry`. Splitting `config.ts` while the
+component still sits in `src/components/` would leave it importing
+`cards/vehicles/config.js` — a `components → cards` edge that `rules.toml`
+forbids. Moving the component first keeps every intermediate commit
+boundary-clean.
+
 | # | Step | Verify |
 |---|---|---|
-| 1 | Split `types/config.ts` → 11 `cards/<card>/config.ts` + kernel | tsc + vitest |
-| 2 | Split `getLabel`/`getSectionTitle` → 11 `cards/<card>/labels.ts` + kernel mechanism | tsc + vitest |
-| 3 | Move `sf-landspeeder.ts` + `vehicle_const.ts` → `cards/vehicles/` | tsc + vitest |
-| 4 | Move `sf-radiator.ts` → `cards/climates/`, `sf-stove-image.ts` → `cards/stove/` | tsc + vitest |
+| 1 | Move `sf-landspeeder.ts` + `vehicle_const.ts` → `cards/vehicles/` | tsc + vitest |
+| 2 | Move `sf-radiator.ts` → `cards/climates/`, `sf-stove-image.ts` → `cards/stove/` | tsc + vitest |
+| 3 | Split `types/config.ts` → 11 `cards/<card>/config.ts` + kernel | tsc + vitest |
+| 4 | Split `getLabel`/`getSectionTitle` → 11 `cards/<card>/labels.ts` + kernel mechanism | tsc + vitest |
 | 5 | Extract the 412-line SVG out of `_renderSpeeder` into an asset module | tsc + vitest |
 | 6 | Extract `sci-fi-tv.ts:renderCard` (261 l, cc=32) into per-zone methods | tsc + vitest |
 | 7 | Extract the remaining 100+ line functions (radiator, 4 editors) | tsc + vitest + `check_rules` |

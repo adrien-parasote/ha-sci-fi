@@ -6,8 +6,8 @@
 import { LitElement, css, html, nothing, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { msg } from '@lit/localize';
-import { sciFiCommonStyles } from '../styles/common.js';
-import type { SciFiVehicleEntry } from '../types/config.js';
+import { sciFiCommonStyles } from '../../styles/common.js';
+import type { SciFiVehicleEntry } from '../../types/config.js';
 import {
   CHARGE_STATE_ICONS,
   PLUG_STATE_ICONS,
@@ -16,8 +16,8 @@ import {
   VEHICLE_PLUG_STATES_ERROR,
   VEHICLE_SENSOR_ON_STATE,
 } from './vehicle_const.js';
-import './sf-icon/sf-icon.js';
-import './buttons/sf-button.js';
+import '../../components/sf-icon/sf-icon.js';
+import '../../components/buttons/sf-button.js';
 
 const TAG = 'sf-landspeeder';
 

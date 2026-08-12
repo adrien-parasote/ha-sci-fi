@@ -1,5 +1,5 @@
 import { expect, describe, it } from 'vitest';
-import * as consts from '../../src/components/vehicle_const.js';
+import * as consts from '../../../src/cards/vehicles/vehicle_const.js';
 
 describe('vehicle_const', () => {
   it('should export correct Renault HA service values', () => {

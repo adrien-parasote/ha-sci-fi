@@ -55,8 +55,8 @@
 | Path / Identifier | Format | Schema location | Consumers |
 |---|---|---|---|
 | `src/cards/vehicles/styles.ts` | Lit CSS export | This spec § styles.ts | `vehicles/sci-fi-vehicles.ts` (import `vehicleStyles`) |
-| `src/components/sf-landspeeder.ts` | Web Component | This spec § sf-landspeeder | `vehicles/sci-fi-vehicles.ts` |
-| `src/cards/vehicles/vehicle_const.ts` | TS constants | This spec § Constants | `components/sf-landspeeder.ts`, `vehicles/sci-fi-vehicles.ts` |
+| `src/cards/vehicles/sf-landspeeder.ts` | Web Component | This spec § sf-landspeeder | `vehicles/sci-fi-vehicles.ts` |
+| `src/cards/vehicles/vehicle_const.ts` | TS constants | This spec § Constants | `cards/vehicles/sf-landspeeder.ts`, `vehicles/sci-fi-vehicles.ts` |
 | Updated `sci-fi-vehicles` card | Web Component | This spec § Full render | Lovelace via `getConfigElement()` (Spec 05) |
 
  ### Consumes
@@ -102,8 +102,9 @@ src/cards/vehicles/
 ├── src/cards/vehicles/styles.ts                      [NEW]    — extracted vehicle CSS (card, header, actions sections)
 └── src/cards/vehicles/vehicle_const.ts               [NEW]    — charge/plug state constants + icon/label mappings (ported from main vehicle_const.js)
 
-src/components/
-└── src/components/sf-landspeeder.ts                  [NEW]    — landspeeder SVG + overlaid top/middle data panels (ported from main sf-landspeeder.js)
+src/cards/vehicles/
+├── src/cards/vehicles/sf-landspeeder.ts               [NEW]    — landspeeder SVG + overlaid top/middle data panels (ported from main sf-landspeeder.js)
+└── src/cards/vehicles/vehicle_const.ts                [NEW]    — service names, charge/plug state constants
 
 tests/cards/vehicles/
 └── tests/cards/vehicles/sci-fi-vehicles.test.ts      [MODIFY] — rewrite to match new layout selectors; preserve TC-VEH-0001 (getConfigElement) and TC-VEH-0002 (getStubConfig)
@@ -113,7 +114,11 @@ xliff/
 ```
 
 > [!NOTE]
-> `components/sf-landspeeder.ts` is a new component not yet in `src/components/`. Its SVG data is ported 1:1 from 'main:src/components/landspeeder/data/top.js'. The `vehicles/vehicle_const.ts` constants are ported from 'main:src/helpers/entities/vehicle/vehicle_const.js'.
+> `sf-landspeeder` and `vehicle_const` are **card-private**: the vehicles card is
+> their only consumer, so ADR-017 places them in `src/cards/vehicles/` rather
+> than in the shared `src/components/` layer. Its SVG data is ported 1:1 from
+> 'main:src/components/landspeeder/data/top.js'. The `vehicle_const.ts` constants
+> are ported from 'main:src/helpers/entities/vehicle/vehicle_const.js'.
 
 ---
 
@@ -151,7 +156,7 @@ export const VEHICLE_SENSOR_ON_STATE = 'on';
 export const VEHICLE_SENSOR_UNAVAILABLE_STATE = 'unavailable';
 ```
 
-**Charge state icon map** (used in `components/sf-landspeeder.ts` → `_getChargeStateIcon()`):
+**Charge state icon map** (used in `cards/vehicles/sf-landspeeder.ts` → `_getChargeStateIcon()`):
 
 | State constant | Icon |
 |---|---|
@@ -174,7 +179,7 @@ export const VEHICLE_SENSOR_UNAVAILABLE_STATE = 'unavailable';
 | `ERROR` | `sci:landspeeder-error-plug` |
 | `UNKNOWN` / `UNAVAILABLE` | `sci:landspeeder-unknown-plug` |
 
-**Human-readable label map** (used in `components/sf-landspeeder.ts` → `_getLabel(key)`):
+**Human-readable label map** (used in `cards/vehicles/sf-landspeeder.ts` → `_getLabel(key)`):
 
 | Key | Label (msg()) |
 |---|---|
@@ -317,7 +322,7 @@ import {
   HASS_RENAULT_SERVICE_ACTION_STOP_AC,
 } from './vehicle_const.js';
 
-import '../../components/sf-landspeeder.js';
+import './sf-landspeeder.js';
 import '../../components/sf-wheel.js';
 import '../../components/buttons/sf-button-card.js';
 import '../../components/buttons/sf-button.js';
@@ -467,7 +472,7 @@ private _toast(error: boolean, text: string): void {
 
 ## sf-landspeeder.ts — New Component
 
-**File:** `src/components/sf-landspeeder.ts`
+**File:** `src/cards/vehicles/sf-landspeeder.ts`
 
 **Tag:** `sf-landspeeder`
 
@@ -614,7 +619,7 @@ The component CSS is ported 1:1 from 'main:src/components/landspeeder/style.js',
 | # | Anti-Pattern | Violation | Correct Behavior |
 |---|---|---|---|
 | 1 | **Keeping the flat stats grid** | Keeping `.stat-item`, `.vehicle-stats`, `.vehicle-card` | Full replacement with header + landspeeder + actions layout |
-| 2 | **Inlining landspeeder in the card** | Putting SVG image and data panels directly in `vehicles/sci-fi-vehicles.ts` | Separate `components/sf-landspeeder.ts` component (matches main architecture) |
+| 2 | **Inlining landspeeder in the card** | Putting SVG image and data panels directly in `vehicles/sci-fi-vehicles.ts` | Separate `cards/vehicles/sf-landspeeder.ts` component (matches main architecture) |
 | 3 | **Wrong battery threshold** | Using `>= 60 → high`, `>= 30 → mid` (old TS logic) | Use `Math.round(raw / 10) * 10` then `≥60 → green`, `≥20 → orange`, `<20 → red` (matches main) |
 | 4 | **Hardcoding temperature range** | `Array.from({length: 5}, ...)` | Always 10 items (idx 0–9), values 16°C to 25°C, default idx=2 |
 | 5 | **Calling the wrong AC service** | `climate.turn_on`, `switch.turn_on` | `renault.ac_start` with `{vehicle: v.id, temperature}` |

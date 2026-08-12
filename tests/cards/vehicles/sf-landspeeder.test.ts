@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { expect, describe, it, afterEach } from 'vitest';
-import '../../src/components/sf-landspeeder.js';
-import { SciFiLandspeeder } from '../../src/components/sf-landspeeder.js';
+import '../../../src/cards/vehicles/sf-landspeeder.js';
+import { SciFiLandspeeder } from '../../../src/cards/vehicles/sf-landspeeder.js';
 
 describe('sf-landspeeder', () => {
   afterEach(() => {

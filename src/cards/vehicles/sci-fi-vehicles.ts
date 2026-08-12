@@ -15,9 +15,9 @@ import {
   HASS_RENAULT_SERVICE,
   HASS_RENAULT_SERVICE_ACTION_START_AC,
   HASS_RENAULT_SERVICE_ACTION_STOP_AC,
-} from '../../components/vehicle_const.js';
+} from './vehicle_const.js';
 
-import '../../components/sf-landspeeder.js';
+import './sf-landspeeder.js';
 import '../../components/sf-wheel.js';
 import '../../components/buttons/sf-button-card.js';
 import '../../components/buttons/sf-button.js';

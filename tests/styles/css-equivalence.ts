@@ -26,7 +26,7 @@ export type FoldedCss = Record<RuleKey, Record<string, string>>;
 
 /** Recursively flattens Lit's `static styles` into one CSS string, in order. */
 export function flattenStyles(styles: unknown): string {
-  if (styles == null) return '';
+  if (styles === null || styles === undefined) return '';
   if (Array.isArray(styles)) return styles.map(flattenStyles).join('\n');
   const text = (styles as { cssText?: string }).cssText;
   return typeof text === 'string' ? text : '';

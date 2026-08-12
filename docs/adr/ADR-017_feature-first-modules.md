@@ -230,24 +230,61 @@ which is a visible behaviour change and not this ADR's to make.
 `types/config.ts` 436 → 51 lines. `base-editor.ts` 347 → 214, `getLabel()`
 189 → 4. `sf-landspeeder.ts` 925 → 518. `sci-fi-tv.ts:renderCard` 261 → 27.
 
-Two `check_rules` violations remain and are intentional:
+Two `check_rules` violations remained when this ADR landed, both since resolved
+by `ha-sci-fi-wrf`:
 - `dev/modules/icon-browser.js` (198 lines) and `dev/modules/mock-hass.js` (117)
-  — the workbench, plain JS, never shipped in the bundle. Either fix them in
-  their own pass or exclude `dev/**` in `rules.toml`.
-- `src/sci-fi.ts` fan-out 28 — barrel + registry, see Context.
+  — the workbench, plain JS, never shipped in the bundle. **Split** (61 and 44);
+  `max_fn_lines` is now green repo-wide, not just on `src/`.
+- `src/sci-fi.ts` fan-out 28 — barrel + registry, see Context. **Still open, on
+  purpose**: sentrux offers no exclusion mechanism, so the rule stays armed with
+  this one accepted violation, documented in `.sentrux/rules.toml`.
 
 ## Follow-ups filed by this ADR
 
 Tracked in **bd**, which is this repo's task ledger — this list is a pointer, not
 a second source of truth. `bd show <id>` for the detail.
 
-| Bead | What | Prio |
-|---|---|---|
-| `ha-sci-fi-63z` | 193 colour literals match no `--sf-*` token — extend the palette, and decide separately whether the theme-chained tokens (`--sf-primary`, `--sf-bg`, `--sf-text-*`) should replace hardcoded colours, which makes cards follow the user's HA theme | 2 |
-| `ha-sci-fi-wrf` | `check_rules`: 2 workbench functions over `max_fn_lines`, plus the `src/sci-fi.ts` fan-out false positive — fix or exclude `dev/**` in `rules.toml` | 3 |
-| `ha-sci-fi-cu7` | `sci-fi-stove.ts:232` carries the same `replace`-only-first-underscore pattern as the vacuum defect — latent today | 3 |
+**All five are closed** (2026-08-12). None is deferred; two of them closed by
+disproving the premise they were filed on, which is recorded below rather than
+quietly dropped.
 
 Closed since:
+
+- ~~`ha-sci-fi-63z` — 193 colour literals match no `--sf-*` token; extend the
+  palette, and decide separately whether the theme-chained tokens should replace
+  hardcoded colours.~~ **DONE — [ADR-018](./ADR-018_palette-fixed-identity.md).**
+  The premise was wrong, and the correction is the finding: re-measuring by
+  parsing every `` css` ` `` literal and classifying each occurrence *by
+  syntactic position* shows 184 of 198 are already the declared fallback inside
+  `var(--token, literal)` on the very declaration that applies the token. The
+  cards do not route around the palette, they apply it defensively. The correct
+  substitution set was 4, not 59, and each of the 4 is blocked independently —
+  net zero substitutions. What the pass did change is 17 `var(--sf-border, …)`
+  fallbacks carrying a value that is not the token's, one reference to
+  `--sf-color-cyan` (a token declared nowhere), and one text `color` taken from
+  `--secondary-bg-color` (a variable neither this repo nor Home Assistant
+  defines). All dead code paths; the CSS baseline diff is 16 declarations, all
+  fallback-only.
+- ~~`ha-sci-fi-wrf` — `check_rules`: 2 workbench functions over `max_fn_lines`
+  plus the `src/sci-fi.ts` fan-out — fix or exclude `dev/**` in `rules.toml`.~~
+  **DONE.** The exclusion this bead assumed does not exist: sentrux 0.5.7's
+  `RulesConfig` has four fields and `Constraints` thirteen scalars, and serde
+  swallows unknown keys silently — an invented `exclude` would have parsed
+  cleanly and changed nothing, i.e. produced a false green. So the two workbench
+  functions were split instead (198 → 61, 117 → 44 lines) and `max_fn_lines` is
+  genuinely green. `no_god_files` stays **armed** with one accepted violation:
+  `rules.toml` now opens with the expected `check_rules` output verbatim, so a
+  second god file reads as a regression rather than as more of the same.
+- ~~`ha-sci-fi-bjo` — split `sf-radiator` into the 4 sub-components spec 04
+  § F-COMP-02 has claimed since day one but which were never written.~~
+  **CLOSED — split rejected.** The file carries no complexity signal
+  (`check_rules` green on `max_fn_lines` / `max_cc`), the only multi-consumer
+  widget is already extracted as `sf-wheel`, and four extra card-private custom
+  elements would work against this ADR's own co-location decision. Spec 04
+  § F-COMP-02 now specifies the single element as the intended form.
+- ~~`ha-sci-fi-cu7` — `sci-fi-stove.ts:232` carries the same
+  `replace`-only-first-underscore pattern as the vacuum defect.~~ **DONE** —
+  `replaceAll` plus TC-1114, verified to bite by reverting the fix.
 
 - ~~`ha-sci-fi-bjo` — split `sf-radiator` into the 4 sub-components spec 04
   § F-COMP-02 has claimed since day one but which were never written.~~
@@ -262,7 +299,11 @@ Closed since:
   `action-call-children`, `input-input-button-entity`, `input-button-text`);
   `input-last-clean-area` and `input-last-clean-duration` sat in
   `src/cards/vacuum/labels.ts`. The vacuum card reads only `current_clean_*`, so
-  those two were vestiges, not a missing editor field. Plus TC-1017.
+  those two were vestiges, not a missing editor field. Guarded by TC-1017 (the
+  shared kernel) and TC-1018 (the 10 per-card dictionaries, with a cross-check
+  that fails when a new card ships a `labels.ts` nobody wired in). Neither
+  proves *reachability* — that needs static analysis of every call site — and
+  the spec says so rather than implying full coverage.
 - ~~`vacuum-editor` builds `input-${f.replace('_','-')}`, which replaces only the
   first underscore, so two sensor fields rendered an empty label.~~ **DONE**
   (`85da36f`) — `replaceAll` plus TC-1016 asserting every vacuum-sensor input

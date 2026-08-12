@@ -33,6 +33,15 @@
 - Zero tests → chaque changement est une regression potentielle
 - Build fragile → un `rm + mv` shell peut casser la prod
 - Composants non découpés → `sf-radiator.js` (533 lignes), editors (470 lignes) sont impossibles à tester et à modifier
+
+> **Note 2026-08-12 — ce diagnostic date de la v0.9.6 et sa dernière ligne a été
+> réfutée.** La testabilité ne tenait pas à la taille du fichier mais à
+> l'absence de toute infrastructure de test : `sf-radiator` est resté un fichier
+> unique, il fait aujourd'hui 427 lignes en TypeScript et porte 8 tests verts.
+> Le découpage annoncé ici a été explicitement rejeté — voir
+> [ADR-017](../adr/ADR-017_feature-first-modules.md) et
+> [spec 04 § `sf-radiator` — one element on purpose](../specs/04_components.md).
+> Les quatre autres constats de cette liste restent exacts.
 - Stack EOL → Rollup 2, `es-dev-server` ne reçoivent plus de patches sécurité
 
 **Ce que la v1.0.0-wip a cassé en plus :**

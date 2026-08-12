@@ -155,6 +155,30 @@ describe('sci-fi-vacuum-editor', () => {
     expect(received[0]!.detail.config.vacuums[0].sensors?.battery).toBe('sensor.battery');
   });
 
+  it('TC-1016: renders a non-empty label for every sensor field', async () => {
+    // Regression: the label key was built with `f.replace('_', '-')`, which
+    // replaces only the FIRST underscore, so 'current_clean_area' produced
+    // 'input-current-clean_area' — a key no dictionary defines. getLabel()
+    // returns '' for an unknown key, so those two fields rendered unlabelled.
+    const el = await createElement();
+    el.setConfig(makeConfig({ vacuums: [makeVacuum()] }));
+    await el.updateComplete;
+
+    const sensorInputs = Array.from(
+      el.shadowRoot!.querySelectorAll('sf-editor-input[kind="vacuum-sensor"]')
+    );
+    expect(sensorInputs.length).toBeGreaterThan(0);
+
+    const unlabelled = sensorInputs
+      .map(input => ({
+        field: input.getAttribute('element-id'),
+        label: input.getAttribute('label'),
+      }))
+      .filter(entry => !entry.label);
+
+    expect(unlabelled, `sensor fields with no label: ${JSON.stringify(unlabelled)}`).toEqual([]);
+  });
+
   it('dispatches config-changed when add-shortcut clicked', async () => {
     const el = await createElement();
     el.setConfig(makeConfig({ vacuums: [makeVacuum({ shortcuts: { description: [] } })] }));

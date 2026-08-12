@@ -235,9 +235,11 @@ Two `check_rules` violations remain and are intentional:
 
 1. Split `sf-radiator` into the 4 sub-components spec 04 § F-COMP-02 has claimed
    since day one but which were never written.
-2. `vacuum-editor` builds `input-${f.replace('_','-')}`, which replaces only the
+2. ~~`vacuum-editor` builds `input-${f.replace('_','-')}`, which replaces only the
    first underscore: `current_clean_area` → `input-current-clean_area`, a key
-   that does not exist. Two sensor fields render an empty label.
+   that does not exist. Two sensor fields render an empty label.~~
+   **DONE** — fixed with `replaceAll` plus a regression test asserting every
+   vacuum-sensor input carries a non-empty label.
 3. Six unreachable label keys: `input-last-clean-area`,
    `input-last-clean-duration`, `input-device`, `action-call-children`,
    `input-input-button-entity`, `input-button-text`.

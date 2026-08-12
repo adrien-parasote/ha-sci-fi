@@ -320,7 +320,7 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
             <sf-editor-input
               element-id="${f}"
               kind="vacuum-sensor"
-              label="${this.getLabel(`input-${f.replace('_', '-')}`)}"
+              label="${this.getLabel(`input-${f.replaceAll('_', '-')}`)}"
               .value="${vacuum.sensors?.[f] ?? ''}"
               @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateSensor(vi, f, e.detail.value)}"
             ></sf-editor-input>

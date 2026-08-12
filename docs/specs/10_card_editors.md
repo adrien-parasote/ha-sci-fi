@@ -725,7 +725,10 @@ The `sensors` field in `SciFiPlugDevice` is a `Record<string, SciFiPlugSensorEnt
 **Main view sections per active vacuum:**
 1. **Entity** — `<sf-editor-dropdown-entity>` for `vacuums[N].entity`
 2. **Actions** (accordion) — toggles (using `<sf-toggle-switch>`) for start, pause, stop, return_to_base, set_fan_speed
-3. **Sensors** (accordion) — `<sf-editor-input>` for each sensor in `{ battery, current_clean_area, current_clean_duration, map, mop_intensite }`
+3. **Sensors** (accordion) — `<sf-editor-input>` for each sensor in `{ battery, current_clean_area, current_clean_duration, map, mop_intensite }`.
+   The label key is derived from the field name: `input-${field.replaceAll('_', '-')}`
+   → `current_clean_area` yields `input-current-clean-area`. **`replaceAll`, not
+   `replace`** — see anti-pattern 12.
 4. **Shortcuts** (accordion) —
    - `<sf-editor-input>` for `service` (the Lovelace command service, e.g. `'vacuum.send_command'`)
    - `<sf-editor-input>` for `command` (the segment cleaning command parameter, e.g. `'app_segment_clean'`)
@@ -794,6 +797,7 @@ The `sensors` field in `SciFiPlugDevice` is a `Record<string, SciFiPlugSensorEnt
 | 9 | Adding i18n labels as raw strings without `msg()` | `'Header'` hardcoded | Wrap ALL labels in `msg('Header')` — `getLabel()` already does this |
 | 10 | Building icon list with `getAllIconNames()` (main branch function) | Missing function in TS | Use `Object.keys(CUSTOM_ICONS)` with `sf:` prefix + curated MDI list |
 | 11 | Calling `msg()` directly in editor templates for UI labels | Bypasses `getLabel()`, preventing locale updates; French strings as `msg('Ajouter une tuile')` appear untranslatable in other locales | Add the key to **that card's** `src/cards/<card>/labels.ts` (ADR-017 — only add it to `sharedEditorLabels()` in `base-editor.ts` if a second card needs it), call `this.getLabel('action-add-tile')` in the template; add corresponding entry to `fr.ts` and `xliff/fr.xlf` |
+| 12 | Deriving an i18n key with `String.replace(pattern, …)` on a field name | `replace` with a **string** pattern substitutes only the FIRST occurrence, so `'current_clean_area'.replace('_','-')` gives `current-clean_area` and the key `input-current-clean_area` matches nothing. `getLabel()` returns `''` for an unknown key, so the field renders with **no label and no error** — silent, and invisible to any test that does not assert the label | Use `replaceAll` (or `/_/g`). Assert it: a test that walks every generated field and requires a non-empty label catches the whole class, not just the field you noticed — see `TC-1016: renders a non-empty label for every sensor field` in `tests/cards/vacuum/sci-fi-vacuum-editor.test.ts` |
 
 ---
 
@@ -818,6 +822,7 @@ The `sensors` field in `SciFiPlugDevice` is a `Record<string, SciFiPlugSensorEnt
 | TC-1013 | Unit | climates editor toggle handler reads `sf-toggle-change.detail.checked` | `sf-toggle-change` event with `checked: false` | `config-changed` fired with `header.display = false` |
 | TC-1014 | Unit | lights editor resets `first_area_to_render` when floor changes | `input-update` with `id='first_floor_to_render'` | `config-changed` fired with `first_area_to_render = null` |
 | TC-1015 | Unit | `_getNewConfig()` deep clone preserves nested arrays | Config with `entities_to_exclude: ['a', 'b']` | Clone has equal but distinct array reference |
+| TC-1016 | Unit | Every generated vacuum sensor field carries a non-empty label (guards anti-pattern 12) | Vacuum editor with one vacuum configured | No `sf-editor-input[kind="vacuum-sensor"]` has an empty `label` attribute |
 | IT-1001 | Integration | weather editor renders in mock HA panel | Mount editor with `setConfig()` + `hass` | Editor element visible, no console errors |
 | IT-1002 | Integration | config-changed propagates up to Lovelace mock | User changes `weather_entity` | Parent listener receives `event.detail.config.weather_entity` |
 | IT-1003 | Integration | `sf-editor-dropdown-entity` items filtered from hass.states | Hass with 5 weather entities | Dropdown shows 5 entities matching filter |

@@ -50,6 +50,114 @@ export function resolveScenario(overrides) {
   return states;
 }
 
+const WEATHER_ENTITY = 'weather.la_chapelle_sur_erdre';
+const HOURLY_CONDITIONS = ['partlycloudy', 'rainy', 'sunny', 'cloudy', 'sunny'];
+
+/**
+ * Inject entity_id on every state entry (matches real HA behaviour).
+ * MOCK_STATES uses entity IDs as dict keys but not as properties on the object.
+ */
+function normalizeStates(rawStates) {
+  return Object.fromEntries(
+    Object.entries(rawStates).map(([id, state]) => [
+      id,
+      state?.entity_id ? state : { ...state, entity_id: id },
+    ])
+  );
+}
+
+/** The daily forecast the weather card subscribes to, unwrapped. */
+function dailyForecast(states) {
+  return states[WEATHER_ENTITY]?.attributes?.forecast ?? [];
+}
+
+/**
+ * Generate 120 hours of hourly forecast — enough to cover every day of the
+ * daily forecast. Temperature follows a simple day/night profile.
+ */
+function buildHourlyForecast(hours = 120) {
+  const now = Date.now();
+  const hourly = [];
+  for (let i = 0; i < hours; i++) {
+    const dt = new Date(now + i * 3600000);
+    const dayIdx = Math.floor(i / 24);
+    const hour = dt.getHours();
+    // Simulated temperature profile (colder at night, warmer in afternoon)
+    const baseTemp = 18 - dayIdx * 2;
+    const tempOffset = 6 * Math.sin((hour - 8) / 12 * Math.PI);
+    hourly.push({
+      datetime: dt.toISOString(),
+      condition: HOURLY_CONDITIONS[dayIdx % HOURLY_CONDITIONS.length],
+      temperature: Math.round(baseTemp + tempOffset),
+      precipitation: Math.random() > 0.75 ? parseFloat((Math.random() * 2).toFixed(1)) : 0,
+      wind_speed: Math.round(10 + Math.random() * 15),
+    });
+  }
+  return hourly;
+}
+
+/** The weather subscription mock, shared by hass.subscribeMessage and hass.connection. */
+function createSubscribeMessage(states) {
+  return (cb, msg) => {
+    if (msg.type === 'weather/subscribe_forecast') {
+      if (msg.forecast_type === 'hourly') {
+        const hourly = buildHourlyForecast();
+        setTimeout(() => cb({ forecast: hourly }), 50);
+      } else {
+        // Return unwrapped daily forecast to matching callback
+        setTimeout(() => cb({ forecast: dailyForecast(states) }), 50);
+      }
+    }
+    return Promise.resolve(() => { });
+  };
+}
+
+function createMockConnection(states, scenarioOverrides, subscribeMessage) {
+  return {
+    subscribeEvents: () => () => { },
+    sendMessagePromise: async (msg) => {
+      if (msg.type === 'weather/subscribe_forecast') return { forecast: dailyForecast(states) };
+      if (msg && msg.type === 'logbook/get_events') {
+        return mockLogbookEvents(scenarioOverrides);
+      }
+      return {};
+    },
+    addEventListener: () => { },
+    removeEventListener: () => { },
+    subscribeMessage,
+  };
+}
+
+/**
+ * Simulate the state mutation a service call implies, in place, so UI toggles
+ * and sliders respond in the workbench.
+ */
+function applyServiceMutation(states, entityId, service, data) {
+  const s = states[entityId];
+  if (service === 'turn_on')  { states[entityId] = { ...s, state: 'on' }; }
+  else if (service === 'turn_off') { states[entityId] = { ...s, state: 'off' }; }
+  else if (service === 'toggle') {
+    states[entityId] = { ...s, state: s.state === 'on' ? 'off' : 'on' };
+  }
+  else if (service === 'open_cover')  { states[entityId] = { ...s, state: 'open' }; }
+  else if (service === 'close_cover') { states[entityId] = { ...s, state: 'closed' }; }
+  else if (service === 'set_value' && data?.value !== undefined) {
+    states[entityId] = { ...s, state: String(data.value) };
+  }
+  else if (service === 'press') {
+    // input_button: keep state as is, no visual change needed
+  }
+}
+
+/** 24h of mock power data, one point every 30 min — for the plugs power chart. */
+function buildMockHistory(points = 48) {
+  const now = Date.now();
+  return Array.from({ length: points }, (_, i) => ({
+    last_changed: new Date(now - (points - 1 - i) * 30 * 60 * 1000).toISOString(),
+    state: String(Math.round(10 + Math.random() * 25)),
+  }));
+}
+
 /**
  * Build a complete mock hass object for dev workbench.
  *
@@ -58,48 +166,8 @@ export function resolveScenario(overrides) {
  * @returns {Object} Mock hass object
  */
 export function buildMockHass(scenarioOverrides = {}, language = 'fr') {
-  const rawStates = resolveScenario(scenarioOverrides);
-
-  // Normalize: inject entity_id on every state entry (matches real HA behaviour).
-  // MOCK_STATES uses entity IDs as dict keys but not as properties on the object.
-  const states = Object.fromEntries(
-    Object.entries(rawStates).map(([id, state]) => [
-      id,
-      state?.entity_id ? state : { ...state, entity_id: id },
-    ])
-  );
-
-  const subscribeMessageMock = (cb, msg) => {
-    if (msg.type === 'weather/subscribe_forecast') {
-      if (msg.forecast_type === 'hourly') {
-        // Generate 120 hours of hourly forecast to match all days in daily forecast
-        const hourly = [];
-        const now = Date.now();
-        const conditions = ['partlycloudy', 'rainy', 'sunny', 'cloudy', 'sunny'];
-        for (let i = 0; i < 120; i++) {
-          const dt = new Date(now + i * 3600000);
-          const dayIdx = Math.floor(i / 24);
-          const hour = dt.getHours();
-          // Simulated temperature profile (colder at night, warmer in afternoon)
-          const baseTemp = 18 - dayIdx * 2;
-          const tempOffset = 6 * Math.sin((hour - 8) / 12 * Math.PI);
-          const temp = Math.round(baseTemp + tempOffset);
-          hourly.push({
-            datetime: dt.toISOString(),
-            condition: conditions[dayIdx % conditions.length],
-            temperature: temp,
-            precipitation: Math.random() > 0.75 ? parseFloat((Math.random() * 2).toFixed(1)) : 0,
-            wind_speed: Math.round(10 + Math.random() * 15),
-          });
-        }
-        setTimeout(() => cb({ forecast: hourly }), 50);
-      } else {
-        // Return unwrapped daily forecast to matching callback
-        setTimeout(() => cb({ forecast: states['weather.la_chapelle_sur_erdre']?.attributes?.forecast ?? [] }), 50);
-      }
-    }
-    return Promise.resolve(() => { });
-  };
+  const states = normalizeStates(resolveScenario(scenarioOverrides));
+  const subscribeMessage = createSubscribeMessage(states);
 
   return {
     states,
@@ -112,40 +180,14 @@ export function buildMockHass(scenarioOverrides = {}, language = 'fr') {
     locale: { language, number_format: 'comma_decimal', time_format: '24', date_format: 'DMY', time_zone: 'Europe/Paris', first_weekday: 'monday' },
     config: { unit_system: { length: 'km', temperature: '°C' }, time_zone: 'Europe/Paris' },
     themes: { darkMode: true, theme: 'default' },
-    connection: {
-      subscribeEvents: () => () => { },
-      sendMessagePromise: async (msg) => {
-        if (msg.type === 'weather/subscribe_forecast') return { forecast: states['weather.la_chapelle_sur_erdre']?.attributes?.forecast ?? [] };
-        if (msg && msg.type === 'logbook/get_events') {
-          return mockLogbookEvents(scenarioOverrides);
-        }
-        return {};
-      },
-      addEventListener: () => { },
-      removeEventListener: () => { },
-      subscribeMessage: subscribeMessageMock,
-    },
-    subscribeMessage: subscribeMessageMock,
+    connection: createMockConnection(states, scenarioOverrides, subscribeMessage),
+    subscribeMessage,
     callService: (domain, service, data) => {
       log(`🔧 callService(${domain}.${service})`, 'ok');
 
-      // Simulate state mutation for common services so UI toggles/sliders respond
       const entityId = data?.entity_id;
       if (entityId && states[entityId]) {
-        const s = states[entityId];
-        if (service === 'turn_on')  { states[entityId] = { ...s, state: 'on' }; }
-        else if (service === 'turn_off') { states[entityId] = { ...s, state: 'off' }; }
-        else if (service === 'toggle') {
-          states[entityId] = { ...s, state: s.state === 'on' ? 'off' : 'on' };
-        }
-        else if (service === 'open_cover')  { states[entityId] = { ...s, state: 'open' }; }
-        else if (service === 'close_cover') { states[entityId] = { ...s, state: 'closed' }; }
-        else if (service === 'set_value' && data?.value !== undefined) {
-          states[entityId] = { ...s, state: String(data.value) };
-        }
-        else if (service === 'press') {
-          // input_button: keep state as is, no visual change needed
-        }
+        applyServiceMutation(states, entityId, service, data);
         // Notify cards of state change via a custom event on the hass object
         window.dispatchEvent(new CustomEvent('mock-hass-state-changed', { detail: { states } }));
       }
@@ -161,15 +203,7 @@ export function buildMockHass(scenarioOverrides = {}, language = 'fr') {
     callApi: async (method, path) => {
       // Mock history API for plugs power chart
       log(`📊 callApi(${method}, ${path})`, 'info');
-      if (path.includes('history/period')) {
-        const now = Date.now();
-        // Generate 24h of mock power data (one point every 30 min)
-        const history = Array.from({ length: 48 }, (_, i) => ({
-          last_changed: new Date(now - (47 - i) * 30 * 60 * 1000).toISOString(),
-          state: String(Math.round(10 + Math.random() * 25)),
-        }));
-        return [history];
-      }
+      if (path.includes('history/period')) return [buildMockHistory()];
       return [[]];
     },
   };

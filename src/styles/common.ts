@@ -130,29 +130,3 @@ export const sciFiCommonStyles = css`
     outline-offset: 2px;
   }
 `;
-
-export const sciFiEditorStyles = css`
-  :host {
-    display: block;
-    font-family: var(--sf-font-family, 'Inter', system-ui, sans-serif);
-  }
-
-  .editor-row {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 16px;
-  }
-
-  .editor-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--secondary-text-color, rgba(224, 232, 255, 0.6));
-  }
-
-  ha-textfield, ha-select {
-    width: 100%;
-  }
-`;

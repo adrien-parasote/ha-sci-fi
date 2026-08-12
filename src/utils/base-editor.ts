@@ -18,9 +18,12 @@ import '../components/sf-icon/sf-icon.js';
 
 
 /**
- * Labels shared by two or more card editors, plus a few reached only through
- * dynamically built keys. Everything card-specific lives in
+ * Labels shared by two or more card editors, or reached only through a
+ * dynamically built key. Everything card-specific lives in
  * src/cards/<card>/labels.ts (ADR-017).
+ *
+ * A key here must have a live consumer: `getLabel()` returns '' for an unknown
+ * key, so an orphaned entry is invisible until an extract run drifts the xliff.
  *
  * A function, not a const: msg() must re-resolve on every lookup so labels
  * follow a locale change.
@@ -59,10 +62,6 @@ export function sharedEditorLabels(): Record<string, string> {
     'input-alert-yellow': msg('Yellow state'),
     'input-alert-orange': msg('Orange state'),
     'input-alert-red': msg('Red state'),
-    'input-device': msg('Device'),
-    'action-call-children': msg('Call children'),
-    'input-input-button-entity': msg('input_button entity'),
-    'input-button-text': msg('Button text (opt.)'),
   };
 }
 

@@ -261,7 +261,28 @@ protected override get cardLabels(): Record<string, string> {
 `labels.ts`. A key consumed by two or more cards, or built dynamically at
 runtime, stays in `sharedEditorLabels()` in `base-editor.ts` — the kernel is
 the lookup fallback, so kernel placement is always safe. Current split:
-**144 card-owned keys, 36 shared**; section icons: **15 card-owned, 13 shared**.
+**142 card-owned keys, 32 shared**; section icons: **15 card-owned, 13 shared**.
+
+A key with no live consumer must be deleted, not parked in the kernel: the
+fallback that makes kernel placement safe is also what hides an orphan, since
+`getLabel()` answers `''` instead of raising.
+
+**What the label guards cover, and what they do not.** TC-1017 (shared kernel)
+and TC-1018 (the 10 card dictionaries) together read all 179 keys through
+`getLabel()` and fail on any that resolves to `''`. That is the *empty-label*
+half of the failure mode — the half that produced the vacuum defect in
+`85da36f`. Neither test can prove a key is *reachable*: that would need static
+analysis of every `getLabel()` call site, including the dynamically built ones,
+so a key nothing ever asks for still passes both. Reachability stays a review
+duty — when deleting an editor or a section, delete its vocabulary with it.
+
+Both guards iterate the real dictionaries instead of restating them, so a new
+label is covered the moment it is added and never breaks the test. TC-1018 has
+to name the 10 modules to import them (`import.meta.glob` would require
+`vite/client` in tsconfig `types`, widening the project's type surface for one
+test), but it cross-checks that list against the card directories that actually
+ship a `labels.ts`: add a card and the test fails until it is wired in. The
+`water` card is correctly absent — it has no `labels.ts`, using shared keys only.
 
 > **Note:** `msg` is imported from `@lit/localize` in each dictionary module.
 > Dictionaries are **functions**, not consts, so `msg()` re-resolves on every
@@ -823,6 +844,8 @@ The `sensors` field in `SciFiPlugDevice` is a `Record<string, SciFiPlugSensorEnt
 | TC-1014 | Unit | lights editor resets `first_area_to_render` when floor changes | `input-update` with `id='first_floor_to_render'` | `config-changed` fired with `first_area_to_render = null` |
 | TC-1015 | Unit | `_getNewConfig()` deep clone preserves nested arrays | Config with `entities_to_exclude: ['a', 'b']` | Clone has equal but distinct array reference |
 | TC-1016 | Unit | Every generated vacuum sensor field carries a non-empty label (guards anti-pattern 12) | Vacuum editor with one vacuum configured | No `sf-editor-input[kind="vacuum-sensor"]` has an empty `label` attribute |
+| TC-1017 | Unit | Every key in `sharedEditorLabels()` resolves to a non-empty label | Iterate `Object.keys(sharedEditorLabels())` through `getLabel()` | No key returns `''` |
+| TC-1018 | Unit | Every key in each of the 10 card-owned dictionaries resolves to a non-empty label | Each `*Labels()` assigned to a mock editor's `cardLabels`, every key read through `getLabel()` | No key returns `''`; one `it()` per card, plus a cross-check asserting the wired module list equals the card dirs that ship a `labels.ts` on disk |
 | IT-1001 | Integration | weather editor renders in mock HA panel | Mount editor with `setConfig()` + `hass` | Editor element visible, no console errors |
 | IT-1002 | Integration | config-changed propagates up to Lovelace mock | User changes `weather_entity` | Parent listener receives `event.detail.config.weather_entity` |
 | IT-1003 | Integration | `sf-editor-dropdown-entity` items filtered from hass.states | Hass with 5 weather entities | Dropdown shows 5 entities matching filter |

@@ -773,14 +773,6 @@
   <source>Current clean duration</source>
   <target>Durée de nettoyage actuelle</target>
 </trans-unit>
-<trans-unit id="s8e7d9b3270e423e9">
-  <source>Last clean area</source>
-  <target>Dernière zone nettoyée</target>
-</trans-unit>
-<trans-unit id="s4159338f5e20baf0">
-  <source>Last clean duration</source>
-  <target>Dernière durée de nettoyage</target>
-</trans-unit>
 <trans-unit id="s2eda024d0ca3dbae">
   <source>Battery</source>
   <target>Batterie</target>
@@ -1063,10 +1055,6 @@
   <source>Inactive</source>
 <target>Inactif</target>
 </trans-unit>
-<trans-unit id="s64f5ce47dbb31df7">
-  <source>Call the kids</source>
-<target>Appeler les enfants</target>
-</trans-unit>
 <trans-unit id="s397b659c8b1bad98">
   <source>Crew</source>
 <target>Équipage</target>
@@ -1109,9 +1097,6 @@
 <trans-unit id="s9839775f1bfecdd2">
   <source>Consumable</source>
 <target>Consommable</target></trans-unit>
-<trans-unit id="sc88c98daa5ce1614">
-  <source>Call children</source>
-<target>Appeler enfants</target></trans-unit>
 <trans-unit id="s2c6f8fc63e3acf05">
   <source>Section icon</source>
 <target>Icône section</target></trans-unit>
@@ -1139,18 +1124,12 @@
 <trans-unit id="s735564e1bca6e671">
   <source>Lock (optional)</source>
 <target>Verrou (optionnel)</target></trans-unit>
-<trans-unit id="sf5e22e7b6629d903">
-  <source>input_button entity</source>
-<target>Entité input_button</target></trans-unit>
 <trans-unit id="sc9707b8a6e40fb52">
   <source>Entity (input_button / script / automation)</source>
 <target>Entité (input_button / script / automation)</target></trans-unit>
 <trans-unit id="s94bb12b36b913b14">
   <source>Color (opt.)</source>
 <target>Couleur (opt.)</target></trans-unit>
-<trans-unit id="s910c55f047789df0">
-  <source>Button text (opt.)</source>
-<target>Texte bouton (opt.)</target></trans-unit>
 <trans-unit id="s8f26e0f086cc2787">
   <source>Unit</source>
 <target>Unité</target></trans-unit>

@@ -1167,7 +1167,11 @@ title="${this.getLabel('section-title-crew')}"
 title="${msg('Équipage')}"
 ```
 
-### Clés `getLabel()` bridge (dans `src/utils/base-editor.ts`)
+### Clés `getLabel()` bridge (dans `src/cards/bridge/labels.ts`)
+
+> ADR-017 : ces clés ont quitté `sharedEditorLabels()` pour le dictionnaire de
+> la carte. Seules les clés effectivement consommées par l'éditeur figurent
+> ici — une clé sans consommateur se supprime, elle ne se réserve pas.
 
 | Clé | EN source | FR target |
 |-----|-----------|----------|
@@ -1187,7 +1191,6 @@ title="${msg('Équipage')}"
 | `action-add-toggle` | `Toggle` | `Toggle` |
 | `action-add-appliance` | `Appliance` | `Appareil` |
 | `action-add-consumable` | `Consumable` | `Consommable` |
-| `action-call-children` | `Call children` | `Appeler enfants` |
 | `input-icon-section` | `Section icon` | `Icône section` |
 | `input-smoke-sensors` | `Smoke sensors` | `Détecteurs fumée` |
 | `input-binary-sensor-entity` | `binary_sensor entity` | `Entité binary_sensor` |
@@ -1197,10 +1200,8 @@ title="${msg('Équipage')}"
 | `input-occupancy-entity` | `Occupancy entity (opt.)` | `Entité occupancy (opt.)` |
 | `input-cover-entity` | `Cover entity` | `Entité cover` |
 | `input-lock-optional` | `Lock (optional)` | `Verrou (optionnel)` |
-| `input-input-button-entity` | `input_button entity` | `Entité input_button` |
 | `input-action-entity` | `Entity (input_button / script / automation)` | `Entité (input_button / script / automation)` |
 | `input-color-optional` | `Color (opt.)` | `Couleur (opt.)` |
-| `input-button-text` | `Button text (opt.)` | `Texte bouton (opt.)` |
 | `input-type` | `Type` | `Type` |
 | `input-min` | `Min` | `Min` |
 | `input-max` | `Max` | `Max` |

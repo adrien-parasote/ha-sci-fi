@@ -1,9 +1,22 @@
 // @vitest-environment happy-dom
 import { expect, describe, it, vi } from 'vitest';
 import { html } from 'lit';
+import * as fs from 'fs';
+import * as path from 'path';
+
+import { bridgeLabels } from '../../src/cards/bridge/labels.js';
+import { climatesLabels } from '../../src/cards/climates/labels.js';
+import { hexaTilesLabels } from '../../src/cards/hexa-tiles/labels.js';
+import { lightsLabels } from '../../src/cards/lights/labels.js';
+import { plugsLabels } from '../../src/cards/plugs/labels.js';
+import { stoveLabels } from '../../src/cards/stove/labels.js';
+import { tvLabels } from '../../src/cards/tv/labels.js';
+import { vacuumLabels } from '../../src/cards/vacuum/labels.js';
+import { vehiclesLabels } from '../../src/cards/vehicles/labels.js';
+import { weatherLabels } from '../../src/cards/weather/labels.js';
 
 import { customElement } from 'lit/decorators.js';
-import { SciFiBaseEditor } from '../../src/utils/base-editor.js';
+import { SciFiBaseEditor, sharedEditorLabels } from '../../src/utils/base-editor.js';
 import type { HomeAssistantExt } from '../../src/types/ha.js';
 import type { SciFiBaseConfig } from '../../src/types/config.js';
 import { makeMockHass } from '../fixtures/mock-hass.js';
@@ -19,6 +32,51 @@ function makeEl(): MockEditor {
   const el = document.createElement('mock-editor-v2') as MockEditor;
   document.body.appendChild(el);
   return el;
+}
+
+/**
+ * Stands in for any card editor: whatever dictionary is assigned goes through
+ * the real getLabel() merge, so TC-1018 exercises the production lookup rather
+ * than reading the dictionaries directly.
+ */
+@customElement('mock-editor-card-labels')
+class MockCardEditor extends SciFiBaseEditor {
+  dictionary: Record<string, string> = {};
+  protected override get cardLabels(): Record<string, string> {
+    return this.dictionary;
+  }
+  protected override renderEditor() {
+    return html`<div>Mock Card Editor</div>`;
+  }
+}
+
+/**
+ * The 10 card-owned dictionaries. Listed rather than globbed because
+ * `import.meta.glob` would need `vite/client` in tsconfig `types`, widening the
+ * whole project's type surface for one test. The list is a list of MODULES, not
+ * of keys: a new label is covered automatically, and the cross-check below
+ * fails if a new card's labels.ts is ever added without a line here.
+ */
+const cardLabelModules: Record<string, () => Record<string, string>> = {
+  bridge: bridgeLabels,
+  climates: climatesLabels,
+  'hexa-tiles': hexaTilesLabels,
+  lights: lightsLabels,
+  plugs: plugsLabels,
+  stove: stoveLabels,
+  tv: tvLabels,
+  vacuum: vacuumLabels,
+  vehicles: vehiclesLabels,
+  weather: weatherLabels,
+};
+
+/** Card directories that actually ship a labels.ts, read from disk. */
+function cardDirsWithLabels(): string[] {
+  const cardsDir = path.join(__dirname, '..', '..', 'src', 'cards');
+  return fs
+    .readdirSync(cardsDir)
+    .filter((d) => fs.existsSync(path.join(cardsDir, d, 'labels.ts')))
+    .sort();
 }
 
 describe('base-editor', () => {
@@ -170,6 +228,40 @@ describe('base-editor', () => {
     const el = makeEl();
     expect(el.getLabel('totally-unknown-key-xyz')).toBe('');
   });
+
+  it('TC-1017: every shared key resolves to a non-empty label', () => {
+    // getLabel() returns '' for an unknown key, so a shared entry that is
+    // misspelled, or whose msg() resolves to nothing, fails silently at
+    // runtime — the field just renders unlabelled (anti-pattern 12).
+    // Iterates the real dictionary rather than restating it, so a new key is
+    // covered the moment it is added.
+    const el = makeEl();
+    const empty = Object.keys(sharedEditorLabels()).filter((key) => el.getLabel(key) === '');
+    expect(empty, `shared keys resolving to an empty label: ${JSON.stringify(empty)}`).toEqual([]);
+  });
+
+  // Same failure mode as TC-1017, over the 10 card-owned dictionaries — which
+  // hold 142 of the 179 keys, including the two the vacuum defect (85da36f)
+  // actually rendered blank.
+  it('TC-1018: covers every card that ships a labels.ts', () => {
+    // Keeps the module list above honest: add a card, and this fails until the
+    // card is wired in, so the per-card assertions can never go quietly stale.
+    expect(Object.keys(cardLabelModules).sort()).toEqual(cardDirsWithLabels());
+    for (const [card, dict] of Object.entries(cardLabelModules)) {
+      expect(Object.keys(dict()).length, `${card} dictionary is empty`).toBeGreaterThan(0);
+    }
+  });
+
+  for (const [card, dict] of Object.entries(cardLabelModules)) {
+    it(`TC-1018: ${card} — every key resolves to a non-empty label`, () => {
+      const el = document.createElement('mock-editor-card-labels') as MockCardEditor;
+      document.body.appendChild(el);
+      const dictionary = dict();
+      el.dictionary = dictionary;
+      const empty = Object.keys(dictionary).filter((key) => el.getLabel(key) === '');
+      expect(empty, `${card} keys resolving to an empty label: ${JSON.stringify(empty)}`).toEqual([]);
+    });
+  }
 
   it('TC-308: getLabel returns translated French string when locale is fr', async () => {
     const el = makeEl();

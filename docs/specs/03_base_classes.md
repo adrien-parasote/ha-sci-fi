@@ -147,6 +147,7 @@ so any change to these declarations surfaces as a reviewed diff.
 | TC-304 | Unit | setConfig stores config | Configuration object | config gets updated and stored |
 | TC-305 | Unit | baseEditor updates properties | Change value in editor | Dispatches config-changed custom event |
 | TC-306 | Unit | Subclass overriding willUpdate must call super | Subclass with `willUpdate()` override | `super.willUpdate(changedProperties)` is first line; locale sync still fires |
+| TC-307 | Unit | No `var(--x)` without fallback targets an undefined token | Every `` css` ` `` block and inline `style=` in `src/**/*.ts`, CSS comments excluded | Zero references; a violation is reported with the token name and its `file:line`. Guards rule 2 above — a reference that is neither defined nor defaulted is invalid at computed-value time and the property renders unset |
 | IT-301 | Integration | Card reacts to HA state changes | Modify mockHass states | Subclass `renderCard` triggered |
 | IT-302 | Integration | Editor styles apply correctly | Open card editor | Shared CSS properties verify as loaded |
 | IT-303 | Integration | Locale synced with HA language | Update HA language state | UI translation texts update reactively |

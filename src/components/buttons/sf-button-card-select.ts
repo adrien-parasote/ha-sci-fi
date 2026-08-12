@@ -79,7 +79,7 @@ export class SciFiCardSelectButton extends SciFiCardButton {
         align-items: center;
       }
       .items .item:hover {
-        background-color: var(--sf-bg-tertiary);
+        background-color: var(--sf-bg-tertiary, rgba(0, 210, 255, 0.1));
       }
       .items .item:last-of-type {
         border-bottom: none;

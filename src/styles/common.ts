@@ -149,7 +149,7 @@ export const sciFiEditorStyles = css`
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--secondary-text-color);
+    color: var(--secondary-text-color, rgba(224, 232, 255, 0.6));
   }
 
   ha-textfield, ha-select {

@@ -4632,7 +4632,7 @@
     ".chart-header .title .title-icon svg": {
       "width": "100%",
       "height": "100%",
-      "fill": "var(--primary-text-color)"
+      "fill": "var(--sf-text-primary, #e0e8ff)"
     },
     ".canvas-wrapper": {
       "position": "relative",
@@ -4688,12 +4688,12 @@
     ".chart-container .dropdown .dropdown-content .dropdown-item svg": {
       "width": "32px",
       "height": "32px",
-      "fill": "var(--primary-text-color)"
+      "fill": "var(--sf-text-primary, #e0e8ff)"
     },
     ".chart-container .dropdown .dropdow-button .btn-icon svg": {
       "width": "32px",
       "height": "32px",
-      "fill": "var(--primary-text-color)"
+      "fill": "var(--sf-text-primary, #e0e8ff)"
     },
     ".chart-container .dropdown .dropdow-button sf-icon": {
       "--icon-color": "var(--secondary-light-alpha-color, #7ca8c9)"

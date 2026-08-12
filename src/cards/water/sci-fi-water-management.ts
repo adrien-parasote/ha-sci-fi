@@ -4,6 +4,7 @@ import { repeat } from 'lit/directives/repeat.js';
 import { msg } from '@lit/localize';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
+import { floorNavStyles } from '../../styles/floor-nav.js';
 import type { SciFiWaterManagementConfig } from './config.js';
 import type { HassFloor, HassEntityEntry } from '../../types/ha.js';
 import { fireHassAction } from '../../utils/action.js';
@@ -22,7 +23,9 @@ const DEFAULT_FLOOR_ICON = 'mdi:floor-plan';
 
 @customElement(TAG)
 export class SciFiWaterManagementCard extends SciFiBaseCard {
-  static override styles = [sciFiCommonStyles, waterStyles];
+  // floorNavStyles BEFORE waterStyles: the shared shell must be overridable by
+  // the card, never the other way round (ADR-017 step 8).
+  static override styles = [sciFiCommonStyles, floorNavStyles, waterStyles];
 
   @state() private _activeFloorId: string | null = null;
   @state() private _devices: Record<string, any> = {};

@@ -9,6 +9,7 @@ import { customElement, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
+import { floorNavStyles } from '../../styles/floor-nav.js';
 import type { SciFiLightsConfig } from './config.js';
 import type { HassFloor, HassArea, HassEntityEntry } from '../../types/ha.js';
 import { fireHassAction } from '../../utils/action.js';
@@ -37,8 +38,11 @@ const DEFAULT_AREA_ICON = 'mdi:home-outline';
 
 @customElement(TAG)
 export class SciFiLightsCard extends SciFiBaseCard {
+  // floorNavStyles BEFORE lightStyles: the shared shell must be overridable by
+  // the card, never the other way round (ADR-017 step 8).
   static override styles = [
     sciFiCommonStyles,
+    floorNavStyles,
     lightStyles,
   ];
 

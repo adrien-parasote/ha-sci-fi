@@ -29,8 +29,13 @@ src/
 │                                         MECHANISM + sharedEditorLabels()
 │                                         + SHARED_SECTION_ICONS (ADR-017)
 └── styles/
-    ├── common.ts                   [NEW] Shared styles
-    └── editor-common.ts            [NEW] Editor styles
+    ├── common.ts                   [NEW] Shared styles — imported by every card
+    ├── editor-common.ts            [NEW] Editor styles
+    └── floor-nav.ts                [NEW] Hexagonal floor-navigation shell,
+                                          shared by lights + water (ADR-017).
+                                          Goes BEFORE the card sheet in
+                                          `static styles` so the card can
+                                          override it.
 ```
 
 ---

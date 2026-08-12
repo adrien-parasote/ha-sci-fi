@@ -161,7 +161,7 @@ boundary-clean.
 | 5 | Extract the 412-line SVG out of `_renderSpeeder` into an asset module | tsc + vitest |
 | 6 | Extract `sci-fi-tv.ts:renderCard` (261 l, cc=32) into per-zone methods | tsc + vitest |
 | 7 | Extract the remaining 100+ line functions (radiator, 4 editors) | tsc + vitest + `check_rules` |
-| 8 | Build the CSS equivalence harness, then hoist the shared card chrome into `styles/card-chrome.ts` | tsc + vitest + CSS harness |
+| 8 | Build the CSS equivalence harness, then hoist what is genuinely shared | tsc + vitest + CSS harness |
 | 9 | Replace token-bypassing literals (`rgb(...)`) with `--sf-*` tokens | tsc + vitest + CSS harness |
 | 10 | Sync CODEMAPS + specs 02/03/04/05/10 to the post-refactor tree | doc review + link check |
 
@@ -169,6 +169,29 @@ Commit format: `refactor(<scope>): <what> — step N/10`.
 
 Test coverage requirement before starting: **met** — baseline `npx tsc --noEmit`
 clean and `npx vitest run` 91 files / 1019 tests green, captured before step 1.
+
+## Correction to the diagnosis (recorded after step 8)
+
+The diagnosis claimed a duplicated *card chrome*: `:host` in 11 stylesheets,
+`.header` in 10, `.container` in 10. Counting selector names was the wrong
+measurement. Once the equivalence harness folded every card's resolved CSS and
+compared rules by their **declarations**, the real picture came out:
+
+| Duplication | Size | Verdict |
+|---|---|---|
+| `lights` ↔ `water` | **26 rules / 106 declarations** — card frame, header, power button, and the whole hexagonal floor-tile widget with its hover/selected/active states | Hoisted into `src/styles/floor-nav.ts` |
+| `bridge` ↔ `water` | `@keyframes spin`, 2 rules / 2 declarations | Left duplicated — a shared module for 4 lines costs more than it saves, and folding it into `sciFiCommonStyles` would push an unused rule into all 11 cards |
+| `climates` ↔ `weather`, `stove` ↔ `vacuum` | one `.container`, 3 declarations each | Left duplicated — same reason |
+
+There is **no** chrome common to the 11 cards. The 10 `.header` blocks are ten
+different `.header` rules: `lights` and `climates` are near-copies that have
+already drifted (`align-items`, `min-height` present in one, absent in the
+other), and `plugs` is unrelated and bypasses the `--sf-*` tokens outright.
+What exists is one duplicated *widget* between two cards, which is a component
+problem, not a design-system problem.
+
+Net effect: `lights/styles.ts` 478 → 335, `water/styles.ts` 557 → 414, with 184
+shared lines declared once in `styles/floor-nav.ts`.
 
 ## Rollback plan
 

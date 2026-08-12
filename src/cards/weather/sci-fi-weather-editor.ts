@@ -15,7 +15,7 @@ import { html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
-import type { SciFiWeatherConfig } from '../../types/config.js';
+import type { SciFiWeatherConfig } from './config.js';
 import type { InputUpdateDetail } from '../../components/editor-inputs/sf-editor-input.js';
 import type { EditorHassEntity } from '../../components/editor-inputs/sf-editor-dropdown-entity.js';
 
@@ -23,6 +23,7 @@ import '../../components/editor-inputs/sf-editor-input.js';
 import '../../components/editor-inputs/sf-editor-dropdown-entity.js';
 import '../../components/editor-inputs/sf-editor-slider.js';
 import '../../components/editor-inputs/sf-editor-dropdown.js';
+import { weatherLabels, weatherSectionIcons } from './labels.js';
 
 const CHART_KINDS: Record<string, 'temperature' | 'precipitation' | 'wind'> = {
   Temperature: 'temperature',
@@ -38,6 +39,14 @@ const CHART_KIND_LABELS: Record<string, string> = {
 
 @customElement('sci-fi-weather-editor')
 export class SciFiWeatherEditor extends SciFiBaseEditor {
+  protected override get cardLabels(): Record<string, string> {
+    return weatherLabels();
+  }
+
+  protected override get cardSectionIcons(): Record<string, string> {
+    return weatherSectionIcons();
+  }
+
   @state() private _weatherEntities: EditorHassEntity[] = [];
 
   static override styles = [sciFiEditorCommonStyles];

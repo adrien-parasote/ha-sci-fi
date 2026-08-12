@@ -11,47 +11,7 @@ export const lightStyles = css`
     height: 100%;
   }
 
-  ha-card {
-    background: rgba(39, 40, 43, 0.3) !important;
-    border: none !important;
-    height: 100%;
-    width: 100%;
-    display: block;
-    box-sizing: border-box;
-  }
-
-  .container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding: 0;
-  }
-
   /* ── Header ─────────────────────────────────────────── */
-  .header {
-    display: flex;
-    flex-direction: row;
-    border-top: var(--sf-border-width, 1px) solid var(--sf-border);
-    border-bottom: var(--sf-border-width, 1px) solid var(--sf-border);
-    background-color: rgba(13, 17, 23, 0.6);
-    padding: 5px 10px;
-    font-size: var(--sf-text-sm, 12px);
-    align-items: center;
-    min-height: 44px;
-  }
-  .header .info {
-    display: flex;
-    flex-direction: row;
-    column-gap: 5px;
-    align-items: center;
-    padding-bottom: 5px;
-    flex: 1;
-  }
-  .header-text {
-    font-size: 0.9rem;
-    color: var(--sf-primary, #00d2ff);
-    text-shadow: 0 0 5px var(--sf-primary, #00d2ff);
-  }
   /* Day/night icon — top-right of header */
   .header .weather-icon {
     width: 36px;
@@ -67,100 +27,21 @@ export const lightStyles = css`
   }
 
   /* ── Floors row (hexa) ───────────────────────────────── */
-  .floors {
-    display: flex;
-    flex-direction: row;
-    background-color: black;
-    column-gap: 5px;
-    justify-content: center;
-    align-items: center;
-    margin: 0;
-    padding: 20px 0;
-  }
-
-  .floor-hexa {
-    position: relative;
-    width: var(--hexa-w);
-    height: var(--hexa-h);
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: transform 0.2s ease;
-  }
-  .floor-hexa:hover { transform: scale(1.08); }
   /* Selected floor is visually larger (matches main branch) */
-  .floor-hexa[data-selected="true"] {
-    transform: scale(1.3);
-    z-index: 1;
-  }
-  .floor-hexa[data-selected="true"]:hover { transform: scale(1.35); }
-
-  .floor-hexa svg { width: 100%; height: 100%; display: block; }
-  .floor-hexa .hexa-bg { transition: fill 0.15s; }
-  .floor-hexa .hexa-border { fill: none; transition: stroke 0.15s, filter 0.15s; }
-
   /*
    * Floor hexa states:
    *   data-selected="true"  → border glow (this floor is selected)
    *   data-active="true"    → icon bright (≥1 light ON in this floor)
    */
-  .floor-hexa .hexa-bg { fill: rgba(16,22,38,0.6); }
-  .floor-hexa .hexa-border { stroke: rgba(224,232,255,0.15); stroke-width: 1.5px; }
-
   /* Selected = glowing border */
-  .floor-hexa[data-selected="true"] .hexa-bg { fill: rgba(0,210,255,0.12); }
-  .floor-hexa[data-selected="true"] .hexa-border {
-    stroke: var(--sf-primary, #00d2ff);
-    stroke-width: 2.5px;
-    filter: drop-shadow(0 0 6px var(--sf-primary, #00d2ff));
-  }
-  .floor-hexa:hover .hexa-border {
-    stroke: var(--sf-primary, #00d2ff);
-    filter: drop-shadow(0 0 5px var(--sf-primary, #00d2ff));
-  }
-
-  .floor-hexa .hexa-content {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-    padding: 4px;
-    box-sizing: border-box;
-  }
-  .floor-hexa .hexa-content sf-icon {
-    --icon-width: 20px;
-    --icon-height: 20px;
-    /* Default: dim (no lights on) */
-    --icon-color: rgba(224,232,255,0.35);
-    display: block;
-  }
   /* Active = icon bright (≥1 light on in floor) */
-  .floor-hexa[data-active="true"] .hexa-content sf-icon {
-    --icon-color: var(--sf-primary, #00d2ff);
-  }
-  .floor-hexa .floor-name {
-    font-size: 0.48rem;
-    font-weight: 600;
-    /* Default: dim */
-    color: rgba(224,232,255,0.35);
-    margin-top: 2px;
-    text-align: center;
-    max-width: 90%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
   /* Active = name bright */
-  .floor-hexa[data-active="true"] .floor-name { color: var(--sf-primary, #00d2ff); }
-
   /* ── Floor info panel ────────────────────────────────── */
   .floor-content {
     display: flex;
     flex-direction: column;
-    border-bottom: 1px solid rgba(0,210,255,0.15);
-    border-top: 1px solid rgba(0,210,255,0.15);
+    border-bottom: 1px solid var(--sf-border);
+    border-top: 1px solid var(--sf-border);
     padding: 10px 0;
     margin: 0;
     background-color: rgba(13, 17, 23, 0.6);
@@ -173,7 +54,6 @@ export const lightStyles = css`
     min-width: 200px;
     color: var(--sf-primary, #00d2ff);
   }
-  .floor-info.floor-off { color: rgba(224,232,255,0.4); }
   .floor-title {
     font-size: 0.9rem;
     font-weight: bold;
@@ -299,7 +179,7 @@ export const lightStyles = css`
     --icon-width: 22px;
     --icon-height: 22px;
     /* Default: dim (no lights on) */
-    --icon-color: rgba(224,232,255,0.3);
+    --icon-color: var(--sf-text-disabled);
     display: block;
   }
   /* Active = icon bright (≥1 light on in area) */
@@ -441,29 +321,6 @@ export const lightStyles = css`
   .light-btn.light-off .light-label { color: rgba(255,255,255,0.25); }
 
   /* ── Shared: power button ─────────────────────────────── */
-  .power-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: background 0.15s;
-    flex-shrink: 0;
-  }
-  .power-btn:hover { background: rgba(0,210,255,0.12); }
-  .power-btn svg {
-    width: 14px;
-    height: 14px;
-    fill: none;
-    stroke: var(--sf-primary, #00d2ff);
-    stroke-width: 2;
-    filter: drop-shadow(0 0 3px var(--sf-primary, #00d2ff));
-    transition: stroke 0.15s, filter 0.15s;
-  }
-  .power-btn.is-off svg { stroke: rgba(255,255,255,0.2); filter: none; }
   .header-power svg { width: 18px; height: 18px; }
 
   /* ── Empty state ──────────────────────────────────────── */

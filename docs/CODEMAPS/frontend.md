@@ -20,6 +20,7 @@ All cards register as standard web components and are bound in `src/sci-fi.ts`.
 ## Base Classes
 - `SciFiBaseCard` (in `src/utils/base-card.ts`) → Core Home Assistant `hass` state proxy, error boundaries, Lit `update()` overrides.
 - `SciFiBaseEditor` (in `src/utils/base-editor.ts`) → Configuration dispatcher (`config-changed` via `_dispatchChange()`). Exposes `getLabel(key)` for i18n — all editor labels go through this method, never via direct `msg()`. All editors extend this class.
+  - **ADR-017:** the base class owns the lookup *mechanism* plus `sharedEditorLabels()` / `SHARED_SECTION_ICONS`; each editor supplies its own vocabulary by overriding `cardLabels` / `cardSectionIcons` from `src/cards/<card>/labels.ts`. A card key shadows a shared key of the same name.
 
 ## Components Hierarchy
 - **Icons (`sf-icon/`)**
@@ -40,6 +41,11 @@ All cards register as standard web components and are bound in `src/sci-fi.ts`.
   - `sf-hexa-tile`, `sf-hexa-row` → Core honeycomb layout components
   - `sf-toggle-switch`, `sf-button`, `sf-button-card` → Interaction
 
+> **Membership rule (ADR-017):** `src/components/` holds components with **two or
+> more consumers**. Single-consumer components live in their card's directory:
+> `sf-landspeeder` + `landspeeder-svg` (vehicles), `sf-radiator` +
+> `radiator-svg` (climates), `sf-stove-image` (stove).
+
 ## Selectors (State Extraction)
 - `src/selectors/climate.ts` → `getClimateState()`
 - `src/selectors/house.ts` → `getHouseState()`
@@ -50,6 +56,7 @@ All cards register as standard web components and are bound in `src/sci-fi.ts`.
 - **Logic:** `src/locales/localization.ts` (Dynamic loader)
 - **Dictionaries:** `src/locales/locales/fr.js` (Target, generated — do not edit manually), `xliff/fr.xlf` (Source translation file, edit this)
 - **Pattern:** All editor labels use `this.getLabel('key')` via `SciFiBaseEditor.getLabel()` — never `msg('string')` directly in editor templates.
+- **Where to add a key (ADR-017):** in that card's `src/cards/<card>/labels.ts`. Promote it to `sharedEditorLabels()` in `base-editor.ts` only when a second card needs it.
 - **Workflow:** `npx lit-localize extract` → edit `xliff/fr.xlf` → `npx lit-localize build` → `fr.js` is regenerated.
 
 ## Workbench Dev Tools (`dev/`)

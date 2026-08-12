@@ -495,7 +495,7 @@ export const tvStyles = css`
 
   .planet-ring-back, .planet-ring-front {
     fill: none;
-    stroke: rgba(0, 210, 255, 0.15);
+    stroke: var(--sf-border);
     stroke-width: 2px;
     stroke-dasharray: 4, 2;
     transition: stroke 0.2s;

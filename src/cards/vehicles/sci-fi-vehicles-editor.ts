@@ -15,16 +15,40 @@ import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
 import type {
   SciFiVehiclesConfig,
   SciFiVehicleEntry,
-} from '../../types/config.js';
+} from './config.js';
 import type { InputUpdateDetail } from '../../components/editor-inputs/sf-editor-input.js';
 import type { EditorHassEntity } from '../../components/editor-inputs/sf-editor-dropdown-entity.js';
 
 import '../../components/editor-inputs/sf-editor-input.js';
 import '../../components/editor-inputs/sf-editor-dropdown-entity.js';
 import '../../components/editor-inputs/sf-editor-accordion.js';
+import { vehiclesLabels } from './labels.js';
+
+/**
+ * Text fields of a vehicle entry, in render order:
+ * [config key, input kind, label key, icon].
+ */
+const VEHICLE_FIELDS: ReadonlyArray<readonly [keyof SciFiVehicleEntry, string, string, string]> = [
+  ['name',                    'vehicle-name',   'input-name',                    'mdi:cursor-text'],
+  ['location',                'vehicle-sensor', 'input-location',                'mdi:map-marker'],
+  ['location_last_activity',  'vehicle-sensor', 'input-location-last-activity',  'mdi:clock-outline'],
+  ['mileage',                 'vehicle-sensor', 'input-mileage',                 'mdi:counter'],
+  ['lock_status',             'vehicle-sensor', 'input-lock-status',             'mdi:lock-outline'],
+  ['fuel_autonomy',           'vehicle-sensor', 'input-fuel-autonomy',           'mdi:gas-station'],
+  ['fuel_quantity',           'vehicle-sensor', 'input-fuel-quantity',           'mdi:fuel'],
+  ['battery_autonomy',        'vehicle-sensor', 'input-battery-autonomy',        'mdi:ev-station'],
+  ['battery_level',           'vehicle-sensor', 'input-battery-level',           'mdi:battery-medium'],
+  ['charging',                'vehicle-sensor', 'input-charging-state',          'mdi:ev-plug-type2'],
+  ['plug_state',              'vehicle-sensor', 'input-plug-state',              'mdi:power-plug-outline'],
+  ['charging_remaining_time', 'vehicle-sensor', 'input-remainting-charging-time','mdi:clock-fast'],
+];
 
 @customElement('sci-fi-vehicles-editor')
 export class SciFiVehiclesEditor extends SciFiBaseEditor {
+  protected override get cardLabels(): Record<string, string> {
+    return vehiclesLabels();
+  }
+
   @state() private _vehiclesList: EditorHassEntity[] = [];
 
   static override styles = [sciFiEditorCommonStyles];
@@ -92,102 +116,16 @@ export class SciFiVehiclesEditor extends SciFiBaseEditor {
           .items="${this._vehiclesList}"
           @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateVehicle(index, 'id', e.detail.value)}"
         ></sf-editor-dropdown-entity>
-        <sf-editor-input
-          element-id="name"
-          kind="vehicle-name"
-          label="${this.getLabel('input-name')}"
-          icon="mdi:cursor-text"
-          .value="${vehicle.name ?? ''}"
-          @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateVehicle(index, 'name', e.detail.value)}"
-        ></sf-editor-input>
-        <sf-editor-input
-          element-id="location"
-          kind="vehicle-sensor"
-          label="${this.getLabel('input-location')}"
-          icon="mdi:map-marker"
-          .value="${vehicle.location ?? ''}"
-          @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateVehicle(index, 'location', e.detail.value)}"
-        ></sf-editor-input>
-        <sf-editor-input
-          element-id="location_last_activity"
-          kind="vehicle-sensor"
-          label="${this.getLabel('input-location-last-activity')}"
-          icon="mdi:clock-outline"
-          .value="${vehicle.location_last_activity ?? ''}"
-          @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateVehicle(index, 'location_last_activity', e.detail.value)}"
-        ></sf-editor-input>
-        <sf-editor-input
-          element-id="mileage"
-          kind="vehicle-sensor"
-          label="${this.getLabel('input-mileage')}"
-          icon="mdi:counter"
-          .value="${vehicle.mileage ?? ''}"
-          @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateVehicle(index, 'mileage', e.detail.value)}"
-        ></sf-editor-input>
-        <sf-editor-input
-          element-id="lock_status"
-          kind="vehicle-sensor"
-          label="${this.getLabel('input-lock-status')}"
-          icon="mdi:lock-outline"
-          .value="${vehicle.lock_status ?? ''}"
-          @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateVehicle(index, 'lock_status', e.detail.value)}"
-        ></sf-editor-input>
-        <sf-editor-input
-          element-id="fuel_autonomy"
-          kind="vehicle-sensor"
-          label="${this.getLabel('input-fuel-autonomy')}"
-          icon="mdi:gas-station"
-          .value="${vehicle.fuel_autonomy ?? ''}"
-          @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateVehicle(index, 'fuel_autonomy', e.detail.value)}"
-        ></sf-editor-input>
-        <sf-editor-input
-          element-id="fuel_quantity"
-          kind="vehicle-sensor"
-          label="${this.getLabel('input-fuel-quantity')}"
-          icon="mdi:fuel"
-          .value="${vehicle.fuel_quantity ?? ''}"
-          @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateVehicle(index, 'fuel_quantity', e.detail.value)}"
-        ></sf-editor-input>
-        <sf-editor-input
-          element-id="battery_autonomy"
-          kind="vehicle-sensor"
-          label="${this.getLabel('input-battery-autonomy')}"
-          icon="mdi:ev-station"
-          .value="${vehicle.battery_autonomy ?? ''}"
-          @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateVehicle(index, 'battery_autonomy', e.detail.value)}"
-        ></sf-editor-input>
-        <sf-editor-input
-          element-id="battery_level"
-          kind="vehicle-sensor"
-          label="${this.getLabel('input-battery-level')}"
-          icon="mdi:battery-medium"
-          .value="${vehicle.battery_level ?? ''}"
-          @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateVehicle(index, 'battery_level', e.detail.value)}"
-        ></sf-editor-input>
-        <sf-editor-input
-          element-id="charging"
-          kind="vehicle-sensor"
-          label="${this.getLabel('input-charging-state')}"
-          icon="mdi:ev-plug-type2"
-          .value="${vehicle.charging ?? ''}"
-          @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateVehicle(index, 'charging', e.detail.value)}"
-        ></sf-editor-input>
-        <sf-editor-input
-          element-id="plug_state"
-          kind="vehicle-sensor"
-          label="${this.getLabel('input-plug-state')}"
-          icon="mdi:power-plug-outline"
-          .value="${vehicle.plug_state ?? ''}"
-          @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateVehicle(index, 'plug_state', e.detail.value)}"
-        ></sf-editor-input>
-        <sf-editor-input
-          element-id="charging_remaining_time"
-          kind="vehicle-sensor"
-          label="${this.getLabel('input-remainting-charging-time')}"
-          icon="mdi:clock-fast"
-          .value="${vehicle.charging_remaining_time ?? ''}"
-          @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateVehicle(index, 'charging_remaining_time', e.detail.value)}"
-        ></sf-editor-input>
+        ${VEHICLE_FIELDS.map(([field, kind, labelKey, icon]) => html`
+          <sf-editor-input
+            element-id="${field}"
+            kind="${kind}"
+            label="${this.getLabel(labelKey)}"
+            icon="${icon}"
+            .value="${vehicle[field] ?? ''}"
+            @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateVehicle(index, field, e.detail.value)}"
+          ></sf-editor-input>
+        `)}
       </sf-editor-accordion>
     `;
   }

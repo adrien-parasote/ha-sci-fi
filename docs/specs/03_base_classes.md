@@ -23,13 +23,19 @@
 
 ```
 src/
-├── helpers/
-│   └── utils/
-│       ├── base-card.ts            [NEW] Base card class
-│       └── base-editor.ts          [NEW] Base editor class
+├── utils/
+│   ├── base-card.ts                [NEW] Base card class
+│   └── base-editor.ts              [NEW] Base editor class — label lookup
+│                                         MECHANISM + sharedEditorLabels()
+│                                         + SHARED_SECTION_ICONS (ADR-017)
 └── styles/
-    ├── common.ts                   [NEW] Shared styles
-    └── editor.ts                   [NEW] Editor styles
+    ├── common.ts                   [NEW] Shared styles — imported by every card
+    ├── editor-common.ts            [NEW] Editor styles
+    └── floor-nav.ts                [NEW] Hexagonal floor-navigation shell,
+                                          shared by lights + water (ADR-017).
+                                          Goes BEFORE the card sheet in
+                                          `static styles` so the card can
+                                          override it.
 ```
 
 ---
@@ -49,7 +55,7 @@ src/
 | Artefact | Consumer | Description |
 |---|---|---|
 | `SciFiBaseCard` | Spec 05 | Base custom Lovelace card class |
-| `SciFiBaseEditor` | Spec 05 | Base Lovelace card editor class |
+| `SciFiBaseEditor` | Spec 05 | Base Lovelace card editor class. Owns the label lookup mechanism (`getLabel`, `getSectionTitle`) and the shared dictionaries; per-card vocabulary is supplied by subclasses via `cardLabels` / `cardSectionIcons` — ADR-017, Spec 10 § Base Editor Enrichment |
 | `src/styles/common.ts` | Spec 04, 05 | Shared sci-fi theme styling tokens |
 
  ### Consumes

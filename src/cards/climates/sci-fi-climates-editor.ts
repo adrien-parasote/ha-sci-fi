@@ -16,7 +16,7 @@ import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
 import type {
   SciFiClimatesConfig,
-} from '../../types/config.js';
+} from './config.js';
 import type { InputUpdateDetail } from '../../components/editor-inputs/sf-editor-input.js';
 import type { EditorHassEntity } from '../../components/editor-inputs/sf-editor-dropdown-entity.js';
 
@@ -26,6 +26,7 @@ import '../../components/editor-inputs/sf-editor-multi-entity.js';
 import '../../components/editor-inputs/sf-editor-color-picker.js';
 import '../../components/sf-toggle-switch/sf-toggle-switch.js';
 import '../../components/buttons/sf-button.js';
+import { climatesLabels, climatesSectionIcons } from './labels.js';
 
 type EditTarget = { key: string; kind: 'state' | 'mode' };
 
@@ -34,6 +35,14 @@ const MODE_KEYS = ['frost_protection', 'eco', 'comfort', 'comfort-1', 'comfort-2
 
 @customElement('sci-fi-climates-editor')
 export class SciFiClimatesEditor extends SciFiBaseEditor {
+  protected override get cardLabels(): Record<string, string> {
+    return climatesLabels();
+  }
+
+  protected override get cardSectionIcons(): Record<string, string> {
+    return climatesSectionIcons();
+  }
+
   @state() private _climateEntities: EditorHassEntity[] = [];
   @state() private _edit = false;
   @state() private _editTarget: EditTarget | null = null;

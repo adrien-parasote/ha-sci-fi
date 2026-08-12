@@ -10,14 +10,14 @@ import { msg } from '@lit/localize';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import { vehicleStyles } from './styles.js';
-import type { SciFiVehiclesConfig, SciFiVehicleEntry } from '../../types/config.js';
+import type { SciFiVehiclesConfig, SciFiVehicleEntry } from './config.js';
 import {
   HASS_RENAULT_SERVICE,
   HASS_RENAULT_SERVICE_ACTION_START_AC,
   HASS_RENAULT_SERVICE_ACTION_STOP_AC,
-} from '../../components/vehicle_const.js';
+} from './vehicle_const.js';
 
-import '../../components/sf-landspeeder.js';
+import './sf-landspeeder.js';
 import '../../components/sf-wheel.js';
 import '../../components/buttons/sf-button-card.js';
 import '../../components/buttons/sf-button.js';

@@ -1,8 +1,8 @@
 // @vitest-environment happy-dom
 import { expect, describe, it, vi, afterEach } from 'vitest';
-import '../../src/components/sf-radiator.js';
-import type { SciFiRadiator } from '../../src/components/sf-radiator.js';
-import { makeMockEntity } from '../fixtures/mock-hass.js';
+import '../../../src/cards/climates/sf-radiator.js';
+import type { SciFiRadiator } from '../../../src/cards/climates/sf-radiator.js';
+import { makeMockEntity } from '../../fixtures/mock-hass.js';
 
 describe('sf-radiator', () => {
   afterEach(() => {

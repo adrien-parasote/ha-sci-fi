@@ -147,7 +147,7 @@ export const bridgeStyles = css`
     height: 100%;
     border-radius: 50%;
     overflow: hidden;
-    background: rgba(255,255,255,0.04);   /* très léger pour le fallback icône */
+    background: var(--sf-bg-secondary);   /* très léger pour le fallback icône */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -351,7 +351,7 @@ export const bridgeStyles = css`
   }
 
   .access-btn:active {
-    background: rgba(0,210,255,0.15);
+    background: var(--sf-border);
   }
 
   .access-btn.disabled {

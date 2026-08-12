@@ -16,6 +16,73 @@ import type { SciFiBaseConfig } from '../types/config.js';
 import { getLocale, setLocale } from '../locales/localization.js';
 import '../components/sf-icon/sf-icon.js';
 
+
+/**
+ * Labels shared by two or more card editors, plus a few reached only through
+ * dynamically built keys. Everything card-specific lives in
+ * src/cards/<card>/labels.ts (ADR-017).
+ *
+ * A function, not a const: msg() must re-resolve on every lookup so labels
+ * follow a locale change.
+ */
+export function sharedEditorLabels(): Record<string, string> {
+  return {
+    'section-title-header': msg('Header'),
+    'section-title-settings': msg('Settings'),
+    'section-title-vehicle': msg('Vehicle'),
+    'section-title-weather': msg('Weather'),
+    'section-title-technical': msg('Technical'),
+    'section-title-appearance': msg('Appearance'),
+    'section-title-entity': msg('Entity'),
+    'section-title-storage': msg('Storage'),
+    'section-title-energy': msg('Energy'),
+    'section-title-other': msg('Others'),
+    'section-title-monitoring': msg('Monitoring'),
+    'section-title-device': msg('Device'),
+    'section-title-custom-actions': msg('Custom actions'),
+    'text-optional': msg('(optional)'),
+    'text-required': msg('(required)'),
+    'text-child-lock': msg('Child lock?'),
+    'text-power-outage-memory': msg('Power outage memory'),
+    'text-other-sensor': msg('Others sensors'),
+    'edit-section-title': msg('Edit'),
+    'input-entities-to-exclude': msg('Entities to exclude'),
+    'input-icon': msg('Icon'),
+    'input-weather-alert-entity-id': msg('Weather alert entity id'),
+    'input-message-text': msg('Message'),
+    'input-weather-entity': msg('Weather entity'),
+    'input-name': msg('Name'),
+    'input-active-icon': msg('Active icon'),
+    'input-inactive-icon': msg('Inactive icon'),
+    'input-entity-id': msg('Entity id'),
+    'input-alert-green': msg('Green state'),
+    'input-alert-yellow': msg('Yellow state'),
+    'input-alert-orange': msg('Orange state'),
+    'input-alert-red': msg('Red state'),
+    'input-device': msg('Device'),
+    'action-call-children': msg('Call children'),
+    'input-input-button-entity': msg('input_button entity'),
+    'input-button-text': msg('Button text (opt.)'),
+  };
+}
+
+/** Section-title icons shared by two or more card editors. Static, no i18n. */
+const SHARED_SECTION_ICONS: Record<string, string> = {
+    'section-title-header':              'mdi:page-layout-header',
+    'section-title-settings':            'mdi:tune-vertical-variant',
+    'section-title-vehicle':             'mdi:selection-ellipse-arrow-inside',
+    'section-title-weather':             'mdi:theme-light-dark',
+    'section-title-technical':           'mdi:cog-outline',
+    'section-title-appearance':          'mdi:palette-outline',
+    'section-title-entity':              'mdi:selection-ellipse-arrow-inside',
+    'section-title-storage':             'mdi:archive-outline',
+    'section-title-energy':              'mdi:flash-outline',
+    'section-title-other':               'mdi:dots-horizontal-circle-outline',
+    'section-title-monitoring':          'mdi:monitor-eye',
+    'section-title-device':              'mdi:devices',
+    'section-title-custom-actions':      'mdi:gesture-tap-button',
+};
+
 export abstract class SciFiBaseEditor extends LitElement {
   private _hassInternal?: HomeAssistantExt;
 
@@ -97,243 +164,43 @@ export abstract class SciFiBaseEditor extends LitElement {
     this._dispatchChange(newConfig);
   }
 
-  // ─── Label dictionary (Spec 10 — i18n via @lit/localize) ───────────────────
+  // ─── Label lookup (Spec 10 — i18n; ADR-017 — per-card dictionaries) ─────────
+
+  /**
+   * Labels owned by this editor's card. Subclasses override with their own
+   * dictionary from src/cards/<card>/labels.ts. A card key shadows a shared one.
+   */
+  protected get cardLabels(): Record<string, string> {
+    return {};
+  }
+
+  /** Section-title icons owned by this editor's card. Same contract as cardLabels. */
+  protected get cardSectionIcons(): Record<string, string> {
+    return {};
+  }
 
   /**
    * Returns a localized label string for the given key.
    * Returns '' for unknown keys to prevent crashes.
    */
   getLabel(key: string): string {
-    const labels: Record<string, string> = {
-      'section-title-header': msg('Header'),
-      'section-title-settings': msg('Settings'),
-      'section-title-vehicle': msg('Vehicle'),
-      'section-title-state': msg('State'),
-      'section-title-mode': msg('Mode'),
-      'section-title-weather': msg('Weather'),
-      'section-title-chart': msg('Chart'),
-      'section-title-alert': msg('Alert'),
-      'section-title-tile': msg('Tile'),
-      'section-title-technical': msg('Technical'),
-      'section-title-home-selection': msg('Display selection'),
-      'section-title-appearance': msg('Appearance'),
-      'section-title-entity': msg('Entity'),
-      'section-title-entity-light-custom': msg('Light entities customization'),
-      'section-title-sensor': msg('Sensors'),
-      'section-title-storage': msg('Storage'),
-      'section-title-plug': msg('Plugs'),
-      'section-title-energy': msg('Energy'),
-      'section-title-other': msg('Others'),
-      'section-title-monitoring': msg('Monitoring'),
-      'section-title-config': msg('Configuration'),
-      'section-title-device': msg('Device'),
-      'section-title-visibility': msg('Visibility'),
-      'section-title-default-actions': msg('Default actions display'),
-      'section-title-custom-actions': msg('Custom actions'),
-      'section-title-shortcuts': msg('Shortcuts'),
-      'section-title-segments': msg('Segments'),
-      'section-title-tv': msg('TV Remote'),
-      'section-title-device-settings': msg('Device settings'),
-      'section-title-media-sources': msg('Media sources'),
-      'input-media-player-entity': msg('Media Player entity'),
-      'input-quadrant-name': msg('Quadrant name'),
-      'input-remote-entity': msg('Remote entity'),
-      'input-media-sources': msg('Quick-Select sources (Press Enter to add)'),
-      'text-optional': msg('(optional)'),
-      'text-required': msg('(required)'),
-      'text-switch-climate-global-turn-on_off': msg('Display global turn on/off button ?'),
-      'text-switch-hexa-add-weather-tile': msg('Add weather tile ?'),
-      'text-switch-hexa-standalone': msg('Standalone entity?'),
-      'text-switch-action-start': msg('Start?'),
-      'text-switch-action-pause': msg('Pause?'),
-      'text-switch-action-stop': msg('Stop?'),
-      'text-switch-action-return-to-base': msg('Return to base?'),
-      'text-switch-action-set-fan-speed': msg('Set fan speed?'),
-      'text-child-lock': msg('Child lock?'),
-      'text-power-outage-memory': msg('Power outage memory'),
-      'text-other-sensor': msg('Others sensors'),
-      'edit-section-title': msg('Edit'),
-      'input-message-header-section-winter': msg('Winter period message'),
-      'input-icon-header-section-winter': msg('Winter period icon'),
-      'input-message-header-section-summer': msg('Summer period message'),
-      'input-icon-header-section-summer': msg('Summer period icon'),
-      'input-entities-to-exclude': msg('Entities to exclude'),
-      'input-icon': msg('Icon'),
-      'input-weather-alert-entity-id': msg('Weather alert entity id'),
-      'input-icon-auto': msg('Icon auto'),
-      'input-icon-off': msg('Icon off'),
-      'input-icon-heat': msg('Icon heat'),
-      'input-icon-frost_protection': msg('Icon frost protection'),
-      'input-icon-eco': msg('Icon eco'),
-      'input-icon-comfort': msg('Icon comfort'),
-      'input-icon-comfort-1': msg('Icon comfort-1'),
-      'input-icon-comfort-2': msg('Icon comfort-2'),
-      'input-icon-boost': msg('Icon boost'),
-      'input-color-auto': msg('Auto icon color'),
-      'input-color-off': msg('Off icon color'),
-      'input-color-heat': msg('Heat icon color'),
-      'input-color-frost_protection': msg('Frost protection icon color'),
-      'input-color-eco': msg('Eco icon color'),
-      'input-color-comfort': msg('Comfort icon color'),
-      'input-color-comfort-1': msg('Comfort-1 icon color'),
-      'input-color-comfort-2': msg('Comfort-2 icon color'),
-      'input-color-boost': msg('Boost icon color'),
-      'input-message-text': msg('Message'),
-      'input-weather-entity': msg('Weather entity'),
-      'input-link': msg('Link'),
-      'input-name': msg('Name'),
-      'input-active-icon': msg('Active icon'),
-      'input-inactive-icon': msg('Inactive icon'),
-      'input-states-on': msg('States on'),
-      'input-state-error': msg('Error state'),
-      'input-entity-id': msg('Entity id'),
-      'input-entity-kind': msg('Entity kind'),
-      'input-floor-id': msg('First floor to render'),
-      'input-area-id': msg('First area to render'),
-      'input-location': msg('Location'),
-      'input-location-last-activity': msg('Location last activity'),
-      'input-mileage': msg('Mileage'),
-      'input-lock-status': msg('Lock status'),
-      'input-fuel-autonomy': msg('Fuel autonomy'),
-      'input-fuel-quantity': msg('Fuel quantity'),
-      'input-battery-autonomy': msg('Battery autonomy'),
-      'input-battery-level': msg('Battery level'),
-      'input-charging-state': msg('Charging'),
-      'input-plug-state': msg('Plug state'),
-      'input-remainting-charging-time': msg('Remaining charging time'),
-      'input-storage-counter': msg('Storage counter'),
-      'input-threshold': msg('Threshold'),
-      'input-stove-combustion-chamber': msg('Stove combustion chamber'),
-      'input-room-temperature': msg('Room temperature'),
-      'input-stove-pressure': msg('Stove pressure'),
-      'input-stove-fan-speed': msg('Stove fans speed'),
-      'input-stove-power-rendered': msg('Stove power rendered'),
-      'input-stove-power-consume': msg('Stove power consumed'),
-      'input-stove-status': msg('Stove status'),
-      'input-stove-time-to-service': msg('Stove time to service'),
-      'input-pellet-quantity': msg('Stove pellet quantity'),
-      'input-pellet-quantity-threshold': msg('Pellet quantity threshold'),
-      'input-daily-forecast-number': msg('Forecast number of days'),
-      'input-chart-first-focus-data': msg('First data targeted on the chart'),
-      'input-alert-green': msg('Green state'),
-      'input-alert-yellow': msg('Yellow state'),
-      'input-alert-orange': msg('Orange state'),
-      'input-alert-red': msg('Red state'),
-      'input-device': msg('Device'),
-      'input-energy': msg('Energy'),
-      'input-power': msg('Power'),
-      'input-map': msg('Map'),
-      'input-service': msg('Service to call'),
-      'input-segment': msg('Segment'),
-      'input-current-clean-area': msg('Current clean area'),
-      'input-current-clean-duration': msg('Current clean duration'),
-      'input-last-clean-area': msg('Last clean area'),
-      'input-last-clean-duration': msg('Last clean duration'),
-      'input-battery': msg('Battery'),
-      'input-mop-intensite': msg('Mop intensite'),
-      'input-command': msg('Command'),
-      // ── Action labels ─────────────────────────────────────────────────────
-      'action-add-tile': msg('Add tile'),
-      'action-add-custom-entity': msg('Add custom entity'),
-      'action-add-vehicle': msg('Add vehicle'),
-      'action-add-device': msg('Add device'),
-      'action-add-segment': msg('Add segment'),
-      'action-add-shortcut': msg('Add shortcut'),
-      'action-delete-shortcut': msg('Delete shortcut'),
-      'action-edit-shortcut': msg('Edit shortcut'),
-      // ── Entity labels ─────────────────────────────────────────────────────
-      'input-switch-entity': msg('Switch entity'),
-      'input-vacuum-entity': msg('Vacuum entity'),
-      // ── Status text ───────────────────────────────────────────────────────
-      'text-no-vacuum': msg('No vacuum configured.'),
-      // ── Bridge-specific keys ──────────────────────────────────────────────
-      'section-title-crew': msg('Crew'),
-      'section-title-alerts': msg('Alerts'),
-      'section-title-access': msg('Access'),
-      'section-title-automations': msg('Automations'),
-      'section-title-appliances': msg('Appliances'),
-      'section-title-stove': msg('Stove'),
-      'section-title-action': msg('Action'),
-      'section-title-actions': msg('Actions'),
-      'action-enable-section': msg('Enable section'),
-      'action-disable': msg('Disable'),
-      'action-remove': msg('Remove'),
-      'action-add-smoke': msg('Smoke'),
-      'action-add-toggle': msg('Toggle'),
-      'action-add-appliance': msg('Appliance'),
-      'action-add-consumable': msg('Consumable'),
-      'action-call-children': msg('Call children'),
-      'input-icon-section': msg('Section icon'),
-      'input-smoke-sensors': msg('Smoke sensors'),
-      'input-binary-sensor-entity': msg('binary_sensor entity'),
-      'input-icon-optional': msg('Icon (opt.)'),
-      'input-siren-switch': msg('Siren switch (optional)'),
-      'input-alert-toggles': msg('Alert toggles'),
-      'input-occupancy-entity': msg('Occupancy entity (opt.)'),
-      'input-cover-entity': msg('Cover entity'),
-      'input-lock-optional': msg('Lock (optional)'),
-      'input-input-button-entity': msg('input_button entity'),
-      'input-action-entity': msg('Entity (input_button / script / automation)'),
-      'input-color-optional': msg('Color (opt.)'),
-      'input-button-text': msg('Button text (opt.)'),
-      'input-type': msg('Type'),
-      'input-min': msg('Min'),
-      'input-max': msg('Max'),
-      'input-step': msg('Step'),
-      'input-unit': msg('Unit'),
-      'input-appliances': msg('Appliances'),
-      'input-consumables': msg('Consumables (optional)'),
-      'input-power-sensor': msg('Power sensor (W)'),
-      'input-pellet-qty-sensor': msg('Pellet quantity sensor'),
-      'input-status-sensor': msg('ON/OFF status sensor'),
-      'input-bag-counter': msg('Bag stock counter'),
-      'input-pellet-low-threshold': msg('Pellet low threshold (0.0–1.0)'),
-      'input-ok-when': msg('OK when'),
-    };
-    return (key in labels ? (labels)[key] : '') ?? '';
+    const labels: Record<string, string> = { ...sharedEditorLabels(), ...this.cardLabels };
+    return (key in labels ? labels[key] : '') ?? '';
   }
 
   /**
-   * Section icon map — matches the legacy sci-fi-icon usage per section title.
-   * Returns a TemplateResult with sf-icon + label for use inside <h1>.
+   * Section icon + label for use inside <h1>. Falls back to a neutral icon for
+   * a key neither the kernel nor the card declares.
    */
   getSectionTitle(key: string): TemplateResult {
-    const SECTION_ICONS: Record<string, string> = {
-      'section-title-header':              'mdi:page-layout-header',
-      'section-title-settings':            'mdi:tune-vertical-variant',
-      'section-title-vehicle':             'mdi:selection-ellipse-arrow-inside',
-      'section-title-state':               'mdi:state-machine',
-      'section-title-mode':                'mdi:state-machine',
-      'section-title-weather':             'mdi:theme-light-dark',
-      'section-title-chart':               'mdi:chart-bell-curve',
-      'section-title-alert':               'mdi:alert',
-      'section-title-tile':                'mdi:hexagon-slice-6',
-      'section-title-technical':           'mdi:cog-outline',
-      'section-title-home-selection':      'mdi:home-search-outline',
-      'section-title-appearance':          'mdi:palette-outline',
-      'section-title-entity':              'mdi:selection-ellipse-arrow-inside',
-      'section-title-entity-light-custom': 'mdi:selection-ellipse-arrow-inside',
-      'section-title-sensor':              'mdi:sine-wave',
-      'section-title-storage':             'mdi:archive-outline',
-      'section-title-plug':                'mdi:tune-vertical-variant',
-      'section-title-energy':              'mdi:flash-outline',
-      'section-title-other':               'mdi:dots-horizontal-circle-outline',
-      'section-title-monitoring':          'mdi:monitor-eye',
-      'section-title-config':              'mdi:selection-ellipse-arrow-inside',
-      'section-title-device':              'mdi:devices',
-      'section-title-visibility':          'mdi:eye-outline',
-      'section-title-default-actions':     'mdi:gesture-tap',
-      'section-title-custom-actions':      'mdi:gesture-tap-button',
-      'section-title-shortcuts':           'mdi:lightning-bolt-outline',
-      'section-title-segments':            'mdi:floor-plan',
-      'section-title-tv':                  'mdi:television',
-    };
-    const icon = SECTION_ICONS[key] ?? 'mdi:circle-small';
+    const icons: Record<string, string> = { ...SHARED_SECTION_ICONS, ...this.cardSectionIcons };
+    const icon = icons[key] ?? 'mdi:circle-small';
     return html`
       <sf-icon icon="${icon}" style="--icon-width:16px;--icon-height:16px;"></sf-icon>
       <span>${this.getLabel(key)}</span>
     `;
   }
+
 
   // ─── Sealed render ──────────────────────────────────────────────────────────
 

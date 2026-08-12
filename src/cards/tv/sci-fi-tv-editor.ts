@@ -7,7 +7,7 @@ import { html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
-import type { SciFiTVConfig } from '../../types/config.js';
+import type { SciFiTVConfig, SciFiTVCustomActions } from './config.js';
 import type { EditorHassEntity } from '../../components/editor-inputs/sf-editor-dropdown-entity.js';
 
 import '../../components/editor-inputs/sf-editor-input.js';
@@ -15,9 +15,24 @@ import '../../components/editor-inputs/sf-editor-dropdown-entity.js';
 import '../../components/editor-inputs/sf-editor-source-list.js';
 import '../../components/editor-inputs/sf-editor-action.js';
 import '../../components/editor-inputs/sf-editor-accordion.js';
+import { tvLabels, tvSectionIcons } from './labels.js';
+
+/** Remote buttons the user can bind a custom action to. */
+const TV_CUSTOM_ACTION_IDS = [
+  'power', 'home', 'menu', 'back', 'info',
+  'up', 'down', 'left', 'right', 'enter', 'volume_mute',
+] as const satisfies ReadonlyArray<keyof SciFiTVCustomActions>;
 
 @customElement('sci-fi-tv-editor')
 export class SciFiTVEditor extends SciFiBaseEditor {
+  protected override get cardLabels(): Record<string, string> {
+    return tvLabels();
+  }
+
+  protected override get cardSectionIcons(): Record<string, string> {
+    return tvSectionIcons();
+  }
+
   @state() private _mediaPlayers: EditorHassEntity[] = [];
   @state() private _remotes: EditorHassEntity[] = [];
 
@@ -106,7 +121,7 @@ export class SciFiTVEditor extends SciFiBaseEditor {
         <div class="container">
           <section>
             <h1>${this.getSectionTitle('section-title-tv') ?? 'Configuration TV'}</h1>
-            
+
             <!-- Entity selection (Required) -->
             <sf-editor-dropdown-entity
               element-id="entity"
@@ -118,87 +133,100 @@ export class SciFiTVEditor extends SciFiBaseEditor {
               @input-update="${this._handleDropdownUpdate}"
             ></sf-editor-dropdown-entity>
 
-            <!-- Settings Accordion -->
-            <sf-editor-accordion
-              .title=${this.getLabel('section-title-device-settings')}
-              element-id="device_settings"
-              icon="mdi:cog"
-            >
-              <sf-editor-input
-                element-id="name"
-                kind="spaceship-label"
-                .label=${this.getLabel('input-quadrant-name')}
-                icon="mdi:cursor-text"
-                .value="${config.name ?? ''}"
-                @input-update="${this._handleInputUpdate}"
-              ></sf-editor-input>
-
-              <sf-editor-dropdown-entity
-                element-id="volume_entity"
-                kind="media-player"
-                label="Entité Volume (Optionnel)"
-                icon="mdi:volume-high"
-                .value="${config.volume_entity ?? ''}"
-                .items="${this._mediaPlayers}"
-                @input-update="${this._handleDropdownUpdate}"
-              ></sf-editor-dropdown-entity>
-
-              <sf-editor-dropdown-entity
-                element-id="app_entity"
-                kind="media-player"
-                label="Entité Application (Optionnel)"
-                icon="mdi:cast"
-                .value="${config.app_entity ?? ''}"
-                .items="${this._mediaPlayers}"
-                @input-update="${this._handleDropdownUpdate}"
-              ></sf-editor-dropdown-entity>
-
-              <sf-editor-dropdown-entity
-                element-id="remote_entity"
-                kind="remote-device"
-                .label=${this.getLabel('input-remote-entity') + ' ' + this.getLabel('text-optional')}
-                icon="mdi:remote"
-                .value="${config.remote_entity ?? ''}"
-                .items="${this._remotes}"
-                @input-update="${this._handleDropdownUpdate}"
-              ></sf-editor-dropdown-entity>
-            </sf-editor-accordion>
-
-            <!-- Shortcuts Accordion (Sources) -->
-            <sf-editor-accordion
-              .title=${this.getLabel('section-title-media-sources') ?? 'Sources'}
-              element-id="shortcuts"
-              icon="mdi:link-variant"
-            >
-              <sf-editor-source-list
-                element-id="sources"
-                .label=${this.getLabel('input-media-sources')}
-                .hass="${this.hass}"
-                .values="${config.sources ?? []}"
-                @input-update="${this._handleSourceListUpdate}"
-              ></sf-editor-source-list>
-            </sf-editor-accordion>
-
-            <!-- Custom Actions Accordion -->
-            <sf-editor-accordion
-              title="Actions Personnalisées"
-              element-id="custom_actions"
-              icon="mdi:remote-tv"
-            >
-              ${['power', 'home', 'menu', 'back', 'info', 'up', 'down', 'left', 'right', 'enter', 'volume_mute'].map(actionId => html`
-                <sf-editor-action
-                  element-id="${actionId}"
-                  label="Bouton ${actionId}"
-                  .hass="${this.hass}"
-                  .value="${config.custom_actions?.[actionId as keyof typeof config.custom_actions]}"
-                  @input-update="${this._handleActionUpdate}"
-                ></sf-editor-action>
-              `)}
-            </sf-editor-accordion>
+            ${this._renderSettingsAccordion(config)}
+            ${this._renderSourcesAccordion(config)}
+            ${this._renderCustomActionsAccordion(config)}
 
           </section>
         </div>
       </div>
+    `;
+  }
+
+  private _renderSettingsAccordion(config: SciFiTVConfig): TemplateResult {
+    return html`
+      <sf-editor-accordion
+        .title=${this.getLabel('section-title-device-settings')}
+        element-id="device_settings"
+        icon="mdi:cog"
+      >
+        <sf-editor-input
+          element-id="name"
+          kind="spaceship-label"
+          .label=${this.getLabel('input-quadrant-name')}
+          icon="mdi:cursor-text"
+          .value="${config.name ?? ''}"
+          @input-update="${this._handleInputUpdate}"
+        ></sf-editor-input>
+
+        <sf-editor-dropdown-entity
+          element-id="volume_entity"
+          kind="media-player"
+          label="Entité Volume (Optionnel)"
+          icon="mdi:volume-high"
+          .value="${config.volume_entity ?? ''}"
+          .items="${this._mediaPlayers}"
+          @input-update="${this._handleDropdownUpdate}"
+        ></sf-editor-dropdown-entity>
+
+        <sf-editor-dropdown-entity
+          element-id="app_entity"
+          kind="media-player"
+          label="Entité Application (Optionnel)"
+          icon="mdi:cast"
+          .value="${config.app_entity ?? ''}"
+          .items="${this._mediaPlayers}"
+          @input-update="${this._handleDropdownUpdate}"
+        ></sf-editor-dropdown-entity>
+
+        <sf-editor-dropdown-entity
+          element-id="remote_entity"
+          kind="remote-device"
+          .label=${this.getLabel('input-remote-entity') + ' ' + this.getLabel('text-optional')}
+          icon="mdi:remote"
+          .value="${config.remote_entity ?? ''}"
+          .items="${this._remotes}"
+          @input-update="${this._handleDropdownUpdate}"
+        ></sf-editor-dropdown-entity>
+      </sf-editor-accordion>
+    `;
+  }
+
+  private _renderSourcesAccordion(config: SciFiTVConfig): TemplateResult {
+    return html`
+      <sf-editor-accordion
+        .title=${this.getLabel('section-title-media-sources') ?? 'Sources'}
+        element-id="shortcuts"
+        icon="mdi:link-variant"
+      >
+        <sf-editor-source-list
+          element-id="sources"
+          .label=${this.getLabel('input-media-sources')}
+          .hass="${this.hass}"
+          .values="${config.sources ?? []}"
+          @input-update="${this._handleSourceListUpdate}"
+        ></sf-editor-source-list>
+      </sf-editor-accordion>
+    `;
+  }
+
+  private _renderCustomActionsAccordion(config: SciFiTVConfig): TemplateResult {
+    return html`
+      <sf-editor-accordion
+        title="Actions Personnalisées"
+        element-id="custom_actions"
+        icon="mdi:remote-tv"
+      >
+        ${TV_CUSTOM_ACTION_IDS.map(actionId => html`
+          <sf-editor-action
+            element-id="${actionId}"
+            label="Bouton ${actionId}"
+            .hass="${this.hass}"
+            .value="${config.custom_actions?.[actionId]}"
+            @input-update="${this._handleActionUpdate}"
+          ></sf-editor-action>
+        `)}
+      </sf-editor-accordion>
     `;
   }
 }

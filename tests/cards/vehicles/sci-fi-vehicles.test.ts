@@ -25,7 +25,7 @@ import {
   VEHICLE_CHARGE_STATES_CHARGE_IN_PROGRESS,
   VEHICLE_PLUG_STATES_UNPLUGGED,
   VEHICLE_PLUG_STATES_PLUGGED,
-} from '../../../src/components/vehicle_const.js';
+} from '../../../src/cards/vehicles/vehicle_const.js';
 
 // vehicleStyles export
 import { vehicleStyles } from '../../../src/cards/vehicles/styles.js';

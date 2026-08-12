@@ -11,7 +11,7 @@
 | Feature ID | Description | Covered here |
 |---|---|---|
 | F-DOM-01 | HomeAssistantExt types | ✅ `src/types/ha.ts` |
-| F-DOM-02 | Configuration validation schemas | ✅ `src/types/config.ts` |
+| F-DOM-02 | Configuration validation schemas | ✅ `src/types/config.ts` — kernel only since ADR-017 (`SciFiBaseConfig`, `ActionConfig`, `assertString`, `assertDefined`, `isValidCardType`). Per-card config interfaces live in `src/cards/<card>/config.ts`. |
 | F-DOM-03 | Immutability on all domain structures | ✅ `src/types/ha.ts` |
 | F-DOM-04 | Immutability mapping helpers | ✅ `src/selectors/house.ts` |
 | F-DOM-05 | Immutability collection selectors | ✅ `src/selectors/climate.ts` |
@@ -26,7 +26,10 @@
 src/
 ├── types/
 │   ├── ha.ts                       [NEW] Home Assistant custom types
-│   └── config.ts                   [NEW] Lovelace Card YAML interfaces
+│   └── config.ts                   [NEW] Config KERNEL only — SciFiBaseConfig,
+│                                         ActionConfig, assert*/isValidCardType.
+│                                         Per-card interfaces: cards/<card>/config.ts
+│                                         (ADR-017)
 ├── selectors/
 │   ├── house.ts                    [NEW] Immutable area/floor selectors
 │   ├── climate.ts                  [NEW] Climate state selector functions
@@ -51,7 +54,8 @@ src/
 | Artefact | Consumer | Description |
 |---|---|---|
 | `types/ha.ts` | Spec 03-06 | Home Assistant Extended type definitions |
-| `types/config.ts` | Spec 05, 06 | YAML Card Config structures |
+| `types/config.ts` | Spec 05, 06 | Config kernel — base config shape, action config, type-guards (ADR-017) |
+| `cards/<card>/config.ts` | Spec 05, 10 | Per-card YAML Config structures, owned by the card |
 | `selectors/*.ts` | Spec 05 | Functional immutable domain state queries |
 | `tests/fixtures/mock-hass.ts` | Spec 03, 05, 06 | Mocked HASS extension fixture |
 

@@ -12,7 +12,7 @@ import { customElement } from 'lit/decorators.js';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import { bridgeStyles } from './styles.js';
-import type { SciFiBridgeConfig } from '../../types/config.js';
+import type { SciFiBridgeConfig } from './config.js';
 
 import './sections/sf-bridge-crew.js';
 import './sections/sf-bridge-alerts.js';

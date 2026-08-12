@@ -8,7 +8,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { localized, msg } from '@lit/localize';
 import { sciFiCommonStyles } from '../../../styles/common.js';
 import { bridgeStyles } from '../styles.js';
-import type { BridgeAutomationsConfig, BridgeAutomationEntry } from '../../../types/config.js';
+import type { BridgeAutomationsConfig, BridgeAutomationEntry } from '../config.js';
 import { bridgeToast } from '../bridge-toast.js';
 import '../../../components/sf-icon/sf-icon.js';
 

@@ -23,7 +23,7 @@ import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
 import type {
   SciFiLightsConfig,
-} from '../../types/config.js';
+} from './config.js';
 import type { InputUpdateDetail } from '../../components/editor-inputs/sf-editor-input.js';
 import type { EditorHassEntity } from '../../components/editor-inputs/sf-editor-dropdown-entity.js';
 import {
@@ -37,9 +37,18 @@ import '../../components/editor-inputs/sf-editor-dropdown-entity.js';
 import '../../components/editor-inputs/sf-editor-dropdown-icon.js';
 import '../../components/editor-inputs/sf-editor-multi-entity.js';
 import '../../components/buttons/sf-button.js';
+import { lightsLabels, lightsSectionIcons } from './labels.js';
 
 @customElement('sci-fi-lights-editor')
 export class SciFiLightsEditor extends SciFiBaseEditor {
+  protected override get cardLabels(): Record<string, string> {
+    return lightsLabels();
+  }
+
+  protected override get cardSectionIcons(): Record<string, string> {
+    return lightsSectionIcons();
+  }
+
   @state() private _floorItems: EditorHassEntity[] = [];
   @state() private _areaItems: EditorHassEntity[] = [];
   @state() private _lightEntities: EditorHassEntity[] = [];

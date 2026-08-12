@@ -15,7 +15,7 @@ import Chart from 'chart.js/auto';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import { plugStyles } from './styles.js';
-import type { SciFiPlugsConfig, SciFiPlugDevice, SciFiPlugSensorEntry } from '../../types/config.js';
+import type { SciFiPlugsConfig, SciFiPlugDevice, SciFiPlugSensorEntry } from './config.js';
 import {
   PLUG_STATE_ON,
   HASS_PLUG_SERVICE,

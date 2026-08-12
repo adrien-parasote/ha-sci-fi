@@ -4,7 +4,8 @@ import { repeat } from 'lit/directives/repeat.js';
 import { msg } from '@lit/localize';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
-import type { SciFiWaterManagementConfig } from '../../types/config.js';
+import { floorNavStyles } from '../../styles/floor-nav.js';
+import type { SciFiWaterManagementConfig } from './config.js';
 import type { HassFloor, HassEntityEntry } from '../../types/ha.js';
 import { fireHassAction } from '../../utils/action.js';
 import { getFloors, getAreasByFloor } from '../../selectors/house.js';
@@ -22,7 +23,9 @@ const DEFAULT_FLOOR_ICON = 'mdi:floor-plan';
 
 @customElement(TAG)
 export class SciFiWaterManagementCard extends SciFiBaseCard {
-  static override styles = [sciFiCommonStyles, waterStyles];
+  // floorNavStyles BEFORE waterStyles: the shared shell must be overridable by
+  // the card, never the other way round (ADR-017 step 8).
+  static override styles = [sciFiCommonStyles, floorNavStyles, waterStyles];
 
   @state() private _activeFloorId: string | null = null;
   @state() private _devices: Record<string, any> = {};
@@ -128,24 +131,23 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
   }
 
 
+  /**
+   * Domains that produce meaningful execution events for water management.
+   * sensor IS included: when switch/automation are excluded from recorder (a
+   * common config), power/energy sensors are the best proxy for device activity
+   * (e.g. water heater on/off).
+   */
+  private static readonly MEANINGFUL_DOMAINS = new Set([
+    'switch', 'valve', 'automation', 'binary_sensor', 'input_boolean', 'sensor',
+  ]);
+
   async _fetchHistoryLogs(): Promise<void> {
     // Clear old logs immediately to prevent stale state display while fetching or on floor switch
     this._rawLogs = [];
     this._historyLogs = [];
 
     if (!this.hass) {
-      // Local Development Sandbox Mock Mode
-      this._historyLogsLoading = true;
-      await new Promise(resolve => setTimeout(resolve, 500)); // Simulated network latency
-      
-      this._rawLogs = [
-        { name: 'Arrosage Jardin', entity_id: 'switch.arrosage_terrasse', state: 'off', when: new Date(Date.now() - 15 * 60 * 1000).toISOString() },
-        { name: 'Fuite Cuisine', entity_id: 'sensor.leak_kitchen', state: 'on', when: new Date(Date.now() - 45 * 60 * 1000).toISOString(), device_class: 'moisture' },
-        { name: 'Vanne Principale', entity_id: 'switch.arrosage_haie', state: 'unavailable', when: new Date(Date.now() - 2 * 3600 * 1000).toISOString() },
-        { name: 'Remplissage Cuve', entity_id: 'switch.arrosage_terrasse', state: 'on', when: new Date(Date.now() - 4 * 3600 * 1000).toISOString() }
-      ];
-      this._historyLogsLoading = false;
-      this._applyFiltersAndLimit();
+      await this._loadSandboxLogs();
       return;
     }
 
@@ -158,17 +160,14 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     const currentFetchId = this._fetchId;
     this._historyLogsLoading = true;
 
-    // Domains that produce meaningful execution events for water management.
-    // sensor IS included: when switch/automation are excluded from recorder (common config),
-    // power/energy sensors are the best proxy for device activity (e.g. water heater on/off).
-    const MEANINGFUL_DOMAINS = new Set(['switch', 'valve', 'automation', 'binary_sensor', 'input_boolean', 'sensor']);
-
     try {
       const startTime = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
       const callWS = (this.hass as any).callWS || this.hass.connection.sendMessagePromise.bind(this.hass.connection);
 
-      // Filter entityIds to only meaningful domains before querying
-      const queryIds = this.entityIds.filter(id => MEANINGFUL_DOMAINS.has((id.split('.')[0] as string)));
+      // Query only the domains that carry meaningful events.
+      const queryIds = this.entityIds.filter(
+        id => SciFiWaterManagementCard.MEANINGFUL_DOMAINS.has(id.split('.')[0] as string)
+      );
 
       if (queryIds.length === 0) {
         this._historyLogsLoading = false;
@@ -176,54 +175,12 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
         return;
       }
 
-      let logs: any[] = [];
-
+      let logs: any[];
       try {
-        // Primary: history/history_during_period (recorder DB — records all state changes).
-        // significant_changes_only=true avoids sensor noise: only meaningful threshold crossings
-        // are returned (e.g. water heater power: 5W standby → 2000W heating).
-        const result = await callWS({
-          type: 'history/history_during_period',
-          start_time: startTime,
-          entity_ids: queryIds,
-          no_attributes: true,
-          minimal_response: true,
-          significant_changes_only: true,
-        }) as Record<string, any[]>;
-
-        for (const [entityId, states] of Object.entries(result)) {
-          if (!Array.isArray(states)) continue;
-          const stateObj = this.hass.states[entityId];
-          const name = stateObj?.attributes?.friendly_name || entityId;
-          const deviceClass = stateObj?.attributes?.device_class;
-          for (const entry of states) {
-            // minimal_response uses 's' for state, 'lu' for last_updated (Unix float)
-            const state = entry.s ?? entry.state ?? '';
-            const when = entry.lu
-              ? new Date(entry.lu * 1000).toISOString()
-              : (entry.last_changed || entry.last_updated || '');
-            if (state && when) {
-              logs.push({ entity_id: entityId, state, when, name, device_class: deviceClass });
-            }
-          }
-        }
+        logs = await this._queryHistory(callWS, startTime, queryIds);
       } catch (histErr) {
-        // Fallback: logbook/get_events (older HA or if history API unavailable)
         console.warn('[SciWater] history API failed, falling back to logbook:', histErr);
-        const events = await callWS({
-          type: 'logbook/get_events',
-          start_time: startTime,
-          entity_ids: queryIds,
-        });
-        if (Array.isArray(events)) {
-          logs = events.map((e: any) => ({
-            entity_id: e.entity_id,
-            state: e.state,
-            when: e.when,
-            name: e.name || this.hass.states[e.entity_id]?.attributes?.friendly_name || e.entity_id,
-            device_class: e.device_class || this.hass.states[e.entity_id]?.attributes?.device_class,
-          }));
-        }
+        logs = await this._queryLogbook(callWS, startTime, queryIds);
       }
 
       if (this._fetchId !== currentFetchId) return; // Discard superseded response
@@ -237,6 +194,74 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
         this._applyFiltersAndLimit();
       }
     }
+  }
+
+  /** Local development sandbox: no hass, so serve a fixture after a fake latency. */
+  private async _loadSandboxLogs(): Promise<void> {
+    this._historyLogsLoading = true;
+    await new Promise(resolve => setTimeout(resolve, 500)); // Simulated network latency
+
+    this._rawLogs = [
+      { name: 'Arrosage Jardin', entity_id: 'switch.arrosage_terrasse', state: 'off', when: new Date(Date.now() - 15 * 60 * 1000).toISOString() },
+      { name: 'Fuite Cuisine', entity_id: 'sensor.leak_kitchen', state: 'on', when: new Date(Date.now() - 45 * 60 * 1000).toISOString(), device_class: 'moisture' },
+      { name: 'Vanne Principale', entity_id: 'switch.arrosage_haie', state: 'unavailable', when: new Date(Date.now() - 2 * 3600 * 1000).toISOString() },
+      { name: 'Remplissage Cuve', entity_id: 'switch.arrosage_terrasse', state: 'on', when: new Date(Date.now() - 4 * 3600 * 1000).toISOString() }
+    ];
+    this._historyLogsLoading = false;
+    this._applyFiltersAndLimit();
+  }
+
+  /**
+   * Primary source: history/history_during_period (recorder DB — records all
+   * state changes). significant_changes_only avoids sensor noise: only
+   * meaningful threshold crossings come back (e.g. water heater power:
+   * 5W standby -> 2000W heating).
+   */
+  private async _queryHistory(callWS: any, startTime: string, queryIds: string[]): Promise<any[]> {
+    const result = await callWS({
+      type: 'history/history_during_period',
+      start_time: startTime,
+      entity_ids: queryIds,
+      no_attributes: true,
+      minimal_response: true,
+      significant_changes_only: true,
+    }) as Record<string, any[]>;
+
+    const logs: any[] = [];
+    for (const [entityId, states] of Object.entries(result)) {
+      if (!Array.isArray(states)) continue;
+      const stateObj = this.hass.states[entityId];
+      const name = stateObj?.attributes?.friendly_name || entityId;
+      const deviceClass = stateObj?.attributes?.device_class;
+      for (const entry of states) {
+        // minimal_response uses 's' for state, 'lu' for last_updated (Unix float)
+        const state = entry.s ?? entry.state ?? '';
+        const when = entry.lu
+          ? new Date(entry.lu * 1000).toISOString()
+          : (entry.last_changed || entry.last_updated || '');
+        if (state && when) {
+          logs.push({ entity_id: entityId, state, when, name, device_class: deviceClass });
+        }
+      }
+    }
+    return logs;
+  }
+
+  /** Fallback for older HA, or when the history API is unavailable. */
+  private async _queryLogbook(callWS: any, startTime: string, queryIds: string[]): Promise<any[]> {
+    const events = await callWS({
+      type: 'logbook/get_events',
+      start_time: startTime,
+      entity_ids: queryIds,
+    });
+    if (!Array.isArray(events)) return [];
+    return events.map((e: any) => ({
+      entity_id: e.entity_id,
+      state: e.state,
+      when: e.when,
+      name: e.name || this.hass.states[e.entity_id]?.attributes?.friendly_name || e.entity_id,
+      device_class: e.device_class || this.hass.states[e.entity_id]?.attributes?.device_class,
+    }));
   }
 
   _applyFiltersAndLimit(): void {

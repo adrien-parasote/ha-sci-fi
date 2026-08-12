@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "ha_sci_fi",
+  "project_id": "fd8675ac-c07f-4235-b49d-9d1089d3602e"
+}

@@ -15,3 +15,20 @@ coverage/
 .env
 .env.local
 lint_output.txt
+
+# local tooling state (machine-local, never committed)
+.sc/*
+.sc-*
+.tdd_lock
+.specconformance
+.agents/
+# local tooling workspace (machine-specific paths — never commit)
+CLAUDE.md
+.sentrux/baseline.json
+.codegraph/
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
+.beads/proxieddb/

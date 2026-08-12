@@ -119,13 +119,13 @@ export class SciFiHexaHalfTile extends LitElement {
     sciFiCommonStyles,
     css`
       .hexa svg .border {
-        fill: var(--sf-bg-primary);
+        fill: var(--sf-bg-primary, #101626);
         stroke: var(--sf-border);
         stroke-width: 5px;
         stroke-linejoin: round;
       }
       .hexa svg .background {
-        fill: var(--sf-bg-primary);
+        fill: var(--sf-bg-primary, #101626);
         stroke-width: 4px;
         stroke: var(--sf-bg-secondary);
         stroke-opacity: 0.8;

@@ -44,7 +44,7 @@ export class SciFiCardButton extends SciFiButton {
         flex-direction: column;
       }
       .btn:hover {
-        background-color: var(--sf-bg-tertiary);
+        background-color: var(--sf-bg-tertiary, rgba(0, 210, 255, 0.1));
       }
       .btn .label {
         display: flex;

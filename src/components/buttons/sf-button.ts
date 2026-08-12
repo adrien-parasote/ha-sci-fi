@@ -49,7 +49,7 @@ export class SciFiButton extends LitElement {
         cursor: unset;
       }
       .btn-border:hover {
-        background-color: var(--sf-bg-tertiary);
+        background-color: var(--sf-bg-tertiary, rgba(0, 210, 255, 0.1));
       }
     `,
   ];

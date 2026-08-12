@@ -248,7 +248,7 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
           .value="${sc.icon ?? ''}"
           @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateShortcutField(vi, this._shortcutId!, 'icon', e.detail.value)}"
         ></sf-editor-dropdown-icon>
-        <h1 style="font-size:0.8rem;margin:8px 0 4px;color:var(--secondary-text-color)">${this.getLabel('section-title-segments')}</h1>
+        <h1 style="font-size:0.8rem;margin:8px 0 4px;color:var(--secondary-text-color, rgba(224, 232, 255, 0.6))">${this.getLabel('section-title-segments')}</h1>
         ${(sc.segments ?? []).map((seg, si) => html`
           <div class="row">
             <sf-editor-input
@@ -389,7 +389,7 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
 
           ${vacuums.length > 0
             ? this._renderVacuumPanel(vacuums[this._activeVacuum] ?? { entity: '' }, this._activeVacuum)
-            : html`<p style="color:var(--secondary-text-color);padding:12px">${this.getLabel('text-no-vacuum')}</p>`}
+            : html`<p style="color:var(--secondary-text-color, rgba(224, 232, 255, 0.6));padding:12px">${this.getLabel('text-no-vacuum')}</p>`}
         </div>
       </div>
     `;

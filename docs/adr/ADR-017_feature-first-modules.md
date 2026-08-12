@@ -193,6 +193,20 @@ problem, not a design-system problem.
 Net effect: `lights/styles.ts` 478 → 335, `water/styles.ts` 557 → 414, with 184
 shared lines declared once in `styles/floor-nav.ts`.
 
+The token half of C (step 9) shrank for the same reason. Of the **203 colour
+literals** in the card sheets, only **10** exactly equal an existing `--sf-*`
+token; those 10 were substituted. The other 193 are bespoke values with no token
+equivalent — `plugs` "bypassing the tokens" turned out to mean *it uses colours
+the design system does not define*. Giving them tokens is designing new palette
+entries, a product decision, not a refactor. Filed as follow-up.
+
+Substitution rule applied, and it matters: only tokens whose value is a **literal**
+(`--sf-border`, `--sf-bg-secondary`, `--sf-text-disabled`) were used. Tokens that
+chain to an HA theme variable — `--sf-primary: var(--primary-color, #00d2ff)`,
+`--sf-bg`, `--sf-text-primary`, `--sf-text-secondary` — were excluded: replacing
+a hardcoded colour with one of those makes the card follow the user's HA theme,
+which is a visible behaviour change and not this ADR's to make.
+
 ## Rollback plan
 
 Every step is one atomic commit on `refactor/sc-refactor`, a worktree branch that

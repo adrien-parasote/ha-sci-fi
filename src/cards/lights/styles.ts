@@ -40,8 +40,8 @@ export const lightStyles = css`
   .floor-content {
     display: flex;
     flex-direction: column;
-    border-bottom: 1px solid rgba(0,210,255,0.15);
-    border-top: 1px solid rgba(0,210,255,0.15);
+    border-bottom: 1px solid var(--sf-border);
+    border-top: 1px solid var(--sf-border);
     padding: 10px 0;
     margin: 0;
     background-color: rgba(13, 17, 23, 0.6);
@@ -179,7 +179,7 @@ export const lightStyles = css`
     --icon-width: 22px;
     --icon-height: 22px;
     /* Default: dim (no lights on) */
-    --icon-color: rgba(224,232,255,0.3);
+    --icon-color: var(--sf-text-disabled);
     display: block;
   }
   /* Active = icon bright (≥1 light on in area) */

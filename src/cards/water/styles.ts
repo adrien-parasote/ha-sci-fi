@@ -19,8 +19,8 @@ export const waterStyles = css`
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid rgba(0,210,255,0.15);
-    border-top: 1px solid rgba(0,210,255,0.15);
+    border-bottom: 1px solid var(--sf-border);
+    border-top: 1px solid var(--sf-border);
     padding: 10px 14px;
     margin: 0;
     background-color: rgba(13, 17, 23, 0.6);
@@ -78,7 +78,7 @@ export const waterStyles = css`
 
   .device-group {
     background: rgba(13, 17, 23, 0.4);
-    border: 1px solid rgba(0, 210, 255, 0.15);
+    border: 1px solid var(--sf-border);
     border-radius: 8px;
     padding: 12px;
     margin-bottom: 12px;
@@ -235,7 +235,7 @@ export const waterStyles = css`
     justify-content: space-between;
     align-items: center;
     margin-bottom: 12px;
-    border-bottom: 1px solid rgba(0, 210, 255, 0.15);
+    border-bottom: 1px solid var(--sf-border);
     padding-bottom: 6px;
   }
 

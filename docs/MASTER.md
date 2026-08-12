@@ -87,7 +87,7 @@ Release (see docs/release-process.md)
 | Spec 01 | Spec 02-11 | `tsconfig.json`, `package.json`, test runner |
 | Spec 02 | Spec 03, 04, 05 | `types/ha.ts`, `types/config.ts`, `selectors/*.ts` |
 | Spec 03 | Spec 04, 05 | `SciFiBaseCard`, `SciFiBaseEditor`, shared styles |
-| Spec 04 | Spec 05 | `sf-icon`, `sf-radiator` (4 components), `sf-toggle-switch`, etc. |
+| Spec 04 | Spec 05 | `sf-icon`, `sf-toggle-switch`, `sf-wheel`, `editor-inputs/`, etc. (`sf-radiator` moved to `cards/climates/` — ADR-017) |
 | Spec 05 | Spec 06 | 11 cards auto-registered via `customElements.define` (HMR-safe guard in `sci-fi.ts`) |
 | Spec 06 | HA Dashboard | `dist/sci-fi.min.js` |
 

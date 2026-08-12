@@ -207,6 +207,48 @@ chain to an HA theme variable — `--sf-primary: var(--primary-color, #00d2ff)`,
 a hardcoded colour with one of those makes the card follow the user's HA theme,
 which is a visible behaviour change and not this ADR's to make.
 
+## Outcome (measured after step 10)
+
+| Signal | Before (`f1a949b`) | After | |
+|---|---|---|---|
+| quality_signal | 0.6388 | **0.6545** | floor 0.60 |
+| modularity (the bottleneck) | 0.156 | **0.227** | +45 % |
+| cross-module import edges | 415 / 507 (82 %) | **406 / 545 (75 %)** | |
+| propagation cost | 345 | **317** | |
+| redundancy | 0.112 | **0.103** | |
+| cycles | 0 | 0 | |
+| `check_rules` `max_cc` | 1 violation (cc=32) | **0** | |
+| `check_rules` `max_fn_lines` in `src/` | 9 violations | **0** | |
+| tests | 91 files / 1019 | 92 files / 1031 | all green |
+| `tsc --noEmit`, `eslint`, `npm run build` | clean | clean | 0 errors |
+
+`types/config.ts` 436 → 51 lines. `base-editor.ts` 347 → 214, `getLabel()`
+189 → 4. `sf-landspeeder.ts` 925 → 518. `sci-fi-tv.ts:renderCard` 261 → 27.
+
+Two `check_rules` violations remain and are intentional:
+- `dev/modules/icon-browser.js` (198 lines) and `dev/modules/mock-hass.js` (117)
+  — the workbench, plain JS, never shipped in the bundle. Either fix them in
+  their own pass or exclude `dev/**` in `rules.toml`.
+- `src/sci-fi.ts` fan-out 28 — barrel + registry, see Context.
+
+## Follow-ups filed by this ADR
+
+1. Split `sf-radiator` into the 4 sub-components spec 04 § F-COMP-02 has claimed
+   since day one but which were never written.
+2. `vacuum-editor` builds `input-${f.replace('_','-')}`, which replaces only the
+   first underscore: `current_clean_area` → `input-current-clean_area`, a key
+   that does not exist. Two sensor fields render an empty label.
+3. Six unreachable label keys: `input-last-clean-area`,
+   `input-last-clean-duration`, `input-device`, `action-call-children`,
+   `input-input-button-entity`, `input-button-text`.
+4. 193 colour literals in the card sheets match no `--sf-*` token. Extending the
+   palette to cover them is a design decision, not a refactor.
+5. Decide whether `--sf-primary` and the other theme-chained tokens should
+   replace hardcoded colours — that makes cards follow the user's HA theme, a
+   visible product change.
+6. `.claude/` is not in `.gitignore`; a worktree created under
+   `.claude/worktrees/` shows up as untracked in the main checkout.
+
 ## Rollback plan
 
 Every step is one atomic commit on `refactor/sc-refactor`, a worktree branch that

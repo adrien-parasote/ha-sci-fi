@@ -1,4 +1,4 @@
-<!-- Generated: 2026-06-02 | Files scanned: ~110 | Token estimate: ~580 -->
+<!-- Generated: 2026-06-02 | Updated: 2026-08-12 (ADR-017 feature-first modules) | Files scanned: ~120 | Token estimate: ~700 -->
 
 # Home Assistant Sci-Fi Cards — Architecture v2
 
@@ -6,14 +6,14 @@
 
 | Layer | Path | Responsibility |
 |---|---|---|
-| Cards | `src/cards/` | 11 Lovelace custom cards — extend `SciFiBaseCard` (bridge, climates, hexa-tiles, lights, plugs, stove, tv, vacuum, vehicles, water, weather) |
-| Components | `src/components/` | Reusable UI elements (`sf-icon`, `sf-toggle-switch`, `sf-button*`, `editor-inputs/`) |
+| Cards | `src/cards/` | 11 Lovelace custom cards — extend `SciFiBaseCard` (bridge, climates, hexa-tiles, lights, plugs, stove, tv, vacuum, vehicles, water, weather). Since ADR-017 a card also owns its config types, its editor labels, and any component only it consumes |
+| Components | `src/components/` | Reusable UI elements (`sf-icon`, `sf-toggle-switch`, `sf-button*`, `sf-wheel`, `editor-inputs/`). **Two or more consumers required** — single-consumer components belong to their card |
 | Selectors | `src/selectors/` | Pure HA state extraction helpers — no mutations |
 | Utils | `src/utils/` | `base-card.ts`, `base-editor.ts`, `action.ts`, `toast.ts` — Lit lifecycle base classes |
 | Locales | `src/locales/` | `@lit/localize` runtime i18n — `localization.ts` (setLocale/getLocale) + `locales/fr.ts` (FR translations) |
-| Types | `src/types/` | TypeScript interfaces (`config.ts` — all card configs, `ha.ts` — HA entity types) |
-| Styles | `src/styles/` | `common.ts` — shared CSS custom properties (`--sf-*` tokens). `editor-common.ts` — shared editor layout |
-| Entry | `src/sci-fi.ts` | Bundle entry — registers all 11 `customCards` + `customElements` (HMR-safe define guard) |
+| Types | `src/types/` | `config.ts` — config **kernel** only (`SciFiBaseConfig`, `ActionConfig`, type-guards); `ha.ts` — HA entity types. Per-card config: `cards/<card>/config.ts` |
+| Styles | `src/styles/` | `common.ts` — shared CSS custom properties (`--sf-*` tokens). `editor-common.ts` — shared editor layout. `floor-nav.ts` — hexagonal floor-navigation shell shared by lights + water |
+| Entry | `src/sci-fi.ts` | Bundle entry — registers all 11 `customCards` + `customElements` (HMR-safe define guard). Reported as a "god file" by sentrux (fan-out 28); that is intrinsic to a barrel + registry, not a defect |
 | Dev Workbench | `dev/` | Local UI test environment — modular ES modules, mock + live HA data |
 
 ## Key Files
@@ -22,7 +22,11 @@
 |---|---|
 | `src/sci-fi.ts` | Main entry — registers all cards in `window.customCards`. HMR protection patch prevents duplicate `customElements.define` crashes |
 | `src/utils/base-card.ts` | `SciFiBaseCard` (156 lines) — error boundary, `hass` guard, lifecycle |
-| `src/utils/base-editor.ts` | `SciFiBaseEditor` (304 lines) — `_dispatchChange()`, `getLabel()` i18n dict, `setConfig()` pattern |
+| `src/utils/base-editor.ts` | `SciFiBaseEditor` (214 lines) — `_dispatchChange()`, `setConfig()` pattern, and the label lookup **mechanism**: `getLabel()` merges `sharedEditorLabels()` with the card's own `cardLabels` (ADR-017) |
+| `src/cards/<card>/config.ts` | That card's YAML config interfaces (ADR-017) |
+| `src/cards/<card>/labels.ts` | That card's editor label dictionary + section icons (ADR-017) |
+| `src/styles/floor-nav.ts` | Floor-navigation shell shared by lights + water — must be listed BEFORE the card sheet in `static styles` |
+| `tests/styles/card-css-baseline.test.ts` | Locks all 11 cards' resolved CSS against a baseline; the only mechanical guard the stylesheets have. Regenerate with `UPDATE_CSS_BASELINE=1` only for an intended visual change |
 | `src/utils/toast.ts` | `showToast(msg, type)` — module-level active-toast dedup, auto-dismiss 1.8s |
 | `src/components/sf-icon/sf-icon.ts` | MDI icon renderer — `willUpdate()` + 3-tier cache (mem→idb→HA) |
 | `src/components/sf-icon/icon-cache.ts` | `resolveIcon()` — memory Map + idb-keyval + HA native registry |
@@ -40,9 +44,20 @@ src/cards/<card>/
   sci-fi-<card>.ts        ← card logic (extends SciFiBaseCard)
   sci-fi-<card>-editor.ts ← config editor (extends SciFiBaseEditor)
   styles.ts               ← css`` tagged template (imported by card)
+  config.ts               ← this card's config interfaces        (ADR-017)
+  labels.ts               ← this card's editor labels + icons    (ADR-017)
   <card>_const.ts         ← constants/type guards (optional)
+  <private components>.ts ← components only this card uses       (ADR-017)
   sections/               ← sub-components (bridge only)
 ```
+
+Card-private components, after ADR-017:
+
+| Card | Files |
+|---|---|
+| `vehicles/` | `sf-landspeeder.ts`, `landspeeder-svg.ts`, `vehicle_const.ts` |
+| `climates/` | `sf-radiator.ts`, `radiator-svg.ts` |
+| `stove/` | `sf-stove-image.ts` |
 
 ## Bridge Card — Sections (new in v1.3)
 
@@ -99,8 +114,8 @@ Dynamic icon values **require** Lit property binding (`.icon=`), not attribute b
 
 ## Test Coverage
 
-- **87 test files / 954 tests** — all GREEN
-- Global: Lines 86.3% | Branches 75.49% | Functions 82.62% | Statements 87.95%
+- **92 test files / 1031 tests** — all GREEN
+- Global: Lines 88.6% | Branches 75.48% | Functions 85.82% | Statements 87%
 - Thresholds: lines/statements/functions ≥ 80%, branches ≥ 75%
 - `tsconfig.json` has `noUncheckedIndexedAccess: true` — array accesses use `!` non-null assertion
 - Canvas API mocked globally in `tests/setup.ts`

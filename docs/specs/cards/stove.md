@@ -489,6 +489,7 @@ No changes. CSS classes `.sensor-tile`, `.sensor-tile.warn`, `.bar-bg`, `.bar-fi
 | TC-1105 | Unit | `friendly_name` appears in header info | `attributes.friendly_name: 'Poêle Salon'` | textContent includes `'Poêle Salon'` |
 | TC-1111 | Unit | Error message when entity not found | `entity: 'climate.missing'`, hass empty | textContent includes `'Entité poêle non trouvée'` |
 | TC-1113 | Unit | `styles.ts` exports `stoveStyles` as a Lit CSSResult | Import check | `typeof stoveStyles === 'object'` with `cssText` property |
+| TC-1114 | Unit | Le repli de libellé d'un statut absent de `STATUS_LABELS` remplace **tous** les underscores | `sensor_status: 'some_unknown_state'` | `.stove-status` = `some unknown state` (et non `some unknown_state`) |
 | IT-1101 | Integration | `sci-fi-stove` registers correctly in `customElements` | Load 'sci-fi.min.js' | `customElements.get('sci-fi-stove')` returns the class |
 | IT-1102 | Integration | Rend l'en-tête, le panneau info et la ligne de statut depuis un hass réel | Mount `state: 'heat'`, `sensor_status: 'combustion'`, pellets + stock | `.header` porte le `friendly_name`, `.content .info`, `sf-stove-image`, `sf-circle-progress-bar`, `sf-stack-bar` et `.stove-status` présents |
 | IT-1103 | Integration | `styles.ts` imported — no inline `css\`\`` block remains in `sci-fi-stove.ts` | Grep source file | 'grep -c 'css\'' sci-fi-stove.ts` returns 0 |

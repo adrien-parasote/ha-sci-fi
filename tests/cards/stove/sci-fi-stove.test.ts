@@ -616,6 +616,15 @@ describe('sci-fi-stove', () => {
     expect(row!.querySelector('.stove-status')!.textContent?.trim()).to.equal('off');
   });
 
+  it('TC-1114: unknown status falls back to a label with every underscore replaced', async () => {
+    const el = makeStoveWithStatus('some_unknown_state');
+    document.body.appendChild(el);
+    await el.updateComplete;
+    const row = el.shadowRoot!.querySelector('.status.off');
+    expect(row).not.to.be.null;
+    expect(row!.querySelector('.stove-status')!.textContent?.trim()).to.equal('some unknown state');
+  });
+
   // ── Registration + styles provenance ──────────────────────────────────────
 
   it('IT-1101: registers sci-fi-stove in customElements', () => {

@@ -229,7 +229,7 @@ export class SciFiStoveCard extends SciFiBaseCard {
   private _renderStatus(text: string, status: string | undefined): TemplateResult {
     const resolved = status ?? 'N/A';
     const meta = STATUS_ICONS[resolved] ?? { icon: 'sci:stove-unknow', color: 'off' };
-    const label = STATUS_LABELS[resolved] ?? resolved.replace('_', ' ');
+    const label = STATUS_LABELS[resolved] ?? resolved.replaceAll('_', ' ');
     return html`
       <div class="status ${meta.color}">
         <sf-icon icon="${meta.icon}" .connection="${this.hass.connection}"></sf-icon>

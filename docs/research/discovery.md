@@ -181,7 +181,7 @@ Source: HA Developer Docs, Custom Cards Boilerplate, community consensus.
 | **Upgrade Rollup 2 → 4** | Update config + add `@rollup/plugin-typescript` |
 | **Fix immutability** | `house.js` entity mutation, config mutation in validator |
 | **Fix critical bugs** | `lenght` typo, loose `==` comparisons |
-| **Split large files** | `sf-radiator.js` (533 lines) → extract sub-components |
+| **Split large files** | `sf-radiator.js` (533 lines) → extract sub-components — *superseded: the split was rejected in v1.x, see [Spec 04 § `sf-radiator` — one element on purpose](../specs/04_components.md#sf-radiator--one-element-on-purpose)* |
 | **Replace `unsafeHTML`** | Use `repeat()` directive |
 | **Clean build pipeline** | Replace `const.js.PROD` swap with rollup replace plugin |
 | **Replace `es-dev-server`** | Switch to `@web/dev-server` |

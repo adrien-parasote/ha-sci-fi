@@ -91,6 +91,11 @@ Explicitly OUT OF SCOPE:
 - Splitting `sf-radiator` into the 4 sub-components that spec 04 § F-COMP-02
   already claims exist. That claim is stale (the code is one 554-line file); this
   ADR corrects the spec to match reality and files the split as follow-up.
+  > **Resolved 2026-08-12 (`ha-sci-fi-bjo`): the split was rejected, not
+  > performed.** The single element is now the specified form — no complexity
+  > signal asks for a split, and four extra card-private custom elements would
+  > reintroduce exactly the coupling this ADR removed. See
+  > [Spec 04 § `sf-radiator` — one element on purpose](../specs/04_components.md#sf-radiator--one-element-on-purpose).
 
 ## Options considered
 
@@ -238,7 +243,6 @@ a second source of truth. `bd show <id>` for the detail.
 
 | Bead | What | Prio |
 |---|---|---|
-| `ha-sci-fi-bjo` | Split `sf-radiator` into the 4 sub-components spec 04 § F-COMP-02 has claimed since day one but which were never written | 2 |
 | `ha-sci-fi-63z` | 193 colour literals match no `--sf-*` token — extend the palette, and decide separately whether the theme-chained tokens (`--sf-primary`, `--sf-bg`, `--sf-text-*`) should replace hardcoded colours, which makes cards follow the user's HA theme | 2 |
 | `ha-sci-fi-wrf` | `check_rules`: 2 workbench functions over `max_fn_lines`, plus the `src/sci-fi.ts` fan-out false positive — fix or exclude `dev/**` in `rules.toml` | 3 |
 | `ha-sci-fi-ouf` | Six unreachable label keys left in `sharedEditorLabels()` | 3 |
@@ -246,6 +250,13 @@ a second source of truth. `bd show <id>` for the detail.
 
 Closed since:
 
+- ~~`ha-sci-fi-bjo` — split `sf-radiator` into the 4 sub-components spec 04
+  § F-COMP-02 has claimed since day one but which were never written.~~
+  **CLOSED — split rejected.** The file carries no complexity signal
+  (`check_rules` green on `max_fn_lines` / `max_cc`), the only multi-consumer
+  widget is already extracted as `sf-wheel`, and four extra card-private custom
+  elements would work against this ADR's own co-location decision. Spec 04
+  § F-COMP-02 now specifies the single element as the intended form.
 - ~~`vacuum-editor` builds `input-${f.replace('_','-')}`, which replaces only the
   first underscore, so two sensor fields rendered an empty label.~~ **DONE**
   (`85da36f`) — `replaceAll` plus TC-1016 asserting every vacuum-sensor input

@@ -11,7 +11,7 @@
 | Feature ID | Description | Covered here |
 |---|---|---|
 | F-COMP-01 | `sf-icon` — cache encapsulé | ✅ `sf-icon.ts` + `icon-cache.ts` |
-| F-COMP-02 | `sf-radiator` → 4 sub-composants | ⚠️ **NOT IMPLEMENTED** — `sf-radiator` is a single 554-line file, never split. Relocated to `src/cards/climates/` by ADR-017 (single consumer); the 4-way split is filed as follow-up, out of ADR-017 scope. |
+| F-COMP-02 | `sf-radiator` — one card-private Lit element | ✅ `src/cards/climates/sf-radiator.ts` — a single `@customElement`, deliberately kept whole (see [§ `sf-radiator` — one element on purpose](#sf-radiator--one-element-on-purpose)). Relocated out of `src/components/` by ADR-017 (single consumer). |
 | F-COMP-03 | Shared components migrated TypeScript | ✅ `sf-accordion`, `sf-tabs`, `sf-toggle-switch` |
 | F-COMP-04 | Iconset custom fallback | ✅ `sf-icon.ts` fallback |
 | F-COMP-05 | `sci-icon` public element | ✅ `sci-icon.ts` — global `<sci-icon>` usable in any HA card |
@@ -68,6 +68,36 @@ Relocated by ADR-017 (single-consumer components):
 | `vehicle_const.ts` | `src/components/` | `src/cards/vehicles/` | vehicles card |
 | `sf-radiator.ts` | `src/components/` | `src/cards/climates/` | climates card |
 | `sf-stove-image.ts` | `src/components/` | `src/cards/stove/` | stove card |
+
+### `sf-radiator` — one element on purpose
+
+Earlier revisions of this spec announced `sf-radiator` as four sub-components
+living in an `sf-radiator/` directory. That directory was never created and
+those four elements were never written: the line described an intention, not a
+structure that was later lost. The shipped and specified form is **one Lit
+element in one file** — `src/cards/climates/sf-radiator.ts`, with its inline SVG
+asset already carved off into `radiator-svg.ts` by ADR-017 step 7.
+
+Why it stays whole:
+
+- **Nothing in the file is complaining.** 427 lines, of which ~128 are the
+  `static styles` CSS block. The eleven members are small — the longest,
+  `__select`, is 48 lines against a `max_fn_lines` ceiling of 100, and
+  `check_rules` reports no `max_fn_lines` or `max_cc` violation here. Splitting
+  would be a reaction to a line count, not to a measured complexity signal.
+- **It would undo ADR-017.** Four extra custom elements mean four shadow roots,
+  four tag registrations and four import edges — for widgets whose only consumer
+  is the radiator itself. Co-locating single-consumer artefacts with their card
+  is precisely the coupling ADR-017 removed; re-splitting a card-private
+  component into more card-private components contradicts that decision.
+- **The genuinely reusable widget is already out.** The temperature selector is
+  `sf-wheel` in `src/components/`, shared with stove and vehicles. What remains
+  in `sf-radiator` is climate-specific glue: preset/HVAC option building, label
+  mapping and the three `change-*` events. None of it has a second consumer.
+
+Sub-components are the right answer when a widget earns a second consumer, or
+when a method stops fitting in a screen. Neither is true here; the split is not
+deferred work, it is a rejected option.
 
 ---
 
@@ -146,7 +176,7 @@ Relocated by ADR-017 (single-consumer components):
 | TC-401 | Unit | sf-icon checks customIcons first | Custom icon request | Renders custom path from window |
 | TC-402 | Unit | sf-icon checks native MDI next | MDI icon request | Renders native path from database |
 | TC-403 | Unit | icon-cache saves icons successfully | Fetch and cache request | Stores SVG in idb-keyval cache |
-| TC-404 | Unit | sf-radiator compiles correctly | Active climate configuration | Renders nested radiator elements — **moved to Spec 05 § Climates** (component relocated by ADR-017); test lives in `tests/cards/climates/sf-radiator.test.ts` |
+| TC-404 | Unit | sf-radiator compiles correctly | Active climate configuration | Renders the radiator SVG, one `sf-wheel` and the two `sf-button-card-select` — **moved to Spec 05 § Climates** (component relocated by ADR-017); test lives in `tests/cards/climates/sf-radiator.test.ts` |
 | TC-405 | Unit | sf-toggle-switch dispatch events | Click active element | Dispatches custom change event |
 | TC-406 | Unit | sci-icon mirrors sf-icon API | sci: / sf: / mdi: icon | Renders correctly for each prefix |
 | TC-407 | Unit | getIconList() returns all sci: icons | Call getIconList() | Returns array with name for each registered icon |

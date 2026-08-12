@@ -144,7 +144,7 @@ export const hexaTilesStyles = css`
   }
   .hexa-half svg polygon {
     fill: var(--sf-tile-inactive-bg, rgba(16, 22, 38, 0.6));
-    stroke: var(--sf-border, rgba(224, 232, 255, 0.1));
+    stroke: var(--sf-border, rgba(0, 210, 255, 0.15));
     stroke-width: 1.5px;
   }
 
@@ -176,7 +176,7 @@ export const hexaTilesStyles = css`
     fill: var(--sf-tile-inactive-bg, rgba(16, 22, 38, 0.6));
   }
   .hexa-tile[data-active="false"] .hexa-border {
-    stroke: var(--sf-border, rgba(224, 232, 255, 0.1));
+    stroke: var(--sf-border, rgba(0, 210, 255, 0.15));
     stroke-width: 1.5px;
   }
 

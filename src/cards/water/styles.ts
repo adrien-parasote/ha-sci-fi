@@ -185,7 +185,7 @@ export const waterStyles = css`
   
   select.sf-select {
     background: rgba(0, 0, 0, 0.5);
-    color: var(--sf-color-cyan, #00d2ff);
+    color: var(--sf-primary, #00d2ff);
     border: 1px solid rgba(0, 210, 255, 0.3);
     border-radius: 4px;
     padding: 4px 8px;

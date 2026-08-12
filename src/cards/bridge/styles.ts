@@ -49,7 +49,7 @@ export const bridgeStyles = css`
     /* Restaurer le style individuel des sections (bord-radius, border) */
     .bridge-section {
       border-radius: var(--sf-radius, 8px);
-      border: 1px solid var(--sf-border, rgba(0,210,255,0.2));
+      border: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
     }
 
     /* Sections full-width : couvrent les 2 colonnes + espace au-dessus */
@@ -67,7 +67,7 @@ export const bridgeStyles = css`
   /* Section card style */
   .bridge-section {
     background: var(--sf-bg-secondary, rgba(255,255,255,0.04));
-    border: 1px solid var(--sf-border, rgba(0,210,255,0.2));
+    border: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
     border-radius: var(--sf-radius, 8px);
     padding: var(--sf-spacing-md, 12px);
   }
@@ -81,7 +81,7 @@ export const bridgeStyles = css`
     color: var(--sf-glow-cyan, hsl(190, 100%, 50%));
     text-shadow: 0 0 6px var(--sf-glow-cyan, hsl(190, 100%, 50%));
     padding: var(--sf-spacing-md, 12px) var(--sf-spacing-md, 12px) 0;
-    border-bottom: 1px solid var(--sf-border, rgba(0,210,255,0.15));
+    border-bottom: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
     padding-bottom: var(--sf-spacing-sm, 8px);
     margin-bottom: 0;
   }
@@ -98,7 +98,7 @@ export const bridgeStyles = css`
     color: var(--sf-primary, #00d2ff);
     padding-bottom: var(--sf-spacing-xs, 6px);
     margin-bottom: var(--sf-spacing-sm, 8px);
-    border-bottom: 1px solid var(--sf-border, rgba(0,210,255,0.15));
+    border-bottom: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
   }
 
   /* ── Crew — halo glow + icône colorée (like hexa tile) ——— */
@@ -198,7 +198,7 @@ export const bridgeStyles = css`
     gap: 4px;
     padding: 4px 8px;
     border-radius: var(--sf-radius, 6px);
-    border: 1px solid var(--sf-border, rgba(0,210,255,0.2));
+    border: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
     font-size: 0.75rem;
   }
 
@@ -259,7 +259,7 @@ export const bridgeStyles = css`
     align-items: center;
     gap: 8px;
     padding: 6px 0;
-    border-bottom: 1px solid var(--sf-border, rgba(255,255,255,0.06));
+    border-bottom: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
   }
 
   .access-entry:last-child { border-bottom: none; }
@@ -278,7 +278,7 @@ export const bridgeStyles = css`
     height: 36px;
     border-radius: var(--sf-radius, 8px);
     background: var(--sf-bg-secondary, rgba(255,255,255,0.06));
-    border: 1px solid var(--sf-border, rgba(0,210,255,0.15));
+    border: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -330,7 +330,7 @@ export const bridgeStyles = css`
   /* Access action buttons — larger for touch (screen 3) */
   .access-btn {
     background: transparent;
-    border: 1px solid var(--sf-border, rgba(0,210,255,0.3));
+    border: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
     border-radius: var(--sf-radius, 6px);
     padding: 8px;
     cursor: pointer;
@@ -371,7 +371,7 @@ export const bridgeStyles = css`
     align-items: center;
     gap: 8px;
     padding: 4px 0;
-    border-bottom: 1px solid var(--sf-border, rgba(255,255,255,0.04));
+    border-bottom: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
   }
 
   .auto-row:last-child { border-bottom: none; }
@@ -402,7 +402,7 @@ export const bridgeStyles = css`
     height: 20px;
     border-radius: 10px;
     background: var(--sf-bg-secondary, rgba(255,255,255,0.1));
-    border: 1.5px solid var(--sf-border, rgba(255,255,255,0.2));
+    border: 1.5px solid var(--sf-border, rgba(0, 210, 255, 0.15));
     transition: background 0.2s, border-color 0.2s;
     position: relative;
     display: flex;
@@ -434,7 +434,7 @@ export const bridgeStyles = css`
     flex-direction: column;
     gap: 4px;
     padding: 4px 0;
-    border-bottom: 1px solid var(--sf-border, rgba(255,255,255,0.04));
+    border-bottom: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
   }
 
   .slider-row:last-child { border-bottom: none; }
@@ -484,7 +484,7 @@ export const bridgeStyles = css`
     height: 64px;
     border-radius: var(--sf-radius, 8px);
     background: var(--sf-bg-secondary, rgba(255,255,255,0.06));
-    border: 1.5px solid var(--sf-border, rgba(0,210,255,0.18));
+    border: 1.5px solid var(--sf-border, rgba(0, 210, 255, 0.15));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -652,7 +652,7 @@ export const bridgeStyles = css`
     color: var(--sf-text-disabled, #555);
     padding: 1px 8px;
     border-radius: 999px;
-    border: 1px solid var(--sf-border, rgba(255,255,255,0.1));
+    border: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
     align-self: flex-start;
   }
 

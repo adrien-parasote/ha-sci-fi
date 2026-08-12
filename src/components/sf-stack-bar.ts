@@ -23,7 +23,7 @@ export class SciFiStackBar extends LitElement {
         display: flex;
         flex-direction: column;
         gap: 5px;
-        color: var(--secondary-bg-color, rgba(224, 232, 255, 0.6));
+        color: var(--sf-text-secondary, rgba(224, 232, 255, 0.6));
         font-size: var(--sf-text-sm, 12px);
         background: transparent;
       }

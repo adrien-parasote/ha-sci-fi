@@ -19,7 +19,7 @@ export class SciFiHexaTile extends LitElement {
     sciFiCommonStyles,
     css`
       :host {
-        --custom-border: var(--sf-hexa-border, var(--sf-border, rgba(224, 232, 255, 0.1)));
+        --custom-border: var(--sf-hexa-border, var(--sf-border, rgba(0, 210, 255, 0.15)));
       }
       .hexa {
         width: var(--sf-hexa-width, 100px);

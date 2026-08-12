@@ -35,7 +35,7 @@
 > 5. [guidelines.md](./guidelines.md) — complete card development and urbanization guide
 > 6. [release-process.md](./release-process.md) — release process (versioning, build, tag, draft release, wiki)
 > 7. [`.agents/learnings.md`](../.agents/learnings.md) — 85 project-specific learnings (L012-L085 + L086+)
-> 8. [`docs/adr/`](./adr/) — 15 Architectural Decision Records (ADR-001 to ADR-015)
+> 8. [`docs/adr/`](./adr/) — 18 Architectural Decision Records (ADR-001 to ADR-018)
 
 ---
 
@@ -127,6 +127,9 @@ Before launching BUILD, verify:
 | ADR-013 | Container queries for bridge responsive layout | ✅ Accepted — see [ADR-013](./adr/ADR-013_container-queries.md) |
 | ADR-014 | CREW + ACTIONS sections always full width | ✅ Accepted — see [ADR-014](./adr/ADR-014_crew-actions-fullwidth.md) |
 | ADR-015 | Persons loaded dynamically from hass.states | ✅ Accepted — see [ADR-015](./adr/ADR-015_persons-dynamic.md) |
+| ADR-016 | Bridge 2-column layout uses column flow, not row grid | ✅ Accepted — see [ADR-016](./adr/ADR-016_bridge-column-flow.md) |
+| ADR-017 | Feature-first modules — cards own their config, labels and exclusive components | ✅ Accepted — see [ADR-017](./adr/ADR-017_feature-first-modules.md) |
+| ADR-018 | Fixed palette is the identity — status colours and illustrations never follow the HA theme | ✅ Accepted — see [ADR-018](./adr/ADR-018_palette-fixed-identity.md) |
 
 > **ADR-007 rationale:** The v1.0.0 release broke production without prior visual validation. Rule: `npm run build` → validate all cards in `dev/workbench.html` → ONLY THEN release (see [release-process.md](./release-process.md)).
 

@@ -15,7 +15,8 @@
 | F-BASE-03 | Reactivity and lifecycle hooks | ✅ `base-card.ts` |
 | F-BASE-04 | Sealed render wrapper pattern | ✅ `base-card.ts` |
 | F-BASE-05 | Shared common Lit CSS styles | ✅ `src/styles/common.ts` |
-| F-BASE-06 | Shared editor Lit CSS styles | ✅ `` |
+| F-BASE-06 | Shared editor Lit CSS styles | ✅ `src/styles/editor-common.ts` |
+| F-BASE-07 | Design token families (fixed vs theme-chained) | ✅ `src/styles/common.ts` — [ADR-018](../adr/ADR-018_palette-fixed-identity.md) |
 
 ---
 
@@ -37,6 +38,54 @@ src/
                                           `static styles` so the card can
                                           override it.
 ```
+
+---
+
+## Design Tokens — two families, two reaches
+
+Decided in [ADR-018](../adr/ADR-018_palette-fixed-identity.md); that record holds
+the measurements and the rationale, this is the operating summary.
+
+`src/styles/common.ts` declares two kinds of `--sf-*` token:
+
+| Family | Tokens | Resolves to |
+|---|---|---|
+| **Fixed** | `--sf-accent-on`, `--sf-accent-off`, `--sf-warning`, `--sf-error`, `--sf-border`, `--sf-bg-secondary`, `--sf-text-disabled` | a literal — state and status, never follows the HA theme |
+| **Chained** | `--sf-primary`, `--sf-bg`, `--sf-text-primary`, `--sf-text-secondary` | `var(--<ha-theme-var>, <literal>)` — frame, primary accent and text, follows the HA theme |
+
+Rules that follow from it:
+
+1. **The line runs through each card, not between the cards and this kernel.**
+   A card sheet uses both families: its frame, accent and text are chained (129
+   such declarations live in card sheets today), its state colours and
+   illustrations are fixed. Do not move a colour across that line — replacing a
+   state or illustration literal with a *chained* token drags it into the user's
+   theme while the status colours beside it cannot follow, since the HA theme has
+   no variable meaning "warning".
+2. **`var(--sf-token, <literal>)` is the idiom**, not a bypass. The literal is the
+   token's declared default repeated at the use site. Where the element declares
+   `sciFiCommonStyles` in its own `static styles`, the token always resolves and
+   the fallback is dead — keep it **character-identical** to the declaration in
+   `common.ts`, because a fallback that says something else is read as the token's
+   value and is wrong. Where the element does *not* declare it (`sf-dropdown`,
+   `sf-button-card` — both rely on their mount point), the fallback is live
+   insurance: it is what renders off-tree, and it is deliberately not the token's
+   value.
+3. **A bespoke colour with one consumer does not get a token.** Illustration and
+   domain palettes (landspeeder, radiator, stove, plugs, weather icons) stay
+   literal in their own sheet.
+4. **`--sf-*` does not reach the editor tree.** The tokens are declared on the
+   `:host` of `sciFiCommonStyles`; editors do not include it and are rendered by
+   HA as siblings of the card preview, not descendants. `background: var(--sf-border)`
+   in an editor sheet computes to `transparent`. Editors use the `--editor-*`
+   family from `editor-common.ts`, chained to HA theme variables that do reach a dialog.
+5. **A component in `src/components/` that needs the tokens includes
+   `sciFiCommonStyles` itself**, rather than relying on being mounted inside a
+   card. An element appended to `document.body` (`src/utils/toast.ts`) inherits
+   nothing and correctly hard-codes its colours.
+
+`tests/styles/card-css-baseline.test.ts` locks the resolved CSS of all 11 cards,
+so any change to these declarations surfaces as a reviewed diff.
 
 ---
 
@@ -79,7 +128,8 @@ src/
 | # | Anti-Pattern | Violation | Correct Behavior |
 |---|---|---|---|
 | 1 | Overriding `render()` | Card overrides `render()` directly | Implement `renderCard()` inside card subclasses |
-| 2 | Inline styling tokens | Hardcoded hex colors in css | Import shared styles from `common.ts` |
+| 2 | Inline styling tokens | Hardcoded hex color in css where a `--sf-*` token already holds that exact value | Use `var(--sf-token, <literal>)` — see § Design Tokens and [ADR-018](../adr/ADR-018_palette-fixed-identity.md). A bespoke colour with one consumer stays literal; a *chained* token never replaces a widget colour |
+| 2b | Chained token in an editor sheet | `var(--sf-border)` inside `editor-common.ts` or `components/editor-inputs/*` — `--sf-*` does not reach the config dialog, so the declaration computes to its initial value | Use the `--editor-*` family from `editor-common.ts` |
 | 3 | Manual update calls | `this.performUpdate()` in card | Lit properties handle reactivity automatically |
 | 4 | Duplicated editor styles | Copy-pasting styling rules | Import editor common styles from `editor.ts` |
 | 5 | Unhandled rendering exception | Empty render blocks | Wrap rendering loop in try/catch block |

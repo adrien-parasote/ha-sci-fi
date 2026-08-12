@@ -5,6 +5,42 @@ max_cc = 30
 max_fn_lines = 100
 no_god_files = true
 
+# ─────────────────────────────────────────────────────────────────────────────
+# EXPECTED STATE OF `sentrux check .` — exactly ONE violation
+# ─────────────────────────────────────────────────────────────────────────────
+#   ✗ [Error] no_god_files: 1 god file(s) found (fan-out > 15)
+#       src/sci-fi.ts (fan-out=28)
+#   ✗ 1 violation(s) found
+#
+# That red is expected and accepted. Any OTHER violation, or a second god file,
+# is new — treat it as a regression, not as noise.
+#
+# Why a comment and not an exclusion: sentrux 0.5.7 has NO path-exclusion syntax
+# for rules.toml. Verified against the shipped binary, not assumed — the parser's
+# `RulesConfig` accepts only `constraints`, `language`, `layers` and `boundaries`,
+# and `Constraints` has exactly 13 numeric/boolean fields, none of them a path
+# list. serde silently swallows unknown keys, so an invented `exclude = [...]`
+# would parse cleanly, change nothing, and leave behind a comment claiming a
+# protection that does not exist. `.sentruxignore` is never read. `.ignore` works
+# only outside git, and here the file set comes from `git ls-files`.
+# `sentrux check <subdir>` fails because rules.toml must sit at the scanned root.
+#
+# src/sci-fi.ts is the bundle entry: a barrel plus the Lovelace registry that
+# imports and registers all 11 cards. Its fan-out is not accidental coupling, it
+# is the file's entire job — one import per card it must register. Refactoring it
+# away would mean deleting the entry point. A barrel is not a god file.
+#
+# `no_god_files` stays ARMED rather than being deleted to clear this one line. A
+# disarmed rule stops reporting the NEXT god file; an armed rule with a single
+# named violation is still a usable signal, and it degrades loudly the day a
+# second file trips it — which is the point.
+#
+# Do NOT silence this by loosening the numbers above: dropping `no_god_files` or
+# raising `max_fn_lines` relaxes the rule for the whole of src/, which is exactly
+# the code these constraints exist to protect. The two workbench functions that
+# used to breach `max_fn_lines` were split into module-level helpers instead.
+# ─────────────────────────────────────────────────────────────────────────────
+
 [[layers]]
 name = "cards"
 paths = ["src/cards/**"]

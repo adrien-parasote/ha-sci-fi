@@ -10,6 +10,7 @@ import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import { tvStyles } from './style.js';
 import { fireHassAction } from '../../utils/action.js';
+import type { HassEntity } from '../../types/ha.js';
 import type { SciFiTVConfig, SciFiTVCustomActions } from './config.js';
 
 const TAG = 'sci-fi-tv';
@@ -28,6 +29,48 @@ const D_PAD_KEYS = {
   home: 'Home',
   menu: 'Menu',
 } as const;
+
+
+/** Volume-arc geometry for the orbital dial. */
+interface DialGeometry {
+  readonly strokeLength: number;
+  readonly dashOffset: number;
+  readonly satelliteX: number;
+  readonly satelliteY: number;
+}
+
+/** Everything the render needs, derived from hass once per render. */
+interface TvViewModel {
+  readonly isUnavailable: boolean;
+  readonly isOff: boolean;
+  readonly isOn: boolean;
+  readonly displayVolume: number;
+  readonly volumePercent: number;
+  readonly sourceLabel: string | undefined;
+  readonly mediaTitle: string | undefined;
+  readonly appName: string | undefined;
+  readonly appId: string | undefined;
+  readonly subtext: string;
+  readonly dial: DialGeometry;
+}
+
+/**
+ * 270-degree sweep on a r=75 circle. Circumference = 2 * PI * 75 = 471.24,
+ * so the full stroke is 270/360 * 471.24 = 353.43 and the offset runs from
+ * 353.43 (0%) down to 0 (100%). A muted-but-on dial keeps a 3-degree arc
+ * (3/270 = 0.011) so it never collapses to zero length.
+ */
+function computeDialGeometry(displayVolume: number, isOn: boolean): DialGeometry {
+  const strokeLength = (270 / 360) * (2 * Math.PI * 75);
+  const normalizedVol = displayVolume <= 0.0 && isOn ? 0.011 : displayVolume;
+  const angleRad = ((225 - normalizedVol * 270) * Math.PI) / 180;
+  return {
+    strokeLength,
+    dashOffset: strokeLength - normalizedVol * strokeLength,
+    satelliteX: 100 + 75 * Math.cos(angleRad),
+    satelliteY: 100 - 75 * Math.sin(angleRad),
+  };
+}
 
 @customElement(TAG)
 export class SciFiTVCard extends SciFiBaseCard {
@@ -62,9 +105,7 @@ export class SciFiTVCard extends SciFiBaseCard {
   }
 
   protected override renderCard(): TemplateResult {
-    const entityId = this.config.entity;
-    const tvState = this.hass.states[entityId];
-
+    const tvState = this.hass.states[this.config.entity];
     if (!tvState) {
       return html`
         <ha-card>
@@ -73,255 +114,260 @@ export class SciFiTVCard extends SciFiBaseCard {
       `;
     }
 
+    const vm = this._readViewModel(tvState);
+    return html`
+      <ha-card>
+        <div class="container">
+          ${this._renderHeader(vm)}
+          ${this._renderTelemetryBar(vm)}
+          <div class="bridge-layout">
+            ${this._renderDial(vm)}
+            ${this._renderControls(vm)}
+          </div>
+          ${this._renderSourcesPanel(vm)}
+          ${vm.isUnavailable
+            ? html`<div class="offline-banner">${msg('TACTICAL BRIDGE DISCONNECTED')}</div>`
+            : ''}
+        </div>
+        <sf-toast></sf-toast>
+      </ha-card>
+    `;
+  }
+
+  // ── View model ─────────────────────────────────────────────────────────────
+
+  /**
+   * Everything the render derives from hass, computed once. Keeping this out of
+   * renderCard() is what keeps the render a composition rather than a 261-line
+   * function (ADR-017 step 6).
+   */
+  private _readViewModel(tvState: HassEntity): TvViewModel {
+    const entityId = this.config.entity;
     const stateStr = tvState.state;
     const isUnavailable = stateStr === 'unavailable' || stateStr === 'unknown';
     const isOff = stateStr === 'off';
     const isOn = !isOff && !isUnavailable;
 
-    // Get current volume from volume_entity if configured, otherwise fallback to main entity
-    const volEntityId = this.config.volume_entity || entityId;
-    const volState = this.hass.states[volEntityId];
-    
-    const currentVolume = volState?.attributes?.volume_level !== undefined 
-      ? Number(volState.attributes.volume_level) 
+    // Volume comes from volume_entity when configured, otherwise the main entity.
+    const volState = this.hass.states[this.config.volume_entity || entityId];
+    const currentVolume = volState?.attributes?.volume_level !== undefined
+      ? Number(volState.attributes.volume_level)
       : 0.0;
-    
     const displayVolume = this._isDragging && this._localVolume !== null
       ? this._localVolume
       : currentVolume;
 
-    const volumePercent = Math.round(displayVolume * 100);
+    const appState = this.hass.states[this.config.app_entity || entityId];
 
-    const appEntityId = this.config.app_entity || entityId;
-    const appState = this.hass.states[appEntityId];
-    
-    // Extract metadata from the app entity first
+    // Metadata from the app entity first…
     let sourceLabel = appState?.attributes?.source as string | undefined;
     let mediaTitle = appState?.attributes?.media_title as string | undefined;
     let appName = appState?.attributes?.app_name as string | undefined;
     let appId = appState?.attributes?.app_id as string | undefined;
-    
-    // If app entity provides nothing (e.g. idle cast), fallback to volume/main entity
+
+    // …and if it provides nothing (e.g. idle cast), fall back to volume/main entity.
     if (!sourceLabel && !mediaTitle && !appName && !appId) {
       sourceLabel = (volState?.attributes?.source || tvState.attributes.source) as string | undefined;
       mediaTitle = (volState?.attributes?.media_title || tvState.attributes.media_title) as string | undefined;
       appName = (volState?.attributes?.app_name || tvState.attributes.app_name) as string | undefined;
       appId = (volState?.attributes?.app_id || tvState.attributes.app_id) as string | undefined;
     }
-    
+
     let subtext = msg('SYSTEM ONLINE');
-    if (isUnavailable) {
-      subtext = msg('SYSTEM OFFLINE');
-    } else if (isOff) {
-      subtext = msg('STANDBY');
-    } else if (mediaTitle) {
-      subtext = mediaTitle;
-    } else if (appName) {
-      subtext = appName;
-    } else if (sourceLabel) {
-      subtext = sourceLabel;
-    } else if (appId) {
-      subtext = appId;
-    }
+    if (isUnavailable) subtext = msg('SYSTEM OFFLINE');
+    else if (isOff) subtext = msg('STANDBY');
+    else if (mediaTitle) subtext = mediaTitle;
+    else if (appName) subtext = appName;
+    else if (sourceLabel) subtext = sourceLabel;
+    else if (appId) subtext = appId;
 
-    // Render volume arc math
-    // 270 degrees total sweep. Circumference = 2 * PI * 75 = 471.24
-    // Length of stroke = 270 / 360 * 471.24 = 353.43
-    // Offset ranges from 353.43 (0%) to 0 (100%)
-    const maxSweep = 270;
-    const circ = 2 * Math.PI * 75;
-    const strokeLength = (maxSweep / 360) * circ;
-    
-    // Minimum 3 degrees visible arc (3 / 270 = 0.011) to avoid total zero length
-    const normalizedVol = displayVolume <= 0.0 && isOn ? 0.011 : displayVolume;
-    const activeSweep = normalizedVol * strokeLength;
-    const dashOffset = strokeLength - activeSweep;
+    return {
+      isUnavailable,
+      isOff,
+      isOn,
+      displayVolume,
+      volumePercent: Math.round(displayVolume * 100),
+      sourceLabel,
+      mediaTitle,
+      appName,
+      appId,
+      subtext,
+      dial: computeDialGeometry(displayVolume, isOn),
+    };
+  }
 
-    // Orbit satellite coordinates along circular track
-    const angleDegrees = 225 - normalizedVol * 270;
-    const angleRad = (angleDegrees * Math.PI) / 180;
-    const satelliteX = 100 + 75 * Math.cos(angleRad);
-    const satelliteY = 100 - 75 * Math.sin(angleRad);
+  // ── Header ─────────────────────────────────────────────────────────────────
 
+  private _renderHeader(vm: TvViewModel): TemplateResult {
     return html`
-      <ha-card>
-        <div class="container">
-          <!-- Header Row -->
-          <div class="header">
-            <div class="info">
-              <button
-                class="header-power ${isOff ? 'is-off' : ''}"
-                title="${this._getPowerButtonTitle(isOn)}"
-                ?disabled="${isUnavailable}"
-                @click="${() => this._togglePower(isOn)}"
-              >
-                <svg viewBox="0 0 24 24">
-                  <path d="M12 2v10M6.34 5.34a9 9 0 1 0 11.32 0" stroke="round" stroke-linecap="round"/>
-                </svg>
-              </button>
-              <span class="header-text">${this.config.name ?? 'Planet Orbit Exit'}</span>
-            </div>
-          </div>
-
-          <!-- Telemetry Status Bar -->
-          <div class="telemetry-status-bar">
-            <div class="status-segment segment-left">
-              <span class="segment-indicator ${isUnavailable ? 'is-offline' : (isOff ? 'is-standby' : 'is-active')}"></span>
-              <span class="segment-title">${msg('TRANSMISSION:')}</span>
-              <span class="segment-value">${this._getTransmissionStatus(isUnavailable, isOff)}</span>
-            </div>
-            <div class="status-segment segment-right">
-              <span class="segment-title">${msg('PLAYING:')}</span>
-              <span class="segment-value highlight">${this._getPlayingStatus(isUnavailable, isOff, mediaTitle, appName, sourceLabel, appId)}</span>
-            </div>
-          </div>
-
-          <!-- Active Workspace Viewport -->
-          <div class="bridge-layout">
-            
-            <!-- SVGs Dial -->
-            <div class="dial-section">
-              <svg 
-                class="dial-svg" 
-                viewBox="0 0 200 200"
-                @pointerdown="${(e: PointerEvent) => this._onPointerDown(e)}"
-                @pointermove="${(e: PointerEvent) => this._onPointerMove(e)}"
-                @pointerup="${(e: PointerEvent) => this._onPointerUp(e)}"
-                @pointercancel="${(e: PointerEvent) => this._onPointerUp(e)}"
-              >
-                <!-- Radar grid markings -->
-                <circle cx="100" cy="100" r="95" class="dial-grid" stroke-dasharray="2, 6"/>
-                <circle cx="100" cy="100" r="55" class="dial-grid" stroke-dasharray="1, 4"/>
-                
-                <!-- Central sci-fi planet with ring -->
-                <g class="planet-group">
-                  <!-- Diagonal ring backing -->
-                  <ellipse cx="100" cy="100" rx="32" ry="6" transform="rotate(-25 100 100)" class="planet-ring-back" />
-                  <!-- Planet body -->
-                  <circle cx="100" cy="100" r="18" class="planet-body" />
-                  <!-- Diagonal ring front -->
-                  <path d="M 68 100 A 32 6 0 0 0 132 100" transform="rotate(-25 100 100)" class="planet-ring-front" />
-                  <!-- Planet orbiting satellite -->
-                  <g transform="rotate(-25 100 100)">
-                    <circle cx="100" cy="100" r="2.5" class="planet-orbit-satellite ${isOff || isUnavailable ? 'is-off' : ''}" />
-                  </g>
-                </g>
-
-                <!-- Background dial track (opening at bottom-center: starts -135deg, sweeps 270deg) -->
-                <path 
-                  d="M 46.97 153.03 A 75 75 0 1 1 153.03 153.03" 
-                  class="dial-track"
-                />
-                
-                <!-- Active dial sweep -->
-                <path 
-                  d="M 46.97 153.03 A 75 75 0 1 1 153.03 153.03" 
-                  class="dial-active ${isOff || isUnavailable ? 'is-off' : ''}"
-                  stroke-dasharray="${strokeLength}"
-                  stroke-dashoffset="${dashOffset}"
-                  opacity="${isOff || isUnavailable ? 0.2 : (displayVolume <= 0.0 ? 0.4 : 1.0)}"
-                />
-
-                <!-- Orbit Satellite Marker -->
-                ${isOn ? html`
-                  <circle 
-                    cx="${satelliteX}" 
-                    cy="${satelliteY}" 
-                    r="5" 
-                    class="dial-satellite"
-                  />
-                ` : ''}
-              </svg>
-              
-              <!-- Core volume state reading -->
-              <div class="dial-label-container">
-                <span class="dial-value ${isOff || isUnavailable ? 'is-off' : ''}">
-                  ${isUnavailable ? '---' : (isOff ? msg('OFF') : `${volumePercent}%`)}
-                </span>
-                <span class="dial-title">${subtext}</span>
-              </div>
-
-              <!-- Mute Button Row -->
-              <div class="mute-row">
-                <button class="mute-btn" data-key="volume_mute" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('volume_mute')}">
-                  <sf-icon icon="mdi:volume-off" .connection="${this.hass.connection}"></sf-icon>
-                </button>
-              </div>
-            </div>
-
-            <!-- Tactical Controls panel -->
-            <div class="control-section">
-              <!-- Grid D-pad -->
-              <div class="dpad-container">
-                <button class="dpad-btn btn-up" data-key="up" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('up')}">
-                  <sf-icon icon="mdi:chevron-up" .connection="${this.hass.connection}"></sf-icon>
-                </button>
-                <button class="dpad-btn btn-left" data-key="left" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('left')}">
-                  <sf-icon icon="mdi:chevron-left" .connection="${this.hass.connection}"></sf-icon>
-                </button>
-                <button class="dpad-btn btn-confirm" data-key="confirm" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('confirm')}">
-                  <sf-icon icon="mdi:circle-outline" .connection="${this.hass.connection}"></sf-icon>
-                </button>
-                <button class="dpad-btn btn-right" data-key="right" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('right')}">
-                  <sf-icon icon="mdi:chevron-right" .connection="${this.hass.connection}"></sf-icon>
-                </button>
-                <button class="dpad-btn btn-down" data-key="down" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('down')}">
-                  <sf-icon icon="mdi:chevron-down" .connection="${this.hass.connection}"></sf-icon>
-                </button>
-              </div>
-
-              <!-- Supplementary Buttons Row -->
-              <div class="remote-row">
-                <button class="row-btn" data-key="back" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('back')}">${msg('Back')}</button>
-                <button class="row-btn" data-key="home" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('home')}">${msg('Home')}</button>
-                <button class="row-btn" data-key="menu" ?disabled="${!isOn}" @click="${() => this._handleDpadClick('menu')}">${msg('Menu')}</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Honeycomb Quick-Select Panel -->
-          ${this.config.sources && this.config.sources.length > 0 ? html`
-            <div class="sources-panel">
-              ${(() => {
-                const activeLabels = [appName, sourceLabel, appId, mediaTitle].filter(Boolean).map(v => v!.toLowerCase());
-                const activeSourceIndex = this.config.sources.findIndex(src => {
-                  const srcName = typeof src === 'string' ? src : src.name;
-                  const srcId = typeof src === 'object' && ((src as any).data?.media_content_id || (src as any).service_data?.media_content_id);
-                  return activeLabels.some(val => 
-                    val === srcName.toLowerCase() || (srcId && val === srcId.toLowerCase())
-                  );
-                });
-
-                return this.config.sources.map((src, index) => {
-                  const srcName = typeof src === 'string' ? src : src.name;
-                  const isActive = index === activeSourceIndex;
-                  return html`
-                  <div
-                    class="source-hexa"
-                    data-active="${isActive}"
-                    data-disabled="${!isOn}"
-                    title="${msg('Select Source')}: ${srcName}"
-                    @click="${() => { if (isOn) this._selectSource(src); }}"
-                  >
-                    <svg viewBox="0 0 44 51">
-                      <polygon class="hexa-bg" points="${HEXA_BG}"/>
-                      <polygon class="hexa-border" points="${HEXA_BORDER}"/>
-                    </svg>
-                    <div class="hexa-content">${srcName}</div>
-                  </div>
-                `;
-                });
-              })()}
-            </div>
-          ` : ''}
-
-          <!-- Offline / Standsby caution bar -->
-          ${isUnavailable ? html`<div class="offline-banner">${msg('TACTICAL BRIDGE DISCONNECTED')}</div>` : ''}
+      <div class="header">
+        <div class="info">
+          <button
+            class="header-power ${vm.isOff ? 'is-off' : ''}"
+            title="${this._getPowerButtonTitle(vm.isOn)}"
+            ?disabled="${vm.isUnavailable}"
+            @click="${() => this._togglePower(vm.isOn)}"
+          >
+            <svg viewBox="0 0 24 24">
+              <path d="M12 2v10M6.34 5.34a9 9 0 1 0 11.32 0" stroke="round" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <span class="header-text">${this.config.name ?? 'Planet Orbit Exit'}</span>
         </div>
-        <sf-toast></sf-toast>
-      </ha-card>
+      </div>
     `;
   }
+
+  private _renderTelemetryBar(vm: TvViewModel): TemplateResult {
+    const indicator = vm.isUnavailable ? 'is-offline' : (vm.isOff ? 'is-standby' : 'is-active');
+    return html`
+      <div class="telemetry-status-bar">
+        <div class="status-segment segment-left">
+          <span class="segment-indicator ${indicator}"></span>
+          <span class="segment-title">${msg('TRANSMISSION:')}</span>
+          <span class="segment-value">${this._getTransmissionStatus(vm.isUnavailable, vm.isOff)}</span>
+        </div>
+        <div class="status-segment segment-right">
+          <span class="segment-title">${msg('PLAYING:')}</span>
+          <span class="segment-value highlight">${this._getPlayingStatus(vm.isUnavailable, vm.isOff, vm.mediaTitle, vm.appName, vm.sourceLabel, vm.appId)}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  // ── Orbital volume dial ────────────────────────────────────────────────────
+
+  private _renderDial(vm: TvViewModel): TemplateResult {
+    const dimmed = vm.isOff || vm.isUnavailable;
+    return html`
+      <div class="dial-section">
+        <svg
+          class="dial-svg"
+          viewBox="0 0 200 200"
+          @pointerdown="${(e: PointerEvent) => this._onPointerDown(e)}"
+          @pointermove="${(e: PointerEvent) => this._onPointerMove(e)}"
+          @pointerup="${(e: PointerEvent) => this._onPointerUp(e)}"
+          @pointercancel="${(e: PointerEvent) => this._onPointerUp(e)}"
+        >
+          <!-- Radar grid markings -->
+          <circle cx="100" cy="100" r="95" class="dial-grid" stroke-dasharray="2, 6"/>
+          <circle cx="100" cy="100" r="55" class="dial-grid" stroke-dasharray="1, 4"/>
+
+          <!-- Central sci-fi planet with ring -->
+          <g class="planet-group">
+            <ellipse cx="100" cy="100" rx="32" ry="6" transform="rotate(-25 100 100)" class="planet-ring-back" />
+            <circle cx="100" cy="100" r="18" class="planet-body" />
+            <path d="M 68 100 A 32 6 0 0 0 132 100" transform="rotate(-25 100 100)" class="planet-ring-front" />
+            <g transform="rotate(-25 100 100)">
+              <circle cx="100" cy="100" r="2.5" class="planet-orbit-satellite ${dimmed ? 'is-off' : ''}" />
+            </g>
+          </g>
+
+          <!-- Background dial track (opening at bottom-center: starts -135deg, sweeps 270deg) -->
+          <path d="M 46.97 153.03 A 75 75 0 1 1 153.03 153.03" class="dial-track" />
+
+          <!-- Active dial sweep -->
+          <path
+            d="M 46.97 153.03 A 75 75 0 1 1 153.03 153.03"
+            class="dial-active ${dimmed ? 'is-off' : ''}"
+            stroke-dasharray="${vm.dial.strokeLength}"
+            stroke-dashoffset="${vm.dial.dashOffset}"
+            opacity="${dimmed ? 0.2 : (vm.displayVolume <= 0.0 ? 0.4 : 1.0)}"
+          />
+
+          <!-- Orbit satellite marker -->
+          ${vm.isOn
+            ? html`<circle cx="${vm.dial.satelliteX}" cy="${vm.dial.satelliteY}" r="5" class="dial-satellite" />`
+            : ''}
+        </svg>
+
+        <!-- Core volume state reading -->
+        <div class="dial-label-container">
+          <span class="dial-value ${dimmed ? 'is-off' : ''}">
+            ${vm.isUnavailable ? '---' : (vm.isOff ? msg('OFF') : `${vm.volumePercent}%`)}
+          </span>
+          <span class="dial-title">${vm.subtext}</span>
+        </div>
+
+        <!-- Mute button row -->
+        <div class="mute-row">
+          <button class="mute-btn" data-key="volume_mute" ?disabled="${!vm.isOn}" @click="${() => this._handleDpadClick('volume_mute')}">
+            <sf-icon icon="mdi:volume-off" .connection="${this.hass.connection}"></sf-icon>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  // ── D-pad + supplementary buttons ──────────────────────────────────────────
+
+  private _renderControls(vm: TvViewModel): TemplateResult {
+    const dpad = (
+      [
+        ['up', 'btn-up', 'mdi:chevron-up'],
+        ['left', 'btn-left', 'mdi:chevron-left'],
+        ['confirm', 'btn-confirm', 'mdi:circle-outline'],
+        ['right', 'btn-right', 'mdi:chevron-right'],
+        ['down', 'btn-down', 'mdi:chevron-down'],
+      ] as const
+    ).map(([key, cls, icon]) => html`
+      <button class="dpad-btn ${cls}" data-key="${key}" ?disabled="${!vm.isOn}" @click="${() => this._handleDpadClick(key)}">
+        <sf-icon icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
+      </button>
+    `);
+
+    return html`
+      <div class="control-section">
+        <div class="dpad-container">${dpad}</div>
+        <div class="remote-row">
+          <button class="row-btn" data-key="back" ?disabled="${!vm.isOn}" @click="${() => this._handleDpadClick('back')}">${msg('Back')}</button>
+          <button class="row-btn" data-key="home" ?disabled="${!vm.isOn}" @click="${() => this._handleDpadClick('home')}">${msg('Home')}</button>
+          <button class="row-btn" data-key="menu" ?disabled="${!vm.isOn}" @click="${() => this._handleDpadClick('menu')}">${msg('Menu')}</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // ── Honeycomb quick-select panel ───────────────────────────────────────────
+
+  private _renderSourcesPanel(vm: TvViewModel): TemplateResult | string {
+    const sources = this.config.sources;
+    if (!sources || sources.length === 0) return '';
+
+    const activeLabels = [vm.appName, vm.sourceLabel, vm.appId, vm.mediaTitle]
+      .filter(Boolean)
+      .map(v => v!.toLowerCase());
+
+    const activeSourceIndex = sources.findIndex(src => {
+      const srcName = typeof src === 'string' ? src : src.name;
+      const srcId = typeof src === 'object' && ((src as any).data?.media_content_id || (src as any).service_data?.media_content_id);
+      return activeLabels.some(val => val === srcName.toLowerCase() || (srcId && val === srcId.toLowerCase()));
+    });
+
+    return html`
+      <div class="sources-panel">
+        ${sources.map((src, index) => {
+          const srcName = typeof src === 'string' ? src : src.name;
+          return html`
+            <div
+              class="source-hexa"
+              data-active="${index === activeSourceIndex}"
+              data-disabled="${!vm.isOn}"
+              title="${msg('Select Source')}: ${srcName}"
+              @click="${() => { if (vm.isOn) this._selectSource(src); }}"
+            >
+              <svg viewBox="0 0 44 51">
+                <polygon class="hexa-bg" points="${HEXA_BG}"/>
+                <polygon class="hexa-border" points="${HEXA_BORDER}"/>
+              </svg>
+              <div class="hexa-content">${srcName}</div>
+            </div>
+          `;
+        })}
+      </div>
+    `;
+  }
+
 
   // ── Drag & Trigonometry Math ───────────────────────────────────────────────
 

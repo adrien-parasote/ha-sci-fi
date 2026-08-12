@@ -26,6 +26,10 @@ lint_output.txt
 CLAUDE.md
 .sentrux/baseline.json
 .codegraph/
+# Claude Code session state. .claude/worktrees/ holds git worktrees created
+# during a run: each contains its own .git file, so git shows the directory as
+# untracked and `git add -A` would record it as a gitlink.
+.claude/
 
 # Beads / Dolt files (added by bd init)
 .dolt/

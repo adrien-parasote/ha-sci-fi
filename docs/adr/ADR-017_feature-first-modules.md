@@ -233,23 +233,25 @@ Two `check_rules` violations remain and are intentional:
 
 ## Follow-ups filed by this ADR
 
-1. Split `sf-radiator` into the 4 sub-components spec 04 § F-COMP-02 has claimed
-   since day one but which were never written.
-2. ~~`vacuum-editor` builds `input-${f.replace('_','-')}`, which replaces only the
-   first underscore: `current_clean_area` → `input-current-clean_area`, a key
-   that does not exist. Two sensor fields render an empty label.~~
-   **DONE** — fixed with `replaceAll` plus a regression test asserting every
-   vacuum-sensor input carries a non-empty label.
-3. Six unreachable label keys: `input-last-clean-area`,
-   `input-last-clean-duration`, `input-device`, `action-call-children`,
-   `input-input-button-entity`, `input-button-text`.
-4. 193 colour literals in the card sheets match no `--sf-*` token. Extending the
-   palette to cover them is a design decision, not a refactor.
-5. Decide whether `--sf-primary` and the other theme-chained tokens should
-   replace hardcoded colours — that makes cards follow the user's HA theme, a
-   visible product change.
-6. `.claude/` is not in `.gitignore`; a worktree created under
-   `.claude/worktrees/` shows up as untracked in the main checkout.
+Tracked in **bd**, which is this repo's task ledger — this list is a pointer, not
+a second source of truth. `bd show <id>` for the detail.
+
+| Bead | What | Prio |
+|---|---|---|
+| `ha-sci-fi-bjo` | Split `sf-radiator` into the 4 sub-components spec 04 § F-COMP-02 has claimed since day one but which were never written | 2 |
+| `ha-sci-fi-63z` | 193 colour literals match no `--sf-*` token — extend the palette, and decide separately whether the theme-chained tokens (`--sf-primary`, `--sf-bg`, `--sf-text-*`) should replace hardcoded colours, which makes cards follow the user's HA theme | 2 |
+| `ha-sci-fi-wrf` | `check_rules`: 2 workbench functions over `max_fn_lines`, plus the `src/sci-fi.ts` fan-out false positive — fix or exclude `dev/**` in `rules.toml` | 3 |
+| `ha-sci-fi-ouf` | Six unreachable label keys left in `sharedEditorLabels()` | 3 |
+| `ha-sci-fi-cu7` | `sci-fi-stove.ts:232` carries the same `replace`-only-first-underscore pattern as the vacuum defect — latent today | 3 |
+
+Closed since:
+
+- ~~`vacuum-editor` builds `input-${f.replace('_','-')}`, which replaces only the
+  first underscore, so two sensor fields rendered an empty label.~~ **DONE**
+  (`85da36f`) — `replaceAll` plus TC-1016 asserting every vacuum-sensor input
+  carries a non-empty label.
+- ~~`.claude/` is not in `.gitignore`; a worktree created under
+  `.claude/worktrees/` shows up as untracked in the main checkout.~~ **DONE.**
 
 ## Rollback plan
 

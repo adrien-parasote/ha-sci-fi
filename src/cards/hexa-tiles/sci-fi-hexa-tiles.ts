@@ -8,7 +8,7 @@ import { html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
-import type { SciFiHexaTilesConfig, SciFiHexaTileConfig } from '../../types/config.js';
+import type { SciFiHexaTilesConfig, SciFiHexaTileConfig } from './config.js';
 import type { HassEntity } from '../../types/ha.js';
 import { fireHassAction } from '../../utils/action.js';
 

@@ -9,7 +9,7 @@ import { customElement, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
-import type { SciFiLightsConfig } from '../../types/config.js';
+import type { SciFiLightsConfig } from './config.js';
 import type { HassFloor, HassArea, HassEntityEntry } from '../../types/ha.js';
 import { fireHassAction } from '../../utils/action.js';
 import {

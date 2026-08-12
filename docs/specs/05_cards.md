@@ -36,7 +36,7 @@
 ## ⛔ YAML Config Contracts (ADR-005 — Source de vérité)
 
 > [!CAUTION]
-> Les noms de champs ci-dessous sont figés. Toute divergence dans `src/types/config.ts` ou dans le code des cartes est un bug bloquant.
+> Les noms de champs ci-dessous sont figés. Toute divergence dans `src/cards/<card>/config.ts` (interfaces propres à la carte, ADR-017) ou dans le code des cartes est un bug bloquant.
 > Source primaire : 'config-metadata.js' de chaque card en v0.9.6.
 > Source de vérification : '"yaml backup"/*.yaml' dans le workspace HA.
 
@@ -162,22 +162,31 @@ To ensure robust and correct code generation across the 8 cards, the following c
 
 ## File Tree
 
+Anatomie standard d'une carte (ADR-009 pour l'urbanisation, ADR-017 pour la
+co-location) :
+
 ```
-src/cards/
-├── hexa-tiles/
-│   ├── card.ts             [MODIFY] Rewrite TS — config YAML inchangée
-│   ├── editor.ts           [MODIFY] Migration TS — pilotée par config-metadata.ts
-│   ├── config-metadata.ts  [MODIFY] Migration TS — schéma identique
-│   ├── const.ts            [MODIFY] Migration TS
-│   └── style.ts            [MODIFY] Migration TS
-├── lights/                 [MODIFY] même pattern
-├── climates/               [MODIFY] même pattern
-├── plugs/                  [MODIFY] même pattern
-├── weather/                [MODIFY] même pattern
-├── stove/                  [MODIFY] même pattern
-├── vehicles/               [MODIFY] même pattern
-└── vacuum/                 [MODIFY] même pattern
+src/cards/<card>/
+├── sci-fi-<card>.ts        Logique de la carte — étend SciFiBaseCard
+├── sci-fi-<card>-editor.ts Éditeur de config — étend SciFiBaseEditor
+├── styles.ts               css`` de la carte
+├── config.ts               Interfaces de config de CETTE carte      (ADR-017)
+├── labels.ts               Dictionnaire i18n de CET éditeur         (ADR-017)
+├── <card>_const.ts         Constantes / type-guards (optionnel)
+├── <composants privés>.ts  Composants à consommateur unique         (ADR-017)
+└── sections/               Sous-composants (bridge uniquement)
 ```
+
+Cartes couvertes : `hexa-tiles/`, `lights/`, `climates/`, `plugs/`, `weather/`,
+`stove/`, `vehicles/`, `vacuum/`, `tv/`, `water/`, `bridge/`.
+
+Composants privés effectivement rapatriés par ADR-017 :
+
+| Carte | Fichiers |
+|---|---|
+| `vehicles/` | `sf-landspeeder.ts`, `vehicle_const.ts` |
+| `climates/` | `sf-radiator.ts` |
+| `stove/` | `sf-stove-image.ts` |
 
 ---
 

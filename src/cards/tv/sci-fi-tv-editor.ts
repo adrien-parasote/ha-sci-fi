@@ -7,7 +7,7 @@ import { html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
-import type { SciFiTVConfig } from '../../types/config.js';
+import type { SciFiTVConfig } from './config.js';
 import type { EditorHassEntity } from '../../components/editor-inputs/sf-editor-dropdown-entity.js';
 
 import '../../components/editor-inputs/sf-editor-input.js';

@@ -4,7 +4,7 @@ import { msg } from '@lit/localize';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import { climateStyles } from './styles.js';
-import type { SciFiClimatesConfig } from '../../types/config.js';
+import type { SciFiClimatesConfig } from './config.js';
 import { getClimateEntitiesExcluding, isClimateActive } from '../../selectors/climate.js';
 import { getFloors, getAreasByFloor, getEntitiesByAreaAndDomain, getFloorById, getAreaById, getAreas } from '../../selectors/house.js';
 

@@ -24,7 +24,7 @@ import type {
   BridgeCycleEntry,
   BridgeConsumableEntry,
   BridgeActionItem,
-} from '../../types/config.js';
+} from './config.js';
 
 import '../../components/editor-inputs/sf-editor-accordion.js';
 import '../../components/editor-inputs/sf-editor-dropdown-entity.js';

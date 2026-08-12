@@ -3,7 +3,7 @@ import { customElement, state } from 'lit/decorators.js';
 import { msg } from '@lit/localize';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
-import type { SciFiWaterManagementConfig } from '../../types/config.js';
+import type { SciFiWaterManagementConfig } from './config.js';
 
 const TAG = 'sci-fi-water-management-editor';
 

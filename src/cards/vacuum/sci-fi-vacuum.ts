@@ -17,7 +17,7 @@ import type {
   SciFiVacuumConfig,
   SciFiVacuumEntry,
   SciFiVacuumShortcutDescription,
-} from '../../types/config.js';
+} from './config.js';
 import {
   VACUUM_ICONS,
   VACUUM_ACTIVITY_STATE,

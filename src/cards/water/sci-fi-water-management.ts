@@ -4,7 +4,7 @@ import { repeat } from 'lit/directives/repeat.js';
 import { msg } from '@lit/localize';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
-import type { SciFiWaterManagementConfig } from '../../types/config.js';
+import type { SciFiWaterManagementConfig } from './config.js';
 import type { HassFloor, HassEntityEntry } from '../../types/ha.js';
 import { fireHassAction } from '../../utils/action.js';
 import { getFloors, getAreasByFloor } from '../../selectors/house.js';

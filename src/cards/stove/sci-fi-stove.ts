@@ -18,7 +18,7 @@ import { msg } from '@lit/localize';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import { stoveStyles } from './styles.js';
-import type { SciFiStoveConfig } from '../../types/config.js';
+import type { SciFiStoveConfig } from './config.js';
 
 import './sf-stove-image.js';
 import '../../components/sf-circle-progress-bar.js';

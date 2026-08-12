@@ -10,7 +10,7 @@ import { customElement, query, state } from 'lit/decorators.js';
 import { msg } from '@lit/localize';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
-import type { SciFiWeatherConfig } from '../../types/config.js';
+import type { SciFiWeatherConfig } from './config.js';
 import WEATHER_ICON_SET from '../../components/sf-icon/data/sf-weather-icons.js';
 
 import {

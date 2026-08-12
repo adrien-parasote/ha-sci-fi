@@ -10,7 +10,7 @@ import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import { tvStyles } from './style.js';
 import { fireHassAction } from '../../utils/action.js';
-import type { SciFiTVConfig, SciFiTVCustomActions } from '../../types/config.js';
+import type { SciFiTVConfig, SciFiTVCustomActions } from './config.js';
 
 const TAG = 'sci-fi-tv';
 

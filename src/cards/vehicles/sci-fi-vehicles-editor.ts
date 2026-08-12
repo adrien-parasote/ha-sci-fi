@@ -15,7 +15,7 @@ import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
 import type {
   SciFiVehiclesConfig,
   SciFiVehicleEntry,
-} from '../../types/config.js';
+} from './config.js';
 import type { InputUpdateDetail } from '../../components/editor-inputs/sf-editor-input.js';
 import type { EditorHassEntity } from '../../components/editor-inputs/sf-editor-dropdown-entity.js';
 

@@ -11,7 +11,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { localized, msg } from '@lit/localize';
 import { sciFiCommonStyles } from '../../../styles/common.js';
 import { bridgeStyles } from '../styles.js';
-import type { BridgePersonEntry } from '../../../types/config.js';
+import type { BridgePersonEntry } from '../config.js';
 import '../../../components/sf-icon/sf-icon.js';
 
 const TAG = 'sf-bridge-crew';

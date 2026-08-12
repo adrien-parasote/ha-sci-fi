@@ -12,7 +12,7 @@ import { html, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
-import type { SciFiStoveConfig } from '../../types/config.js';
+import type { SciFiStoveConfig } from './config.js';
 import type { InputUpdateDetail } from '../../components/editor-inputs/sf-editor-input.js';
 
 import '../../components/editor-inputs/sf-editor-input.js';

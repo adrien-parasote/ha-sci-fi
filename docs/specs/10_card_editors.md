@@ -127,7 +127,7 @@ src/
 |---|---|---|---|
 | `SciFiBaseEditor` | Abstract class | Spec 03 § base-editor.ts | `src/utils/base-editor.ts` |
 | `HomeAssistantExt` | TS type | Spec 02 § types/ha.ts | `src/types/ha.ts` |
-| `Sci-Fi*Config` types | TS interfaces | Spec 05 § Config Types | `src/types/config.ts` |
+| `Sci-Fi*Config` types | TS interfaces | Spec 05 § Config Types | `src/cards/<card>/config.ts` (ADR-017) |
 | `getFloors`, `getAreasByFloor` | Functions | Spec 02 § house.ts | `src/selectors/house.ts` |
 | `getLightEntities` | Function | Spec 02 § light.ts | `src/selectors/light.ts` |
 | `sf-toggle-switch` | Web Component | Spec 04 § sf-toggle-switch | `src/components/sf-toggle-switch/` |

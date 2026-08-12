@@ -18,7 +18,7 @@ import type {
   SciFiVacuumConfig,
   SciFiVacuumEntry,
   SciFiVacuumShortcutDescription,
-} from '../../types/config.js';
+} from './config.js';
 import type { InputUpdateDetail } from '../../components/editor-inputs/sf-editor-input.js';
 import type { EditorHassEntity } from '../../components/editor-inputs/sf-editor-dropdown-entity.js';
 

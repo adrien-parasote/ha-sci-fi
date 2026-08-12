@@ -8,7 +8,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { localized, msg } from '@lit/localize';
 import { sciFiCommonStyles } from '../../../styles/common.js';
 import { bridgeStyles } from '../styles.js';
-import type { BridgeStoveConfig } from '../../../types/config.js';
+import type { BridgeStoveConfig } from '../config.js';
 import '../../../components/sf-icon/sf-icon.js';
 import '../../../components/sf-circle-progress-bar.js';
 import '../../../components/sf-stack-bar.js';

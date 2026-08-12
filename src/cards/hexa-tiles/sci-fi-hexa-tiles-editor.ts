@@ -317,7 +317,6 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
 
   private _renderTile(tile: SciFiHexaTileConfig, index: number, total: number): TemplateResult {
     const title = tile.name || tile.entity || tile.entity_kind || `${this.getLabel('section-title-tile')} ${index + 1}`;
-    const domainItems = tile.entity_kind ? (this._entitiesByDomain[tile.entity_kind] ?? []) : [];
 
     return html`
       <sf-editor-accordion
@@ -330,103 +329,116 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
           if (e.detail.type === 'remove' && e.detail.kind === 'accordion') this._removeTile(index);
         }}"
       >
-        <!-- ── Entity ──────────────────────────────────── -->
-        <section>
-          <h1>${this.getSectionTitle('section-title-entity')}</h1>
-          <sf-toggle-switch
-            .checked="${tile.standalone ?? false}"
-            label="${this.getLabel('text-switch-hexa-standalone')}"
-            @sf-toggle-change="${(e: CustomEvent<{ checked: boolean }>) => this._updateTileField(index, 'standalone', e.detail.checked)}"
-          ></sf-toggle-switch>
-
-          ${tile.standalone
-            ? html`
-              <sf-editor-dropdown-entity
-                element-id="entity"
-                kind="entity"
-                label="${this.getLabel('section-title-entity')} ${this.getLabel('text-required')}"
-                .value="${tile.entity ?? ''}"
-                .items="${Object.values(this._entitiesByDomain).flat()}"
-                @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateTileField(index, 'entity', e.detail.value)}"
-              ></sf-editor-dropdown-entity>
-            `
-            : html`
-              <sf-editor-dropdown
-                element-id="entity_kind"
-                kind="entity_kind"
-                label="${this.getLabel('input-entity-kind')} ${this.getLabel('text-required')}"
-                .value="${tile.entity_kind ?? ''}"
-                .items="${ENTITY_KINDS}"
-                @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateTileField(index, 'entity_kind', e.detail.value)}"
-              ></sf-editor-dropdown>
-              <sf-editor-multi-entity
-                element-id="entities_to_exclude"
-                kind="entities_to_exclude"
-                label="${this.getLabel('input-entities-to-exclude')} ${this.getLabel('text-optional')}"
-                .values="${[...(tile.entities_to_exclude ?? [])]}"
-                .items="${domainItems}"
-                @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateTileExclude(index, e)}"
-              ></sf-editor-multi-entity>
-            `}
-        </section>
-
-        <!-- ── Appearance ─────────────────────────────── -->
-        <section>
-          <h1>${this.getSectionTitle('section-title-appearance')}</h1>
-          <sf-editor-input
-            element-id="name"
-            kind="name"
-            label="${this.getLabel('input-name')} ${this.getLabel('text-optional')}"
-            .value="${tile.name ?? ''}"
-            @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateTileField(index, 'name', e.detail.value)}"
-          ></sf-editor-input>
-          <sf-editor-dropdown-icon
-            element-id="active_icon"
-            kind="active_icon"
-            label="${this.getLabel('input-active-icon')} ${this.getLabel('text-optional')}"
-            .value="${tile.active_icon ?? ''}"
-            @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateTileField(index, 'active_icon', e.detail.value)}"
-          ></sf-editor-dropdown-icon>
-          <sf-editor-dropdown-icon
-            element-id="inactive_icon"
-            kind="inactive_icon"
-            label="${this.getLabel('input-inactive-icon')} ${this.getLabel('text-optional')}"
-            .value="${tile.inactive_icon ?? ''}"
-            @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateTileField(index, 'inactive_icon', e.detail.value)}"
-          ></sf-editor-dropdown-icon>
-        </section>
-
-        <!-- ── Technical ──────────────────────────────── -->
-        <section>
-          <h1>${this.getSectionTitle('section-title-technical')}</h1>
-          <sf-editor-chips
-            element-id="state_on"
-            kind="state_on"
-            label="${this.getLabel('input-states-on')} ${this.getLabel('text-required')}"
-            .values="${[...(tile.state_on ?? [])]}"
-            @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateTileStateOn(index, e)}"
-          ></sf-editor-chips>
-          <sf-editor-input
-            element-id="state_error"
-            kind="state_error"
-            label="${this.getLabel('input-state-error')} ${this.getLabel('text-optional')}"
-            icon="mdi:alert-circle"
-            .value="${tile.state_error ?? ''}"
-            @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateTileField(index, 'state_error', e.detail.value)}"
-          ></sf-editor-input>
-          <sf-editor-input
-            element-id="link"
-            kind="link"
-            label="${this.getLabel('input-link')} ${this.getLabel('text-optional')}"
-            icon="mdi:link-edit"
-            .value="${tile.link ?? ''}"
-            @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateTileField(index, 'link', e.detail.value)}"
-          ></sf-editor-input>
-        </section>
-
-        <!-- ── Visibility ─────────────────────────────── -->
+        ${this._renderTileEntity(tile, index)}
+        ${this._renderTileAppearance(tile, index)}
+        ${this._renderTileTechnical(tile, index)}
         ${this._renderVisibility(tile, index)}
       </sf-editor-accordion>
+    `;
+  }
+
+  /** A tile targets either one standalone entity, or a whole domain minus exclusions. */
+  private _renderTileEntity(tile: SciFiHexaTileConfig, index: number): TemplateResult {
+    const domainItems = tile.entity_kind ? (this._entitiesByDomain[tile.entity_kind] ?? []) : [];
+    return html`
+      <section>
+        <h1>${this.getSectionTitle('section-title-entity')}</h1>
+        <sf-toggle-switch
+          .checked="${tile.standalone ?? false}"
+          label="${this.getLabel('text-switch-hexa-standalone')}"
+          @sf-toggle-change="${(e: CustomEvent<{ checked: boolean }>) => this._updateTileField(index, 'standalone', e.detail.checked)}"
+        ></sf-toggle-switch>
+
+        ${tile.standalone
+          ? html`
+            <sf-editor-dropdown-entity
+              element-id="entity"
+              kind="entity"
+              label="${this.getLabel('section-title-entity')} ${this.getLabel('text-required')}"
+              .value="${tile.entity ?? ''}"
+              .items="${Object.values(this._entitiesByDomain).flat()}"
+              @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateTileField(index, 'entity', e.detail.value)}"
+            ></sf-editor-dropdown-entity>
+          `
+          : html`
+            <sf-editor-dropdown
+              element-id="entity_kind"
+              kind="entity_kind"
+              label="${this.getLabel('input-entity-kind')} ${this.getLabel('text-required')}"
+              .value="${tile.entity_kind ?? ''}"
+              .items="${ENTITY_KINDS}"
+              @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateTileField(index, 'entity_kind', e.detail.value)}"
+            ></sf-editor-dropdown>
+            <sf-editor-multi-entity
+              element-id="entities_to_exclude"
+              kind="entities_to_exclude"
+              label="${this.getLabel('input-entities-to-exclude')} ${this.getLabel('text-optional')}"
+              .values="${[...(tile.entities_to_exclude ?? [])]}"
+              .items="${domainItems}"
+              @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateTileExclude(index, e)}"
+            ></sf-editor-multi-entity>
+          `}
+      </section>
+    `;
+  }
+
+  private _renderTileAppearance(tile: SciFiHexaTileConfig, index: number): TemplateResult {
+    return html`
+      <section>
+        <h1>${this.getSectionTitle('section-title-appearance')}</h1>
+        <sf-editor-input
+          element-id="name"
+          kind="name"
+          label="${this.getLabel('input-name')} ${this.getLabel('text-optional')}"
+          .value="${tile.name ?? ''}"
+          @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateTileField(index, 'name', e.detail.value)}"
+        ></sf-editor-input>
+        <sf-editor-dropdown-icon
+          element-id="active_icon"
+          kind="active_icon"
+          label="${this.getLabel('input-active-icon')} ${this.getLabel('text-optional')}"
+          .value="${tile.active_icon ?? ''}"
+          @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateTileField(index, 'active_icon', e.detail.value)}"
+        ></sf-editor-dropdown-icon>
+        <sf-editor-dropdown-icon
+          element-id="inactive_icon"
+          kind="inactive_icon"
+          label="${this.getLabel('input-inactive-icon')} ${this.getLabel('text-optional')}"
+          .value="${tile.inactive_icon ?? ''}"
+          @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateTileField(index, 'inactive_icon', e.detail.value)}"
+        ></sf-editor-dropdown-icon>
+      </section>
+    `;
+  }
+
+  private _renderTileTechnical(tile: SciFiHexaTileConfig, index: number): TemplateResult {
+    return html`
+      <section>
+        <h1>${this.getSectionTitle('section-title-technical')}</h1>
+        <sf-editor-chips
+          element-id="state_on"
+          kind="state_on"
+          label="${this.getLabel('input-states-on')} ${this.getLabel('text-required')}"
+          .values="${[...(tile.state_on ?? [])]}"
+          @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateTileStateOn(index, e)}"
+        ></sf-editor-chips>
+        <sf-editor-input
+          element-id="state_error"
+          kind="state_error"
+          label="${this.getLabel('input-state-error')} ${this.getLabel('text-optional')}"
+          icon="mdi:alert-circle"
+          .value="${tile.state_error ?? ''}"
+          @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateTileField(index, 'state_error', e.detail.value)}"
+        ></sf-editor-input>
+        <sf-editor-input
+          element-id="link"
+          kind="link"
+          label="${this.getLabel('input-link')} ${this.getLabel('text-optional')}"
+          icon="mdi:link-edit"
+          .value="${tile.link ?? ''}"
+          @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateTileField(index, 'link', e.detail.value)}"
+        ></sf-editor-input>
+      </section>
     `;
   }
 

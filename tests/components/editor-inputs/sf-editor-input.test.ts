@@ -76,7 +76,7 @@ describe('sf-editor-input', () => {
     expect(input.disabled).toBe(true);
   });
 
-  it('dispatches input-update event on input', async () => {
+  it('TC-1005: dispatches input-update event on input', async () => {
     const el = await createElement({ elementId: 'test-id', kind: 'text' });
     const received: CustomEvent[] = [];
     el.addEventListener('input-update', (e) => received.push(e as CustomEvent));

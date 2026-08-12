@@ -59,12 +59,12 @@ describe('sci-fi-plugs — Spec 13 redesign', () => {
 
   // ── Static tests (TC-1301, TC-1302) ───────────────────────────────────────
 
-  it('TC-1301 — provides getConfigElement', () => {
+  it('TC-1301, TC-PLG-0001 — provides getConfigElement', () => {
     const el = SciFiPlugsCard.getConfigElement();
     expect(el.tagName.toLowerCase()).to.equal('sci-fi-plugs-editor');
   });
 
-  it('TC-1302 — provides getStubConfig', () => {
+  it('TC-1302, TC-PLG-0002 — provides getStubConfig', () => {
     const config = SciFiPlugsCard.getStubConfig();
     expect(config.type).to.equal('custom:sci-fi-plugs');
   });
@@ -201,7 +201,7 @@ describe('sci-fi-plugs — Spec 13 redesign', () => {
 
   // ── Sensors (TC-1314) ─────────────────────────────────────────────────────
 
-  it('TC-1314 — sensor list rendered for visible sensors (non-power)', async () => {
+  it('TC-1314, TC-505 — sensor list rendered for visible sensors (non-power)', async () => {
     const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_TV] });
     // sensor.tv_energy has show: true and power: false → should appear in .sensors
     const sensorRows = el.shadowRoot!.querySelectorAll('.sensors .sensor');

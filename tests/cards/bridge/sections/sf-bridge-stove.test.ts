@@ -183,6 +183,53 @@ describe('sf-bridge-stove', () => {
     el.hass = makeHass('60', '15');
     document.body.appendChild(el);
     await el.updateComplete;
-    expect(el.shadowRoot!.querySelector('.bridge-section')).not.to.be.null;
+    const circle = el.shadowRoot!.querySelector('sf-circle-progress-bar') as any;
+    expect(circle.threshold).to.equal(0.2);
+  });
+
+  // ── Section icon ───────────────────────────────────────────────────────────
+
+  it('TC-BRIDGE-U-19: uses config.icon for the section title, defaulting to sci:stove', async () => {
+    const custom = makeEl();
+    custom.config = { ...BASE_CONFIG, icon: 'mdi:campfire' };
+    custom.hass = makeHass('60', '15');
+    document.body.appendChild(custom);
+    await custom.updateComplete;
+    expect(
+      custom.shadowRoot!.querySelector('.bridge-section-title sf-icon')!.getAttribute('icon'),
+    ).to.equal('mdi:campfire');
+
+    document.body.replaceChildren();
+
+    const fallback = makeEl();
+    fallback.config = { ...BASE_CONFIG };
+    fallback.hass = makeHass('60', '15');
+    document.body.appendChild(fallback);
+    await fallback.updateComplete;
+    expect(
+      fallback.shadowRoot!.querySelector('.bridge-section-title sf-icon')!.getAttribute('icon'),
+    ).to.equal('sci:stove');
+  });
+
+  // ── Low-pellet warning ─────────────────────────────────────────────────────
+
+  it('TC-BRIDGE-U-24: pellet quantity below low_threshold puts the gauges in warning state', async () => {
+    const el = makeEl();
+    el.config = { ...BASE_CONFIG, low_threshold: 0.3 };
+    // Ratio input: 0.2 → 20 %, below the 0.3 threshold.
+    el.hass = makeHass('0.2', '3', 'off', 20);
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const circle = el.shadowRoot!.querySelector('sf-circle-progress-bar') as any;
+    expect(circle).not.to.be.null;
+    expect(circle.val).to.equal(20);
+    expect(circle.threshold).to.equal(0.3);
+    // sf-circle-progress-bar flags warning when val / 100 < threshold
+    expect(circle.val / 100).to.be.lessThan(circle.threshold);
+
+    const stack = el.shadowRoot!.querySelector('sf-stack-bar') as any;
+    expect(stack.threshold).to.equal(0.3);
+    expect(stack.val / stack.max).to.be.lessThan(stack.threshold);
   });
 });

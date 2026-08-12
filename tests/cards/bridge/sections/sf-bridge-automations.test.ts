@@ -223,7 +223,7 @@ describe('sf-bridge-automations', () => {
     expect(callService).toHaveBeenCalledWith('switch', 'turn_off', { entity_id: 'switch.pump' });
   });
 
-  it('_toggle calls turn_on when state is off', async () => {
+  it('TC-BRIDGE-U-20: _toggle calls turn_on when state is off', async () => {
     const callService = vi.fn().mockResolvedValue({});
     const el = makeEl();
     el.config = { items: [{ entity: 'automation.nuit', name: 'Nuit', type: 'toggle' as const }] };

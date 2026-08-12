@@ -293,29 +293,16 @@ export const stoveStyles = css`
     --icon-height: 10px;
   }
 
-  /*** stove-status selector (required by tests) ***/
+  /*** Status label, rendered by _renderStatus ***/
   .stove-status {
     display: inline;
   }
 
-  /*** sensor-tile (required by tests — legacy compatibility) ***/
-  .sensor-tile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 8px;
-    border: 1px solid rgba(0, 210, 255, 0.2);
-    border-radius: 6px;
-  }
-  .sensor-tile.warn {
-    border-color: var(--sf-error, #ff6b35);
-  }
-  .bar-fill.pellet,
-  .bar-fill.storage {
-    height: 4px;
-    border-radius: 2px;
-    background: var(--sf-primary, #00d2ff);
-  }
+  /* 2026-08-12 (bead ha-sci-fi-9xf) — removed: .sensor-tile, .sensor-tile.warn,
+   * .bar-fill.pellet and .bar-fill.storage. They were kept "required by tests —
+   * legacy compatibility" for tests that were never written, and no markup has
+   * ever rendered them: the gauges are sf-circle-progress-bar and sf-stack-bar.
+   * Spec rows TC-1106..TC-1109 went with them. */
 
   /*********** BOTTOM ***********/
   .bottom {

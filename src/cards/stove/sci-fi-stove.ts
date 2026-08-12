@@ -9,8 +9,7 @@
  * - Bottom: interactive controls (mode, temperature wheel, preset)
  *
  * ADR-005: preserves entity (not entity_id), all sensors, storage_counter, thresholds.
- * CSS selectors required by tests: .sensor-tile, .sensor-tile.warn,
- *   .bar-fill.pellet, .bar-fill.storage, .stove-status
+ * CSS selector required by tests: .stove-status (the label in _renderStatus).
  */
 import { html, nothing, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';

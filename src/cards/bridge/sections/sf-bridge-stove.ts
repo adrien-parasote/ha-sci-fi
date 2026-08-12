@@ -32,7 +32,7 @@ export class SfBridgeStove extends LitElement {
 
   override render(): TemplateResult {
     if (!this.hass || !this.config) return html``;
-    const sectionIcon = 'sci:stove';
+    const sectionIcon = this.config.icon ?? 'sci:stove';
 
     // Pellet quantity — normalized to 0–100 for circle-progress-bar
     const rawQty = parseFloat(this.hass.states[this.config.pellet_quantity]?.state ?? 'NaN');

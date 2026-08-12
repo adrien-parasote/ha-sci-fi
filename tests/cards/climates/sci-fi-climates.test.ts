@@ -1,6 +1,8 @@
  
 // @vitest-environment happy-dom
 import { expect, describe, it, beforeEach, vi, afterEach } from 'vitest';
+import * as fs from 'fs';
+import * as path from 'path';
 
 import '../../../src/cards/climates/sci-fi-climates.js';
 import { SciFiClimatesCard } from '../../../src/cards/climates/sci-fi-climates.js';
@@ -304,6 +306,60 @@ describe('sci-fi-climates', () => {
     const haCard = el.shadowRoot!.querySelector('ha-card');
     expect(haCard).to.exist;
     expect(haCard!.querySelector('.container')).to.exist;
+  });
+
+  it('IT-113: season colours fall back to hex literals, and no season class renders without sensor.season', async () => {
+    // The fallback IS the CSS custom-property default: var(--sf-season-blue, #acd5f3).
+    // Drop the hex and a theme without --sf-season-* silently renders an uncoloured icon.
+    const css = fs.readFileSync(
+      path.resolve(__dirname, '../../../src/cards/climates/styles.ts'),
+      'utf8',
+    );
+    for (const tone of ['blue', 'green', 'yellow', 'orange']) {
+      expect(css, `--sf-season-${tone} must keep a hex fallback`)
+        .toMatch(new RegExp(`--sf-season-${tone},\\s*#[0-9a-fA-F]{3,6}`));
+    }
+
+    const el = document.createElement('sci-fi-climates') as SciFiClimatesCard;
+    el.setConfig(SciFiClimatesCard.getStubConfig());
+    el.hass = makeMockHass({
+      entities: { 'climate.salon': makeMockEntityEntry({ entity_id: 'climate.salon', domain: 'climate' }) },
+      states: {
+        'climate.salon': makeMockEntity({ entity_id: 'climate.salon', state: 'heat', attributes: { friendly_name: 'Salon', current_temperature: 21, temperature: 22 } }),
+      }, // no sensor.season
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const season = el.shadowRoot!.querySelector('.season')!;
+    expect(season.className.trim()).toBe('season');
+    expect(season.querySelector('sf-icon')).toBeNull();
+  });
+
+  it('TC-504: forwards custom state_icons to every radiator tile', async () => {
+    const el = document.createElement('sci-fi-climates') as SciFiClimatesCard;
+    el.setConfig({
+      ...SciFiClimatesCard.getStubConfig(),
+      state_icons: { heat: 'mdi:fire' },
+    } as any);
+    el.hass = makeMockHass({
+      entities: {
+        'climate.salon': makeMockEntityEntry({ entity_id: 'climate.salon', domain: 'climate' }),
+      },
+      states: {
+        'climate.salon': makeMockEntity({
+          entity_id: 'climate.salon',
+          state: 'heat',
+          attributes: { friendly_name: 'Salon', current_temperature: 21.5, temperature: 22 },
+        }),
+      },
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const radiator = el.shadowRoot!.querySelector('sf-radiator') as any;
+    expect(radiator, 'a radiator tile must be rendered').to.exist;
+    expect(radiator.cardStyles.state.icons.heat).to.equal('mdi:fire');
   });
 });
 

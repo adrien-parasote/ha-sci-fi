@@ -74,7 +74,7 @@ describe('sf-bridge-vehicle', () => {
 
   // ── plugIcon: charging branch (line 27) ───────────────────────────────────
 
-  it('renders landspeeder-plugged icon when charging (power > 0)', async () => {
+  it('TC-BRIDGE-U-26: renders landspeeder-plugged icon when charging (power > 0)', async () => {
     const el = makeEl();
     el.config = BASE_CONFIG;
     el.hass = makeHass('3500');
@@ -86,7 +86,7 @@ describe('sf-bridge-vehicle', () => {
 
   // ── plugIcon: idle branch (line 29) ───────────────────────────────────────
 
-  it('renders landspeeder idle icon when power is 0 (not charging, not unavailable)', async () => {
+  it('TC-BRIDGE-U-25: renders landspeeder idle icon when power is 0 (not charging, not unavailable)', async () => {
     const el = makeEl();
     el.config = BASE_CONFIG;
     el.hass = makeHass('0');

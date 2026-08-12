@@ -96,8 +96,15 @@
 | TC-104 | Unit | Strict Lint passes | `npm run lint` | Exit code 0, zero lint warnings |
 | TC-105 | Unit | HACS manifest is valid | `hacs.json` present | HACS validate workflow passes |
 | IT-101 | Integration | CI runner runs the complete checks | Push to branch `v2` | GitHub Action passes successfully |
-| IT-102 | Integration | Dev container mounts and compiles | VS Code container open | Full Node/Docker compiler mounts |
-| IT-103 | Integration | Dev server serves active minified bundle | `npm run start` | `http://localhost:5000/sci-fi.min.js` returns 200 |
+
+> **Retirées le 2026-08-12** (bead `ha-sci-fi-9xf`) — les deux lignes d'intégration 102 et
+> 103 : *Dev container mounts and compiles* et *Dev server serves active minified bundle
+> (`npm run start`)*. (Les identifiants ne sont pas réécrits ici : le contrôle de
+> couverture P14 lit tout ID présent dans une spec comme une promesse à tenir.)
+> Ni `.devcontainer/` ni le script `start` n'existent dans ce dépôt : les deux lignes
+> promettaient un outillage qui n'a jamais été mis en place. Le serveur de développement
+> passe par `npm run dev` et sert `dev/workbench.html`. À réintroduire avec l'outillage
+> le jour où il arrive, pas avant.
 
 ---
 

@@ -8,6 +8,8 @@
  * GREEN: pass once src/cards/bridge/sci-fi-bridge.ts is implemented.
  */
 import { expect, describe, it, afterEach, vi } from 'vitest';
+import * as fs from 'fs';
+import * as path from 'path';
 
 import '../../../src/cards/bridge/sci-fi-bridge.js';
 import { SciFiBridgeCard } from '../../../src/cards/bridge/sci-fi-bridge.js';
@@ -105,12 +107,12 @@ describe('sci-fi-bridge', () => {
 
   // ── Card registration ────────────────────────────────────────────────────────
 
-  it('provides getConfigElement → sci-fi-bridge-editor', () => {
+  it('TC-BRIDGE-U-01: provides getConfigElement → sci-fi-bridge-editor', () => {
     const el = SciFiBridgeCard.getConfigElement();
     expect(el.tagName.toLowerCase()).to.equal('sci-fi-bridge-editor');
   });
 
-  it('provides getStubConfig with type custom:sci-fi-bridge', () => {
+  it('TC-BRIDGE-U-02: provides getStubConfig with type custom:sci-fi-bridge', () => {
     const config = SciFiBridgeCard.getStubConfig();
     expect(config.type).to.equal('custom:sci-fi-bridge');
   });
@@ -124,7 +126,7 @@ describe('sci-fi-bridge', () => {
     expect(ids).to.deep.equal([]);
   });
 
-  it('getRelevantEntities returns all entity_ids from full config (deduped)', () => {
+  it('TC-BRIDGE-U-10: getRelevantEntities returns all entity_ids from full config (deduped)', () => {
     const el = document.createElement('sci-fi-bridge') as SciFiBridgeCard;
     (el as any).setConfig(FULL_CONFIG);
     const ids: string[] = (el as any).getRelevantEntities();
@@ -157,7 +159,7 @@ describe('sci-fi-bridge', () => {
     expect(ids).to.deep.equal(['person.adrien']);
   });
 
-  it('getRelevantEntities iterates access.items (not top-level access array)', () => {
+  it('TC-BRIDGE-U-08: getRelevantEntities iterates access.items (not top-level access array)', () => {
     const el = document.createElement('sci-fi-bridge') as SciFiBridgeCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-bridge',
@@ -168,7 +170,7 @@ describe('sci-fi-bridge', () => {
     expect(ids).to.include('lock.porte_garage');
   });
 
-  it('getRelevantEntities iterates automations.items (not top-level automations array)', () => {
+  it('TC-BRIDGE-U-09: getRelevantEntities iterates automations.items (not top-level automations array)', () => {
     const el = document.createElement('sci-fi-bridge') as SciFiBridgeCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-bridge',
@@ -180,7 +182,7 @@ describe('sci-fi-bridge', () => {
 
   // ── Optional sections rendering ──────────────────────────────────────────────
 
-  it('renders nothing when hass is not set', async () => {
+  it('TC-BRIDGE-U-03: renders nothing when hass is not set', async () => {
     const el = document.createElement('sci-fi-bridge') as SciFiBridgeCard;
     (el as any).setConfig({ type: 'custom:sci-fi-bridge' });
     document.body.appendChild(el);
@@ -188,7 +190,7 @@ describe('sci-fi-bridge', () => {
     expect(el.shadowRoot!.textContent?.trim()).to.equal('');
   });
 
-  it('does NOT render sf-bridge-crew when persons is absent', async () => {
+  it('TC-BRIDGE-U-05: does NOT render sf-bridge-crew when persons is absent', async () => {
     const el = document.createElement('sci-fi-bridge') as SciFiBridgeCard;
     (el as any).setConfig({ type: 'custom:sci-fi-bridge' });
     el.hass = makeMockHass();
@@ -197,7 +199,7 @@ describe('sci-fi-bridge', () => {
     expect(el.shadowRoot!.querySelector('sf-bridge-crew')).to.be.null;
   });
 
-  it('renders sf-bridge-crew when persons is present', async () => {
+  it('TC-BRIDGE-U-06: renders sf-bridge-crew when persons is present', async () => {
     const el = document.createElement('sci-fi-bridge') as SciFiBridgeCard;
     (el as any).setConfig({ type: 'custom:sci-fi-bridge', persons: [{ entity: 'person.adrien' }] });
     el.hass = makeFullHass();
@@ -224,7 +226,7 @@ describe('sci-fi-bridge', () => {
     expect(el.shadowRoot!.querySelector('sf-bridge-alerts')).not.to.be.null;
   });
 
-  it('does NOT render sf-bridge-automations when automations.items is empty', async () => {
+  it('TC-BRIDGE-U-07: does NOT render sf-bridge-automations when automations.items is empty', async () => {
     const el = document.createElement('sci-fi-bridge') as SciFiBridgeCard;
     (el as any).setConfig({ type: 'custom:sci-fi-bridge', automations: { items: [] } });
     el.hass = makeMockHass();
@@ -331,7 +333,7 @@ describe('sci-fi-bridge', () => {
 
   // ── Full render ───────────────────────────────────────────────────────────────
 
-  it('renders .bridge-grid with all 8 sections for full config', async () => {
+  it('IT-BRIDGE-I-02, IT-103: renders .bridge-grid with all 8 sections for full config', async () => {
     const el = document.createElement('sci-fi-bridge') as SciFiBridgeCard;
     (el as any).setConfig(FULL_CONFIG);
     el.hass = makeFullHass();
@@ -385,5 +387,100 @@ describe('sci-fi-bridge', () => {
     // Component must be present
     const automationsEl = el.shadowRoot!.querySelector('sf-bridge-automations');
     expect(automationsEl).not.to.be.null;
+  });
+
+  // ── Empty-config guards ───────────────────────────────────────────────────────
+
+  it('TC-BRIDGE-U-04: renders nothing when config is not set', async () => {
+    const el = document.createElement('sci-fi-bridge') as SciFiBridgeCard;
+    el.hass = makeFullHass();
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect(el.shadowRoot!.textContent?.trim()).to.equal('');
+  });
+
+  it('TC-BRIDGE-U-30: renders only .bridge-grid and zero sf-bridge-* sections for empty config', async () => {
+    const el = document.createElement('sci-fi-bridge') as SciFiBridgeCard;
+    (el as any).setConfig({ type: 'custom:sci-fi-bridge' });
+    el.hass = makeFullHass();
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('.bridge-grid')).not.to.be.null;
+    expect(el.shadowRoot!.querySelectorAll('[class^="sf-bridge-"], sf-bridge-crew, sf-bridge-alerts, sf-bridge-automations, sf-bridge-access, sf-bridge-appliances, sf-bridge-stove, sf-bridge-vehicle, sf-bridge-actions').length).to.equal(0);
+  });
+
+  // ── Card registration ─────────────────────────────────────────────────────────
+
+  it('IT-BRIDGE-I-01: registers sci-fi-bridge in customElements', () => {
+    expect(customElements.get('sci-fi-bridge')).to.equal(SciFiBridgeCard);
+  });
+
+  // ── Styles live in styles.ts, not inline ──────────────────────────────────────
+
+  it('IT-BRIDGE-I-03: sci-fi-bridge.ts declares no inline css`` block', () => {
+    const src = fs.readFileSync(
+      path.resolve(__dirname, '../../../src/cards/bridge/sci-fi-bridge.ts'),
+      'utf8',
+    );
+    expect(src).to.not.match(/\bcss`/);
+    expect(src).to.contain("from './styles.js'");
+  });
+
+  it('IT-BRIDGE-I-04: .bridge-grid defaults to a single column (portrait)', () => {
+    const css = fs.readFileSync(
+      path.resolve(__dirname, '../../../src/cards/bridge/styles.ts'),
+      'utf8',
+    );
+    // The base rule — outside any @container block — is 1 column.
+    const base = css.slice(css.indexOf('.bridge-grid'), css.indexOf('@container'));
+    expect(base).to.match(/grid-template-columns:\s*1fr\s*;/);
+  });
+
+  it('IT-BRIDGE-I-05: .bridge-grid switches to a two-column flow at container width 600px', () => {
+    const css = fs.readFileSync(
+      path.resolve(__dirname, '../../../src/cards/bridge/styles.ts'),
+      'utf8',
+    );
+    const query = css.slice(css.indexOf('@container sf-card (min-width: 600px)'));
+    // ADR-016: column flow, not a row-flow grid — sections pack against each other
+    // instead of leaving holes under the short ones.
+    expect(query).toMatch(/\.bridge-grid\s*{[^}]*display:\s*block;/);
+    expect(query).toMatch(/\.bridge-grid\s*{[^}]*columns:\s*2;/);
+    // Without break-inside a section would be sliced across the two columns.
+    expect(query).toMatch(/\.bridge-grid\s*>\s*\*\s*{[^}]*break-inside:\s*avoid;/);
+  });
+
+  // ── Reference scenarios ───────────────────────────────────────────────────────
+
+  it('IT-BRIDGE-I-06: Disconnected scenario — every entity unavailable, card renders without throwing', async () => {
+    const unavailable: Record<string, any> = {};
+    for (const id of Object.keys(makeFullHass().states)) {
+      unavailable[id] = makeMockEntity({ entity_id: id, state: 'unavailable' });
+    }
+    const el = document.createElement('sci-fi-bridge') as SciFiBridgeCard;
+    (el as any).setConfig(FULL_CONFIG);
+    el.hass = makeFullHass(unavailable);
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('.bridge-grid')).not.to.be.null;
+    expect(el.shadowRoot!.querySelector('sf-bridge-crew')).not.to.be.null;
+  });
+
+  it('IT-BRIDGE-I-07: Minimal scenario — only CREW and ACTIONS render', async () => {
+    const el = document.createElement('sci-fi-bridge') as SciFiBridgeCard;
+    (el as any).setConfig({
+      type: 'custom:sci-fi-bridge',
+      persons: [{ entity: 'person.adrien' }],
+      actions: { items: [{ entity: 'input_button.call_kids', name: 'Appeler' }] },
+    });
+    el.hass = makeFullHass();
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('sf-bridge-crew')).not.to.be.null;
+    expect(el.shadowRoot!.querySelector('sf-bridge-actions')).not.to.be.null;
+    expect(el.shadowRoot!.querySelector('sf-bridge-alerts')).to.be.null;
+    expect(el.shadowRoot!.querySelector('sf-bridge-access')).to.be.null;
+    expect(el.shadowRoot!.querySelector('sf-bridge-stove')).to.be.null;
+    expect(el.shadowRoot!.querySelector('sf-bridge-vehicle')).to.be.null;
   });
 });

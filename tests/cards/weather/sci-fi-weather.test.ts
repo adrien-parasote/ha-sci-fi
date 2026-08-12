@@ -54,7 +54,7 @@ describe('sci-fi-weather', () => {
       expect(editor.tagName.toLowerCase()).to.equal('sci-fi-weather-editor');
     });
 
-    it('provides getStubConfig', () => {
+    it('TC-502: provides getStubConfig', () => {
       const config = SciFiWeatherCard.getStubConfig();
       expect(config.type).to.equal('custom:sci-fi-weather');
       expect(config.weather_entity).to.equal('weather.forecast_home');
@@ -129,7 +129,7 @@ describe('sci-fi-weather', () => {
       expect(clock!.querySelector('.date')).not.to.be.null;
     });
 
-    it('TC-002: Alerts rendering', () => {
+    it('TC-002, TC-503: Alerts rendering', () => {
       const alerts = el.shadowRoot!.querySelector('.alerts');
       expect(alerts).not.to.be.null;
       // Should show 'Crues' (Orange) and 'Orages' (Jaune)

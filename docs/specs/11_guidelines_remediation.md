@@ -25,7 +25,7 @@
 
 | ID | Assumption | Risk | Validation |
 |---|---|---|---|
-| 1 | The native `hass-action` event is correctly intercepted by the dashboard without `custom-card-helpers`. | Low | → IT-114: Deploy hexa-tiles card to HA dashboard, click tile, verify HA navigates/toggles entity based on action config. |
+| 1 | The native `hass-action` event is correctly intercepted by the dashboard without `custom-card-helpers`. | Low | Acceptation de release (voir la note en fin de section) : déployer la carte hexa-tiles sur un dashboard HA, cliquer une tuile, vérifier la navigation / le toggle. Côté code, l'émission de l'event est couverte par IT-111. |
 | 2 | Wrapping the climates card in `<ha-card>` does not break its flexible horizontal layout. | Medium | → Render the card in the workbench and inspect element rendering under mobile breakpoints. |
 | 3 | CSS variables with fallbacks preserve the premium visual appearance in all default dashboard themes. | Low | → Audit style elements in dev workbench under dark, light, and custom active themes. |
 
@@ -175,7 +175,15 @@ export interface LovelaceCard extends HTMLElement {
 | IT-111 | Integration | Hexa-tiles handles custom click action | Click tile element with tap_action config | `hass-action` CustomEvent fired up the DOM tree |
 | IT-112 | Integration | Climates card renders surrounded by `<ha-card>` wrapper | Render `sci-fi-climates` | Top element in shadow root is `<ha-card>` |
 | IT-113 | Integration | Season variables fallback to hexes when undefined | Render climates card | Season icon color maps to default hexes |
-| IT-114 | Integration | HA Dashboard intercepts `hass-action` | Deploy card to HA dashboard, click tile | HA navigates/toggles entity based on action config (Verifies Assumption 1) |
+
+> **Reclassée le 2026-08-12** (bead `ha-sci-fi-9xf`) — la ligne d'intégration 114,
+> *HA Dashboard intercepts `hass-action`*, n'est pas un cas de test mais une
+> **acceptation de release**. (L'identifiant n'est pas réécrit ici : le contrôle de
+> couverture P14 lit tout ID présent dans une spec comme une promesse à tenir.) Elle porte
+> sur le comportement de Home Assistant, pas sur notre code : ce que nous contrôlons —
+> l'émission de l'event, `bubbles` et `composed` compris — est couvert par IT-111 dans
+> `tests/cards/hexa-tiles/sci-fi-hexa-tiles.test.ts`. À vérifier à la main sur un
+> dashboard réel avant publication, pas dans la suite unitaire.
 
 ---
 

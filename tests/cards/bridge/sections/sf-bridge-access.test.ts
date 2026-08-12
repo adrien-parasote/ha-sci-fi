@@ -102,7 +102,7 @@ describe('sf-bridge-access', () => {
     expect(icon?.getAttribute('icon')).to.equal('mdi:garage');
   });
 
-  it('uses item.icon when provided', async () => {
+  it('TC-BRIDGE-U-18: uses item.icon when provided', async () => {
     const el = makeEl();
     el.config = { items: [{ entity: 'cover.garage', name: 'Garage', icon: 'mdi:door' }] };
     el.hass = makeHass();
@@ -256,7 +256,7 @@ describe('sf-bridge-access', () => {
     expect(btns[1].classList.contains('disabled')).to.be.false;
   });
 
-  it('Close button has disabled class when cover is closed', async () => {
+  it('TC-BRIDGE-U-29: Close button has disabled class when cover is closed', async () => {
     const el = makeEl();
     el.config = { items: [{ entity: 'cover.garage', name: 'Garage' }] };
     el.hass = makeHass({ 'cover.garage': makeMockEntity({ entity_id: 'cover.garage', state: 'closed' }) });
@@ -295,5 +295,22 @@ describe('sf-bridge-access', () => {
     btns[1].dispatchEvent(new MouseEvent('click'));
 
     expect(callService).toHaveBeenCalledWith('cover', 'close_cover', { entity_id: 'cover.garage' });
+  });
+
+  // ── Localised state label ─────────────────────────────────────────────────
+
+  it('TC-BRIDGE-U-31: renders the localised cover state label for a closed cover', async () => {
+    const el = makeEl();
+    el.config = { items: [{ entity: 'cover.garage', name: 'Garage' }] };
+    el.hass = makeHass();
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    // The label goes through lit-localize msg(); the source locale renders 'Closed'
+    // (translated to 'Fermée' in xliff/fr.xlf).
+    const tag = el.shadowRoot!.querySelector('.access-state-tag');
+    expect(tag).not.to.be.null;
+    expect(tag!.textContent?.trim()).to.equal('Closed');
+    expect(tag!.classList.contains('state-closed')).to.be.true;
   });
 });

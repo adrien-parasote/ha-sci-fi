@@ -59,7 +59,7 @@ describe('base-editor', () => {
     expect(el.hass).toBeUndefined();
   });
 
-  it('hass setter triggers setLocale asynchronously when language differs', async () => {
+  it('IT-303: hass setter triggers setLocale asynchronously when language differs', async () => {
     const el = makeEl();
     const mockHass = makeMockHass() as unknown as HomeAssistantExt;
     expect(() => { el.hass = mockHass; }).not.toThrow();
@@ -78,7 +78,7 @@ describe('base-editor', () => {
 
   // ── _dispatchChange ───────────────────────────────────────────────────────
 
-  it('_dispatchChange dispatches config-changed and syncs local config', () => {
+  it('TC-1004: _dispatchChange dispatches config-changed and syncs local config', () => {
     const el = makeEl();
     el.setConfig({ type: 'custom:mock' });
     const received: CustomEvent[] = [];
@@ -103,7 +103,7 @@ describe('base-editor', () => {
 
   // ── _dispatchConfigChanged (deprecated compat) ─────────────────────────────
 
-  it('_dispatchConfigChanged dispatches config-changed event', () => {
+  it('TC-305: _dispatchConfigChanged dispatches config-changed event', () => {
     const el = makeEl();
     el.setConfig({ type: 'custom:mock' });
     let eventFired = false;
@@ -132,7 +132,7 @@ describe('base-editor', () => {
 
   // ── _getNewConfig ─────────────────────────────────────────────────────────
 
-  it('_getNewConfig returns a deep clone of config', () => {
+  it('TC-1003: _getNewConfig returns a deep clone of config', () => {
     const el = makeEl();
     el.setConfig({ type: 'custom:mock', title: 'Original' } as unknown as SciFiBaseConfig);
 
@@ -141,7 +141,7 @@ describe('base-editor', () => {
     expect(cloned).toEqual({ type: 'custom:mock', title: 'Original' });
   });
 
-  it('_getNewConfig modifications do not affect original config', () => {
+  it('TC-1015: _getNewConfig modifications do not affect original config', () => {
     const el = makeEl();
     el.setConfig({ type: 'custom:mock' });
 
@@ -160,13 +160,13 @@ describe('base-editor', () => {
 
   // ── getLabel ──────────────────────────────────────────────────────────────
 
-  it('getLabel returns a string for known keys', () => {
+  it('TC-1001: getLabel returns a string for known keys', () => {
     const el = makeEl();
     const result = el.getLabel('section-title-header');
     expect(typeof result).toBe('string');
   });
 
-  it('getLabel returns empty string for unknown key', () => {
+  it('TC-1002: getLabel returns empty string for unknown key', () => {
     const el = makeEl();
     expect(el.getLabel('totally-unknown-key-xyz')).toBe('');
   });

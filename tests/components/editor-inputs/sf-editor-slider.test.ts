@@ -56,7 +56,7 @@ describe('sf-editor-slider', () => {
     expect(display?.textContent?.trim()).not.toBeNull(); // just verify it renders
   });
 
-  it('dispatches input-update on slider move', async () => {
+  it('TC-1009: dispatches input-update on slider move', async () => {
     const el = await createElement({ elementId: 'slider1', kind: 'brightness', min: 0, max: 100 });
     const received: CustomEvent[] = [];
     el.addEventListener('input-update', (e) => received.push(e as CustomEvent));

@@ -66,7 +66,7 @@ describe('sf-bridge-crew', () => {
 
   // ── ringClass: home branch ────────────────────────────────────────────────
 
-  it('renders ring-home class when person state is home', async () => {
+  it('TC-BRIDGE-U-11: renders ring-home class when person state is home', async () => {
     const el = makeEl();
     el.persons = [ALICE];
     el.hass = makeHass('home');
@@ -88,7 +88,7 @@ describe('sf-bridge-crew', () => {
 
   // ── ringClass: other branch (work/school/etc.) ────────────────────────────
 
-  it('renders ring-other class when person is at work', async () => {
+  it('TC-BRIDGE-U-12: renders ring-other class when person is at work', async () => {
     const el = makeEl();
     el.persons = [ALICE];
     el.hass = makeHass('work');

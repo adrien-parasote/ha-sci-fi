@@ -16,7 +16,7 @@ describe('sf-radiator', () => {
     expect(el.shadowRoot!.textContent).to.be.empty;
   });
 
-  it('renders correctly with default attributes and states', async () => {
+  it('TC-404: renders correctly with default attributes and states', async () => {
     const el = document.createElement('sf-radiator') as SciFiRadiator;
     el.climateEntity = makeMockEntity({
       entity_id: 'climate.salon',
@@ -71,7 +71,7 @@ describe('sf-radiator', () => {
     });
   });
 
-  it('triggers change-hvac-mode when sf-button-card-select dispatches button-select for mode', async () => {
+  it('IT-402: triggers change-hvac-mode when sf-button-card-select dispatches button-select for mode', async () => {
     const el = document.createElement('sf-radiator') as SciFiRadiator;
     el.climateEntity = makeMockEntity({
       entity_id: 'climate.salon',

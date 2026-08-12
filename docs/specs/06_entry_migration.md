@@ -88,7 +88,13 @@ src/
 | TC-601 | Unit | syncHALocale switches language | HASS state lang `fr` | setLocale resolves to French statically |
 | TC-602 | Unit | CustomIcons registers successfully | Load entry script | `window.customIcons.sf` is defined |
 | TC-603 | Unit | Card registration compiles all elements | Load entry script | Custom card element tags get registered |
-| TC-604 | Unit | MIGRATION parses legacy config keys | Legacy YAML configuration | Mapped and migrated configuration output |
+
+> **Retirée le 2026-08-12** (bead `ha-sci-fi-9xf`) — la ligne unitaire 604 : *MIGRATION
+> parses legacy config keys*. (L'identifiant n'est pas réécrit ici : le contrôle de
+> couverture P14 lit tout ID présent dans une spec comme une promesse à tenir.) Il n'y a aucun module de migration dans `src/`, et il ne doit pas y en
+> avoir : ADR-005 « zero breaking yaml » pose que les clés historiques restent lues
+> telles quelles (`entity` et non `entity_id`, `weather_entity`, …). La ligne
+> contredisait son propre ADR — rien à migrer par construction.
 | TC-605 | Unit | Static locales bundled cleanly | Run build command | `dist/sci-fi.min.js` contains locales text |
 | IT-601 | Integration | Single-bundle loads in HA dashboard | Include bundle in HA resources | Cards render without fetch failures |
 | IT-602 | Integration | Language switches reactively in dashboard | Update HA user language | Card UI updates translation language |

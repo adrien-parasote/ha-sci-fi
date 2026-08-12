@@ -301,7 +301,7 @@ describe('sci-fi-vacuum', () => {
 
   // ── TC-1518 — shortcut sf-button click calls shortcut service ───────────
 
-  it('TC-1518 — shortcut sf-button click calls shortcut service', async () => {
+  it('TC-1518, TC-506 — shortcut sf-button click calls shortcut service', async () => {
     const el = makeEl();
     const mockCallService = vi.fn().mockResolvedValue(undefined);
     setConfig(el, {

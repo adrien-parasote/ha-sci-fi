@@ -12,7 +12,7 @@ describe('sf-iconset', () => {
     expect(typeof (window as any).customIconsets!.sci).toBe('function');
   });
 
-  it('getIcon (customIconsets) returns path and viewBox for a known custom icon', async () => {
+  it('TC-408: getIcon (customIconsets) returns path and viewBox for a known custom icon', async () => {
     await import('../../../src/components/sf-icon/sf-iconset.js');
     const getIcon = (window as any).customIconsets!.sci as (name: string) => Promise<any>;
     const result = await getIcon('power-socket-fr-off');
@@ -63,7 +63,7 @@ describe('sf-iconset', () => {
     expect(result).toHaveProperty('viewBox', '0 0 24 24');
   });
 
-  it('getIconList returns a non-empty array with name fields', async () => {
+  it('TC-407: getIconList returns a non-empty array with name fields', async () => {
     await import('../../../src/components/sf-icon/sf-iconset.js');
     const sciMap = (window as any).customIcons!.sci as Record<string, any>;
     const list: { name: string; keywords?: string[] }[] = await sciMap.getIconList();

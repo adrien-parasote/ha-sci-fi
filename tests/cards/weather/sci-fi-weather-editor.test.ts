@@ -3,7 +3,7 @@ import { expect, describe, it } from 'vitest';
 import '../../../src/cards/weather/sci-fi-weather-editor.js';
 import type { SciFiWeatherEditor } from '../../../src/cards/weather/sci-fi-weather-editor.js';
 import type { HomeAssistantExt } from '../../../src/types/ha.js';
-import { makeMockHass } from '../../fixtures/mock-hass.js';
+import { makeMockHass, makeMockEntity } from '../../fixtures/mock-hass.js';
 
 function makeConfig(overrides: Record<string, unknown> = {}) {
   return { type: 'custom:sci-fi-weather', ...overrides };
@@ -23,7 +23,7 @@ describe('sci-fi-weather-editor', () => {
     expect(result).toBeDefined();
   });
 
-  it('renders the editor sections when config is set', async () => {
+  it('TC-1011: renders the editor sections when config is set', async () => {
     const el = await createElement();
     el.setConfig(makeConfig());
     await el.updateComplete;
@@ -70,7 +70,7 @@ describe('sci-fi-weather-editor', () => {
     expect(inputs.length).toBeGreaterThanOrEqual(5);
   });
 
-  it('dispatches config-changed on simple field update (e.g. weather_entity)', async () => {
+  it('TC-1012: dispatches config-changed on simple field update (e.g. weather_entity)', async () => {
     const el = await createElement();
     el.setConfig(makeConfig());
     await el.updateComplete;
@@ -203,5 +203,57 @@ describe('sci-fi-weather-editor', () => {
 
     const dropdown = el.shadowRoot!.querySelector('sf-editor-dropdown') as any;
     expect(dropdown?.value).toBe('');
+  });
+
+  // ── Integration: mounted in a Lovelace-like host ────────────────────────────
+
+  it('IT-1001: mounts with setConfig() + hass and renders without console errors', async () => {
+    const errors: unknown[][] = [];
+    const original = console.error;
+    console.error = (...args: unknown[]) => { errors.push(args); };
+    try {
+      const el = await createElement();
+      el.setConfig(makeConfig({ weather_entity: 'weather.home' }));
+      el.hass = makeMockHass({
+        states: {
+          'weather.home': makeMockEntity({ entity_id: 'weather.home', state: 'sunny', attributes: { friendly_name: 'Home' } }),
+        },
+      }) as unknown as HomeAssistantExt;
+      await el.updateComplete;
+
+      expect(el.shadowRoot!.querySelector('.card')).not.toBeNull();
+      expect(el.isConnected).toBe(true);
+      expect(errors).toHaveLength(0);
+    } finally {
+      console.error = original;
+    }
+  });
+
+  it('IT-1002: config-changed crosses the shadow boundary and reaches a Lovelace-like parent', async () => {
+    const host = document.createElement('div');
+    document.body.appendChild(host);
+
+    const el = document.createElement('sci-fi-weather-editor') as SciFiWeatherEditor;
+    host.appendChild(el);
+    await el.updateComplete;
+    el.setConfig(makeConfig({ weather_entity: 'weather.old' }));
+    await el.updateComplete;
+
+    // The listener sits on the PARENT — this is what Lovelace does, and it only
+    // works if the event is both bubbles:true and composed:true.
+    const received: CustomEvent[] = [];
+    host.addEventListener('config-changed', e => received.push(e as CustomEvent));
+
+    const input = el.shadowRoot!.querySelector('sf-editor-dropdown-entity[element-id="weather_entity"]')
+      ?? el.shadowRoot!.querySelector('[element-id="weather_entity"]');
+    expect(input, 'weather_entity field must exist').not.toBeNull();
+    input!.dispatchEvent(new CustomEvent('input-update', {
+      bubbles: true,
+      composed: true,
+      detail: { id: 'weather_entity', value: 'weather.new' },
+    }));
+
+    expect(received).toHaveLength(1);
+    expect(received[0]!.detail.config.weather_entity).toBe('weather.new');
   });
 });

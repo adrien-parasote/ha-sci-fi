@@ -67,7 +67,7 @@ describe('sf-editor-multi-entity', () => {
     expect(chipText?.textContent?.trim()).toBe('light.salon');
   });
 
-  it('dispatches input-update type:remove when chip delete clicked', async () => {
+  it('TC-1007: dispatches input-update type:remove when chip delete clicked', async () => {
     const el = await createElement({
       values: ['light.salon', 'switch.prise'],
       items: [],
@@ -100,7 +100,7 @@ describe('sf-editor-multi-entity', () => {
     expect(dropItems.length).toBe(1);
   });
 
-  it('dispatches input-update type:add when entity selected from dropdown', async () => {
+  it('TC-1008: dispatches input-update type:add when entity selected from dropdown', async () => {
     const items = [
       makeEntity({ entity_id: 'light.kitchen', attributes: { friendly_name: 'Kitchen' } }),
     ];

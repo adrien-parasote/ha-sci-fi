@@ -863,3 +863,24 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 - **Evidence:** Using advanced `sed` commands with brace chaining `{cmd; cmd;}` for multiline extraction caused unexpected EOF errors on macOS (BSD sed), while passing on Ubuntu (GNU sed).
 - **Anti-pattern:** Relying on complex `sed` syntax in CI/CD scripts that developers also test locally. The BSD vs GNU syntax difference leads to "works on my machine" or "works on CI but fails locally" divergence.
 - **Fix:** For multiline string parsing (e.g. changelog extraction), use `awk` instead of `sed`. `awk` handles stateful extraction (`flag=1`) identically across macOS and Linux, ensuring the script behaves perfectly in both environments.
+
+### L112: CSS kept "required by tests" for tests that were never written becomes undetectable dead code
+- **Date:** 2026-08-12
+- **Source:** ha-sci-fi — P14 TC-coverage pass (bead `ha-sci-fi-9xf`)
+- **Evidence:** `src/cards/stove/styles.ts` carried `.sensor-tile`, `.sensor-tile.warn`, `.bar-fill.pellet` and `.bar-fill.storage` under the comment *"required by tests — legacy compatibility"*, and `sci-fi-stove.ts` repeated the claim in its header. No markup has ever rendered those selectors — the gauges are `sf-circle-progress-bar` and `sf-stack-bar`. Four spec rows (the 1106–1109 series) described the same dead design. The comment made the dead code look load-bearing, so every reader left it alone.
+- **Anti-pattern:** Justifying code by a test that does not exist. The comment is unfalsifiable: a reader cannot tell "tests depend on this" from "someone once meant to write tests". Dead-code detection then skips it, because the comment reads as intent.
+- **Fix:** Never write "required by tests" — name the test. `/* .stove-status: asserted by TC-1104 */` is checkable in one grep and rots visibly when the test goes. If no test cites the selector, the selector is dead: delete it.
+
+### L113: A spec row is only a promise if its ID lives in a test TITLE — comments and removal notes both fool the scanner
+- **Date:** 2026-08-12
+- **Source:** ha-sci-fi — P14 TC-coverage pass (bead `ha-sci-fi-9xf`)
+- **Evidence:** 141 of 254 declared TC-IDs had no test. Two traps surfaced while closing them. First, `verify.py` P14 accepts an ID found anywhere in the test corpus, including a bare comment — which passes forever after the test it names is renamed or deleted. Second, and the reverse: writing a *removal* note that spells the retired ID (`"TC-1527 must be deleted"`, or `"Retirées : IT-102, IT-103"`) re-declares it, so the gate demands a test for a row that was just retired. Three separate rounds were spent chasing IDs that only existed in my own retirement notes.
+- **Anti-pattern:** Treating the ID as a token to place somewhere in the file. It is a binding between one spec row and one live test, and it must break when either side moves.
+- **Fix:** Put the ID in the `it(...)` title, never in a comment beside it. When retiring a row, describe it without spelling the identifier — *"la ligne d'intégration 114"* — and say in the note why the ID is not written out, or the next pass re-opens it.
+
+### L114: When code and its ADR disagree, the missing artefact is usually the ADR — write it, don't silently pick a side
+- **Date:** 2026-08-12
+- **Source:** ha-sci-fi — bridge responsive layout (bead `ha-sci-fi-zkd`)
+- **Evidence:** `ADR-013` and the bridge spec both required `grid-template-columns: 1fr 1fr` above 600px. `styles.ts` instead leaves grid layout for `display: block; columns: 2`, with a comment crediting *"ADR-B02"* — an ADR that does not exist, in a numbering scheme the repo never used. The shipped behaviour had been the column flow all along; only the record was missing. Writing the test against either side would have frozen an unresolved divergence, so the test was held back until the decision was recorded (`ADR-016`, superseding ADR-013's layout clause only).
+- **Anti-pattern:** Resolving a code/doc conflict by editing whichever side is cheaper — usually the doc — without recording that a decision was made. The next reader sees agreement and no history.
+- **Fix:** A citation to a non-existent ADR is a strong signal that a real decision was taken and never written down. Reconstruct the ADR from what the code does, mark precisely which clause of the old ADR it supersedes, and leave the old one readable with the superseded clause struck through. Only then write the test.

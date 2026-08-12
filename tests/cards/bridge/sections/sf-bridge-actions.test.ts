@@ -146,7 +146,7 @@ describe('sf-bridge-actions', () => {
 
   // ── resolveActionService via _trigger ────────────────────────────────────
 
-  it('_trigger calls input_button.press for input_button domain', async () => {
+  it('TC-BRIDGE-U-27: _trigger calls input_button.press for input_button domain', async () => {
     const callService = vi.fn().mockResolvedValue({});
     const el = makeEl();
     el.config = { items: [{ entity: 'input_button.ring', name: 'Ring' }] };
@@ -259,5 +259,18 @@ describe('sf-bridge-actions', () => {
     expect(loadingIcon).not.to.be.null;
     expect(loadingIcon?.getAttribute('icon')).to.equal('mdi:loading');
     resolve({});
+  });
+
+  // ── Custom colour ─────────────────────────────────────────────────────────
+
+  it('TC-BRIDGE-U-28: action button inherits item.color when provided', async () => {
+    const el = makeEl();
+    el.config = { items: [{ entity: 'input_button.test', name: 'Test', color: '#ff0000' }] };
+    el.hass = makeHass();
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const btn = el.shadowRoot!.querySelector('.action-btn') as HTMLElement;
+    expect(btn.getAttribute('style')).to.contain('--action-color: #ff0000');
   });
 });

@@ -31,7 +31,7 @@ describe('sf-editor-dropdown-entity', () => {
     expect(el.items).toEqual([]);
   });
 
-  it('filters by friendly_name', async () => {
+  it('IT-1003: filters by friendly_name', async () => {
     const items = [
       makeEntity({ entity_id: 'light.salon', attributes: { friendly_name: 'Salon' } }),
       makeEntity({ entity_id: 'switch.kitchen', attributes: { friendly_name: 'Kitchen' } }),

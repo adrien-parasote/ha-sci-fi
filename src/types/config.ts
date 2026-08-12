@@ -366,7 +366,7 @@ export interface BridgeAppliancesConfig {
 }
 
 export interface BridgeStoveConfig {
-  icon?: string;          // section icon (default: 'mdi:fire')
+  icon?: string;          // section icon (default: 'sci:stove')
   pellet_quantity: string;
   pellet_stock: string;
   status: string;

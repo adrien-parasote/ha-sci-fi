@@ -40,6 +40,8 @@ export default defineConfig({
       ['tests/utils/**', 'happy-dom'],
       ['tests/components/**', 'happy-dom'],
       ['tests/cards/**', 'happy-dom'],
+      // dev/ workbench modules read document + localStorage at import time
+      ['tests/dev/**', 'happy-dom'],
       ['tests/selectors/**', 'node'],
       ['tests/types/**', 'node'],
     ],

@@ -155,5 +155,40 @@ describe('house selectors', () => {
       expect(floors1).toEqual(floors2);
       expect(floors1).not.toBe(floors2); // Immutability verification
     });
+
+    it('IT-203: getFloors → getAreasByFloor → getEntitiesByArea resolves the whole hierarchy', () => {
+      const hass = makeMockHass({
+        floors: {
+          'ground': makeMockFloor({ floor_id: 'ground', name: 'Ground', level: 0 }),
+          'first': makeMockFloor({ floor_id: 'first', name: 'First', level: 1 }),
+        },
+        areas: {
+          'kitchen': makeMockArea({ area_id: 'kitchen', name: 'Kitchen', floor_id: 'ground' }),
+          'garage': makeMockArea({ area_id: 'garage', name: 'Garage', floor_id: 'ground' }),
+          'bedroom': makeMockArea({ area_id: 'bedroom', name: 'Bedroom', floor_id: 'first' }),
+        },
+        entities: {
+          'light.kitchen': makeMockEntityEntry({ entity_id: 'light.kitchen', area_id: 'kitchen', domain: 'light' }),
+          'switch.kettle': makeMockEntityEntry({ entity_id: 'switch.kettle', area_id: 'kitchen', domain: 'switch' }),
+          'cover.garage': makeMockEntityEntry({ entity_id: 'cover.garage', area_id: 'garage', domain: 'cover' }),
+          'light.bedroom': makeMockEntityEntry({ entity_id: 'light.bedroom', area_id: 'bedroom', domain: 'light' }),
+        },
+      });
+
+      const floors = getFloors(hass);
+      expect(floors.map(f => f.floor_id)).toEqual(['ground', 'first']);
+
+      const groundAreas = getAreasByFloor(hass, 'ground');
+      expect(groundAreas.map(a => a.area_id).sort()).toEqual(['garage', 'kitchen']);
+
+      const kitchenEntities = getEntitiesByArea(hass, 'kitchen');
+      expect(kitchenEntities.map(e => e.entity_id).sort()).toEqual(['light.kitchen', 'switch.kettle']);
+
+      // The chain must not leak across branches of the hierarchy.
+      const firstAreas = getAreasByFloor(hass, 'first');
+      expect(firstAreas.map(a => a.area_id)).toEqual(['bedroom']);
+      expect(getEntitiesByArea(hass, 'bedroom').map(e => e.entity_id)).toEqual(['light.bedroom']);
+      expect(getEntitiesByArea(hass, 'garage').map(e => e.entity_id)).toEqual(['cover.garage']);
+    });
   });
 });

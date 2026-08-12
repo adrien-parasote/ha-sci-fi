@@ -1,7 +1,9 @@
 import { configureLocalization } from '@lit/localize';
 
 import { sourceLocale, targetLocales } from './locale-codes.js';
-// @ts-expect-error - generated JS file from lit-localize
+// Generated JS file from lit-localize. Resolvable since tsconfig sets allowJs
+// (checkJs stays off), so no @ts-expect-error is needed — and TS rejects an
+// unused one.
 import { templates as frTemplates } from './locales/fr.js';
 
 const localizedTemplates = new Map([['fr', { templates: frTemplates }]]);

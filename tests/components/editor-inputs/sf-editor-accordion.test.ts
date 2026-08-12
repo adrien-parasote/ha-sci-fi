@@ -90,4 +90,27 @@ describe('sf-editor-accordion', () => {
     const slot = el.shadowRoot!.querySelector('slot');
     expect(slot).not.toBeNull();
   });
+
+  it('TC-1010: toggles open state and emits sf-accordion-toggle when the header checkbox changes', async () => {
+    const el = await createElement({ elementId: 'toggle-test', title: 'My Section' });
+    const received: CustomEvent[] = [];
+    el.addEventListener('sf-accordion-toggle', e => received.push(e as CustomEvent));
+
+    const checkbox = el.shadowRoot!.querySelector('input[type="checkbox"]') as HTMLInputElement;
+    expect(el.open).toBe(false);
+
+    checkbox.checked = true;
+    checkbox.dispatchEvent(new Event('change'));
+    await el.updateComplete;
+    expect(el.open).toBe(true);
+    expect(received).toHaveLength(1);
+    expect(received[0]!.detail.open).toBe(true);
+
+    checkbox.checked = false;
+    checkbox.dispatchEvent(new Event('change'));
+    await el.updateComplete;
+    expect(el.open).toBe(false);
+    expect(received).toHaveLength(2);
+    expect(received[1]!.detail.open).toBe(false);
+  });
 });

@@ -1,6 +1,8 @@
  
 // @vitest-environment happy-dom
 import { expect, describe, it, afterEach, vi } from 'vitest';
+import * as fs from 'fs';
+import * as path from 'path';
 
 import '../../../src/cards/stove/sci-fi-stove.js';
 import { SciFiStoveCard } from '../../../src/cards/stove/sci-fi-stove.js';
@@ -37,7 +39,7 @@ describe('sci-fi-stove', () => {
     expect(el.shadowRoot!.textContent).to.be.empty;
   });
 
-  it('renders error message if entity not found', async () => {
+  it('TC-1111: renders error message if entity not found', async () => {
     const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
     (el as any).setConfig({ type: 'custom:sci-fi-stove', entity: 'climate.poele' });
     el.hass = makeMockHass();
@@ -46,7 +48,7 @@ describe('sci-fi-stove', () => {
     expect(el.shadowRoot!.textContent).to.include('Entité poêle non trouvée');
   });
 
-  it('renders header with friendly_name', async () => {
+  it('TC-1105: renders header with friendly_name', async () => {
     const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
     (el as any).setConfig({ type: 'custom:sci-fi-stove', entity: 'climate.poele' });
     el.hass = makeMockHass({
@@ -489,7 +491,7 @@ describe('sci-fi-stove', () => {
     return el;
   }
 
-  it('renders temperature HIGH class when temp >= 25 (line 258)', async () => {
+  it('TC-507: renders temperature HIGH class when temp >= 25 (line 258)', async () => {
     const el = makeStoveWithSensors('28', '400');
     document.body.appendChild(el);
     await el.updateComplete;
@@ -557,5 +559,107 @@ describe('sci-fi-stove', () => {
     // No .temperature.off from pressure (only from temperature undefined)
     // Temperature tiles without temp data render as .off — but the pressure tile should not
     expect(el.shadowRoot!.querySelector('sf-icon[icon="mdi:gauge"]')).not.to.be.null;
+  });
+
+  // ── Status icon + colour, driven by sensor_status ─────────────────────────
+  //
+  // The spec rows below place these on a "header"; the implementation renders them
+  // in the status row (_renderStatus) and colours it .status.<colour> rather than
+  // .stove-status.sf-state-on|off. The BEHAVIOUR the rows describe is real and is
+  // what these tests pin; the stale selectors are tracked in the spec-drift bead.
+
+  function makeStoveWithStatus(status: string) {
+    const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
+    (el as any).setConfig({
+      type: 'custom:sci-fi-stove',
+      entity: 'climate.poele',
+      sensors: { sensor_status: 'sensor.poele_status' },
+    });
+    el.hass = makeMockHass({
+      states: {
+        'climate.poele': makeMockEntity({ entity_id: 'climate.poele', state: 'heat', attributes: { hvac_modes: [] } }),
+        'sensor.poele_status': makeMockEntity({ entity_id: 'sensor.poele_status', state: status }),
+      },
+    });
+    return el;
+  }
+
+  it('TC-1101: renders sf-icon sci:stove-heat when the stove status is a burning state', async () => {
+    const el = makeStoveWithStatus('combustion');
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('sf-icon[icon="sci:stove-heat"]')).not.to.be.null;
+  });
+
+  it('TC-1102: renders sf-icon sci:stove-off when the stove status is off', async () => {
+    const el = makeStoveWithStatus('off');
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('sf-icon[icon="sci:stove-off"]')).not.to.be.null;
+  });
+
+  it('TC-1103: status row carries the active colour class when the stove is burning', async () => {
+    const el = makeStoveWithStatus('combustion');
+    document.body.appendChild(el);
+    await el.updateComplete;
+    const row = el.shadowRoot!.querySelector('.status.red');
+    expect(row).not.to.be.null;
+    expect(row!.querySelector('.stove-status')!.textContent?.trim()).to.equal('combustion');
+  });
+
+  it('TC-1104: status row carries the off colour class when the stove is off', async () => {
+    const el = makeStoveWithStatus('off');
+    document.body.appendChild(el);
+    await el.updateComplete;
+    const row = el.shadowRoot!.querySelector('.status.off');
+    expect(row).not.to.be.null;
+    expect(row!.querySelector('.stove-status')!.textContent?.trim()).to.equal('off');
+  });
+
+  // ── Registration + styles provenance ──────────────────────────────────────
+
+  it('IT-1101: registers sci-fi-stove in customElements', () => {
+    expect(customElements.get('sci-fi-stove')).to.equal(SciFiStoveCard);
+  });
+
+  it('IT-1102: renders header, info panel and status row from a real hass state', async () => {
+    const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
+    (el as any).setConfig({
+      type: 'custom:sci-fi-stove',
+      entity: 'climate.poele',
+      storage_counter: 'counter.stock',
+      sensors: {
+        sensor_status: 'sensor.poele_status',
+        sensor_pellet_quantity: 'sensor.pellet',
+        sensor_inside_temperature: 'sensor.inside',
+      },
+    });
+    el.hass = makeMockHass({
+      states: {
+        'climate.poele': makeMockEntity({ entity_id: 'climate.poele', state: 'heat', attributes: { friendly_name: 'Poêle Salon', hvac_modes: [] } }),
+        'sensor.poele_status': makeMockEntity({ entity_id: 'sensor.poele_status', state: 'combustion' }),
+        'sensor.pellet': makeMockEntity({ entity_id: 'sensor.pellet', state: '75' }),
+        'sensor.inside': makeMockEntity({ entity_id: 'sensor.inside', state: '21' }),
+        'counter.stock': makeMockEntity({ entity_id: 'counter.stock', state: '8', attributes: { maximum: 20 } }),
+      },
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    expect(el.shadowRoot!.querySelector('.header')!.textContent).to.include('Poêle Salon');
+    expect(el.shadowRoot!.querySelector('.content .info')).not.to.be.null;
+    expect(el.shadowRoot!.querySelector('sf-stove-image')).not.to.be.null;
+    expect(el.shadowRoot!.querySelector('sf-circle-progress-bar')).not.to.be.null;
+    expect(el.shadowRoot!.querySelector('sf-stack-bar')).not.to.be.null;
+    expect(el.shadowRoot!.querySelector('.stove-status')).not.to.be.null;
+  });
+
+  it('IT-1103: sci-fi-stove.ts declares no inline css`` block', () => {
+    const src = fs.readFileSync(
+      path.resolve(__dirname, '../../../src/cards/stove/sci-fi-stove.ts'),
+      'utf8',
+    );
+    expect(src).to.not.match(/\bcss`/);
+    expect(src).to.contain("from './styles.js'");
   });
 });

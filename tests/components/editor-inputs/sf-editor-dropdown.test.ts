@@ -68,7 +68,7 @@ describe('sf-editor-dropdown', () => {
     expect(dropItems.length).toBe(3);
   });
 
-  it('filters items on input typing', async () => {
+  it('TC-1006: filters items on input typing', async () => {
     const el = await createElement({ items: ['apple', 'apricot', 'banana'] });
     const input = el.shadowRoot!.querySelector('input') as HTMLInputElement;
     input.dispatchEvent(new FocusEvent('focus'));

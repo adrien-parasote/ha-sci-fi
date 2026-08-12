@@ -64,7 +64,7 @@ describe('sf-bridge-alerts', () => {
 
   // ── _renderSmoke: nothing branch (no smoke config) ────────────────────────
 
-  it('does NOT render smoke row when smoke is empty', async () => {
+  it('TC-BRIDGE-U-13: does NOT render smoke row when smoke is empty', async () => {
     const el = makeEl();
     el.config = { smoke: [] };
     el.hass = makeHass();
@@ -75,7 +75,7 @@ describe('sf-bridge-alerts', () => {
 
   // ── _renderSmoke: smoke-ok state ──────────────────────────────────────────
 
-  it('renders smoke-ok chip when smoke sensor state is off', async () => {
+  it('TC-BRIDGE-U-15: renders smoke-ok chip when smoke sensor state is off', async () => {
     const el = makeEl();
     el.config = { smoke: [{ entity: 'binary_sensor.smoke', name: 'Smoke Detector' }] };
     el.hass = makeHass();
@@ -87,7 +87,7 @@ describe('sf-bridge-alerts', () => {
 
   // ── _renderSmoke: smoke-active state ─────────────────────────────────────
 
-  it('renders smoke-active chip when smoke sensor state is on', async () => {
+  it('TC-BRIDGE-U-16: renders smoke-active chip when smoke sensor state is on', async () => {
     const el = makeEl();
     el.config = { smoke: [{ entity: 'binary_sensor.smoke', name: 'Smoke Detector' }] };
     el.hass = makeHass({
@@ -100,7 +100,7 @@ describe('sf-bridge-alerts', () => {
 
   // ── _renderSmoke: custom icon ─────────────────────────────────────────────
 
-  it('uses custom smoke icon when provided', async () => {
+  it('TC-BRIDGE-U-17: uses custom smoke icon when provided', async () => {
     const el = makeEl();
     el.config = { smoke: [{ entity: 'binary_sensor.smoke', name: 'Smoke', icon: 'mdi:fire' }] };
     el.hass = makeHass();
@@ -112,7 +112,7 @@ describe('sf-bridge-alerts', () => {
 
   // ── _renderToggles: nothing branch ────────────────────────────────────────
 
-  it('does NOT render toggles row when toggles is empty', async () => {
+  it('TC-BRIDGE-U-14: does NOT render toggles row when toggles is empty', async () => {
     const el = makeEl();
     el.config = { toggles: [] };
     el.hass = makeHass();

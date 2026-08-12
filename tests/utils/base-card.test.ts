@@ -5,7 +5,7 @@ import type { SciFiBaseConfig } from '../../src/types/config.js';
 import type { TemplateResult } from 'lit';
 import { html } from 'lit';
 import type { HomeAssistantExt } from '../../src/types/ha.js';
-import { makeMockHass } from '../fixtures/mock-hass.js';
+import { makeMockHass, makeMockEntity } from '../fixtures/mock-hass.js';
 
 // ── Concrete test subclass ─────────────────────────────────────────────────────
 
@@ -74,7 +74,7 @@ describe('SciFiBaseCard', () => {
   });
 
   // TC-303: hass setter triggers locale sync
-  it('TC-303: setting hass triggers setLocale when language differs from current locale', () => {
+  it('TC-303, TC-601, IT-602: setting hass triggers setLocale when language differs from current locale', () => {
     const card = new TestCard();
     card.setConfig({ type: 'custom:test' });
     const mockHass = makeMockHass() as unknown as HomeAssistantExt;
@@ -119,5 +119,55 @@ describe('SciFiBaseCard', () => {
     expect(card.setConfig).toBeDefined();
     expect(card.getCardSize).toBeDefined();
     expect('hass' in card).toBe(true);
+  });
+
+  // ── Selective rendering on hass changes (ADR-008) ───────────────────────────
+
+  it('IT-301, IT-403: re-renders when a relevant entity changes and skips when none did', async () => {
+    let renders = 0;
+
+    class TrackedCard extends SciFiBaseCard {
+      protected override getRelevantEntities(): string[] {
+        return ['light.kitchen'];
+      }
+      protected renderCard(): TemplateResult {
+        renders += 1;
+        return html`<div class="tracked">${this.hass.states['light.kitchen']?.state}</div>`;
+      }
+    }
+    if (!customElements.get('tracked-sf-card')) {
+      customElements.define('tracked-sf-card', TrackedCard);
+    }
+
+    // shouldUpdate compares state objects by REFERENCE, which is what real HA gives:
+    // untouched entities keep their previous object. The mock must do the same or the
+    // optimisation looks broken when it is not.
+    const kitchenOff = makeMockEntity({ entity_id: 'light.kitchen', state: 'off' });
+    const kitchenOn = makeMockEntity({ entity_id: 'light.kitchen', state: 'on' });
+    const atticOff = makeMockEntity({ entity_id: 'light.attic', state: 'off' });
+    const atticOn = makeMockEntity({ entity_id: 'light.attic', state: 'on' });
+    const hassWith = (kitchen: typeof kitchenOff, attic: typeof atticOff) =>
+      makeMockHass({ states: { 'light.kitchen': kitchen, 'light.attic': attic } }) as unknown as HomeAssistantExt;
+
+    const el = document.createElement('tracked-sf-card') as TrackedCard;
+    (el as any).setConfig({ type: 'custom:tracked-sf-card' });
+    el.hass = hassWith(kitchenOff, atticOff);
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const afterFirst = renders;
+    expect(afterFirst).toBeGreaterThan(0);
+    expect(el.shadowRoot!.querySelector('.tracked')!.textContent).toBe('off');
+
+    // An irrelevant entity moves; the tracked one keeps its object → render vetoed.
+    el.hass = hassWith(kitchenOff, atticOn);
+    await el.updateComplete;
+    expect(renders, 'an unrelated entity must not re-render the card').toBe(afterFirst);
+
+    // The tracked entity moves — the card must pick it up.
+    el.hass = hassWith(kitchenOn, atticOn);
+    await el.updateComplete;
+    expect(renders, 'a tracked entity must re-render the card').toBe(afterFirst + 1);
+    expect(el.shadowRoot!.querySelector('.tracked')!.textContent).toBe('on');
   });
 });

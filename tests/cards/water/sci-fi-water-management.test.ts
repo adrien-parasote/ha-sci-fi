@@ -121,7 +121,7 @@ describe('sci-fi-water-management', () => {
   });
 
   describe('Automation History Logs (Spec 12)', () => {
-    it('TC-1201: filters alerts and success logs correctly', async () => {
+    it('TC-1201, TC-007: filters alerts and success logs correctly', async () => {
       const el = document.createElement('sci-fi-water-management') as any;
       el.config = { type: 'custom:sci-fi-water-management', filter_label: 'water' };
       el.hass = makeMockHass({});
@@ -598,5 +598,67 @@ describe('sci-fi-water-management', () => {
 
     const rows = el.shadowRoot!.querySelectorAll('.entity-row');
     expect(rows.length).toBe(1);
+  });
+
+  // ── Accordion state + sync button ──────────────────────────────────────────
+
+  async function mountWithTwoDevices(): Promise<SciFiWaterManagementCard> {
+    const el = document.createElement('sci-fi-water-management') as SciFiWaterManagementCard;
+    (el as any).setConfig({ type: 'custom:sci-fi-water-management', filter_label: 'water' });
+    const hass = makeMockHass({
+      floors: { 'f1': makeMockFloor({ floor_id: 'f1', name: 'Floor 1', level: 0 }) },
+      areas: { 'a1': makeMockArea({ area_id: 'a1', name: 'Area 1', floor_id: 'f1' }) },
+      entities: {
+        'switch.pump': makeMockEntityEntry({ entity_id: 'switch.pump', area_id: 'a1', device_id: 'd1', domain: 'switch', labels: ['water'] }),
+        'switch.valve': makeMockEntityEntry({ entity_id: 'switch.valve', area_id: 'a1', device_id: 'd2', domain: 'switch', labels: ['water'] }),
+      },
+      states: {
+        'switch.pump': makeMockEntity({ entity_id: 'switch.pump', state: 'on' }),
+        'switch.valve': makeMockEntity({ entity_id: 'switch.valve', state: 'off' }),
+      },
+    });
+    // makeMockHass does not model the device registry; the card reads hass.devices
+    // to name each accordion group.
+    (hass as any).devices = { 'd1': { id: 'd1', name: 'Pump' }, 'd2': { id: 'd2', name: 'Valve' } };
+    el.hass = hass;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    return el;
+  }
+
+  it('TC-006: _expandedMap tracks each accordion independently', async () => {
+    const el = await mountWithTwoDevices();
+    const accordions = el.shadowRoot!.querySelectorAll('sf-editor-accordion');
+    expect(accordions.length, 'one accordion per device group').toBeGreaterThanOrEqual(2);
+
+    // Open the first one only.
+    accordions[0]!.dispatchEvent(new CustomEvent('sf-accordion-toggle', { detail: { open: true } }));
+    await el.updateComplete;
+
+    const map = (el as any)._expandedMap as Map<string, boolean>;
+    const openCount = [...map.values()].filter(Boolean).length;
+    expect(openCount, 'opening one group must not open the others').toBe(1);
+
+    // Open the second: both are now tracked, independently.
+    accordions[1]!.dispatchEvent(new CustomEvent('sf-accordion-toggle', { detail: { open: true } }));
+    await el.updateComplete;
+    expect([...(el as any)._expandedMap.values()].filter(Boolean).length).toBe(2);
+
+    // Close the first: the second stays open.
+    accordions[0]!.dispatchEvent(new CustomEvent('sf-accordion-toggle', { detail: { open: false } }));
+    await el.updateComplete;
+    expect([...(el as any)._expandedMap.values()].filter(Boolean).length).toBe(1);
+  });
+
+  it('TC-008: the floor sync button triggers _fetchHistoryLogs', async () => {
+    const el = await mountWithTwoDevices();
+    const spy = vi.spyOn(el as any, '_fetchHistoryLogs').mockResolvedValue(undefined);
+
+    const syncBtn = el.shadowRoot!.querySelector('.floor-sync-btn') as HTMLButtonElement;
+    expect(syncBtn, 'the floor header must carry a sync button').not.toBeNull();
+    syncBtn.dispatchEvent(new MouseEvent('click'));
+
+    expect(spy).toHaveBeenCalledTimes(1);
+    spy.mockRestore();
   });
 });

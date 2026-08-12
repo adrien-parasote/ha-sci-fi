@@ -1341,7 +1341,7 @@ title="${msg('Équipage')}"
 | IT-BRIDGE-I-02 | Integration | Render complet avec config de référence (Scénario 1) | Full mock hass Scenario 1 | Tous les 8 composants section présents |
 | IT-BRIDGE-I-03 | Integration | `styles.ts` importé — zéro CSS inline dans `sci-fi-bridge.ts` | grep | `grep -c "css\`" src/cards/bridge/sci-fi-bridge.ts` returns 0 |
 | IT-BRIDGE-I-04 | Integration | Breakpoint responsive : 1 col < 600px | container width 390px | `.bridge-grid` a `grid-template-columns: 1fr` |
-| IT-BRIDGE-I-05 | Integration | Breakpoint responsive : 2 col ≥ 600px | container width 700px | `.bridge-grid` a `grid-template-columns: 1fr 1fr` |
+| IT-BRIDGE-I-05 | Integration | Breakpoint responsive : flux colonne ≥ 600px ([ADR-016](../../adr/ADR-016_bridge-column-flow.md)) | `@container sf-card (min-width: 600px)` | `.bridge-grid` passe en `display: block; columns: 2`, enfants en `break-inside: avoid` |
 | IT-BRIDGE-I-06 | Integration | Scénario 4 (Disconnected) — aucune section ne crash | Scénario unavailable | Carte rendue sans erreur JS, tous les `--` affichés |
 | IT-BRIDGE-I-07 | Integration | Scénario 5 (Minimal) — seuls CREW + CALL KIDS visibles | config partielle | `querySelector('sf-bridge-alerts')` is null, CREW et CALL KIDS présents |
 

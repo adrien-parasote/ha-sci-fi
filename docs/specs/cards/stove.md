@@ -477,26 +477,40 @@ No changes. CSS classes `.sensor-tile`, `.sensor-tile.warn`, `.bar-bg`, `.bar-fi
 
 | Test ID | Type | Description | Input | Expected Output |
 |---|---|---|---|---|
-| TC-1101 | Unit | Header renders `sf-icon` with `sci:stove-heat` when ON | `state: 'heating'` | `sf-icon.icon === 'sci:stove-heat'` |
-| TC-1102 | Unit | Header renders `sf-icon` with `sci:stove-off` when OFF | `state: 'off'` | `sf-icon.icon === 'sci:stove-off'` |
-| TC-1103 | Unit | Header shows `stoveStatus` class `sf-state-on` when heating | `state: 'heating'` | `.stove-status.sf-state-on` present |
-| TC-1104 | Unit | Header shows `stoveStatus` class `sf-state-off` when off | `state: 'off'` | `.stove-status.sf-state-off` present |
+| TC-1101 | Unit | La ligne de statut rend `sf-icon` avec `sci:stove-heat` en combustion | `sensor_status: 'combustion'` | `sf-icon[icon="sci:stove-heat"]` présent |
+| TC-1102 | Unit | La ligne de statut rend `sf-icon` avec `sci:stove-off` à l'arrêt | `sensor_status: 'off'` | `sf-icon[icon="sci:stove-off"]` présent |
+| TC-1103 | Unit | La ligne de statut porte sa classe de couleur en combustion | `sensor_status: 'combustion'` | `.status.red` présent, `.stove-status` = `combustion` |
+| TC-1104 | Unit | La ligne de statut porte sa classe de couleur à l'arrêt | `sensor_status: 'off'` | `.status.off` présent, `.stove-status` = `off` |
 | TC-1105 | Unit | `friendly_name` appears in header info | `attributes.friendly_name: 'Poêle Salon'` | textContent includes `'Poêle Salon'` |
-| TC-1106 | Unit | `.sensor-tile` count = 0 when all sensors undefined | `sensors: {}` | `querySelectorAll('.sensor-tile').length === 0` |
-| TC-1107 | Unit | `.bar-fill.pellet` width = percentage | `sensor_pellet_quantity: 75` | `style.width === '75%'` |
-| TC-1108 | Unit | `.sensor-tile.warn` appears when below threshold | `pellet_quantity: 20, threshold: 0.5` | `.sensor-tile.warn` not null |
-| TC-1109 | Unit | `.bar-fill.storage` null when no maximum attribute | `counter state='5', attributes={}` | `.bar-fill.storage` is null |
-| TC-1110 | Unit | `header_message` renders in `.sf-header` | `config.header_message: 'Stove Status'` | textContent includes `'Stove Status'` |
 | TC-1111 | Unit | Error message when entity not found | `entity: 'climate.missing'`, hass empty | textContent includes `'Entité poêle non trouvée'` |
-| TC-1112 | Regression | All existing 'sci-fi-stove.test.ts' tests still pass | Run `npm test` | 0 failures |
 | TC-1113 | Unit | `styles.ts` exports `stoveStyles` as a Lit CSSResult | Import check | `typeof stoveStyles === 'object'` with `cssText` property |
 | IT-1101 | Integration | `sci-fi-stove` registers correctly in `customElements` | Load 'sci-fi.min.js' | `customElements.get('sci-fi-stove')` returns the class |
-| IT-1102 | Integration | Card renders header + grid with real hass state | Mount with `state: 'heating'`, all sensors set | Header visible, `.sensor-tile` count > 0, `.header-icon sf-icon` present |
+| IT-1102 | Integration | Rend l'en-tête, le panneau info et la ligne de statut depuis un hass réel | Mount `state: 'heat'`, `sensor_status: 'combustion'`, pellets + stock | `.header` porte le `friendly_name`, `.content .info`, `sf-stove-image`, `sf-circle-progress-bar`, `sf-stack-bar` et `.stove-status` présents |
 | IT-1103 | Integration | `styles.ts` imported — no inline `css\`\`` block remains in `sci-fi-stove.ts` | Grep source file | 'grep -c 'css\'' sci-fi-stove.ts` returns 0 |
 
 > [!NOTE]
-> TC-1101 through TC-1111 are **NEW** tests for the new header design.
-> TC-1112 is the regression gate — all 8 existing tests must remain GREEN.
+> **Révision du 2026-08-12** (bead `ha-sci-fi-9xf`). Cette table décrivait un *new header
+> design* dont une partie n'a jamais été construite. Ce qui a changé :
+>
+> Les identifiants retirés ne sont pas réécrits ci-dessous : le contrôle de couverture P14
+> lit tout ID présent dans une spec comme une promesse à tenir, y compris dans une note
+> de suppression.
+>
+> - **Lignes unitaires 1101 à 1104** — reformulées. Le comportement décrit est réel, mais
+>   il vit dans la ligne de statut (`_renderStatus`), pas dans un en-tête, et les classes
+>   sont `.status.<couleur>` (off / amber / red / green / blue), pas `.sf-state-on|off`.
+> - **Lignes unitaires 1106 à 1109** — retirées. `.sensor-tile`, `.sensor-tile.warn`,
+>   `.bar-fill.pellet` et `.bar-fill.storage` n'existaient qu'en CSS mort dans
+>   `styles.ts`, sous le commentaire « required by tests — legacy compatibility », pour
+>   des tests jamais écrits. Aucun rendu ne les produit : les jauges sont
+>   `sf-circle-progress-bar` et `sf-stack-bar`. Le CSS a été supprimé avec les lignes.
+> - **Ligne unitaire 1110** — retirée. `header_message` n'existe ni dans
+>   `SciFiStoveConfig` ni dans la carte, et la classe `.sf-header` n'existe pas. À
+>   réintroduire *avec* la fonctionnalité si on la veut, par cohérence avec les cartes
+>   lights et climates.
+> - **Ligne de régression 1112** — retirée. « Tous les tests existants passent » est une
+>   porte de régression, pas un cas de test : lui donner un ID la rendait circulaire.
+> - **Ligne d'intégration 1102** — reformulée sur les sélecteurs réels.
 
 ---
 

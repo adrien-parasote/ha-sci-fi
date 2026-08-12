@@ -263,7 +263,7 @@ describe('sci-fi-lights-editor', () => {
     expect(received[0]!.detail.config.ignored_entities).toContain('light.other');
   });
 
-  it('dispatches config-changed when floor dropdown changes', async () => {
+  it('TC-1014: dispatches config-changed when floor dropdown changes', async () => {
     const el = await createElement();
     el.setConfig(makeConfig({ first_floor_to_render: '' }));
     await el.updateComplete;

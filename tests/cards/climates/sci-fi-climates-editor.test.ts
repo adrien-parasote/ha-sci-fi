@@ -60,7 +60,7 @@ describe('sci-fi-climates-editor', () => {
     expect(editBtns.length).toBe(9);
   });
 
-  it('dispatches config-changed on header toggle', async () => {
+  it('TC-1013: dispatches config-changed on header toggle', async () => {
     const el = await createElement();
     el.setConfig(makeConfig({ header: { display: true } }));
     await el.updateComplete;
@@ -79,7 +79,7 @@ describe('sci-fi-climates-editor', () => {
     expect(received[0]!.detail.config.header.display).toBe(false);
   });
 
-  it('dispatches config-changed on header field update', async () => {
+  it('IT-505: dispatches config-changed on header field update', async () => {
     const el = await createElement();
     el.setConfig(makeConfig({ header: { display: true } }));
     await el.updateComplete;

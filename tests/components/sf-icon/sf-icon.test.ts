@@ -77,7 +77,7 @@ describe('sf-icon', () => {
     }
   });
 
-  it('renders loading state then actual icon via HA connection', async () => {
+  it('TC-402: renders loading state then actual icon via HA connection', async () => {
     const el = document.createElement('sf-icon') as SfIcon;
     
     // Create a connection that resolves slowly so we can see the loading state

@@ -23,7 +23,7 @@ describe('sf-toggle-switch', () => {
     expect(labelEl!.textContent).to.equal('Test Label');
   });
 
-  it('toggles state on click and dispatches event', async () => {
+  it('TC-405: toggles state on click and dispatches event', async () => {
     const el = document.createElement('sf-toggle-switch') as SfToggleSwitch;
     document.body.appendChild(el);
     await new Promise(r => setTimeout(r, 50));

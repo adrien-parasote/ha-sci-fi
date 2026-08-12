@@ -7,6 +7,7 @@ import { setupConsoleProxy, log, setConsoleFilter, filterConsoleLines, clearCons
 import { buildMockHass, buildLiveHass } from './mock-hass.js';
 import { setHaStatus, setLiveMode, openConnectModal, closeConnectModal } from './ui-helpers.js';
 import { initViewModes, setViewMode, setDeviceSize, setOrientation, getViewMode } from './view-modes.js';
+import { initWorkMode, setWorkMode, getWorkMode } from './work-mode.js';
 import { setEditTab, handleYamlInput, copyConfigYaml, updateCardConfig, mountUiEditor, getEditorEl } from './editor.js';
 import {
   connectToHA,
@@ -36,7 +37,7 @@ let cardEl = null;
 let activeConfig = null;
 let currentScenarioData = {}; // current scenario states — passed to updateCardConfig to preserve mock hass
 let bundleLoaded = false;
-let workMode = localStorage.getItem('wb-work-mode') || 'view';
+let workMode = initWorkMode();
 let currentLanguage = localStorage.getItem('wb-lang') || 'fr';
 
 // ─── Bundle loading ──────────────────────────────────────────────────────────
@@ -255,31 +256,15 @@ async function setLanguage(lang) {
 }
 
 // ─── Work mode (View / Edit) ─────────────────────────────────────────────────
+// The behaviour lives in ./work-mode.js so it can be tested (IT-906); this wrapper
+// keeps the local `workMode` mirror the render path reads, and supplies the
+// re-render callback.
 function setWorkModeFunc(mode) {
-  workMode = mode;
-  localStorage.setItem('wb-work-mode', mode);
-  document.getElementById('btn-work-view').classList.toggle('active', mode === 'view');
-  document.getElementById('btn-work-edit').classList.toggle('active', mode === 'edit');
-
-  const deviceViewport = document.getElementById('device-viewport');
-  const editViewport = document.getElementById('edit-viewport');
-  const deviceToggle = document.getElementById('device-toggle');
-
-  if (mode === 'edit') {
-    deviceViewport.style.display = 'none';
-    editViewport.style.display = 'flex';
-    deviceToggle.classList.remove('visible'); // Force PC layout, hide selectors
-
-    log('✏️ Mode Édition activé', 'info');
-  } else {
-    deviceViewport.style.display = '';
-    editViewport.style.display = 'none';
-    deviceToggle.classList.toggle('visible', getViewMode() === 'panel'); // restore if panel view
-
-    log('👁️ Mode Visualisation activé', 'info');
-  }
-
-  renderCard(currentCard, currentScenario);
+  setWorkMode(mode, () => {
+    workMode = getWorkMode();
+    renderCard(currentCard, currentScenario);
+  });
+  workMode = getWorkMode();
 }
 
 // ─── Navigation intercept ────────────────────────────────────────────────────

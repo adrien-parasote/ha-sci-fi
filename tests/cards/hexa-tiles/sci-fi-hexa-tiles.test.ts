@@ -1,6 +1,8 @@
  
 // @vitest-environment happy-dom
 import { expect, describe, it, beforeEach, afterEach, vi } from 'vitest';
+import * as fs from 'fs';
+import * as path from 'path';
 
 import '../../../src/cards/hexa-tiles/sci-fi-hexa-tiles.js';
 import { SciFiHexaTilesCard } from '../../../src/cards/hexa-tiles/sci-fi-hexa-tiles.js';
@@ -228,7 +230,7 @@ describe('sci-fi-hexa-tiles', () => {
     vi.unstubAllGlobals();
   });
 
-  it('renders custom tiles with entity and link navigation', async () => {
+  it('TC-501: renders custom tiles with entity and link navigation', async () => {
     const el = document.createElement('sci-fi-hexa-tiles') as SciFiHexaTilesCard;
     el.setConfig({
       type: 'custom:sci-fi-hexa-tiles',
@@ -551,6 +553,95 @@ describe('sci-fi-hexa-tiles', () => {
     expect(event.detail.action).toBe('tap');
     expect(event.detail.config.entity).toBe('light.living_room');
     expect(event.detail.config.tap_action.action).toBe('call-service');
+  });
+
+  // ── Weather alert banner label ────────────────────────────────────────────
+
+  async function mountWithAlert(alertAttributes: Record<string, unknown>, alertState: string) {
+    const el = document.createElement('sci-fi-hexa-tiles') as SciFiHexaTilesCard;
+    el.setConfig({
+      type: 'custom:sci-fi-hexa-tiles',
+      weather: {
+        activate: true,
+        weather_alert_entity: 'sensor.alert',
+        state_green: 'Vert',
+        state_yellow: 'Jaune',
+        state_orange: 'Orange',
+        state_red: 'Rouge',
+      },
+    } as any);
+    el.hass = makeMockHass({
+      states: {
+        'sensor.alert': makeMockEntity({
+          entity_id: 'sensor.alert',
+          state: alertState,
+          attributes: alertAttributes,
+        }),
+      },
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+    return el;
+  }
+
+  it('TC-706: alert banner names the phenomenon whose attribute matches a non-green level', async () => {
+    const el = await mountWithAlert({ canicule: 'Jaune', vent: 'Vert' }, 'Jaune');
+    const banner = el.shadowRoot!.querySelector('.weather-alert');
+    expect(banner, 'a non-green alert must render the banner').not.toBeNull();
+    expect(banner!.textContent).toContain('Alerte météo');
+    expect(banner!.textContent).toContain('canicule');
+    // 'vent' is green — it must not be listed.
+    expect(banner!.textContent).not.toContain('vent');
+  });
+
+  it('TC-707: alert banner falls back to the entity state when no attribute matches', async () => {
+    const el = await mountWithAlert({ friendly_name: 'Vigilance' }, 'Orange');
+    const banner = el.shadowRoot!.querySelector('.weather-alert');
+    expect(banner).not.toBeNull();
+    expect(banner!.textContent).toContain('Alerte météo');
+    expect(banner!.textContent).toContain('Orange');
+  });
+
+  // ── Layout & theming contracts ────────────────────────────────────────────
+  //
+  // These three rows describe rendered geometry and paint. happy-dom performs no
+  // layout, so the assertions read styles.ts: the formulas ARE the contract, and
+  // the tests fail the moment one is dropped or reworded. A true pixel check needs
+  // the playwright runner (web-test-runner.config.mjs, currently unwired).
+
+  const hexaCss = () => fs.readFileSync(
+    path.resolve(__dirname, '../../../src/cards/hexa-tiles/styles.ts'),
+    'utf8',
+  );
+
+  it('IT-701: the grid divides the full card width by cols + 0.5 and interlocks the rows', () => {
+    const css = hexaCss();
+    // 2 columns → 2.5 hexagons across exactly 100% of the width; the half tile is the
+    // offset that makes the interlocking read as a honeycomb rather than a table.
+    expect(css).toMatch(/--tile-width:\s*calc\(\s*100%\s*\/\s*\(var\(--cols,\s*2\)\s*\+\s*0\.5\)\s*\)/);
+    // Row overlap: each row climbs a quarter of a tile into the one above it.
+    expect(css).toMatch(/\.hexa-row\s*{[^}]*margin-bottom:\s*calc\(var\(--tile-height\)\s*\*\s*-0\.25\)/);
+    // Height is derived from width by the hexagon ratio, so nothing can stretch.
+    expect(css).toMatch(/--tile-height:\s*calc\(var\(--tile-width\)\s*\*\s*1\.1547\)/);
+  });
+
+  it('IT-702: active tiles carry a border glow and glowing text', () => {
+    const css = hexaCss();
+    expect(css, 'active tile outline glow').toMatch(/box-shadow:\s*0 0 \d+px var\(--sf-primary/);
+    expect(css, 'active tile text glow').toMatch(/text-shadow:\s*0 0 \d+px var\(--sf-primary/);
+    expect(css, 'active SVG hexagon glow').toMatch(/filter:\s*drop-shadow\(0 0 \d+px var\(--sf-primary/);
+  });
+
+  it('IT-703: every themed colour reads --sf-primary with a hex fallback', () => {
+    const css = hexaCss();
+    const uses = css.match(/var\(--sf-primary[^)]*\)/g) ?? [];
+    expect(uses.length, '--sf-primary must drive the theme').toBeGreaterThan(5);
+    // Every plain usage carries a fallback, so an HA theme that does not define the
+    // variable still paints. (color-mix() usages take the bare variable by design.)
+    for (const use of uses) {
+      if (use === 'var(--sf-primary)') continue;
+      expect(use, `${use} must carry a hex fallback`).toMatch(/var\(--sf-primary,\s*#[0-9a-fA-F]{3,6}\)/);
+    }
   });
 });
 

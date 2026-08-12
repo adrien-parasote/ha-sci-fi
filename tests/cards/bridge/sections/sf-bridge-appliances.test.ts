@@ -74,7 +74,7 @@ describe('sf-bridge-appliances', () => {
 
   // ── isCycleRunning: binary_sensor on → running ───────────────────────────
 
-  it('shows cycle-running when binary_sensor is on', async () => {
+  it('TC-BRIDGE-U-21: shows cycle-running when binary_sensor is on', async () => {
     const el = makeEl();
     el.config = {
       cycles: [{ entity: 'binary_sensor.washer', name: 'Washer', icon: 'mdi:washing-machine' }],
@@ -189,7 +189,7 @@ describe('sf-bridge-appliances', () => {
 
   // ── _renderConsumables: ok branch ─────────────────────────────────────────
 
-  it('renders consumable-ok when state matches ok_when', async () => {
+  it('TC-BRIDGE-U-22: renders consumable-ok when state matches ok_when', async () => {
     const el = makeEl();
     el.config = {
       cycles: [],
@@ -206,7 +206,7 @@ describe('sf-bridge-appliances', () => {
 
   // ── _renderConsumables: warn branch ──────────────────────────────────────
 
-  it('renders consumable-warn when state does not match ok_when', async () => {
+  it('TC-BRIDGE-U-23: renders consumable-warn when state does not match ok_when', async () => {
     const el = makeEl();
     el.config = {
       cycles: [],

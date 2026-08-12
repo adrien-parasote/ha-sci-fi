@@ -240,9 +240,16 @@ src/cards/
 | TC-507 | Unit | StoveCard lit `sensor_inside_temperature` | Config stove complète | Température intérieure affichée |
 | TC-508 | Unit | VehiclesCard affiche `fuel_quantity` | Config vehicles avec `fuel_quantity` | Jauge carburant visible |
 | IT-501 | Integration | 8 cartes s'enregistrent | Load 'sci-fi.min.js' | `customElements.get('sci-fi-*')` retourne toutes les classes |
-| IT-502 | Integration | Backup YAML 'plugs.yaml' charge sans erreur | '"yaml backup"/plugs.yaml' | Card visible, 0 console error |
-| IT-503 | Integration | Backup YAML 'vacuum.yaml' charge sans erreur | '"yaml backup"/vacuum.yaml' | Shortcuts Dobby visibles |
-| IT-504 | Integration | Backup YAML 'climate.yaml' charge sans erreur | '"yaml backup"/climate.yaml' | Icônes et couleurs custom appliqués |
+
+> **Retirées le 2026-08-12** (bead `ha-sci-fi-9xf`) — les trois lignes d'intégration 502,
+> 503 et 504 : chargement des YAML de sauvegarde (`"yaml backup"/plugs.yaml`,
+> `vacuum.yaml`, `climate.yaml`). (Les identifiants ne sont pas réécrits ici : le contrôle
+> de couverture P14 lit tout ID présent dans une spec comme une promesse à tenir.)
+> Le répertoire `"yaml backup"` n'existe pas dans le dépôt : ces fixtures datent
+> d'avant la réécriture (ADR-001) et n'ont pas été reprises. La compatibilité
+> ascendante YAML qu'elles gardaient est aujourd'hui portée par les tests de config
+> de chaque carte (TC-501 à TC-508). À réintroduire si l'on recrée de vraies fixtures
+> sous `tests/fixtures/yaml/`.
 | IT-505 | Integration | Editor synchronise configuration | Change toggle en editor | Dispatche `config-changed` valide |
 
 ---

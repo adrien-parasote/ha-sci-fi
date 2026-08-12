@@ -10,6 +10,10 @@
     "strictFunctionTypes": true,
     "noUncheckedIndexedAccess": true,
     "experimentalDecorators": true,
+    // dev/modules/*.js (the workbench) is plain ESM JavaScript with JSDoc, imported by
+    // tests/dev/*.test.ts. checkJs stays off: TS resolves those modules, it does not
+    // type-check them.
+    "allowJs": true,
     "useDefineForClassFields": false,
     "declaration": false,
     "sourceMap": true,

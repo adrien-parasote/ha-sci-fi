@@ -24,7 +24,8 @@ export const bridgeStyles = css`
     padding: var(--sf-spacing-md, 12px);
   }
 
-  /* ≥ 600px : mode 2 colonnes Pinterest — COLUMN FLOW (container query — ADR-B02)
+  /* ≥ 600px : mode 2 colonnes Pinterest — COLUMN FLOW (container query — ADR-016,
+   * qui remplace la clause de layout d'ADR-013)
    * Clé : display:block + columns:2 = les éléments remplissent la colonne gauche
    * de haut en bas, puis la colonne droite. Pas de row-flow grid.
    */

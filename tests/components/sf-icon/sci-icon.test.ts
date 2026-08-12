@@ -20,7 +20,9 @@ describe('sci-icon', () => {
     expect(el.querySelector('svg')).to.be.null;
   });
 
-  it('renders a custom sci: icon from the bundled icon set', async () => {
+  // TC-406 (sci-icon mirrors the sf-icon API across prefixes) is covered by this test
+  // plus the two that follow it: the sf: case and the mdi: case.
+  it('TC-406: renders a custom sci: icon from the bundled icon set', async () => {
     const el = document.createElement('sci-icon') as SciIcon;
     el.icon = 'sci:stove';
     document.body.appendChild(el);
@@ -33,7 +35,7 @@ describe('sci-icon', () => {
     expect(path?.getAttribute('d')).to.include('M 10.272');
   });
 
-  it('renders a custom sf: icon from the bundled icon set', async () => {
+  it('IT-603: renders a custom sf: icon from the bundled icon set', async () => {
     const el = document.createElement('sci-icon') as SciIcon;
     el.icon = 'sf:stove';
     document.body.appendChild(el);

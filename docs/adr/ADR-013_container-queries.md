@@ -19,4 +19,8 @@ Container queries respond to the card container width, not the viewport. The car
 ## Consequences
 
 - `common.ts` already provides `container-type: inline-size; container-name: sf-card`. Zero additional configuration.
-- Layout: `grid-template-columns: 1fr` below 600px, `grid-template-columns: 1fr 1fr` at 600px and above.
+- Layout: `grid-template-columns: 1fr` below 600px.
+- ~~`grid-template-columns: 1fr 1fr` at 600px and above.~~ **Superseded on 2026-08-12 by
+  [ADR-016](ADR-016_bridge-column-flow.md)**: the wide layout is a column flow
+  (`display: block; columns: 2`), which is what the code has always implemented.
+  The container-query decision above is unaffected.

@@ -55,12 +55,12 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
 
   // ── TC-1201 / Static & Stub Config ─────────────────────────────────────────
 
-  it('TC-1201: getConfigElement returns correct editor tag', () => {
+  it('TC-1201, TC-VEH-0001: getConfigElement returns correct editor tag', () => {
     const el = SciFiVehiclesCard.getConfigElement();
     expect(el.tagName.toLowerCase()).to.equal('sci-fi-vehicles-editor');
   });
 
-  it('TC-1202: getStubConfig returns correct type', () => {
+  it('TC-1202, TC-VEH-0002: getStubConfig returns correct type', () => {
     const config = SciFiVehiclesCard.getStubConfig();
     expect(config.type).to.equal('custom:sci-fi-vehicles');
   });
@@ -366,7 +366,7 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
 
   // ── TC-V01 / getRelevantEntities covers all sensor fields ──────────────────
 
-  it('TC-V01: getRelevantEntities includes all defined sensor fields', () => {
+  it('TC-V01, TC-508: getRelevantEntities includes all defined sensor fields', () => {
     const el = document.createElement('sci-fi-vehicles') as SciFiVehiclesCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-vehicles',

@@ -249,7 +249,7 @@ describe('sci-fi-bridge-editor', () => {
       expect(received.alerts.toggles[0].entity).to.equal('auto.new');
     });
 
-    it('_updateAlerts dispatches config with alerts.occupancy set', async () => {
+    it('IT-102: _updateAlerts dispatches config with alerts.occupancy set', async () => {
       const el = makeEditorEl();
       el.setConfig({ type: 'custom:sci-fi-bridge', alerts: {} });
       el.hass = makeEditorHass();

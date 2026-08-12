@@ -842,4 +842,42 @@ describe('sci-fi-tv', () => {
     // volume_mute is not in D_PAD_KEYS so commandString is undefined but callService should be called
     expect(callServiceMock).toHaveBeenCalled();
   });
+
+  // ── IT-704: volume throttling ─────────────────────────────────────────────
+
+  it('IT-704: 10 rapid volume updates collapse to at most 2 callService calls (80ms window)', async () => {
+    const callServiceMock = vi.fn().mockResolvedValue({} as any);
+    const el = document.createElement('sci-fi-tv') as SciFiTVCard;
+    (el as any).setConfig({ type: 'custom:sci-fi-tv', entity: 'media_player.bravia_4k_vh22' });
+    el.hass = makeMockHass({
+      callService: callServiceMock,
+      states: {
+        'media_player.bravia_4k_vh22': makeMockEntity({ entity_id: 'media_player.bravia_4k_vh22', state: 'on' }),
+      },
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const nowSpy = vi.spyOn(Date, 'now');
+    try {
+      // 10 updates spread over 50ms — inside a single 80ms window.
+      for (let i = 0; i < 10; i++) {
+        nowSpy.mockReturnValue(1_000_000 + i * 5);
+        (el as any)._throttleVolumeCall('media_player.bravia_4k_vh22', 0.1 + i * 0.05);
+      }
+      expect(callServiceMock.mock.calls.length).toBeLessThanOrEqual(2);
+
+      // Past the window, the next update goes through.
+      const before = callServiceMock.mock.calls.length;
+      nowSpy.mockReturnValue(1_000_000 + 200);
+      (el as any)._throttleVolumeCall('media_player.bravia_4k_vh22', 0.9);
+      expect(callServiceMock.mock.calls.length).toBe(before + 1);
+      expect(callServiceMock).toHaveBeenLastCalledWith('media_player', 'volume_set', {
+        entity_id: 'media_player.bravia_4k_vh22',
+        volume_level: 0.9,
+      });
+    } finally {
+      nowSpy.mockRestore();
+    }
+  });
 });

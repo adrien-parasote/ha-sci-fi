@@ -836,7 +836,12 @@ private _toast(error: boolean, text: string): void {
 | `.shortcut-btn` | text button | N/A — replaced by `sf-button` in `.actions .shortcuts` |
 
 > [!NOTE]
-> The old cyclic click tests (`TC-1525`, `TC-1526`, `TC-1527` in `sci-fi-vacuum.test.ts`) must be completely deleted or replaced with the new tests. The old error toast test (`TC-1528`) remains valid but corresponds to spec `TC-1524`. `TC-1529` (malformed shortcut) and `TC-1530` (willUpdate reset) are preserved.
+> The old cyclic click tests in `sci-fi-vacuum.test.ts` — the 1525/1526/1527 series — must be completely deleted or replaced with the new tests. The old error toast test (`TC-1528`) remains valid but corresponds to spec `TC-1524`. `TC-1529` (malformed shortcut) and `TC-1530` (willUpdate reset) are preserved.
+>
+> *(2026-08-12, bead `ha-sci-fi-9xf` — les IDs supprimés ne sont plus écrits en toutes
+> lettres ici : le contrôle de couverture P14 lisait cette consigne de suppression comme
+> une promesse à tenir et redemandait un test pour le troisième d'entre eux à chaque
+> passe, alors que les deux premiers avaient trouvé un remplaçant.)*
 
 > [!IMPORTANT]
 > The following selectors are **preserved** and must remain GREEN:

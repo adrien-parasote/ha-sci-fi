@@ -28,8 +28,6 @@ export function vacuumLabels(): Record<string, string> {
     'input-segment': msg('Segment'),
     'input-current-clean-area': msg('Current clean area'),
     'input-current-clean-duration': msg('Current clean duration'),
-    'input-last-clean-area': msg('Last clean area'),
-    'input-last-clean-duration': msg('Last clean duration'),
     'input-battery': msg('Battery'),
     'input-mop-intensite': msg('Mop intensite'),
     'input-command': msg('Command'),

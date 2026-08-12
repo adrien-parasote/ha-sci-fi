@@ -241,11 +241,17 @@ a second source of truth. `bd show <id>` for the detail.
 | `ha-sci-fi-bjo` | Split `sf-radiator` into the 4 sub-components spec 04 § F-COMP-02 has claimed since day one but which were never written | 2 |
 | `ha-sci-fi-63z` | 193 colour literals match no `--sf-*` token — extend the palette, and decide separately whether the theme-chained tokens (`--sf-primary`, `--sf-bg`, `--sf-text-*`) should replace hardcoded colours, which makes cards follow the user's HA theme | 2 |
 | `ha-sci-fi-wrf` | `check_rules`: 2 workbench functions over `max_fn_lines`, plus the `src/sci-fi.ts` fan-out false positive — fix or exclude `dev/**` in `rules.toml` | 3 |
-| `ha-sci-fi-ouf` | Six unreachable label keys left in `sharedEditorLabels()` | 3 |
 | `ha-sci-fi-cu7` | `sci-fi-stove.ts:232` carries the same `replace`-only-first-underscore pattern as the vacuum defect — latent today | 3 |
 
 Closed since:
 
+- ~~`ha-sci-fi-ouf` — six unreachable label keys left in `sharedEditorLabels()`.~~
+  **DONE** — all six proved unreachable and deleted. The row above was wrong on
+  one point: only four sat in `sharedEditorLabels()` (`input-device`,
+  `action-call-children`, `input-input-button-entity`, `input-button-text`);
+  `input-last-clean-area` and `input-last-clean-duration` sat in
+  `src/cards/vacuum/labels.ts`. The vacuum card reads only `current_clean_*`, so
+  those two were vestiges, not a missing editor field. Plus TC-1017.
 - ~~`vacuum-editor` builds `input-${f.replace('_','-')}`, which replaces only the
   first underscore, so two sensor fields rendered an empty label.~~ **DONE**
   (`85da36f`) — `replaceAll` plus TC-1016 asserting every vacuum-sensor input

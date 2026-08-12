@@ -147,7 +147,7 @@
 11. **`sf-toggle-switch`**, **`sf-tabs`**, **`sf-toast`** → migrés TS
 12. **`sf-circle-progress-bar`**, **`sf-hexa-row`** → migrés TS
 13. **Boutons et inputs** → migrés TS
-14. **`sf-radiator`** → découpé en sous-composants (< 200L chacun)
+14. **`sf-radiator`** → migré TS, composant unique co-localisé dans `cards/climates/` (ADR-017) — pas de découpage, voir [Spec 04](./specs/04_components.md#sf-radiator--one-element-on-purpose)
 15. **`sf-landspeeder`** → migré TS (SVG animé véhicule)
 
 #### Tier 3 — Cartes (par ordre de complexité croissante)
@@ -191,7 +191,7 @@
 |---|-----|----------|
 | 1 | **Backward compat YAML** | ✅ **RÉSOLU — Zero breaking changes.** Les noms de champs YAML sont figés (ADR-005). La source de vérité est `docs/research/discovery.md` §2 et les `config-metadata` v0.9.6. |
 | 2 | **Scope des tests** | ✅ **RÉSOLU** — setup `@web/test-runner` + rebuild automatique. Tests sur domain model ET interactions composants (hass mocké). |
-| 3 | **`sf-radiator` découpage** | ✅ **RÉSOLU** — Composants Lit indépendants (`@customElement`) — state of the art. Chaque sous-composant dans son propre répertoire. |
+| 3 | **`sf-radiator` découpage** | ✅ **RÉSOLU — on ne découpe pas.** `sf-radiator` reste un seul `@customElement` co-localisé dans `src/cards/climates/` (ADR-017). Le seul widget avec plusieurs consommateurs, `sf-wheel`, est déjà extrait dans `src/components/`. Rationale : [Spec 04 § `sf-radiator` — one element on purpose](../specs/04_components.md#sf-radiator--one-element-on-purpose). |
 | 4 | **Modèle `House`** | ✅ **RÉSOLU** — Sélecteurs HA qui lisent directement `hass.areas`, `hass.floors`, `hass.devices`, `hass.entities` sans construire un objet intermédiaire lourd. |
 | 5 | **Git branching** | ✅ **RÉSOLU** — Branche `v1.0.0-wip` isolée. `main` est revenu sur `v0.9.6` stable. |
 | 6 | **Config validation** | ✅ **RÉSOLU** — `config-metadata` migré en TypeScript typé, NON remplacé par zod. Validation identique à v0.9.6. |

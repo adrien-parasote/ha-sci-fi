@@ -22,9 +22,14 @@ import type { EditorHassEntity } from '../../components/editor-inputs/sf-editor-
 import '../../components/editor-inputs/sf-editor-input.js';
 import '../../components/editor-inputs/sf-editor-dropdown-entity.js';
 import '../../components/editor-inputs/sf-editor-accordion.js';
+import { vehiclesLabels } from './labels.js';
 
 @customElement('sci-fi-vehicles-editor')
 export class SciFiVehiclesEditor extends SciFiBaseEditor {
+  protected override get cardLabels(): Record<string, string> {
+    return vehiclesLabels();
+  }
+
   @state() private _vehiclesList: EditorHassEntity[] = [];
 
   static override styles = [sciFiEditorCommonStyles];

@@ -27,9 +27,18 @@ import '../../components/editor-inputs/sf-editor-input.js';
 import '../../components/editor-inputs/sf-editor-dropdown-entity.js';
 import '../../components/editor-inputs/sf-editor-dropdown-icon.js';
 import '../../components/editor-inputs/sf-editor-accordion.js';
+import { plugsLabels, plugsSectionIcons } from './labels.js';
 
 @customElement('sci-fi-plugs-editor')
 export class SciFiPlugsEditor extends SciFiBaseEditor {
+  protected override get cardLabels(): Record<string, string> {
+    return plugsLabels();
+  }
+
+  protected override get cardSectionIcons(): Record<string, string> {
+    return plugsSectionIcons();
+  }
+
   @state() private _switchEntities: EditorHassEntity[] = [];
   @state() private _sensorEntities: EditorHassEntity[] = [];
 

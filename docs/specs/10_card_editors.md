@@ -19,7 +19,7 @@
 | F-EDITOR-07 | `sf-editor-chips` — tags multivaleur | ✅ This spec § Editor Input Components |
 | F-EDITOR-08 | `sf-editor-color-picker` — color picker | ✅ This spec § Editor Input Components |
 | F-EDITOR-09 | `sf-editor-accordion` — accordéon groupé | ✅ This spec § Editor Input Components |
-| F-EDITOR-10 | Enrichissement `SciFiBaseEditor` (`getLabel`, `_getNewConfig`) | ✅ This spec § Base Editor Enrichment |
+| F-EDITOR-10 | Enrichissement `SciFiBaseEditor` (`getLabel`, `_getNewConfig`) | ✅ This spec § Base Editor Enrichment — depuis ADR-017 la classe de base porte le **mécanisme** de lookup, chaque carte porte son **vocabulaire** (`cards/<card>/labels.ts`) |
 | F-EDITOR-11 | `sci-fi-weather-editor` | ✅ This spec § Card Editors |
 | F-EDITOR-12 | `sci-fi-climates-editor` | ✅ This spec § Card Editors |
 | F-EDITOR-13 | `sci-fi-lights-editor` | ✅ This spec § Card Editors |
@@ -49,24 +49,36 @@ src/
 ├── styles/
 │   └── editor-common.ts                    [NEW] Shared editor CSS tokens
 ├── utils/
-│   └── base-editor.ts                      [MODIFY] Add getLabel() + _getNewConfig()
+│   └── base-editor.ts                      [MODIFY] Label MECHANISM + sharedEditorLabels()
+│                                                    + SHARED_SECTION_ICONS + _getNewConfig()
 ├── cards/
 │   ├── weather/
-│   │   └── sci-fi-weather-editor.ts        [NEW]
+│   │   ├── sci-fi-weather-editor.ts        [NEW]
+│   │   └── labels.ts                       [NEW] card-owned label dict (ADR-017)
 │   ├── climates/
-│   │   └── sci-fi-climates-editor.ts       [NEW]
+│   │   ├── sci-fi-climates-editor.ts       [NEW]
+│   │   └── labels.ts                       [NEW]
 │   ├── lights/
-│   │   └── sci-fi-lights-editor.ts         [NEW]
+│   │   ├── sci-fi-lights-editor.ts         [NEW]
+│   │   └── labels.ts                       [NEW]
 │   ├── plugs/
-│   │   └── sci-fi-plugs-editor.ts          [NEW]
+│   │   ├── sci-fi-plugs-editor.ts          [NEW]
+│   │   └── labels.ts                       [NEW]
 │   ├── stove/
-│   │   └── sci-fi-stove-editor.ts          [NEW]
+│   │   ├── sci-fi-stove-editor.ts          [NEW]
+│   │   └── labels.ts                       [NEW]
 │   ├── vacuum/
-│   │   └── sci-fi-vacuum-editor.ts         [NEW]
+│   │   ├── sci-fi-vacuum-editor.ts         [NEW]
+│   │   └── labels.ts                       [NEW]
 │   ├── vehicles/
-│   │   └── sci-fi-vehicles-editor.ts       [NEW]
-│   └── hexa_tiles/
-│       └── sci-fi-hexa-tiles-editor.ts     [NEW]
+│   │   ├── sci-fi-vehicles-editor.ts       [NEW]
+│   │   └── labels.ts                       [NEW]
+│   ├── hexa-tiles/
+│   │   ├── sci-fi-hexa-tiles-editor.ts     [NEW]
+│   │   └── labels.ts                       [NEW]
+│   ├── tv/       — sci-fi-tv-editor.ts     + labels.ts
+│   ├── bridge/   — sci-fi-bridge-editor.ts + labels.ts
+│   └── water/    — sci-fi-water-management-editor.ts (shared keys only, no labels.ts)
 └── sci-fi.ts                               [MODIFY] Import all editors
 ```
 
@@ -119,6 +131,8 @@ src/
 | `sci-fi-*-editor` custom elements | Web Components | This spec § Card Editors | Lovelace `getConfigElement()` in Spec 05 |
 | `sf-editor-input`, `sf-editor-dropdown`, etc. | Web Components | This spec § Editor Input Components | 8 card editors in this spec |
 | `SciFiBaseEditor.getLabel(key)` | `string` method | This spec § Base Editor Enrichment | All 8 card editors |
+| `sharedEditorLabels()` | `Record<string,string>` function | This spec § Base Editor Enrichment | Merged into every editor's lookup |
+| `<card>Labels()` / `<card>SectionIcons()` | functions | `src/cards/<card>/labels.ts` | That card's editor only (ADR-017) |
 | `SciFiBaseEditor._getNewConfig<T>()` | `T` method | This spec § Base Editor Enrichment | All 8 card editors |
 
  ### Consumes
@@ -195,154 +209,63 @@ protected _dispatchChange(newConfig: SciFiBaseConfig): void {
 ```
 
 ```ts
-/** Label dictionary — port from main branch base_editor.js getLabel() */
+/**
+ * Label lookup — ADR-017.
+ *
+ * The base class owns the MECHANISM, not the vocabulary. It merges the shared
+ * kernel dictionary with the dictionary the card supplies; a card key shadows a
+ * shared key of the same name.
+ */
+protected get cardLabels(): Record<string, string> {
+  return {};                       // overridden per card
+}
+
+protected get cardSectionIcons(): Record<string, string> {
+  return {};                       // overridden per card
+}
+
 getLabel(key: string): string {
-  const labels: Record<string, string> = {
-    'section-title-header': msg('Header'),
-    'section-title-settings': msg('Settings'),
-    'section-title-vehicle': msg('Vehicle'),
-    'section-title-state': msg('State'),
-    'section-title-mode': msg('Mode'),
-    'section-title-weather': msg('Weather'),
-    'section-title-chart': msg('Chart'),
-    'section-title-alert': msg('Alert'),
-    'section-title-tile': msg('Tile'),
-    'section-title-technical': msg('Technical'),
-    'section-title-home-selection': msg('Display selection'),
-    'section-title-appearance': msg('Appearance'),
-    'section-title-entity': msg('Entity'),
-    'section-title-entity-light-custom': msg('Light entities customization'),
-    'section-title-sensor': msg('Sensors'),
-    'section-title-storage': msg('Storage'),
-    'section-title-plug': msg('Plugs'),
-    'section-title-energy': msg('Energy'),
-    'section-title-other': msg('Others'),
-    'section-title-monitoring': msg('Monitoring'),
-    'section-title-config': msg('Configuration'),
-    'section-title-device': msg('Device'),
-    'section-title-visibility': msg('Visibility'),
-    'section-title-default-actions': msg('Default actions display'),
-    'section-title-custom-actions': msg('Custom actions'),
-    'section-title-shortcuts': msg('Shortcuts'),
-    'section-title-segments': msg('Segments'),
-    'text-optional': msg('(optional)'),
-    'text-required': msg('(required)'),
-    'text-switch-climate-global-turn-on_off': msg('Display global turn on/off button ?'),
-    'text-switch-hexa-add-weather-tile': msg('Add weather tile ?'),
-    'text-switch-hexa-standalone': msg('Standalone entity?'),
-    'text-switch-action-start': msg('Start?'),
-    'text-switch-action-pause': msg('Pause?'),
-    'text-switch-action-stop': msg('Stop?'),
-    'text-switch-action-return-to-base': msg('Return to base?'),
-    'text-switch-action-set-fan-speed': msg('Set fan speed?'),
-    'text-child-lock': msg('Child lock?'),
-    'text-power-outage-memory': msg('Power outage memory'),
-    'text-other-sensor': msg('Others sensors'),
-    'edit-section-title': msg('Edit'),
-    'input-message-header-section-winter': msg('Winter period message'),
-    'input-icon-header-section-winter': msg('Winter period icon'),
-    'input-message-header-section-summer': msg('Summer period message'),
-    'input-icon-header-section-summer': msg('Summer period icon'),
-    'input-entities-to-exclude': msg('Entities to exclude'),
-    'input-icon': msg('Icon'),
-    'input-weather-alert-entity-id': msg('Weather alert entity id'),
-    'input-icon-auto': msg('Icon auto'),
-    'input-icon-off': msg('Icon off'),
-    'input-icon-heat': msg('Icon heat'),
-    'input-icon-frost_protection': msg('Icon frost protection'),
-    'input-icon-eco': msg('Icon eco'),
-    'input-icon-comfort': msg('Icon comfort'),
-    'input-icon-comfort-1': msg('Icon comfort-1'),
-    'input-icon-comfort-2': msg('Icon comfort-2'),
-    'input-icon-boost': msg('Icon boost'),
-    'input-color-auto': msg('Auto icon color'),
-    'input-color-off': msg('Off icon color'),
-    'input-color-heat': msg('Heat icon color'),
-    'input-color-frost_protection': msg('Frost protection icon color'),
-    'input-color-eco': msg('Eco icon color'),
-    'input-color-comfort': msg('Comfort icon color'),
-    'input-color-comfort-1': msg('Comfort-1 icon color'),
-    'input-color-comfort-2': msg('Comfort-2 icon color'),
-    'input-color-boost': msg('Boost icon color'),
-    'input-message-text': msg('Message'),
-    'input-weather-entity': msg('Weather entity'),
-    'input-link': msg('Link'),
-    'input-name': msg('Name'),
-    'input-active-icon': msg('Active icon'),
-    'input-inactive-icon': msg('Inactive icon'),
-    'input-states-on': msg('States on'),
-    'input-state-error': msg('Error state'),
-    'input-entity-id': msg('Entity id'),
-    'input-entity-kind': msg('Entity kind'),
-    'input-floor-id': msg('First floor to render'),
-```
+  const labels: Record<string, string> = { ...sharedEditorLabels(), ...this.cardLabels };
+  return (key in labels ? labels[key] : '') ?? '';
+}
 
-> _(block continued)_
-
-```ts
-    'input-area-id': msg('First area to render'),
-    'input-location': msg('Location'),
-    'input-location-last-activity': msg('Location last activity'),
-    'input-mileage': msg('Mileage'),
-    'input-lock-status': msg('Lock status'),
-    'input-fuel-autonomy': msg('Fuel autonomy'),
-    'input-fuel-quantity': msg('Fuel quantity'),
-    'input-battery-autonomy': msg('Battery autonomy'),
-    'input-battery-level': msg('Battery level'),
-    'input-charging-state': msg('Charging'),
-    'input-plug-state': msg('Plug state'),
-    'input-remainting-charging-time': msg('Remaining charging time'),
-    'input-storage-counter': msg('Storage counter'),
-    'input-threshold': msg('Threshold'),
-    'input-stove-combustion-chamber': msg('Stove combustion chamber'),
-    'input-room-temperature': msg('Room temperature'),
-    'input-stove-pressure': msg('Stove pressure'),
-    'input-stove-fan-speed': msg('Stove fans speed'),
-    'input-stove-power-rendered': msg('Stove power rendered'),
-    'input-stove-power-consume': msg('Stove power consumed'),
-    'input-stove-status': msg('Stove status'),
-    'input-stove-time-to-service': msg('Stove time to service'),
-    'input-pellet-quantity': msg('Stove pellet quantity'),
-    'input-pellet-quantity-threshold': msg('Pellet quantity threshold'),
-    'input-daily-forecast-number': msg('Forecast number of days'),
-    'input-chart-first-focus-data': msg('First data targeted on the chart'),
-    'input-alert-green': msg('Green state'),
-    'input-alert-yellow': msg('Yellow state'),
-    'input-alert-orange': msg('Orange state'),
-    'input-alert-red': msg('Red state'),
-    'input-device': msg('Device'),
-    'input-energy': msg('Energy'),
-    'input-power': msg('Power'),
-    'input-map': msg('Map'),
-    'input-service': msg('Service to call'),
-    'input-segment': msg('Segment'),
-    'input-current-clean-area': msg('Current clean area'),
-    'input-current-clean-duration': msg('Current clean duration'),
-    'input-last-clean-area': msg('Last clean area'),
-    'input-last-clean-duration': msg('Last clean duration'),
-    'input-battery': msg('Battery'),
-    'input-mop-intensite': msg('Mop intensite'),
-    'input-command': msg('Command'),
-    // ── Action labels ─────────────────────────────────────────────────────
-    'action-add-tile': msg('Add tile'),
-    'action-add-custom-entity': msg('Add custom entity'),
-    'action-add-vehicle': msg('Add vehicle'),
-    'action-add-device': msg('Add device'),
-    'action-add-segment': msg('Add segment'),
-    'action-add-shortcut': msg('Add shortcut'),
-    'action-delete-shortcut': msg('Delete shortcut'),
-    'action-edit-shortcut': msg('Edit shortcut'),
-    // ── Entity labels ─────────────────────────────────────────────────────
-    'input-switch-entity': msg('Switch entity'),
-    'input-vacuum-entity': msg('Vacuum entity'),
-    // ── Status text ───────────────────────────────────────────────────────
-    'text-no-vacuum': msg('No vacuum configured.'),
-  };
-  return key in labels ? labels[key] : '';
+getSectionTitle(key: string): TemplateResult {
+  const icons: Record<string, string> = { ...SHARED_SECTION_ICONS, ...this.cardSectionIcons };
+  const icon = icons[key] ?? 'mdi:circle-small';
+  return html`
+    <sf-icon icon="${icon}" style="--icon-width:16px;--icon-height:16px;"></sf-icon>
+    <span>${this.getLabel(key)}</span>
+  `;
 }
 ```
 
-> **Note:** `msg` is imported from `@lit/localize`. All labels go through the localization system so that `getLabel()` strings are translated when the locale changes.
+Each card editor supplies its own dictionary from `src/cards/<card>/labels.ts`:
+
+```ts
+// src/cards/weather/labels.ts
+export function weatherLabels(): Record<string, string> {
+  return {
+    'section-title-chart': msg('Chart'),
+    'input-daily-forecast-number': msg('Forecast number of days'),
+    // …
+  };
+}
+
+// src/cards/weather/sci-fi-weather-editor.ts
+protected override get cardLabels(): Record<string, string> {
+  return weatherLabels();
+}
+```
+
+**Ownership rule.** A key consumed by exactly one card lives in that card's
+`labels.ts`. A key consumed by two or more cards, or built dynamically at
+runtime, stays in `sharedEditorLabels()` in `base-editor.ts` — the kernel is
+the lookup fallback, so kernel placement is always safe. Current split:
+**144 card-owned keys, 36 shared**; section icons: **15 card-owned, 13 shared**.
+
+> **Note:** `msg` is imported from `@lit/localize` in each dictionary module.
+> Dictionaries are **functions**, not consts, so `msg()` re-resolves on every
+> lookup and labels follow a locale change.
 
 ---
 
@@ -870,7 +793,7 @@ The `sensors` field in `SciFiPlugDevice` is a `Record<string, SciFiPlugSensorEnt
 | 8 | Dispatching `config-changed` without `composed: true` | Event doesn't reach Lovelace shadow boundary | Always `composed: true, bubbles: true` on `config-changed` |
 | 9 | Adding i18n labels as raw strings without `msg()` | `'Header'` hardcoded | Wrap ALL labels in `msg('Header')` — `getLabel()` already does this |
 | 10 | Building icon list with `getAllIconNames()` (main branch function) | Missing function in TS | Use `Object.keys(CUSTOM_ICONS)` with `sf:` prefix + curated MDI list |
-| 11 | Calling `msg()` directly in editor templates for UI labels | Bypasses `getLabel()`, preventing locale updates; French strings as `msg('Ajouter une tuile')` appear untranslatable in other locales | Add the key to `getLabel()` dictionary in `base-editor.ts`, call `this.getLabel('action-add-tile')` in the template; add corresponding entry to `fr.ts` and `xliff/fr.xlf` |
+| 11 | Calling `msg()` directly in editor templates for UI labels | Bypasses `getLabel()`, preventing locale updates; French strings as `msg('Ajouter une tuile')` appear untranslatable in other locales | Add the key to **that card's** `src/cards/<card>/labels.ts` (ADR-017 — only add it to `sharedEditorLabels()` in `base-editor.ts` if a second card needs it), call `this.getLabel('action-add-tile')` in the template; add corresponding entry to `fr.ts` and `xliff/fr.xlf` |
 
 ---
 

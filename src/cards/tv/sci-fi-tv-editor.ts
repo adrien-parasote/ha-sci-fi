@@ -15,9 +15,18 @@ import '../../components/editor-inputs/sf-editor-dropdown-entity.js';
 import '../../components/editor-inputs/sf-editor-source-list.js';
 import '../../components/editor-inputs/sf-editor-action.js';
 import '../../components/editor-inputs/sf-editor-accordion.js';
+import { tvLabels, tvSectionIcons } from './labels.js';
 
 @customElement('sci-fi-tv-editor')
 export class SciFiTVEditor extends SciFiBaseEditor {
+  protected override get cardLabels(): Record<string, string> {
+    return tvLabels();
+  }
+
+  protected override get cardSectionIcons(): Record<string, string> {
+    return tvSectionIcons();
+  }
+
   @state() private _mediaPlayers: EditorHassEntity[] = [];
   @state() private _remotes: EditorHassEntity[] = [];
 

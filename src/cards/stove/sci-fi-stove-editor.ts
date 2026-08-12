@@ -17,9 +17,18 @@ import type { InputUpdateDetail } from '../../components/editor-inputs/sf-editor
 
 import '../../components/editor-inputs/sf-editor-input.js';
 import '../../components/editor-inputs/sf-editor-slider.js';
+import { stoveLabels, stoveSectionIcons } from './labels.js';
 
 @customElement('sci-fi-stove-editor')
 export class SciFiStoveEditor extends SciFiBaseEditor {
+  protected override get cardLabels(): Record<string, string> {
+    return stoveLabels();
+  }
+
+  protected override get cardSectionIcons(): Record<string, string> {
+    return stoveSectionIcons();
+  }
+
 
   static override styles = [sciFiEditorCommonStyles];
 

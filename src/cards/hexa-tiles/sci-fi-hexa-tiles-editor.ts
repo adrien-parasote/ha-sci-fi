@@ -33,6 +33,7 @@ import '../../components/editor-inputs/sf-editor-accordion.js';
 import '../../components/sf-toggle-switch/sf-toggle-switch.js';
 import '../../components/sf-icon/sf-icon.js';
 import '../../components/buttons/sf-button.js';
+import { hexaTilesLabels, hexaTilesSectionIcons } from './labels.js';
 
 const ENTITY_KINDS = ['light', 'climate', 'vacuum', 'plug', 'switch'];
 
@@ -53,6 +54,14 @@ interface PersonEntry {
 
 @customElement('sci-fi-hexa-tiles-editor')
 export class SciFiHexaTilesEditor extends SciFiBaseEditor {
+  protected override get cardLabels(): Record<string, string> {
+    return hexaTilesLabels();
+  }
+
+  protected override get cardSectionIcons(): Record<string, string> {
+    return hexaTilesSectionIcons();
+  }
+
   @state() private _weatherEntities: EditorHassEntity[] = [];
   @state() private _people: PersonEntry[] = [];
   @state() private _entitiesByDomain: Record<string, EditorHassEntity[]> = {};

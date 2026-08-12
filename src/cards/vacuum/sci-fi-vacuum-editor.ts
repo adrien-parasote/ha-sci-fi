@@ -28,6 +28,7 @@ import '../../components/editor-inputs/sf-editor-dropdown-icon.js';
 import '../../components/editor-inputs/sf-editor-accordion.js';
 import '../../components/sf-toggle-switch/sf-toggle-switch.js';
 import '../../components/buttons/sf-button.js';
+import { vacuumLabels, vacuumSectionIcons } from './labels.js';
 
 type ActionKey = 'start' | 'pause' | 'stop' | 'return_to_base' | 'set_fan_speed';
 
@@ -42,6 +43,14 @@ const ACTION_LABELS: Record<ActionKey, string> = {
 
 @customElement('sci-fi-vacuum-editor')
 export class SciFiVacuumEditor extends SciFiBaseEditor {
+  protected override get cardLabels(): Record<string, string> {
+    return vacuumLabels();
+  }
+
+  protected override get cardSectionIcons(): Record<string, string> {
+    return vacuumSectionIcons();
+  }
+
   @state() private _vacuumEntities: EditorHassEntity[] = [];
   @state() private _activeVacuum = 0;
   @state() private _edit = false;

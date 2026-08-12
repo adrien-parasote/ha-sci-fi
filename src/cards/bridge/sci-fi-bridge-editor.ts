@@ -33,11 +33,16 @@ import '../../components/editor-inputs/sf-editor-dropdown-icon.js';
 import '../../components/editor-inputs/sf-editor-input.js';
 import '../../components/sf-icon/sf-icon.js';
 import '../../components/buttons/sf-button.js';
+import { bridgeLabels } from './labels.js';
 
 const TAG = 'sci-fi-bridge-editor';
 
 @customElement(TAG)
 export class SciFiBridgeEditor extends SciFiBaseEditor {
+  protected override get cardLabels(): Record<string, string> {
+    return bridgeLabels();
+  }
+
   static override styles = [
     sciFiEditorCommonStyles,
     css`

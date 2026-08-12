@@ -103,7 +103,8 @@ src/cards/vehicles/
 └── src/cards/vehicles/vehicle_const.ts               [NEW]    — charge/plug state constants + icon/label mappings (ported from main vehicle_const.js)
 
 src/cards/vehicles/
-├── src/cards/vehicles/sf-landspeeder.ts               [NEW]    — landspeeder SVG + overlaid top/middle data panels (ported from main sf-landspeeder.js)
+├── src/cards/vehicles/sf-landspeeder.ts               [NEW]    — overlaid top/middle data panels (ported from main sf-landspeeder.js)
+├── src/cards/vehicles/landspeeder-svg.ts              [NEW]    — the static SVG illustration (ADR-017 step 5)
 └── src/cards/vehicles/vehicle_const.ts                [NEW]    — service names, charge/plug state constants
 
 tests/cards/vehicles/

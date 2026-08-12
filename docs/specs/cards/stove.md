@@ -102,6 +102,11 @@ src/components/
 
 > [!NOTE]
 > `sf-stove-image.ts`, `sf-stack-bar.ts`, and 'sf-circle-progress-bar.ts' are new files not in the original spec — they were extracted from main branch JS components as part of the TS port.
+>
+> ADR-017: `sf-stove-image.ts` lives in `src/cards/stove/` — the stove card is
+> its only consumer, so it is card-private, not a shared component.
+> `sf-stack-bar.ts` and `sf-circle-progress-bar.ts` have several consumers and
+> stay in `src/components/`.
 
 ---
 

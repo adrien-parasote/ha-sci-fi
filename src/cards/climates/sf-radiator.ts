@@ -1,9 +1,9 @@
 import { msg, updateWhenLocaleChanges } from '@lit/localize';
 import { LitElement, css, html, nothing, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { sciFiCommonStyles } from '../styles/common.js';
-import './sf-wheel.js';
-import './buttons/sf-button-card-select.js';
+import { sciFiCommonStyles } from '../../styles/common.js';
+import '../../components/sf-wheel.js';
+import '../../components/buttons/sf-button-card-select.js';
 
 const STATE_CLIMATE_HEAT = 'heat';
 const STATE_CLIMATE_COOL = 'cool';

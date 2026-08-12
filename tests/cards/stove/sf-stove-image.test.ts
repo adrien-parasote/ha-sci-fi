@@ -11,12 +11,12 @@ afterEach(() => {
 
 describe('sf-stove-image', () => {
   it('registers as a custom element', async () => {
-    await import('../../src/components/sf-stove-image.js');
+    await import('../../../src/cards/stove/sf-stove-image.js');
     expect(customElements.get('sf-stove-image')).to.not.be.undefined;
   });
 
   it('renders an SVG element', async () => {
-    await import('../../src/components/sf-stove-image.js');
+    await import('../../../src/cards/stove/sf-stove-image.js');
     const el = document.createElement('sf-stove-image') as any;
     el.state = 'off';
     document.body.appendChild(el);
@@ -25,7 +25,7 @@ describe('sf-stove-image', () => {
   });
 
   it('reflects state attribute — off', async () => {
-    await import('../../src/components/sf-stove-image.js');
+    await import('../../../src/cards/stove/sf-stove-image.js');
     const el = document.createElement('sf-stove-image') as any;
     el.state = 'off';
     document.body.appendChild(el);
@@ -34,7 +34,7 @@ describe('sf-stove-image', () => {
   });
 
   it('reflects state attribute — heat', async () => {
-    await import('../../src/components/sf-stove-image.js');
+    await import('../../../src/cards/stove/sf-stove-image.js');
     const el = document.createElement('sf-stove-image') as any;
     el.state = 'heat';
     document.body.appendChild(el);
@@ -43,7 +43,7 @@ describe('sf-stove-image', () => {
   });
 
   it('reflects state attribute — cool', async () => {
-    await import('../../src/components/sf-stove-image.js');
+    await import('../../../src/cards/stove/sf-stove-image.js');
     const el = document.createElement('sf-stove-image') as any;
     el.state = 'cool';
     document.body.appendChild(el);

@@ -20,7 +20,7 @@ import { sciFiCommonStyles } from '../../styles/common.js';
 import { stoveStyles } from './styles.js';
 import type { SciFiStoveConfig } from '../../types/config.js';
 
-import '../../components/sf-stove-image.js';
+import './sf-stove-image.js';
 import '../../components/sf-circle-progress-bar.js';
 import '../../components/sf-stack-bar.js';
 import '../../components/sf-icon/sf-icon.js';

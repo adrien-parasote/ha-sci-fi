@@ -55,9 +55,7 @@ src/
     ├── sf-dropdown.ts              Generic dropdown
     ├── sf-hexa-row.ts              Hexagonal tile row
     ├── sf-hexa-tile.ts             Hexagonal tile
-    ├── sf-radiator.ts              Radiator display        [MOVES → cards/climates/ — ADR-017 step 2]
     ├── sf-stack-bar.ts             Stacked bar display
-    ├── sf-stove-image.ts           Stove SVG display       [MOVES → cards/stove/ — ADR-017 step 2]
     ├── sf-toast.ts                 Global toast element
     └── sf-wheel.ts                 Radial dial (stove + vehicles — stays shared)
 ```
@@ -148,7 +146,7 @@ Relocated by ADR-017 (single-consumer components):
 | TC-401 | Unit | sf-icon checks customIcons first | Custom icon request | Renders custom path from window |
 | TC-402 | Unit | sf-icon checks native MDI next | MDI icon request | Renders native path from database |
 | TC-403 | Unit | icon-cache saves icons successfully | Fetch and cache request | Stores SVG in idb-keyval cache |
-| TC-404 | Unit | sf-radiator compiles correctly | Active climate configuration | Renders nested radiator elements |
+| TC-404 | Unit | sf-radiator compiles correctly | Active climate configuration | Renders nested radiator elements — **moved to Spec 05 § Climates** (component relocated by ADR-017); test lives in `tests/cards/climates/sf-radiator.test.ts` |
 | TC-405 | Unit | sf-toggle-switch dispatch events | Click active element | Dispatches custom change event |
 | TC-406 | Unit | sci-icon mirrors sf-icon API | sci: / sf: / mdi: icon | Renders correctly for each prefix |
 | TC-407 | Unit | getIconList() returns all sci: icons | Call getIconList() | Returns array with name for each registered icon |

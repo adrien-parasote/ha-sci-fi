@@ -9,7 +9,7 @@ import { getClimateEntitiesExcluding, isClimateActive } from '../../selectors/cl
 import { getFloors, getAreasByFloor, getEntitiesByAreaAndDomain, getFloorById, getAreaById, getAreas } from '../../selectors/house.js';
 
 import '../../components/sf-hexa-row.js';
-import '../../components/sf-radiator.js';
+import './sf-radiator.js';
 
 const TAG = 'sci-fi-climates';
 

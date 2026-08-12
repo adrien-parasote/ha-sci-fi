@@ -297,6 +297,43 @@ describe('sf-bridge-access', () => {
     expect(callService).toHaveBeenCalledWith('cover', 'close_cover', { entity_id: 'cover.garage' });
   });
 
+  // ── Repro: two access points, acting on the second ────────────────────────
+
+  it('acts on the clicked entry when several access points are configured', async () => {
+    const callService = vi.fn().mockResolvedValue({});
+    const el = makeEl();
+    el.config = {
+      items: [
+        { entity: 'cover.porte_garage', name: 'Garage' },
+        { entity: 'cover.portail', name: 'Portail' },
+      ],
+    };
+    el.hass = makeHass(
+      {
+        'cover.porte_garage': makeMockEntity({ entity_id: 'cover.porte_garage', state: 'closed' }),
+        'cover.portail': makeMockEntity({ entity_id: 'cover.portail', state: 'closed' }),
+      },
+      callService,
+    );
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const entries = el.shadowRoot!.querySelectorAll('.access-entry');
+    expect(entries.length, 'both access points must render').to.equal(2);
+
+    // Second entry (Portail), first button (Open).
+    const portailOpen = entries[1]!.querySelectorAll('.access-btn')[0]!;
+    portailOpen.dispatchEvent(new MouseEvent('click'));
+
+    expect(callService).toHaveBeenCalledWith('cover', 'open_cover', { entity_id: 'cover.portail' });
+
+    // And the first entry still acts on itself.
+    callService.mockClear();
+    const garageOpen = entries[0]!.querySelectorAll('.access-btn')[0]!;
+    garageOpen.dispatchEvent(new MouseEvent('click'));
+    expect(callService).toHaveBeenCalledWith('cover', 'open_cover', { entity_id: 'cover.porte_garage' });
+  });
+
   // ── Localised state label ─────────────────────────────────────────────────
 
   it('TC-BRIDGE-U-31: renders the localised cover state label for a closed cover', async () => {

@@ -361,6 +361,54 @@ describe('sci-fi-climates', () => {
     expect(radiator, 'a radiator tile must be rendered').to.exist;
     expect(radiator.cardStyles.state.icons.heat).to.equal('mdi:fire');
   });
+
+  // ── O4: the header reads sensor.season, so it must be a relevant entity ───
+
+  it('O4: lists sensor.season among its relevant entities', async () => {
+    const el = document.createElement('sci-fi-climates') as any;
+    el.setConfig({ type: 'custom:sci-fi-climates' });
+    el.hass = makeMockHass({
+      states: {
+        'climate.salon': makeMockEntity({
+          entity_id: 'climate.salon',
+          state: 'heat',
+          attributes: { friendly_name: 'Salon', current_temperature: 21, temperature: 22 },
+        }),
+        'sensor.season': makeMockEntity({ entity_id: 'sensor.season', state: 'winter' }),
+      },
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    // Without it, shouldUpdate suppresses the repaint and the header keeps the
+    // previous season's icon until some climate entity happens to change.
+    expect(el.getRelevantEntities()).to.include('sensor.season');
+  });
+
+  /**
+   * Review round 3: the guard that preserves base-card's repaint escape had no
+   * probe and its mutant survived. With no climate entity there is nothing to
+   * watch, and an EMPTY list is what base-card reads as "repaint on every hass
+   * change" — adding the season unconditionally retired that escape, so
+   * deleting the last climate entity left a stale radiator on screen.
+   */
+  it('O4: returns no relevant entity at all when no climate exists', async () => {
+    const el = document.createElement('sci-fi-climates') as any;
+    el.setConfig({ type: 'custom:sci-fi-climates' });
+    el.hass = makeMockHass({
+      states: {
+        'sensor.season': makeMockEntity({ entity_id: 'sensor.season', state: 'winter' }),
+        'light.salon': makeMockEntity({ entity_id: 'light.salon', state: 'on' }),
+      },
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    expect(
+      el.getRelevantEntities(),
+      'an empty list is the repaint-on-everything escape — the season must not fill it'
+    ).to.deep.equal([]);
+  });
 });
 
 

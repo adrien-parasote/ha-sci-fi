@@ -82,6 +82,7 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
         ${STOVE_SENSOR_FIELDS.map(([id, labelKey, icon]) =>
           this._renderInput(id, 'sensor', labelKey, icon, sensors[id] ?? ''))}
         ${this._renderInput('storage_counter', 'storage', 'input-storage-counter', 'mdi:database', config.storage_counter ?? '')}
+        ${this._renderInput('switch_eco_mode', 'entity', 'input-switch-eco-mode', 'mdi:leaf', config.switch_eco_mode ?? '')}
       </section>
     `;
   }

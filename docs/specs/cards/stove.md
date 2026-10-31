@@ -131,6 +131,75 @@ src/components/
 
 ---
 
+## Contrat d'intégration Fumis — les deux générations
+
+> Lot `stove-fumis-core` (O2 → bead `ha-sci-fi-nib`, O3 → bead `ha-sci-fi-1qy`).
+> La carte est branchée indifféremment sur l'intégration HACS `maheus/fumis_integration`
+> (projet arrêté) ou sur l'intégration **core** `fumis` (HA 2026.5+). Les deux ne
+> présentent pas le même poêle, et la carte doit tolérer les deux.
+
+### Vocabulaire de statut — `sensors.sensor_status`
+
+`STATUS_ICONS` et `STATUS_LABELS` couvrent les **quatorze** valeurs de
+`sensor.*_detailed_stove_status` de l'intégration core. Les sept premières sont
+aussi celles qu'écrivait le `binary_sensor` de l'intégration HACS.
+
+| État | Icône | Couleur | Génération |
+|---|---|---|---|
+| `off` | `sci:stove-off` | off | les deux |
+| `pre_heating` | `sci:stove-heat` | amber | les deux |
+| `ignition` | `sci:stove-heat` | amber | les deux |
+| `pre_combustion` | `sci:stove-heat` | red | les deux |
+| `combustion` | `sci:stove-heat` | red | les deux |
+| `eco` | `sci:stove-eco` | green | les deux |
+| `cooling` | `sci:stove-cool` | blue | les deux |
+| `cold_start` | `sci:stove-heat` | amber | core |
+| `cold_start_off` | `sci:stove-off` | off | core |
+| `hybrid_init` | `sci:stove-heat` | amber | core |
+| `hybrid_start` | `sci:stove-heat` | red | core |
+| `wood_start` | `sci:stove-heat` | amber | core |
+| `wood_combustion` | `sci:stove-heat` | red | core |
+| `wood_burning_off` | `sci:stove-cool` | blue | core |
+
+Le repli `sci:stove-unknow` + `replaceAll('_', ' ')` **reste en place** : il couvre une
+valeur future que l'intégration ajouterait (TC-1114 le vérifie).
+
+> **Source du vocabulaire** : relevé sur l'installation d'Adrien le 2026-10-31
+> (HA 2026.10.4, intégration core `fumis`), consigné dans le bead `ha-sci-fi-nib` ;
+> les sept valeurs core supplémentaires sont celles que réclamait
+> `maheus/fumis_integration#17`. Aucune de ces quatorze valeurs n'est garantie par un
+> contrat publié : une quinzième apparaîtrait sur le repli, pas en erreur. Si
+> l'intégration en ajoute, c'est ce tableau qu'il faut compléter — et le
+> `STOVE_OFF_STATES` de `sf-bridge-stove.ts` en même temps, sans quoi un nouvel état
+> éteint compterait comme « en marche » sur le bridge.
+
+> [!WARNING]
+> **Ne pas brancher la carte sur `sensor.*_stove_status`** (la version simplifiée de core) :
+> elle renomme `combustion` en `burning`, `pre_heating` en `heating_up`, et perd
+> `pre_combustion` — trois des sept clés historiques cesseraient d'être reconnues.
+
+### Mode éco — `switch_eco_mode`
+
+L'intégration HACS exposait `preset_modes: ['none', 'eco']` sur l'entité `climate`.
+L'intégration core ne l'expose plus : ses `supported_features` valent
+`TARGET_TEMPERATURE | TURN_ON | TURN_OFF`, sans `PRESET_MODE`, et le mode éco devient
+une entité à part, `switch.*_eco_mode`. Le troisième contrôle de la barre du bas suit
+donc trois branches, dans cet ordre :
+
+| Condition | Rendu | Action |
+|---|---|---|
+| `config.switch_eco_mode` renseigné | `sf-button-card` bascule, icône `mdi:leaf` quand le switch est `on`, `mdi:circle-medium` sinon | `switch.toggle` sur l'entité |
+| sinon, `attributes.preset_modes` non vide | `sf-button-card-select` — comportement historique, inchangé | `climate.set_preset_mode` |
+| sinon | **rien** | — |
+
+La troisième branche est le défaut corrigé : un bouton rendu mais sans liste à ouvrir
+est un contrôle mort, pire qu'un contrôle absent.
+
+`switch_eco_mode` est un champ **racine** de `SciFiStoveConfig` (ce n'est pas un capteur),
+exposé par l'éditeur dans la section Configuration et ajouté à `getRelevantEntities()`.
+
+---
+
 ## Header
 
 ### Design Specification

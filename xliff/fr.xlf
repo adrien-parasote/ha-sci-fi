@@ -1163,6 +1163,12 @@
 <trans-unit id="secbba82986a809bc">
   <source>No radiator configured</source>
 <target>Aucun radiateur configuré</target></trans-unit>
+<trans-unit id="s9f34d842bf3f3897">
+  <source>Eco mode switch</source>
+<target>Interrupteur mode éco</target></trans-unit>
+<trans-unit id="s091d5807b5b33550">
+  <source>On</source>
+<target>Marche</target></trans-unit>
 </body>
 </file>
 </xliff>

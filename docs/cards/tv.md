@@ -91,7 +91,11 @@ custom_actions:
 
 ### Options — `custom_actions` (per entry)
 
-Each key can be one of the following buttons: `up`, `down`, `left`, `right`, `confirm`, `back`, `home`, `menu`, `power`, `info`, `enter`, `volume_mute`.
+Each key can be one of the following buttons: `up`, `down`, `left`, `right`, `confirm`, `back`, `home`, `menu`, `power`, `volume_mute`.
+
+`enter` is still accepted as an alias of `confirm`, for dashboards saved by an
+earlier version of the editor. `info` is accepted but bound to no button, so an
+action placed there never fires.
 
 Values must conform to standard Lovelace action configurations:
 

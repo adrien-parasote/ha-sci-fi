@@ -17,10 +17,19 @@ import '../../components/editor-inputs/sf-editor-action.js';
 import '../../components/editor-inputs/sf-editor-accordion.js';
 import { tvLabels, tvSectionIcons } from './labels.js';
 
-/** Remote buttons the user can bind a custom action to. */
+/**
+ * Remote buttons the user can bind a custom action to — every one of them a
+ * button this card actually renders.
+ *
+ * `enter` was offered here while the card rendered and read `confirm`, so every
+ * action bound through this editor was saved and never fired; the card now
+ * reads `confirm` with `enter` as an alias, and the selector names `confirm`.
+ * `info` is gone: there is no info button to bind, so the selector could only
+ * ever write dead config (ha-sci-fi-ecr).
+ */
 const TV_CUSTOM_ACTION_IDS = [
-  'power', 'home', 'menu', 'back', 'info',
-  'up', 'down', 'left', 'right', 'enter', 'volume_mute',
+  'power', 'home', 'menu', 'back',
+  'up', 'down', 'left', 'right', 'confirm', 'volume_mute',
 ] as const satisfies ReadonlyArray<keyof SciFiTVCustomActions>;
 
 @customElement('sci-fi-tv-editor')
@@ -93,7 +102,16 @@ export class SciFiTVEditor extends SciFiBaseEditor {
     const actionConfig = e.detail.value;
 
     const customActions = { ...(newConfig.custom_actions || {}) };
-    
+
+    // The confirm selector displays `confirm ?? enter`, and `enter` no longer has
+    // a selector of its own — so this handler is the ONLY place that can clear a
+    // legacy `enter` binding. Without this line, clearing confirm left `enter` in
+    // the config and the selector re-displayed it: an unremovable action that
+    // came back after being deleted. Writing confirm migrates off `enter` too.
+    if (actionId === 'confirm') {
+      delete customActions.enter;
+    }
+
     // If the action is empty or undefined, remove it from custom_actions
     if (!actionConfig || Object.keys(actionConfig).length === 0 || actionConfig.action === 'none') {
       delete customActions[actionId as keyof typeof customActions];
@@ -222,7 +240,9 @@ export class SciFiTVEditor extends SciFiBaseEditor {
             element-id="${actionId}"
             label="Bouton ${actionId}"
             .hass="${this.hass}"
-            .value="${config.custom_actions?.[actionId]}"
+            .value="${actionId === 'confirm'
+              ? (config.custom_actions?.confirm ?? config.custom_actions?.enter)
+              : config.custom_actions?.[actionId]}"
             @input-update="${this._handleActionUpdate}"
           ></sf-editor-action>
         `)}

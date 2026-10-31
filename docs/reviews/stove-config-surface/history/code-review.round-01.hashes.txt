@@ -1,0 +1,13 @@
+5fa2ae2b01bc821c1cea561cedeb2abdb478648a docs/cards/stove.md
+a0d21430898df4cf1dc26b43efe7f3a25eb6f8f2 src/cards/bridge/sci-fi-bridge-editor.ts
+04d03288407ae82e121590772f67f8c3d3df2545 src/cards/stove/config.ts
+abddb23200c29a7cb75050a76cc24216ac7fcc1d src/cards/stove/labels.ts
+563ce0bf19411565765bde07b9b7c8a20a48c535 src/cards/stove/sci-fi-stove-editor.ts
+363d16443496f8462c7c09725b20a6bb68ff1b2c src/cards/stove/sci-fi-stove.ts
+c8aebef56aa682a0d521af31b9cfb0341a582f75 src/locales/locales/fr.js
+94bc2f15d9d6faca93e8ec571913bdfb4f523a29 tests/cards/bridge/sci-fi-bridge-editor.test.ts
+50672b5b7e32d6ccf6f1467161453de9650ed1f7 tests/cards/stove/sci-fi-stove-editor.test.ts
+2071f3abe49b14f9ac4a1450b49f352f7e6d7efb tests/cards/stove/sci-fi-stove.test.ts
+5887722b2d44fe2cb715c5e8734476b6de311a18 xliff/fr.xlf
+8dca41231bbc0fd5b227b2ef4878346e237efa8d docs/fixes/stove-config-surface/lot.json
+3cefdf8baaff50502b5fa84bbffdd953e959c782 docs/fixes/stove-config-surface/verdicts.json

@@ -15,6 +15,7 @@ import { msg } from '@lit/localize';
 export function stoveLabels(): Record<string, string> {
   return {
     'section-title-config': msg('Configuration'),
+    'input-stove-entity': msg('Stove entity'),
     'input-storage-counter': msg('Storage counter'),
     'input-switch-eco-mode': msg('Eco mode switch'),
     'input-threshold': msg('Threshold'),

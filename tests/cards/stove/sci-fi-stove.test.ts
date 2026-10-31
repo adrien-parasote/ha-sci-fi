@@ -7,6 +7,7 @@ import * as path from 'path';
 import '../../../src/cards/stove/sci-fi-stove.js';
 import { SciFiStoveCard } from '../../../src/cards/stove/sci-fi-stove.js';
 import { makeMockHass, makeMockEntity } from '../../fixtures/mock-hass.js';
+import { setLocale } from '../../../src/locales/localization.js';
 
 if (!customElements.get('sf-toast')) {
   customElements.define('sf-toast', class extends HTMLElement {
@@ -862,5 +863,168 @@ describe('sci-fi-stove', () => {
     );
     expect(src).to.not.match(/\bcss`/);
     expect(src).to.contain("from './styles.js'");
+  });
+
+  // ── O5. Les quatre toasts de la barre inférieure passent par msg() ──────────
+
+  /**
+   * O5 — the four success toasts of the bottom bar were hard-coded French
+   * literals, against correction C12 of the spec which had moved that bar's keys
+   * to English msg() so lit-localize resolves them.
+   *
+   * What a resolved message can do and a literal cannot: FOLLOW the language
+   * Home Assistant reports. SciFiBaseCard syncs the locale from
+   * `hass.locale.language`, so these drive it the way a real dashboard does.
+   */
+  describe('O5 — bottom-bar toasts go through msg() (regression)', () => {
+    const stoveAttrs = {
+      friendly_name: 'Poêle',
+      hvac_modes: ['off', 'heat'],
+      preset_modes: ['none', 'eco'],
+      preset_mode: 'none',
+      temperature: 20,
+      min_temp: 15,
+      max_temp: 25,
+    };
+
+    const settle = () => new Promise((r) => setTimeout(r, 10));
+
+    afterEach(async () => {
+      // the card moved the locale through hass; the suite's other cases read
+      // French, so never leave it moved.
+      await setLocale('fr');
+    });
+
+    /** Mount with HA reporting `language`, and capture what reaches sf-toast. */
+    const mountCapturing = async (
+      language: string,
+      config: Record<string, unknown>,
+      states: Record<string, unknown>,
+    ): Promise<{ el: SciFiStoveCard; messages: Array<{ text: string; error: boolean }> }> => {
+      const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
+      (el as any).setConfig({ type: 'custom:sci-fi-stove', entity: 'climate.poele', ...config });
+      const hass = makeMockHass({
+        callService: vi.fn().mockResolvedValue({} as any),
+        states: states as any,
+      });
+      el.hass = { ...hass, locale: { ...hass.locale, language } } as any;
+      document.body.appendChild(el);
+      await el.updateComplete;
+      await settle();   // the locale load the base class kicked off
+
+      const messages: Array<{ text: string; error: boolean }> = [];
+      const toast = el.shadowRoot!.querySelector('sf-toast') as any;
+      toast.addMessage = (text: string, error: boolean) => { messages.push({ text, error }); };
+      return { el, messages };
+    };
+
+    /** Drive the three climate controls of the bottom bar, in order. */
+    const driveClimateControls = async (el: SciFiStoveCard): Promise<void> => {
+      const selects = el.shadowRoot!.querySelectorAll('sf-button-card-select');
+      selects[0]!.dispatchEvent(new CustomEvent('button-select', { bubbles: true, composed: true, detail: { id: 'heat' } }));
+      await settle();
+
+      el.shadowRoot!.querySelector('sf-wheel')!.dispatchEvent(
+        new CustomEvent('wheel-change', { bubbles: true, composed: true, detail: { id: '21' } }));
+      await settle();
+
+      selects[1]!.dispatchEvent(new CustomEvent('button-select', { bubbles: true, composed: true, detail: { id: 'eco' } }));
+      await settle();
+    };
+
+    const climateStates = () => ({
+      'climate.poele': makeMockEntity({ entity_id: 'climate.poele', state: 'off', attributes: stoveAttrs }),
+    });
+
+    it('O5 — HVAC, temperature and preset toasts read English when HA is in English', async () => {
+      const { el, messages } = await mountCapturing('en', {}, climateStates());
+      await driveClimateControls(el);
+
+      expect(messages.map((m) => m.text)).to.deep.equal([
+        'HVAC mode changed',
+        'Temperature changed',
+        'Preset changed',
+      ]);
+      expect(messages.every((m) => m.error === false)).to.be.true;
+    });
+
+    it('O5 — the same three read French when HA is in French', async () => {
+      const { el, messages } = await mountCapturing('fr', {}, climateStates());
+      await driveClimateControls(el);
+
+      expect(messages.map((m) => m.text)).to.deep.equal([
+        'Mode HVAC modifié',
+        'Température modifiée',
+        'Preset modifié',
+      ]);
+    });
+
+    it('O5 — the eco toast follows the language too', async () => {
+      const states = {
+        ...climateStates(),
+        'switch.eco': makeMockEntity({ entity_id: 'switch.eco', state: 'off' }),
+      };
+
+      const en = await mountCapturing('en', { switch_eco_mode: 'switch.eco' }, states);
+      en.el.shadowRoot!.querySelector('sf-button-card')!.dispatchEvent(
+        new CustomEvent('button-click', { bubbles: true, composed: true }));
+      await settle();
+      expect(en.messages.map((m) => m.text)).to.deep.equal(['Eco mode changed']);
+
+      const fr = await mountCapturing('fr', { switch_eco_mode: 'switch.eco' }, states);
+      fr.el.shadowRoot!.querySelector('sf-button-card')!.dispatchEvent(
+        new CustomEvent('button-click', { bubbles: true, composed: true }));
+      await settle();
+      expect(fr.messages.map((m) => m.text)).to.deep.equal(['Mode éco modifié']);
+    });
+
+    // The first shape of this guard only scanned `_showToast(` call sites, and
+    // the review found two accented literals surviving in the very file it was
+    // meant to protect (the absent-entity message and the header fallback).
+    // It now reads the whole source, comments excluded.
+    // Round 2 of the review measured a SURVIVING mutant here: `?? 'Stove'`
+    // instead of `?? msg('Stove')` left the whole stove suite green. The accent
+    // guard cannot see an unaccented literal, and nothing mounted the card on an
+    // entity without `friendly_name`. TC-1115.
+    it('TC-1115 — the header fallback of an entity without friendly_name follows the locale', async () => {
+      const noName = {
+        'climate.poele': makeMockEntity({
+          entity_id: 'climate.poele',
+          state: 'off',
+          attributes: { hvac_modes: ['off', 'heat'] },
+        }),
+      };
+
+      const en = await mountCapturing('en', {}, noName);
+      expect(en.el.shadowRoot!.querySelector('.header')!.textContent!.trim()).to.equal('Stove');
+
+      const fr = await mountCapturing('fr', {}, noName);
+      expect(fr.el.shadowRoot!.querySelector('.header')!.textContent!.trim()).to.equal('Poêle');
+    });
+
+    it('O5 — no accented French literal is left in the card source', () => {
+      const src = fs.readFileSync(
+        path.resolve(__dirname, '../../../src/cards/stove/sci-fi-stove.ts'),
+        'utf8',
+      );
+      // Comments legitimately hold French; code must not. Their CONTENT is
+      // blanked and their newlines kept, so the line numbers reported below are
+      // the file's own. Trailing `//` comments go too — a French note at the end
+      // of a code line is not a defect — while `://` is left alone so a URL is
+      // not mistaken for one. Accepted limit: a literal `/* */` sequence inside
+      // a string would be read as a comment; none exists in this card.
+      const code = src
+        .replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, ' '))
+        .replace(/(^|[^:])\/\/.*$/gm, '$1');
+      // Not just quoted strings: the absent-entity message sat inside an html``
+      // template, where a quote-shaped probe could not see it. Measured on the
+      // version this lot started from, this reads 6 lines; on the fixed file, 0.
+      const accented = code
+        .split('\n')
+        .map((line, i) => [i + 1, line] as const)
+        .filter(([, line]) => /[éèêàâîôûùçÉÈÊÀÂÎÔÛÙÇ]/.test(line));
+      expect(accented, `French left in code: ${accented.map(([n, l]) => `${n}: ${l.trim()}`).join(' | ')}`)
+        .to.have.lengthOf(0);
+    });
   });
 });

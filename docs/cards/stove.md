@@ -56,9 +56,9 @@ sensors:
   sensor_fan_speed: sensor.stove_fan_speed
   sensor_pressure: sensor.stove_pressure
   sensor_time_to_service: sensor.stove_time_to_service
-pellet_quantity_threshold: 0.4
+pellet_quantity_threshold: 0.1
 storage_counter: counter.pellet_stock
-storage_counter_threshold: 0.07
+storage_counter_threshold: 0.1
 ```
 
 ### Options
@@ -68,7 +68,7 @@ storage_counter_threshold: 0.07
 | `type` | String | ✅ | `custom:sci-fi-stove` | |
 | `entity` | String | ✅ | Stove `climate` entity ID | |
 | `sensors` | Object | | Additional stove sensors | |
-| `pellet_quantity_threshold` | Float | | Internal pellet alert threshold (0–1) | `0.5` |
+| `pellet_quantity_threshold` | Float | | Internal pellet alert threshold (0–1) | `0.1` |
 | `storage_counter` | String | | Pellet bag counter entity | |
 | `storage_counter_threshold` | Float | | Storage counter alert threshold (0–1) | `0.1` |
 

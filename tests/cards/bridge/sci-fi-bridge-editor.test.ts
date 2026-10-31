@@ -785,4 +785,49 @@ describe('sci-fi-bridge-editor', () => {
       expect(el.shadowRoot).not.to.be.null;
     });
   });
+
+  // ── O7. Stove icon default ───────────────────────────────────────────────────
+
+  /**
+   * O7 — the editor offered `mdi:fire` as the stove icon default while the
+   * section renders `sci:stove` when the field is empty (sf-bridge-stove.ts:58):
+   * opening the editor, touching nothing and closing it showed one icon in the
+   * form and another on the card. The lot fix test-spec-divergence settled on
+   * `sci:stove` (TC-BRIDGE-U-19).
+   */
+  describe('Stove icon default', () => {
+    it('O7 — offers sci:stove as the stove icon default, like the section renders', async () => {
+      const el = makeEditorEl();
+      el.setConfig({
+        type: 'custom:sci-fi-bridge',
+        stove: { pellet_quantity: 'sensor.pellet', pellet_stock: 'counter.stock', status: 'binary_sensor.smoke_salon' },
+      });
+      el.hass = makeEditorHass();
+      document.body.appendChild(el);
+      await el.updateComplete;
+
+      const accordion = el.shadowRoot.querySelector('sf-editor-accordion[icon="sci:stove"]');
+      expect(accordion, 'the stove accordion carries the house icon').not.to.be.null;
+
+      const picker = accordion.querySelector('sf-editor-dropdown-icon');
+      expect(picker, 'the stove section has an icon picker').not.to.be.null;
+      expect(picker.value).to.equal('sci:stove');
+    });
+
+    it('O7 — keeps a configured stove icon untouched', async () => {
+      const el = makeEditorEl();
+      el.setConfig({
+        type: 'custom:sci-fi-bridge',
+        stove: { pellet_quantity: 'sensor.pellet', pellet_stock: 'counter.stock', status: 'binary_sensor.smoke_salon', icon: 'mdi:fireplace' },
+      });
+      el.hass = makeEditorHass();
+      document.body.appendChild(el);
+      await el.updateComplete;
+
+      const picker = el.shadowRoot
+        .querySelector('sf-editor-accordion[icon="sci:stove"]')
+        .querySelector('sf-editor-dropdown-icon');
+      expect(picker.value).to.equal('mdi:fireplace');
+    });
+  });
 });

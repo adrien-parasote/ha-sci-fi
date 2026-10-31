@@ -1,7 +1,13 @@
 // @vitest-environment happy-dom
 import { expect, describe, it } from 'vitest';
+import * as fs from 'fs';
+import * as path from 'path';
 import '../../../src/cards/stove/sci-fi-stove-editor.js';
 import type { SciFiStoveEditor } from '../../../src/cards/stove/sci-fi-stove-editor.js';
+import {
+  STOVE_PELLET_QUANTITY_THRESHOLD_DEFAULT,
+  STOVE_STORAGE_COUNTER_THRESHOLD_DEFAULT,
+} from '../../../src/cards/stove/config.js';
 
 function makeConfig(overrides: Record<string, unknown> = {}) {
   return { type: 'custom:sci-fi-stove', ...overrides };
@@ -49,11 +55,11 @@ describe('sci-fi-stove-editor', () => {
     card.dispatchEvent(new CustomEvent('input-update', {
       bubbles: true,
       composed: false,
-      detail: { id: 'room_temperature', kind: 'sensor', value: 'sensor.temp' },
+      detail: { id: 'sensor_inside_temperature', kind: 'sensor', value: 'sensor.temp' },
     }));
 
     expect(received).toHaveLength(1);
-    expect(received[0]!.detail.config.sensors?.room_temperature).toBe('sensor.temp');
+    expect(received[0]!.detail.config.sensors?.sensor_inside_temperature).toBe('sensor.temp');
   });
 
   it('dispatches config-changed on technical slider update (parses float)', async () => {
@@ -68,14 +74,14 @@ describe('sci-fi-stove-editor', () => {
     card.dispatchEvent(new CustomEvent('input-update', {
       bubbles: true,
       composed: false,
-      detail: { id: 'threshold', kind: 'technical', value: '15.5' },
+      detail: { id: 'pellet_quantity_threshold', kind: 'technical', value: '0.3' },
     }));
 
     expect(received).toHaveLength(1);
-    expect(received[0]!.detail.config.threshold).toBe(15.5);
+    expect(received[0]!.detail.config.pellet_quantity_threshold).toBe(0.3);
   });
 
-  it('dispatches config-changed on generic field update', async () => {
+  it('dispatches config-changed on a field of the else branch (kind the editor really emits)', async () => {
     const el = await createElement();
     el.setConfig(makeConfig());
     await el.updateComplete;
@@ -87,10 +93,145 @@ describe('sci-fi-stove-editor', () => {
     card.dispatchEvent(new CustomEvent('input-update', {
       bubbles: true,
       composed: false,
-      detail: { id: 'custom_field', kind: 'other', value: 'something' },
+      detail: { id: 'storage_counter', kind: 'storage', value: 'counter.bags' },
     }));
 
     expect(received).toHaveLength(1);
-    expect(received[0]!.detail.config.custom_field).toBe('something');
+    expect(received[0]!.detail.config.storage_counter).toBe('counter.bags');
+  });
+
+  /**
+   * Lot stove-config-surface — the configuration surface of this editor was
+   * never asserted: the three tests above pin `room_temperature`, `threshold`
+   * and `custom_field`, none of which exists in SciFiStoveSensors or
+   * SciFiStoveConfig, so every label and default below was free to drift.
+   */
+  describe('O1/O4/O6 — the field contract (regression)', () => {
+    const labelOf = (el: SciFiStoveEditor, id: string): string | null =>
+      el.shadowRoot!.querySelector(`sf-editor-input[element-id="${id}"]`)!.getAttribute('label');
+
+    const mounted = async (overrides: Record<string, unknown> = {}): Promise<SciFiStoveEditor> => {
+      const el = await createElement();
+      el.setConfig(makeConfig(overrides));
+      await el.updateComplete;
+      return el;
+    };
+
+    // O1 — the editor labelled `sensor_actual_power` "consumed" and
+    // `sensor_power` "rendered", while the card renders the first as Render and
+    // the second as Consume: whoever configured through the UI filled the wrong
+    // field. docs/cards/stove.md agrees with the card.
+    it('O1 — labels each power sensor the way the card renders it', async () => {
+      const el = await mounted({ sensors: {} });
+      expect(labelOf(el, 'sensor_actual_power')).toBe('Stove power rendered');
+      expect(labelOf(el, 'sensor_power')).toBe('Stove power consumed');
+    });
+
+    // O4 — the `entity` field borrowed the status sensor's label key, so the
+    // climate entity showed up as "Stove status".
+    it('O4 — labels the main entity field with its own key', async () => {
+      const el = await mounted({ sensors: {} });
+      expect(labelOf(el, 'entity')).toBe('Stove entity');
+      expect(labelOf(el, 'entity')).not.toBe(labelOf(el, 'sensor_status'));
+    });
+
+    // O6 — nothing asserted that the real sensor keys are rendered at all.
+    it('O6 — renders an input for every key of the sensors contract', async () => {
+      const el = await mounted({ sensors: {} });
+      const ids = [...el.shadowRoot!.querySelectorAll('sf-editor-input')]
+        .map((n) => n.getAttribute('element-id'));
+      expect(ids).toEqual(expect.arrayContaining([
+        'entity',
+        'sensor_actual_power',
+        'sensor_combustion_chamber_temperature',
+        'sensor_inside_temperature',
+        'sensor_pressure',
+        'sensor_fan_speed',
+        'sensor_power',
+        'sensor_status',
+        'sensor_time_to_service',
+        'sensor_pellet_quantity',
+        'storage_counter',
+        'switch_eco_mode',
+      ]));
+    });
+
+    // O6 — and that a real key, not an invented one, round-trips.
+    it('O6 — emits a real sensor key under config.sensors', async () => {
+      const el = await mounted({ sensors: {} });
+      const received: CustomEvent[] = [];
+      el.addEventListener('config-changed', (e) => received.push(e as CustomEvent));
+
+      el.shadowRoot!.querySelector('.card')!.dispatchEvent(new CustomEvent('input-update', {
+        bubbles: true,
+        composed: false,
+        detail: { id: 'sensor_pellet_quantity', kind: 'sensor', value: 'sensor.pellets' },
+      }));
+
+      expect(received).toHaveLength(1);
+      expect(received[0]!.detail.config.sensors.sensor_pellet_quantity).toBe('sensor.pellets');
+    });
+  });
+
+  /**
+   * O2/O3 — `pellet_quantity_threshold` had four different defaults (docs 0.5,
+   * the card 0.1, this slider 0.2) and `storage_counter_threshold` three. The
+   * literal now lives once in config.ts; these pin that the slider starts where
+   * the card actually computes.
+   */
+  describe('O2/O3 — threshold defaults (regression)', () => {
+    const sliderValue = async (id: string): Promise<string> => {
+      const el = await createElement();
+      el.setConfig(makeConfig());
+      await el.updateComplete;
+      const slider = el.shadowRoot!.querySelector(`sf-editor-slider[element-id="${id}"]`) as HTMLElement & { value: string };
+      return slider.value;
+    };
+
+    it('O2 — the pellet slider starts on the default the card applies', async () => {
+      expect(await sliderValue('pellet_quantity_threshold'))
+        .toBe(String(STOVE_PELLET_QUANTITY_THRESHOLD_DEFAULT));
+    });
+
+    it('O3 — the storage slider starts on the default the card applies', async () => {
+      expect(await sliderValue('storage_counter_threshold'))
+        .toBe(String(STOVE_STORAGE_COUNTER_THRESHOLD_DEFAULT));
+    });
+
+    // The value docs/cards/stove.md publishes, and what every delivered
+    // dashboard already lives with: changing it is a behaviour change, so it is
+    // pinned rather than left to drift silently a second time.
+    it('O2/O3 — both documented defaults are 0.1', () => {
+      expect(STOVE_PELLET_QUANTITY_THRESHOLD_DEFAULT).toBe(0.1);
+      expect(STOVE_STORAGE_COUNTER_THRESHOLD_DEFAULT).toBe(0.1);
+    });
+
+    // The review found the drift surviving in the `Full` YAML example a user is
+    // most likely to copy, twelve lines above the options table the lot had
+    // corrected. Both places are now read from the doc itself.
+    it('O2/O3 — the user doc publishes those defaults, in its table and its example', () => {
+      const doc = fs.readFileSync(
+        path.resolve(__dirname, '../../../docs/cards/stove.md'),
+        'utf8',
+      );
+      const published = (field: string): string[] => [
+        ...[...doc.matchAll(new RegExp(`^\\| \`${field}\`.*\\| \`([0-9.]+)\` \\|$`, 'gm'))].map((m) => m[1]!),
+        ...[...doc.matchAll(new RegExp(`^${field}: ([0-9.]+)$`, 'gm'))].map((m) => m[1]!),
+      ];
+
+      const pellet = published('pellet_quantity_threshold');
+      expect(pellet, 'the doc states pellet_quantity_threshold twice').to.have.lengthOf(2);
+      expect(pellet.map(Number)).to.deep.equal([
+        STOVE_PELLET_QUANTITY_THRESHOLD_DEFAULT,
+        STOVE_PELLET_QUANTITY_THRESHOLD_DEFAULT,
+      ]);
+
+      const storage = published('storage_counter_threshold');
+      expect(storage, 'the doc states storage_counter_threshold twice').to.have.lengthOf(2);
+      expect(storage.map(Number)).to.deep.equal([
+        STOVE_STORAGE_COUNTER_THRESHOLD_DEFAULT,
+        STOVE_STORAGE_COUNTER_THRESHOLD_DEFAULT,
+      ]);
+    });
   });
 });

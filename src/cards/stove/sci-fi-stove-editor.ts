@@ -12,7 +12,12 @@ import { html, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
-import type { SciFiStoveConfig, SciFiStoveSensors } from './config.js';
+import {
+  STOVE_PELLET_QUANTITY_THRESHOLD_DEFAULT,
+  STOVE_STORAGE_COUNTER_THRESHOLD_DEFAULT,
+  type SciFiStoveConfig,
+  type SciFiStoveSensors,
+} from './config.js';
 import type { InputUpdateDetail } from '../../components/editor-inputs/sf-editor-input.js';
 
 import '../../components/editor-inputs/sf-editor-input.js';
@@ -21,12 +26,12 @@ import { stoveLabels, stoveSectionIcons } from './labels.js';
 
 /** Sensor entity fields of the Config section: [config key, label key, icon]. */
 const STOVE_SENSOR_FIELDS: ReadonlyArray<readonly [keyof SciFiStoveSensors, string, string]> = [
-  ['sensor_actual_power',                    'input-stove-power-consume',      'mdi:lightning-bolt'],
+  ['sensor_actual_power',                    'input-stove-power-rendered',     'mdi:lightning-bolt'],
   ['sensor_combustion_chamber_temperature',  'input-stove-combustion-chamber', 'mdi:thermometer'],
   ['sensor_inside_temperature',              'input-room-temperature',         'mdi:home-thermometer-outline'],
   ['sensor_pressure',                        'input-stove-pressure',           'mdi:gauge'],
   ['sensor_fan_speed',                       'input-stove-fan-speed',          'mdi:speedometer'],
-  ['sensor_power',                           'input-stove-power-rendered',     'mdi:lightning-bolt'],
+  ['sensor_power',                           'input-stove-power-consume',      'mdi:lightning-bolt'],
   ['sensor_status',                          'input-stove-status',             'mdi:database'],
   ['sensor_time_to_service',                 'input-stove-time-to-service',    'mdi:counter'],
   ['sensor_pellet_quantity',                 'input-pellet-quantity',          'mdi:database'],
@@ -78,7 +83,7 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
     return html`
       <section>
         <h1>${this.getSectionTitle('section-title-config')}</h1>
-        ${this._renderInput('entity', 'entity', 'input-stove-status', 'mdi:store-settings-outline', config.entity ?? '')}
+        ${this._renderInput('entity', 'entity', 'input-stove-entity', 'mdi:store-settings-outline', config.entity ?? '')}
         ${STOVE_SENSOR_FIELDS.map(([id, labelKey, icon]) =>
           this._renderInput(id, 'sensor', labelKey, icon, sensors[id] ?? ''))}
         ${this._renderInput('storage_counter', 'storage', 'input-storage-counter', 'mdi:database', config.storage_counter ?? '')}
@@ -92,8 +97,8 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
     return html`
       <section>
         <h1>${this.getSectionTitle('section-title-technical')}</h1>
-        ${this._renderThreshold('pellet_quantity_threshold', 'input-pellet-quantity-threshold', config.pellet_quantity_threshold)}
-        ${this._renderThreshold('storage_counter_threshold', 'input-threshold', config.storage_counter_threshold)}
+        ${this._renderThreshold('pellet_quantity_threshold', 'input-pellet-quantity-threshold', config.pellet_quantity_threshold, STOVE_PELLET_QUANTITY_THRESHOLD_DEFAULT)}
+        ${this._renderThreshold('storage_counter_threshold', 'input-threshold', config.storage_counter_threshold, STOVE_STORAGE_COUNTER_THRESHOLD_DEFAULT)}
       </section>
     `;
   }
@@ -110,7 +115,7 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
     `;
   }
 
-  private _renderThreshold(elementId: string, labelKey: string, value: number | undefined): TemplateResult {
+  private _renderThreshold(elementId: string, labelKey: string, value: number | undefined, fallback: number): TemplateResult {
     return html`
       <sf-editor-slider
         element-id="${elementId}"
@@ -120,7 +125,7 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
         min="0"
         max="1"
         step="0.1"
-        .value="${String(value ?? 0.2)}"
+        .value="${String(value ?? fallback)}"
       ></sf-editor-slider>
     `;
   }

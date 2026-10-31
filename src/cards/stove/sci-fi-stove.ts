@@ -13,12 +13,16 @@
  */
 import { html, nothing, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import { msg } from '@lit/localize';
+import { msg, str } from '@lit/localize';
 
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import { stoveStyles } from './styles.js';
-import type { SciFiStoveConfig } from './config.js';
+import {
+  STOVE_PELLET_QUANTITY_THRESHOLD_DEFAULT,
+  STOVE_STORAGE_COUNTER_THRESHOLD_DEFAULT,
+  type SciFiStoveConfig,
+} from './config.js';
 
 import './sf-stove-image.js';
 import '../../components/sf-circle-progress-bar.js';
@@ -119,13 +123,13 @@ export class SciFiStoveCard extends SciFiBaseCard {
   protected override renderCard(): TemplateResult {
     const stoveState = this.hass.states[this.config.entity];
     if (!stoveState) {
-      return html`<ha-card><div class="container">Entité poêle non trouvée : ${this.config.entity}</div></ha-card>`;
+      return html`<ha-card><div class="container">${msg(str`Stove entity not found: ${this.config.entity}`)}</div></ha-card>`;
     }
 
     return html`
       <ha-card>
         <div class="container">
-          ${this._renderHeader(stoveState.attributes.friendly_name ?? 'Poêle')}
+          ${this._renderHeader(stoveState.attributes.friendly_name ?? msg('Stove'))}
           ${this._renderContent(stoveState)}
           ${this._renderBottom(stoveState)}
         </div>
@@ -179,7 +183,7 @@ export class SciFiStoveCard extends SciFiBaseCard {
     if (!pelletState) return nothing;
     const val = parseFloat(pelletState.state);
     if (isNaN(val)) return nothing;
-    const threshold = this.config.pellet_quantity_threshold ?? 0.1;
+    const threshold = this.config.pellet_quantity_threshold ?? STOVE_PELLET_QUANTITY_THRESHOLD_DEFAULT;
     return html`
       <sf-circle-progress-bar
         text="${msg('Fuel quantity')}"
@@ -195,7 +199,7 @@ export class SciFiStoveCard extends SciFiBaseCard {
     if (!st) return nothing;
     const val = parseInt(st.state, 10);
     const max = (st.attributes['maximum'] as number | undefined) ?? 100;
-    const threshold = this.config.storage_counter_threshold ?? 0.1;
+    const threshold = this.config.storage_counter_threshold ?? STOVE_STORAGE_COUNTER_THRESHOLD_DEFAULT;
     return html`
       <sf-stack-bar
         text="${msg('Stock')}"
@@ -452,7 +456,7 @@ export class SciFiStoveCard extends SciFiBaseCard {
     const mode: string = e.detail.id;
     void this.hass
       .callService('climate', 'set_hvac_mode', { entity_id: entityId, hvac_mode: mode })
-      .then(() => { this._showToast(false, 'Mode HVAC modifié'); })
+      .then(() => { this._showToast(false, msg('HVAC mode changed')); })
       .catch((err: Error) => { this._showToast(true, err.message); });
   }
 
@@ -461,7 +465,7 @@ export class SciFiStoveCard extends SciFiBaseCard {
     if (!isNaN(temp)) {
       void this.hass
         .callService('climate', 'set_temperature', { entity_id: entityId, temperature: temp })
-        .then(() => { this._showToast(false, 'Température modifiée'); })
+        .then(() => { this._showToast(false, msg('Temperature changed')); })
         .catch((err: Error) => { this._showToast(true, err.message); });
     }
   }
@@ -469,7 +473,7 @@ export class SciFiStoveCard extends SciFiBaseCard {
   private _onEcoToggle(switchEntityId: string): void {
     void this.hass
       .callService('switch', 'toggle', { entity_id: switchEntityId })
-      .then(() => { this._showToast(false, 'Mode éco modifié'); })
+      .then(() => { this._showToast(false, msg('Eco mode changed')); })
       .catch((err: Error) => { this._showToast(true, err.message); });
   }
 
@@ -477,7 +481,7 @@ export class SciFiStoveCard extends SciFiBaseCard {
     const preset: string = e.detail.id;
     void this.hass
       .callService('climate', 'set_preset_mode', { entity_id: entityId, preset_mode: preset })
-      .then(() => { this._showToast(false, 'Preset modifié'); })
+      .then(() => { this._showToast(false, msg('Preset changed')); })
       .catch((err: Error) => { this._showToast(true, err.message); });
   }
 

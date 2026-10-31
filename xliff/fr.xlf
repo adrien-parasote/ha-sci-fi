@@ -1172,6 +1172,30 @@
 <trans-unit id="s7262392f278336e8">
   <source>Charging status</source>
 <target>Statut de charge</target></trans-unit>
+<trans-unit id="s4774c5ec5a7d5355">
+  <source>Stove entity</source>
+  <target>Entité poêle</target>
+</trans-unit>
+<trans-unit id="s5ae6af5add9e130a">
+  <source>HVAC mode changed</source>
+  <target>Mode HVAC modifié</target>
+</trans-unit>
+<trans-unit id="s2535012c866f3d7d">
+  <source>Temperature changed</source>
+  <target>Température modifiée</target>
+</trans-unit>
+<trans-unit id="saf95d4afa4a8e395">
+  <source>Eco mode changed</source>
+  <target>Mode éco modifié</target>
+</trans-unit>
+<trans-unit id="s84d17f00f6c12e7e">
+  <source>Preset changed</source>
+  <target>Preset modifié</target>
+</trans-unit>
+<trans-unit id="s437558b3f6ef6130">
+  <source>Stove entity not found: <x id="0" equiv-text="${this.config.entity}"/></source>
+  <target>Entité poêle non trouvée : <x id="0" equiv-text="${this.config.entity}"/></target>
+</trans-unit>
 </body>
 </file>
 </xliff>

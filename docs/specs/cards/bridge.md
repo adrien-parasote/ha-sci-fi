@@ -151,7 +151,7 @@ appliances:
 
 # POÊLE — si absent, section masquée.
 stove:
-  icon: "mdi:fire"                  # optionnel — défaut: mdi:fire
+  icon: "mdi:campfire"              # optionnel — défaut: sci:stove
   pellet_quantity: sensor.clou_pellet_quantity
   pellet_stock: counter.pellet_stock
   status: binary_sensor.clou_stove_status
@@ -311,7 +311,7 @@ export interface BridgeAppliancesConfig {
 
 ```ts
 export interface BridgeStoveConfig {
-  icon?: string;          // section icon (default: 'mdi:fire')
+  icon?: string;          // section icon (default: 'sci:stove')
   pellet_quantity: string;
   pellet_stock: string;
   status: string;
@@ -963,10 +963,10 @@ private _setSliderValue(entity: string, value: number): void {
 ```
 .bridge-section
 ├── .bridge-section-title
-│   └── ha-icon (config.icon ?? 'mdi:fire') + msg('Poêle')
+│   └── ha-icon (config.icon ?? 'sci:stove') + msg('Poêle')
 │
 └── .stove-row (flex-row, align-center, gap: 12px)
-    ├── ha-icon (config.icon ?? 'mdi:fire', color: isOn → --sf-warning, else --sf-text-disabled)
+    ├── ha-icon (config.icon ?? 'sci:stove', color: isOn → --sf-warning, else --sf-text-disabled)
     ├── .stove-pellet-bar (flex-col, flex: 1)
     │   ├── .pellet-progress (width: pelletQty*100%, color: isLow → --sf-error, else --sf-accent-on)
     │   └── .pellet-pct ("${Math.round(pelletQty*100)}%", 0.75rem, --sf-primary)
@@ -1372,7 +1372,7 @@ title="${msg('Équipage')}"
 | TC-BRIDGE-U-16 | Unit | Fumée `on` → icône rouge (ALERTE) | smoke state = 'on' | `.smoke-chip` color = `--sf-error` |
 | TC-BRIDGE-U-17 | Unit | Icône entrée smoke customisée via config | smoke entry.icon = 'mdi:fire' | `ha-icon[icon='mdi:fire']` présent dans `.smoke-chip` |
 | TC-BRIDGE-U-18 | Unit | Icône entrée access customisée via config | access entry.icon = 'mdi:gate' | `ha-icon[icon='mdi:gate']` présent dans `.access-entry` |
-| TC-BRIDGE-U-19 | Unit | Icône section stove customisée via config, et son défaut | stove.icon = 'mdi:campfire', puis stove sans `icon` | `sf-icon[icon='mdi:campfire']` dans `.bridge-section-title` de stove ; sans `icon`, le défaut est **`sci:stove`** (et non `mdi:fire`) — cohérent avec `sci:stove-heat`/`sci:stove-off` que la même section rend pour le corps. ⚠ L'éditeur propose encore `mdi:fire` comme défaut du champ : voir bead `ha-sci-fi-gxd` |
+| TC-BRIDGE-U-19 | Unit | Icône section stove customisée via config, et son défaut | stove.icon = 'mdi:campfire', puis stove sans `icon` | `sf-icon[icon='mdi:campfire']` dans `.bridge-section-title` de stove ; sans `icon`, le défaut est **`sci:stove`** (et non `mdi:fire`) — cohérent avec `sci:stove-heat`/`sci:stove-off` que la même section rend pour le corps. L'éditeur propose le même défaut (lot fix stove-config-surface, O7) |
 | TC-BRIDGE-U-20 | Unit | Toggle automation ON → callService `turn_on` | clic toggle, state = 'off' | `hass.callService` appelé avec `automation.turn_on` |
 | TC-BRIDGE-U-21 | Unit | Cycle lave-linge `on` → status msg('En cours') + animation | cycle state = 'on', **locale `fr` forcée** | `.cycle-running` class présente + `.cycle-status` textContent = 'En cours'. La locale doit être posée explicitement (`await setLocale('fr')`) : le code rend `msg('Running')`, qui ne devient 'En cours' qu'en FR — sans cela le DOM porte 'Running' et l'exigence n'est pas assertable |
 | TC-BRIDGE-U-22 | Unit | Consumable `ok_when: 'off'` + state `off` → vert | rinse_aid = 'off' | `.consumable-chip` color = `--sf-accent-on` |

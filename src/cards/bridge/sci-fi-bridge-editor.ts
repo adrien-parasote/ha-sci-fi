@@ -726,12 +726,12 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
     const statusSensors = this._entitiesByDomain('binary_sensor', 'sensor');
 
     return html`
-      <sf-editor-accordion title="${this.getLabel('section-title-stove')}" icon="mdi:fire" ?open="${enabled}">
+      <sf-editor-accordion title="${this.getLabel('section-title-stove')}" icon="sci:stove" ?open="${enabled}">
         <div class="panel">
           ${enabled && stove ? html`
             <sf-editor-dropdown-icon
               .label="${this.getLabel('input-icon-section')}"
-              .value="${stove.icon ?? 'mdi:fire'}"
+              .value="${stove.icon ?? 'sci:stove'}"
               @input-update="${(e: CustomEvent) => { const c = this._getNewConfig<SciFiBridgeConfig>(); this._dispatch({ ...c, stove: { ...c.stove!, icon: e.detail.value } }); }}"
             ></sf-editor-dropdown-icon>
             <sf-editor-dropdown-entity

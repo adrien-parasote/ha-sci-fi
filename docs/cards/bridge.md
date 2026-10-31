@@ -96,7 +96,7 @@ appliances:
       ok_when: "off"
 
 stove:
-  icon: mdi:fire                  # optional
+  icon: sci:stove                 # optional
   pellet_quantity: sensor.pellets_qty
   pellet_stock: sensor.pellets_stock
   status: sensor.stove_status

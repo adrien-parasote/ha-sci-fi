@@ -3,7 +3,7 @@
 
 import { MOCK_STATES, MOCK_AREAS, MOCK_FLOORS, MOCK_ENTITIES, MOCK_DEVICES } from './mock-data.js';
 import { log } from './console.js';
-import { callService } from '/node_modules/home-assistant-js-websocket/dist/index.js';
+import { callService } from 'home-assistant-js-websocket';
 
 /**
  * Merge scenario overrides into MOCK_STATES.

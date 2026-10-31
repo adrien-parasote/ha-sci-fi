@@ -9,7 +9,7 @@ import {
   getUser,
   subscribeEntities,
   subscribeServices,
-} from '/node_modules/home-assistant-js-websocket/dist/index.js';
+} from 'home-assistant-js-websocket';
 
 import { log } from './console.js';
 import { setHaStatus, setLiveMode, closeConnectModal } from './ui-helpers.js';

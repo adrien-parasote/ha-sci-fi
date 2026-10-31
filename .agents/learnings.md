@@ -884,3 +884,94 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 - **Evidence:** `ADR-013` and the bridge spec both required `grid-template-columns: 1fr 1fr` above 600px. `styles.ts` instead leaves grid layout for `display: block; columns: 2`, with a comment crediting *"ADR-B02"* — an ADR that does not exist, in a numbering scheme the repo never used. The shipped behaviour had been the column flow all along; only the record was missing. Writing the test against either side would have frozen an unresolved divergence, so the test was held back until the decision was recorded (`ADR-016`, superseding ADR-013's layout clause only).
 - **Anti-pattern:** Resolving a code/doc conflict by editing whichever side is cheaper — usually the doc — without recording that a decision was made. The next reader sees agreement and no history.
 - **Fix:** A citation to a non-existent ADR is a strong signal that a real decision was taken and never written down. Reconstruct the ADR from what the code does, mark precisely which clause of the old ADR it supersedes, and leave the old one readable with the superseded clause struck through. Only then write the test.
+
+### L115: A git worktree under `.claude/worktrees/` does not arm the SC commit gate — the whole pipeline ran ungated
+- **Date:** 2026-08-12
+- **Source:** ha-sci-fi — ADR-017 feature-first refactor (10 steps, 13 commits)
+- **Evidence:** The entire refactor was executed in `.claude/worktrees/refactor`. All 13 commits went through `git commit` without the SC commit gate ever firing — `.sc/` lives at the repo root and was not reachable from the worktree, so `check_commit_gate_sentinels` never ran. The `--no-ff` merge to `main` also passed unmeasured. The gate fired for the FIRST time on the next ordinary commit made from the main checkout, and immediately refused: `verify.py` missing, then P10 (2 locked test files modified), then 13 source files created by the refactor with no test file. All of that debt was already merged into `main` by then.
+- **Anti-pattern:** Assuming the gate chain protects a run because it protects the repo. The gate is bound to the checkout that owns `.sc/`, not to the branch or the work. A worktree is exactly the situation where a long unsupervised run happens — and it is the one place the gate is blind.
+- **Fix:** Before starting a multi-commit run inside a worktree, check that the gate can see its state: run `bash "$SC/scripts/sc-gate-core.sh" gate-status .` from the worktree and confirm it reports a stage rather than failing to find `.sc/`. If it cannot, either symlink `.sc/` into the worktree or plan to run `verify.py` + the HARDEN steps from the main checkout BEFORE merging, not after. Merging first means the debt is already on `main` when the gate finally speaks.
+
+### L116: To refactor a surface with no test coverage, build the equivalence harness first — and mutation-test the harness before trusting it
+- **Date:** 2026-08-12
+- **Source:** ha-sci-fi — ADR-017 step 8 (CSS style kernel)
+- **Evidence:** ~4 100 lines of card CSS with zero tests asserting a computed style: any bad hoist would only have shown up by eye in the workbench. Instead of refactoring and hoping, step 8 first built a harness folding each card's flattened `cssText` into `(at-rule context, selector) → winning declarations`, locking all 11 cards (773 rules). It was then mutation-tested — flipping one declaration (`min-height: 44px → 45px`) made it fail with the exact diff — BEFORE any hoist. The subsequent 26-rule hoist came out byte-identical on all 11 cards, and step 9's token substitution produced exactly 10 reviewable declaration diffs and nothing else.
+- **Pattern:** Order matters and is the whole learning: (1) write the equivalence check over the CURRENT behaviour, (2) prove it fails on a deliberate one-unit perturbation, (3) only then refactor. A harness written after the change encodes the change; a harness never mutation-tested may be asserting nothing — an empty parse and a perfect match are indistinguishable from a green test. The same shape applies to any untested surface with a comparable output: serialized config, generated SQL, rendered templates.
+
+### L117: A lookup that returns `''` for an unknown key turns every key-construction bug into a silent one
+- **Date:** 2026-08-12
+- **Source:** ha-sci-fi — ADR-017 step 4 (per-card label dictionaries) + the vacuum editor fix that followed
+- **Evidence:** `SciFiBaseEditor.getLabel()` returns `''` for an unrecognised key "to prevent crashes". The vacuum editor built its keys as `input-${f.replace('_','-')}` — a **string** pattern, which replaces only the FIRST occurrence — so `current_clean_area` produced `input-current-clean_area`, matching nothing. Two sensor fields had been rendering with no label at all. 1019 passing tests did not catch it, `tsc` could not, and it survived long enough to be found only because a refactor had to attribute all 179 label keys to an owner. The fix was one character (`replaceAll`); finding it was the expensive part.
+- **Anti-pattern:** Pairing a *computed* key with a *silent* fallback. Either half alone is fine: a hardcoded key with a silent fallback fails visibly at review, and a computed key against a throwing lookup fails loudly at runtime. Together they produce a defect with no symptom.
+- **Fix:** Where keys are computed, do not test the happy key — assert the *absence of the failure mode* across the whole generated set: "every generated field carries a non-empty label". That single test covers the class, including the next field someone adds with two underscores, and it is what caught this one (`renders a non-empty label for every sensor field`, confirmed RED before the fix). If a silent fallback must stay, make it observable in dev (`console.warn` on miss) so the next occurrence has a symptom.
+
+### L118: A config parser that ignores unknown keys turns an invented exclusion into a false green
+- **Date:** 2026-08-12
+- **Source:** ha-sci-fi — bd `ha-sci-fi-wrf` (sentrux rules.toml)
+- **Evidence:** The bead, and my brief derived from it, both assumed sentrux
+  supported a path-exclusion key in `.sentrux/rules.toml`. It does not: v0.5.7's
+  `RulesConfig` has exactly four fields (`constraints`, `language`, `layers`,
+  `boundaries`) and `Constraints` is 13 scalars. Serde swallows unknown keys
+  silently, so `exclude`, `excludes`, `ignore` and a deliberate nonsense key all
+  parsed without complaint and all left the violation reported — indistinguishable
+  from a working exclusion if you only read the TOML and not the output.
+  `.sentruxignore` does not exist in the binary; `.ignore` works only outside a
+  git repo, because inside one the file set comes from `git ls-files`.
+- **Anti-pattern:** Writing a config key you have not proven the tool reads. A
+  permissive parser gives no error, so the only evidence of failure is the
+  behaviour you were trying to change — which you then attribute to something else.
+- **Fix:** Before adding any key to a tool's config, prove the tool reads it:
+  find the field list in the binary/source, then run a scratch repro where the
+  key SHOULD change the outcome and confirm it does. If it cannot be proven,
+  write the waiver as a comment and say in the commit that the rule stays red —
+  a documented red beats a silent green. See also [[L045]] (SC's own template
+  already recorded "Sentrux free tier ignores exclude/sentruxignore" — the answer
+  was in the plugin's templates directory the whole time; look there first).
+
+### L119: Counting occurrences of a literal is not measuring it — classify each by syntactic position first
+- **Date:** 2026-08-12
+- **Source:** ha-sci-fi — bd `ha-sci-fi-63z` (design-system palette decision)
+- **Evidence:** I measured colour literals with `str.count()` per file and handed
+  an agent a table: 110 `#00d2ff`, 25 `#00ff9d`, 59 literals "equal to a fixed
+  token", 139 "equal to a chained token". The agent reproduced all nine totals to
+  the unit — and then parsed every `` css` ` `` template literal and classified
+  each occurrence by position. 184 of 198 were already the declared fallback
+  INSIDE `var(--token, literal)` on the very declaration that applies the token.
+  The premise ("the cards bypass the design system") was the exact inverse of the
+  truth: the cards apply it with a defensive fallback. The correct substitution
+  set was 4, not 59, and all 4 were blocked for independent reasons — net zero.
+- **Anti-pattern:** Treating a grep count as a measurement. `#00d2ff` appearing
+  110 times says nothing until you know whether it is a value being written or a
+  fallback being declared; those are opposite facts about the codebase.
+- **Fix:** When a count is going to drive a decision, classify before you count —
+  parse to the construct (here: the `css` tagged template, then the `var()`
+  argument position), and report the breakdown, not the total. And state the
+  premise as a claim the executor is expected to falsify, not as a given: this
+  one was caught only because the brief said "re-measure yourself, do not take my
+  word for it". See also [[L116]].
+
+### L120: A static analyser that does not strip comments turns documentation into a defect report
+- **Date:** 2026-08-12
+- **Source:** ha-sci-fi — bd `ha-sci-fi-qzf` (verify.py P12_TokenRefs)
+- **Evidence:** P12 reported 19 CSS custom properties "referenced with no
+  definition anywhere — they render as transparent/unset", 35 sites, mostly in
+  `src/cards/vehicles/`. I filed a P1 bead on it and recovered the deleted
+  palette from git history to fix them. The executor rebuilt the inventory with
+  a comment-aware scanner: **all 19 sit inside `/* … */`.** The v2 rewrite
+  annotated each declaration with the v1 token it replaced —
+  `/* main: var(--primary-green-color) = rgb(79,227,139) */` next to the literal
+  that actually renders. Nothing was broken. The real defect was 4 tokens /
+  10 references, in files P12's summary never named first.
+- **Anti-pattern:** Treating a linter's finding list as an inventory. A scanner
+  that regexes source without stripping comments cannot tell code from prose
+  about code, and a codebase that documents its migration in comments is exactly
+  the one that trips it. Worse, the false positives clustered convincingly (one
+  directory, one coherent palette family) and had a plausible history
+  (`35c4d9f` really did delete that stylesheet), so the story self-confirmed.
+- **Fix:** Before filing or fixing anything from a text-scanning advisory,
+  re-derive the finding with your own comment-aware pass and print the offending
+  lines verbatim. One `grep -n` of the reported sites would have shown the `/*`
+  in the first column. Frame the tool's output to the executor as a claim to
+  falsify, never as an inventory to work through — that framing is what caught
+  this one, as it caught [[L119]]. See also [[L118]]: three findings in one
+  session where the tool's own output was the unreliable part.

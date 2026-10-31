@@ -7,7 +7,6 @@ temp
 .sc-*
 .tdd_lock
 package-lock.json
-.agents/
 .specconformance
 coverage/
 
@@ -21,7 +20,6 @@ lint_output.txt
 .sc-*
 .tdd_lock
 .specconformance
-.agents/
 # local tooling workspace (machine-specific paths — never commit)
 CLAUDE.md
 .sentrux/baseline.json
@@ -36,3 +34,12 @@ CLAUDE.md
 *.db
 .beads-credential-key
 .beads/proxieddb/
+wt/*
+.claude/worktrees/*
+.agents/*
+!.agents/lanes/
+!.agents/tests.yml
+!.agents/config/
+
+# Runtime gate locks (machine-local)
+*.gate.lock

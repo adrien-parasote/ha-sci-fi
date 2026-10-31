@@ -163,49 +163,98 @@ describe('sci-fi-water-management', () => {
       expect(fetchCount).to.equal(1);
     });
 
-    it('TC-1203: renders empty message if logs list is empty', async () => {
+    // Helpers for the cases below. _renderHistoryLogs returns a Lit template,
+    // so it must be rendered before anything can be asserted.
+    const renderLogs = async (el: any, filterEntityIds: string[]) => {
+      const temp = document.createElement('div');
+      const { render } = await import('lit');
+      render(el._renderHistoryLogs(filterEntityIds), temp);
+      return temp;
+    };
+
+    // State has to be set AFTER the first update cycle: connecting the card
+    // kicks off _fetchHistoryLogs, which resets _rawLogs to [] and
+    // _historyLogsLoading to false — it would wipe whatever the test arranged.
+    const mountCard = async () => {
       const el = document.createElement('sci-fi-water-management') as any;
       el.config = { type: 'custom:sci-fi-water-management', filter_label: 'water' };
       el.hass = makeMockHass({});
-      el._historyLogs = [];
-      el._historyLogsLoading = false;
-      
       document.body.appendChild(el);
       await el.updateComplete;
-      
-      // Since it's inside render, let's verify if _renderHistoryLogs is called or output contains empty message
-      const htmlOutput = el._renderHistoryLogs ? el._renderHistoryLogs() : null;
-      if (htmlOutput) {
-        const temp = document.createElement('div');
-        const { render } = await import('lit');
-        render(htmlOutput, temp);
-        expect(temp.textContent).to.include('Aucun événement enregistré');
-      }
+      return el;
+    };
+
+    const A_LOG = {
+      entity_id: 'automation.watering',
+      when: '2026-06-01T08:26:35Z',
+      name: 'Arrosage',
+      state: 'on',
+    };
+
+    it('TC-1203: renders empty message if logs list is empty', async () => {
+      const el = await mountCard();
+      // _renderHistoryLogs filters _rawLogs — it never reads _historyLogs,
+      // which only _applyFiltersAndLimit feeds. And the argument is mandatory:
+      // called with none, `new Set(undefined)` is empty, every log is filtered
+      // out and the empty state renders unconditionally, which is why this case
+      // used to pass no matter what.
+      el._rawLogs = [];
+      el._historyLogsLoading = false;
+
+      const temp = await renderLogs(el, ['automation.watering']);
+      expect(temp.textContent).to.include('Aucun événement enregistré');
+    });
+
+    it('TC-1203: renders the timeline, not the empty message, when logs match the filter', async () => {
+      // The counterpart that makes the case above mean something: same call,
+      // same filter, populated _rawLogs — the empty state must NOT appear.
+      const el = await mountCard();
+      el._rawLogs = [A_LOG];
+      el._historyLogsLoading = false;
+
+      const temp = await renderLogs(el, ['automation.watering']);
+      expect(temp.textContent).to.not.include('Aucun événement enregistré');
+      expect(temp.querySelector('.log-timeline')).to.not.be.null;
+    });
+
+    it('TC-1203: filters out logs whose entity is not in filterEntityIds', async () => {
+      // Proves the filter itself, which the argument-less call could never do.
+      const el = await mountCard();
+      el._rawLogs = [A_LOG];
+      el._historyLogsLoading = false;
+
+      const temp = await renderLogs(el, ['automation.other']);
+      expect(temp.textContent).to.include('Aucun événement enregistré');
     });
 
     it('TC-1204: renders loading state placeholder when loading is true', async () => {
-      const el = document.createElement('sci-fi-water-management') as any;
+      const el = await mountCard();
+      // Logs that WOULD render a timeline, so the assertion shows the loading
+      // branch winning over present data rather than over an empty list.
+      el._rawLogs = [A_LOG];
       el._historyLogsLoading = true;
-      
-      const htmlOutput = el._renderHistoryLogs ? el._renderHistoryLogs() : null;
-      if (htmlOutput) {
-        const temp = document.createElement('div');
-        const { render } = await import('lit');
-        render(htmlOutput, temp);
-        expect(temp.querySelector('.log-scanner')).to.not.be.null;
-      }
+
+      const temp = await renderLogs(el, ['automation.watering']);
+      expect(temp.querySelector('.log-scanner')).to.not.be.null;
+      expect(temp.querySelector('.log-timeline')).to.be.null;
     });
 
     it('TC-1205: formats timestamps correctly', () => {
       const el = document.createElement('sci-fi-water-management') as any;
-      const formatted = el._formatTimestamp ? el._formatTimestamp('2026-06-01T08:26:35Z') : '01/06 08:26';
-      const date = new Date('2026-06-01T08:26:35Z');
-      const dd = String(date.getDate()).padStart(2, '0');
-      const mo = String(date.getMonth() + 1).padStart(2, '0');
-      const hh = String(date.getHours()).padStart(2, '0');
-      const mm = String(date.getMinutes()).padStart(2, '0');
-      const expected = `${dd}/${mo} ${hh}:${mm}`;
-      expect(formatted).to.equal(expected);
+      // The input is built in LOCAL time, so its own components ARE the
+      // expected output whatever the runner's timezone — no TZ pinning, and no
+      // re-derivation of the implementation's getDate/padStart chain, which is
+      // what made this case green for any format the code might pick.
+      const localInput = new Date(2026, 5, 1, 8, 26, 35);
+      expect(el._formatTimestamp(localInput.toISOString())).to.equal('01/06 08:26');
+
+      // The date is part of the contract: the card fetches a 7-day window, so
+      // HH:MM alone would not say which day. See bead ha-sci-fi-o5p.
+      expect(el._formatTimestamp(new Date(2026, 11, 25, 23, 5, 0).toISOString())).to.equal(
+        '25/12 23:05',
+      );
+      // Unparseable input falls back, it never throws.
+      expect(el._formatTimestamp('not-a-date')).to.equal('00/00 00:00');
     });
 
 

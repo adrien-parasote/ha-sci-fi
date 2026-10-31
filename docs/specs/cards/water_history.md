@@ -119,9 +119,9 @@ This component MUST expose the following reactive Lit properties:
 |---|---|---|---|---|
 | TC-001 | Unit | Toggling the "Alerts" filter | Click 'Alerts' button with 3 success and 2 warning logs | Only the 2 warning logs are rendered; others hidden |
 | TC-002 | Unit | Accordion expansion triggers fetch | Automations accordion is expanded by user | `_fetchHistoryLogs` is called exactly once |
-| TC-003 | Unit | Empty history rendering | `_historyLogs` is an empty array | Renders text `"Aucun événement enregistré."` |
-| TC-004 | Unit | Loading state rendering | `_historyLogsLoading` is set to `true` | Renders a pulsing digital scanner animation placeholder |
-| TC-005 | Unit | Timestamp formatting | Log time is `2026-06-01T08:26:35Z` | Text content displays `[08:26]` (or local timezone equivalent) |
+| TC-003 | Unit | Empty history rendering | `_rawLogs` holds no entry matching the `filterEntityIds` passed to `_renderHistoryLogs` | Renders text `"Aucun événement enregistré."`. The test MUST pass `filterEntityIds` explicitly: called with no argument the filter set is empty, so the empty state renders whatever `_rawLogs` holds and the case proves nothing. `_renderHistoryLogs` reads `_rawLogs`, never `_historyLogs` (which only `_applyFiltersAndLimit` feeds) |
+| TC-004 | Unit | Loading state rendering | `_historyLogsLoading` is set to `true`, with `filterEntityIds` passed and `_rawLogs` non-empty for that filter | Renders a pulsing digital scanner animation placeholder, and NOT the timeline the same `_rawLogs` would otherwise produce — the loading branch is evaluated before the filter, so a passing assertion must show it wins over present data |
+| TC-005 | Unit | Timestamp formatting | Log time is `2026-06-01T08:26:35Z`, rendered under a fixed `TZ` | Text content displays `[DD/MM HH:MM]` for the run's timezone — e.g. `[01/06 08:26]` under `TZ=UTC`. The date is part of the format because the card fetches a **7-day** window (`sci-fi-water-management.ts:164`); were that window reduced to 24 h this MUST return to `[HH:MM]` (see bead `ha-sci-fi-o5p`). The test MUST assert a literal, never re-derive the implementation's own `getDate`/`getMonth`/`padStart` chain — a re-derivation stays green for any format the code picks |
 
 ### Integration Tests
 

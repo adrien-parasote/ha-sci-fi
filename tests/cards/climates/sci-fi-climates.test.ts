@@ -193,7 +193,7 @@ describe('sci-fi-climates', () => {
     expect(icon?.icon).to.equal('mdi:thermometer-chevron-down');
   });
 
-  it('respects excluded_entity_ids config', async () => {
+  it('TC-002: respects entities_to_exclude config', async () => {
     const el = document.createElement('sci-fi-climates') as SciFiClimatesCard;
     (el as any).setConfig({ type: 'custom:sci-fi-climates', header: { display: false }, entities_to_exclude: ['climate.hidden'] });
     el.hass = makeMockHass({

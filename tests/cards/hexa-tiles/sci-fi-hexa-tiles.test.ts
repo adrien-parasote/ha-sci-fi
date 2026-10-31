@@ -627,9 +627,21 @@ describe('sci-fi-hexa-tiles', () => {
 
   it('IT-702: active tiles carry a border glow and glowing text', () => {
     const css = hexaCss();
-    expect(css, 'active tile outline glow').toMatch(/box-shadow:\s*0 0 \d+px var\(--sf-primary/);
-    expect(css, 'active tile text glow').toMatch(/text-shadow:\s*0 0 \d+px var\(--sf-primary/);
-    expect(css, 'active SVG hexagon glow').toMatch(/filter:\s*drop-shadow\(0 0 \d+px var\(--sf-primary/);
+    // Anchored on the active-tile selector, like IT-701 anchors on .hexa-row.
+    // Unanchored, the old `box-shadow` assertion matched .avatar in the header
+    // — the only box-shadow in this sheet — so the test was green on the avatar
+    // while no active-tile rule declared a glow at all. The glow is drawn by
+    // drop-shadow on the SVG border and text-shadow on the label, never
+    // box-shadow: there is no box-shadow of an active tile to assert.
+    expect(css, 'active SVG hexagon glow').toMatch(
+      /\.hexa-tile\[data-active="true"\]\s+\.hexa-border\s*{[^}]*filter:\s*drop-shadow\(0 0 \d+px var\(--sf-primary/,
+    );
+    expect(css, 'active tile label glow').toMatch(
+      /\.hexa-tile\[data-active="true"\]\s+\.tile-label\s*{[^}]*text-shadow:\s*0 0 \d+px var\(--sf-primary/,
+    );
+    expect(css, 'active tile icon glow').toMatch(
+      /\.hexa-tile\[data-active="true"\]\s+\.hexa-content\s+sf-icon\s*{[^}]*filter:\s*drop-shadow\(0 0 \d+px var\(--sf-primary/,
+    );
   });
 
   it('IT-703: every themed colour reads --sf-primary with a hex fallback', () => {

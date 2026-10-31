@@ -1,0 +1,7 @@
+43f80c19eec6783d4303d3d5e14b8401befdde1d src/cards/bridge/labels.ts
+2fbf204326c18094f57101a396b439666fcb92e9 src/cards/bridge/sci-fi-bridge-editor.ts
+6bffee5e61a5859496b5da46f07ad7a6090bbba2 src/locales/locales/fr.js
+2f04af99ce9dd4faf7ebba77ff4d3bb65feac4f3 tests/cards/bridge/sci-fi-bridge-editor.test.ts
+db8a177781029d29e780c96157157b497dda0cc4 xliff/fr.xlf
+53b0913b4cfa115db782be54a2a0409bc5f3af08 docs/fixes/jq5-editor-status-domain/lot.json
+a83e583691fb2f58928a1674f46f5a22198f14ae docs/fixes/jq5-editor-status-domain/verdicts.json

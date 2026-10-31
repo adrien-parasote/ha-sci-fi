@@ -87,6 +87,58 @@ describe('sf-bridge-stove', () => {
     expect(el.shadowRoot!.querySelector('.stove-on')).to.be.null;
   });
 
+  // ── O1 (ha-sci-fi-uvl): the status chip never lit up ─────────────────────
+  //
+  // config.status never carries the string 'on': the HACS binary_sensor wrote the
+  // raw status text, and core fumis only has the 14-value detailed_stove_status
+  // enum. The chip must read membership of the off set, not equality to 'on'.
+
+  const HEATING_STATES = [
+    'combustion', 'eco', 'pre_heating', 'ignition', 'pre_combustion',
+    'wood_combustion', 'wood_start', 'hybrid_init', 'hybrid_start', 'cold_start',
+  ];
+  const OFF_STATES = ['off', 'cooling', 'cold_start_off', 'wood_burning_off', 'unknown', 'unavailable'];
+
+  for (const state of HEATING_STATES) {
+    it(`test_O1_chip_is_active_on_heating_state: '${state}' lights the chip`, async () => {
+      const el = makeEl();
+      el.config = BASE_CONFIG;
+      el.hass = makeHass('60', '15', state);
+      document.body.appendChild(el);
+      await el.updateComplete;
+      expect(el.shadowRoot!.querySelector('.stove-on'), state).not.to.be.null;
+      expect(el.shadowRoot!.querySelector('.stove-off'), state).to.be.null;
+      expect(
+        el.shadowRoot!.querySelector('.stove-status-row sf-icon')!.getAttribute('icon'),
+      ).to.equal('sci:stove-heat');
+    });
+  }
+
+  for (const state of OFF_STATES) {
+    it(`test_O1_chip_is_inactive_on_off_state: '${state}' leaves the chip off`, async () => {
+      const el = makeEl();
+      el.config = BASE_CONFIG;
+      el.hass = makeHass('60', '15', state);
+      document.body.appendChild(el);
+      await el.updateComplete;
+      expect(el.shadowRoot!.querySelector('.stove-off'), state).not.to.be.null;
+      expect(el.shadowRoot!.querySelector('.stove-on'), state).to.be.null;
+      expect(
+        el.shadowRoot!.querySelector('.stove-status-row sf-icon')!.getAttribute('icon'),
+      ).to.equal('sci:stove-off');
+    });
+  }
+
+  it('test_O1_chip_is_inactive_when_status_entity_is_absent', async () => {
+    const el = makeEl();
+    el.config = { ...BASE_CONFIG, status: 'binary_sensor.does_not_exist' };
+    el.hass = makeHass('60', '15', 'combustion');
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('.stove-off')).not.to.be.null;
+    expect(el.shadowRoot!.querySelector('.stove-on')).to.be.null;
+  });
+
   // ── normalizePelletPct: percentage branch (raw > 1) ──────────────────────
 
   it('renders circle-progress-bar when pellet_qty is a percentage (e.g. 60)', async () => {

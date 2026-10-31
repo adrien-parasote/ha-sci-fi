@@ -663,6 +663,198 @@ describe('sci-fi-stove', () => {
     expect(el.shadowRoot!.querySelector('.stove-status')).not.to.be.null;
   });
 
+  // ── O2 (ha-sci-fi-nib): the 14 core detailed_stove_status values ──────────
+  //
+  // STATUS_ICONS covered the 7 values the HACS integration wrote; the core
+  // integration exposes 14. The 7 extra fell on the sci:stove-unknow fallback,
+  // so a hybrid stove lost its icon and colour as soon as wood took over.
+
+  function mountWithStatus(status: string): SciFiStoveCard {
+    const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
+    (el as any).setConfig({
+      type: 'custom:sci-fi-stove',
+      entity: 'climate.poele',
+      sensors: { sensor_status: 'sensor.poele_status' },
+    });
+    el.hass = makeMockHass({
+      states: {
+        'climate.poele': makeMockEntity({ entity_id: 'climate.poele', state: 'heat', attributes: { hvac_modes: [] } }),
+        'sensor.poele_status': makeMockEntity({ entity_id: 'sensor.poele_status', state: status }),
+      },
+    });
+    document.body.appendChild(el);
+    return el;
+  }
+
+  const CORE_STATUSES: ReadonlyArray<readonly [string, string, string]> = [
+    // state, icon, colour class
+    ['off',              'sci:stove-off',  'off'],
+    ['pre_heating',      'sci:stove-heat', 'amber'],
+    ['ignition',         'sci:stove-heat', 'amber'],
+    ['pre_combustion',   'sci:stove-heat', 'red'],
+    ['combustion',       'sci:stove-heat', 'red'],
+    ['eco',              'sci:stove-eco',  'green'],
+    ['cooling',          'sci:stove-cool', 'blue'],
+    ['cold_start',       'sci:stove-heat', 'amber'],
+    ['cold_start_off',   'sci:stove-off',  'off'],
+    ['hybrid_init',      'sci:stove-heat', 'amber'],
+    ['hybrid_start',     'sci:stove-heat', 'red'],
+    ['wood_start',       'sci:stove-heat', 'amber'],
+    ['wood_combustion',  'sci:stove-heat', 'red'],
+    ['wood_burning_off', 'sci:stove-cool', 'blue'],
+  ];
+
+  for (const [status, icon, colour] of CORE_STATUSES) {
+    it(`test_O2_core_status_has_its_own_icon: '${status}' → ${icon} / ${colour}`, async () => {
+      const el = mountWithStatus(status);
+      await el.updateComplete;
+      const row = el.shadowRoot!.querySelector('.status')!;
+      expect(row.classList.contains(colour), `${status} colour`).to.be.true;
+      expect(row.querySelector('sf-icon')!.getAttribute('icon'), `${status} icon`).to.equal(icon);
+      expect(row.querySelector('.stove-status')!.textContent!.trim(), `${status} label`)
+        .to.not.contain('_');
+    });
+  }
+
+  it('test_O2_unknown_future_status_still_falls_back', async () => {
+    const el = mountWithStatus('plasma_overdrive');
+    await el.updateComplete;
+    const row = el.shadowRoot!.querySelector('.status')!;
+    expect(row.querySelector('sf-icon')!.getAttribute('icon')).to.equal('sci:stove-unknow');
+    expect(row.querySelector('.stove-status')!.textContent!.trim()).to.equal('plasma overdrive');
+  });
+
+  // ── O3 (ha-sci-fi-1qy): the dead Preset control ───────────────────────────
+  //
+  // Core fumis drops PRESET_MODE and moves eco to switch.*_eco_mode, so
+  // preset_modes came back empty and the button opened nothing.
+
+  function mountBottom(
+    extraConfig: Record<string, unknown>,
+    attributes: Record<string, unknown>,
+    extraStates: Record<string, any> = {},
+    callService = vi.fn().mockResolvedValue({} as any),
+  ): { el: SciFiStoveCard; callService: ReturnType<typeof vi.fn> } {
+    const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
+    (el as any).setConfig({ type: 'custom:sci-fi-stove', entity: 'climate.poele', ...extraConfig });
+    el.hass = makeMockHass({
+      callService,
+      states: {
+        'climate.poele': makeMockEntity({
+          entity_id: 'climate.poele',
+          state: 'heat',
+          attributes: { hvac_modes: ['off', 'heat'], temperature: 20, min_temp: 15, max_temp: 30, ...attributes },
+        }),
+        ...extraStates,
+      },
+    });
+    document.body.appendChild(el);
+    return { el, callService };
+  }
+
+  it('test_O3_eco_switch_renders_a_toggle_and_reflects_its_state', async () => {
+    const { el } = mountBottom(
+      { switch_eco_mode: 'switch.poele_eco_mode' },
+      { preset_modes: [], preset_mode: 'none' },
+      { 'switch.poele_eco_mode': makeMockEntity({ entity_id: 'switch.poele_eco_mode', state: 'on' }) },
+    );
+    await el.updateComplete;
+    const toggle = el.shadowRoot!.querySelector('sf-button-card')!;
+    expect(toggle).not.to.be.null;
+    expect(toggle.getAttribute('icon')).to.equal('mdi:leaf');
+    // the dead preset select is gone
+    expect(el.shadowRoot!.querySelectorAll('sf-button-card-select').length).to.equal(1);
+  });
+
+  it('test_O3_eco_switch_toggle_shows_inactive_icon_when_off', async () => {
+    const { el } = mountBottom(
+      { switch_eco_mode: 'switch.poele_eco_mode' },
+      { preset_modes: [], preset_mode: 'none' },
+      { 'switch.poele_eco_mode': makeMockEntity({ entity_id: 'switch.poele_eco_mode', state: 'off' }) },
+    );
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('sf-button-card')!.getAttribute('icon'))
+      .to.equal('mdi:circle-medium');
+  });
+
+  it('test_O3_eco_switch_toggle_calls_switch_toggle', async () => {
+    const { el, callService } = mountBottom(
+      { switch_eco_mode: 'switch.poele_eco_mode' },
+      { preset_modes: [], preset_mode: 'none' },
+      { 'switch.poele_eco_mode': makeMockEntity({ entity_id: 'switch.poele_eco_mode', state: 'off' }) },
+    );
+    await el.updateComplete;
+    el.shadowRoot!.querySelector('sf-button-card')!
+      .dispatchEvent(new CustomEvent('button-click', { bubbles: true, composed: true, detail: {} }));
+    await el.updateComplete;
+    expect(callService).toHaveBeenCalledWith('switch', 'toggle', { entity_id: 'switch.poele_eco_mode' });
+  });
+
+  it('test_O3_eco_switch_toggle_error_does_not_throw', async () => {
+    const failing = vi.fn().mockRejectedValue(new Error('eco error'));
+    const { el } = mountBottom(
+      { switch_eco_mode: 'switch.poele_eco_mode' },
+      { preset_modes: [], preset_mode: 'none' },
+      { 'switch.poele_eco_mode': makeMockEntity({ entity_id: 'switch.poele_eco_mode', state: 'off' }) },
+      failing,
+    );
+    await el.updateComplete;
+    el.shadowRoot!.querySelector('sf-button-card')!
+      .dispatchEvent(new CustomEvent('button-click', { bubbles: true, composed: true, detail: {} }));
+    await el.updateComplete;
+    expect(failing).toHaveBeenCalled();
+  });
+
+  it('test_O3_configured_but_absent_eco_switch_renders_no_dead_toggle', async () => {
+    // switch_eco_mode points at an entity hass does not have (typo, or the
+    // integration went away): no toggle, and the preset branch takes over.
+    const { el } = mountBottom(
+      { switch_eco_mode: 'switch.typo_eco_mode' },
+      { preset_modes: ['none', 'eco'], preset_mode: 'none' },
+    );
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('sf-button-card')).to.be.null;
+    expect(el.shadowRoot!.querySelectorAll('sf-button-card-select').length).to.equal(2);
+  });
+
+  it('test_O3_configured_but_absent_eco_switch_renders_nothing_without_presets', async () => {
+    const { el } = mountBottom(
+      { switch_eco_mode: 'switch.typo_eco_mode' },
+      { preset_modes: [], preset_mode: 'none' },
+    );
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('sf-button-card')).to.be.null;
+    expect(el.shadowRoot!.querySelectorAll('sf-button-card-select').length).to.equal(1);
+  });
+
+  it('test_O3_preset_modes_keep_the_historical_select_when_no_eco_switch', async () => {
+    const { el } = mountBottom({}, { preset_modes: ['none', 'eco'], preset_mode: 'eco' });
+    await el.updateComplete;
+    const selects = el.shadowRoot!.querySelectorAll('sf-button-card-select');
+    expect(selects.length).to.equal(2);
+    expect(selects[1]!.getAttribute('icon')).to.equal('mdi:leaf');
+    expect(el.shadowRoot!.querySelector('sf-button-card')).to.be.null;
+  });
+
+  it('test_O3_no_dead_control_when_neither_switch_nor_presets', async () => {
+    const { el } = mountBottom({}, { preset_modes: [], preset_mode: 'none' });
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelectorAll('sf-button-card-select').length).to.equal(1);
+    expect(el.shadowRoot!.querySelector('sf-button-card')).to.be.null;
+    // the other two controls are untouched
+    expect(el.shadowRoot!.querySelector('sf-wheel')).not.to.be.null;
+  });
+
+  it('test_O3_eco_switch_is_tracked_as_a_relevant_entity', () => {
+    const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
+    (el as any).setConfig({
+      type: 'custom:sci-fi-stove',
+      entity: 'climate.poele',
+      switch_eco_mode: 'switch.poele_eco_mode',
+    });
+    expect((el as any).getRelevantEntities()).to.include('switch.poele_eco_mode');
+  });
+
   it('IT-1103: sci-fi-stove.ts declares no inline css`` block', () => {
     const src = fs.readFileSync(
       path.resolve(__dirname, '../../../src/cards/stove/sci-fi-stove.ts'),

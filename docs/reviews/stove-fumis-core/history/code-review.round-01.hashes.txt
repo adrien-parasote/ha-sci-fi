@@ -1,0 +1,14 @@
+794355c49bb3c227e12f438ab8222cfbac4b38a8 docs/specs/cards/bridge.md
+c45a30b8295bf3a909541af49e419ae24c878f11 docs/specs/cards/stove.md
+e8d916395ab9c44339fee41da96c22be4210543d src/cards/bridge/sections/sf-bridge-stove.ts
+6219faaecae38291da1af8ac7bc4545e8a5f0f83 src/cards/stove/config.ts
+4394e565c47dde9814bfbb4de27872d680c48002 src/cards/stove/labels.ts
+be1f2f32740a3d7b45a0660b3fc15d312f0b4e52 src/cards/stove/sci-fi-stove-editor.ts
+16d1c04f118ebb3f1787dab6b83c9f381c42d1e3 src/cards/stove/sci-fi-stove.ts
+bc6e25320f8049b8ca55cef039af06829768515b src/cards/stove/styles.ts
+2254cb419542401d3d58d4c16bf9854be693054c src/locales/locales/fr.js
+eb9e276f51c53ea0a0d879b41c411bbb50fbbe3e tests/cards/bridge/sections/sf-bridge-stove.test.ts
+057d319e0650ce85574a47773b55764f4f57b17c tests/cards/stove/sci-fi-stove.test.ts
+b2e1ad31c448184457074747e9dd36f07997f409 xliff/fr.xlf
+d7e0a541a54f615b8e084a9a43307dc9c05187af docs/fixes/stove-fumis-core/lot.json
+3bce9f5654b36e08b9c74a3b4ffd1ff8e6c3ca51 docs/fixes/stove-fumis-core/verdicts.json

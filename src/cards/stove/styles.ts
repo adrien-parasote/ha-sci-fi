@@ -316,7 +316,11 @@ export const stoveStyles = css`
     padding: 5px;
     background-color: rgba(13, 17, 23, 0.6);
   }
-  .bottom sf-button-card-select {
+  /* sf-button-card is the eco toggle rendered when the integration exposes
+   * switch.*_eco_mode instead of a climate preset — same metrics as the select
+   * it replaces, so the bottom bar keeps its three-slot rhythm. */
+  .bottom sf-button-card-select,
+  .bottom sf-button-card {
     --title-color: var(--secondary-bg-color, #7ca8c9);
     --label-text-color: var(--primary-light-color, #6ecbf5);
     align-self: center; /* vertically center relative to the wheel */

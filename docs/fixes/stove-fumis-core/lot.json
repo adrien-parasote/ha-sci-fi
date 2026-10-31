@@ -1,0 +1,39 @@
+{
+  "feature": "stove-fumis-core",
+  "created": "2026-10-31T15:06:42Z",
+  "frozen_at": "2026-10-31T15:13:23Z",
+  "epic": "ha-sci-fi-eyp",
+  "observations": [
+    {
+      "id": "O1",
+      "text": "bridge/stove : la pastille d'etat affiche « Inactive » en permanence, poele en pleine combustion compris. sf-bridge-stove decide l'etat par `status === 'on'`, or aucun capteur fumis (binary_sensor HACS ou sensor enum core) ne renvoie jamais la chaine `on`. Vu par Adrien le 2026-10-31 sur HA 2026.10.4, carte v1.3.4 ; attendu : « Active » des que le poele chauffe, « Inactive » a l'arret et au refroidissement. Bead ha-sci-fi-uvl.",
+      "bead": "ha-sci-fi-eyp.1",
+      "test": "npx vitest run tests/cards/bridge/sections/sf-bridge-stove.test.ts -t test_O1",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O2",
+      "text": "carte stove : sept des quatorze valeurs de `sensor.*_detailed_stove_status` de l'integration core (cold_start, cold_start_off, hybrid_init, hybrid_start, wood_start, wood_combustion, wood_burning_off) tombent sur l'icone de secours `sci:stove-unknow` avec un libelle auto-formate. Vu par Adrien le 2026-10-31 ; attendu : une icone et une couleur pour chacune, le fallback reserve a une valeur future inconnue. Bead ha-sci-fi-nib.",
+      "bead": "ha-sci-fi-eyp.2",
+      "test": "npx vitest run tests/cards/stove/sci-fi-stove.test.ts -t test_O2",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O3",
+      "text": "carte stove : le troisieme controle de la barre du bas (Preset) s'affiche mais n'ouvre aucune liste. `preset_modes` est vide sur l'integration core, qui n'annonce pas PRESET_MODE et sort le mode eco en `switch.*_eco_mode`. Mesure par Adrien le 2026-10-31 sur HA 2026.10.4 ; attendu : une bascule sur le switch eco quand il est configure, le comportement actuel si `preset_modes` est renseigne, rien du tout sinon. Bead ha-sci-fi-1qy.",
+      "bead": "ha-sci-fi-eyp.3",
+      "test": "npx vitest run tests/cards/stove/sci-fi-stove.test.ts -t test_O3",
+      "unreproduced": null,
+      "escalated": null
+    }
+  ],
+  "suite": "npx vitest run",
+  "lint": "npm run lint",
+  "suite_run": {
+    "at": "2026-10-31T16:00:36Z",
+    "rc": 0,
+    "tail": ""
+  }
+}

@@ -6,6 +6,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🚀 Sci-Fi Cards — Workbench</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js" integrity="sha384-+pxiN6T7yvpryuJmE1gM9PX7yQit15auDb+ZwwvJOd/4be2Cie5/IuVXgQb/S9du" crossorigin="anonymous"></script>
+  <!-- The workbench is served from the PROJECT ROOT (ADR-007: `npx serve@14 . -p 8888`),
+       and this page is the only file that knows it. The modules import the bare
+       specifier; mapping it to the served path belongs HERE, not in their source —
+       an absolute path inside a module binds it to one root and breaks it anywhere
+       else, a worktree included (bead ha-sci-fi-rx2). -->
+  <script type="importmap">
+    {
+      "imports": {
+        "home-assistant-js-websocket": "/node_modules/home-assistant-js-websocket/dist/index.js"
+      }
+    }
+  </script>
   <link rel="stylesheet" href="workbench.css">
 </head>
 

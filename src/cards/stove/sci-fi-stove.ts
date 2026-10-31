@@ -25,30 +25,50 @@ import '../../components/sf-circle-progress-bar.js';
 import '../../components/sf-stack-bar.js';
 import '../../components/sf-icon/sf-icon.js';
 import '../../components/sf-wheel.js';
+import '../../components/buttons/sf-button-card.js';
 import '../../components/buttons/sf-button-card-select.js';
 
 const TAG = 'sci-fi-stove';
 
 // ── Status display helpers (ported from main/src/cards/stove/const.js) ────────
+// The 14 values of the core `fumis` integration's sensor.*_detailed_stove_status.
+// The first seven are also what the HACS integration's binary_sensor wrote.
+// The sci:stove-unknow fallback stays for a value a future release would add.
+// Spec: docs/specs/cards/stove.md § Contrat d'intégration Fumis (bead ha-sci-fi-nib).
 const STATUS_ICONS: Record<string, { icon: string; color: string }> = {
-  off:            { icon: 'sci:stove-off',  color: 'off' },
-  pre_heating:    { icon: 'sci:stove-heat', color: 'amber' },
-  ignition:       { icon: 'sci:stove-heat', color: 'amber' },
-  pre_combustion: { icon: 'sci:stove-heat', color: 'red' },
-  combustion:     { icon: 'sci:stove-heat', color: 'red' },
-  eco:            { icon: 'sci:stove-eco',  color: 'green' },
-  cooling:        { icon: 'sci:stove-cool', color: 'blue' },
+  off:              { icon: 'sci:stove-off',  color: 'off' },
+  pre_heating:      { icon: 'sci:stove-heat', color: 'amber' },
+  ignition:         { icon: 'sci:stove-heat', color: 'amber' },
+  pre_combustion:   { icon: 'sci:stove-heat', color: 'red' },
+  combustion:       { icon: 'sci:stove-heat', color: 'red' },
+  eco:              { icon: 'sci:stove-eco',  color: 'green' },
+  cooling:          { icon: 'sci:stove-cool', color: 'blue' },
+  // core only — cold start, hybrid and wood phases
+  cold_start:       { icon: 'sci:stove-heat', color: 'amber' },
+  cold_start_off:   { icon: 'sci:stove-off',  color: 'off' },
+  hybrid_init:      { icon: 'sci:stove-heat', color: 'amber' },
+  hybrid_start:     { icon: 'sci:stove-heat', color: 'red' },
+  wood_start:       { icon: 'sci:stove-heat', color: 'amber' },
+  wood_combustion:  { icon: 'sci:stove-heat', color: 'red' },
+  wood_burning_off: { icon: 'sci:stove-cool', color: 'blue' },
 };
 
 const STATUS_LABELS: Record<string, string> = {
-  off:            'off',
-  pre_heating:    'pre-heating',
-  ignition:       'ignition',
-  combustion:     'combustion',
-  pre_combustion: 'pre-combustion',
-  eco:            'eco',
-  cooling:        'cooling',
-  unknown:        'unknown',
+  off:              'off',
+  pre_heating:      'pre-heating',
+  ignition:         'ignition',
+  combustion:       'combustion',
+  pre_combustion:   'pre-combustion',
+  eco:              'eco',
+  cooling:          'cooling',
+  cold_start:       'cold start',
+  cold_start_off:   'cold start off',
+  hybrid_init:      'hybrid init',
+  hybrid_start:     'hybrid start',
+  wood_start:       'wood start',
+  wood_combustion:  'wood combustion',
+  wood_burning_off: 'wood burning off',
+  unknown:          'unknown',
 };
 
 const HVAC_ICONS: Record<string, string> = {
@@ -74,6 +94,9 @@ export class SciFiStoveCard extends SciFiBaseCard {
     }
     if (this.config.storage_counter) {
       entities.add(this.config.storage_counter);
+    }
+    if (this.config.switch_eco_mode) {
+      entities.add(this.config.switch_eco_mode);
     }
     if (this.config.sensors) {
       const s = this.config.sensors;
@@ -363,15 +386,55 @@ export class SciFiStoveCard extends SciFiBaseCard {
           @wheel-change="${(e: CustomEvent) => this._onTempChange(e, stoveState.attributes.entity_id ?? this.config.entity)}"
         ></sf-wheel>
 
-        <sf-button-card-select
-          icon="${PRESET_ICONS[currentPreset] ?? 'mdi:circle-medium'}"
-          title="${msg('Preset')}"
-          text="${this._getPresetLabel(currentPreset)}"
-          .items="${presetItems}"
-          position="bottom"
-          @button-select="${(e: CustomEvent) => this._onPresetSelect(e, stoveState.attributes.entity_id ?? this.config.entity)}"
-        ></sf-button-card-select>
+        ${this._renderEcoControl(stoveState, presetItems, currentPreset)}
       </div>
+    `;
+  }
+
+  /**
+   * Third bottom control — eco mode, in whichever shape the integration offers.
+   *
+   * The HACS integration carried eco as a climate preset; the core one dropped
+   * PRESET_MODE and moved eco to its own switch.*_eco_mode entity. With neither,
+   * the historical code still rendered the button over an empty list: a dead
+   * control. Nothing is rendered instead.
+   *
+   * Spec: docs/specs/cards/stove.md § Mode éco (bead ha-sci-fi-1qy).
+   */
+  private _renderEcoControl(
+    stoveState: any,
+    presetItems: ReadonlyArray<{ id: string; text: string; icon: string }>,
+    currentPreset: string,
+  ): TemplateResult | typeof nothing {
+    // A configured entity that is absent from hass is treated as not configured:
+    // rendering the toggle on the config STRING alone would put back the very
+    // thing O3 removed — a live-looking control whose press only error-toasts.
+    // Same guard as _renderPelletQuantity / _renderPelletStock.
+    const ecoSwitch = this.config.switch_eco_mode;
+    const ecoState = ecoSwitch ? this.hass.states[ecoSwitch] : undefined;
+    if (ecoSwitch && ecoState) {
+      const ecoOn = ecoState.state === 'on';
+      return html`
+        <sf-button-card
+          icon="${ecoOn ? 'mdi:leaf' : 'mdi:circle-medium'}"
+          title="${msg('Eco')}"
+          text="${ecoOn ? msg('On') : msg('Off')}"
+          @button-click="${() => this._onEcoToggle(ecoSwitch)}"
+        ></sf-button-card>
+      `;
+    }
+
+    if (presetItems.length === 0) return nothing;
+
+    return html`
+      <sf-button-card-select
+        icon="${PRESET_ICONS[currentPreset] ?? 'mdi:circle-medium'}"
+        title="${msg('Preset')}"
+        text="${this._getPresetLabel(currentPreset)}"
+        .items="${presetItems}"
+        position="bottom"
+        @button-select="${(e: CustomEvent) => this._onPresetSelect(e, stoveState.attributes.entity_id ?? this.config.entity)}"
+      ></sf-button-card-select>
     `;
   }
 
@@ -401,6 +464,13 @@ export class SciFiStoveCard extends SciFiBaseCard {
         .then(() => { this._showToast(false, 'Température modifiée'); })
         .catch((err: Error) => { this._showToast(true, err.message); });
     }
+  }
+
+  private _onEcoToggle(switchEntityId: string): void {
+    void this.hass
+      .callService('switch', 'toggle', { entity_id: switchEntityId })
+      .then(() => { this._showToast(false, 'Mode éco modifié'); })
+      .catch((err: Error) => { this._showToast(true, err.message); });
   }
 
   private _onPresetSelect(e: CustomEvent, entityId: string): void {

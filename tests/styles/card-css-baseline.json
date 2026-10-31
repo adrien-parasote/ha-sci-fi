@@ -2678,6 +2678,11 @@
       "--label-text-color": "var(--primary-light-color, #6ecbf5)",
       "align-self": "center"
     },
+    ".bottom sf-button-card": {
+      "--title-color": "var(--secondary-bg-color, #7ca8c9)",
+      "--label-text-color": "var(--primary-light-color, #6ecbf5)",
+      "align-self": "center"
+    },
     ".bottom sf-wheel": {
       "--item-font-size": "12px",
       "--wheel-item-color": "var(--sf-primary, #00d2ff)",

@@ -202,7 +202,7 @@ actions:
 | Appliances | `binary_sensor.salt_missing` | Consommable |
 | Stove | `sensor.clou_pellet_quantity` | % pellets |
 | Stove | `counter.pellet_stock` | Nb sacs |
-| Stove | `binary_sensor.clou_stove_status` | ON/OFF |
+| Stove | `sensor.clou_detailed_stove_status` (core) · `binary_sensor.clou_stove_status` (HACS) | Statut brut du poêle — **jamais `on`/`off` au sens binaire**, et pas forcément un `binary_sensor` : voir § `sf-bridge-stove` / `isOn` |
 | Vehicle | `sensor.mureva_evlink_power` | Puissance W |
 | Actions | `input_button.*`, `script.*`, `automation.*` | Raccourcis d'actions configurables |
 
@@ -908,8 +908,40 @@ private _setSliderValue(entity: string, value: number): void {
 |----------|--------|-------|
 | `pelletQty` | `parseFloat(hass.states[config.pellet_quantity]?.state)` | 0.0–1.0 (ratio) |
 | `pelletStock` | `parseInt(hass.states[config.pellet_stock]?.state)` | nb sacs |
-| `isOn` | `hass.states[config.status]?.state === 'on'` | boolean |
+| `isOn` | `raw !== undefined && !STOVE_OFF_STATES.has(raw)`, où `raw = hass.states[config.status]?.state` | boolean — voir la note ci-dessous |
 | `isLow` | `pelletQty < (config.low_threshold ?? 0.3)` | boolean |
+
+> [!IMPORTANT]
+> **`config.status` ne renvoie jamais `on`** (lot `stove-fumis-core`, O1 — bead `ha-sci-fi-uvl`).
+> Aucune génération de l'intégration Fumis ne produit cette chaîne :
+> - le `binary_sensor` de l'intégration HACS `maheus/fumis_integration` écrivait le
+>   texte brut du statut (`off`, `eco`, `pre_heating`, `combustion`…) malgré son
+>   `device_class: running` ;
+> - l'intégration core `fumis` (HA 2026.5+) n'expose aucun binary_sensor de marche —
+>   `sensor.*_detailed_stove_status` est un enum de 14 valeurs.
+>
+> L'état de marche se décide donc par APPARTENANCE à l'ensemble des états éteints,
+> jamais par égalité à `on` :
+>
+> ```typescript
+> const STOVE_OFF_STATES = new Set([
+>   'off', 'cooling', 'cold_start_off', 'wood_burning_off',
+>   'unknown', 'unavailable',
+> ]);
+> ```
+>
+> `cooling` est volontairement côté éteint : le poêle ne chauffe plus, il refroidit.
+> La forme reste compatible avec un vrai `binary_sensor` (`on` absent de l'ensemble
+> → vrai ; `off` présent → faux).
+>
+> ⛔ **`config.status` n'est donc PAS contraint au domaine `binary_sensor`.** Sur
+> l'intégration core c'est un `sensor`, et l'éditeur étant la seule voie sanctionnée
+> (§ `sci-fi-bridge-editor`, « éditeur visuel **MANDATORY** »), sa liste déroulante du
+> champ status DOIT offrir les deux domaines — `_entitiesByDomain('binary_sensor',
+> 'sensor')`, la forme que `_renderAppliancesSection` emploie déjà. Une liste
+> restreinte aux `binary_sensor` rend ce contrat inatteignable pour qui est passé sur
+> core : la liste ne publie que l'item cliqué, la saisie libre ne fait que filtrer.
+> Le champ ne se libelle plus « ON/OFF » (`input-status-sensor`).
 
 **Render layout :**
 
@@ -1079,7 +1111,7 @@ const scenarioAlert = {
   'sensor.electrolux_lave_vaisselle_appliancestate': { state: 'Running' },
   'binary_sensor.rinse_aid':     { state: 'on' },    // consommable manquant
   'sensor.clou_pellet_quantity': { state: '0.15' },  // pellets bas
-  'binary_sensor.clou_stove_status': { state: 'on' },
+  'sensor.clou_detailed_stove_status': { state: 'combustion' },  // core fumis — jamais 'on'
   'sensor.mureva_evlink_power':  { state: '2300', attributes: { unit_of_measurement: 'W' } },
 };
 ```
@@ -1211,7 +1243,7 @@ title="${msg('Équipage')}"
 | `input-consumables` | `Consumables (optional)` | `Consommables (optionnel)` |
 | `input-power-sensor` | `Power sensor (W)` | `Capteur puissance (W)` |
 | `input-pellet-qty-sensor` | `Pellet quantity sensor` | `Capteur quantité pellets` |
-| `input-status-sensor` | `ON/OFF status sensor` | `Capteur statut ON/OFF` |
+| `input-status-sensor` | `Stove status sensor` | `Capteur de statut du poêle` |
 | `input-bag-counter` | `Bag stock counter` | `Compteur stock sacs` |
 | `input-pellet-low-threshold` | `Pellet low threshold (0.0–1.0)` | `Seuil bas pellets (0.0–1.0)` |
 | `input-ok-when` | `OK when` | `OK quand` |

@@ -41,7 +41,7 @@ The visual and strategic design treats the television as the main viewing viewpo
 * **SVG Pointer Tracking**: Trigonometric angle parsing (`Math.atan2`) in pure JS/TS to map drag coordinates onto the circular track without external gauge library dependencies.
 
 ### Q6 — Features (Ordered by dependency)
-1. **Tier 0**: Config interfaces, translation keys (`fr.ts`, `en.ts`), and registration in `sci-fi.ts`.
+1. **Tier 0**: Config interfaces, translation keys (`xliff/fr.xlf`, from which `src/locales/locales/fr.js` is generated — English is the source language, so there is no `en` file), and registration in `sci-fi.ts`.
 2. **Tier 1 (Core Viewport)**: Power status button, media title telemetry, connection/active state displays.
 3. **Tier 2 (Telemetry Dial)**: Interactive circular dial mapping the `volume_level` (0.0 to 1.0) to a circular arc.
 4. **Tier 3 (Tactical D-Pad)**: Up, Down, Left, Right, Select, Back, Home, and Menu buttons calling configurable Remote service actions.

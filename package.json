@@ -11,7 +11,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "lint": "eslint --max-warnings 166 \"src/**/*.ts\" \"tests/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" \"tests/**/*.ts\" --fix",
     "localize-extract": "lit-localize extract",
     "localize-build": "lit-localize build"

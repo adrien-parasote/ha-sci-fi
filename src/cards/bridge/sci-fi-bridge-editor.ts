@@ -720,7 +720,10 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
     const enabled = !!stove;
     const sensors = this._entitiesByDomain('sensor');
     const counters = this._entitiesByDomain('counter');
-    const binarySensors = this._entitiesByDomain('binary_sensor');
+    // bead ha-sci-fi-jq5 — `status` n'est pas un binary_sensor sur l'intégration
+    // core fumis (sensor enum) : la liste doit offrir les deux domaines, comme
+    // _renderAppliancesSection (spec bridge.md § sf-bridge-stove / isOn).
+    const statusSensors = this._entitiesByDomain('binary_sensor', 'sensor');
 
     return html`
       <sf-editor-accordion title="${this.getLabel('section-title-stove')}" icon="mdi:fire" ?open="${enabled}">
@@ -746,7 +749,7 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
             <sf-editor-dropdown-entity
               .label="${this.getLabel('input-status-sensor')}"
               .value="${stove.status ?? ''}"
-              .items="${binarySensors}"
+              .items="${statusSensors}"
               @input-update="${(e: CustomEvent) => { const c = this._getNewConfig<SciFiBridgeConfig>(); this._dispatch({ ...c, stove: { ...c.stove!, status: e.detail.value } }); }}"
             ></sf-editor-dropdown-entity>
             <sf-editor-input

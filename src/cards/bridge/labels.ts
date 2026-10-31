@@ -49,7 +49,7 @@ export function bridgeLabels(): Record<string, string> {
     'input-consumables': msg('Consumables (optional)'),
     'input-power-sensor': msg('Power sensor (W)'),
     'input-pellet-qty-sensor': msg('Pellet quantity sensor'),
-    'input-status-sensor': msg('ON/OFF status sensor'),
+    'input-status-sensor': msg('Stove status sensor'),
     'input-bag-counter': msg('Bag stock counter'),
     'input-pellet-low-threshold': msg('Pellet low threshold (0.0–1.0)'),
     'input-ok-when': msg('OK when'),

@@ -1142,9 +1142,6 @@
 <trans-unit id="seb852340a954227e">
   <source>Pellet quantity sensor</source>
 <target>Capteur quantité pellets</target></trans-unit>
-<trans-unit id="s7b4210bd9fa13356">
-  <source>ON/OFF status sensor</source>
-<target>Capteur statut ON/OFF</target></trans-unit>
 <trans-unit id="s2bc5f15a69db0c5b">
   <source>Bag stock counter</source>
 <target>Compteur stock sacs</target></trans-unit>
@@ -1169,6 +1166,9 @@
 <trans-unit id="s091d5807b5b33550">
   <source>On</source>
 <target>Marche</target></trans-unit>
+<trans-unit id="sbfa68151bd7177c6">
+  <source>Stove status sensor</source>
+<target>Capteur de statut du poêle</target></trans-unit>
 </body>
 </file>
 </xliff>

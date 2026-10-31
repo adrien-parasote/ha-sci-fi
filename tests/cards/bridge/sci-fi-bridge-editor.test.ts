@@ -579,6 +579,73 @@ describe('sci-fi-bridge-editor', () => {
       await el.updateComplete;
       expect(el.shadowRoot).not.to.be.null;
     });
+
+    // ── O1 (bead ha-sci-fi-jq5) — le champ status n'est PAS contraint au domaine
+    //    binary_sensor : sur l'intégration core fumis c'est un sensor enum, et
+    //    l'éditeur visuel est la seule voie sanctionnée.
+    //    Spec: docs/specs/cards/bridge.md § sf-bridge-stove / isOn
+
+    const CORE_STATUS = 'sensor.clou_detailed_stove_status';
+    const HACS_STATUS = 'binary_sensor.clou_stove_status';
+
+    function stoveHass() {
+      return makeMockHass({
+        states: {
+          ...makeEditorHass().states,
+          [CORE_STATUS]: makeMockEntity({ entity_id: CORE_STATUS, state: 'combustion' }),
+          [HACS_STATUS]: makeMockEntity({ entity_id: HACS_STATUS, state: 'off' }),
+        },
+      });
+    }
+
+    /** The stove status dropdown, found by the value bound to it (label-agnostic). */
+    async function mountStatusDropdown(status: string): Promise<any> {
+      const el = makeEditorEl();
+      el.setConfig({
+        type: 'custom:sci-fi-bridge',
+        stove: { pellet_quantity: 'sensor.pellet', pellet_stock: 'counter.stock', status },
+      });
+      el.hass = stoveHass();
+      document.body.appendChild(el);
+      await el.updateComplete;
+      const dropdown = Array.from(
+        el.shadowRoot.querySelectorAll('sf-editor-dropdown-entity')
+      ).find((d: any) => d.value === status);
+      expect(dropdown, `no status dropdown bound to ${status}`).not.to.be.undefined;
+      return dropdown;
+    }
+
+    it('test_O1_status_dropdown_offers_core_sensor_enum', async () => {
+      const dropdown = await mountStatusDropdown(CORE_STATUS);
+      const ids = (dropdown.items as any[]).map((e) => e.entity_id);
+
+      expect(ids).to.include(CORE_STATUS);
+    });
+
+    it('test_O1_status_dropdown_still_offers_hacs_binary_sensor', async () => {
+      const dropdown = await mountStatusDropdown(HACS_STATUS);
+      const ids = (dropdown.items as any[]).map((e) => e.entity_id);
+
+      expect(ids).to.include(HACS_STATUS);
+    });
+
+    it('test_O1_status_dropdown_excludes_unrelated_domains', async () => {
+      const dropdown = await mountStatusDropdown(CORE_STATUS);
+      const ids = (dropdown.items as any[]).map((e) => e.entity_id);
+
+      expect(ids).not.to.include('counter.stock');
+      expect(ids).not.to.include('person.adrien');
+    });
+
+    it('test_O1_status_label_no_longer_says_on_off', async () => {
+      const dropdown = await mountStatusDropdown(CORE_STATUS);
+
+      // Les deux valeurs du tableau des labels de la spec (EN, FR) : le test
+      // ne présume pas la locale sous laquelle la suite démarre.
+      expect(dropdown.label).to.not.match(/ON\/OFF/i);
+      expect(['Stove status sensor', 'Capteur de statut du poêle']).to.include(dropdown.label);
+    });
+
   });
 
   // ── 10. Vehicle ───────────────────────────────────────────────────────────────

@@ -67,7 +67,7 @@ alert:
 | `weather_entity` | String | ✅ | HA weather entity ID | |
 | `header_message` | String | | Card header text | |
 | `weather_daily_forecast_limit` | Integer | | Number of forecast days (0–15) | `10` |
-| `chart_first_kind_to_render` | String | | First chart tab: `temperature`, `precipitation`, or `wind` | `temperature` |
+| `chart_first_kind_to_render` | String | | First chart tab: `temperature`, `precipitation`, or `wind` (`wind_speed` is accepted as the same thing). Any other value falls back to `temperature`. | `temperature` |
 | `alert` | Object | | Alert banner configuration | |
 
 ### `alert` options

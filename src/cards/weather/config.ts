@@ -20,6 +20,9 @@ export interface SciFiWeatherConfig extends SciFiBaseConfig {
   readonly type: 'custom:sci-fi-weather';
   readonly weather_entity: string;                        // ADR-005: was weather_entity_id
   readonly weather_daily_forecast_limit?: number;         // range [0, 15]
-  readonly chart_first_kind_to_render?: 'temperature' | 'precipitation' | 'wind';
+  // 'wind' is the v0.9.6 spelling the editor writes and the one both weather.md
+  // and docs/cards/weather.md document; 'wind_speed' is the card's own dropdown
+  // key. Both are accepted, and an unknown value falls back to 'temperature'.
+  readonly chart_first_kind_to_render?: 'temperature' | 'precipitation' | 'wind' | 'wind_speed';
   readonly alert?: SciFiWeatherAlertConfig;               // ADR-005: missing in v1.0.0-wip
 }

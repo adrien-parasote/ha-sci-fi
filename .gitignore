@@ -26,8 +26,14 @@ CLAUDE.md
 .codegraph/
 # Claude Code session state. .claude/worktrees/ holds git worktrees created
 # during a run: each contains its own .git file, so git shows the directory as
-# untracked and `git add -A` would record it as a gitlink.
-.claude/
+# untracked and `git add -A` would record it as a gitlink. .claude/agents/ is
+# seeded by the plugin and checksummed in .sc/seeded-agents/, so it is not ours
+# to version either.
+# `.claude/*` rather than `.claude/`: a negation cannot re-include anything
+# whose parent directory is excluded, and .claude/skills/ holds a skill this
+# project wrote (see below).
+.claude/*
+!.claude/skills/
 
 # Beads / Dolt files (added by bd init)
 .dolt/

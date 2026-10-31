@@ -109,7 +109,7 @@ See [vacuum.md](./cards/vacuum.md#L1) for full config contract.
  
 ### sci-fi-vehicles
  
-See [vehicle.md](./cards/vehicle.md#L1) for full config contract.
+See [vehicles.md](./cards/vehicles.md#L1) for full config contract.
 
 ---
 

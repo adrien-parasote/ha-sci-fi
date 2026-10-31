@@ -10,7 +10,7 @@
 | Components | `src/components/` | Reusable UI elements (`sf-icon`, `sf-toggle-switch`, `sf-button*`, `sf-wheel`, `editor-inputs/`). **Two or more consumers required** — single-consumer components belong to their card |
 | Selectors | `src/selectors/` | Pure HA state extraction helpers — no mutations |
 | Utils | `src/utils/` | `base-card.ts`, `base-editor.ts`, `action.ts`, `toast.ts` — Lit lifecycle base classes |
-| Locales | `src/locales/` | `@lit/localize` runtime i18n — `localization.ts` (setLocale/getLocale) + `locales/fr.ts` (FR translations) |
+| Locales | `src/locales/` | `@lit/localize` runtime i18n — `localization.ts` (setLocale/getLocale) + `locales/fr.js` (FR translations) |
 | Types | `src/types/` | `config.ts` — config **kernel** only (`SciFiBaseConfig`, `ActionConfig`, type-guards); `ha.ts` — HA entity types. Per-card config: `cards/<card>/config.ts` |
 | Styles | `src/styles/` | `common.ts` — shared CSS custom properties (`--sf-*` tokens). `editor-common.ts` — shared editor layout. `floor-nav.ts` — hexagonal floor-navigation shell shared by lights + water |
 | Entry | `src/sci-fi.ts` | Bundle entry — registers all 11 `customCards` + `customElements` (HMR-safe define guard). Reported as a "god file" by sentrux (fan-out 28); that is intrinsic to a barrel + registry, not a defect |
@@ -158,7 +158,7 @@ dev/
 **Critical workbench rule:** `editor.js::updateCardConfig(newConfig, scenarioData)` MUST receive `scenarioData` — without it, entity dropdowns empty on every GUI edit (L078).
 
 **Adding a new card (declarative):**
-1. Create `dev/cards/my-card.js` → `export default { id, label, tag, config, scenarios }`
+1. Create `dev/cards/<your-card>.js` → `export default { id, label, tag, config, scenarios }`
 2. Add 1 import line in `dev/cards/_registry.js`
 3. Zero engine modifications
 

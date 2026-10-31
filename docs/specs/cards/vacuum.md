@@ -942,7 +942,7 @@ private _toast(error: boolean, text: string): void {
 | `'Duration'` | `'Durée'` (fallback label for duration sensor) |
 
 > [!IMPORTANT]
-> Run 'grep -r "msg('done'\|msg('No map" src/' before adding. Only add keys that are genuinely missing. Do NOT modify `src/locales/locales/fr.ts` by hand — update `xliff/fr.xlf` first, then run `npm run locale:build`.
+> Run 'grep -r "msg('done'\|msg('No map" src/' before adding. Only add keys that are genuinely missing. Do NOT modify `src/locales/locales/fr.js` by hand — update `xliff/fr.xlf` first, then run `npm run localize-build`.
 
 ---
 

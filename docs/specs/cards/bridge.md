@@ -453,7 +453,7 @@ src/cards/bridge/
 tests/cards/bridge/
 └── sci-fi-bridge.test.ts     [NEW]
 
-dev/workbench-bridge.html     [NEW] — mock workbench
+dev/workbench.html     [NEW] — mock workbench
 ├── src/cards/bridge/sci-fi-bridge-editor.ts [NEW]
 ├── README.md [EXTERNAL]
 ├── CHANGELOG.md [EXTERNAL]
@@ -1019,7 +1019,7 @@ L'éditeur est organisé en accordéons, un par section de la carte :
 
 ## Workbench
 
-**Fichier :** `dev/workbench-bridge.html`
+**Fichier :** `dev/workbench.html`
 
 Le workbench expose **5 scénarios nommés** sélectionnables via un sélecteur en haut de page. Chaque scénario remplace l'objet `MockHass.states` complet.
 
@@ -1466,7 +1466,7 @@ Si absent, l'icône par défaut de la section est utilisée.
 | config.ts (à modifier) | [src/types/config.ts](../../../src/types/config.ts#L1) |
 | Stove spec (pattern styles) | [stove.md](./stove.md#blueprint-coverage) |
 | Vehicle spec (pattern services) | [vehicle.md](./vehicle.md#blueprint-coverage) |
-| Water Management spec (pattern structure) | [tactical_water_management.md](./tactical_water_management.md#blueprint-coverage) |
+| Water Management spec (pattern structure) | [water.md](./water.md#blueprint-coverage) |
 | Mock workbench pattern | [dev/workbench.html](../../../dev/workbench.html#L1) |
 | sci-fi.ts entry point (enregistrement carte) | [src/sci-fi.ts](../../../src/sci-fi.ts#L1) |
 

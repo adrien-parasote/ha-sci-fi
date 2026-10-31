@@ -13,7 +13,7 @@
 | F-ENTRY-01 | Main entry point script setup | ✅ `src/sci-fi.ts` |
 | F-ICON-01 | Custom iconset registrations | ✅ `src/sci-fi.ts` |
 | F-I18N-01 | Dynamic language sync and localize | ✅ `src/locales/` |
-| F-MIGR-01 | Configuration legacy migration | ✅ `docs/MIGRATION.md` |
+| F-MIGR-01 | Configuration legacy migration | ⬜ not delivered — [ADR-005](../adr/ADR-005_zero-breaking-yaml.md#L1) forbids renaming or removing any YAML field, so no migration guide was ever needed |
 | F-GIT-01 | Branch `v2` isolation setup | ✅ Git setup |
 
 ---
@@ -23,13 +23,11 @@
 ```
 src/
 ├── sci-fi.ts                       [MODIFY] Main package entry point
-├── locales/
-│   ├── generated/
-│   │   └── locale-codes.js         [NEW] lit-localize output codes
-│   ├── locales/
-│   │   └── fr.ts                   [NEW] French static translations
-│   └── localization.ts             [NEW] Static import translation config
-└── docs/MIGRATION.md               [NEW] Lovelace YAML migration guide
+└── locales/
+    ├── locale-codes.ts             [NEW] lit-localize output codes
+    ├── locales/
+    │   └── fr.js                   [NEW] French static translations (generated)
+    └── localization.ts             [NEW] Static import translation config
 ```
 
 ---

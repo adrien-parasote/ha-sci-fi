@@ -200,7 +200,7 @@ export const VEHICLE_SENSOR_UNAVAILABLE_STATE = 'unavailable';
 | `plug_error` | `msg('Error')` |
 
 > [!IMPORTANT]
-> `msg()` keys must be English strings. Do NOT modify `src/locales/locales/fr.ts` by hand. New translation keys must be added to `xliff/fr.xlf`, then compiled via `npm run locale:build` to regenerate `fr.ts` (relying on `lit-localize` hash matching).
+> `msg()` keys must be English strings. Do NOT modify `src/locales/locales/fr.js` by hand. New translation keys must be added to `xliff/fr.xlf`, then compiled via `npm run localize-build` to regenerate `fr.js` (relying on `lit-localize` hash matching).
 
 ---
 
@@ -672,11 +672,11 @@ The component CSS is ported 1:1 from 'main:src/components/landspeeder/style.js',
 
 ## Localization — New msg() Keys
 
-The following `msg()` keys are **new** and must be added to `src/locales/locales/fr.ts` and `xliff/fr.xlf`:
+The following `msg()` keys are **new** and must be added to `src/locales/locales/fr.js` and `xliff/fr.xlf`:
 
 | English key (msg()) | French translation |
 |---|---|
-| `'Temperature'` | Already in fr.ts (stove card) — verify |
+| `'Temperature'` | Already in fr.js (stove card) — verify |
 | `'Air-cond'` | `'Climatisation'` |
 | `'Start'` | `'Démarrer'` |
 | `'Stop'` | `'Arrêter'` |
@@ -696,7 +696,7 @@ The following `msg()` keys are **new** and must be added to `src/locales/locales
 | `'Waiting for charge'` | `'Attente de charge'` |
 
 > [!IMPORTANT]
-> Before adding: run 'grep -r "msg('Temperature'" src/' to confirm `'Temperature'` is already present from the stove card. If yes, skip it. All others are likely new. Do NOT modify `src/locales/locales/fr.ts` by hand; always update translations in `xliff/fr.xlf` first and run the compilation.
+> Before adding: run 'grep -r "msg('Temperature'" src/' to confirm `'Temperature'` is already present from the stove card. If yes, skip it. All others are likely new. Do NOT modify `src/locales/locales/fr.js` by hand; always update translations in `xliff/fr.xlf` first and run the compilation.
 
 ---
 

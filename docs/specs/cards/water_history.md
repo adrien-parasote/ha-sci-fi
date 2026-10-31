@@ -46,7 +46,7 @@ N/A — This spec defines a visual component that consumes HA API data and expos
 
 | Path / Identifier | Format | Schema location | Producer |
 |---|---|---|---|
-| `./tactical_water_management.md` | Markdown | [tactical_water_management.md](./tactical_water_management.md#L1) | Base Water Card Spec |
+| `./water.md` | Markdown | [water.md](./water.md#L1) | Base Water Card Spec |
 
 ### Public Interface
 This component MUST expose the following reactive Lit properties:
@@ -64,7 +64,7 @@ This component MUST expose the following reactive Lit properties:
 
 | Concept | Status in this spec | Mentioned in |
 |---|---|---|
-| Water Management Card | Enhanced with history panel | [tactical_water_management.md](./tactical_water_management.md#L1) |
+| Water Management Card | Enhanced with history panel | [water.md](./water.md#L1) |
 
 ---
 
@@ -143,6 +143,6 @@ If `this.hass` is undefined (workbench mode), do not call the WebSocket API. Ins
 
 | Reference | Location |
 |---|---|
-| Base Water Card Spec | [tactical_water_management.md](./tactical_water_management.md#L1) |
+| Base Water Card Spec | [water.md](./water.md#L1) |
 | Lovelace Card Spec | [05_cards.md#sci-fi-water-management](./05_cards.md#sci-fi-water-management) |
 | Common Styles Spec | [03_base_classes.md#L1](./03_base_classes.md#L1) |

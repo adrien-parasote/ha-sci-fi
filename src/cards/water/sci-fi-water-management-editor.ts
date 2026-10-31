@@ -12,11 +12,11 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
   @state() private _devices: Record<string, any> = {};
   @state() private _entities: Record<string, any> = {};
 
-  public setConfig(config: SciFiWaterManagementConfig): void {
+  public override setConfig(config: SciFiWaterManagementConfig): void {
     this.config = config;
   }
 
-  protected firstUpdated(): void {
+  protected override firstUpdated(): void {
     if (this.hass) {
       void this._fetchRegistry();
     }

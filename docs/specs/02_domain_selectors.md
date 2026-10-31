@@ -104,7 +104,7 @@ src/
 | TC-205 | Unit | `getFloors()` empty if no floors registered | `mockHass` with empty floors registry | Returns `[]` (no crash) |
 | TC-206 | Unit | `countActiveLights()` correct count | 3 lights: 2 on, 1 off | Returns `2` |
 | TC-207 | Unit | Type guard rejects invalid config | `{ type: 'custom:sci-fi-lights' }` missing required field | Throws `Error` with field name |
-| IT-201 | Integration | Selectors are pure — no mutation | Call `getFloors()` twice | Returns identical references (same data, no mutation) |
+| IT-201 | Integration | Selectors are pure — no mutation | Call `getFloors()` twice | Returns equal data, and `hass.floors` is unchanged (same contents, same key order). Reference identity is NOT required: `getFloors` sorts, so it must allocate a fresh array rather than sort the registry in place — requiring identical references would mandate a cache no other requirement asks for, and would risk serving stale floors |
 | IT-202 | Integration | Performance: 500 entities | `mockHass` with 500 states | `getLightEntities()` completes under 5ms |
 | IT-203 | Integration | End-to-end selector pipeline | Chain `getFloors` -> `getAreasByFloor` -> `getEntitiesByArea` | Correct entities resolved across hierarchy |
 

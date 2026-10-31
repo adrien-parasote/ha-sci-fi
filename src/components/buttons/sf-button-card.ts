@@ -72,7 +72,7 @@ export class SciFiCardButton extends SciFiButton {
   }
 
   @property({ type: String })
-  title = '';
+  override title = '';
 
   @property({ type: String })
   text = '';

@@ -17,7 +17,7 @@ import '../../components/buttons/sf-button.js';
 
 @customElement('sf-editor-accordion')
 export class SfEditorAccordion extends LitElement {
-  @property({ type: String }) title = '';
+  @property({ type: String }) override title = '';
   @property({ type: String }) icon = '';
   @property({ type: Boolean, reflect: true }) open = false;
   @property({ attribute: 'element-id', type: String }) elementId = 'ac';

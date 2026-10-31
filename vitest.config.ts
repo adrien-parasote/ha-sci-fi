@@ -17,7 +17,6 @@ export default defineConfig({
       provider: 'v8',
       include: ['src/**/*.ts'],
       exclude: [
-        'src/locales/generated/**',
         'src/**/*.d.ts',
         // Pure data files — SVG icon maps, type definitions only, no logic
         'src/**/data/sf-weather-icons.ts',

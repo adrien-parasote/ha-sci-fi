@@ -15,6 +15,29 @@ import '../../../components/sf-stack-bar.js';
 
 const TAG = 'sf-bridge-stove';
 
+/**
+ * States in which the stove is NOT producing heat.
+ *
+ * `config.status` never carries the string `on`: the HACS integration's
+ * binary_sensor wrote the raw status text despite its `device_class: running`,
+ * and the core `fumis` integration exposes no running binary_sensor at all —
+ * only the 14-value `sensor.*_detailed_stove_status` enum. So the running state
+ * is decided by MEMBERSHIP of the off set, never by equality to `on`.
+ * A real binary_sensor still works: `on` is absent from the set, `off` is in it.
+ *
+ * `cooling` sits on the off side on purpose: the stove is no longer heating.
+ *
+ * Spec: docs/specs/cards/bridge.md § sf-bridge-stove (bead ha-sci-fi-uvl).
+ */
+const STOVE_OFF_STATES = new Set([
+  'off',
+  'cooling',
+  'cold_start_off',
+  'wood_burning_off',
+  'unknown',
+  'unavailable',
+]);
+
 // Normalize pellet quantity to 0–100 int for sf-circle-progress-bar
 function normalizePelletPct(raw: number): number {
   if (isNaN(raw)) return NaN;
@@ -47,8 +70,9 @@ export class SfBridgeStove extends LitElement {
       (stockState?.attributes?.max as number | undefined) ??
       20;
 
-    // Stove on/off
-    const isOn = this.hass.states[this.config.status]?.state === 'on';
+    // Stove on/off — membership, not equality (see STOVE_OFF_STATES)
+    const rawStatus: string | undefined = this.hass.states[this.config.status]?.state;
+    const isOn = rawStatus !== undefined && !STOVE_OFF_STATES.has(rawStatus);
 
     const hasCircle = !isNaN(pelletPct);
     const hasStack  = !isNaN(pelletStock);

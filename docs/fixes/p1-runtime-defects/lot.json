@@ -1,0 +1,63 @@
+{
+  "feature": "p1-runtime-defects",
+  "created": "2026-10-31T12:02:15Z",
+  "frozen_at": "2026-10-31T12:59:35Z",
+  "epic": "ha-sci-fi-xb8",
+  "observations": [
+    {
+      "id": "O1",
+      "text": "weather (ha-sci-fi-0sm) : choisir « Wind Speed » dans l'éditeur visuel casse la carte. L'éditeur écrit `chart_first_kind_to_render: 'wind'` (sci-fi-weather-editor.ts:31), SENSORS_MAP est clée `wind_speed` (sci-fi-weather.ts:47,54,61) ; `SENSORS_MAP[kind]` vaut undefined à :393 et `config.chartTitle.icon` lève à :402, la limite d'erreur de SciFiBaseCard affiche la carte d'erreur. Attendu : les trois valeurs de l'éditeur rendent leur graphique. Rapporté par le retrocheck j02 du 2026-10-31, vérifié indépendamment.",
+      "bead": "ha-sci-fi-xb8.1",
+      "test": "npx vitest run tests/cards/weather/sci-fi-weather.test.ts -t \"O1 —\"",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O2",
+      "text": "tv (ha-sci-fi-3vg) : le bouton mute envoie `command: undefined` à `remote.send_command` (`volume_mute` absent de D_PAD_KEYS, sci-fi-tv.ts:22-31,294,462) ; une action personnalisée liée à `enter` ne se déclenche jamais (l'éditeur écrit `enter` à sci-fi-tv-editor.ts:23, la carte lit `confirm` à :309) ; `custom_actions.power` est ignoré par `_togglePower` ; `app_entity` manque de getRelevantEntities (:92-98) alors que :160 le lit, donc un changement d'app_entity ne repeint pas. Attendu : la commande envoyée est définie, les clés que l'éditeur écrit sont honorées, le rendu sélectif couvre toutes les entités lues. Rapporté par le retrocheck j02.",
+      "bead": "ha-sci-fi-xb8.2",
+      "test": "npx vitest run tests/cards/tv/ -t \"O2\"",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O3",
+      "text": "bridge (ha-sci-fi-7dl) : 6 appels `callService` sans `.catch()` (sf-bridge-alerts.ts:143, sf-bridge-access.ts:127,132, sf-bridge-automations.ts:124,148, sf-bridge-actions.ts:100), et le toast de succès est émis inconditionnellement AVANT la résolution, donc un appel en échec annonce la réussite ; sf-bridge-actions.ts:100-106 a un `.finally()` sans `.catch()` (unhandled rejection). Les 4 lignes console.warn/console.error de la matrice d'Error Handling de la spec ne sont implémentées nulle part. Attendu : le toast de succès n'est émis que sur résolution, un toast d'erreur sur rejet, aucun rejet non géré. Rapporté par le retrocheck j02.",
+      "bead": "ha-sci-fi-xb8.3",
+      "test": "npx vitest run tests/cards/bridge/bridge-call.test.ts tests/cards/bridge/sections/sf-bridge-toast-timing.test.ts",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O4",
+      "text": "climates (ha-sci-fi-9ng) : la config `comfort-1`/`comfort-2` écrite par l'éditeur ne peut jamais être lue par la carte (contrat et config.ts:35,36 en tiret, lookup sf-radiator.ts:18,19 en souligné) ; le repli d'un mode non mappé rend `mdi:information-off-outline` + `--sf-primary` au lieu de l'icône et la couleur `off` exigées par AP#4/TC-005 ; `frost` alias l'icône mais pas la couleur (:327-335) ; l'icône de saison ne se rafraîchit pas car getRelevantEntities (:20-31) ne rend que `climate.*` alors que :153 lit `sensor.season`. Attendu : icône et couleur personnalisées appliquées, repli sur `off`, en-tête repeint au changement de saison. Rapporté par le retrocheck j02.",
+      "bead": "ha-sci-fi-xb8.4",
+      "test": "npx vitest run tests/cards/climates/ -t \"O4\"",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O5",
+      "text": "plugs (ha-sci-fi-dsy) : une prise `unavailable`/`unknown` rend comme une prise éteinte avec ses boutons actifs (plugs.md:929 exige boutons désactivés + état Offline ; aucune occurrence dans src/cards/plugs/) ; le `.cirle-container` gauche est rendu sans classe d'état (sci-fi-plugs.ts:174) donc la bille s'anime prise éteinte, alors que styles.ts:197-200 ne la masque que sous `.off` ; aucun état de chargement ni timeout 2 s pour l'historique (`historyLoading` absent de tout le dépôt) ; `_clearChart` ne vide pas `.chart-container.innerHTML` et `_drawChart` réutilise le canvas de la prise précédente ; `_getYesterday()` rend minuit hier, donc la fenêtre « 24 h » fait 24 à 48 h ; aucun clamp de `_selected_plug_id` quand l'édition raccourcit `devices`. Attendu : état indisponible rendu et verrouillé, animation cohérente avec l'état, fenêtre de 24 h glissantes. Rapporté par le retrocheck j02.",
+      "bead": "ha-sci-fi-xb8.5",
+      "test": "npx vitest run tests/cards/plugs/ -t \"O5\"",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O6",
+      "text": "vehicles (ha-sci-fi-c8l) : un véhicule sans capteur de verrou est peint « déverrouillé » en orange (sf-landspeeder.ts:372-385, aucune garde sur `v.lock_status`, AP#8 l'interdit) ; idem carburant (:387-416) qui imprime `'--'` là où la spec dit `return nothing` ; la température de clim n'est jamais convertie — la molette affiche l'unité de `hass.config.unit_system` mais la charge utile reste `_selected_temp_id + 16` en °C (sci-fi-vehicles.ts:109-113,151) ; les seuils de batterie s'appliquent au brut et non à l'arrondi (:425-426) ; aucune branche « No vehicles configured » (:80,:86) et aucun clamp de `_active_vehicle_id` dans setConfig ; `charge_state` n'a aucune entrée d'éditeur alors qu'il est déclaré, lu et documenté ; un prologue `<?xml …?>` dans un template Lit (landspeeder-svg.ts:15) produit un nœud commentaire bogus à chaque rendu. Attendu : un panneau sans son capteur n'est pas rendu, l'unité affichée et la valeur envoyée concordent, les bornes sont tenues. Rapporté par le retrocheck j02.",
+      "bead": "ha-sci-fi-xb8.6",
+      "test": "npx vitest run tests/cards/vehicles/ -t \"O6\"",
+      "unreproduced": null,
+      "escalated": null
+    }
+  ],
+  "suite": "npm test",
+  "lint": "npm run lint",
+  "suite_run": {
+    "at": "2026-10-31T14:42:46Z",
+    "rc": 0,
+    "tail": ""
+  }
+}

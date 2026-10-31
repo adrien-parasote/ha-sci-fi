@@ -11,7 +11,7 @@ import { localized, msg } from '@lit/localize';
 import { sciFiCommonStyles } from '../../../styles/common.js';
 import { bridgeStyles } from '../styles.js';
 import type { BridgeAlertsConfig } from '../config.js';
-import { bridgeToast } from '../bridge-toast.js';
+import { bridgeCall } from '../bridge-call.js';
 import '../../../components/sf-icon/sf-icon.js';
 
 const TAG = 'sf-bridge-alerts';
@@ -140,9 +140,15 @@ export class SfBridgeAlerts extends LitElement {
 
   private _toggle(entity: string, isOn: boolean, name: string): void {
     const [domain, service] = toggleService(entity, isOn);
-    void this.hass.callService(domain, service, { entity_id: entity });
     const nextState = isOn ? msg('deactivated') : msg('activated');
-    bridgeToast(this, `${name} ${nextState}`, false);
+    void bridgeCall(
+      this,
+      this.hass,
+      domain,
+      service,
+      { entity_id: entity },
+      `${name} ${nextState}`
+    );
   }
 }
 

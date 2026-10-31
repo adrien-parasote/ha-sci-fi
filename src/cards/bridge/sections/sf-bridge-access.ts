@@ -11,7 +11,7 @@ import { localized, msg } from '@lit/localize';
 import { sciFiCommonStyles } from '../../../styles/common.js';
 import { bridgeStyles } from '../styles.js';
 import type { BridgeAccessConfig } from '../config.js';
-import { bridgeToast } from '../bridge-toast.js';
+import { bridgeCall } from '../bridge-call.js';
 import '../../../components/sf-icon/sf-icon.js';
 
 const TAG = 'sf-bridge-access';
@@ -124,13 +124,25 @@ export class SfBridgeAccess extends LitElement {
   }
 
   private _openCover(entity: string, name: string): void {
-    void this.hass.callService('cover', 'open_cover', { entity_id: entity });
-    bridgeToast(this, `${name} — ${msg('Opening…')}`, false);
+    void bridgeCall(
+      this,
+      this.hass,
+      'cover',
+      'open_cover',
+      { entity_id: entity },
+      `${name} — ${msg('Opening…')}`
+    );
   }
 
   private _closeCover(entity: string, name: string): void {
-    void this.hass.callService('cover', 'close_cover', { entity_id: entity });
-    bridgeToast(this, `${name} — ${msg('Closing…')}`, false);
+    void bridgeCall(
+      this,
+      this.hass,
+      'cover',
+      'close_cover',
+      { entity_id: entity },
+      `${name} — ${msg('Closing…')}`
+    );
   }
 }
 

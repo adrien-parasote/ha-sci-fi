@@ -9,7 +9,7 @@ import { localized, msg } from '@lit/localize';
 import { sciFiCommonStyles } from '../../../styles/common.js';
 import { bridgeStyles } from '../styles.js';
 import type { BridgeAutomationsConfig, BridgeAutomationEntry } from '../config.js';
-import { bridgeToast } from '../bridge-toast.js';
+import { bridgeCall } from '../bridge-call.js';
 import '../../../components/sf-icon/sf-icon.js';
 
 const TAG = 'sf-bridge-automations';
@@ -121,8 +121,14 @@ export class SfBridgeAutomations extends LitElement {
 
   private _toggle(entity: string, isOn: boolean, name: string): void {
     const [domain, service] = resolveToggleService(entity, isOn);
-    void this.hass.callService(domain, service, { entity_id: entity });
-    bridgeToast(this, `${name} — ${isOn ? msg('deactivated') : msg('activated')}`, false);
+    void bridgeCall(
+      this,
+      this.hass,
+      domain,
+      service,
+      { entity_id: entity },
+      `${name} — ${isOn ? msg('deactivated') : msg('activated')}`
+    );
   }
 
   private _onSliderInput(entry: BridgeAutomationEntry, e: Event): void {
@@ -145,11 +151,14 @@ export class SfBridgeAutomations extends LitElement {
 
   private _setSliderValue(entity: string, value: number): void {
     const domain = entity.split('.')[0] as string;
-    void this.hass.callService(domain, 'set_value', {
-      entity_id: entity,
-      value,
-    });
-    bridgeToast(this, `${value}`, false);
+    void bridgeCall(
+      this,
+      this.hass,
+      domain,
+      'set_value',
+      { entity_id: entity, value },
+      `${value}`
+    );
   }
 
   override disconnectedCallback(): void {

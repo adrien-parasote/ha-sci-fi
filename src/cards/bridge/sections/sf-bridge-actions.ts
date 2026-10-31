@@ -18,7 +18,7 @@ import { localized, msg } from '@lit/localize';
 import { sciFiCommonStyles } from '../../../styles/common.js';
 import { bridgeStyles } from '../styles.js';
 import type { BridgeActionsConfig, BridgeActionItem } from '../config.js';
-import { bridgeToast } from '../bridge-toast.js';
+import { bridgeCall } from '../bridge-call.js';
 import '../../../components/sf-icon/sf-icon.js';
 
 const TAG = 'sf-bridge-actions';
@@ -97,15 +97,21 @@ export class SfBridgeActions extends LitElement {
     // Start loading state
     this._loading = new Set([...this._loading, item.entity]);
 
-    void this.hass
-      .callService(domain, service, { entity_id: item.entity })
-      .finally(() => {
-        const next = new Set(this._loading);
-        next.delete(item.entity);
-        this._loading = next;
-      });
-
-    bridgeToast(this, `📣 ${label}`, false);
+    void bridgeCall(
+      this,
+      this.hass,
+      domain,
+      service,
+      { entity_id: item.entity },
+      `📣 ${label}`,
+      {
+        after: () => {
+          const next = new Set(this._loading);
+          next.delete(item.entity);
+          this._loading = next;
+        },
+      }
+    );
   }
 }
 

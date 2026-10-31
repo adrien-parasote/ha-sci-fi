@@ -262,5 +262,92 @@ describe('sf-radiator', () => {
     expect(frostItem).to.exist;
     expect(frostItem.icon).to.equal('mdi:snowflake-frost');
   });
+
+  // ── O4: the mode styling a user configures must actually be read ──────────
+
+  describe('O4 — preset style lookup (regression)', () => {
+    const CARD_STYLES = {
+      // What the editor writes and what the frozen contract declares: a hyphen.
+      mode: {
+        icons: { 'comfort-1': 'mdi:numeric-1-box', 'comfort-2': 'mdi:numeric-2-box', frost_protection: 'mdi:snowflake' },
+        colors: { 'comfort-1': '#111111', 'comfort-2': '#222222', frost_protection: '#333333' },
+      },
+      // The `off` state is what an unmapped mode must fall back to.
+      state: {
+        icons: { off: 'mdi:power-off', heat: 'mdi:fire' },
+        colors: { off: '#6c757d', heat: '#ff7f50' },
+      },
+    };
+
+    const mount = async (presetMode: string, state = 'heat') => {
+      const el = document.createElement('sf-radiator') as SciFiRadiator;
+      el.cardStyles = CARD_STYLES as any;
+      el.climateEntity = makeMockEntity({
+        entity_id: 'climate.salon',
+        state,
+        attributes: {
+          friendly_name: 'Salon',
+          current_temperature: 21,
+          temperature: 22,
+          min_temp: 7,
+          max_temp: 30,
+          preset_modes: ['comfort_1', 'comfort_2', 'frost', 'eco'],
+          preset_mode: presetMode,
+          hvac_modes: ['off', 'heat', 'dry'],
+        },
+      });
+      document.body.appendChild(el);
+      await el.updateComplete;
+      return el;
+    };
+
+    const presetButton = (el: SciFiRadiator) =>
+      el.shadowRoot!.querySelector('sf-button-card-select[title="preset"]') as any;
+
+    // HA reports `comfort_1`; the config spells it `comfort-1`. The lookup used
+    // the raw HA key, so a configured icon and colour were silently dropped.
+    it.each([
+      ['comfort_1', 'mdi:numeric-1-box', '#111111'],
+      ['comfort_2', 'mdi:numeric-2-box', '#222222'],
+    ])('applies the configured style for %s', async (presetMode, icon, color) => {
+      const el = await mount(presetMode as string);
+      const btn = presetButton(el);
+      expect(btn.icon).to.equal(icon);
+      expect(btn.getAttribute('style')).to.include(color as string);
+    });
+
+    // 05_cards.md §8 and TC-005: an unmapped mode falls back to `off`, not to a
+    // generic placeholder icon and the primary colour.
+    it('falls back to the off icon and colour for an unmapped preset', async () => {
+      const el = await mount('eco');
+      const btn = presetButton(el);
+      expect(btn.icon).to.equal('mdi:power-off');
+      expect(btn.getAttribute('style')).to.include('#6c757d');
+    });
+
+    it('falls back to the off icon and colour for an unmapped hvac mode', async () => {
+      const el = await mount('eco', 'dry');
+      const btn = el.shadowRoot!.querySelector('sf-button-card-select[title="mode"]') as any;
+      expect(btn.icon).to.equal('mdi:power-off');
+      expect(btn.getAttribute('style')).to.include('#6c757d');
+    });
+
+    // frost aliased its icon onto frost_protection but not its colour.
+    it('aliases the frost colour onto frost_protection, like its icon', async () => {
+      const el = await mount('frost');
+      const btn = presetButton(el);
+      expect(btn.icon).to.equal('mdi:snowflake');
+      expect(btn.getAttribute('style')).to.include('#333333');
+    });
+
+    it('applies the configured style to the dropdown items too', async () => {
+      const el = await mount('eco');
+      const items = presetButton(el).items;
+      const comfort1 = items.find((i: any) => i.id === 'comfort_1');
+      expect(comfort1, 'comfort_1 must be offered').to.exist;
+      expect(comfort1.icon).to.equal('mdi:numeric-1-box');
+      expect(comfort1.color).to.equal('#111111');
+    });
+  });
 });
 

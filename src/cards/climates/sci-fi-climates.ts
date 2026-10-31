@@ -13,6 +13,9 @@ import './sf-radiator.js';
 
 const TAG = 'sci-fi-climates';
 
+/** HA's season integration entity, read by the header for its icon and colour. */
+const SEASON_ENTITY = 'sensor.season';
+
 @customElement(TAG)
 export class SciFiClimatesCard extends SciFiBaseCard {
   static override styles = [sciFiCommonStyles, climateStyles];
@@ -26,6 +29,17 @@ export class SciFiClimatesCard extends SciFiBaseCard {
         entities.add(entityId);
       }
     }
+
+    // With no climate entity at all there is nothing to watch, and an EMPTY list
+    // is what base-card reads as "repaint on every hass change". Adding the
+    // season unconditionally would make the list never empty and retire that
+    // escape, so deleting the last climate entity left a stale radiator on
+    // screen (review round 1).
+    if (entities.size === 0) return [];
+
+    // __displayHeader reads it for the season icon and colour; without it here,
+    // shouldUpdate holds the old season until a climate entity happens to move.
+    entities.add(SEASON_ENTITY);
 
     return Array.from(entities);
   }
@@ -41,7 +55,10 @@ export class SciFiClimatesCard extends SciFiBaseCard {
     const excluded = this.config.entities_to_exclude ?? [];
     const allClimates = getClimateEntitiesExcluding(this.hass, excluded);
     if (allClimates.length === 0) {
-      return html`<div class="empty-message">Aucun radiateur configuré</div>`;
+      // Was a bare French literal, so an English dashboard read French. The
+      // vehicles card's own empty state goes through msg(); this one now does
+      // too, which is what the amended vehicles.md:671 claims as the model.
+      return html`<div class="empty-message">${msg('No radiator configured')}</div>`;
     }
     
     // Initialize active floor if empty
@@ -150,7 +167,7 @@ export class SciFiClimatesCard extends SciFiBaseCard {
     const tempUnit = (this.hass as any).config?.unit_system?.temperature || '°C';
     
     // Fallback season handling
-    const seasonState = this.hass.states['sensor.season']?.state;
+    const seasonState = this.hass.states[SEASON_ENTITY]?.state;
     let seasonColor = '';
     let seasonIcon = nothing as any;
     

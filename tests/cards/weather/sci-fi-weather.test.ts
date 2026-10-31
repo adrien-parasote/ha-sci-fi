@@ -337,4 +337,70 @@ describe('sci-fi-weather', () => {
       expect(updateSpy).toHaveBeenCalled();
     });
   });
+
+  describe('O1 — chart_first_kind_to_render (regression)', () => {
+    const makeHass = () =>
+      makeMockHass({
+        states: {
+          'weather.home': makeMockEntity({
+            entity_id: 'weather.home',
+            state: 'sunny',
+            attributes: { temperature: 24, temperature_unit: '°C', friendly_name: 'Home' },
+          }),
+          'sun.sun': makeMockEntity({
+            entity_id: 'sun.sun',
+            state: 'above_horizon',
+            attributes: {
+              next_dawn: '2026-05-25T04:00:00.000Z',
+              next_dusk: '2026-05-24T20:00:00.000Z',
+            },
+          }),
+        },
+      });
+
+    // Home Assistant configures and feeds a card BEFORE it enters the DOM, and
+    // connectedCallback is where chart_first_kind_to_render is read. Mounting in
+    // the other order leaves that line unexecuted, so the config value never
+    // reaches _chartDataKind and the test proves nothing.
+    let card: SciFiWeatherCard;
+
+    const mount = async (kind: unknown) => {
+      card = document.createElement('sci-fi-weather') as SciFiWeatherCard;
+      (card as any).setConfig({
+        type: 'custom:sci-fi-weather',
+        weather_entity: 'weather.home',
+        chart_first_kind_to_render: kind,
+      });
+      card.hass = makeHass();
+      card.hass.connection.subscribeMessage = async () => () => {};
+      document.body.appendChild(card);
+      await card.updateComplete;
+    };
+
+    afterEach(() => {
+      card?.remove();
+    });
+
+    // The visual editor writes 'wind'; weather.md documents 'wind_speed'. Both
+    // spellings exist in the wild, so both must render their chart.
+    it.each(['temperature', 'precipitation', 'wind', 'wind_speed'])(
+      'renders the chart for chart_first_kind_to_render: %s',
+      async kind => {
+        await mount(kind);
+        expect(card.shadowRoot!.querySelector('.sf-error-card')).to.be.null;
+        expect(card.shadowRoot!.querySelector('.chart-header .dropdow-button')).not.to.be.null;
+      }
+    );
+
+    it('maps the editor value wind onto the wind_speed series', async () => {
+      await mount('wind');
+      expect((card as any)._chartDataKind).to.equal('wind_speed');
+    });
+
+    it('falls back to temperature on a value no series answers', async () => {
+      await mount('tornado');
+      expect(card.shadowRoot!.querySelector('.sf-error-card')).to.be.null;
+      expect((card as any)._chartDataKind).to.equal('temperature');
+    });
+  });
 });

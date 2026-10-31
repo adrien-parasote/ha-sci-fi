@@ -11,7 +11,7 @@ import { sciFiCommonStyles } from '../../styles/common.js';
 import { tvStyles } from './style.js';
 import { fireHassAction } from '../../utils/action.js';
 import type { HassEntity } from '../../types/ha.js';
-import type { SciFiTVConfig, SciFiTVCustomActions } from './config.js';
+import type { SciFiTVConfig } from './config.js';
 
 const TAG = 'sci-fi-tv';
 
@@ -93,7 +93,10 @@ export class SciFiTVCard extends SciFiBaseCard {
     return [
       this.config.entity,
       this.config.volume_entity,
-      this.config.remote_entity
+      this.config.remote_entity,
+      // _readViewModel reads app_entity for the source/app metadata; leaving it
+      // out here means shouldUpdate suppresses the repaint when it changes.
+      this.config.app_entity
     ].filter((e): e is string => e !== undefined && e !== null && e !== '');
   }
 
@@ -291,7 +294,7 @@ export class SciFiTVCard extends SciFiBaseCard {
 
         <!-- Mute button row -->
         <div class="mute-row">
-          <button class="mute-btn" data-key="volume_mute" ?disabled="${!vm.isOn}" @click="${() => this._handleDpadClick('volume_mute')}">
+          <button class="mute-btn" data-key="volume_mute" ?disabled="${!vm.isOn}" @click="${() => this._handleMuteClick()}">
             <sf-icon icon="mdi:volume-off" .connection="${this.hass.connection}"></sf-icon>
           </button>
         </div>
@@ -451,22 +454,49 @@ export class SciFiTVCard extends SciFiBaseCard {
 
   // ── Remote Action Executors ───────────────────────────────────────────────
 
-  private _handleDpadClick(btn: keyof SciFiTVCustomActions): void {
-    const customAction = this.config.custom_actions?.[btn];
-    
+  private _handleDpadClick(btn: keyof typeof D_PAD_KEYS): void {
+    // The editor has always written `enter` for the button this card renders as
+    // `confirm`, and docs/cards/tv.md advertises both. A dashboard carrying
+    // either spelling must fire its action.
+    const customAction = this.config.custom_actions?.[btn]
+      ?? (btn === 'confirm' ? this.config.custom_actions?.enter : undefined);
+
     if (customAction) {
       // Lovelace Tap Action mode
       fireHassAction(this, { tap_action: customAction }, 'tap');
     } else if (this.config.remote_entity) {
       // Default remote mapping mode (PascalCase command strings)
-      const commandString = D_PAD_KEYS[btn as keyof typeof D_PAD_KEYS];
       void this.hass.callService('remote', 'send_command', {
         entity_id: this.config.remote_entity,
-        command: commandString,
+        command: D_PAD_KEYS[btn],
       }).catch(() => {
         this._showToast('Remote command failed');
       });
     }
+  }
+
+  /**
+   * Mute is a volume control, not a D-pad key: there is no `volume_mute` entry
+   * in D_PAD_KEYS, so routing it through _handleDpadClick sent
+   * `command: undefined` to remote.send_command. It goes to the media_player
+   * service instead — the same surface the dial already uses for volume_set,
+   * and the one docs/cards/tv.md shows in its own custom_actions example.
+   */
+  private _handleMuteClick(): void {
+    const customAction = this.config.custom_actions?.volume_mute;
+    if (customAction) {
+      fireHassAction(this, { tap_action: customAction }, 'tap');
+      return;
+    }
+
+    const entityId = this.config.volume_entity || this.config.entity;
+    const isMuted = this.hass.states[entityId]?.attributes?.is_volume_muted === true;
+    void this.hass.callService('media_player', 'volume_mute', {
+      entity_id: entityId,
+      is_volume_muted: !isMuted,
+    }).catch((err: Error) => {
+      this._showToast(err.message);
+    });
   }
 
   private _selectSource(source: string | Record<string, any>): void {
@@ -500,6 +530,14 @@ export class SciFiTVCard extends SciFiBaseCard {
   }
 
   private _togglePower(isOn: boolean): void {
+    // docs/cards/tv.md advertises `power` among the bindable keys; without this
+    // branch the binding was writable, saved, and silently ignored.
+    const customAction = this.config.custom_actions?.power;
+    if (customAction) {
+      fireHassAction(this, { tap_action: customAction }, 'tap');
+      return;
+    }
+
     void this.hass.callService('media_player', isOn ? 'turn_off' : 'turn_on', {
       entity_id: this.config.entity,
     }).catch((err: Error) => {

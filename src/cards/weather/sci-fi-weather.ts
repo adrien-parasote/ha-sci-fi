@@ -67,6 +67,34 @@ const SENSORS_MAP: Record<string, any> = {
   },
 };
 
+const DEFAULT_CHART_KIND = 'temperature';
+
+/**
+ * The runtime keys of SENSORS_MAP are the HA forecast attribute names, so the
+ * wind series is `wind_speed`. The YAML contract spells it `wind` (config.ts,
+ * and what the visual editor has always written), while weather.md documents
+ * `wind_speed`. Both spellings exist in saved dashboards, so both are read.
+ */
+const CHART_KIND_ALIASES: Record<string, string> = {
+  wind: 'wind_speed',
+};
+
+/**
+ * A kind no series answers would make SENSORS_MAP[kind] undefined and throw
+ * through render, which the error boundary turns into the error card — the whole
+ * card lost to one unknown field value. Fall back to the default instead.
+ */
+function normalizeChartKind(kind: string | undefined): string {
+  if (!kind) return DEFAULT_CHART_KIND;
+  // hasOwnProperty, not `in` and not a bare index: both walk the prototype
+  // chain, so `chart_first_kind_to_render: 'toString'` would pass the guard and
+  // hand back a function — the very error card this normalizer exists to avoid.
+  const own = (map: object, k: string) => Object.prototype.hasOwnProperty.call(map, k);
+  const alias = own(CHART_KIND_ALIASES, kind) ? CHART_KIND_ALIASES[kind] : undefined;
+  const key = alias ?? kind;
+  return own(SENSORS_MAP, key) ? key : DEFAULT_CHART_KIND;
+}
+
 import { weatherStyles } from './styles.js';
 
 @customElement(TAG)
@@ -83,7 +111,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
   @state() private _dailyForecast: any[] = [];
   @state() private _date: Date = new Date();
   @state() private _day_selected: number = 0;
-  @state() private _chartDataKind: string = 'temperature';
+  @state() private _chartDataKind: string = DEFAULT_CHART_KIND;
   
   private _unsubHourly?: () => void | Promise<void>;
   private _unsubDaily?: () => void | Promise<void>;
@@ -98,9 +126,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
       this._date = new Date();
     }, 10000);
     if (this.hass && this.config) {
-      if (this.config.chart_first_kind_to_render) {
-        this._chartDataKind = this.config.chart_first_kind_to_render;
-      }
+      this._chartDataKind = normalizeChartKind(this.config.chart_first_kind_to_render);
       void this._subscribeForecasts();
     }
   }

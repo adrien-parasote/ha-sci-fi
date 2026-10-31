@@ -1,0 +1,74 @@
+{
+  "O1": {
+    "green": {
+      "at": "2026-10-31T14:40:30Z",
+      "rc": 0,
+      "tail": "4%, worker 2%, setup 1%)\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning."
+    },
+    "proved": {
+      "at": "2026-10-31T14:42:29Z",
+      "rc": 0,
+      "tail": "4%, worker 3%, setup 1%)\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning."
+    }
+  },
+  "O2": {
+    "green": {
+      "at": "2026-10-31T14:40:32Z",
+      "rc": 0,
+      "tail": "e:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n(node:34399) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)"
+    },
+    "proved": {
+      "at": "2026-10-31T14:42:30Z",
+      "rc": 0,
+      "tail": "e:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n(node:37225) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)"
+    }
+  },
+  "O3": {
+    "green": {
+      "at": "2026-10-31T14:40:33Z",
+      "rc": 0,
+      "tail": "5%, worker 2%, setup 2%)\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning."
+    },
+    "proved": {
+      "at": "2026-10-31T14:42:32Z",
+      "rc": 0,
+      "tail": "4%, worker 3%, setup 1%)\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning."
+    }
+  },
+  "O4": {
+    "green": {
+      "at": "2026-10-31T14:40:35Z",
+      "rc": 0,
+      "tail": "e:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n(node:34452) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)"
+    },
+    "proved": {
+      "at": "2026-10-31T14:42:33Z",
+      "rc": 0,
+      "tail": "e:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n(node:37277) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)"
+    }
+  },
+  "O5": {
+    "green": {
+      "at": "2026-10-31T14:40:36Z",
+      "rc": 0,
+      "tail": "NING=true` to suppress this warning.\n(node:34478) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:34477) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)"
+    },
+    "proved": {
+      "at": "2026-10-31T14:42:35Z",
+      "rc": 0,
+      "tail": "NING=true` to suppress this warning.\n(node:37303) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:37304) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)"
+    }
+  },
+  "O6": {
+    "green": {
+      "at": "2026-10-31T14:40:38Z",
+      "rc": 0,
+      "tail": "NING=true` to suppress this warning.\n(node:34506) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:34505) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)"
+    },
+    "proved": {
+      "at": "2026-10-31T14:42:36Z",
+      "rc": 0,
+      "tail": "NING=true` to suppress this warning.\n(node:37331) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:37330) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)"
+    }
+  }
+}

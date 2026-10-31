@@ -1154,6 +1154,15 @@
 <trans-unit id="s6555b06b10891271">
   <source>OK when</source>
 <target>OK quand</target></trans-unit>
+<trans-unit id="sc8cf14ed1d286dd4">
+  <source>Charge state</source>
+<target>État de charge</target></trans-unit>
+<trans-unit id="sa569fdd3af89d996">
+  <source>No vehicle configured</source>
+<target>Aucun véhicule configuré</target></trans-unit>
+<trans-unit id="secbba82986a809bc">
+  <source>No radiator configured</source>
+<target>Aucun radiateur configuré</target></trans-unit>
 </body>
 </file>
 </xliff>

@@ -2095,6 +2095,22 @@
       "font-size": "12px",
       "color": "rgb(55, 61, 69)"
     },
+    ".header .info .offline-tag": {
+      "font-size": "12px",
+      "letter-spacing": "1px",
+      "text-transform": "uppercase",
+      "color": "var(--sf-warning, #ffd60a)"
+    },
+    ".content .info .image.unavailable": {
+      "cursor": "not-allowed",
+      "opacity": "0.45",
+      "filter": "grayscale(1)"
+    },
+    ".content .sensors .sensor.inert": {
+      "opacity": "0.4",
+      "pointer-events": "none",
+      "cursor": "not-allowed"
+    },
     ".footer": {
       "display": "flex",
       "flex-direction": "row",

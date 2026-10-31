@@ -23,6 +23,53 @@ const HASS_CLIMATE_PRESET_MODE_EXTERNAL = 'external';
 const HASS_CLIMATE_PRESET_MODE_PROG = 'prog';
 const HASS_CLIMATE_PRESET_MODE_AUTO = 'auto';
 
+const FALLBACK_ICON = 'mdi:information-off-outline';
+const FALLBACK_COLOR = 'var(--sf-primary)';
+
+/**
+ * Home Assistant reports preset modes with underscores (`comfort_1`), while the
+ * YAML contract — and the editor's MODE_KEYS — spell the two comfort levels
+ * with a hyphen (`comfort-1`). Looking up the raw HA key therefore missed every
+ * icon and colour a user had configured for those two modes: the config was
+ * writable, saved, and unreadable.
+ *
+ * `frost` / `frost_protection` are the same story: the icon was already aliased
+ * one way by hand, the colour was not.
+ */
+const PRESET_STYLE_KEYS: Record<string, readonly string[]> = {
+  comfort_1: ['comfort-1', 'comfort_1'],
+  'comfort-1': ['comfort-1', 'comfort_1'],
+  comfort_2: ['comfort-2', 'comfort_2'],
+  'comfort-2': ['comfort-2', 'comfort_2'],
+  [HASS_CLIMATE_PRESET_MODE_FROST]: [
+    HASS_CLIMATE_PRESET_MODE_FROST,
+    HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION,
+  ],
+  [HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION]: [
+    HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION,
+    HASS_CLIMATE_PRESET_MODE_FROST,
+  ],
+};
+
+/** The configured value for a mode, under any spelling the contract accepts. */
+function lookupModeStyle(
+  map: Record<string, string> | undefined,
+  mode: string
+): string | undefined {
+  if (!map) return undefined;
+  // hasOwnProperty, not a bare index: `PRESET_STYLE_KEYS['toString']` resolves
+  // up the prototype chain to a function, and `for … of` a function throws
+  // "not iterable" — a preset mode named like an Object member would crash the
+  // tile instead of falling back.
+  const aliases = Object.prototype.hasOwnProperty.call(PRESET_STYLE_KEYS, mode)
+    ? PRESET_STYLE_KEYS[mode]
+    : undefined;
+  for (const key of aliases ?? [mode]) {
+    if (Object.prototype.hasOwnProperty.call(map, key) && map[key]) return map[key];
+  }
+  return undefined;
+}
+
 @customElement('sf-radiator')
 export class SciFiRadiator extends LitElement {
   constructor() {
@@ -265,13 +312,50 @@ export class SciFiRadiator extends LitElement {
     return labels[key] || key;
   }
 
+  /**
+   * 05_cards.md §8 and climates.md TC-005: a mode absent from `mode_icons` /
+   * `state_icons` falls back to the `off` STATE icon and colour — not to a
+   * generic placeholder, which is what the code did for every unmapped mode.
+   */
+  private __modeIcon(mode: string): string {
+    return (
+      lookupModeStyle(this.cardStyles?.mode?.icons, mode) ??
+      this.cardStyles?.state?.icons?.[STATE_CLIMATE_OFF] ??
+      FALLBACK_ICON
+    );
+  }
+
+  private __modeColor(mode: string): string {
+    return (
+      lookupModeStyle(this.cardStyles?.mode?.colors, mode) ??
+      this.cardStyles?.state?.colors?.[STATE_CLIMATE_OFF] ??
+      FALLBACK_COLOR
+    );
+  }
+
+  private __stateIcon(state: string): string {
+    return (
+      this.cardStyles?.state?.icons?.[state] ??
+      this.cardStyles?.state?.icons?.[STATE_CLIMATE_OFF] ??
+      FALLBACK_ICON
+    );
+  }
+
+  private __stateColor(state: string): string {
+    return (
+      this.cardStyles?.state?.colors?.[state] ??
+      this.cardStyles?.state?.colors?.[STATE_CLIMATE_OFF] ??
+      FALLBACK_COLOR
+    );
+  }
+
   private __displayRight(): TemplateResult {
     const presetMode = this.climateEntity.attributes.preset_mode;
     const hvacMode = this.climateEntity.state;
-    const preset_color = (this.cardStyles?.mode?.colors?.[presetMode] || 'var(--sf-primary)') + ';';
-    const hvac_color = (this.cardStyles?.state?.colors?.[hvacMode] || 'var(--sf-primary)') + ';';
-    const preset_icon = this.cardStyles?.mode?.icons?.[presetMode] || 'mdi:information-off-outline';
-    const hvac_icon = this.cardStyles?.state?.icons?.[hvacMode] || 'mdi:information-off-outline';
+    const preset_color = this.__modeColor(presetMode) + ';';
+    const hvac_color = this.__stateColor(hvacMode) + ';';
+    const preset_icon = this.__modeIcon(presetMode);
+    const hvac_icon = this.__stateIcon(hvacMode);
     
     return html`
       <sf-button-card-select
@@ -319,21 +403,13 @@ export class SciFiRadiator extends LitElement {
         );
       })
       .map((mode: string) => {
-        let icon = 'mdi:information-off-outline';
-        if (this.cardStyles?.mode?.icons?.[mode]) {
-          icon = this.cardStyles.mode.icons[mode];
-        }
-        if (
-          mode === HASS_CLIMATE_PRESET_MODE_FROST &&
-          this.cardStyles?.mode?.icons?.[HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION]
-        ) {
-          icon = this.cardStyles.mode.icons[HASS_CLIMATE_PRESET_MODE_FROST_PROTECTION];
-        }
+        // The hand-rolled frost→frost_protection alias that used to live here
+        // is one entry of PRESET_STYLE_KEYS now, and it covers the colour too.
         return {
           id: mode,
           action: 'preset',
-          color: this.cardStyles?.mode?.colors?.[mode] || 'var(--sf-primary)',
-          icon: icon,
+          color: this.__modeColor(mode),
+          icon: this.__modeIcon(mode),
           text: this.__getLabel(mode),
         };
       });
@@ -347,8 +423,8 @@ export class SciFiRadiator extends LitElement {
         return {
           id: hvac_mode,
           action: 'mode',
-          color: this.cardStyles?.state?.colors?.[hvac_mode] || 'var(--sf-primary)',
-          icon: this.cardStyles?.state?.icons?.[hvac_mode] || 'mdi:information-off-outline',
+          color: this.__stateColor(hvac_mode),
+          icon: this.__stateIcon(hvac_mode),
           text: this.__getLabel(hvac_mode),
         };
       });

@@ -344,7 +344,14 @@ declare config: SciFiVehiclesConfig;
 @state() private _selected_temp_id: number = 2; // default = 18°C (index 2 in 16–25°C range)
 @state() private _is_ac_loading: boolean = false;
 ```
-> The temperature items reference `this.hass` for the unit symbol. They are rebuilt in `renderCard()` to always reflect current hass unit system. They should NOT be cached as a class-level constant (unit could theoretically change).
+> **The temperature items are labelled in Celsius on every unit system**, and
+> `renault.ac_start` receives that same number (AP#5). The wheel used to take
+> its unit symbol from `hass.config.unit_system.temperature` while the payload
+> stayed `_selected_temp_id + 16`, so an imperial household read "16 °F" and the
+> car was asked for 16 °C — the label and the payload disagreed by 45 degrees.
+> Celsius is the API's unit, so it is the wheel's unit: what is shown is what is
+> sent. Converting for display instead was weighed and rejected (one conversion
+> to keep correct, for a wheel of ten fixed values).
 
 ### renderCard() — layout structure
 
@@ -501,7 +508,7 @@ private _toast(error: boolean, text: string): void {
 | `isLocked` | `hass.states[v.lock_status]?.state` (`'locked'` → true, else false) | boolean |
 | `rawBattery` | `parseFloat(hass.states[v.battery_level]?.state)` | number or NaN |
 | `batteryLevel` | `Math.round(rawBattery / 10) * 10` | 0–100 in steps of 10 |
-| `batteryColor` | `rawBattery >= 60 → 'green'`, `rawBattery >= 20 → 'orange'`, `rawBattery < 20 → 'red'` | string |
+| `batteryColor` | `batteryLevel >= 60 → 'green'`, `batteryLevel >= 20 → 'orange'`, `batteryLevel < 20 → 'red'` — on the ROUNDED level, so the colour agrees with the icon. This row used to threshold `rawBattery`, contradicting both § Cross-Spec Contracts and AP#3, and painting 19.6 % red while the icon read `mdi:battery-20`. | string |
 | `chargeState` | `hass.states[v.charge_state]?.state` | string |
 | `plugState` | `hass.states[v.plug_state]?.state` | string |
 | `location` | `hass.states[v.location]?.state ?? 'unavailable'` | string |
@@ -661,9 +668,10 @@ The component CSS is ported 1:1 from 'main:src/components/landspeeder/style.js',
 | Error | Detection | Response | Fallback |
 |---|---|---|---|
 | No `hass` | `SciFiBaseCard` guard before `renderCard()` | Returns empty template | Transparent empty card |
-| No `vehicles` in config | `this.config.vehicles` empty array or missing | `renderCard()` returns `html\`<div>No vehicles configured</div>\`` | Message shown |
+| No `vehicles` in config | `this.config.vehicles` empty array or missing | `renderCard()` returns an `<ha-card>` holding `html\`<div class="empty-message">${msg('No vehicle configured')}</div>\`` — localized, and inside the card chrome like every other state. The class matches the climates card's own empty state. | Message shown |
 | Sensor entity not found in `hass.states` | `hass.states[entityId]?.state` undefined | Return `nothing` for that panel | Panel simply hidden |
-| `_active_vehicle_id` out of bounds | Can't happen: prev/next are bounded to `config.vehicles.length - 1` | — | — |
+| Sensor **not configured at all** on the vehicle | the config key itself is absent (`!v.lock_status`, `!v.fuel_autonomy && !v.fuel_quantity`) | Return `nothing` for that panel, per AP#8 | Panel absent. It is NOT rendered in its "off" appearance: an unconfigured lock sensor was painted identically to a vehicle standing unlocked, and the fuel panel printed `--` instead of disappearing. |
+| `_active_vehicle_id` out of bounds | **It can happen**, and this row used to deny it: prev/next are bounded, but an EDIT that shortens `config.vehicles` leaves the index past the new end. `willUpdate()` clamps it to 0 whenever it exceeds `length - 1`. | Clamped to the first vehicle | First vehicle shown, no error card |
 | AC service call fails | `.catch((e) => this._toast(true, e.message))` | Toast error message shown | User notified |
 | GPS latitude null | `_openLocation` checks `gps?.latitude === null` | No-op — button click ignored | No map opened |
 | Battery level NaN | `isNaN(parseFloat(...))` | Battery panel hidden (`return nothing`) | No broken display |

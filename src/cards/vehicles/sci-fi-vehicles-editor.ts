@@ -39,6 +39,10 @@ const VEHICLE_FIELDS: ReadonlyArray<readonly [keyof SciFiVehicleEntry, string, s
   ['battery_autonomy',        'vehicle-sensor', 'input-battery-autonomy',        'mdi:ev-station'],
   ['battery_level',           'vehicle-sensor', 'input-battery-level',           'mdi:battery-medium'],
   ['charging',                'vehicle-sensor', 'input-charging-state',          'mdi:ev-plug-type2'],
+  // charge_state is declared in config.ts, read by sf-landspeeder:468, iterated
+  // by getRelevantEntities and documented — but had no row here, so a config
+  // built in the UI could never fill the charge line.
+  ['charge_state',            'vehicle-sensor', 'input-charge-state',            'mdi:battery-charging'],
   ['plug_state',              'vehicle-sensor', 'input-plug-state',              'mdi:power-plug-outline'],
   ['charging_remaining_time', 'vehicle-sensor', 'input-remainting-charging-time','mdi:clock-fast'],
 ];

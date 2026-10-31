@@ -114,14 +114,20 @@ describe('sci-fi-tv-editor', () => {
   });
 
   // TC-714
-  it('renders 11 sf-editor-action components for custom_actions', async () => {
+  it('renders one sf-editor-action per button the card actually renders', async () => {
     const el = await createElement();
     el.setConfig(makeConfig());
     await el.updateComplete;
-    
-    // The accordion for Custom Actions should contain 11 sf-editor-action components
+
+    // 10: the 8 D-pad and supplementary buttons, plus power and volume_mute.
+    // `info` is deliberately absent — no info button exists to bind — and the
+    // confirm selector replaces the `enter` one the card never read.
     const actionEditors = el.shadowRoot!.querySelectorAll('sf-editor-action');
-    expect(actionEditors.length).toBe(11);
+    expect(actionEditors.length).toBe(10);
+    const ids = [...actionEditors].map(e => e.getAttribute('element-id'));
+    expect(ids).to.include('confirm');
+    expect(ids).to.not.include('enter');
+    expect(ids).to.not.include('info');
   });
 
   // TC-715
@@ -243,5 +249,89 @@ describe('sci-fi-tv-editor', () => {
 
     expect(received).toHaveLength(1);
     expect(received[0]!.detail.config.volume_entity).toBe('media_player.sony_vol');
+  });
+
+  // ── O2 / review round 1: the legacy `enter` binding must be removable ─────
+
+  describe('legacy enter binding', () => {
+    const LEGACY = { action: 'call-service', service: 'script.legacy' };
+
+    const armWithLegacyEnter = async () => {
+      const el = await createElement();
+      el.hass = makeMockHass() as HomeAssistantExt;
+      el.setConfig(makeConfig({ custom_actions: { enter: LEGACY } }));
+      await el.updateComplete;
+      const received: CustomEvent[] = [];
+      el.addEventListener('config-changed', e => received.push(e as CustomEvent));
+      const confirmSelector = el.shadowRoot!.querySelector(
+        'sf-editor-action[element-id="confirm"]'
+      )!;
+      return { el, received, confirmSelector };
+    };
+
+    it('shows a legacy enter binding under the confirm selector', async () => {
+      const { confirmSelector } = await armWithLegacyEnter();
+      expect((confirmSelector as any).value).to.deep.equal(LEGACY);
+    });
+
+    /**
+     * `enter` has no selector of its own any more, so this handler is the only
+     * code that can delete it. Without that, clearing confirm left `enter` in
+     * the config and the selector re-displayed it on the next render: the action
+     * came back after being deleted.
+     */
+    it('clears the legacy enter binding when the confirm selector is cleared', async () => {
+      const { received, confirmSelector } = await armWithLegacyEnter();
+
+      confirmSelector.dispatchEvent(
+        new CustomEvent('input-update', {
+          detail: { id: 'confirm', value: undefined },
+          bubbles: true,
+          composed: true,
+        })
+      );
+
+      expect(received).toHaveLength(1);
+      expect(received[0]!.detail.config.custom_actions).to.be.undefined;
+    });
+
+    it('migrates off enter when the confirm selector is given a new action', async () => {
+      const { received, confirmSelector } = await armWithLegacyEnter();
+      const fresh = { action: 'call-service', service: 'script.fresh' };
+
+      confirmSelector.dispatchEvent(
+        new CustomEvent('input-update', {
+          detail: { id: 'confirm', value: fresh },
+          bubbles: true,
+          composed: true,
+        })
+      );
+
+      expect(received).toHaveLength(1);
+      const actions = received[0]!.detail.config.custom_actions;
+      expect(actions.confirm).to.deep.equal(fresh);
+      expect(actions, 'enter must not survive beside confirm').to.not.have.property('enter');
+    });
+
+    it('leaves other bindings alone while clearing enter', async () => {
+      const el = await createElement();
+      el.hass = makeMockHass() as HomeAssistantExt;
+      el.setConfig(makeConfig({ custom_actions: { enter: LEGACY, home: LEGACY } }));
+      await el.updateComplete;
+      const received: CustomEvent[] = [];
+      el.addEventListener('config-changed', e => received.push(e as CustomEvent));
+
+      el.shadowRoot!
+        .querySelector('sf-editor-action[element-id="confirm"]')!
+        .dispatchEvent(
+          new CustomEvent('input-update', {
+            detail: { id: 'confirm', value: undefined },
+            bubbles: true,
+            composed: true,
+          })
+        );
+
+      expect(received[0]!.detail.config.custom_actions).to.deep.equal({ home: LEGACY });
+    });
   });
 });

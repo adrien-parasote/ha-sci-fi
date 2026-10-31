@@ -498,4 +498,80 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
     // Do not call setConfig
     expect(el.getCardSize()).to.equal(3);
   });
+
+  // ── O6: bounds and the AC payload ─────────────────────────────────────────
+
+  describe('O6 — bounds and AC temperature (regression)', () => {
+    const VEHICLE_A = { id: 'a', name: 'Zoe' };
+    const VEHICLE_B = { id: 'b', name: 'Twingo' };
+
+    /**
+     * makeMockHass builds no `config` key and ignores one passed in its
+     * overrides, so `hass.config.unit_system` has to be grafted on afterwards.
+     * Passing it to the factory leaves the card reading `undefined`, which its
+     * `?? '°C'` fallback turns into Celsius — the old code would then pass an
+     * "imperial" test without ever being imperial.
+     */
+    const mount = async (vehicles: object[], callService = vi.fn().mockResolvedValue({})) => {
+      const el = document.createElement('sci-fi-vehicles') as SciFiVehiclesCard;
+      (el as any).setConfig({ type: 'custom:sci-fi-vehicles', vehicles });
+      const hass = makeMockHass({ callService, states: {} });
+      (hass as any).config = { unit_system: { temperature: '°F' } };
+      el.hass = hass;
+      document.body.appendChild(el);
+      await el.updateComplete;
+      return { el, callService };
+    };
+
+    // The suite runs under the fr locale, so this doubles as the proof that the
+    // string went through the xliff rather than shipping as an English literal
+    // on a French dashboard (review round 1, HIGH).
+    it('says so in the active locale instead of erroring when no vehicle is configured', async () => {
+      const { el } = await mount([]);
+      expect(el.shadowRoot!.querySelector('.sf-error-card')).to.be.null;
+      expect(el.shadowRoot!.textContent).to.include('Aucun véhicule configuré');
+    });
+
+    it('clamps the active vehicle when the list shrinks', async () => {
+      const { el } = await mount([VEHICLE_A, VEHICLE_B]);
+      (el as any)._active_vehicle_id = 1;
+      await el.updateComplete;
+
+      (el as any).setConfig({ type: 'custom:sci-fi-vehicles', vehicles: [VEHICLE_A] });
+      el.requestUpdate();
+      await el.updateComplete;
+
+      expect((el as any)._active_vehicle_id).to.equal(0);
+      expect(el.shadowRoot!.querySelector('.sf-error-card')).to.be.null;
+      expect(el.shadowRoot!.querySelector('.header .title')!.textContent).to.include('Zoe');
+    });
+
+    // VE-15: whatever the unit system, the wheel is Celsius, because Celsius is
+    // what renault.ac_start receives. Label and payload must agree.
+    it('labels the temperature wheel in Celsius even in an imperial system', async () => {
+      const { el } = await mount([VEHICLE_A]);
+      const wheel = el.shadowRoot!.querySelector('sf-wheel') as any;
+      expect(wheel.items[0].text).to.equal('16 °C');
+      expect(wheel.items[9].text).to.equal('25 °C');
+      expect(wheel.items.map((i: any) => i.text).join(' ')).to.not.include('°F');
+    });
+
+    it('sends the temperature it displayed', async () => {
+      const { el, callService } = await mount([VEHICLE_A]);
+      (el as any)._selected_temp_id = 4;
+      await el.updateComplete;
+
+      const wheel = el.shadowRoot!.querySelector('sf-wheel') as any;
+      const shown = wheel.items[4].text;
+
+      (el as any)._startAc(VEHICLE_A);
+
+      expect(callService).toHaveBeenCalledWith(
+        'renault',
+        'ac_start',
+        expect.objectContaining({ vehicle: 'a', temperature: 20 })
+      );
+      expect(shown).to.equal('20 °C');
+    });
+  });
 });

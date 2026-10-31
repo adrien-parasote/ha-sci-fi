@@ -82,8 +82,25 @@ export interface SciFiTVCustomActions {
   readonly back?: LovelaceAction;
   readonly home?: LovelaceAction;
   readonly menu?: LovelaceAction;
+  readonly power?: LovelaceAction;      // header power button
+  readonly volume_mute?: LovelaceAction;// mute button under the dial
+  readonly enter?: LovelaceAction;      // read-only alias of `confirm` (ADR-005)
+  readonly info?: LovelaceAction;       // accepted, bound to no button — see ha-sci-fi-ecr
 }
+```
 
+**`enter` is an alias, not a second binding.** The editor wrote `enter` for the
+button this card renders as `confirm`, so saved dashboards carry both spellings.
+The confirm button reads `confirm ?? enter`; new config is written as `confirm`.
+ADR-005 forbids dropping `enter` from the accepted YAML.
+
+**`volume_mute` without a custom action** calls
+`media_player.volume_mute` on `volume_entity || entity`, with `is_volume_muted`
+set to the negation of the entity's current value — the same service surface the
+dial uses for `volume_set`. It is NOT a `remote.send_command` key: `D_PAD_KEYS`
+holds the eight D-pad and supplementary commands and nothing else.
+
+```typescript
 export interface SciFiTVConfig extends LovelaceCardConfig {
   readonly type: 'custom:sci-fi-tv';
   readonly entity: string;                    // Required: media_player (e.g. media_player.bravia_4k_vh22)
@@ -203,7 +220,8 @@ The `custom:sci-fi-tv-editor` relies exclusively on the components established i
    - Uses a new `<sf-editor-source-list>` component. Supports defining arrays of `{ name: string, action: string, service?: string, ... }`.
    - Wraps HA's native action editor.
 4. **Custom Actions (Accordion)**
-   - Exposes 8 action selectors (`<sf-editor-action>`) corresponding to the D-pad and supplementary buttons (`up`, `down`, `left`, `right`, `confirm`, `back`, `home`, `menu`).
+   - Exposes 10 action selectors (`<sf-editor-action>`), one per button the card renders: the D-pad and supplementary buttons (`up`, `down`, `left`, `right`, `confirm`, `back`, `home`, `menu`), the header `power` button and the `volume_mute` button under the dial.
+   - A selector is offered only for a button that exists. `info` is accepted in the YAML but has no button, so it gets no selector; the `confirm` selector shows `confirm ?? enter` so a dashboard saved with the old `enter` spelling still displays its binding.
 5. **Action Editor Component (`<sf-editor-action>`)**
    - A wrapper around Home Assistant's native `<ha-selector .selector=${{ action: {} }}>` to ensure 100% compatibility with the Lovelace Action schema.
    - Includes a graceful fallback UI (JSON text area or disabled placeholder) for mock environments where `<ha-selector>` is absent.

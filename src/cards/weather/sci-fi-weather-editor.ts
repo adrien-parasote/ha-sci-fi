@@ -35,6 +35,9 @@ const CHART_KIND_LABELS: Record<string, string> = {
   temperature: 'Temperature',
   precipitation: 'Precipitation',
   wind: 'Wind Speed',
+  // A dashboard written by hand carries the spelling weather.md documents; the
+  // dropdown must still show its label rather than coming up blank.
+  wind_speed: 'Wind Speed',
 };
 
 @customElement('sci-fi-weather-editor')

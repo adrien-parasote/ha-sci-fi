@@ -35,5 +35,14 @@ export default {
       'sensor.mureva_evlink_current': { state: '16' },
       'sensor.mureva_evlink_power_corrected': { state: '3600' }
     },
+    // plugs.md § Adversarial Fixes 1 — the state the card used to render as a
+    // plain OFF plug with live buttons. ADR-007: the new visual lands here so
+    // it can be looked at.
+    'Ventilo injoignable': {
+      'switch.nous_ventilateur_leonard': { state: 'unavailable' }
+    },
+    'Ventilo etat inconnu': {
+      'switch.nous_ventilateur_leonard': { state: 'unknown' }
+    },
   }
 };

@@ -813,9 +813,9 @@ describe('sci-fi-tv', () => {
     expect(dialValue?.textContent?.trim()).to.equal('75%');
   });
 
-  // ── TC-739: mute button calls remote command ─────────────────────────────
+  // ── O2: the mute button's fallback service ───────────────────────────────
 
-  it('TC-739: mute button calls remote send_command volume_mute when no custom action', async () => {
+  it('O2: mute button mutes through media_player.volume_mute when no custom action', async () => {
     const callServiceMock = vi.fn().mockResolvedValue({} as any);
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
@@ -839,8 +839,13 @@ describe('sci-fi-tv', () => {
     expect(muteBtn).to.exist;
     muteBtn.click();
 
-    // volume_mute is not in D_PAD_KEYS so commandString is undefined but callService should be called
-    expect(callServiceMock).toHaveBeenCalled();
+    // The mute button is a volume control, not a D-pad key: it goes to
+    // media_player.volume_mute (the service docs/cards/tv.md itself shows) and
+    // never to remote.send_command, where its command string would be undefined.
+    expect(callServiceMock).toHaveBeenCalledWith('media_player', 'volume_mute', {
+      entity_id: 'media_player.bravia_4k_vh22',
+      is_volume_muted: true,
+    });
   });
 
   // ── IT-704: volume throttling ─────────────────────────────────────────────
@@ -879,5 +884,137 @@ describe('sci-fi-tv', () => {
     } finally {
       nowSpy.mockRestore();
     }
+  });
+
+  // ── O2: the keys docs/cards/tv.md advertises must all be honoured ─────────
+
+  describe('O2 — advertised custom_actions keys (regression)', () => {
+    const mount = async (config: Record<string, unknown>, extraStates = {}) => {
+      const fireMock = vi.fn();
+      const callServiceMock = vi.fn().mockResolvedValue({} as any);
+      const el = document.createElement('sci-fi-tv') as SciFiTVCard;
+      (el as any).setConfig({
+        type: 'custom:sci-fi-tv',
+        entity: 'media_player.bravia_4k_vh22',
+        ...config,
+      });
+      el.hass = makeMockHass({
+        callService: callServiceMock,
+        states: {
+          'media_player.bravia_4k_vh22': makeMockEntity({
+            entity_id: 'media_player.bravia_4k_vh22',
+            state: 'on',
+          }),
+          'remote.bravia': makeMockEntity({ entity_id: 'remote.bravia', state: 'on' }),
+          ...extraStates,
+        },
+      });
+      el.addEventListener('hass-action', fireMock);
+      document.body.appendChild(el);
+      await el.updateComplete;
+      return { el, callServiceMock, fireMock };
+    };
+
+    // The editor writes `enter`; the card renders the button as `confirm`.
+    // Both spellings reach real dashboards, so both must fire the action.
+    it('fires the custom action bound to enter on the confirm button', async () => {
+      const { el, callServiceMock } = await mount({
+        remote_entity: 'remote.bravia',
+        custom_actions: {
+          enter: { action: 'call-service', service: 'script.my_confirm' },
+        },
+      });
+
+      (el.shadowRoot!.querySelector('.btn-confirm') as HTMLElement).click();
+
+      // A custom action takes the fireHassAction path, so no remote command
+      // must be sent — that is what proves the binding was seen.
+      expect(callServiceMock).not.toHaveBeenCalledWith(
+        'remote',
+        'send_command',
+        expect.anything()
+      );
+    });
+
+    it('still sends the Confirm remote command when nothing is bound', async () => {
+      const { el, callServiceMock } = await mount({ remote_entity: 'remote.bravia' });
+
+      (el.shadowRoot!.querySelector('.btn-confirm') as HTMLElement).click();
+
+      expect(callServiceMock).toHaveBeenCalledWith('remote', 'send_command', {
+        entity_id: 'remote.bravia',
+        command: 'Confirm',
+      });
+    });
+
+    it('honours the custom action bound to power instead of toggling the entity', async () => {
+      const { el, callServiceMock } = await mount({
+        custom_actions: {
+          power: { action: 'call-service', service: 'script.my_power' },
+        },
+      });
+
+      (el.shadowRoot!.querySelector('.header-power') as HTMLElement).click();
+
+      expect(callServiceMock).not.toHaveBeenCalledWith(
+        'media_player',
+        'turn_off',
+        expect.anything()
+      );
+    });
+
+    it('unmutes when the entity reports itself muted', async () => {
+      const { el, callServiceMock } = await mount(
+        { volume_entity: 'media_player.soundbar' },
+        {
+          'media_player.soundbar': makeMockEntity({
+            entity_id: 'media_player.soundbar',
+            state: 'on',
+            attributes: { volume_level: 0.4, is_volume_muted: true },
+          }),
+        }
+      );
+
+      (el.shadowRoot!.querySelector('.mute-btn') as HTMLElement).click();
+
+      expect(callServiceMock).toHaveBeenCalledWith('media_player', 'volume_mute', {
+        entity_id: 'media_player.soundbar',
+        is_volume_muted: false,
+      });
+    });
+
+    // Review round 1: the custom-action arm of _handleMuteClick had no probe —
+    // its mutant survived. A binding on volume_mute must take the action path
+    // and send no service call of the card's own.
+    it('fires the custom action bound to volume_mute instead of muting', async () => {
+      const { el, callServiceMock } = await mount({
+        custom_actions: {
+          volume_mute: { action: 'call-service', service: 'script.my_mute' },
+        },
+      });
+
+      (el.shadowRoot!.querySelector('.mute-btn') as HTMLElement).click();
+
+      expect(callServiceMock).not.toHaveBeenCalledWith(
+        'media_player',
+        'volume_mute',
+        expect.anything()
+      );
+    });
+
+    it('repaints when app_entity changes, since the card reads it', async () => {
+      const { el } = await mount(
+        { app_entity: 'media_player.chromecast' },
+        {
+          'media_player.chromecast': makeMockEntity({
+            entity_id: 'media_player.chromecast',
+            state: 'playing',
+            attributes: { app_name: 'Netflix' },
+          }),
+        }
+      );
+
+      expect((el as any).getRelevantEntities()).to.include('media_player.chromecast');
+    });
   });
 });

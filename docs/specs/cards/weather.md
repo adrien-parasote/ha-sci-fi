@@ -15,7 +15,12 @@ interface SciFiWeatherAlertConfig {
 interface SciFiWeatherConfig {
   readonly weather_entity: string;                          // ← "weather_entity" (NOT weather_entity_id)
   readonly weather_daily_forecast_limit?: number;           // range [0, 15], default: 10
-  readonly chart_first_kind_to_render?: 'temperature' | 'precipitation' | 'wind';
+  readonly chart_first_kind_to_render?: 'temperature' | 'precipitation' | 'wind' | 'wind_speed';
+                                                            // ← 'wind' is the v0.9.6 spelling the editor
+                                                            //   writes; 'wind_speed' is the runtime series
+                                                            //   key. Both are read (ADR-005), and an
+                                                            //   unknown value falls back to 'temperature'
+                                                            //   rather than throwing through render.
   readonly alert?: SciFiWeatherAlertConfig;                 // ← DO NOT REMOVE
 }
 ```

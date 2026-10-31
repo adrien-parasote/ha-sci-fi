@@ -23,6 +23,7 @@ export function vehiclesLabels(): Record<string, string> {
     'input-battery-autonomy': msg('Battery autonomy'),
     'input-battery-level': msg('Battery level'),
     'input-charging-state': msg('Charging'),
+    'input-charge-state': msg('Charge state'),
     'input-plug-state': msg('Plug state'),
     'input-remainting-charging-time': msg('Remaining charging time'),
     'action-add-vehicle': msg('Add vehicle'),

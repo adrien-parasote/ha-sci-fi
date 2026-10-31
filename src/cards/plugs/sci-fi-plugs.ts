@@ -34,6 +34,13 @@ import type { ButtonSelectItem } from '../../components/buttons/sf-button-card-s
 
 const TAG = 'sci-fi-plugs';
 
+/** F-PLG-D04: the power chart shows the last 24 hours. */
+const HISTORY_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+// plugs.md § Adversarial Fixes 2 also asks for a 2 s budget on the history
+// call, along with the loading and error states. None of it exists here —
+// see ha-sci-fi-8ap, which carries why three attempts were reverted.
+
 @customElement(TAG)
 export class SciFiPlugsCard extends SciFiBaseCard {
   static override styles = [sciFiCommonStyles, plugStyles];
@@ -68,6 +75,44 @@ export class SciFiPlugsCard extends SciFiBaseCard {
 
   // ── Lifecycle ───────────────────────────────────────────────────────────────
 
+  /**
+   * An edit that shortens `devices` leaves the selected index out of bounds,
+   * and _renderHeader then dereferences undefined — the whole card becomes the
+   * error card. The vacuum card specifies this clamp (TC-1530); the plugs spec
+   * declared the case impossible instead.
+   */
+  override willUpdate(changedProperties: Map<string | number | symbol, unknown>): void {
+    super.willUpdate(changedProperties);
+    const count = this.config?.devices?.length ?? 0;
+    if (count === 0) return;
+    if (this._selected_plug_id > count - 1 || this._selected_plug_id < 0) {
+      this._selected_plug_id = 0;
+    }
+  }
+
+  /**
+   * The chart's loading strategy is the one this card shipped with, and it is
+   * left alone deliberately — see ha-sci-fi-8ap.
+   *
+   * plugs.md:930 (F-PLG-AF2) owes this section a loading state, an error state
+   * and a 2 s budget, and none of the three has ever existed here. Three
+   * attempts to add them inside this lot each produced a worse defect than the
+   * one they fixed: a load re-fired by every power reading (found in review
+   * round 3), then a load that never fires at all when the card becomes able to
+   * load after its first render — including in the mount order the workbench
+   * itself uses — and a loading flag shared across plugs that drew one plug's
+   * history under another plug's name (both found in round 5).
+   *
+   * What those findings ask for is a per-plug attempt latch, invalidation on a
+   * config change, and an ownership invariant on the async response: a shape to
+   * design, not a line to correct. That is the bead's work, with the five
+   * findings as its brief.
+   *
+   * The known defect this leaves standing is round 1's: `_chartLoaded` is set
+   * before the call, so a failure retires the only retry trigger and a
+   * single-plug dashboard loses its chart for the card's lifetime. It is in the
+   * bead too. It is the delivered behaviour, not a regression.
+   */
   protected override updated(changedProperties: Map<string | number | symbol, unknown>): void {
     super.updated(changedProperties);
     // Load chart only on:
@@ -113,6 +158,7 @@ export class SciFiPlugsCard extends SciFiBaseCard {
   private _renderHeader(device: SciFiPlugDevice): TemplateResult {
     const switchState = this.hass.states[device.entity_id];
     const isOn = switchState?.state === PLUG_STATE_ON;
+    const isUnavailable = this._isUnavailable(device);
     const name = device.name ?? (switchState?.attributes as any)?.friendly_name ?? device.entity_id;
 
     // Device registry lookup (area icon + model/manufacturer)
@@ -129,10 +175,23 @@ export class SciFiPlugsCard extends SciFiBaseCard {
         <sf-icon icon="${areaIcon}" class="${isOn ? 'on' : ''}" .connection="${this.hass.connection}"></sf-icon>
         <div class="info">
           <div class="title ${isOn ? 'on' : ''}">${name}</div>
-          ${subTitle ? html`<div class="sub-title">${subTitle}</div>` : nothing}
+          ${isUnavailable
+            ? html`<div class="offline-tag">${msg('OFFLINE')}</div>`
+            : subTitle ? html`<div class="sub-title">${subTitle}</div>` : nothing}
         </div>
       </div>
     `;
+  }
+
+  /**
+   * plugs.md § Adversarial Fixes 1: an `unavailable` or `unknown` plug must be
+   * visibly offline and non-interactive. Rendering it as a plain OFF plug with
+   * live buttons told the user the socket was reachable and switched off.
+   * A missing state object is the same situation from the card's point of view.
+   */
+  private _isUnavailable(device: SciFiPlugDevice): boolean {
+    const state = this.hass.states[device.entity_id]?.state;
+    return state === undefined || state === 'unavailable' || state === 'unknown';
   }
 
   // ── Content ────────────────────────────────────────────────────────────────
@@ -155,7 +214,7 @@ export class SciFiPlugsCard extends SciFiBaseCard {
       <div class="content">
         <div class="info">
           ${this._renderImage(isOn, icon, device)}
-          ${this._renderSensors(visibleSensors)}
+          ${this._renderSensors(visibleSensors, this._isUnavailable(device))}
         </div>
         <div class="chart-bottom">
           <div class="msg-container"></div>
@@ -169,9 +228,23 @@ export class SciFiPlugsCard extends SciFiBaseCard {
   // ── Image zone ─────────────────────────────────────────────────────────────
 
   private _renderImage(isOn: boolean, icon: string, device: SciFiPlugDevice): TemplateResult {
+    const isUnavailable = this._isUnavailable(device);
+    // Both containers carry the state class: only `.cirle-container.off` stops
+    // the animation (styles.ts), so leaving the left one bare animated the
+    // cable of a plug that was switched off (plugs.md:522).
+    //
+    // `isOn` alone covers the unavailable case: it is `state === 'on'`, and
+    // _isUnavailable is `state` undefined / 'unavailable' / 'unknown', so the
+    // two are mutually exclusive. The `&& !isUnavailable` this once carried was
+    // dead logic — a mutation removing it could not be killed by any test,
+    // because it changed nothing.
+    const cableClass = isOn ? '' : 'off';
     return html`
-      <div class="image" @click="${() => this._toggle(device)}">
-        <div class="cirle-container">
+      <div
+        class="image ${isUnavailable ? 'unavailable' : ''}"
+        @click="${() => this._toggle(device)}"
+      >
+        <div class="cirle-container ${cableClass}">
           <div class="circle"></div>
         </div>
         <div class="icon-container">
@@ -186,7 +259,7 @@ export class SciFiPlugsCard extends SciFiBaseCard {
             .connection="${this.hass.connection}"
           ></sf-icon>
         </div>
-        <div class="cirle-container ${isOn ? 'on' : 'off'}">
+        <div class="cirle-container ${cableClass}">
           <div class="circle"></div>
         </div>
       </div>
@@ -196,7 +269,8 @@ export class SciFiPlugsCard extends SciFiBaseCard {
   // ── Sensors ────────────────────────────────────────────────────────────────
 
   private _renderSensors(
-    visibleSensors: [string, SciFiPlugSensorEntry][]
+    visibleSensors: [string, SciFiPlugSensorEntry][],
+    isUnavailable: boolean
   ): TemplateResult {
     if (!visibleSensors.length) return html``;
     return html`
@@ -207,8 +281,16 @@ export class SciFiPlugsCard extends SciFiBaseCard {
             const sensorState = this.hass.states[entityId];
             if (!sensorState) return nothing;
             const domain = entityId.split('.')[0]!;
-            if (domain === 'select') return this._renderSelectSensor(entityId, entry, sensorState);
-            if (domain === 'switch') return this._renderLockSensor(entityId, entry, sensorState);
+            // plugs.md § Adversarial Fixes 1 says "disable interaction buttons",
+            // plural: the child-lock toggle and the select dropdown are
+            // interaction buttons too, and stayed live while the socket was
+            // unreachable (review round 1).
+            if (domain === 'select') {
+              return this._renderSelectSensor(entityId, entry, sensorState, isUnavailable);
+            }
+            if (domain === 'switch') {
+              return this._renderLockSensor(entityId, entry, sensorState, isUnavailable);
+            }
             return this._renderValueSensor(entityId, entry, sensorState);
           })}
       </div>
@@ -219,7 +301,8 @@ export class SciFiPlugsCard extends SciFiBaseCard {
   private _renderSelectSensor(
     entityId: string,
     entry: SciFiPlugSensorEntry,
-    sensorState: any
+    sensorState: any,
+    isUnavailable = false
   ): TemplateResult {
     const label = entry.name ?? sensorState.attributes?.friendly_name ?? entityId;
     const icon = entry.icon ?? 'mdi:format-list-bulleted';
@@ -230,15 +313,25 @@ export class SciFiPlugsCard extends SciFiBaseCard {
       text: o,
       icon: 'mdi:circle-medium',
     }));
+    // `?disabled` is the right attribute and is kept, but neither
+    // sf-button-card-select nor sf-button-card reads it today (the select
+    // overrides clickBtn without a guard, the card has no disabled handling at
+    // all) — both are out of this lot's diff. The `inert` class on the wrapper
+    // is what actually stops the interaction and dims the control, so an
+    // offline plug does not merely refuse a click it still invites.
     return html`
-      <div class="sensor">
+      <div class="sensor ${isUnavailable ? 'inert' : ''}">
         <sf-button-card-select
           icon="${icon}"
           label="${label}"
           text="${currentValue}"
-          .items="${items}"
+          .items="${isUnavailable ? [] : items}"
           position="top"
-          @button-select="${(e: CustomEvent) => this._onSelectChange(e, entityId)}"
+          ?disabled="${isUnavailable}"
+          @button-select="${(e: CustomEvent) => {
+            if (isUnavailable) return;
+            this._onSelectChange(e, entityId);
+          }}"
         ></sf-button-card-select>
       </div>
     `;
@@ -248,20 +341,25 @@ export class SciFiPlugsCard extends SciFiBaseCard {
   private _renderLockSensor(
     entityId: string,
     entry: SciFiPlugSensorEntry,
-    sensorState: any
+    sensorState: any,
+    isUnavailable = false
   ): TemplateResult {
     const label = entry.name ?? sensorState.attributes?.friendly_name ?? entityId;
     const icon = entry.icon ?? 'mdi:lock-outline';
     const isOn = sensorState.state === 'on';
     return html`
-      <div class="sensor">
+      <div class="sensor ${isUnavailable ? 'inert' : ''}">
         <sf-icon icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
         <div class="name">${label}</div>
         <div class="value">
           <sf-button-card
             no-title
             text="${this._getPlugStateLabel(isOn)}"
-            @button-click="${() => this._onLockToggle(entityId)}"
+            ?disabled="${isUnavailable}"
+            @button-click="${() => {
+              if (isUnavailable) return;
+              this._onLockToggle(entityId);
+            }}"
           ></sf-button-card>
         </div>
       </div>
@@ -351,7 +449,7 @@ export class SciFiPlugsCard extends SciFiBaseCard {
   // ── Toggle ─────────────────────────────────────────────────────────────────
 
   private _toggle(device: SciFiPlugDevice): void {
-    if (!device.entity_id || !this.hass.states[device.entity_id]) return;
+    if (!device.entity_id || this._isUnavailable(device)) return;
     const isOn = this.hass.states[device.entity_id]?.state === PLUG_STATE_ON;
     void this.hass
       .callService(
@@ -388,11 +486,11 @@ export class SciFiPlugsCard extends SciFiBaseCard {
     }
 
     try {
-      const yesterday = this._getYesterday();
+      const start = this._historyStart();
       // [unverified — query params ported from main:src/helpers/entities/plug/plug.js]
       const data = await (this.hass as any).callApi(
         'GET',
-        `history/period/${yesterday}?minimal_response=true&no_attributes=true&significant_changes_only=false&filter_entity_id=${powerEntityId}`
+        `history/period/${start}?minimal_response=true&no_attributes=true&significant_changes_only=false&filter_entity_id=${powerEntityId}`
       ) as unknown[][];
 
       const history = this._parseHistory(data[0] ?? []);
@@ -459,10 +557,14 @@ export class SciFiPlugsCard extends SciFiBaseCard {
     });
   }
 
-  private _getYesterday(): string {
-    const d = new Date();
-    d.setDate(d.getDate() - 1);
-    return d.toISOString().split('T')[0]!;
+  /**
+   * F-PLG-D04 asks for the last 24 hours. A bare `YYYY-MM-DD` means midnight
+   * yesterday, so the window was 24 hours wide at midnight and 48 just before
+   * it — never the 24 rolling hours the chart claims to show. A full ISO
+   * timestamp pins the start exactly 24 hours back.
+   */
+  private _historyStart(): string {
+    return new Date(Date.now() - HISTORY_WINDOW_MS).toISOString();
   }
 
   private _drawChart(datasets: unknown[], labels: string[]): void {

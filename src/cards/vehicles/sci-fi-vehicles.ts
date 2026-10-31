@@ -24,6 +24,13 @@ import '../../components/buttons/sf-button.js';
 
 const TAG = 'sci-fi-vehicles';
 
+/**
+ * `renault.ac_start` takes Celsius (vehicles.md AP#5), so the wheel is Celsius
+ * on every unit system — the label and the payload are the same number.
+ */
+const AC_TEMP_MIN_C = 16;
+const AC_TEMP_UNIT = '°C';
+
 @customElement(TAG)
 export class SciFiVehiclesCard extends SciFiBaseCard {
   static override styles = [sciFiCommonStyles, vehicleStyles];
@@ -57,7 +64,32 @@ export class SciFiVehiclesCard extends SciFiBaseCard {
   @state() private _selected_temp_id: number = 2; // default 18°C
   @state() private _is_ac_loading: boolean = false;
 
+  /**
+   * VE-06: nothing clamped this index, so deleting a vehicle in the editor left
+   * it out of bounds and `config.vehicles[id]!` handed `undefined` to the header
+   * and the landspeeder — the whole card became the generic error card. The
+   * Error Handling line that declared the case impossible was simply wrong.
+   */
+  override willUpdate(changedProperties: Map<string | number | symbol, unknown>): void {
+    super.willUpdate(changedProperties);
+    const count = this.config?.vehicles?.length ?? 0;
+    if (count === 0) return;
+    if (this._active_vehicle_id > count - 1 || this._active_vehicle_id < 0) {
+      this._active_vehicle_id = 0;
+    }
+  }
+
   protected override renderCard(): TemplateResult {
+    // VE-05: both :80 and :86 dereferenced vehicles[...] directly, so an empty
+    // list reached the error card instead of saying what was missing.
+    if (!this.config.vehicles?.length) {
+      return html`
+        <ha-card>
+          <div class="empty-message">${msg('No vehicle configured')}</div>
+        </ha-card>
+      `;
+    }
+
     return html`
       <ha-card>
         <div class="container">
@@ -105,11 +137,13 @@ export class SciFiVehiclesCard extends SciFiBaseCard {
 
   private _renderActions(): TemplateResult {
     const v = this.config.vehicles[this._active_vehicle_id]!;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const tempUnit = (this.hass as any).config?.unit_system?.temperature ?? '°C';
+    // VE-15: the wheel used to label its items with hass.config.unit_system
+    // while the payload stayed `_selected_temp_id + 16` — so an imperial user
+    // read "16 °F" and the car received 16 °C. `renault.ac_start` takes Celsius
+    // (AP#5), so the label is Celsius too: what is shown is what is sent.
     const tempItems = Array.from({ length: 10 }, (_, idx) => ({
       id: String(idx),
-      text: `${idx + 16} ${tempUnit}`,
+      text: `${idx + AC_TEMP_MIN_C} ${AC_TEMP_UNIT}`,
     }));
 
     return html`
@@ -148,7 +182,7 @@ export class SciFiVehiclesCard extends SciFiBaseCard {
 
   private _startAc(v: SciFiVehicleEntry): void {
     this._is_ac_loading = true;
-    const temperature = this._selected_temp_id + 16;
+    const temperature = this._selected_temp_id + AC_TEMP_MIN_C;
     void this.hass
       .callService(HASS_RENAULT_SERVICE, HASS_RENAULT_SERVICE_ACTION_START_AC, {
         vehicle: v.id,

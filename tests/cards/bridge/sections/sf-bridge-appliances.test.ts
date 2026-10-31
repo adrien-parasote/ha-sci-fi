@@ -9,6 +9,7 @@
 import { expect, describe, it, afterEach } from 'vitest';
 import '../../../../src/cards/bridge/sections/sf-bridge-appliances.js';
 import { makeMockHass, makeMockEntity } from '../../../fixtures/mock-hass.js';
+import { setLocale } from '../../../../src/locales/localization.js';
 
 // ── Stubs ─────────────────────────────────────────────────────────────────────
 for (const tag of ['sf-icon']) {
@@ -74,7 +75,8 @@ describe('sf-bridge-appliances', () => {
 
   // ── isCycleRunning: binary_sensor on → running ───────────────────────────
 
-  it('TC-BRIDGE-U-21: shows cycle-running when binary_sensor is on', async () => {
+  it('TC-BRIDGE-U-21: shows cycle-running and the "En cours" status when binary_sensor is on', async () => {
+    await setLocale('fr');
     const el = makeEl();
     el.config = {
       cycles: [{ entity: 'binary_sensor.washer', name: 'Washer', icon: 'mdi:washing-machine' }],
@@ -86,6 +88,10 @@ describe('sf-bridge-appliances', () => {
     await el.updateComplete;
     expect(el.shadowRoot!.querySelector('.cycle-running')).not.to.be.null;
     expect(el.shadowRoot!.querySelector('.running')).not.to.be.null;
+    // The two classes were the whole assertion; U-21 also requires the status
+    // text. It is only 'En cours' under the FR locale — msg('Running') renders
+    // as 'Running' by default, which is why the locale is forced here.
+    expect(el.shadowRoot!.querySelector('.cycle-status')!.textContent!.trim()).to.equal('En cours');
   });
 
   // ── isCycleRunning: binary_sensor off → idle ─────────────────────────────

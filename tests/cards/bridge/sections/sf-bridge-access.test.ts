@@ -256,7 +256,7 @@ describe('sf-bridge-access', () => {
     expect(btns[1].classList.contains('disabled')).to.be.false;
   });
 
-  it('TC-BRIDGE-U-29: Close button has disabled class when cover is closed', async () => {
+  it('TC-BRIDGE-U-29: Close button is disabled, and the disabled state carries its values', async () => {
     const el = makeEl();
     el.config = { items: [{ entity: 'cover.garage', name: 'Garage' }] };
     el.hass = makeHass({ 'cover.garage': makeMockEntity({ entity_id: 'cover.garage', state: 'closed' }) });
@@ -264,6 +264,14 @@ describe('sf-bridge-access', () => {
     await el.updateComplete;
     const btns = el.shadowRoot!.querySelectorAll('.access-btn');
     expect(btns[1].classList.contains('disabled')).to.be.true;
+    // The counterpart: asserting only "close is disabled" would also pass if
+    // BOTH buttons were disabled, which is the state `open` must not be in.
+    expect(btns[0].classList.contains('disabled')).to.be.false;
+
+    // What `.disabled` DOES — opacity 0.3 and pointer-events: none — is pinned
+    // by tests/styles/card-css-baseline.json ('.access-btn.disabled'), the
+    // project's canonical guard for computed CSS values. Re-reading the sheet
+    // here duplicated it; the spec row for U-29 names the baseline instead.
   });
 
   // ── _openCover and _closeCover ────────────────────────────────────────────

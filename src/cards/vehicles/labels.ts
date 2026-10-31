@@ -22,7 +22,11 @@ export function vehiclesLabels(): Record<string, string> {
     'input-fuel-quantity': msg('Fuel quantity'),
     'input-battery-autonomy': msg('Battery autonomy'),
     'input-battery-level': msg('Battery level'),
-    'input-charging-state': msg('Charging'),
+    // 'Charging' is the vehicle's STATE, rendered as « En charge » by the bridge
+    // card. This is the label of the field selecting the charging-state sensor,
+    // so it needs its own source string — sharing one made the two senses
+    // inseparable in translation.
+    'input-charging-state': msg('Charging status'),
     'input-charge-state': msg('Charge state'),
     'input-plug-state': msg('Plug state'),
     'input-remainting-charging-time': msg('Remaining charging time'),

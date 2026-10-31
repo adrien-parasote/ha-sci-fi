@@ -178,13 +178,16 @@
       "box-sizing": "border-box"
     },
     ".crew-avatar-wrap.ring-home": {
-      "box-shadow": "0 0 0 2px var(--sf-accent-on, #00ff9d), 0 0 10px 0px var(--sf-accent-on, #00ff9d)"
+      "box-shadow": "0 0 0 2px var(--ring-color, var(--sf-accent-on, #00ff9d)), 0 0 10px 0px var(--ring-color, var(--sf-accent-on, #00ff9d))"
     },
     ".crew-avatar-wrap.ring-away": {
-      "box-shadow": "0 0 0 2px var(--sf-text-disabled, #666)"
+      "box-shadow": "0 0 0 2px var(--ring-color, var(--sf-accent-off, rgba(224, 232, 255, 0.25)))"
     },
     ".crew-avatar-wrap.ring-other": {
-      "box-shadow": "0 0 0 2px var(--sf-primary, #00d2ff), 0 0 10px 0px var(--sf-primary, #00d2ff)"
+      "box-shadow": "0 0 0 2px var(--ring-color, var(--sf-primary, #00d2ff)), 0 0 10px 0px var(--ring-color, var(--sf-primary, #00d2ff))"
+    },
+    ".crew-avatar-wrap.ring-unknown": {
+      "box-shadow": "0 0 0 2px var(--ring-color, var(--sf-text-disabled, rgba(224, 232, 255, 0.3)))"
     },
     ".crew-avatar": {
       "width": "100%",

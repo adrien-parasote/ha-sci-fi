@@ -9,6 +9,8 @@
 import { expect, describe, it, afterEach } from 'vitest';
 import '../../../../src/cards/bridge/sections/sf-bridge-crew.js';
 import { makeMockHass, makeMockEntity } from '../../../fixtures/mock-hass.js';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 // ── Stubs ─────────────────────────────────────────────────────────────────────
 for (const tag of ['sf-icon']) {
@@ -64,46 +66,56 @@ describe('sf-bridge-crew', () => {
     expect(el.shadowRoot!.querySelector('.bridge-section')).to.be.null;
   });
 
-  // ── ringClass: home branch ────────────────────────────────────────────────
+  // ── Zone → couleur mapping : les SIX lignes ───────────────────────────────
 
-  it('TC-BRIDGE-U-11: renders ring-home class when person state is home', async () => {
-    const el = makeEl();
-    el.persons = [ALICE];
-    el.hass = makeHass('home');
-    document.body.appendChild(el);
-    await el.updateComplete;
-    expect(el.shadowRoot!.querySelector('.ring-home')).not.to.be.null;
-  });
+  // One row per line of the mapping table (docs/specs/cards/bridge.md). Six
+  // rows, six cases: the previous pass honoured three of them and asserted the
+  // CLASS only, which is identical for work, school and any other zone — so a
+  // person at work rendered cyan and nothing could tell.
+  const ZONE_MAPPING: ReadonlyArray<{
+    state: string;
+    ring: string;
+    token: string;
+    notToken: string;
+  }> = [
+    { state: 'home',        ring: 'ring-home',    token: '--sf-accent-on',     notToken: '--sf-primary' },
+    { state: 'work',        ring: 'ring-other',   token: '--sf-warning',       notToken: '--sf-primary' },
+    { state: 'school',      ring: 'ring-other',   token: '--sf-warning',       notToken: '--sf-primary' },
+    { state: 'not_home',    ring: 'ring-away',    token: '--sf-accent-off',    notToken: '--sf-text-disabled' },
+    { state: 'gym',         ring: 'ring-other',   token: '--sf-primary',       notToken: '--sf-warning' },
+    { state: 'unavailable', ring: 'ring-unknown', token: '--sf-text-disabled', notToken: '--sf-primary' },
+    { state: 'unknown',     ring: 'ring-unknown', token: '--sf-text-disabled', notToken: '--sf-primary' },
+  ];
 
-  // ── ringClass: not_home branch ────────────────────────────────────────────
+  for (const row of ZONE_MAPPING) {
+    it(`TC-BRIDGE-U-11/U-12: state '${row.state}' → ${row.ring} and ${row.token}`, async () => {
+      const el = makeEl();
+      el.persons = [ALICE];
+      el.hass = makeHass(row.state);
+      document.body.appendChild(el);
+      await el.updateComplete;
 
-  it('renders ring-away class when person state is not_home', async () => {
-    const el = makeEl();
-    el.persons = [ALICE];
-    el.hass = makeHass('not_home');
-    document.body.appendChild(el);
-    await el.updateComplete;
-    expect(el.shadowRoot!.querySelector('.ring-away')).not.to.be.null;
-  });
+      const wrap = el.shadowRoot!.querySelector(`.${row.ring}`) as HTMLElement;
+      expect(wrap, `${row.state} should carry .${row.ring}`).not.to.be.null;
+      const style = wrap.getAttribute('style') ?? '';
+      expect(style, `${row.state} should paint ${row.token}`).to.contain(row.token);
+      expect(style, `${row.state} must not paint ${row.notToken}`).to.not.contain(row.notToken);
+    });
+  }
 
-  // ── ringClass: other branch (work/school/etc.) ────────────────────────────
-
-  it('TC-BRIDGE-U-12: renders ring-other class when person is at work', async () => {
-    const el = makeEl();
-    el.persons = [ALICE];
-    el.hass = makeHass('work');
-    document.body.appendChild(el);
-    await el.updateComplete;
-    expect(el.shadowRoot!.querySelector('.ring-other')).not.to.be.null;
-  });
-
-  it('renders ring-other class when person is at school', async () => {
-    const el = makeEl();
-    el.persons = [ALICE];
-    el.hass = makeHass('school');
-    document.body.appendChild(el);
-    await el.updateComplete;
-    expect(el.shadowRoot!.querySelector('.ring-other')).not.to.be.null;
+  it('TC-BRIDGE-U-12: every ring-* rule consumes --ring-color', () => {
+    // Without this, the inline property above is only tied to the painted halo
+    // by the CSS snapshot: reverting the rule AND the snapshot together put the
+    // original defect back, green. This assertion fails on that revert.
+    const sheet = fs.readFileSync(
+      path.resolve(__dirname, '../../../../src/cards/bridge/styles.ts'),
+      'utf8',
+    );
+    for (const ring of ['ring-home', 'ring-away', 'ring-other', 'ring-unknown']) {
+      expect(sheet, `${ring} must read --ring-color`).toMatch(
+        new RegExp(`\\.crew-avatar-wrap\\.${ring}\\s*{[^}]*var\\(--ring-color`),
+      );
+    }
   });
 
   // ── zoneIcon: home/not_home/work/school/unknown ────────────────────────────

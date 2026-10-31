@@ -14,7 +14,7 @@
 | F-PLG-D01 | Header: area icon + plug name + model/manufacturer subtitle | ✅ This spec § Header |
 | F-PLG-D02 | Plug image zone: animated EU socket SVG (CSS-only) + status icon overlay + toggle on click | ✅ This spec § Content — image zone |
 | F-PLG-D03 | Sensor list: vertical list of icon + name + value (with LockSensor and SelectSensor variants) | ✅ This spec § Content — sensors |
-| F-PLG-D04 | Power chart: Chart.js bar histogram of 24h power history | ✅ This spec § Content — chart |
+| F-PLG-D04 | Power chart: Chart.js bar histogram of the last 24 hours of power history. The window start is a full ISO timestamp exactly 24 h back, never a bare `YYYY-MM-DD` — that reads as midnight yesterday and makes the window 24 to 48 h wide depending on the time of day. | ✅ This spec § Content — chart |
 | F-PLG-D05 | Footer navigation: prev/next arrows + plug selector icons | ✅ This spec § Footer |
 | F-PLG-D06 | Extract CSS into `styles.ts` (stove/vehicle pattern) | ✅ This spec § styles.ts |
 | F-PLG-D07 | Toggle plug on/off via `switch.turn_on` / `switch.turn_off` service | ✅ This spec § Toggle action |
@@ -842,7 +842,7 @@ private _toast(error: boolean, text: string): void {
 | 4 | **Power sensor in `.plug-power` div** | Large font power display above sensors | Power sensor integrated into `.sensors` list (with `entry.power === true`) |
 | 5 | **`header_message` config field** | Showing `this.config.header_message` in header | Header shows device name + area icon from device registry — `header_message` is ignored |
 | 6 | **Chart.js outside `.chart-container`** | Appending canvas to shadowRoot directly | Canvas always appended inside `.chart-container` div |
-| 7 | **Caching `_chart` across plug changes** | Reusing same Chart instance when switching plug | Clear `this._chart = null` and `this.shadowRoot.querySelector('.chart-container').innerHTML = ''` on plug switch |
+| 7 | **Caching `_chart` across plug changes** | Reusing same Chart instance when switching plug | `this._chart.destroy()` then `this._chart = null` on plug switch. The `<canvas>` is deliberately REUSED, not emptied: `destroy()` releases Chart.js's hold on it, and clearing `.chart-container.innerHTML` would drop the element only to recreate an identical one on the next draw. Emptying it is what this row used to prescribe; `_drawChart` reuses the canvas instead, and that is correct. |
 | 8 | **Missing null guards on hass.states** | `this.hass.states[entityId].state` (no optional chain) | Always `this.hass.states[entityId]?.state` |
 | 9 | **Removing `sf-toast`** | No user feedback on toggle/chart errors | `<sf-toast>` must be present in `renderCard()` template |
 | 10 | **Sensor sorted by insertion order** | Random order depending on config YAML | Sensors sorted by `entityId.localeCompare()` (matches main) |

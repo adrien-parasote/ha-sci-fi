@@ -68,6 +68,29 @@ export const plugStyles = css`
     font-size: 12px;
     color: rgb(55, 61, 69);
   }
+  /* plugs.md § Adversarial Fixes 1 — an unreachable plug says so, and reads as
+     a distinct state rather than as a plug that is simply switched off. */
+  .header .info .offline-tag {
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--sf-warning, #ffd60a);
+  }
+  /* …and stops inviting a click it will not honour. */
+  .content .info .image.unavailable {
+    cursor: not-allowed;
+    opacity: 0.45;
+    filter: grayscale(1);
+  }
+  /* A control belonging to an unreachable plug. pointer-events: none is what
+     actually stops the click: neither sf-button-card nor sf-button-card-select
+     reads the disabled attribute today, so without this the control looked
+     live and the dropdown still opened. */
+  .content .sensors .sensor.inert {
+    opacity: 0.4;
+    pointer-events: none;
+    cursor: not-allowed;
+  }
 
   /* ── FOOTER ─────────────────────────────────────────────────────────────── */
   .footer {

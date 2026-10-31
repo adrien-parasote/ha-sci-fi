@@ -698,4 +698,168 @@ describe('sci-fi-plugs — Chart Private Methods', () => {
     // Cache hit → _drawChart called without callApi
     expect(drawSpy).toHaveBeenCalled();
   });
+
+  // ── O5: edge cases plugs.md § Adversarial Fixes already demanded ──────────
+
+  describe('O5 — unavailable, animation and history window (regression)', () => {
+
+    // plugs.md § Adversarial Fixes 1.
+    it('renders an offline state and refuses to toggle an unavailable plug', async () => {
+      const callService = vi.fn();
+      const hass = makeMockHass({
+        callService,
+        states: {
+          'switch.lamp': makeMockEntity({ entity_id: 'switch.lamp', state: 'unavailable', attributes: { friendly_name: 'Lamp' } }),
+        },
+      });
+      const card = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_LAMP] }, hass);
+
+      expect(card.shadowRoot!.querySelector('.offline-tag'), 'an offline marker must render').to.exist;
+      (card.shadowRoot!.querySelector('.image') as HTMLElement).click();
+      expect(callService).not.toHaveBeenCalled();
+    });
+
+    it('treats unknown like unavailable', async () => {
+      const hass = makeMockHass({
+        states: {
+          'switch.lamp': makeMockEntity({ entity_id: 'switch.lamp', state: 'unknown', attributes: { friendly_name: 'Lamp' } }),
+        },
+      });
+      const card = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_LAMP] }, hass);
+      expect(card.shadowRoot!.querySelector('.offline-tag')).to.exist;
+    });
+
+    // Review round 1 (LOW): "disable interaction buttons" is plural — the
+    // child-lock toggle and the select dropdown stayed live on an offline plug.
+    it('disables the child-lock and select controls of an unavailable plug', async () => {
+      const onLock = vi.fn();
+      const device = {
+        device_id: 'p1',
+        entity_id: 'switch.lamp',
+        name: 'Lamp',
+        sensors: {
+          'switch.lamp_child_lock': { name: 'Child lock', show: true },
+          'select.lamp_memory': { name: 'Memory', show: true },
+        },
+      };
+      const hass = makeMockHass({
+        states: {
+          'switch.lamp': makeMockEntity({ entity_id: 'switch.lamp', state: 'unavailable' }),
+          'switch.lamp_child_lock': makeMockEntity({ entity_id: 'switch.lamp_child_lock', state: 'off' }),
+          'select.lamp_memory': makeMockEntity({
+            entity_id: 'select.lamp_memory',
+            state: 'on',
+            attributes: { options: ['on', 'off'] },
+          }),
+        },
+      });
+      const card = await mountCard({ type: 'custom:sci-fi-plugs', devices: [device] }, hass);
+      (card as any)._onLockToggle = onLock;
+
+      const lockBtn = card.shadowRoot!.querySelector('.sensors sf-button-card') as any;
+      const select = card.shadowRoot!.querySelector('.sensors sf-button-card-select') as any;
+      expect(lockBtn, 'the child-lock control must render').to.exist;
+      expect(select, 'the select control must render').to.exist;
+      expect(lockBtn.hasAttribute('disabled')).to.be.true;
+      expect(select.hasAttribute('disabled')).to.be.true;
+      expect(select.items, 'an offline plug offers no options to pick').to.deep.equal([]);
+
+      lockBtn.dispatchEvent(new CustomEvent('button-click'));
+      expect(onLock).not.toHaveBeenCalled();
+    });
+
+    it('does not mark a reachable plug offline', async () => {
+      const card = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_TV] });
+      expect(card.shadowRoot!.querySelector('.offline-tag')).to.be.null;
+    });
+
+    // plugs.md:522 — both cable containers carry the state class; only `.off`
+    // stops the animation, so the left one animated on a plug that was off.
+    it('marks both cable containers off when the plug is off', async () => {
+      const card = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_LAMP] });
+      const containers = card.shadowRoot!.querySelectorAll('.image .cirle-container');
+      expect(containers.length).to.equal(2);
+      for (const c of containers) {
+        expect(c.classList.contains('off'), `${c.className} must be off`).to.be.true;
+      }
+    });
+
+    // Review round 1: the `isUnavailable` arm of cableClass had no probe — its
+    // mutant survived. An unreachable plug must not animate its cables either,
+    // whatever its last known state said.
+    it('stops both cable animations when the plug is unavailable', async () => {
+      const hass = makeMockHass({
+        states: {
+          'switch.lamp': makeMockEntity({ entity_id: 'switch.lamp', state: 'unavailable', attributes: { friendly_name: 'Lamp' } }),
+        },
+      });
+      const card = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_LAMP] }, hass);
+      const containers = card.shadowRoot!.querySelectorAll('.image .cirle-container');
+      expect(containers.length).to.equal(2);
+      for (const c of containers) {
+        expect(c.classList.contains('off'), `${c.className} must be off`).to.be.true;
+      }
+    });
+
+    it('leaves both cable containers animated when the plug is on', async () => {
+      const card = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_TV] });
+      const containers = card.shadowRoot!.querySelectorAll('.image .cirle-container');
+      expect(containers.length).to.equal(2);
+      for (const c of containers) {
+        expect(c.classList.contains('off')).to.be.false;
+      }
+    });
+
+    // F-PLG-D04: a bare YYYY-MM-DD means midnight yesterday, so the window was
+    // 24 to 48 hours wide depending on the time of day — never 24 rolling hours.
+    it('asks history for a rolling 24-hour window, not midnight yesterday', async () => {
+      const card = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_TV] });
+      const start = new Date((card as any)._historyStart());
+      const elapsedHours = (Date.now() - start.getTime()) / 3_600_000;
+      expect(elapsedHours).to.be.greaterThan(23.9);
+      expect(elapsedHours).to.be.lessThan(24.1);
+    });
+
+    // P21: shortening `devices` in the editor left the index out of bounds and
+    // _renderHeader dereferenced undefined.
+    it('clamps the selected plug when the device list shrinks', async () => {
+      const card = await mountCard({
+        type: 'custom:sci-fi-plugs',
+        devices: [DEVICE_TV, DEVICE_LAMP],
+      });
+      (card as any)._selected_plug_id = 1;
+      await card.updateComplete;
+
+      (card as any).setConfig({ type: 'custom:sci-fi-plugs', devices: [DEVICE_TV] });
+      card.requestUpdate();
+      await card.updateComplete;
+
+      expect((card as any)._selected_plug_id).to.equal(0);
+      expect(card.shadowRoot!.querySelector('.sf-error-card')).to.be.null;
+      expect(card.shadowRoot!.querySelector('.header .title')!.textContent).to.include('TV');
+    });
+
+    // Review round 3 (LOW): `?disabled` is inert on both components, so the
+    // class on the wrapper is what makes the control unclickable and dimmed.
+    it('marks the offline controls inert, not merely disabled', async () => {
+      const device = {
+        device_id: 'p1',
+        entity_id: 'switch.lamp',
+        name: 'Lamp',
+        sensors: { 'switch.lamp_child_lock': { name: 'Child lock', show: true } },
+      };
+      const hass = makeMockHass({
+        states: {
+          'switch.lamp': makeMockEntity({ entity_id: 'switch.lamp', state: 'unavailable' }),
+          'switch.lamp_child_lock': makeMockEntity({ entity_id: 'switch.lamp_child_lock', state: 'off' }),
+        },
+      });
+      const card = await mountCard({ type: 'custom:sci-fi-plugs', devices: [device] }, hass);
+
+      const wrapper = card.shadowRoot!.querySelector('.sensors .sensor');
+      expect(wrapper, 'the control must render').to.exist;
+      expect(wrapper!.classList.contains('inert')).to.be.true;
+    });
+
+  });
 });

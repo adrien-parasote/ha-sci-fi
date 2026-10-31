@@ -369,9 +369,18 @@ export class SciFiLandspeeder extends LitElement {
     `;
   }
 
-  private _renderLock(): TemplateResult {
+  /**
+   * AP#8: a panel whose sensor is not configured is not rendered. Without this
+   * guard `state === 'locked'` was simply false, so a vehicle with no lock
+   * sensor at all was painted exactly like one standing unlocked — in orange.
+   * The battery and charging panels below already honoured the rule; the lock
+   * and fuel panels did not, in the same file.
+   */
+  private _renderLock(): TemplateResult | typeof nothing {
     const v = this.vehicle!;
-    const isLocked = this.hass.states[v.lock_status ?? '']?.state === 'locked';
+    if (!v.lock_status) return nothing;
+
+    const isLocked = this.hass.states[v.lock_status]?.state === 'locked';
     const icon = isLocked ? 'mdi:lock-check-outline' : 'mdi:lock-open-alert-outline';
     return html`
       <div class="lock">
@@ -384,8 +393,11 @@ export class SciFiLandspeeder extends LitElement {
     `;
   }
 
-  private _renderFuel(): TemplateResult {
+  private _renderFuel(): TemplateResult | typeof nothing {
     const v = this.vehicle!;
+    // An EV has neither sensor: the panel is absent, not filled with dashes.
+    if (!v.fuel_autonomy && !v.fuel_quantity) return nothing;
+
     const fuelAutonomyState = this.hass.states[v.fuel_autonomy ?? ''];
     const fuelQtyState = this.hass.states[v.fuel_quantity ?? ''];
     const fuelAutonomy = fuelAutonomyState
@@ -399,14 +411,16 @@ export class SciFiLandspeeder extends LitElement {
       <div class="fuel">
         <div>
           <div class="components">
+            ${fuelAutonomy === null ? nothing : html`
             <div class="component">
               <sf-icon icon="mdi:gas-station" .connection="${this.hass.connection}"></sf-icon>
-              <div>${fuelAutonomy ?? '--'}</div>
-            </div>
+              <div>${fuelAutonomy}</div>
+            </div>`}
+            ${fuelQty === null ? nothing : html`
             <div class="component">
               <sf-icon icon="mdi:fuel" .connection="${this.hass.connection}"></sf-icon>
-              <div>${fuelQty ?? '--'}</div>
-            </div>
+              <div>${fuelQty}</div>
+            </div>`}
           </div>
           <div class="h-path"></div>
           <div class="circle"></div>
@@ -423,7 +437,10 @@ export class SciFiLandspeeder extends LitElement {
     if (isNaN(rawBattery)) return nothing;
 
     const batteryLevel = Math.round(rawBattery / 10) * 10;
-    const batteryColor = rawBattery >= 60 ? 'green' : rawBattery >= 20 ? 'orange' : 'red';
+    // AP#3 and vehicles.md:93 both say: round FIRST, then threshold. The row in
+    // § middle zone said `rawBattery >= 60`, which disagreed with them and with
+    // the icon — 19.6 rounds to 20, shows mdi:battery-20, and used to be red.
+    const batteryColor = batteryLevel >= 60 ? 'green' : batteryLevel >= 20 ? 'orange' : 'red';
     const isCharging = this.hass.states[v.charging ?? '']?.state === VEHICLE_SENSOR_ON_STATE;
 
     const batteryIcon = this._getBatteryLevelIcon(batteryLevel, isCharging);

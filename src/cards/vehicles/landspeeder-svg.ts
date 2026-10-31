@@ -11,8 +11,10 @@
 
 import { html, type TemplateResult } from 'lit';
 
+// No `<?xml …?>` prologue: inside an html`` template the HTML parser turns a
+// processing instruction into a bogus comment node, re-created on every render.
+// It carried no meaning here — the SVG is inlined, never served as a document.
 export const LANDSPEEDER_SVG: TemplateResult = html`
-<?xml version="1.0" encoding="utf-8"?>
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 450">
     <defs>
       <linearGradient

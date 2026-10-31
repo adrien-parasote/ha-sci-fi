@@ -196,4 +196,25 @@ describe('sci-fi-vehicles-editor', () => {
     // Same reference (not rebuilt)
     expect((el as any)._vehiclesList).toBe(firstList);
   });
+
+  /**
+   * Review round 1: the charge_state row added by this lot had no probe — its
+   * mutant survived. charge_state is declared in config.ts, read by
+   * sf-landspeeder and iterated by getRelevantEntities; without a row here, a
+   * config built in the UI could never fill the charge line.
+   */
+  it('offers a charge_state field, beside the charging one', async () => {
+    const el = await createElement();
+    el.hass = makeMockHass() as HomeAssistantExt;
+    el.setConfig(makeConfig([{ id: 'device-1', name: 'Zoe' }]));
+    await el.updateComplete;
+
+    const ids = [...el.shadowRoot!.querySelectorAll('[element-id]')].map(e =>
+      e.getAttribute('element-id')
+    );
+    expect(ids, `rendered ids: ${ids.join(', ')}`).to.include('charge_state');
+    // Both exist and are distinct: `charging` is the boolean, `charge_state` the
+    // textual state the charge line renders.
+    expect(ids).to.include('charging');
+  });
 });

@@ -15,14 +15,16 @@ describe('sf-iconset', () => {
   it('TC-408: getIcon (customIconsets) returns path and viewBox for a known custom icon', async () => {
     await import('../../../src/components/sf-icon/sf-iconset.js');
     const getIcon = (window as any).customIconsets!.sci as (name: string) => Promise<any>;
-    const result = await getIcon('power-socket-fr-off');
-    if (typeof result === 'object' && result !== null) {
-      expect(result).toHaveProperty('path');
-      expect(result).toHaveProperty('viewBox', '0 0 24 24');
-      expect(typeof result.path).toBe('string');
-    } else {
-      expect(result).toBe('');
-    }
+    // Input taken from TC-408 itself. The assertion is unconditional on
+    // purpose: the previous `if (object) … else expect(result).toBe('')` form
+    // passed on BOTH branches, so a regression to the error path ('') stayed
+    // green. The '' contract belongs to the unknown-icon test below.
+    const result = await getIcon('stove');
+    expect(typeof result).toBe('object');
+    expect(result).not.toBeNull();
+    expect(result).toHaveProperty('viewBox', '0 0 24 24');
+    expect(typeof result.path).toBe('string');
+    expect(result.path.length).toBeGreaterThan(0);
   });
 
   it('getIcon (customIconsets) returns empty string for unknown icon and logs error', async () => {

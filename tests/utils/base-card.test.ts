@@ -1,11 +1,23 @@
 // @vitest-environment happy-dom
 import { describe, it, expect, vi } from 'vitest';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { SciFiBaseCard } from '../../src/utils/base-card.js';
 import type { SciFiBaseConfig } from '../../src/types/config.js';
 import type { TemplateResult } from 'lit';
 import { html } from 'lit';
 import type { HomeAssistantExt } from '../../src/types/ha.js';
 import { makeMockHass, makeMockEntity } from '../fixtures/mock-hass.js';
+
+// TC-303 observes the real `setLocale` call, so the module is wrapped rather
+// than replaced: `getLocale` must keep returning the live locale for the
+// setter's `targetLocale !== getLocale()` guard to hold.
+vi.mock('../../src/locales/localization.js', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('../../src/locales/localization.js')>();
+  return { ...actual, setLocale: vi.fn(actual.setLocale) };
+});
+import { setLocale } from '../../src/locales/localization.js';
 
 // ── Concrete test subclass ─────────────────────────────────────────────────────
 
@@ -74,39 +86,159 @@ describe('SciFiBaseCard', () => {
   });
 
   // TC-303: hass setter triggers locale sync
-  it('TC-303, TC-601, IT-602: setting hass triggers setLocale when language differs from current locale', () => {
+  it('TC-303, TC-601, IT-602: setting hass triggers setLocale when language differs from current locale', async () => {
+    vi.mocked(setLocale).mockClear();
     const card = new TestCard();
     card.setConfig({ type: 'custom:test' });
+    // The fixture reports `fr`; the default locale is `en`, so the setter's
+    // guard lets the call through.
     const mockHass = makeMockHass() as unknown as HomeAssistantExt;
-    // Setting hass should not throw — locale sync is async
-    expect(() => {
-      card.hass = mockHass;
-    }).not.toThrow();
-    // hass getter returns the set value
+    expect(mockHass.locale.language).toBe('fr');
+
+    card.hass = mockHass;
+
+    // The setter fires locale sync from a void async IIFE, so the call lands on
+    // a later microtask — this is the assertion the TC id promises.
+    await vi.waitFor(() => {
+      expect(setLocale).toHaveBeenCalledWith('fr');
+    });
     expect(card.hass).toBe(mockHass);
   });
 
+  it('TC-303: the hass setter does not call setLocale when the language already matches', async () => {
+    vi.mocked(setLocale).mockClear();
+    const card = new TestCard();
+    card.setConfig({ type: 'custom:test' });
+    await setLocale('fr');
+    vi.mocked(setLocale).mockClear();
+
+    card.hass = makeMockHass() as unknown as HomeAssistantExt;
+
+    // Give the microtask the setter would have queued a chance to run.
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(setLocale).not.toHaveBeenCalled();
+  });
+
   // TC-306: subclass overriding willUpdate must call super
-  it('TC-306: super.willUpdate is called even when subclass overrides willUpdate', () => {
-    // This test documents the contract — we verify via the spy that the base
-    // locale sync still fires when subclass calls super correctly.
-    class SubCard extends TestCard {
-      public superCalled = false;
+  it('TC-306: an override that omits super.willUpdate breaks the base reactive hook', () => {
+    // A subclass written to call super proves nothing: it asserts its own flag.
+    // What the contract protects is the base hook reaching LitElement, so the
+    // spy sits on the inherited implementation and a FAULTY subclass is the one
+    // that must be caught.
+    const baseHook = vi.spyOn(
+      Object.getPrototypeOf(SciFiBaseCard.prototype) as { willUpdate: (p: unknown) => void },
+      'willUpdate',
+    );
+
+    class CompliantCard extends TestCard {
       override willUpdate(changedProperties: Map<string | symbol, unknown>): void {
-        super.willUpdate(changedProperties); // MUST be first line
-        this.superCalled = true;
+        super.willUpdate(changedProperties);
       }
     }
-    if (!customElements.get('sub-sf-card')) {
-      customElements.define('sub-sf-card', SubCard);
+    class FaultyCard extends TestCard {
+      override willUpdate(): void {
+        // deliberately omits super.willUpdate — the anti-pattern TC-306 guards
+      }
     }
-    const card = new SubCard();
-    card.setConfig({ type: 'custom:sub' });
+    if (!customElements.get('compliant-sf-card')) {
+      customElements.define('compliant-sf-card', CompliantCard);
+    }
+    if (!customElements.get('faulty-sf-card')) {
+      customElements.define('faulty-sf-card', FaultyCard);
+    }
     const changedProperties = new Map<string | symbol, unknown>();
     changedProperties.set('hass', undefined);
-    card['hass'] = makeMockHass() as unknown as HomeAssistantExt;
-    card.willUpdate(changedProperties);
-    expect(card.superCalled).toBe(true);
+
+    const compliant = new CompliantCard();
+    compliant.setConfig({ type: 'custom:compliant' });
+    compliant.willUpdate(changedProperties);
+    expect(baseHook).toHaveBeenCalledTimes(1);
+
+    baseHook.mockClear();
+    const faulty = new FaultyCard();
+    faulty.setConfig({ type: 'custom:faulty' });
+    // FaultyCard declares no parameter (it uses none), so it is called without
+    // one — Lit allows an override to take fewer arguments than the base hook.
+    faulty.willUpdate();
+    expect(baseHook).not.toHaveBeenCalled();
+
+    baseHook.mockRestore();
+  });
+
+  it('TC-306: every SciFiBaseCard subclass overriding willUpdate calls super first', () => {
+    // Two properties, not one. `noImplicitOverride` (tsconfig) enforces the
+    // `override` KEYWORD; only this walk enforces the SUPER CALL, which is what
+    // TC-306 is about — a card that drops it stops propagating `hass` and the
+    // locale and silently freezes on the dashboard.
+    //
+    // The keyword flag is what makes this walk SOUND rather than a third patch
+    // on the same evasion: `override willUpdate` is now mandatory, so the
+    // anchor cannot be dodged by dropping the keyword (round 4's hole), and the
+    // declared/analysed equality below means it cannot pass by matching nothing
+    // (round 1's hole, via `: void`).
+    const srcRoot = path.resolve(__dirname, '../../src');
+    const walk = (dir: string): string[] =>
+      fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) return walk(full);
+        return entry.isFile() && full.endsWith('.ts') ? [full] : [];
+      });
+
+    const bodyAt = (source: string, braceIndex: number): string => {
+      let depth = 0;
+      for (let i = braceIndex; i < source.length; i += 1) {
+        if (source[i] === '{') depth += 1;
+        else if (source[i] === '}') {
+          depth -= 1;
+          if (depth === 0) return source.slice(braceIndex + 1, i);
+        }
+      }
+      return source.slice(braceIndex + 1);
+    };
+
+    const offenders: string[] = [];
+    let analysed = 0;
+    let declared = 0;
+
+    for (const file of walk(srcRoot)) {
+      const source = fs.readFileSync(file, 'utf8');
+      if (!/extends\s+SciFiBaseCard\b/.test(source)) continue;
+
+      // DECLARATIONS only: the negative lookbehind drops the `super.`/`this.`
+      // CALLS, which a bare `\bwillUpdate\s*\(` also matched — it counted 10
+      // for 5 declarations and the equality below caught it.
+      declared += (source.match(/(?<![.\w])willUpdate\s*\(/g) ?? []).length;
+      const pattern = /(?:override\s+)?(?<![.\w])willUpdate\s*\([^)]*\)\s*(?::[^{]+)?\{/g;
+      for (const match of source.matchAll(pattern)) {
+        analysed += 1;
+        const body = bodyAt(source, match.index + match[0].length - 1);
+        const firstStatement = body
+          .split('\n')
+          .map((line) => line.trim())
+          .find((line) => line.length > 0 && !line.startsWith('//') && !line.startsWith('/*'));
+        if (!firstStatement?.startsWith('super.willUpdate(')) {
+          offenders.push(`${path.relative(srcRoot, file)}: ${firstStatement ?? '<empty body>'}`);
+        }
+      }
+    }
+
+    // The check cannot pass by matching nothing: every `willUpdate(` the plain
+    // search finds must have been parsed, and at least one must exist.
+    expect(analysed, 'parsed fewer willUpdate declarations than exist').toEqual(declared);
+    expect(declared, 'no SciFiBaseCard willUpdate override found at all').toBeGreaterThan(0);
+    expect(offenders).toEqual([]);
+  });
+
+  it('TC-306: noImplicitOverride stays on, so the walk above cannot lose its anchor', () => {
+    // Narrow on purpose: it guards the PRECONDITION of the walk, not the
+    // clause. Removing the flag lets a keyword-less override reappear, which
+    // the walk would still catch (its pattern makes the keyword optional) but
+    // which the compiler should refuse outright.
+    const tsconfig = fs.readFileSync(path.resolve(__dirname, '../../tsconfig.json'), 'utf8');
+    expect(tsconfig, 'noImplicitOverride must stay enabled').toMatch(
+      /"noImplicitOverride"\s*:\s*true/,
+    );
   });
 
   it('getCardSize() returns a positive number', () => {

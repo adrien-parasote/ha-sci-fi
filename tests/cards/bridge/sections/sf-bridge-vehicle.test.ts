@@ -9,6 +9,7 @@
 import { expect, describe, it, afterEach } from 'vitest';
 import '../../../../src/cards/bridge/sections/sf-bridge-vehicle.js';
 import { makeMockHass, makeMockEntity } from '../../../fixtures/mock-hass.js';
+import { setLocale } from '../../../../src/locales/localization.js';
 
 // ── Stubs ─────────────────────────────────────────────────────────────────────
 for (const tag of ['sf-icon']) {
@@ -74,26 +75,47 @@ describe('sf-bridge-vehicle', () => {
 
   // ── plugIcon: charging branch (line 27) ───────────────────────────────────
 
-  it('TC-BRIDGE-U-26: renders landspeeder-plugged icon when charging (power > 0)', async () => {
+  it('TC-BRIDGE-U-26: power > 0 → "En charge" label and the plugged icon', async () => {
+    await setLocale('fr');
     const el = makeEl();
     el.config = BASE_CONFIG;
-    el.hass = makeHass('3500');
+    // U-26 is specified with power = '2300'.
+    el.hass = makeHass('2300');
     document.body.appendChild(el);
     await el.updateComplete;
-    const icon = el.shadowRoot!.querySelector('sf-icon[icon="sci:landspeeder-plugged"]');
-    expect(icon).not.to.be.null;
+
+    // The status label is what U-26 is about; the icon comes second.
+    expect(el.shadowRoot!.querySelector('.vehicle-status-label')!.textContent!.trim()).to.equal(
+      'En charge',
+    );
+    // Anchored INSIDE .vehicle-body — the real container of the plug icon.
+    // `sf-icon[icon="sci:landspeeder*"]` on the whole shadowRoot also matches
+    // the .bridge-section-title icon, which renders unconditionally.
+    const body = el.shadowRoot!.querySelector('.vehicle-body');
+    expect(body, '.vehicle-body must exist for this anchor to mean anything').not.to.be.null;
+    expect(body!.querySelector('sf-icon[icon="sci:landspeeder-plugged"]')).not.to.be.null;
   });
 
   // ── plugIcon: idle branch (line 29) ───────────────────────────────────────
 
-  it('TC-BRIDGE-U-25: renders landspeeder idle icon when power is 0 (not charging, not unavailable)', async () => {
+  it('TC-BRIDGE-U-25: power = 0 → "Non connectée" label and the idle icon', async () => {
+    await setLocale('fr');
     const el = makeEl();
     el.config = BASE_CONFIG;
     el.hass = makeHass('0');
     document.body.appendChild(el);
     await el.updateComplete;
-    const icon = el.shadowRoot!.querySelector('sf-icon[icon="sci:landspeeder"]');
-    expect(icon).not.to.be.null;
+
+    expect(el.shadowRoot!.querySelector('.vehicle-status-label')!.textContent!.trim()).to.equal(
+      'Non connectée',
+    );
+    // The old assertion was tautological: the section-title icon is also
+    // `sci:landspeeder`, so it passed for power = 3500 just as well. The label
+    // discriminates the idle branch; the body anchor pins the plug icon.
+    const body = el.shadowRoot!.querySelector('.vehicle-body');
+    expect(body, '.vehicle-body must exist for this anchor to mean anything').not.to.be.null;
+    expect(body!.querySelector('sf-icon[icon="sci:landspeeder"]')).not.to.be.null;
+    expect(body!.querySelector('sf-icon[icon="sci:landspeeder-plugged"]')).to.be.null;
   });
 
   // ── powerDisplay: W branch (rawPower < 1000) ──────────────────────────────

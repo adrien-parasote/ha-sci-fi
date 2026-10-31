@@ -148,12 +148,23 @@ describe('house selectors', () => {
   });
 
   describe('IT-201 Integration / Immutability', () => {
-    it('IT-201: getFloors() called twice returns equal data without mutation', () => {
+    it('IT-201: getFloors() is pure — equal data, and hass is never mutated', () => {
       const hass = makeMockHass();
+      // The real contract is purity, not reference identity: `not.toBe` only
+      // says the selector allocates, which proves nothing about mutation.
+      // Snapshot the source BEFORE the calls, and compare after.
+      const sourceBefore = JSON.parse(JSON.stringify(hass.floors));
+      const sourceKeyOrder = Object.keys(hass.floors ?? {});
+
       const floors1 = getFloors(hass);
       const floors2 = getFloors(hass);
+
       expect(floors1).toEqual(floors2);
-      expect(floors1).not.toBe(floors2); // Immutability verification
+      // getFloors sorts; `.sort()` mutates its receiver, so a selector that
+      // sorted `hass.floors` in place instead of a fresh array would be caught
+      // by these two — which is what "no mutation" actually means here.
+      expect(hass.floors).toEqual(sourceBefore);
+      expect(Object.keys(hass.floors ?? {})).toEqual(sourceKeyOrder);
     });
 
     it('IT-203: getFloors → getAreasByFloor → getEntitiesByArea resolves the whole hierarchy', () => {

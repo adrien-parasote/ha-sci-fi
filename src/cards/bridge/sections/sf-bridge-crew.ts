@@ -1,9 +1,11 @@
 /**
  * <sf-bridge-crew> — Crew presence section
  * Halo glow (box-shadow) matching zone state, icon colored in halo color.
- * - Green halo → home
- * - Grey halo  → not_home / away
- * - Blue halo  → other (work, school, etc.)
+ * - Green halo  → home (--sf-accent-on)
+ * - Grey halo   → not_home / away (--sf-accent-off)
+ * - Yellow halo → work, school — named zones (--sf-warning)
+ * - Blue halo   → any OTHER known zone (--sf-primary)
+ * - Thin ring, no glow → unavailable / unknown (--sf-text-disabled)
  * Zone icon overlaid top-right corner of avatar.
  */
 import { html, LitElement, nothing, type TemplateResult } from 'lit';
@@ -16,17 +18,36 @@ import '../../../components/sf-icon/sf-icon.js';
 
 const TAG = 'sf-bridge-crew';
 
+/** States for which no zone is known — neither home, nor away, nor a zone */
+const UNKNOWN_STATES = new Set(['unavailable', 'unknown']);
+
 /** CSS class driving the box-shadow halo */
-function ringClass(state: string): 'ring-home' | 'ring-away' | 'ring-other' {
+function ringClass(state: string): 'ring-home' | 'ring-away' | 'ring-other' | 'ring-unknown' {
   if (state === 'home')     return 'ring-home';
   if (state === 'not_home') return 'ring-away';
+  // `unavailable`/`unknown` are NOT "at some known zone": they used to fall
+  // through to ring-other, which paints the cyan known-zone halo on a person
+  // whose entity is simply not reporting.
+  if (UNKNOWN_STATES.has(state)) return 'ring-unknown';
   return 'ring-other';
 }
 
-/** CSS color matching the ring halo — used to color the fallback icon */
+/**
+ * CSS color matching the ring halo — drives the icons AND the halo, via the
+ * `--ring-color` custom property.
+ *
+ * `work` and `school` are named zones, not "somewhere else": the Zone → colour
+ * mapping gives them `--sf-warning`, and cyan is reserved for any OTHER known
+ * zone. The code already told them apart in `zoneIcon`; only the colour was
+ * missing, so all three states fell through to cyan.
+ */
 function ringColor(state: string): string {
   if (state === 'home')     return 'var(--sf-accent-on, #00ff9d)';
-  if (state === 'not_home') return 'var(--sf-text-disabled, #888)';
+  // not_home is `--sf-accent-off`; `--sf-text-disabled` belongs to the
+  // unavailable/unknown row below, and used to be applied here by mistake.
+  if (state === 'not_home') return 'var(--sf-accent-off, rgba(224, 232, 255, 0.25))';
+  if (state === 'work' || state === 'school') return 'var(--sf-warning, #ffd60a)';
+  if (UNKNOWN_STATES.has(state)) return 'var(--sf-text-disabled, rgba(224, 232, 255, 0.3))';
   return 'var(--sf-primary, #00d2ff)';
 }
 
@@ -79,7 +100,7 @@ export class SfBridgeCrew extends LitElement {
     return html`
       <div class="crew-badge">
         <!-- Avatar wrap: halo via box-shadow -->
-        <div class="crew-avatar-wrap ${ring}">
+        <div class="crew-avatar-wrap ${ring}" style="--ring-color:${color};">
           <div class="crew-avatar">
             ${picture
               ? html`<img src="${picture}" alt="${name}" />`

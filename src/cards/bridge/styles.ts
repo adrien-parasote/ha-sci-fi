@@ -126,19 +126,27 @@ export const bridgeStyles = css`
     box-sizing: border-box;
   }
 
-  /* Halo glow : anneau fin + lueur diffuse */
+  /* Halo glow : anneau fin + lueur diffuse.
+     Every ring-* rule reads --ring-color, set inline from ringColor(), so the
+     Zone → couleur mapping has ONE source of truth. Each fallback repeats that
+     row's token, keeping the rule correct on its own. */
   .crew-avatar-wrap.ring-home {
     box-shadow:
-      0 0 0 2px var(--sf-accent-on, #00ff9d),
-      0 0 10px 0px var(--sf-accent-on, #00ff9d);
+      0 0 0 2px var(--ring-color, var(--sf-accent-on, #00ff9d)),
+      0 0 10px 0px var(--ring-color, var(--sf-accent-on, #00ff9d));
   }
   .crew-avatar-wrap.ring-away {
-    box-shadow: 0 0 0 2px var(--sf-text-disabled, #666);
+    box-shadow: 0 0 0 2px var(--ring-color, var(--sf-accent-off, rgba(224, 232, 255, 0.25)));
   }
   .crew-avatar-wrap.ring-other {
     box-shadow:
-      0 0 0 2px var(--sf-primary, #00d2ff),
-      0 0 10px 0px var(--sf-primary, #00d2ff);
+      0 0 0 2px var(--ring-color, var(--sf-primary, #00d2ff)),
+      0 0 10px 0px var(--ring-color, var(--sf-primary, #00d2ff));
+  }
+  /* unavailable / unknown : no zone is known, so no diffuse glow either —
+     a thin desaturated ring only. */
+  .crew-avatar-wrap.ring-unknown {
+    box-shadow: 0 0 0 2px var(--ring-color, var(--sf-text-disabled, rgba(224, 232, 255, 0.3)));
   }
 
   /* Inner circle — photo ou icône directement, sans fond */

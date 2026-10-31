@@ -645,16 +645,31 @@ export const bridgeStyles = css`
 **Render layout :**
 
 ```
-.crew-row (flex, overflow-x: auto, gap: 12px)
-└── [per person] .crew-badge (flex-col, align-center, min-width: 72px)
-    ├── .avatar (32px circle — img si entity_picture, sinon mdi:account)
-    ├── .crew-name (text, 0.75rem)
-    └── .crew-zone-pill (badge coloré, 0.65rem, uppercase)
-        └── [state label — voir Zone → couleur mapping]
+.crew-row (flex, flex-wrap: wrap, gap: 16px)
+└── [per person] .crew-badge (flex-col, align-center, gap: 6px, min-width: 56px)
+    ├── .crew-avatar-wrap (48px circle) .ring-home|.ring-away|.ring-other|.ring-unknown
+    │   │   (halo box-shadow ; les QUATRE règles lisent --ring-color, posé inline
+    │   │    depuis ringColor() — voir Zone → couleur mapping)
+    │   └── .crew-avatar (img si entity_picture, sinon sf-icon mdi:account)
+    └── .crew-zone-badge (coin haut-droit)
+        └── sf-icon [icône de zone : mdi:home | mdi:home-off | mdi:briefcase | mdi:school | mdi:map-marker]
 ```
 
+> [!IMPORTANT]
+> **L'état de zone est porté par une ICÔNE, pas par un libellé texte.** Ce layout
+> décrivait `.avatar`, `.crew-name` et un `.crew-zone-pill` portant le libellé
+> d'état : aucun des trois n'a jamais existé dans `src/`, et le nom de la
+> personne n'est pas rendu du tout (il ne sert que d'`alt` sur l'image). La
+> couleur du mapping arrive par `--ring-color`, lue par les quatre règles
+> `.crew-avatar-wrap.ring-home|ring-away|ring-other|ring-unknown`.
+>
+> **`unavailable`/`unknown` ont leur propre classe `.ring-unknown`.** Ces états
+> ne sont pas « à une zone connue » : ils tombaient dans `.ring-other` et
+> peignaient le halo cyan des zones connues sur une personne dont l'entité ne
+> répond pas. `.ring-unknown` ne porte qu'un anneau fin désaturé, sans lueur.
+
 > [!NOTE]
-> Le `.crew-row` a `overflow-x: auto` pour permettre le scroll horizontal quand la liste dépasse la largeur disponible (ex. 4+ personnes sur mobile portrait). Pas de wrapping.
+> Le `.crew-row` **passe à la ligne** quand la liste dépasse la largeur disponible (ex. 4+ personnes sur mobile portrait) : `flex-wrap: wrap` avec `gap: 16px`. Il n'y a **pas** de scroll horizontal — `overflow-x` n'est pas déclaré sur cette rangée.
 
 ---
 
@@ -1349,25 +1364,25 @@ title="${msg('Équipage')}"
 | TC-BRIDGE-U-08 | Unit | `getRelevantEntities()` itère sur `access.items` (pas tableau direct) | access config objet | entity_ids de access.items présents dans le résultat |
 | TC-BRIDGE-U-09 | Unit | `getRelevantEntities()` itère sur `automations.items` | automations config objet | entity_ids de automations.items présents |
 | TC-BRIDGE-U-10 | Unit | `getRelevantEntities()` déduplique les doublons | Config avec même entity 2x | Array.length < nb entrées config |
-| TC-BRIDGE-U-11 | Unit | Zone `home` → couleur vert (`--sf-accent-on`) | person state = 'home' | `.crew-zone-pill` a `color` = token vert |
-| TC-BRIDGE-U-12 | Unit | Zone `work` → couleur jaune (`--sf-warning`) | person state = 'work' | `.crew-zone-pill` a `color` = token jaune |
+| TC-BRIDGE-U-11 | Unit | Zone `home` → couleur vert (`--sf-accent-on`) | person state = 'home' | `.crew-avatar-wrap.ring-home` porte `--ring-color` = token vert |
+| TC-BRIDGE-U-12 | Unit | **Les SIX lignes du Zone → couleur mapping**, une par une | person state = 'home', 'work', 'school', 'not_home', une zone quelconque, 'unavailable', 'unknown' | Chaque état porte sa classe ET son token dans `--ring-color` : home→`.ring-home`/`--sf-accent-on` · work et school→`.ring-other`/`--sf-warning` · not_home→`.ring-away`/`--sf-accent-off` · autre zone connue→`.ring-other`/`--sf-primary` · unavailable et unknown→`.ring-unknown`/`--sf-text-disabled`. **Chaque cas exige aussi l'ABSENCE du token voisin** (work ne doit pas peindre `--sf-primary`, not_home ne doit pas peindre `--sf-text-disabled`) : la classe seule est identique pour work, school et les autres zones, donc l'asserter ne distingue rien. Et une assertion séparée exige que les quatre règles CSS `ring-*` lisent `var(--ring-color)` — sans elle, la propriété inline n'est reliée au halo peint que par le snapshot CSS, et revertir règle + snapshot ensemble remettrait le défaut au vert |
 | TC-BRIDGE-U-13 | Unit | alerts.smoke absent → rangée fumée non rendue | alerts sans smoke | `.alerts-smoke-row` absent du shadow DOM |
 | TC-BRIDGE-U-14 | Unit | alerts.toggles absent → rangée toggles non rendue | alerts sans toggles | `.alerts-toggles-row` absent du shadow DOM |
 | TC-BRIDGE-U-15 | Unit | Fumée `off` → icône verte (OK) | smoke state = 'off' | `.smoke-chip` color = `--sf-accent-on` |
 | TC-BRIDGE-U-16 | Unit | Fumée `on` → icône rouge (ALERTE) | smoke state = 'on' | `.smoke-chip` color = `--sf-error` |
 | TC-BRIDGE-U-17 | Unit | Icône entrée smoke customisée via config | smoke entry.icon = 'mdi:fire' | `ha-icon[icon='mdi:fire']` présent dans `.smoke-chip` |
 | TC-BRIDGE-U-18 | Unit | Icône entrée access customisée via config | access entry.icon = 'mdi:gate' | `ha-icon[icon='mdi:gate']` présent dans `.access-entry` |
-| TC-BRIDGE-U-19 | Unit | Icône section stove customisée via config | stove.icon = 'mdi:campfire' | `ha-icon[icon='mdi:campfire']` dans `.bridge-section-title` de stove |
+| TC-BRIDGE-U-19 | Unit | Icône section stove customisée via config, et son défaut | stove.icon = 'mdi:campfire', puis stove sans `icon` | `sf-icon[icon='mdi:campfire']` dans `.bridge-section-title` de stove ; sans `icon`, le défaut est **`sci:stove`** (et non `mdi:fire`) — cohérent avec `sci:stove-heat`/`sci:stove-off` que la même section rend pour le corps. ⚠ L'éditeur propose encore `mdi:fire` comme défaut du champ : voir bead `ha-sci-fi-gxd` |
 | TC-BRIDGE-U-20 | Unit | Toggle automation ON → callService `turn_on` | clic toggle, state = 'off' | `hass.callService` appelé avec `automation.turn_on` |
-| TC-BRIDGE-U-21 | Unit | Cycle lave-linge `on` → status msg('En cours') + animation | cycle state = 'on' | `.cycle-running` class présente + textContent contient 'En cours' |
+| TC-BRIDGE-U-21 | Unit | Cycle lave-linge `on` → status msg('En cours') + animation | cycle state = 'on', **locale `fr` forcée** | `.cycle-running` class présente + `.cycle-status` textContent = 'En cours'. La locale doit être posée explicitement (`await setLocale('fr')`) : le code rend `msg('Running')`, qui ne devient 'En cours' qu'en FR — sans cela le DOM porte 'Running' et l'exigence n'est pas assertable |
 | TC-BRIDGE-U-22 | Unit | Consumable `ok_when: 'off'` + state `off` → vert | rinse_aid = 'off' | `.consumable-chip` color = `--sf-accent-on` |
 | TC-BRIDGE-U-23 | Unit | Consumable `ok_when: 'off'` + state `on` → rouge | rinse_aid = 'on' | `.consumable-chip` color = `--sf-error` |
-| TC-BRIDGE-U-24 | Unit | Pellets low (< threshold) → barre rouge | pellet_quantity = '0.2', threshold = 0.3 | `.pellet-progress` color = `--sf-error` |
-| TC-BRIDGE-U-25 | Unit | EV power = 0 → msg('Non connectée') | power = '0' | `.vehicle-status` textContent = 'Non connectée' |
-| TC-BRIDGE-U-26 | Unit | EV power > 0 → msg('En charge') | power = '2300' | `.vehicle-status` textContent = 'En charge' |
+| TC-BRIDGE-U-24 | Unit | Pellets sous le seuil → jauges en état warning, et au-dessus → jauges nettes | pellet_quantity = '0.2' puis '0.8', threshold = 0.3 | `sf-circle-progress-bar` rend `.circular-progress.warning` dans son shadow DOM, et `sf-stack-bar` un `.warning` ; au-dessus du seuil, aucun des deux. ⚠ Les jauges sont **déléguées** à ces deux composants partagés : il n'existe ni `.pellet-progress`, ni `.stove-pellet-bar`, ni variable `isLow` dans la carte — la décision warning appartient aux widgets (`val / 100 < threshold`). Asserter les props passées, ou recalculer cette formule dans le test, ne prouve rien du rendu |
+| TC-BRIDGE-U-25 | Unit | EV power = 0 → msg('Non connectée') | power = '0', locale `fr` | `.vehicle-status-label` textContent = 'Non connectée', ET `sf-icon[icon='sci:landspeeder-plugged']` absent. ⚠ Asserter `sf-icon[icon='sci:landspeeder']` ne vaut RIEN ici : l'icône du titre de section porte le même nom et se rend inconditionnellement, donc l'assertion passait aussi pour power > 0 |
+| TC-BRIDGE-U-26 | Unit | EV power > 0 → msg('En charge') | power = '2300', locale `fr` | `.vehicle-status-label` textContent = 'En charge', ET `sf-icon[icon='sci:landspeeder-plugged']` présent dans la rangée de statut. La cible est `.vehicle-status-label` — `.vehicle-status` n'a jamais existé dans `src/` |
 | TC-BRIDGE-U-27 | Unit | ACTIONS bouton → callService press/turn_on/trigger | clic bouton action | `hass.callService` appelé avec le service approprié |
 | TC-BRIDGE-U-28 | Unit | ACTIONS couleur customisée | color = '#ff0000' | bouton action hérite de la couleur customisée |
-| TC-BRIDGE-U-29 | Unit | Cover state `closed` → bouton open actif, close désactivé | cover = 'closed' | close button `opacity: 0.4` et `pointer-events: none` |
+| TC-BRIDGE-U-29 | Unit | Cover state `closed` → bouton open actif, close désactivé | cover = 'closed' | close button porte `.disabled` et open ne le porte PAS (sans ce second point, deux boutons désactivés satisferaient le cas). Ce que `.disabled` fait — `opacity: 0.3` + `pointer-events: none` — est épinglé par `tests/styles/card-css-baseline.json`, gardien canonique des valeurs CSS calculées dans ce dépôt ; le test de section ne le redouble pas. ⚠ **0.3, et non 0.4** : la valeur livrée est 0.3 depuis l'origine (`src/cards/bridge/styles.ts`), elle est gelée dans `tests/styles/card-css-baseline.json`, et rien ne distingue fonctionnellement les deux — c'est la spec qui est alignée sur le livré, pas l'inverse. Asserter la seule classe ne protégeait aucune des deux valeurs |
 | TC-BRIDGE-U-30 | Unit | Toutes sections absentes si config vide | `{}` config | Seul `.bridge-grid` présent, zéro `sf-bridge-*` |
 | TC-BRIDGE-U-31 | Unit | Label cover traduit — msg('Fermée') affiché | cover = 'closed' | `.access-state-label` textContent = 'Fermée' |
 | IT-BRIDGE-I-01 | Integration | Carte enregistrée dans `customElements` | Load card | `customElements.get('sci-fi-bridge')` returns class |

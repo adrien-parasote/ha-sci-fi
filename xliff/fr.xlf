@@ -671,7 +671,7 @@
 </trans-unit>
 <trans-unit id="s77a0727520efc502">
   <source>Charging</source>
-  <target>Charge</target>
+  <target>En charge</target>
 </trans-unit>
 <trans-unit id="s27e515ed8b8eb9bc">
   <source>Plug state</source>
@@ -1169,6 +1169,9 @@
 <trans-unit id="sbfa68151bd7177c6">
   <source>Stove status sensor</source>
 <target>Capteur de statut du poêle</target></trans-unit>
+<trans-unit id="s7262392f278336e8">
+  <source>Charging status</source>
+<target>Statut de charge</target></trans-unit>
 </body>
 </file>
 </xliff>

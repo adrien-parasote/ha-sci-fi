@@ -277,11 +277,38 @@ describe('sf-bridge-stove', () => {
     expect(circle).not.to.be.null;
     expect(circle.val).to.equal(20);
     expect(circle.threshold).to.equal(0.3);
-    // sf-circle-progress-bar flags warning when val / 100 < threshold
-    expect(circle.val / 100).to.be.lessThan(circle.threshold);
+    // The props above are the inputs; the warning STATE is what U-24 is about.
+    // Re-deriving `val / 100 < threshold` here only restated the widget's own
+    // formula — it stayed green even if the widget stopped rendering warning
+    // at all. Assert the rendered class instead.
+    await circle.updateComplete;
+    expect(circle.shadowRoot!.querySelector('.circular-progress.warning')).not.to.be.null;
 
     const stack = el.shadowRoot!.querySelector('sf-stack-bar') as any;
     expect(stack.threshold).to.equal(0.3);
-    expect(stack.val / stack.max).to.be.lessThan(stack.threshold);
+    await stack.updateComplete;
+    expect(stack.shadowRoot!.querySelector('.warning')).not.to.be.null;
+  });
+
+  it('TC-BRIDGE-U-24: pellet quantity above low_threshold leaves BOTH gauges clear', async () => {
+    // The counterpart: without it, a widget stuck in permanent warning would
+    // satisfy the case above. It has to query sf-stack-bar too — checking only
+    // the circle let a permanently-warning stack bar survive, against the
+    // amended row that requires neither of the two.
+    const el = makeEl();
+    el.config = { ...BASE_CONFIG, low_threshold: 0.3 };
+    el.hass = makeHass('0.8', '18', 'off', 20);
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const circle = el.shadowRoot!.querySelector('sf-circle-progress-bar') as any;
+    expect(circle.val).to.equal(80);
+    await circle.updateComplete;
+    expect(circle.shadowRoot!.querySelector('.circular-progress.warning')).to.be.null;
+
+    const stack = el.shadowRoot!.querySelector('sf-stack-bar') as any;
+    expect(stack.val / stack.max).to.be.greaterThan(stack.threshold);
+    await stack.updateComplete;
+    expect(stack.shadowRoot!.querySelector('.warning')).to.be.null;
   });
 });

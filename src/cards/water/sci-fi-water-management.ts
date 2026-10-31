@@ -56,7 +56,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     };
   }
 
-  protected firstUpdated(): void {
+  protected override firstUpdated(): void {
     if (this.hass) {
       void this._fetchRegistry();
     }
@@ -312,6 +312,10 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
   private _formatTimestamp(when: string): string {
     try {
       const date = new Date(when);
+      // `new Date('nonsense')` does not throw — it yields an Invalid Date whose
+      // getters return NaN, so the catch below never fired and the fallback
+      // rendered as 'NaN/NaN NaN:NaN'. Check validity explicitly.
+      if (Number.isNaN(date.getTime())) return '00/00 00:00';
       const dd = String(date.getDate()).padStart(2, '0');
       const mo = String(date.getMonth() + 1).padStart(2, '0');
       const hh = String(date.getHours()).padStart(2, '0');

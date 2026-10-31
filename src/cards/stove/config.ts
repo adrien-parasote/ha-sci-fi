@@ -8,6 +8,17 @@
 
 import type { SciFiBaseConfig } from '../../types/config.js';
 
+/**
+ * Alert thresholds the card applies when the YAML omits them.
+ *
+ * Exported because the editor's sliders must start on the SAME value the card
+ * uses: bead ha-sci-fi-4h4 (ST-29) found four different defaults for
+ * `pellet_quantity_threshold` — docs 0.5, the card 0.1, the slider 0.2 — so the
+ * literal lives here once and both consumers read it.
+ */
+export const STOVE_PELLET_QUANTITY_THRESHOLD_DEFAULT = 0.1;
+export const STOVE_STORAGE_COUNTER_THRESHOLD_DEFAULT = 0.1;
+
 export interface SciFiStoveSensors {
   readonly sensor_actual_power?: string;
   readonly sensor_combustion_chamber_temperature?: string;

@@ -3,7 +3,7 @@
     // Re-generate this file by running lit-localize
 
     
-    
+    import {str} from '@lit/localize';
 
     /* eslint-disable no-irregular-whitespace */
     /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -53,6 +53,7 @@
 's2333784a4676c1b8': `Option modifiée`,
 's2350e551d4efd065': `Première zone à afficher`,
 's23efbfa52bcbebef': `ACTIF`,
+'s2535012c866f3d7d': `Température modifiée`,
 's2536b1a3c6cb65e3': `SYSTÈME HORS LIGNE`,
 's25392c6d0eb63175': `désactivé`,
 's26273c258ddde0e1': `Sélectionner...`,
@@ -101,10 +102,12 @@
 's40e8787f7d7156a1': `Actions personnalisées`,
 's42159a8784b2051e': `Icône de la période d'été`,
 's42edb88477699c63': `Clapet ouvert`,
+'s437558b3f6ef6130': str`Entité poêle non trouvée : ${0}`,
 's43e9aef7aa01fca9': `Indisponible`,
 's4409ada9c5c2a7f8': `Inactif`,
 's4476c4d962bb61de': `Étage par défaut (ID de l'étage)`,
 's46a0b95a78e298d4': `État d'erreur`,
+'s4774c5ec5a7d5355': `Entité poêle`,
 's47937dbed803a545': `Détecteurs fumée`,
 's47a5a85e872212de': `VEILLE`,
 's480263258f53e669': `État vert`,
@@ -121,6 +124,7 @@
 's585dfbb29d3568cc': `boost`,
 's5a0b7879d5920086': `Quantité de carburant`,
 's5a86ddfb3a2500b5': `Tout`,
+'s5ae6af5add9e130a': `Mode HVAC modifié`,
 's5b168ab1cad7dce5': `Activer la section`,
 's5b8bab6460975745': `Nuageux`,
 's5bc5f422799d8c7b': `Entité occupancy (opt.)`,
@@ -183,6 +187,7 @@
 's82c71a5986948a28': `Statut de verrouillage`,
 's8300b224ee074d12': `Neige`,
 's833996a486514c49': `indisponible`,
+'s84d17f00f6c12e7e': `Preset modifié`,
 's84fcddede27b8e2a': `Externe`,
 's85729f0e3537c32d': `prog`,
 's85994a70cd39166c': `En cours`,
@@ -234,6 +239,7 @@
 'sadc98e3afa865a02': `Message d'en-tête (optionnel)`,
 'sae1c7f13b7c0c47f': `Démarrer`,
 'sae239213b7c70376': `État`,
+'saf95d4afa4a8e395': `Mode éco modifié`,
 'sb21717f2b8f8b667': `Surveillance`,
 'sb232b02074d3cca9': `Vitesses du vent`,
 'sb2b305d0ac7e7a13': `INACTIF`,

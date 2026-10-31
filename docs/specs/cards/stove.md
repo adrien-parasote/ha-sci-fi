@@ -221,7 +221,7 @@ The header follows the same pattern as `sci-fi-climates` and `sci-fi-lights`:
     <sf-icon .icon="${isOn ? 'sci:stove-heat' : 'sci:stove-off'}" .connection="${this.hass.connection}"></sf-icon>
   </div>
   <div class="header-info">
-    <div class="stove-name">${stoveState.attributes.friendly_name ?? 'Poêle'}</div>
+    <div class="stove-name">${stoveState.attributes.friendly_name ?? msg('Poêle')}</div>
     <div class="stove-status ${isOn ? 'sf-state-on' : 'sf-state-off'}">${stoveState.state}</div>
   </div>
 </div>
@@ -449,7 +449,7 @@ static override styles = [sciFiCommonStyles, stoveStyles, stoveStylesPart2];
     </div>
     <div class="header-info">
       <div class="stove-name">
-        ${stoveState.attributes.friendly_name ?? 'Poêle'}
+        ${stoveState.attributes.friendly_name ?? msg('Poêle')}
       </div>
       <div class="stove-status ${isOn ? 'sf-state-on' : 'sf-state-off'}">
         ${stoveState.state}
@@ -559,6 +559,7 @@ No changes. CSS classes `.sensor-tile`, `.sensor-tile.warn`, `.bar-bg`, `.bar-fi
 | TC-1111 | Unit | Error message when entity not found | `entity: 'climate.missing'`, hass empty | textContent includes `'Entité poêle non trouvée'` |
 | TC-1113 | Unit | `styles.ts` exports `stoveStyles` as a Lit CSSResult | Import check | `typeof stoveStyles === 'object'` with `cssText` property |
 | TC-1114 | Unit | Le repli de libellé d'un statut absent de `STATUS_LABELS` remplace **tous** les underscores | `sensor_status: 'some_unknown_state'` | `.stove-status` = `some unknown state` (et non `some unknown_state`) |
+| TC-1115 | Unit | Le repli d'en-tête d'une entité sans `friendly_name` est **localisé** — il suit la langue de HA, il n'est pas un littéral | Entité sans `friendly_name`, `hass.locale.language` = `fr` puis `en` | `.header` = « Poêle » sous `fr`, `Stove` sous `en` |
 | IT-1101 | Integration | `sci-fi-stove` registers correctly in `customElements` | Load 'sci-fi.min.js' | `customElements.get('sci-fi-stove')` returns the class |
 | IT-1102 | Integration | Rend l'en-tête, le panneau info et la ligne de statut depuis un hass réel | Mount `state: 'heat'`, `sensor_status: 'combustion'`, pellets + stock | `.header` porte le `friendly_name`, `.content .info`, `sf-stove-image`, `sf-circle-progress-bar`, `sf-stack-bar` et `.stove-status` présents |
 | IT-1103 | Integration | `styles.ts` imported — no inline `css\`\`` block remains in `sci-fi-stove.ts` | Grep source file | 'grep -c 'css\'' sci-fi-stove.ts` returns 0 |
@@ -593,11 +594,11 @@ No changes. CSS classes `.sensor-tile`, `.sensor-tile.warn`, `.bar-bg`, `.bar-fi
 
 | Error | Detection | Response | Fallback |
 |---|---|---|---|
-| Entity not found (`this.hass.states[this.config.entity]` undefined) | Guard at top of `renderCard()` | Return error `<ha-card>` with message `'Entité poêle non trouvée : ${entity}'` | None — user must fix config |
+| Entity not found (`this.hass.states[this.config.entity]` undefined) | Guard at top of `renderCard()` | Return error `<ha-card>` with a localized message — « Entité poêle non trouvée : <entity> » under `fr`, `Stove entity not found: <entity>` in the source locale | None — user must fix config |
 | Sensor state not found (`this.hass.states[sensorKey]` undefined) | Guard in `_buildSensorTiles` via `get()` helper returning `undefined` | Tile not rendered (filter `t.value !== null && t.value !== undefined`) | Tile simply hidden |
 | Pellet sensor state non-numeric | `isNaN(pct)` check in `_renderPelletBar` | Early return `html\`\`` | Pellet bar not rendered |
 | No `hass` available | `SciFiBaseCard` base class guard before `renderCard()` is called | Base class returns empty template | Transparent empty card |
-| Missing `friendly_name` attribute | Nullish coalescing `?? 'Poêle'` in header | Show `'Poêle'` as fallback | Always renders something |
+| Missing `friendly_name` attribute | Nullish coalescing on a localized fallback in the header | Show « Poêle » under `fr`, `Stove` in the source locale | Always renders something |
 
 ---
 

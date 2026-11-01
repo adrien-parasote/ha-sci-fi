@@ -8,31 +8,31 @@
 
 ## Blueprint Coverage
 
-| Feature ID | Description | Spec file |
-|---|---|---|
-| F-EDITOR-01 | `sf-editor-input` — texte/number input avec label flottant | ✅ This spec § Editor Input Components |
-| F-EDITOR-02 | `sf-editor-dropdown` — dropdown filtrable | ✅ This spec § Editor Input Components |
-| F-EDITOR-03 | `sf-editor-dropdown-entity` — dropdown entités HA | ✅ This spec § Editor Input Components |
-| F-EDITOR-04 | `sf-editor-dropdown-icon` — dropdown icônes | ✅ This spec § Editor Input Components |
-| F-EDITOR-05 | `sf-editor-multi-entity` — multi-sélection entités avec chips | ✅ This spec § Editor Input Components |
-| F-EDITOR-06 | `sf-editor-slider` — range input | ✅ This spec § Editor Input Components |
-| F-EDITOR-07 | `sf-editor-chips` — tags multivaleur | ✅ This spec § Editor Input Components |
-| F-EDITOR-08 | `sf-editor-color-picker` — color picker | ✅ This spec § Editor Input Components |
-| F-EDITOR-09 | `sf-editor-accordion` — accordéon groupé | ✅ This spec § Editor Input Components |
-| F-EDITOR-10 | Enrichissement `SciFiBaseEditor` (`getLabel`, `_getNewConfig`) | ✅ This spec § Base Editor Enrichment — depuis ADR-017 la classe de base porte le **mécanisme** de lookup, chaque carte porte son **vocabulaire** (`cards/<card>/labels.ts`) |
-| F-EDITOR-11 | `sci-fi-weather-editor` | ✅ This spec § Card Editors |
-| F-EDITOR-12 | `sci-fi-climates-editor` | ✅ This spec § Card Editors |
-| F-EDITOR-13 | `sci-fi-lights-editor` | ✅ This spec § Card Editors |
-| F-EDITOR-14 | `sci-fi-plugs-editor` | ✅ This spec § Card Editors |
-| F-EDITOR-15 | `sci-fi-stove-editor` | ✅ This spec § Card Editors |
-| F-EDITOR-16 | `sci-fi-vacuum-editor` | ✅ This spec § Card Editors |
-| F-EDITOR-17 | `sci-fi-vehicles-editor` | ✅ This spec § Card Editors |
-| F-EDITOR-18 | `sci-fi-hexa-tiles-editor` | ✅ This spec § Card Editors |
-| F-EDITOR-19 | `sci-fi-tv-editor` | ✅ This spec § Card Editors |
-| F-EDITOR-20 | `sci-fi-water-management-editor` | ✅ This spec § Card Editors |
-| F-EDITOR-21 | `sci-fi-bridge-editor` | ✅ This spec § Card Editors |
-| F-EDITOR-22 | `sf-editor-action` | ✅ This spec § Editor Input Components — consommé par `sci-fi-tv-editor` |
-| F-EDITOR-23 | `sf-editor-source-list` | ✅ This spec § Editor Input Components — consommé par `sci-fi-tv-editor` |
+| Feature ID | Description | Spec file | Covers |
+|---|---|---|---|
+| F-EDITOR-01 | `sf-editor-input` — texte/number input avec label flottant | ✅ This spec § Editor Input Components | TC-1005 |
+| F-EDITOR-02 | `sf-editor-dropdown` — dropdown filtrable | ✅ This spec § Editor Input Components | TC-1006 |
+| F-EDITOR-03 | `sf-editor-dropdown-entity` — dropdown entités HA | ✅ This spec § Editor Input Components | IT-1003 |
+| F-EDITOR-04 | `sf-editor-dropdown-icon` — dropdown icônes | ✅ This spec § Editor Input Components | ⬜ aucun id TC — testé par `tests/components/editor-inputs/sf-editor-dropdown-icon.test.ts`, cas non déclaré ici |
+| F-EDITOR-05 | `sf-editor-multi-entity` — multi-sélection entités avec chips | ✅ This spec § Editor Input Components | TC-1007, TC-1008 |
+| F-EDITOR-06 | `sf-editor-slider` — range input | ✅ This spec § Editor Input Components | TC-1009 |
+| F-EDITOR-07 | `sf-editor-chips` — tags multivaleur | ✅ This spec § Editor Input Components | ⬜ aucun id TC — testé par `tests/components/editor-inputs/sf-editor-chips.test.ts`, cas non déclaré ici |
+| F-EDITOR-08 | `sf-editor-color-picker` — color picker | ✅ This spec § Editor Input Components | ⬜ aucun id TC — testé par `tests/components/editor-inputs/sf-editor-color-picker.test.ts`, cas non déclaré ici |
+| F-EDITOR-09 | `sf-editor-accordion` — accordéon groupé | ✅ This spec § Editor Input Components | TC-1010 |
+| F-EDITOR-10 | Enrichissement `SciFiBaseEditor` (`getLabel`, `_getNewConfig`) | ✅ This spec § Base Editor Enrichment — depuis ADR-017 la classe de base porte le **mécanisme** de lookup, chaque carte porte son **vocabulaire** (`cards/<card>/labels.ts`) | TC-1001, TC-1002, TC-1003, TC-1004, TC-1015, TC-1017, TC-1018 |
+| F-EDITOR-11 | `sci-fi-weather-editor` | ✅ This spec § Card Editors | TC-1011, TC-1012, TC-1018, IT-1001, IT-1002 |
+| F-EDITOR-12 | `sci-fi-climates-editor` | ✅ This spec § Card Editors | TC-1013, TC-1018 |
+| F-EDITOR-13 | `sci-fi-lights-editor` | ✅ This spec § Card Editors | TC-1014, TC-1018 |
+| F-EDITOR-14 | `sci-fi-plugs-editor` | ✅ This spec § Card Editors | TC-1018 (libellés seuls) — aucun id TC pour l'éditeur, testé par `tests/cards/plugs/sci-fi-plugs-editor.test.ts` |
+| F-EDITOR-15 | `sci-fi-stove-editor` | ✅ This spec § Card Editors | TC-1018 (libellés seuls) — aucun id TC pour l'éditeur, testé par `tests/cards/stove/sci-fi-stove-editor.test.ts` |
+| F-EDITOR-16 | `sci-fi-vacuum-editor` | ✅ This spec § Card Editors | TC-1016, TC-1018 |
+| F-EDITOR-17 | `sci-fi-vehicles-editor` | ✅ This spec § Card Editors | TC-1018 (libellés seuls) — aucun id TC pour l'éditeur, testé par `tests/cards/vehicles/sci-fi-vehicles-editor.test.ts` |
+| F-EDITOR-18 | `sci-fi-hexa-tiles-editor` | ✅ This spec § Card Editors | TC-1018 (libellés seuls) — aucun id TC pour l'éditeur, testé par `tests/cards/hexa-tiles/sci-fi-hexa-tiles-editor.test.ts` |
+| F-EDITOR-19 | `sci-fi-tv-editor` | ✅ This spec § Card Editors | TC-1018 (libellés seuls) — aucun id TC pour l'éditeur, testé par `tests/cards/tv/sci-fi-tv-editor.test.ts` |
+| F-EDITOR-20 | `sci-fi-water-management-editor` | ✅ This spec § Card Editors | ⬜ aucun id TC — seule carte sans `labels.ts`, donc hors TC-1018 ; testé par `tests/cards/water/sci-fi-water-management-editor.test.ts` |
+| F-EDITOR-21 | `sci-fi-bridge-editor` | ✅ This spec § Card Editors | TC-1018 ; cas propres dans [bridge.md](./cards/bridge.md#blueprint-coverage) |
+| F-EDITOR-22 | `sf-editor-action` | ✅ This spec § Editor Input Components — consommé par `sci-fi-tv-editor` | ⬜ aucun id TC — testé par `tests/components/editor-inputs/sf-editor-action.test.ts`, cas non déclaré ici |
+| F-EDITOR-23 | `sf-editor-source-list` | ✅ This spec § Editor Input Components — consommé par `sci-fi-tv-editor` | ⬜ aucun id TC — testé par `tests/components/editor-inputs/sf-editor-source-list.test.ts`, cas non déclaré ici |
 
 ---
 

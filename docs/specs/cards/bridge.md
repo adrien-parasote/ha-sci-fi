@@ -15,24 +15,24 @@
 
 ## Blueprint Coverage
 
-| Feature ID | Description | Covered in |
-|---|---|---|
-| F-BR-01 | `SciFiBridgeConfig` TypeScript interfaces for all sections | This spec § TypeScript Interfaces |
-| F-BR-02 | `config-metadata.ts` YAML validation schema | This spec § config-metadata |
-| F-BR-03 | `getRelevantEntities()` — collects all entity_ids from config | This spec § getRelevantEntities |
-| F-BR-04 | `sf-bridge-crew` — dynamic person list with zone + avatar | This spec § sf-bridge-crew |
-| F-BR-05 | `sf-bridge-alerts` — smoke + toggles + occupancy | This spec § sf-bridge-alerts |
-| F-BR-06 | `sf-bridge-stove` — pellets quantity + stock counter + status | This spec § sf-bridge-stove |
-| F-BR-07 | `sf-bridge-vehicle` — EV power sensor read-only | This spec § sf-bridge-vehicle |
-| F-BR-08 | `sf-bridge-access` — cover + lock controls (extensible list) | This spec § sf-bridge-access |
-| F-BR-09 | `sf-bridge-automations` — toggles + slider (extensible list) | This spec § sf-bridge-automations |
-| F-BR-10 | `sf-bridge-appliances` — cycles + consumables (extensible list) | This spec § sf-bridge-appliances |
-| F-BR-11 | `sf-bridge-actions` — quick-action buttons panel (scripts, automations, input_buttons) | This spec § sf-bridge-actions |
-| F-BR-12 | `sci-fi-bridge` card — orchestrator + CSS Grid responsive layout | This spec § sci-fi-bridge Card |
-| F-BR-13 | `sci-fi-bridge-editor` — HA config editor | This spec § Editor |
-| F-BR-14 | Tests ≥ 80% coverage — domain + composants | This spec § Test Case Specifications |
-| F-BR-15 | Workbench mock — entities mockées pour validation visuelle | This spec § Workbench |
-| F-BR-16 | README.md + CHANGELOG.md mis à jour | This spec § README & CHANGELOG Updates |
+| Feature ID | Description | Covered in | Covers |
+|---|---|---|---|
+| F-BR-01 | `SciFiBridgeConfig` TypeScript interfaces for all sections | This spec § TypeScript Interfaces | ⬜ aucun id TC — l'alignement de l'interface de cette spec sur `src/cards/bridge/config.ts` est tenu par `tests/specs/bridge-spec-structure.test.ts` |
+| F-BR-02 | `config-metadata.ts` YAML validation schema | This spec § config-metadata | ⬜ aucun id TC — `bridgeConfigMetadata` n'a aucun importeur (bead `ha-sci-fi-14z`) |
+| F-BR-03 | `getRelevantEntities()` — collects all entity_ids from config | This spec § getRelevantEntities | TC-BRIDGE-U-08, TC-BRIDGE-U-09, TC-BRIDGE-U-10 |
+| F-BR-04 | `sf-bridge-crew` — dynamic person list with zone + avatar | This spec § sf-bridge-crew | TC-BRIDGE-U-05, TC-BRIDGE-U-06, TC-BRIDGE-U-11, TC-BRIDGE-U-12 |
+| F-BR-05 | `sf-bridge-alerts` — smoke + toggles + occupancy | This spec § sf-bridge-alerts | TC-BRIDGE-U-13, TC-BRIDGE-U-14, TC-BRIDGE-U-15, TC-BRIDGE-U-16, TC-BRIDGE-U-17 |
+| F-BR-06 | `sf-bridge-stove` — pellets quantity + stock counter + status | This spec § sf-bridge-stove | TC-BRIDGE-U-19, TC-BRIDGE-U-24 |
+| F-BR-07 | `sf-bridge-vehicle` — EV power sensor read-only | This spec § sf-bridge-vehicle | TC-BRIDGE-U-25, TC-BRIDGE-U-26 |
+| F-BR-08 | `sf-bridge-access` — cover + lock controls (extensible list) | This spec § sf-bridge-access | TC-BRIDGE-U-18, TC-BRIDGE-U-29, TC-BRIDGE-U-31 |
+| F-BR-09 | `sf-bridge-automations` — toggles + slider (extensible list) | This spec § sf-bridge-automations | TC-BRIDGE-U-07, TC-BRIDGE-U-20 |
+| F-BR-10 | `sf-bridge-appliances` — cycles + consumables (extensible list) | This spec § sf-bridge-appliances | TC-BRIDGE-U-21, TC-BRIDGE-U-22, TC-BRIDGE-U-23 |
+| F-BR-11 | `sf-bridge-actions` — quick-action buttons panel (scripts, automations, input_buttons) | This spec § sf-bridge-actions | TC-BRIDGE-U-27, TC-BRIDGE-U-28 |
+| F-BR-12 | `sci-fi-bridge` card — orchestrator + CSS Grid responsive layout | This spec § sci-fi-bridge Card | TC-BRIDGE-U-01, TC-BRIDGE-U-02, TC-BRIDGE-U-03, TC-BRIDGE-U-04, TC-BRIDGE-U-30, IT-BRIDGE-I-01, IT-BRIDGE-I-02, IT-BRIDGE-I-03, IT-BRIDGE-I-04, IT-BRIDGE-I-05 |
+| F-BR-13 | `sci-fi-bridge-editor` — HA config editor | This spec § Editor | IT-BRIDGE-I-08 |
+| F-BR-14 | Tests ≥ 80% coverage — domain + composants | This spec § Test Case Specifications | ⬜ aucun id TC — seuil de couverture, pas un comportement : mesuré par `npm run test:coverage`, pas par un cas |
+| F-BR-15 | Workbench mock — entities mockées pour validation visuelle | This spec § Workbench | IT-BRIDGE-I-06, IT-BRIDGE-I-07 (scénarios 4 et 5) |
+| F-BR-16 | README.md + CHANGELOG.md mis à jour | This spec § README & CHANGELOG Updates | ⬜ aucun id TC — prescription HARDEN honorée le 2026-06-02, texte archivé dans [spec-history.md](../bridge-md-structure/spec-history.md) |
 
 ---
 

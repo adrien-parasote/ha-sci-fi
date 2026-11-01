@@ -2,6 +2,26 @@
 
 > Document type: Implementation
 
+## Blueprint Coverage
+
+| Feature ID | Description | Covered here | Covers |
+|---|---|---|---|
+| F-WATER-01 | Dynamic Floor Selector — onglets hexagonaux par étage, barre de nom d'étage et bouton de synchronisation | ✅ This spec § Features | TC-002, IT-001 |
+| F-WATER-02 | Label-based Discovery — découverte des entités portant le label `water` ou le label configuré | ✅ This spec § Configuration & Tags (Labels) | TC-004, IT-002 |
+| F-WATER-03 | Smart Entity Controls — interrupteur sci-fi pour `switch`/`valve`/`automation`/`input_boolean`, valeur pour `sensor`/`number`/`select` | ✅ This spec § Features | TC-003, TC-005, IT-003 |
+| F-WATER-04 | Grouped Accordions — un `sf-editor-accordion` par appareil, un accordéon « Automations » pour les entités sans appareil, état d'ouverture indépendant | ✅ This spec § Internal State | TC-006 |
+| F-WATER-05 | Execution Log per Accordion — journal filtré sur les seules entités de l'accordéon | ✅ This spec § Key Methods | TC-007 |
+| F-WATER-06 | History Fetch Strategy — `history/history_during_period` une fois par étage sur 7 jours, repli `logbook/get_events`, domaines restreints, `significant_changes_only` | ✅ This spec § Key Methods | TC-008, IT-004 |
+| F-WATER-07 | Resilient UI — aucun étage ou aucune entité eau ne provoque ni erreur ni carte vide | ✅ This spec § Features | TC-001 |
+| F-WATER-08 | i18n — toutes les chaînes visibles passent par `@lit/localize` et suivent la langue de HA | ✅ This spec § Features | ⬜ aucun id TC — aucun cas déclaré pour la localisation de cette carte |
+
+> Cette table a été créée le 2026-11-01 par le lot fix `ids-tracabilite` (bead
+> `ha-sci-fi-p6v.2`) : la spec était typée `Implementation` et n'en portait aucune,
+> si bien que ses exigences n'étaient listées nulle part. Les huit lignes reprennent
+> les huit points de § Features, qui en tenait lieu sans ids.
+
+---
+
 ## Context
 A dynamic, spaceship-style dashboard component designed to display and manage water-related entities across different floors/areas. It acts as a unified hub for water control, adapting dynamically to the user's Home Assistant setup based on tags/labels rather than static configuration.
 

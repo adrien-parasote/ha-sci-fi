@@ -26,6 +26,32 @@ préfixe compris, et `tests/specs/transverse-registries.test.ts` les compare lig
 aux ids que chaque spec porte. Une plage réécrite à la main sans que la spec suive fait
 rougir cette garde.
 
+### Ce qu'une table Blueprint Coverage porte, et qui en porte une
+
+Le projet trace ses exigences avec son propre schéma, `F-<DOMAINE>-NN`, dans une table
+`## Blueprint Coverage` — pas avec une section `## Requirements` et des ids `FR-NN`. Trois
+règles le rendent lisible, et chacune est tenue par une garde de
+`tests/specs/blueprint-traceability.test.ts` :
+
+1. **Chaque ligne F porte une colonne `Covers`** qui nomme les ids de cas de test
+   (`TC-…`, `IT-…`) qui la couvrent. Une exigence que rien ne teste le dit en clair —
+   `⬜ aucun id TC`, suivi de la raison — plutôt que de laisser la colonne vide : une
+   case vide se lit comme un oubli, une absence déclarée se lit comme un choix.
+2. **Une spec typée `> Document Type: Reference` ne porte PAS de table Blueprint.** Ces
+   documents portent un contrat YAML, pas des exigences ; leur exigence vit dans la spec
+   d'implémentation qu'ils nomment en tête — `05_cards.md` pour `climates.md`,
+   `lights.md` et `weather.md`, dont les lignes sont `F-CARD-03`, `F-CARD-02` et
+   `F-CARD-05`. Leur en donner une dupliquerait ces lignes : deux tables à tenir
+   d'accord, et aucune des deux source de vérité.
+3. **Un id F est déclaré dans une seule spec.** Une spec qui réalise l'exigence d'une
+   autre la cite avec une flèche (`F-CARD-09 ↗`) et renvoie à son propriétaire, comme
+   [tv.md](./specs/cards/tv.md#blueprint-coverage) le fait, au lieu de redéclarer l'id.
+
+> Mesuré le 2026-11-01 (lot fix `ids-tracabilite`, bead `ha-sci-fi-p6v.4`) : ces trois
+> règles étaient appliquées de fait mais écrites nulle part. Le retrocheck du
+> 2026-10-31 a donc compté quatre tables Blueprint manquantes là où une seule l'était —
+> `water.md`, typée `Implementation` — et réclamé trois tables qui auraient été fausses.
+
 ---
 
 ## Source of Truth

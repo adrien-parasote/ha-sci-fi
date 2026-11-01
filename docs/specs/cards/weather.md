@@ -1,3 +1,7 @@
+> Document Type: Reference
+> YAML contract — Full implementation spec in [05_cards.md](../05_cards.md#sci-fi-weather)
+> Depends on: [Spec 02](../02_domain_selectors.md#blueprint-coverage), [Spec 03](../03_base_classes.md#blueprint-coverage)
+
 # sci-fi-weather Schema
 
 ### sci-fi-weather

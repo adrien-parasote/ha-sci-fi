@@ -9,15 +9,15 @@
 
 ## Blueprint Coverage
 
-| Feature ID | Description | Spec file |
-|---|---|---|
-| F-STOVE-D01 | Structured header (border-top + bottom, icon + name + state) | ✅ This spec § Header |
-| F-STOVE-D02 | Conditional state coloring (orange ON, grey OFF) in header | ✅ This spec § Header |
-| F-STOVE-D03 | Extract CSS into `styles.ts` (climate pattern) | ✅ This spec § styles.ts |
-| F-STOVE-D04 | `ha-card` background `rgba(39,40,43,0.3)` (light/climate pattern) | ✅ This spec § styles.ts |
-| F-STOVE-D05 | Sensor grid tiles — refined tokens, preserved CSS selectors | ✅ This spec § Sensor Grid |
-| F-STOVE-D06 | Pellet bar and storage counter tiles — preserved classes + refined colors | ✅ This spec § Special Tiles |
-| F-STOVE-D07 | All existing tests remain GREEN (no CSS selector changes that break tests) | ✅ This spec § Test Selectors |
+| Feature ID | Description | Spec file | Covers |
+|---|---|---|---|
+| F-STOVE-D01 | Structured header (border-top + bottom, icon + name + state) | ✅ This spec § Header | TC-1101, TC-1102, TC-1105, TC-1115, IT-1102 |
+| F-STOVE-D02 | Conditional state coloring (orange ON, grey OFF) in header | ✅ This spec § Header | TC-1103, TC-1104 |
+| F-STOVE-D03 | Extract CSS into `styles.ts` (climate pattern) | ✅ This spec § styles.ts | TC-1113, IT-1103 |
+| F-STOVE-D04 | `ha-card` background `rgba(39,40,43,0.3)` (light/climate pattern) | ✅ This spec § styles.ts | ⬜ aucun id TC — valeur de fond, aucun cas ne la pine |
+| F-STOVE-D05 | Sensor grid tiles — refined tokens, preserved CSS selectors | ✅ This spec § _buildSensorTiles() — unchanged | ⬜ aucun id TC — les sélecteurs sont gelés par § Test Selectors — Frozen Contract, sans cas déclaré |
+| F-STOVE-D06 | Pellet bar and storage counter tiles — preserved classes + refined colors | ✅ This spec § _renderPelletBar() — unchanged | ⬜ aucun id TC — aucun cas déclaré pour la jauge de pellets ni le compteur de stock |
+| F-STOVE-D07 | All existing tests remain GREEN (no CSS selector changes that break tests) | ✅ This spec § Test Selectors — Frozen Contract | TC-1111, TC-1114, IT-1101 |
 
 ---
 

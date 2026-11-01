@@ -20,19 +20,19 @@
 
 ## Blueprint Coverage
 
-| Feature ID | Description | Covered here |
-|---|---|---|
-| F-CARD-01 | `sci-fi-hexa-tiles` Lovelace Card | ✅ `hexa-tiles/` |
-| F-CARD-02 | `sci-fi-lights` Lovelace Card | ✅ `lights/` |
-| F-CARD-03 | `sci-fi-climates` Lovelace Card | ✅ `climates/` |
-| F-CARD-04 | `sci-fi-plugs` Lovelace Card | ✅ `plugs/` |
-| F-CARD-05 | `sci-fi-weather` Lovelace Card | ✅ `weather/` |
-| F-CARD-06 | `sci-fi-stove` Lovelace Card | ✅ `stove/` |
-| F-CARD-07 | `sci-fi-vehicles` Lovelace Card | ✅ `vehicles/` |
-| F-CARD-08 | `sci-fi-vacuum` Lovelace Card | ✅ `vacuum/` |
-| F-CARD-09 | `sci-fi-tv` Lovelace Card | ✅ `tv/` |
-| F-CARD-10 | `sci-fi-water-management` Lovelace Card | ✅ `water/` |
-| F-CARD-11 | `sci-fi-bridge` Lovelace Card | ✅ `bridge/` |
+| Feature ID | Description | Covered here | Covers |
+|---|---|---|---|
+| F-CARD-01 | `sci-fi-hexa-tiles` Lovelace Card | ✅ `hexa-tiles/` | TC-501, IT-501 |
+| F-CARD-02 | `sci-fi-lights` Lovelace Card | ✅ `lights/` | IT-501 ; cas propres dans [lights.md](./cards/lights.md#test-case-specifications) |
+| F-CARD-03 | `sci-fi-climates` Lovelace Card | ✅ `climates/` | TC-504, IT-501 ; cas propres dans [climates.md](./cards/climates.md#test-case-specifications) |
+| F-CARD-04 | `sci-fi-plugs` Lovelace Card | ✅ `plugs/` | TC-505, IT-501 ; cas propres dans [plugs.md](./cards/plugs.md#blueprint-coverage) |
+| F-CARD-05 | `sci-fi-weather` Lovelace Card | ✅ `weather/` | TC-502, TC-503, IT-501 ; cas propres dans [weather.md](./cards/weather.md#test-case-specifications) |
+| F-CARD-06 | `sci-fi-stove` Lovelace Card | ✅ `stove/` | TC-507, IT-501 ; cas propres dans [stove.md](./cards/stove.md#blueprint-coverage) |
+| F-CARD-07 | `sci-fi-vehicles` Lovelace Card | ✅ `vehicles/` | TC-508, IT-501 ; cas propres dans [vehicles.md](./cards/vehicles.md#blueprint-coverage) |
+| F-CARD-08 | `sci-fi-vacuum` Lovelace Card | ✅ `vacuum/` | TC-506, IT-501 ; cas propres dans [vacuum.md](./cards/vacuum.md#blueprint-coverage) |
+| F-CARD-09 | `sci-fi-tv` Lovelace Card | ✅ `tv/` | IT-501 ; cas propres dans [tv.md](./cards/tv.md#blueprint-coverage) |
+| F-CARD-10 | `sci-fi-water-management` Lovelace Card | ✅ `water/` | IT-501 ; cas propres dans [water.md](./cards/water.md#blueprint-coverage) et [water_history.md](./cards/water_history.md#blueprint-coverage) |
+| F-CARD-11 | `sci-fi-bridge` Lovelace Card | ✅ `bridge/` | IT-501 ; cas propres dans [bridge.md](./cards/bridge.md#blueprint-coverage) |
 
 ---
 

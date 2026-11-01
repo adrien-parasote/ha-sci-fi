@@ -9,18 +9,18 @@
 
 ## Blueprint Coverage
 
-| Feature ID | Description | Spec file |
-|---|---|---|
-| F-VAC-D01 | Header: vacuum name + fan speed (dropdown → uses sf-button-card-select) + mop_intensite (conditional) + battery (conditional, with warning/critical colors) | ✅ This spec § Header |
-| F-VAC-D02 | Sub-header: animated icon traversing card (CLEAN/RETURNING=moveAcross, DOCKED=rotate 90°, IDLE/ALERT=centered) — icon 40px, sub-header height 40px | ✅ This spec § Sub-header |
-| F-VAC-D03 | Info sensors: `current_clean_area` + `current_clean_duration` — column cards with icon + value + unit + name, centered, duration rounded to integer minutes | ✅ This spec § Info sensors |
-| F-VAC-D04 | Map: full-width `<img>` with border/radius; fallback text `msg('No map defined')` — fills all remaining space between info and actions via `flex: 1` | ✅ This spec § Map |
-| F-VAC-D05 | Actions: `.default` row (sf-button for start/pause/stop/return_to_base only — **set_fan_speed excluded**) + `.shortcuts` row — pinned to bottom | ✅ This spec § Actions |
-| F-VAC-D06 | Device navigation: bottom bar with chevron-left/right + dot indicators (hidden if single vacuum) | ✅ This spec § Devices |
-| F-VAC-D07 | Toast feedback on action success/failure via `<sf-toast>` | ✅ This spec § Toast |
-| F-VAC-D08 | Extract CSS into `styles.ts` (stove/vehicle/plugs pattern) | ✅ This spec § styles.ts |
-| F-VAC-D09 | 'vacuum_const.ts' constants file (ported from main) | ✅ This spec § Constants |
-| F-VAC-D10 | All existing vacuum tests remain GREEN (regression gate) | ✅ This spec § Test Selectors |
+| Feature ID | Description | Spec file | Covers |
+|---|---|---|---|
+| F-VAC-D01 | Header: vacuum name + fan speed (dropdown → uses sf-button-card-select) + mop_intensite (conditional) + battery (conditional, with warning/critical colors) | ✅ This spec § _renderHeader(v) | TC-1505, TC-1506, TC-1525, TC-1526 |
+| F-VAC-D02 | Sub-header: animated icon traversing card (CLEAN/RETURNING=moveAcross, DOCKED=rotate 90°, IDLE/ALERT=centered) — icon 40px, sub-header height 40px | ✅ This spec § _renderSubHeader(v) | TC-1507, TC-1508, TC-1509 |
+| F-VAC-D03 | Info sensors: `current_clean_area` + `current_clean_duration` — column cards with icon + value + unit + name, centered, duration rounded to integer minutes | ✅ This spec § _renderInfo(v) | TC-1510, TC-1511 |
+| F-VAC-D04 | Map: full-width `<img>` with border/radius; fallback text `msg('No map defined')` — fills all remaining space between info and actions via `flex: 1` | ✅ This spec § _renderMap(v) | TC-1512, TC-1513 |
+| F-VAC-D05 | Actions: `.default` row (sf-button for start/pause/stop/return_to_base only — **set_fan_speed excluded**) + `.shortcuts` row — pinned to bottom | ✅ This spec § _renderActions(v) | TC-1514, TC-1515, TC-1516, TC-1517, TC-1518 |
+| F-VAC-D06 | Device navigation: bottom bar with chevron-left/right + dot indicators (hidden if single vacuum) | ✅ This spec § _renderDevices() | TC-1519, TC-1520, TC-1521, TC-1522 |
+| F-VAC-D07 | Toast feedback on action success/failure via `<sf-toast>` | ✅ This spec § Service calls | TC-1523, TC-1524 |
+| F-VAC-D08 | Extract CSS into `styles.ts` (stove/vehicle/plugs pattern) | ✅ This spec § styles.ts | IT-1503 |
+| F-VAC-D09 | 'vacuum_const.ts' constants file (ported from main) | ✅ This spec § Constants — vacuum_const.ts | ⬜ aucun id TC — fichier de constantes, aucun cas déclaré |
+| F-VAC-D10 | All existing vacuum tests remain GREEN (regression gate) | ✅ This spec § Test Selectors — Frozen Contract | TC-1501, TC-1502, TC-1503, TC-1504, IT-1501, IT-1502 |
 
 ---
 

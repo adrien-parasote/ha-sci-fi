@@ -385,8 +385,12 @@ le contrat de re-rendu sélectif (`ha-sci-fi-93k`, commentaire portant la mesure
 La correction a pris la forme d'une consolidation plutôt que d'une douzième série d'éditions
 ancrées, sur décision de l'utilisateur. La prescription de HARDEN accomplie le 2026-06-02 — 86
 lignes, dont le bloc `markdown` qui portait le fence imbriqué de O2 — est archivée dans
-docs/specs/bridge-md-structure/spec-history.md. bridge.md passe de 1635 à 1549 lignes, et la
-cause de O2 quitte le document au lieu d'y être contournée. L'archive vit sous le dossier du lot
+docs/specs/bridge-md-structure/spec-history.md, et la cause de O2 quitte le document au lieu d'y
+être contournée. ⚠ Le document ne RÉTRÉCIT pas pour autant : 1552 lignes à la base du lot,
+1563 à l'arrivée. L'archive en retire 86, et la section `§ sf-bridge-actions` que la spec devait
+depuis la livraison, plus les corrections, en rendent 97. La valeur de cette passe est le retrait
+des surfaces de dérive, pas une réduction de taille — `/spec-consolidate` visait ≥20 % de
+réduction et ce lot n'en obtient aucune. L'archive vit sous le dossier du lot
 et non à côté de la spec : le gate de périmètre refuse un fichier neuf sous docs/specs/cards/,
 qui est le périmètre de la feature `cards`.
 

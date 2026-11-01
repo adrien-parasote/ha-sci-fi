@@ -1,7 +1,7 @@
 # Spec 09 — Workbench Editor & i18n Integration
 
 > Document Type: Implementation
-> Covers: Features F1 to F6 from [workbench_editor_i18n_blueprint.md](../strategic/workbench_editor_i18n_blueprint.md#L1)
+> Covers: Features F-WB-01 to F-WB-06, dérivées de [workbench_editor_i18n_blueprint.md](../strategic/workbench_editor_i18n_blueprint.md#L1) — ce blueprint décrit les six fonctions en prose et ne porte aucun id (sonde : `grep -n 'F1' docs/strategic/` → 0), donc les ids sont ceux de cette spec, pas les siens
 > Depends on: [Spec 03 — Base Classes & Styles](./03_base_classes.md#L1), [Spec 06 — Entry & Migration](./06_entry_migration.md#L1)
 
 ---

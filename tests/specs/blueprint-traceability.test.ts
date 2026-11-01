@@ -355,6 +355,23 @@ describe('Blueprint Coverage — les ✅ non gagnés (O6)', () => {
     expect(row).toMatch(/Aucun composant `sf-tabs` n'existe/);
   });
 
+  it('O6: aucune spec ne recommande un outil que le dépôt n’emploie pas', () => {
+    // Trouvé par le balayage post-fusion : l'anti-patron 3 de la spec 01
+    // prescrivait Vite, que F-INFRA-03 venait de déclarer absent.
+    expect(readdirSync(ROOT).filter((e) => e.startsWith('vite.config'))).toEqual([]);
+    const fautifs = SPECS.filter((f) => /Use Vite|utiliser Vite/.test(read(f)));
+    expect(fautifs).toEqual([]);
+    // Témoin positif : la recommandation réelle est bien écrite quelque part.
+    expect(read('docs/specs/01_infrastructure.md')).toContain('rollup -c --watch');
+  });
+
+  it('O4: 09_workbench_editor_i18n.md n’annonce plus les ids F1 à F6', () => {
+    const text = read('docs/specs/09_workbench_editor_i18n.md');
+    expect(text).toContain('F-WB-01'); // témoin positif
+    expect(text).not.toMatch(/\bF1 to F6\b/);
+    expect(text).not.toMatch(/^\| F[1-6] /m);
+  });
+
   it('O6: F-STOVE-D04 dit le fond que la carte applique vraiment', () => {
     // Le constat HIGH de la ronde 1 disait que la base CSS pine
     // rgba(39, 40, 43, 0.3) pour le poêle. Mesuré : elle pine

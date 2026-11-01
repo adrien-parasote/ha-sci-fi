@@ -1,0 +1,75 @@
+# Fix lot — socle-specs-01-03
+
+14 observation(s): 14 fixed, 0 escalated, 0 UNREPRODUCED.
+
+Whole suite: `npx vitest run` — green 2026-11-01T16:44:20Z
+
+## O1 — O1 — Le contrat de rendu selectif n'est specifie nulle part. `shouldUpdate()` (src/utils/base-card.ts:63) et `getRelevantEntities()` (:85) n'apparaissent ni en Blueprint Coverage, ni en Public Interface, ni en Anti-Patterns, ni en Test Case Specifications de la spec 03 — alors que `getRelevantEntities()` est le hook que chaque carte doit surcharger et que son retour [] par defaut fait re-rendre la carte a chaque changement d'etat HA. Mesure : `grep -rn 'getRelevantEntities' docs/specs/*.md` = 0. Attendu : le contrat specifie (Blueprint, Public Interface, anti-patron du retour vide, cas de test), et le cas IT retire de bridge.md reintroduit ici ou il appartient.
+
+Bead: ha-sci-fi-y6l.1
+Test: `npx vitest run tests/utils/base-card.test.ts` — green 2026-11-01T16:44:02Z
+
+## O2 — O2 — Spec 02 AP#2 prescrit « Use memoized selector functions » ; il n'existe aucune memoisation dans src/selectors/ (sonde `grep -rniE 'memo|cache|WeakMap' src/selectors/` = 0) et les en-tetes des trois fichiers revendiquent « Pure, stateless functions. No mutation. ». La spec se contredit avec le code ET avec IT-201, qui interdit explicitement un cache. Attendu : l'anti-patron tranche en faveur du livre, ou dit pourquoi il ne l'est pas.
+
+Bead: ha-sci-fi-y6l.2
+Test: `npx vitest run tests/specs/socle-contract.test.ts` — green 2026-11-01T16:44:03Z
+
+## O3 — O3 — Spec 02 AP#5 prescrit « Use typed selector domain constants » ; aucune constante de domaine n'existe, les domaines sont des litteraux (`startsWith('climate.')` climate.ts:15, `'light'` light.ts:17). Attendu : l'anti-patron dit ce que le code fait, ou nomme la dette comme dette.
+
+Bead: ha-sci-fi-y6l.3
+Test: `npx vitest run tests/specs/socle-contract.test.ts` — green 2026-11-01T16:44:04Z
+
+## O4 — O4 — Spec 02 AP#3 prescrit « Always use strict custom types from ha.ts » ; la classe de base type `hass?: any` et `setConfig(config: any)` (base-card.ts:19-20) au titre de l'interface externe `LovelaceCard`, et utils/action.ts:9-12 type les trois `*_action` en `any` alors qu'`ActionConfig` existe (types/config.ts:23). Attendu : l'exception de frontiere HA enoncee dans la spec, la dette interne nommee.
+
+Bead: ha-sci-fi-y6l.4
+Test: `npx vitest run tests/specs/socle-contract.test.ts` — green 2026-11-01T16:44:04Z
+
+## O5 — O5 — Spec 03 AP#4 prescrit « Import editor common styles from `editor.ts` » : ce fichier n'existe pas, la feuille est `src/styles/editor-common.ts`. Et la regle 4 du § Design Tokens affirme « Editors use the --editor-* family » : vrai des 11 editeurs de carte (tous importent editor-common), faux des 11 composants de src/components/editor-inputs/ qui consomment les variables de theme HA en direct et zero `--editor-*`. La spec ne distingue pas les deux etages.
+
+Bead: ha-sci-fi-y6l.5
+Test: `npx vitest run tests/specs/socle-contract.test.ts` — green 2026-11-01T16:44:05Z
+
+## O6 — O6 — Spec 03 § Error Handling promet « Missing Configuration → Render setup required warning card » : le code rend `nothing` (base-card.ts:104). Et « Style Injection Error → Load fallback styling tokens seamlessly » n'est implemente nulle part. Spec 02 § Error Handling promet « Null Registry → Log warning in console » : zero `console.*` dans src/selectors/.
+
+Bead: ha-sci-fi-y6l.6
+Test: `npx vitest run tests/specs/socle-contract.test.ts` — green 2026-11-01T16:44:06Z
+
+## O7 — O7 — Spec 01 F-INFRA-05 porte ✅ `.eslintrc.json` et le File Tree le liste [NEW] : le fichier n'existe pas, la configuration est plate (`eslint.config.mjs`). Le meme File Tree liste `.devcontainer/devcontainer.json` et `.devcontainer/docker-compose.yml` en [NEW] alors que F-INFRA-06 dit, deux tables plus haut, qu'ils n'existent pas.
+
+Bead: ha-sci-fi-y6l.7
+Test: `npx vitest run tests/specs/socle-contract.test.ts` — green 2026-11-01T16:44:07Z
+
+## O8 — O8 — Spec 01 TC-104 exige « Exit code 0, zero lint warnings » quand `npm run lint` est `eslint --max-warnings 166` : la spec exige zero, le gate en autorise 166, et le compte reel est a la marge exacte.
+
+Bead: ha-sci-fi-y6l.8
+Test: `npx vitest run tests/specs/socle-contract.test.ts` — green 2026-11-01T16:44:08Z
+
+## O9 — O9 — Trois cellules vides dans les tables de la spec 01 : l'« Expected Output » de TC-102 (le critere de succes du cas), et deux lignes de Public Interface dont l'element est vide (« Browser / Source map for debugging », « Cards / Shared editor styles »). La derniere ligne de cette table est une enumeration de types generee (`Constraints, DOMException, Error, Map, TypeError`...) qui ne decrit aucune interface.
+
+Bead: ha-sci-fi-y6l.9
+Test: `npx vitest run tests/specs/socle-contract.test.ts` — green 2026-11-01T16:44:09Z
+
+## O10 — O10 — Spec 02 § Public Interface omet 9 des 16 fonctions exportees par src/selectors/ : getAreas, getAreaById, getFirstFloor, getEntitiesByAreaAndDomain, getLightState, hasActiveLights, getClimateState, getClimateEntitiesExcluding, isClimateActive.
+
+Bead: ha-sci-fi-y6l.10
+Test: `npx vitest run tests/specs/socle-contract.test.ts` — green 2026-11-01T16:44:10Z
+
+## O11 — O11 — `HassEntityEntry.domain` est declare obligatoire (src/types/ha.ts:44) alors que src/selectors/house.ts:111 affirme « the HA entity_registry API does NOT send a `domain` field » et le derive du prefixe d'entity_id. Le type et son propre consommateur se contredisent, et la spec 02 ne tranche pas.
+
+Bead: ha-sci-fi-y6l.11
+Test: `npx vitest run tests/specs/socle-contract.test.ts` — green 2026-11-01T16:44:11Z
+
+## O12 — O12 — `isClimateActive` est documente « currently heating » et rend `state !== 'off'` (climate.ts:44-50) : `unavailable` et `unknown` comptent comme chauffant. Ni la spec 02 ni un cas de test ne disent lequel des deux est le contrat.
+
+Bead: ha-sci-fi-y6l.12
+Test: `npx vitest run tests/specs/socle-contract.test.ts` — green 2026-11-01T16:44:12Z
+
+## O13 — O13 — Le File Tree de la spec 03 omet `src/utils/action.ts` et `src/utils/toast.ts`, et ne nomme aucun des deux mecanismes de notification du socle : `src/utils/toast.ts` (showToast, 5 cartes) et `src/components/sf-toast.ts` (element, 10 cartes). Deux mecanismes paralleles, zero ligne de spec.
+
+Bead: ha-sci-fi-y6l.13
+Test: `npx vitest run tests/specs/socle-contract.test.ts` — green 2026-11-01T16:44:12Z
+
+## O14 — O14 — Les en-tetes de src/utils/base-card.ts et src/utils/base-editor.ts annoncent « all 8 sci-fi Lovelace cards » / « all 8 card editors » : il y a 11 cartes et 11 editeurs. La spec 03, qui cite ces deux fichiers, ne porte aucun compte — mais le socle dit faux dans son propre commentaire.
+
+Bead: ha-sci-fi-y6l.14
+Test: `npx vitest run tests/specs/socle-contract.test.ts` — green 2026-11-01T16:44:13Z

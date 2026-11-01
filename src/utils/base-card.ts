@@ -1,5 +1,7 @@
 /**
- * SciFiBaseCard — Abstract base class for all 8 sci-fi Lovelace cards.
+ * SciFiBaseCard — Abstract base class for every sci-fi Lovelace card.
+ * (Said "all 8" until 2026-11-01; there are 11, and a count in a comment
+ *  goes stale the next time one is added.)
  *
  * Subclass contract:
  * - MUST implement `renderCard()` — used instead of overriding `render()`

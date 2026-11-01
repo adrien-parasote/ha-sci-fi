@@ -12,7 +12,7 @@
 |---|---|---|---|
 | Step 1 — Infrastructure | F-INFRA-01 to 08 | [01_infrastructure.md](./specs/01_infrastructure.md#blueprint-coverage) | ✅ |
 | Step 2 — Domain Selectors + Types | F-DOM-01 to 07 | [02_domain_selectors.md](./specs/02_domain_selectors.md#blueprint-coverage) | ✅ |
-| Step 3 — Base Classes | F-BASE-01 to 07 | [03_base_classes.md](./specs/03_base_classes.md#blueprint-coverage) | ✅ |
+| Step 3 — Base Classes | F-BASE-01 to 08 | [03_base_classes.md](./specs/03_base_classes.md#blueprint-coverage) | ✅ |
 | Step 4 — Components | F-COMP-01 to 06 | [04_components.md](./specs/04_components.md#blueprint-coverage) | ✅ |
 | Step 5 — Cards (11) | F-CARD-01 to 11 | [05_cards.md](./specs/05_cards.md#blueprint-coverage) | ✅ |
 | Step 6 — Entry + i18n | F-ENTRY-01, F-ICON-01, F-I18N-01, F-MIGR-01, F-GIT-01 | [06_entry_migration.md](./specs/06_entry_migration.md#blueprint-coverage) | ✅ sauf F-MIGR-01, `⬜ not delivered` par ADR-005 — aucune migration n'était nécessaire |

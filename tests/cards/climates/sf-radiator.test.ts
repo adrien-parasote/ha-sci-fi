@@ -316,7 +316,7 @@ describe('sf-radiator', () => {
       expect(btn.getAttribute('style')).to.include(color as string);
     });
 
-    // 05_cards.md §8 and TC-005: an unmapped mode falls back to `off`, not to a
+    // 05_cards.md §8 and TC-CLIMATES-U-005: an unmapped mode falls back to `off`, not to a
     // generic placeholder icon and the primary colour.
     it('falls back to the off icon and colour for an unmapped preset', async () => {
       const el = await mount('eco');

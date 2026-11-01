@@ -313,7 +313,7 @@ export class SciFiRadiator extends LitElement {
   }
 
   /**
-   * 05_cards.md §8 and climates.md TC-005: a mode absent from `mode_icons` /
+   * 05_cards.md §8 and climates.md TC-CLIMATES-U-005: a mode absent from `mode_icons` /
    * `state_icons` falls back to the `off` STATE icon and colour — not to a
    * generic placeholder, which is what the code did for every unmapped mode.
    */

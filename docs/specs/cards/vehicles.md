@@ -11,15 +11,15 @@
 
 | Feature ID | Description | Spec file | Covers |
 |---|---|---|---|
-| F-VEH-D01 | Header: vehicle name centered + prev/next navigation buttons (multi-vehicle) | ✅ This spec § _renderHeader() | tests/cards/vehicles/sci-fi-vehicles.test.ts :: TC-1204, TC-1205, TC-1206, TC-1212, TC-1213 |
-| F-VEH-D02 | `sf-landspeeder` component: SVG top-view image + overlaid data panels (top, middle) | ✅ This spec § sf-landspeeder.ts — New Component | tests/cards/vehicles/sci-fi-vehicles.test.ts :: TC-1207, TC-1208 |
+| F-VEH-D01 | Header: vehicle name centered + prev/next navigation buttons (multi-vehicle) | ✅ This spec § _renderHeader() | tests/cards/vehicles/sci-fi-vehicles.test.ts :: TC-VEHICLES-U-1204, TC-VEHICLES-U-1205, TC-VEHICLES-U-1206, TC-VEHICLES-U-1212, TC-VEHICLES-U-1213 |
+| F-VEH-D02 | `sf-landspeeder` component: SVG top-view image + overlaid data panels (top, middle) | ✅ This spec § sf-landspeeder.ts — New Component | tests/cards/vehicles/sci-fi-vehicles.test.ts :: TC-VEHICLES-U-1207, TC-VEHICLES-U-1208 |
 | F-VEH-D03 | Landspeeder `.top` zone: location (with map link) + mileage | ✅ This spec § _renderTop() zone | ⬜ aucun id TC — aucun cas ne pine le contenu de la zone `.top` |
 | F-VEH-D04 | Landspeeder `.middle` zone: lock + fuel + battery + charging panels positioned on SVG | ✅ This spec § _renderMiddle() zone | ⬜ aucun id TC — aucun cas ne pine le contenu de la zone `.middle` |
-| F-VEH-D05 | Actions bar: temperature `sf-wheel` + Start AC / Stop AC buttons | ✅ This spec § _renderActions() | tests/cards/vehicles/sci-fi-vehicles.test.ts :: TC-1209, TC-1210, TC-1211 |
+| F-VEH-D05 | Actions bar: temperature `sf-wheel` + Start AC / Stop AC buttons | ✅ This spec § _renderActions() | tests/cards/vehicles/sci-fi-vehicles.test.ts :: TC-VEHICLES-U-1209, TC-VEHICLES-U-1210, TC-VEHICLES-U-1211 |
 | F-VEH-D06 | Extract CSS into `styles.ts` (stove/climate pattern) | ✅ This spec § styles.ts | tests/cards/vehicles/sci-fi-vehicles.test.ts :: TC-1215 |
 | F-VEH-D07 | Battery color thresholds: green ≥60%, orange 20-59%, red <20% | ✅ This spec § _renderMiddle() zone | ⬜ aucun id TC — les trois seuils ne sont pinés par aucun cas |
 | F-VEH-D08 | Charge state + plug state icon mapping from `vehicles/vehicle_const.ts` | ✅ This spec § Constants — vehicle_const.ts | ⬜ aucun id TC — table de correspondance, aucun cas déclaré |
-| F-VEH-D09 | All existing 6 vehicle tests remain GREEN (regression gate) | ✅ This spec § Test Selectors — Frozen Contract | tests/cards/vehicles/sci-fi-vehicles.test.ts :: TC-1201, TC-1202, TC-1203, TC-1214, IT-1201, IT-1202 |
+| F-VEH-D09 | All existing 6 vehicle tests remain GREEN (regression gate) | ✅ This spec § Test Selectors — Frozen Contract | tests/cards/vehicles/sci-fi-vehicles.test.ts :: TC-VEHICLES-U-1201, TC-VEHICLES-U-1202, TC-VEHICLES-U-1203, TC-VEHICLES-U-1214, IT-VEHICLES-I-1201, IT-VEHICLES-I-1202 |
 
 ---
 
@@ -641,25 +641,30 @@ The component CSS is ported 1:1 from 'main:src/components/landspeeder/style.js',
 
 ## Test Case Specifications
 
+> **⬜ dans la colonne ID : le cas n'est joué par aucun test.** Une ligne sur dix-sept : `tests/cards/vehicles/sci-fi-vehicles.test.ts` s'arrête à `IT-VEHICLES-I-1202`.
+> Le marqueur est la seule source : `tests/specs/ids-cas-uniques.test.ts` dérive
+> l'ensemble des cas non joués de ces marques et refuse l'écart dans les deux
+> sens — un cas non marqué que rien ne cite, comme un cas marqué qu'un test porte.
+
 | Test ID | Type | Description | Input | Expected Output |
 |---|---|---|---|---|
-| TC-1201 | Unit | `getConfigElement()` returns correct editor tag | static call | `tagName === 'sci-fi-vehicles-editor'` |
-| TC-1202 | Unit | `getStubConfig()` returns correct type | static call | `config.type === 'custom:sci-fi-vehicles'` |
-| TC-1203 | Unit | Renders empty without hass | no hass | `shadowRoot.textContent` is empty |
-| TC-1204 | Unit | Renders vehicle name in header | `vehicles: [{id:'v1', name:'Tesla'}]` | textContent includes `'Tesla'` |
-| TC-1205 | Unit | Prev/next buttons hidden for single vehicle | 1 vehicle | `.hide` class on both button containers |
-| TC-1206 | Unit | Prev/next buttons visible for multiple vehicles | 2 vehicles | no `.hide` class on button containers |
-| TC-1207 | Unit | `sf-landspeeder` present in shadow DOM | mounted with hass | `querySelector('sf-landspeeder')` not null |
-| TC-1208 | Unit | `sf-landspeeder` receives vehicle prop | `vehicles[0]` configured | `landspeeder.vehicle` deep-equals `config.vehicles[0]` |
-| TC-1209 | Unit | AC actions section present | mounted with hass | `querySelector('.actions')` not null |
-| TC-1210 | Unit | Temperature wheel present in actions | mounted with hass | `querySelector('sf-wheel')` not null |
-| TC-1211 | Unit | Start and Stop AC buttons present | mounted with hass | 2 `sf-button-card` elements in `.ac` |
-| TC-1212 | Unit | Prev navigation cycles to last vehicle | 2 vehicles, click prev from idx 0 | `.title` textContent changes to second vehicle name |
-| TC-1213 | Unit | Next navigation cycles to first vehicle | 2 vehicles, click next from idx 1 | `.title` textContent changes to first vehicle name |
-| TC-1214 | Regression | All existing 2 static tests pass | `getConfigElement`, `getStubConfig` | No failures |
-| IT-1201 | Integration | Card registers in `customElements` | load card | `customElements.get('sci-fi-vehicles')` returns class |
-| IT-1202 | Integration | Card full render: header + landspeeder + actions | mount with full config | All 3 sections present |
-| IT-1203 | Integration | `vehicles/styles.ts` imported — no inline `css\`` in `vehicles/sci-fi-vehicles.ts` | grep | 'grep -c "css\`" sci-fi-vehicles.ts' returns 0 |
+| TC-VEHICLES-U-1201 | Unit | `getConfigElement()` returns correct editor tag | static call | `tagName === 'sci-fi-vehicles-editor'` |
+| TC-VEHICLES-U-1202 | Unit | `getStubConfig()` returns correct type | static call | `config.type === 'custom:sci-fi-vehicles'` |
+| TC-VEHICLES-U-1203 | Unit | Renders empty without hass | no hass | `shadowRoot.textContent` is empty |
+| TC-VEHICLES-U-1204 | Unit | Renders vehicle name in header | `vehicles: [{id:'v1', name:'Tesla'}]` | textContent includes `'Tesla'` |
+| TC-VEHICLES-U-1205 | Unit | Prev/next buttons hidden for single vehicle | 1 vehicle | `.hide` class on both button containers |
+| TC-VEHICLES-U-1206 | Unit | Prev/next buttons visible for multiple vehicles | 2 vehicles | no `.hide` class on button containers |
+| TC-VEHICLES-U-1207 | Unit | `sf-landspeeder` present in shadow DOM | mounted with hass | `querySelector('sf-landspeeder')` not null |
+| TC-VEHICLES-U-1208 | Unit | `sf-landspeeder` receives vehicle prop | `vehicles[0]` configured | `landspeeder.vehicle` deep-equals `config.vehicles[0]` |
+| TC-VEHICLES-U-1209 | Unit | AC actions section present | mounted with hass | `querySelector('.actions')` not null |
+| TC-VEHICLES-U-1210 | Unit | Temperature wheel present in actions | mounted with hass | `querySelector('sf-wheel')` not null |
+| TC-VEHICLES-U-1211 | Unit | Start and Stop AC buttons present | mounted with hass | 2 `sf-button-card` elements in `.ac` |
+| TC-VEHICLES-U-1212 | Unit | Prev navigation cycles to last vehicle | 2 vehicles, click prev from idx 0 | `.title` textContent changes to second vehicle name |
+| TC-VEHICLES-U-1213 | Unit | Next navigation cycles to first vehicle | 2 vehicles, click next from idx 1 | `.title` textContent changes to first vehicle name |
+| TC-VEHICLES-U-1214 | Regression | All existing 2 static tests pass | `getConfigElement`, `getStubConfig` | No failures |
+| IT-VEHICLES-I-1201 | Integration | Card registers in `customElements` | load card | `customElements.get('sci-fi-vehicles')` returns class |
+| IT-VEHICLES-I-1202 | Integration | Card full render: header + landspeeder + actions | mount with full config | All 3 sections present |
+| IT-VEHICLES-I-1203 ⬜ | Integration | `vehicles/styles.ts` imported — no inline `css\`` in `vehicles/sci-fi-vehicles.ts` | grep | 'grep -c "css\`" sci-fi-vehicles.ts' returns 0 |
 
 ---
 

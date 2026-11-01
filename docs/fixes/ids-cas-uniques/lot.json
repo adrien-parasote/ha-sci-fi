@@ -1,0 +1,31 @@
+{
+  "feature": "ids-cas-uniques",
+  "created": "2026-11-01T17:58:05Z",
+  "frozen_at": "2026-11-01T18:04:18Z",
+  "epic": "ha-sci-fi-xtg",
+  "observations": [
+    {
+      "id": "O1",
+      "text": "20 ids de cas de test collisionnent entre 7 specs cartes : climates.md, lights.md, water.md, water_history.md et weather.md declarent toutes TC-001 a TC-005 et IT-001 a IT-003 ; hexa-tiles.md et tv.md declarent toutes deux TC-701 a TC-709 et IT-701 a IT-703. Mesure du 2026-11-01 (bead ha-sci-fi-cft) : 286 lignes d'id declarees dans docs/specs, 242 ids distincts, 44 lignes en double. Attendu : un espace d'ids unique par spec, obtenu par un prefixe derive du nom de fichier, sur le modele de bridge.md qui porte deja TC-BRIDGE-U-NN et IT-BRIDGE-I-NN. Vu par la mesure du lot fix ids-tracabilite ; la collision mord des qu'une spec, un rapport ou une revue cite TC-701 sans nommer le fichier.",
+      "bead": "ha-sci-fi-xtg.1",
+      "test": "npx vitest run tests/specs/ids-cas-uniques.test.ts -t \"l’unicité\"",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O2",
+      "text": "Les onze specs cartes autres que bridge.md ne portent aucun prefixe : rien dans l'arbre n'empeche la prochaine spec carte de repartir a TC-001 et de recollisionner. Attendu : la regle de nommage est derivee mecaniquement du nom de fichier et verifiee par un garde, pas tenue a la main.",
+      "bead": "ha-sci-fi-xtg.2",
+      "test": "npx vitest run tests/specs/ids-cas-uniques.test.ts -t \"la forme qui empêche la rechute\"",
+      "unreproduced": null,
+      "escalated": null
+    }
+  ],
+  "suite": "npm test",
+  "lint": "npm run lint",
+  "suite_run": {
+    "at": "2026-11-01T18:35:43Z",
+    "rc": 0,
+    "tail": ""
+  }
+}

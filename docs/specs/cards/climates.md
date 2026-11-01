@@ -88,18 +88,23 @@ mode_colors:
 
 ## Test Case Specifications
 
+> **⬜ dans la colonne ID : le cas n'est joué par aucun test.** Six des huit lignes : `tests/cards/climates/sci-fi-climates.test.ts` ne porte que `TC-CLIMATES-U-002`, et `sf-radiator.test.ts` que `TC-CLIMATES-U-005`.
+> Le marqueur est la seule source : `tests/specs/ids-cas-uniques.test.ts` dérive
+> l'ensemble des cas non joués de ces marques et refuse l'écart dans les deux
+> sens — un cas non marqué que rien ne cite, comme un cas marqué qu'un test porte.
+
 > Full test suite in [tests/cards/climates/](../../tests/cards/climates/#L1).
 
 | ID | Type | Description | Input | Expected Output |
 |---|---|---|---|---|
-| TC-001 | Unit | Renders with minimal config | `type` only | Card renders without error |
-| TC-002 | Unit | `entities_to_exclude` hides entity | Entity ID in `entities_to_exclude` | Entity not rendered |
-| TC-003 | Unit | `state_icons` overrides HVAC icon | `state_icons.heat: mdi:fire` | Custom icon rendered for heat state |
-| TC-004 | Unit | `state_colors` overrides HVAC color | `state_colors.heat: "#ff0000"` | Custom color applied to heat state |
-| TC-005 | Unit | Unmapped HVAC mode falls back to `off` | Mode not present in `mode_icons` | `off` icon/color used, no crash |
-| IT-001 | Integration | Temperature update re-renders card | `hass.states` updated with new temp | Current temp updated in DOM |
-| IT-002 | Integration | Editor emits config-changed on entity exclude | User removes entity in editor | config.entities_to_exclude updated |
-| IT-003 | Integration | Card updates on HVAC mode change | hass.states mode change event | Icon and color update in DOM |
+| TC-CLIMATES-U-001 ⬜ | Unit | Renders with minimal config | `type` only | Card renders without error |
+| TC-CLIMATES-U-002 | Unit | `entities_to_exclude` hides entity | Entity ID in `entities_to_exclude` | Entity not rendered |
+| TC-CLIMATES-U-003 ⬜ | Unit | `state_icons` overrides HVAC icon | `state_icons.heat: mdi:fire` | Custom icon rendered for heat state |
+| TC-CLIMATES-U-004 ⬜ | Unit | `state_colors` overrides HVAC color | `state_colors.heat: "#ff0000"` | Custom color applied to heat state |
+| TC-CLIMATES-U-005 | Unit | Unmapped HVAC mode falls back to `off` | Mode not present in `mode_icons` | `off` icon/color used, no crash |
+| IT-CLIMATES-I-001 ⬜ | Integration | Temperature update re-renders card | `hass.states` updated with new temp | Current temp updated in DOM |
+| IT-CLIMATES-I-002 ⬜ | Integration | Editor emits config-changed on entity exclude | User removes entity in editor | config.entities_to_exclude updated |
+| IT-CLIMATES-I-003 ⬜ | Integration | Card updates on HVAC mode change | hass.states mode change event | Icon and color update in DOM |
 
 ## Error Handling
 

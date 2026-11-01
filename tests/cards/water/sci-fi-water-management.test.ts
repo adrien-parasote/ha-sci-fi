@@ -121,7 +121,7 @@ describe('sci-fi-water-management', () => {
   });
 
   describe('Automation History Logs (Spec 12)', () => {
-    it('TC-1201, TC-007: filters alerts and success logs correctly', async () => {
+    it('TC-1201, TC-WATER-U-007: filters alerts and success logs correctly', async () => {
       const el = document.createElement('sci-fi-water-management') as any;
       el.config = { type: 'custom:sci-fi-water-management', filter_label: 'water' };
       el.hass = makeMockHass({});
@@ -675,7 +675,7 @@ describe('sci-fi-water-management', () => {
     return el;
   }
 
-  it('TC-006: _expandedMap tracks each accordion independently', async () => {
+  it('TC-WATER-U-006: _expandedMap tracks each accordion independently', async () => {
     const el = await mountWithTwoDevices();
     const accordions = el.shadowRoot!.querySelectorAll('sf-editor-accordion');
     expect(accordions.length, 'one accordion per device group').toBeGreaterThanOrEqual(2);
@@ -699,7 +699,7 @@ describe('sci-fi-water-management', () => {
     expect([...(el as any)._expandedMap.values()].filter(Boolean).length).toBe(1);
   });
 
-  it('TC-008: the floor sync button triggers _fetchHistoryLogs', async () => {
+  it('TC-WATER-U-008: the floor sync button triggers _fetchHistoryLogs', async () => {
     const el = await mountWithTwoDevices();
     const spy = vi.spyOn(el as any, '_fetchHistoryLogs').mockResolvedValue(undefined);
 

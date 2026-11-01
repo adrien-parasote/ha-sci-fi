@@ -120,7 +120,7 @@ describe('sci-fi-weather', () => {
       await el.updateComplete;
     });
 
-    it('TC-001: Header rendering', () => {
+    it('TC-WEATHER-U-001: Header rendering', () => {
       const header = el.shadowRoot!.querySelector('.header');
       expect(header).not.to.be.null;
       const clock = header!.querySelector('.weather-clock');
@@ -129,7 +129,7 @@ describe('sci-fi-weather', () => {
       expect(clock!.querySelector('.date')).not.to.be.null;
     });
 
-    it('TC-002, TC-503: Alerts rendering', () => {
+    it('TC-WEATHER-U-002, TC-503: Alerts rendering', () => {
       const alerts = el.shadowRoot!.querySelector('.alerts');
       expect(alerts).not.to.be.null;
       // Should show 'Crues' (Orange) and 'Orages' (Jaune)
@@ -137,21 +137,21 @@ describe('sci-fi-weather', () => {
       expect(alerts!.textContent).to.include('Orages');
     });
 
-    it('TC-003: Today summary rendering', () => {
+    it('TC-WEATHER-U-003: Today summary rendering', () => {
       const summary = el.shadowRoot!.querySelector('.today-summary');
       expect(summary).not.to.be.null;
       const sensors = summary!.querySelectorAll('.sensor');
       expect(sensors.length).to.equal(5);
     });
 
-    it('TC-004: Chart rendering', () => {
+    it('TC-WEATHER-U-004: Chart rendering', () => {
       const chartContainer = el.shadowRoot!.querySelector('.chart-container');
       expect(chartContainer).not.to.be.null;
       const canvas = chartContainer!.querySelector('canvas');
       expect(canvas).not.to.be.null;
     });
 
-    it('TC-005: Days list rendering', () => {
+    it('TC-WEATHER-U-005: Days list rendering', () => {
       const days = el.shadowRoot!.querySelector('.days-forecast');
       expect(days).not.to.be.null;
       const weathers = days!.querySelectorAll('.weather');
@@ -182,7 +182,7 @@ describe('sci-fi-weather', () => {
       await el.updateComplete;
     });
 
-    it('IT-001: Chart Interaction (Dropdown updates chartDataKind)', async () => {
+    it('IT-WEATHER-I-001: Chart Interaction (Dropdown updates chartDataKind)', async () => {
       const dropdownBtn = el.shadowRoot!.querySelector('.dropdow-button') as HTMLButtonElement;
       expect(dropdownBtn).not.to.be.null;
       dropdownBtn.click(); // Open dropdown
@@ -199,7 +199,7 @@ describe('sci-fi-weather', () => {
       }
     });
 
-    it('IT-002: Day Selection updates _day_selected', async () => {
+    it('IT-WEATHER-I-002: Day Selection updates _day_selected', async () => {
       // Mock daily forecast to return 2 days
       el.hass.connection.subscribeMessage = async (callback: any, params: any) => {
         if (params.forecast_type === 'daily') {
@@ -224,7 +224,7 @@ describe('sci-fi-weather', () => {
       expect((el as any)._day_selected).to.equal(1);
     });
 
-    it('IT-003: Clock Update via Interval', async () => {
+    it('IT-WEATHER-I-003: Clock Update via Interval', async () => {
       const initialDate = (el as any)._date.getTime();
       
       // Advance timers by 11 seconds (interval is 10s)

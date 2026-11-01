@@ -21,13 +21,13 @@
 
 | Feature ID | Description | Spec file | Covers |
 |---|---|---|---|
-| F-STOVE-D01 | En-tête : le `friendly_name` seul, sur une ligne à bordure basse, avec repli localisé | ✅ This spec § Header et ligne de statut | tests/cards/stove/sci-fi-stove.test.ts :: TC-1105, TC-1115, IT-1102 |
-| F-STOVE-D02 | Statut : icône, libellé et classe de couleur choisis ensemble par `STATUS_ICONS`, sur `.status` dans la zone médiane | ✅ This spec § Header et ligne de statut | tests/cards/stove/sci-fi-stove.test.ts :: TC-1101, TC-1102, TC-1103, TC-1104, TC-1114 |
-| F-STOVE-D03 | Extract CSS into `styles.ts` (climate pattern) | ✅ This spec § styles.ts | tests/cards/stove/styles.test.ts :: TC-1113 · tests/cards/stove/sci-fi-stove.test.ts :: IT-1103 |
+| F-STOVE-D01 | En-tête : le `friendly_name` seul, sur une ligne à bordure basse, avec repli localisé | ✅ This spec § Header et ligne de statut | tests/cards/stove/sci-fi-stove.test.ts :: TC-STOVE-U-1105, TC-STOVE-U-1115, IT-STOVE-I-1102 |
+| F-STOVE-D02 | Statut : icône, libellé et classe de couleur choisis ensemble par `STATUS_ICONS`, sur `.status` dans la zone médiane | ✅ This spec § Header et ligne de statut | tests/cards/stove/sci-fi-stove.test.ts :: TC-STOVE-U-1101, TC-STOVE-U-1102, TC-STOVE-U-1103, TC-STOVE-U-1104, TC-STOVE-U-1114 |
+| F-STOVE-D03 | Extract CSS into `styles.ts` (climate pattern) | ✅ This spec § styles.ts | tests/cards/stove/styles.test.ts :: TC-STOVE-U-1113 · tests/cards/stove/sci-fi-stove.test.ts :: IT-STOVE-I-1103 |
 | F-STOVE-D04 | `ha-card` background `var(--sf-bg)` — mesuré le 2026-11-01 dans `tests/styles/card-css-baseline.json` ; la valeur `rgba(39,40,43,0.3)` que cette ligne annonçait n'est appliquée par aucune règle de `sci-fi-stove` (elle l'est par `lights`, `vehicles`, `water-management` et `weather`) | ✅ This spec § styles.ts | tests/styles/card-css-baseline.test.ts (« sci-fi-stove resolves to the same CSS as the baseline », sans id) |
-| F-STOVE-D05 | Zone contenu : l'illustration `sf-stove-image`, puis le panneau `.info` en trois zones (jauges, statut + températures, puissances) | ✅ This spec § sci-fi-stove.ts — la structure rendue | tests/cards/stove/sci-fi-stove.test.ts :: IT-1102 · tests/cards/stove/sci-fi-stove.test.ts (« renders .content with .info panel », « renders stove-image component with correct state », « renders fan speed in .powers section… », sans id) |
+| F-STOVE-D05 | Zone contenu : l'illustration `sf-stove-image`, puis le panneau `.info` en trois zones (jauges, statut + températures, puissances) | ✅ This spec § sci-fi-stove.ts — la structure rendue | tests/cards/stove/sci-fi-stove.test.ts :: IT-STOVE-I-1102 · tests/cards/stove/sci-fi-stove.test.ts (« renders .content with .info panel », « renders stove-image component with correct state », « renders fan speed in .powers section… », sans id) |
 | F-STOVE-D06 | Les jauges sont des composants, pas des règles de la feuille : `sf-circle-progress-bar` pour les granulés, `sf-stack-bar` pour le stock, et rien quand l'état n'est pas numérique | ✅ This spec § sci-fi-stove.ts — la structure rendue | tests/cards/stove/sci-fi-stove.test.ts (« renders sf-circle-progress-bar for pellet quantity », « renders sf-stack-bar for storage_counter », « does not render pellet gauge when state is non-numeric (NaN branch) », sans id) |
-| F-STOVE-D07 | Les sélecteurs que les tests lisent ne sont pas renommés | ✅ This spec § Test Selectors — Frozen Contract | tests/cards/stove/sci-fi-stove.test.ts :: TC-1111, TC-1114, IT-1101 |
+| F-STOVE-D07 | Les sélecteurs que les tests lisent ne sont pas renommés | ✅ This spec § Test Selectors — Frozen Contract | tests/cards/stove/sci-fi-stove.test.ts :: TC-STOVE-U-1111, TC-STOVE-U-1114, IT-STOVE-I-1101 |
 | F-STOVE-D08 | Barre inférieure : mode HVAC, molette de température et mode éco, chacun écrivant par un service et confirmant par `sf-toast` | ✅ This spec § Barre inférieure — les contrôles interactifs | tests/cards/stove/sci-fi-stove.test.ts :: test_O3_eco_switch_renders_a_toggle_and_reflects_its_state, test_O3_eco_switch_toggle_calls_switch_toggle, test_O3_no_dead_control_when_neither_switch_nor_presets · tests/cards/stove/sci-fi-stove.test.ts (« renders .bottom interactive section », « calls climate services and shows sf-toast on hvac/temp/preset actions », les trois chemins d'erreur et le garde `isNaN`, sans id) |
 
 ---
@@ -173,7 +173,7 @@ aussi celles qu'écrivait le `binary_sensor` de l'intégration HACS.
 | `wood_burning_off` | `sci:stove-cool` | blue | core |
 
 Le repli `sci:stove-unknow` + `replaceAll('_', ' ')` **reste en place** : il couvre une
-valeur future que l'intégration ajouterait (TC-1114 le vérifie).
+valeur future que l'intégration ajouterait (TC-STOVE-U-1114 le vérifie).
 
 > **Source du vocabulaire** : relevé sur l'installation d'Adrien le 2026-10-31
 > (HA 2026.10.4, intégration core `fumis`), consigné dans le bead `ha-sci-fi-nib` ;
@@ -232,7 +232,7 @@ private _renderHeader(name: string): TemplateResult {
 
 Le nom lui est passé par `renderCard` :
 `stoveState.attributes.friendly_name ?? msg('Stove')` — un repli **localisé**,
-pas un littéral (TC-1115 le tient).
+pas un littéral (TC-STOVE-U-1115 le tient).
 
 Son CSS (`styles.ts:25-33`) n'a qu'une bordure, en bas :
 
@@ -469,11 +469,11 @@ La température cible est `attributes.temperature ?? attributes.current_temperat
 
 | Sélecteur gelé | Ce que le test en lit | Cas |
 |---|---|---|
-| `.stove-status` | le libellé d'état, `textContent` | TC-1103, TC-1104, TC-1114 |
-| `.status` + sa classe de couleur (`off`, `amber`, `red`, `green`, `blue`) | la classe présente sur la ligne de statut | TC-1103, TC-1104 |
-| `sf-icon[icon="sci:stove-heat"]` / `sf-icon[icon="sci:stove-off"]` | l'icône choisie par `STATUS_ICONS` | TC-1101, TC-1102 |
-| `.header` | le `friendly_name`, ou son repli localisé | TC-1105, TC-1115 |
-| `sf-stove-image`, `sf-circle-progress-bar`, `sf-stack-bar` | la présence des composants de la zone contenu | IT-1102 |
+| `.stove-status` | le libellé d'état, `textContent` | TC-STOVE-U-1103, TC-STOVE-U-1104, TC-STOVE-U-1114 |
+| `.status` + sa classe de couleur (`off`, `amber`, `red`, `green`, `blue`) | la classe présente sur la ligne de statut | TC-STOVE-U-1103, TC-STOVE-U-1104 |
+| `sf-icon[icon="sci:stove-heat"]` / `sf-icon[icon="sci:stove-off"]` | l'icône choisie par `STATUS_ICONS` | TC-STOVE-U-1101, TC-STOVE-U-1102 |
+| `.header` | le `friendly_name`, ou son repli localisé | TC-STOVE-U-1105, TC-STOVE-U-1115 |
+| `sf-stove-image`, `sf-circle-progress-bar`, `sf-stack-bar` | la présence des composants de la zone contenu | IT-STOVE-I-1102 |
 
 Les quatre classes que cette table gelait autrefois — `.sensor-tile`,
 `.sensor-tile.warn`, `.bar-fill.pellet`, `.bar-fill.storage` — ne sont pas
@@ -501,18 +501,18 @@ les promettaient (bead `ha-sci-fi-9xf`), et aucun rendu ne les produit.
 
 | Test ID | Type | Description | Input | Expected Output |
 |---|---|---|---|---|
-| TC-1101 | Unit | La ligne de statut rend `sf-icon` avec `sci:stove-heat` en combustion | `sensor_status: 'combustion'` | `sf-icon[icon="sci:stove-heat"]` présent |
-| TC-1102 | Unit | La ligne de statut rend `sf-icon` avec `sci:stove-off` à l'arrêt | `sensor_status: 'off'` | `sf-icon[icon="sci:stove-off"]` présent |
-| TC-1103 | Unit | La ligne de statut porte sa classe de couleur en combustion | `sensor_status: 'combustion'` | `.status.red` présent, `.stove-status` = `combustion` |
-| TC-1104 | Unit | La ligne de statut porte sa classe de couleur à l'arrêt | `sensor_status: 'off'` | `.status.off` présent, `.stove-status` = `off` |
-| TC-1105 | Unit | `friendly_name` appears in header info | `attributes.friendly_name: 'Poêle Salon'` | textContent includes `'Poêle Salon'` |
-| TC-1111 | Unit | Error message when entity not found | `entity: 'climate.missing'`, hass empty | textContent includes `'Entité poêle non trouvée'` |
-| TC-1113 | Unit | `styles.ts` exports `stoveStyles` as a Lit CSSResult | Import check | `typeof stoveStyles === 'object'` with `cssText` property |
-| TC-1114 | Unit | Le repli de libellé d'un statut absent de `STATUS_LABELS` remplace **tous** les underscores | `sensor_status: 'some_unknown_state'` | `.stove-status` = `some unknown state` (et non `some unknown_state`) |
-| TC-1115 | Unit | Le repli d'en-tête d'une entité sans `friendly_name` est **localisé** — il suit la langue de HA, il n'est pas un littéral | Entité sans `friendly_name`, `hass.locale.language` = `fr` puis `en` | `.header` = « Poêle » sous `fr`, `Stove` sous `en` |
-| IT-1101 | Integration | `sci-fi-stove` registers correctly in `customElements` | Load 'sci-fi.min.js' | `customElements.get('sci-fi-stove')` returns the class |
-| IT-1102 | Integration | Rend l'en-tête, le panneau info et la ligne de statut depuis un hass réel | Mount `state: 'heat'`, `sensor_status: 'combustion'`, pellets + stock | `.header` porte le `friendly_name`, `.content .info`, `sf-stove-image`, `sf-circle-progress-bar`, `sf-stack-bar` et `.stove-status` présents |
-| IT-1103 | Integration | `styles.ts` imported — no inline `css\`\`` block remains in `sci-fi-stove.ts` | Grep source file | 'grep -c 'css\'' sci-fi-stove.ts` returns 0 |
+| TC-STOVE-U-1101 | Unit | La ligne de statut rend `sf-icon` avec `sci:stove-heat` en combustion | `sensor_status: 'combustion'` | `sf-icon[icon="sci:stove-heat"]` présent |
+| TC-STOVE-U-1102 | Unit | La ligne de statut rend `sf-icon` avec `sci:stove-off` à l'arrêt | `sensor_status: 'off'` | `sf-icon[icon="sci:stove-off"]` présent |
+| TC-STOVE-U-1103 | Unit | La ligne de statut porte sa classe de couleur en combustion | `sensor_status: 'combustion'` | `.status.red` présent, `.stove-status` = `combustion` |
+| TC-STOVE-U-1104 | Unit | La ligne de statut porte sa classe de couleur à l'arrêt | `sensor_status: 'off'` | `.status.off` présent, `.stove-status` = `off` |
+| TC-STOVE-U-1105 | Unit | `friendly_name` appears in header info | `attributes.friendly_name: 'Poêle Salon'` | textContent includes `'Poêle Salon'` |
+| TC-STOVE-U-1111 | Unit | Error message when entity not found | `entity: 'climate.missing'`, hass empty | textContent includes `'Entité poêle non trouvée'` |
+| TC-STOVE-U-1113 | Unit | `styles.ts` exports `stoveStyles` as a Lit CSSResult | Import check | `typeof stoveStyles === 'object'` with `cssText` property |
+| TC-STOVE-U-1114 | Unit | Le repli de libellé d'un statut absent de `STATUS_LABELS` remplace **tous** les underscores | `sensor_status: 'some_unknown_state'` | `.stove-status` = `some unknown state` (et non `some unknown_state`) |
+| TC-STOVE-U-1115 | Unit | Le repli d'en-tête d'une entité sans `friendly_name` est **localisé** — il suit la langue de HA, il n'est pas un littéral | Entité sans `friendly_name`, `hass.locale.language` = `fr` puis `en` | `.header` = « Poêle » sous `fr`, `Stove` sous `en` |
+| IT-STOVE-I-1101 | Integration | `sci-fi-stove` registers correctly in `customElements` | Load 'sci-fi.min.js' | `customElements.get('sci-fi-stove')` returns the class |
+| IT-STOVE-I-1102 | Integration | Rend l'en-tête, le panneau info et la ligne de statut depuis un hass réel | Mount `state: 'heat'`, `sensor_status: 'combustion'`, pellets + stock | `.header` porte le `friendly_name`, `.content .info`, `sf-stove-image`, `sf-circle-progress-bar`, `sf-stack-bar` et `.stove-status` présents |
+| IT-STOVE-I-1103 | Integration | `styles.ts` imported — no inline `css\`\`` block remains in `sci-fi-stove.ts` | Grep source file | 'grep -c 'css\'' sci-fi-stove.ts` returns 0 |
 
 > [!NOTE]
 > **Révision du 2026-08-12** (bead `ha-sci-fi-9xf`). Cette table décrivait un *new header

@@ -143,11 +143,11 @@ The `sci-fi-weather` component has lost its original, complex UI during the migr
 
 | ID | Description | Preconditions | Action | Expected Result |
 |---|---|---|---|---|
-| TC-001 | Header rendering | Valid config | Render component | Header shows correct icon and time |
-| TC-002 | Alerts rendering | Alert entity has state | Render component | Alerts section displays correctly |
-| TC-003 | Today summary rendering | Weather entity has sensors | Render component | 5 sensors displayed |
-| TC-004 | Chart rendering | Chart instance created | Render component | Chart.js canvas rendered with data |
-| TC-005 | Days list rendering | Daily forecast exists | Render component | List of days is rendered |
-| IT-001 | Chart Interaction | Component rendered | Click dropdown menu | `_chartDataKind` updates, chart type changes |
-| IT-002 | Day Selection | Component rendered | Click a day in footer | `_day_selected` updates, chart updates hourly data |
-| IT-003 | Clock Update | Component rendered | Wait 10 seconds | Header time updates |
+| TC-WEATHER-U-001 | Header rendering | Valid config | Render component | Header shows correct icon and time |
+| TC-WEATHER-U-002 | Alerts rendering | Alert entity has state | Render component | Alerts section displays correctly |
+| TC-WEATHER-U-003 | Today summary rendering | Weather entity has sensors | Render component | 5 sensors displayed |
+| TC-WEATHER-U-004 | Chart rendering | Chart instance created | Render component | Chart.js canvas rendered with data |
+| TC-WEATHER-U-005 | Days list rendering | Daily forecast exists | Render component | List of days is rendered |
+| IT-WEATHER-I-001 | Chart Interaction | Component rendered | Click dropdown menu | `_chartDataKind` updates, chart type changes |
+| IT-WEATHER-I-002 | Day Selection | Component rendered | Click a day in footer | `_day_selected` updates, chart updates hourly data |
+| IT-WEATHER-I-003 | Clock Update | Component rendered | Wait 10 seconds | Header time updates |

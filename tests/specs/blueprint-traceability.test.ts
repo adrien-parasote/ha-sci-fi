@@ -12,11 +12,17 @@
  * The `Covers` column cites TEST FILES, not test-case ids, and that is the
  * round-1 review's doing. The first version of this lot cited ids, and 27 of
  * its 229 citations resolved, in the suite, to a test of a DIFFERENT card:
- * `TC-001` is declared as a table row by five specs, and the only `it()` that
- * carries that title tests the weather card. An id is ambiguous across specs
- * (bead `ha-sci-fi-cft` tracks the 20 colliding ids); a path is not, and a
- * path is checkable — which is why the guard below can verify the whole
- * column instead of trusting the mapping its author wrote.
+ * `TC-001` was declared as a table row by six documents — five card specs and
+ * `docs/MASTER.md` — and the only `it()` that carried that title tested the
+ * weather card.
+ *
+ * Those 20 colliding ids were prefixed on 2026-11-01 (bead `ha-sci-fi-cft`,
+ * lot fix `ids-cas-uniques`), and `tests/specs/ids-cas-uniques.test.ts` now
+ * refuses a second declaration. The column still cites paths, and that is not
+ * a leftover: uniqueness makes an id unambiguous, it does not make it
+ * CHECKABLE. A path is both — the guard below reads that the file exists and
+ * that the id is carried by an `it()` inside it, instead of trusting the
+ * mapping its author wrote.
  *
  * Every case carries a POSITIVE WITNESS, and no witness is a frozen count.
  * Round 1 also showed why: the thresholds were set to the pre-lot numbers, the

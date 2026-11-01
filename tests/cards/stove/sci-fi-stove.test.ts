@@ -40,7 +40,7 @@ describe('sci-fi-stove', () => {
     expect(el.shadowRoot!.textContent).to.be.empty;
   });
 
-  it('TC-1111: renders error message if entity not found', async () => {
+  it('TC-STOVE-U-1111: renders error message if entity not found', async () => {
     const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
     (el as any).setConfig({ type: 'custom:sci-fi-stove', entity: 'climate.poele' });
     el.hass = makeMockHass();
@@ -49,7 +49,7 @@ describe('sci-fi-stove', () => {
     expect(el.shadowRoot!.textContent).to.include('Entité poêle non trouvée');
   });
 
-  it('TC-1105: renders header with friendly_name', async () => {
+  it('TC-STOVE-U-1105: renders header with friendly_name', async () => {
     const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
     (el as any).setConfig({ type: 'custom:sci-fi-stove', entity: 'climate.poele' });
     el.hass = makeMockHass({
@@ -585,21 +585,21 @@ describe('sci-fi-stove', () => {
     return el;
   }
 
-  it('TC-1101: renders sf-icon sci:stove-heat when the stove status is a burning state', async () => {
+  it('TC-STOVE-U-1101: renders sf-icon sci:stove-heat when the stove status is a burning state', async () => {
     const el = makeStoveWithStatus('combustion');
     document.body.appendChild(el);
     await el.updateComplete;
     expect(el.shadowRoot!.querySelector('sf-icon[icon="sci:stove-heat"]')).not.to.be.null;
   });
 
-  it('TC-1102: renders sf-icon sci:stove-off when the stove status is off', async () => {
+  it('TC-STOVE-U-1102: renders sf-icon sci:stove-off when the stove status is off', async () => {
     const el = makeStoveWithStatus('off');
     document.body.appendChild(el);
     await el.updateComplete;
     expect(el.shadowRoot!.querySelector('sf-icon[icon="sci:stove-off"]')).not.to.be.null;
   });
 
-  it('TC-1103: status row carries the active colour class when the stove is burning', async () => {
+  it('TC-STOVE-U-1103: status row carries the active colour class when the stove is burning', async () => {
     const el = makeStoveWithStatus('combustion');
     document.body.appendChild(el);
     await el.updateComplete;
@@ -608,7 +608,7 @@ describe('sci-fi-stove', () => {
     expect(row!.querySelector('.stove-status')!.textContent?.trim()).to.equal('combustion');
   });
 
-  it('TC-1104: status row carries the off colour class when the stove is off', async () => {
+  it('TC-STOVE-U-1104: status row carries the off colour class when the stove is off', async () => {
     const el = makeStoveWithStatus('off');
     document.body.appendChild(el);
     await el.updateComplete;
@@ -617,7 +617,7 @@ describe('sci-fi-stove', () => {
     expect(row!.querySelector('.stove-status')!.textContent?.trim()).to.equal('off');
   });
 
-  it('TC-1114: unknown status falls back to a label with every underscore replaced', async () => {
+  it('TC-STOVE-U-1114: unknown status falls back to a label with every underscore replaced', async () => {
     const el = makeStoveWithStatus('some_unknown_state');
     document.body.appendChild(el);
     await el.updateComplete;
@@ -628,11 +628,11 @@ describe('sci-fi-stove', () => {
 
   // ── Registration + styles provenance ──────────────────────────────────────
 
-  it('IT-1101: registers sci-fi-stove in customElements', () => {
+  it('IT-STOVE-I-1101: registers sci-fi-stove in customElements', () => {
     expect(customElements.get('sci-fi-stove')).to.equal(SciFiStoveCard);
   });
 
-  it('IT-1102: renders header, info panel and status row from a real hass state', async () => {
+  it('IT-STOVE-I-1102: renders header, info panel and status row from a real hass state', async () => {
     const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-stove',
@@ -856,7 +856,7 @@ describe('sci-fi-stove', () => {
     expect((el as any).getRelevantEntities()).to.include('switch.poele_eco_mode');
   });
 
-  it('IT-1103: sci-fi-stove.ts declares no inline css`` block', () => {
+  it('IT-STOVE-I-1103: sci-fi-stove.ts declares no inline css`` block', () => {
     const src = fs.readFileSync(
       path.resolve(__dirname, '../../../src/cards/stove/sci-fi-stove.ts'),
       'utf8',
@@ -985,8 +985,8 @@ describe('sci-fi-stove', () => {
     // Round 2 of the review measured a SURVIVING mutant here: `?? 'Stove'`
     // instead of `?? msg('Stove')` left the whole stove suite green. The accent
     // guard cannot see an unaccented literal, and nothing mounted the card on an
-    // entity without `friendly_name`. TC-1115.
-    it('TC-1115 — the header fallback of an entity without friendly_name follows the locale', async () => {
+    // entity without `friendly_name`. TC-STOVE-U-1115.
+    it('TC-STOVE-U-1115 — the header fallback of an entity without friendly_name follows the locale', async () => {
       const noName = {
         'climate.poele': makeMockEntity({
           entity_id: 'climate.poele',

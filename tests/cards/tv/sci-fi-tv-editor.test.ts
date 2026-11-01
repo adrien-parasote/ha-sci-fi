@@ -113,7 +113,7 @@ describe('sci-fi-tv-editor', () => {
     expect(received[0]!.detail.config.name).toBe('Bridge Quadrant 4');
   });
 
-  // TC-714
+  // TC-TV-U-714
   it('renders one sf-editor-action per button the card actually renders', async () => {
     const el = await createElement();
     el.setConfig(makeConfig());
@@ -130,7 +130,7 @@ describe('sci-fi-tv-editor', () => {
     expect(ids).to.not.include('info');
   });
 
-  it('TC-715: handles fallback for ha-selector in mock environment without crashing', async () => {
+  it('TC-TV-U-715: handles fallback for ha-selector in mock environment without crashing', async () => {
     // In Vitest happy-dom, ha-selector is not defined, so it's naturally a mock environment
     const el = await createElement();
     el.setConfig(makeConfig({

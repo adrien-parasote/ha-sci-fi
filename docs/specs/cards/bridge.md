@@ -609,7 +609,7 @@ export const bridgeStyles = css`
     }
   }
 
-  /* CREW + ACTIONS : toujours pleine largeur ([ADR-014](../../adr/ADR-014_full-width-sections.md)) */
+  /* CREW + ACTIONS : toujours pleine largeur ([ADR-014](../../adr/ADR-014_crew-actions-fullwidth.md)) */
   .full-width {
     grid-column: 1 / -1;   /* portrait (mode grid) seulement — en paysage c'est column-span: all, ci-dessus */
   }
@@ -717,17 +717,17 @@ export const bridgeStyles = css`
 ```
 .bridge-section
 ├── .bridge-section-title
-│   └── ha-icon (config.icon ?? 'mdi:shield-alert') + msg('Alertes')
+│   └── sf-icon (config.icon ?? 'mdi:shield-alert') + msg('Alertes')
 │
 ├── [SI config.smoke?.length] .alerts-smoke-row (flex, gap: 8px, flex-wrap: wrap)
 │   └── [per smoke] .smoke-chip
-│       ├── ha-icon (entry.icon ?? 'mdi:smoke-detector')
+│       ├── sf-icon (entry.icon ?? 'mdi:smoke-detector')
 │       │   color: state='off' → --sf-accent-on vert | state='on' → --sf-error rouge
 │       └── .smoke-name + status icon (✓ ou ⚠)
 │
 ├── [SI config.toggles?.length] .alerts-toggles-row (flex-col, gap: 4px)
 │   └── [per toggle] .toggle-row (flex-row, align-center)
-│       ├── ha-icon (entry.icon ?? icône auto par domain, --sf-text-secondary)
+│       ├── sf-icon (entry.icon ?? icône auto par domain, --sf-text-secondary)
 │       ├── .toggle-name (flex: 1)
 │       └── ha-switch (checked si state = 'on' | 'enabled')
 │
@@ -774,10 +774,10 @@ export const bridgeStyles = css`
 ```
 .bridge-section
 ├── .bridge-section-title
-│   └── ha-icon (config.icon ?? 'mdi:door-closed') + msg('Accès')
+│   └── sf-icon (config.icon ?? 'mdi:door-closed') + msg('Accès')
 │
 └── [per entry in config.items] .access-entry (flex-row, align-center, gap: 8px, border-bottom)
-    ├── ha-icon (entry.icon ?? 'mdi:garage')
+    ├── sf-icon (entry.icon ?? 'mdi:garage')
     ├── .access-name (flex: 1)
     ├── .access-state-label (state text, color selon état)
     ├── [si cover] action buttons (open: mdi:arrow-up / close: mdi:arrow-down)
@@ -834,20 +834,20 @@ private _toggleLock(entity: string, currentState: string): void {
 ```
 .bridge-section
 ├── .bridge-section-title
-│   └── ha-icon (config.icon ?? 'mdi:robot') + msg('Automatisations')
+│   └── sf-icon (config.icon ?? 'mdi:robot') + msg('Automatisations')
 │
 └── [per entry in config.items]
 
     [si entry.type === 'toggle']
     .auto-row (flex-row, align-center, gap: 8px)
-    ├── ha-icon (entry.icon ?? icône auto par domain, --sf-text-secondary)
+    ├── sf-icon (entry.icon ?? icône auto par domain, --sf-text-secondary)
     ├── .auto-name (flex: 1, 0.875rem)
     └── ha-switch (checked si state = 'on' | 'enabled')
 
     [si entry.type === 'slider']
     .slider-row (flex-col, gap: 4px)
     ├── .slider-header (flex-row, gap: 8px)
-    │   ├── ha-icon (entry.icon ?? 'mdi:tune', --sf-text-secondary)
+    │   ├── sf-icon (entry.icon ?? 'mdi:tune', --sf-text-secondary)
     │   ├── .auto-name (flex: 1)
     │   └── .slider-value (valeur actuelle + unit, 0.75rem, --sf-primary)
     └── input[type=range] (min/max/step depuis config)
@@ -911,7 +911,7 @@ private _setSliderValue(entity: string, value: number): void {
 ├── .bridge-section-title "ÉLECTROMÉNAGER"
 ├── .appliances-cycles (flex-row, gap: 12px, justify-content: space-around)
 │   └── [per cycle] .cycle-item (flex-col, align-center)
-│       ├── ha-icon (icon depuis config, color: running → cyan + pulsing-border animation, idle → --sf-text-disabled)
+│       ├── sf-icon (icon depuis config, color: running → cyan + pulsing-border animation, idle → --sf-text-disabled)
 │       ├── .cycle-name (0.7rem)
 │       └── .cycle-status ("En cours" | "Inactif", 0.65rem)
 └── [si consumables] .consumables-row (flex-row, gap: 8px, flex-wrap: wrap)
@@ -991,10 +991,10 @@ private _setSliderValue(entity: string, value: number): void {
 ```
 .bridge-section
 ├── .bridge-section-title
-│   └── ha-icon (config.icon ?? 'sci:stove') + msg('Poêle')
+│   └── sf-icon (config.icon ?? 'sci:stove') + msg('Poêle')
 │
 └── .stove-row (flex-row, align-center, gap: 12px)
-    ├── ha-icon (config.icon ?? 'sci:stove', color: isOn → --sf-warning, else --sf-text-disabled)
+    ├── sf-icon (config.icon ?? 'sci:stove', color: isOn → --sf-warning, else --sf-text-disabled)
     ├── .stove-pellet-bar (flex-col, flex: 1)
     │   ├── .pellet-progress (width: pelletQty*100%, color: isLow → --sf-error, else --sf-accent-on)
     │   └── .pellet-pct ("${Math.round(pelletQty*100)}%", 0.75rem, --sf-primary)
@@ -1032,10 +1032,10 @@ private _setSliderValue(entity: string, value: number): void {
 ```
 .bridge-section
 ├── .bridge-section-title
-│   └── ha-icon (config.icon ?? 'mdi:ev-station') + msg('Voiture')
+│   └── sf-icon (config.icon ?? 'mdi:ev-station') + msg('Voiture')
 │
 └── .vehicle-row (flex-row, align-center, gap: 12px)
-    ├── ha-icon (config.icon ?? 'mdi:ev-station', color: isCharging → --sf-accent-on, else --sf-text-disabled)
+    ├── sf-icon (config.icon ?? 'mdi:ev-station', color: isCharging → --sf-accent-on, else --sf-text-disabled)
     ├── .vehicle-power ("${power} ${unit}", 1rem, --sf-primary si isCharging, else --sf-text-secondary)
     └── .vehicle-status (msg('En charge') | msg('Non connectée'), 0.75rem)
 ```
@@ -1096,10 +1096,11 @@ clic sur un bouton déjà en vol est ignoré.
         └── .action-label (label)
 ```
 
-> ⚠ Cette section rend `<sf-icon>`, pas `<ha-icon>` — comme les sept autres
-> sections du module. Les blocs « Render layout » ci-dessus qui nomment encore
-> `ha-icon` décrivent une maquette que le code n'a jamais rendue : c'est l'objet
-> du bead `ha-sci-fi-ykf`, hors de ce lot.
+> ⚠ Les huit blocs « Render layout » ci-dessus nomment `<sf-icon>`, le composant
+> que le module rend réellement. Ils ont nommé `<ha-icon>` jusqu'au 2026-11-01 :
+> une maquette de conception que le code n'a jamais suivie. Corrigé par le lot
+> fix specs-design-abandonne (O1, bead `ha-sci-fi-zdw.1`) ; `grep -rc ha-icon
+> src/cards/bridge/` rend 0 sur les 16 fichiers du module, `sf-icon` 66.
 
 ## Editor
 
@@ -1432,7 +1433,7 @@ title="${msg('Équipage')}"
 | 7 | **Slider qui appelle callService à chaque tick** | `@input="${() => this._setSlider(...)}"` | Debounce 300ms sur l'event `input` avant callService |
 | 8 | **Section entière masquée si une entité est unavailable** | `if (!state) return nothing` pour toute la section | Rendre la section avec état `unavailable` visible — ne cacher que l'indicateur individuel manquant |
 | 9 | **Masquer une sous-section parce que 1 entité manque** | `if (!config.alerts.smoke) return nothing` → cache toute la section alerts | Chaque sous-section est conditionnelle indépendamment: `config.alerts.smoke?.length` → smoke row, `config.alerts.toggles?.length` → toggles row |
-| 10 | **Icône hardcodée dans le template** | `html\`<ha-icon icon="mdi:garage">\`` | Lire `entry.icon ?? 'mdi:garage'` — permet la personnalisation YAML sans modifier le code |
+| 10 | **Icône hardcodée dans le template** | `html\`<sf-icon icon="mdi:garage">\`` | Lire `entry.icon ?? 'mdi:garage'` — permet la personnalisation YAML sans modifier le code |
 | 11 | **String label FR/EN sans `msg()`** | `html\`<span>En cours</span>\`` | Toujours `msg('En cours')` — `@lit/localize` traduit au runtime selon la langue HA |
 | 12 | **Accéder à `config.automations` comme un array** | `config.automations.forEach(...)` | `config.automations` est `BridgeAutomationsConfig` (objet). Itérer sur `config.automations.items.forEach(...)` |
 
@@ -1458,8 +1459,8 @@ title="${msg('Équipage')}"
 | TC-BRIDGE-U-14 | Unit | alerts.toggles absent → rangée toggles non rendue | alerts sans toggles | `.alerts-toggles-row` absent du shadow DOM |
 | TC-BRIDGE-U-15 | Unit | Fumée `off` → icône verte (OK) | smoke state = 'off' | `.smoke-chip` color = `--sf-accent-on` |
 | TC-BRIDGE-U-16 | Unit | Fumée `on` → icône rouge (ALERTE) | smoke state = 'on' | `.smoke-chip` color = `--sf-error` |
-| TC-BRIDGE-U-17 | Unit | Icône entrée smoke customisée via config | smoke entry.icon = 'mdi:fire' | `ha-icon[icon='mdi:fire']` présent dans `.smoke-chip` |
-| TC-BRIDGE-U-18 | Unit | Icône entrée access customisée via config | access entry.icon = 'mdi:gate' | `ha-icon[icon='mdi:gate']` présent dans `.access-entry` |
+| TC-BRIDGE-U-17 | Unit | Icône entrée smoke customisée via config | smoke entry.icon = 'mdi:fire' | `.smoke-chip sf-icon` porte `icon='mdi:fire'` |
+| TC-BRIDGE-U-18 | Unit | Icône entrée access customisée via config | access `items[].icon` renseigné | `.access-icon-wrap sf-icon` porte cette valeur — le wrap est le conteneur d'icône de `.access-entry` |
 | TC-BRIDGE-U-19 | Unit | Icône section stove customisée via config, et son défaut | stove.icon = 'mdi:campfire', puis stove sans `icon` | `sf-icon[icon='mdi:campfire']` dans `.bridge-section-title` de stove ; sans `icon`, le défaut est **`sci:stove`** (et non `mdi:fire`) — cohérent avec `sci:stove-heat`/`sci:stove-off` que la même section rend pour le corps. L'éditeur propose le même défaut (lot fix stove-config-surface, O7) |
 | TC-BRIDGE-U-20 | Unit | Toggle automation ON → callService `turn_on` | clic toggle, state = 'off' | `hass.callService` appelé avec `automation.turn_on` |
 | TC-BRIDGE-U-21 | Unit | Cycle lave-linge `on` → status msg('En cours') + animation | cycle state = 'on', **locale `fr` forcée** | `.cycle-running` class présente + `.cycle-status` textContent = 'En cours'. La locale doit être posée explicitement (`await setLocale('fr')`) : le code rend `msg('Running')`, qui ne devient 'En cours' qu'en FR — sans cela le DOM porte 'Running' et l'exigence n'est pas assertable |
@@ -1472,7 +1473,7 @@ title="${msg('Équipage')}"
 | TC-BRIDGE-U-28 | Unit | ACTIONS couleur customisée | color = '#ff0000' | bouton action hérite de la couleur customisée |
 | TC-BRIDGE-U-29 | Unit | Cover state `closed` → bouton open actif, close désactivé | cover = 'closed' | close button porte `.disabled` et open ne le porte PAS (sans ce second point, deux boutons désactivés satisferaient le cas). Ce que `.disabled` fait — `opacity: 0.3` + `pointer-events: none` — est épinglé par `tests/styles/card-css-baseline.json`, gardien canonique des valeurs CSS calculées dans ce dépôt ; le test de section ne le redouble pas. ⚠ **0.3, et non 0.4** : la valeur livrée est 0.3 depuis l'origine (`src/cards/bridge/styles.ts`), elle est gelée dans `tests/styles/card-css-baseline.json`, et rien ne distingue fonctionnellement les deux — c'est la spec qui est alignée sur le livré, pas l'inverse. Asserter la seule classe ne protégeait aucune des deux valeurs |
 | TC-BRIDGE-U-30 | Unit | Toutes sections absentes si config vide | `{}` config | Seul `.bridge-grid` présent, zéro `sf-bridge-*` |
-| TC-BRIDGE-U-31 | Unit | Label cover traduit — msg('Fermée') affiché | cover = 'closed' | `.access-state-label` textContent = 'Fermée' |
+| TC-BRIDGE-U-31 | Unit | Libellé d'état du cover, localisé | cover = 'closed' | `.access-state-tag` porte la classe `state-closed` et son `textContent` est `Closed` dans la locale source (`Fermée` sous `fr`, via `xliff/fr.xlf`) |
 | IT-BRIDGE-I-01 | Integration | Carte enregistrée dans `customElements` | Load card | `customElements.get('sci-fi-bridge')` returns class |
 | IT-BRIDGE-I-02 | Integration | Render complet avec config de référence (Scénario 1) | Full mock hass Scenario 1 | Tous les 8 composants section présents |
 | IT-BRIDGE-I-03 | Integration | `styles.ts` importé — zéro CSS inline dans `sci-fi-bridge.ts` | grep | `grep -c "css\`" src/cards/bridge/sci-fi-bridge.ts` returns 0 |
@@ -1530,7 +1531,7 @@ HARDEN accomplie n'est plus un contrat à confronter au code.
 | Common styles tokens | [src/styles/common.ts](../../../src/styles/common.ts#L1) |
 | Interfaces de la carte | [src/cards/bridge/config.ts](../../../src/cards/bridge/config.ts#L1) |
 | Stove spec (pattern styles) | [stove.md](./stove.md#blueprint-coverage) |
-| Vehicle spec (pattern services) | [vehicle.md](./vehicle.md#blueprint-coverage) |
+| Vehicle spec (pattern services) | [vehicles.md](./vehicles.md#blueprint-coverage) |
 | Water Management spec (pattern structure) | [water.md](./water.md#blueprint-coverage) |
 | Mock workbench pattern | [dev/workbench.html](../../../dev/workbench.html#L1) |
 | sci-fi.ts entry point (enregistrement carte) | [src/sci-fi.ts](../../../src/sci-fi.ts#L1) |

@@ -16,8 +16,8 @@
 | F-REMED-04 | Lightweight event action dispatcher | ✅ `src/utils/action.ts` |
 | F-REMED-05 | Lovelace action handlers for hexa-tiles and lights | ✅ `src/cards/hexa-tiles/` & `src/cards/lights/` |
 | F-REMED-06 | `LovelaceCard` typescript interface declaration | ✅ `src/utils/base-card.ts` |
-| F-REMED-07 | Card height overrides (`getCardSize()`) | ✅ All 8 card classes |
-| F-REMED-08 | HACS `"type": "plugin"` + `documentationURL` | ✅ `hacs.json` & `src/sci-fi.ts` |
+| F-REMED-07 | Card height overrides (`getCardSize()`) | ✅ les 11 classes de carte |
+| F-REMED-08 | Classification HACS — `hacs.json` conforme au schéma HACS 2.0, qui a **retiré** la clé `"type"` | ✅ `hacs.json` (`name`, `render_readme`, `filename`) & `src/sci-fi.ts` |
 
 ---
 
@@ -50,7 +50,7 @@ src/
 │   └── vacuum/
 │       └── styles.ts           [MODIFY] Replace hardcoded rgb values with tokens
 ├── sci-fi.ts                   [MODIFY] Add documentationURL to customCards registry
-hacs.json                       [MODIFY] Add plugin type
+hacs.json                       [MODIFY] name, render_readme, filename — PAS de clé `type` (HACS 2.0 l'a retirée)
 ```
 
 ---
@@ -170,8 +170,8 @@ export interface LovelaceCard extends HTMLElement {
 | TC-111 | Unit | `fireHassAction` dispatches native CustomEvent | Element node, config, action = 'tap' | CustomEvent `hass-action` caught with correct detail, composed=true, bubbles=true |
 | TC-112 | Unit | `getCardSize()` returns specific values per card class | Concrete card instances | Correct overrides: hexa-tiles=6, stove=4, vacuum=6, climates=5, plugs=5, vehicles=5, weather=4 |
 | TC-113 | Unit | `SciFiBaseCard` complies with `LovelaceCard` | Subclass contract verification | Class implements `getCardSize()`, `setConfig()`, `set hass()`, and supports Lit lifecycle |
-| TC-114 | Unit | customCards array contains `documentationURL` for all 8 cards | `sci-fi.ts` export | `window.customCards` entries have `documentationURL` string |
-| TC-115 | Unit | `hacs.json` includes required plugin classification | Parse `hacs.json` | JSON contains `"type": "plugin"` |
+| TC-114 | Unit | customCards array contains `documentationURL` for all 11 cards | `sci-fi.ts` export | `window.customCards` entries have `documentationURL` string |
+| TC-115 | Unit | `hacs.json` suit le schéma HACS 2.0 | Parse `hacs.json` | Le JSON ne porte **pas** de clé `"type"` — `expect(hacsJson).to.not.have.property('type')` dans `tests/sci-fi.test.ts` |
 | IT-111 | Integration | Hexa-tiles handles custom click action | Click tile element with tap_action config | `hass-action` CustomEvent fired up the DOM tree |
 | IT-112 | Integration | Climates card renders surrounded by `<ha-card>` wrapper | Render `sci-fi-climates` | Top element in shadow root is `<ha-card>` |
 | IT-113 | Integration | Season variables fallback to hexes when undefined | Render climates card | Season icon color maps to default hexes |

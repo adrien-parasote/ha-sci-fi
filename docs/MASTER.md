@@ -11,17 +11,20 @@
 | Step | Feature IDs | Spec file | Status |
 |---|---|---|---|
 | Step 1 — Infrastructure | F-INFRA-01 to 08 | [01_infrastructure.md](./specs/01_infrastructure.md#blueprint-coverage) | ✅ |
-| Step 2 — Domain Selectors + Types | F-DOM-01 to 09 | [02_domain_selectors.md](./specs/02_domain_selectors.md#blueprint-coverage) | ✅ |
-| Step 3 — Base Classes | F-BASE-01 to 06 | [03_base_classes.md](./specs/03_base_classes.md#blueprint-coverage) | ✅ |
-| Step 4 — Components | F-COMP-01 to 04 | [04_components.md](./specs/04_components.md#blueprint-coverage) | ✅ |
+| Step 2 — Domain Selectors + Types | F-DOM-01 to 07 | [02_domain_selectors.md](./specs/02_domain_selectors.md#blueprint-coverage) | ✅ |
+| Step 3 — Base Classes | F-BASE-01 to 07 | [03_base_classes.md](./specs/03_base_classes.md#blueprint-coverage) | ✅ |
+| Step 4 — Components | F-COMP-01 to 06 | [04_components.md](./specs/04_components.md#blueprint-coverage) | ✅ |
 | Step 5 — Cards (11) | F-CARD-01 to 11 | [05_cards.md](./specs/05_cards.md#blueprint-coverage) | ✅ |
-| Step 6 — Entry + i18n | F-ENTRY-01, F-ICON-01, F-I18N-01, F-GIT-01 | [06_entry_migration.md](./specs/06_entry_migration.md#blueprint-coverage) | ✅ |
-| Step 7 — Workbench + Editor i18n | F-WB-01 to 05 | [09_workbench_editor_i18n.md](./specs/09_workbench_editor_i18n.md) | ✅ |
-| Step 8 — Card Editors | F-EDIT-01 to 11 | [10_card_editors.md](./specs/10_card_editors.md) | ✅ |
-| Step 9 — Guidelines Remediation | F-GUIDE-01 to 04 | [11_guidelines_remediation.md](./specs/11_guidelines_remediation.md) | ✅ |
+| Step 6 — Entry + i18n | F-ENTRY-01, F-ICON-01, F-I18N-01, F-MIGR-01, F-GIT-01 | [06_entry_migration.md](./specs/06_entry_migration.md#blueprint-coverage) | ✅ sauf F-MIGR-01, `⬜ not delivered` par ADR-005 — aucune migration n'était nécessaire |
+| Step 7 — Workbench + Editor i18n | F1 to F6 | [09_workbench_editor_i18n.md](./specs/09_workbench_editor_i18n.md) | ✅ |
+| Step 8 — Card Editors | F-EDITOR-01 to 23 | [10_card_editors.md](./specs/10_card_editors.md) | ✅ |
+| Step 9 — Guidelines Remediation | F-REMED-01 to 08 | [11_guidelines_remediation.md](./specs/11_guidelines_remediation.md) | ✅ |
 | Card specs (per card) | — | [specs/cards/](./specs/cards/) | ✅ |
 
-**Coverage: 100% — no orphan feature.**
+**Couverture :** les plages ci-dessus sont celles que les specs définissent réellement —
+préfixe compris, et `tests/specs/transverse-registries.test.ts` les compare ligne par ligne
+aux ids que chaque spec porte. Une plage réécrite à la main sans que la spec suive fait
+rougir cette garde.
 
 ---
 
@@ -31,11 +34,11 @@
 > **Before any refactoring, read these documents in order:**
 > 1. [`discovery.md`](./research/discovery.md) — Audit of v0.9.6 (exact YAML schemas, architecture, critical rules)
 > 2. [strategic/blueprint.md](./strategic/blueprint.md) — strategy + ADR summary index (full ADRs in [docs/adr/](./adr/))
-> 4. [specs/05_cards.md](./specs/05_cards.md#blueprint-coverage) — full YAML contracts per card
-> 5. [guidelines.md](./guidelines.md) — complete card development and urbanization guide
-> 6. [release-process.md](./release-process.md) — release process (versioning, build, tag, draft release, wiki)
-> 7. [`.agents/learnings.md`](../.agents/learnings.md) — 85 project-specific learnings (L012-L085 + L086+)
-> 8. [`docs/adr/`](./adr/) — 18 Architectural Decision Records (ADR-001 to ADR-018)
+> 3. [specs/05_cards.md](./specs/05_cards.md#blueprint-coverage) — full YAML contracts per card
+> 4. [guidelines.md](./guidelines.md) — complete card development and urbanization guide
+> 5. [release-process.md](./release-process.md) — release process (versioning, build, tag, draft release, wiki)
+> 6. [`.agents/learnings.md`](../.agents/learnings.md) — 101 project-specific learnings (L012 to L120)
+> 7. [`docs/adr/`](./adr/) — 18 Architectural Decision Records (ADR-001 to ADR-018)
 
 ---
 
@@ -97,7 +100,7 @@ Release (see docs/release-process.md)
 
 Before launching BUILD, verify:
 
-- [x] Blueprint Coverage Matrix complete (0 orphan feature)
+- [x] Blueprint Coverage Matrix complete — chaque plage vérifiée contre les ids de sa spec par `tests/specs/transverse-registries.test.ts`
 - [x] Each spec has an `Anti-Patterns` section (min 5)
 - [x] Each spec has a `Test Case Specifications` section (min 5 unit + 2 integration)
 - [x] Each spec has an `Error Handling` section
@@ -160,6 +163,7 @@ This section lists reference documentation, external dependencies, and assets us
 │   ├── vacuum.md
 │   ├── vehicles.md
 │   ├── water.md
+│   ├── water_history.md
 │   └── weather.md
 ├── sci-fi.min.js
 ├── plugs.yaml

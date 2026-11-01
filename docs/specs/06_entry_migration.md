@@ -14,7 +14,7 @@
 | F-ICON-01 | Custom iconset registrations | ✅ `src/sci-fi.ts` |
 | F-I18N-01 | Dynamic language sync and localize | ✅ `src/locales/` |
 | F-MIGR-01 | Configuration legacy migration | ⬜ not delivered — [ADR-005](../adr/ADR-005_zero-breaking-yaml.md#L1) forbids renaming or removing any YAML field, so no migration guide was ever needed |
-| F-GIT-01 | Branch `v2` isolation setup | ✅ Git setup |
+| F-GIT-01 | Isolation de la réécriture v2 sur sa propre branche | ✅ accompli — plus aucune branche `v2` (sonde : `git branch -a --list '*v2*'` → 0) ; le travail vit sur `main` et les lots sur `fix/*`, `feat/*` |
 
 ---
 
@@ -53,13 +53,14 @@ src/
 | Artefact | Provider | Description |
 |---|---|---|
 | `SciFiBaseCard` | Spec 03 | Standard card parent class |
-| Lovelace Cards (8) | Spec 05 | Cards compiled and registered |
+| Lovelace Cards (11) | Spec 05 | Cards compiled and registered |
 
  ### Public Interface
 | Element | Consumed by | Description |
 |---|---|---|
-| `window.customIcons` | HA Frontend | Registers custom icons for the sf namespace |
-| `syncHALocale` | Base class | Reactively maps language states to card locales |
+| `window.customIconsets['sci']` | HA Frontend (`<ha-icon>`) | Fonction de résolution du namespace `sci` (`src/components/sf-icon/sf-iconset.ts`) |
+| `window.customIcons` | HA Frontend (icon-picker) | Porte `['sci']` avec `getIcon`/`getIconList` pour le picker, et `['sf']` que `sf-icon.ts` peuple pour son propre rendu. ⚠ Seul `sci` est enregistré auprès de `customIconsets`, donc seul `sci:` résout dans un `<ha-icon>` |
+| `setLocale` | [`src/locales/localization.ts`](../../src/locales/localization.ts#L12) | Appelé par `SciFiBaseCard` dans son setter `hass` quand la locale cible change, et sa méthode `shouldUpdate()` re-rend sur un changement de `hass.locale?.language` ; `SciFiBaseEditor` fait de même (`src/utils/base-card.ts`, `src/utils/base-editor.ts` — nommés par symbole, un numéro de ligne se périme). ⚠ Cette ligne nommait `syncHALocale`, symbole qui n'a jamais existé dans `src/` |
 
 ---
 
@@ -70,8 +71,8 @@ src/
 | 1 | Dynamic bundle imports | `import('./fr.js')` splits files | Statically import translation files in `localization.ts` |
 | 2 | Direct `window.customIcons.sf` overwrite | `window.customIcons.sf = sfIconset` — overwrites other cards' icons | Defensive spread merge: `window.customIcons = window.customIcons \|\| {}; window.customIcons.sf = { ...window.customIcons.sf, ...sfIconset }` |
 | 3 | Manual card registration | Registering cards in separate files | Single entry point handles card class imports |
-| 4 | No config migrations | Rejecting legacy configs | Parse and migrate YAML fields in the setter |
-| 5 | Git force push to main | Force pushing branches in prod | Isolate active work to short-lived branch `v2` |
+| 4 | Écrire un chemin de migration de config | Parser et migrer des champs YAML dans le setter | Aucune migration : [ADR-005](../adr/ADR-005_zero-breaking-yaml.md#L1) interdit de renommer ou retirer un champ, donc une config ancienne est déjà valide. Accepter les champs gelés tels quels |
+| 5 | Git force push to main | Force pushing branches in prod | Isoler le travail en cours sur une branche courte (`fix/*`, `feat/*`), jamais de force push sur `main` |
 | 6 | `window.customIcons` unguarded access | `window.customIcons.sf = ...` when `customIcons` undefined | Always guard: `window.customIcons = window.customIcons \|\| {}` first |
 | 7 | Terser collapses symmetric ternary `msg()` calls | Optimizer compiles `isOn ? msg('A') : msg('B')` into `msg(isOn ? 'A' : 'B')`, bypassing static hashing | Use un-collapsible array-tuple lookups: `[msg('B'), msg('A')][isOn ? 1 : 0] as string` |
 | 8 | Global `customElements.define` patch in production | Wrapping `customElements.define` globally blocks HA's scoped element registry (used by `hui-card-picker`) — cards appear registered in global scope but are invisible to the picker dialog scope → "Custom element not found" at card creation | Wrap in `if (__DEV__)` — Rollup injects `__DEV__=false` in production, Terser dead-code-eliminates the block entirely |
@@ -83,8 +84,8 @@ src/
 
 | Test ID | Type | Description | Input | Expected Output |
 |---|---|---|---|---|
-| TC-601 | Unit | syncHALocale switches language | HASS state lang `fr` | setLocale resolves to French statically |
-| TC-602 | Unit | CustomIcons registers successfully | Load entry script | `window.customIcons.sf` is defined |
+| TC-601 | Unit | Poser `hass` avec une langue différente déclenche `setLocale` | `hass.locale.language` = `fr` | `setLocale` est appelé avec la locale cible — couvert par `tests/utils/base-card.test.ts` (« TC-303, TC-601, IT-602 ») |
+| TC-602 | Unit | Le point d'entrée enregistre le namespace d'icônes auprès de HA | Load entry script | `window.customIconsets['sci']` est la fonction de résolution `<ha-icon>`, et `window.customIcons['sci']` porte `getIcon` et `getIconList` pour le picker. ⚠ Cette ligne attendait `window.customIcons.sf` : ce namespace existe bien (peuplé par `sf-icon.ts`) mais ce n'est pas ce que le point d'entrée enregistre |
 | TC-603 | Unit | Card registration compiles all elements | Load entry script | Custom card element tags get registered |
 
 > **Retirée le 2026-08-12** (bead `ha-sci-fi-9xf`) — la ligne unitaire 604 : *MIGRATION
@@ -94,7 +95,7 @@ src/
 > telles quelles (`entity` et non `entity_id`, `weather_entity`, …). La ligne
 > contredisait son propre ADR — rien à migrer par construction.
 | TC-605 | Unit | Static locales bundled cleanly | Run build command | `dist/sci-fi.min.js` contains locales text |
-| IT-601 | Integration | Single-bundle loads in HA dashboard | Include bundle in HA resources | Cards render without fetch failures |
+| IT-601 | Integration | Le bundle unique se charge sans aller chercher quoi que ce soit au runtime | Include bundle in HA resources | Les locales sont importées statiquement, et `localization.ts` ne porte ni `fetch(` ni `import(` — couvert par `tests/sci-fi.test.ts` (« TC-605, IT-601 »), le seul angle de ce cas qu'une suite puisse prouver sans un dashboard HA réel |
 | IT-602 | Integration | Language switches reactively in dashboard | Update HA user language | Card UI updates translation language |
 | IT-603 | Integration | Custom icons render in HA entities | Request `sf:radiator` icon | Renders target custom packaged SVG |
 
@@ -107,4 +108,4 @@ src/
 | Locale Load Error | Static import failures | Fail compiling | Block build pipeline, output error trace |
 | `window.customIcons` undefined at load | Direct property access crashes | `TypeError` at runtime | Guard: `window.customIcons = window.customIcons \|\| {}` before any assignment |
 | `window.customIcons.sf` namespace conflict | Another HACS card defines `sf` | Our icons would be silently overwritten | Spread merge: `{ ...window.customIcons.sf, ...sfIconset }` preserves both |
-| Legacy Config Error | Migration parser failure | Catch parse error | Apply defaults, print configuration warnings |
+

@@ -1,0 +1,119 @@
+{
+  "feature": "bridge-md-structure",
+  "created": "2026-11-01T09:36:57Z",
+  "frozen_at": "2026-11-01T09:45:46Z",
+  "epic": "ha-sci-fi-5du",
+  "observations": [
+    {
+      "id": "O1",
+      "text": "O1 F-BR-11 (bridge.md:25) renvoie a \"This spec § sf-bridge-actions\" : aucun des 64 titres du document ne porte ce nom. Le composant livre src/cards/bridge/sections/sf-bridge-actions.ts (teste par tests/cards/bridge/sections/sf-bridge-actions.test.ts) est donc non specifie, alors que ses 7 sections soeurs ont chacune la leur. Attendu : une section de composant sf-bridge-actions, de la meme forme que les 7 autres. Rapporte par le retrocheck du 2026-10-31 (bead ha-sci-fi-1b3).",
+      "bead": "ha-sci-fi-5du.1",
+      "test": "npx vitest run tests/specs/bridge-spec-structure.test.ts -t 'O1 —'",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O2",
+      "text": "O2 Le fence ```yaml ouvert ligne 1474 A L INTERIEUR du fence ```markdown ouvert ligne 1465 fait fermer ce dernier des la ligne 1478 au lieu de 1501. Consequence mesuree : la ligne 1501 ouvre un bloc jamais ferme, donc §Deep Links, §Shared Artifact Schema, §Assumptions et la seconde §Test Case Specifications (1501 a 1552, fin du fichier) rendent comme UN SEUL bloc de code ; a l inverse \"## Sections disponibles\" et \"## Icones\" (1479-1500), qui devaient rester dans l echantillon, rendent comme des sections vivantes de bridge.md. Attendu : fences equilibres a la fin du fichier et aucun titre de bridge.md pris dans un bloc de code. Rapporte par le retrocheck du 2026-10-31.",
+      "bead": "ha-sci-fi-5du.2",
+      "test": "npx vitest run tests/specs/bridge-spec-structure.test.ts -t 'O2 —'",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O3",
+      "text": "O3 Deux \"## Test Case Specifications\" (1353 et 1542), de formes differentes (Test ID|Type|Description|Input|Expected Output contre ID|Type|Description). La seconde revendique TC-101 a TC-105 et IT-101 a IT-103, ids deja pris par tests/infrastructure.test.ts et tests/sci-fi.test.ts, et son contenu est redondant avec la premiere. Attendu : une seule table de TC, sans collision d ids. Rapporte par le retrocheck du 2026-10-31.",
+      "bead": "ha-sci-fi-5du.3",
+      "test": "npx vitest run tests/specs/bridge-spec-structure.test.ts -t 'O3 —'",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O4",
+      "text": "O4 Le §File Tree (bridge.md:436) melange un arbre, des entrees [EXTERNAL], des lignes import et la mention litterale \"// ... (remaining file content remains unchanged)\" ; dev/workbench.html [NEW] y recoit README.md et lit/decorators.js comme enfants. Inexploitable comme contrat. Attendu : un arbre de fichiers lisible, sans import ni texte de troncature. Rapporte par le retrocheck du 2026-10-31.",
+      "bead": "ha-sci-fi-5du.4",
+      "test": "npx vitest run tests/specs/bridge-spec-structure.test.ts -t 'O4 —'",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O5",
+      "text": "O5 L en-tete annonce \"Covers: F-BR-01 → F-BR-15\" (bridge.md:4) alors que la table §Blueprint Coverage porte 16 lignes, F-BR-01 a F-BR-16. Attendu : l en-tete couvre la table reelle. Rapporte par le retrocheck du 2026-10-31.",
+      "bead": "ha-sci-fi-5du.5",
+      "test": "npx vitest run tests/specs/bridge-spec-structure.test.ts -t 'O5 —'",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O6",
+      "text": "O6 Le §config-metadata de la spec (bridge.md:367-368) declare access et automations en type: 'array' alors que §TypeScript Interfaces (343-344) les type en objets BridgeAccessConfig / BridgeAutomationsConfig et que l anti-pattern 12 (1349) interdit explicitement de les iterer comme des tableaux. Trois endroits du meme document se contredisent. Attendu : le §config-metadata dit ce que les interfaces disent. Rapporte par le retrocheck du 2026-10-31.",
+      "bead": "ha-sci-fi-5du.6",
+      "test": "npx vitest run tests/specs/bridge-spec-structure.test.ts -t 'O6 —'",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O7",
+      "text": "O7 Le §Responsive Layout (bridge.md:580) publie grid-template-columns: 1fr 1fr pour le breakpoint >= 600px, alors que IT-BRIDGE-I-05 (1392) dans le meme document exige le flux colonne d ADR-016, et que le code livre l applique (src/cards/bridge/styles.ts:34-35 display: block; columns: 2). Attendu : la spec publie ce que le code rend et ce que son propre IT exige. Rapporte par le retrocheck du 2026-10-31.",
+      "bead": "ha-sci-fi-5du.7",
+      "test": "npx vitest run tests/specs/bridge-spec-structure.test.ts -t 'O7 —'",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O8",
+      "text": "O8 La table §Sections de l editeur (bridge.md:1041) liste une section \"Call Kids\", renommee actions en 1.3.0, et n a aucune ligne Actions — alors que l echantillon de doc utilisateur du meme fichier liste bien Actions / cle actions. La table de mapping de services (1323) porte aussi \"Call Kids\". Attendu : la section s appelle Actions partout. Rapporte par le retrocheck du 2026-10-31.",
+      "bead": "ha-sci-fi-5du.8",
+      "test": "npx vitest run tests/specs/bridge-spec-structure.test.ts -t 'O8 —'",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O9",
+      "text": "O9 Le §Shared Artifact Schema (bridge.md:1522) publie un champ entity que SciFiBridgeConfig (src/cards/bridge/config.ts:117-128) n a pas, et omet type et title qu il a. Attendu : la table decrit this.config tel qu il est type. Rapporte par le retrocheck du 2026-10-31.",
+      "bead": "ha-sci-fi-5du.9",
+      "test": "npx vitest run tests/specs/bridge-spec-structure.test.ts -t 'O9 —'",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O10",
+      "text": "O10 F-BR-01 (bridge.md:15) nomme l interface BridgeConfig, symbole ecrit nulle part dans src/ (sonde : grep -rn '\\bBridgeConfig\\b' src/ hors SciFiBridgeConfig / BridgeAccessConfig / BridgeAutomationsConfig rend 0, temoin positif : SciFiBridgeConfig est trouve dans 3 fichiers). Attendu : le nom reel, SciFiBridgeConfig. Rapporte par le retrocheck du 2026-10-31.",
+      "bead": "ha-sci-fi-5du.10",
+      "test": "npx vitest run tests/specs/bridge-spec-structure.test.ts -t 'O10 —'",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O11",
+      "text": "O11 Trois endroits (bridge.md:225, 1297, 1513) envoient les interfaces Bridge dans src/types/config.ts, alors que le document cite lui-meme ADR-017 (1219) qui les a deplacees et qu elles vivent dans src/cards/bridge/config.ts. Attendu : les trois renvois pointent le fichier reel. Rapporte par le retrocheck du 2026-10-31.",
+      "bead": "ha-sci-fi-5du.11",
+      "test": "npx vitest run tests/specs/bridge-spec-structure.test.ts -t 'O11 —'",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O12",
+      "text": "O12 Deux behavioral claims restent ASSUMED (bridge.md:1413-1414, binary_sensor.rinse_aid et sensor.clou_pellet_quantity) dans une spec livree. Attendu : chaque claim est tranchee, ou son ASSUMED porte la decision prise. Rapporte par le retrocheck du 2026-10-31.",
+      "bead": "ha-sci-fi-5du.12",
+      "test": "npx vitest run tests/specs/bridge-spec-structure.test.ts -t 'O12 —'",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O13",
+      "text": "O13 Le bead annonce \"**Tag :** / **Extends :** ecrits deux fois de suite\". Sonde sur le fichier courant (1552 lignes) : grep -n '\\*\\*Tag\\|\\*\\*Extends' rend 38 (**Tag custom element :**), 40 (**Extends :**) et un seul **Tag :** par section de composant (615, 678, 735, 795, 863, 911, 984, 1018) — aucune repetition. Attendu : la repetition annoncee, introuvable en l etat.",
+      "bead": "ha-sci-fi-5du.13",
+      "test": "npx vitest run tests/specs/bridge-spec-structure.test.ts -t 'O13 —'",
+      "unreproduced": null,
+      "escalated": null
+    }
+  ],
+  "suite": "npm test",
+  "lint": "npx eslint src/cards/bridge/config-metadata.ts tests/specs/bridge-spec-structure.test.ts tests/cards/bridge/sci-fi-bridge.test.ts tests/cards/bridge/sci-fi-bridge-editor.test.ts",
+  "suite_run": {
+    "at": "2026-11-01T10:23:12Z",
+    "rc": 0,
+    "tail": ""
+  }
+}

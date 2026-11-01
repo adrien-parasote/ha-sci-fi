@@ -1,0 +1,7 @@
+329927d98eb2f71e0c9c0c1d16702c0be9ac2b8b docs/specs/cards/bridge.md
+36bf78705446fdbd1fa7ed07493a384f7ee17a5a src/cards/bridge/config-metadata.ts
+c2297b2092ad0ee65bb3ea2895326ec61cc91291 tests/cards/bridge/sci-fi-bridge-editor.test.ts
+28fc050d233e7c6b540aa3a799ac3d8f05aeb6be tests/cards/bridge/sci-fi-bridge.test.ts
+e50e03ef9c2f17495c022997ed28fdb7a0cdcb6a docs/fixes/bridge-md-structure/lot.json
+c9763feef6efecb46512c595cd29cd73ed583828 docs/fixes/bridge-md-structure/verdicts.json
+e490130a6bb1dc2720ebc2b6c5ca5e1eb917a16a tests/specs/bridge-spec-structure.test.ts

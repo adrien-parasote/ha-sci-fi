@@ -78,7 +78,7 @@
 |---|---|---|---|
 | 1 | Hardcoded swap script | `npm run build` copies environment files | Use `@rollup/plugin-replace` for environment constants |
 | 2 | Permissive compiler | `"strict": false` | Set `"strict": true` in `tsconfig.json` |
-| 3 | EOL dev server | Using `es-dev-server` | Use Vite dev server for local testing |
+| 3 | EOL dev server | Using `es-dev-server` | Use `npm run dev` (`rollup -c --watch`), which serves `dev/workbench.html` — mesuré le 2026-11-01 : aucun `vite.config*` dans le dépôt, cf. F-INFRA-03 |
 | 4 | Untested deployment | Shipping without unit tests | Execute `vitest` in the build pipeline |
 | 5 | Silent compiler fail | Swallowing ts/eslint errors | Let Rollup exit with status code 1 on errors |
 | 6 | Missing Rollup decorator flags | `@rollup/plugin-typescript` with default options — silently strips Lit `@property`/`@state` decorators | Instantiate plugin with `compilerOptions: { experimentalDecorators: true, useDefineForClassFields: false }` — see HIGH-02 |

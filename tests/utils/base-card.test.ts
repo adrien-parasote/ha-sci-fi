@@ -302,4 +302,98 @@ describe('SciFiBaseCard', () => {
     expect(renders, 'a tracked entity must re-render the card').toBe(afterFirst + 1);
     expect(el.shadowRoot!.querySelector('.tracked')!.textContent).toBe('on');
   });
+
+  // Spec 03 § Contrat de rendu sélectif, point 3 — the conservative fallback.
+  // IT-301 above proves the veto when the list is supplied; this is its other
+  // half: an untouched hook means no list, so the card cannot know what
+  // concerns it and must re-render on anything.
+  it('TC-309: a card that does not override getRelevantEntities re-renders on any state change', async () => {
+    let renders = 0;
+
+    class UntrackedCard extends SciFiBaseCard {
+      protected renderCard(): TemplateResult {
+        renders += 1;
+        return html`<div class="untracked">ok</div>`;
+      }
+    }
+    if (!customElements.get('untracked-sf-card')) {
+      customElements.define('untracked-sf-card', UntrackedCard);
+    }
+
+    // The base hook must still be the empty default — if a future change gives it
+    // a non-empty return, this case would pass for the wrong reason.
+    expect(
+      new UntrackedCard()['getRelevantEntities'](),
+      'the base default must stay [] for this case to mean anything'
+    ).toEqual([]);
+
+    const atticOff = makeMockEntity({ entity_id: 'light.attic', state: 'off' });
+    const atticOn = makeMockEntity({ entity_id: 'light.attic', state: 'on' });
+    const hassWith = (attic: typeof atticOff) =>
+      makeMockHass({ states: { 'light.attic': attic } }) as unknown as HomeAssistantExt;
+
+    const el = document.createElement('untracked-sf-card') as UntrackedCard;
+    (el as any).setConfig({ type: 'custom:untracked-sf-card' });
+    el.hass = hassWith(atticOff);
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const afterFirst = renders;
+    expect(afterFirst).toBeGreaterThan(0);
+
+    // An entity the card never reads moves — with no list, it re-renders anyway.
+    el.hass = hassWith(atticOn);
+    await el.updateComplete;
+    expect(
+      renders,
+      'with no relevant-entity list, every HA state change must re-render'
+    ).toBe(afterFirst + 1);
+  });
+
+  it('TC-310: every card subclass overrides getRelevantEntities', () => {
+    const cardsDir = path.join(__dirname, '..', '..', 'src', 'cards');
+    const files: string[] = [];
+    for (const dir of fs.readdirSync(cardsDir)) {
+      const full = path.join(cardsDir, dir);
+      if (!fs.statSync(full).isDirectory()) continue;
+      for (const f of fs.readdirSync(full)) {
+        if (f.endsWith('.ts')) files.push(path.join(full, f));
+      }
+    }
+
+    // Floors derived from the tree, not typed in: one card directory holds at
+    // least a card and an editor, so two files each is the honest minimum. A
+    // constant here would tolerate whole cards dropping out of the walk.
+    const cardDirCount = fs
+      .readdirSync(cardsDir, { withFileTypes: true })
+      .filter((e) => e.isDirectory()).length;
+    expect(cardDirCount, 'src/cards/ holds no card directory').toBeGreaterThan(0);
+    expect(files.length, 'the card walk lost sources').toBeGreaterThanOrEqual(cardDirCount * 2);
+
+    const missing: string[] = [];
+    let found = 0;
+    for (const file of files) {
+      const src = fs.readFileSync(file, 'utf8');
+      if (!/class\s+\w+\s+extends\s+SciFiBaseCard\b/.test(src)) continue;
+      found += 1;
+      if (!/override\s+getRelevantEntities\s*\(/.test(src)) {
+        missing.push(path.relative(cardsDir, file));
+      }
+    }
+
+    // Equality, not a floor: a floor tolerates a card silently dropping out of
+    // the walk — moved out of src/cards/, or renamed so the `extends` regex no
+    // longer matches — while the spec keeps claiming every card is covered.
+    const roots = fs
+      .readdirSync(cardsDir, { withFileTypes: true })
+      .filter((e) => e.isDirectory())
+      .filter((e) =>
+        fs
+          .readdirSync(path.join(cardsDir, e.name))
+          .some((f) => /^sci-fi-[\w-]+\.ts$/.test(f) && !f.endsWith('-editor.ts'))
+      );
+    expect(roots.length, 'src/cards/ holds no card root').toBeGreaterThan(0);
+    expect(found, 'a card root stopped matching the SciFiBaseCard walk').toBe(roots.length);
+    expect(missing, 'these cards inherit the [] default and re-render on everything').toEqual([]);
+  });
 });

@@ -1,0 +1,10 @@
+fbaaec297a128700ad2573481276a4a171fb071b docs/MASTER.md
+ed2599d7589e9704c9615fa4d58aedb13e0c970a docs/specs/01_infrastructure.md
+40ec01df536cd510b91a84182641f35435092783 docs/specs/02_domain_selectors.md
+9e61d187db41d50a5d979289e7c855e05722621b docs/specs/03_base_classes.md
+4afe689167e7ac1972fcba1fc60e1f959f59376b src/utils/base-card.ts
+cd9663a6c7a88ae665d337fe4a6cb9e213c15396 src/utils/base-editor.ts
+55ad72743d7f0d99f70d80f165ad7e8ae4840b01 tests/utils/base-card.test.ts
+4595d9eea877c5f299b7bc91f20f5d2ed3c9c0cb docs/fixes/socle-specs-01-03/lot.json
+e9b6f5994ad1a3495a58dbb9a9980414f4e0c793 docs/fixes/socle-specs-01-03/verdicts.json
+955b23b864968078b5a9d4805da46d4058b9f001 tests/specs/socle-contract.test.ts

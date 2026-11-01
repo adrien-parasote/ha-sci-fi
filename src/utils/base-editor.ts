@@ -1,5 +1,6 @@
 /**
- * SciFiBaseEditor — Abstract base class for all 8 card editors.
+ * SciFiBaseEditor — Abstract base class for every card editor.
+ * (Said "all 8" until 2026-11-01; there are 11.)
  * Manages config updates and dispatches 'config-changed' for Lovelace.
  *
  * Spec 10 additions:

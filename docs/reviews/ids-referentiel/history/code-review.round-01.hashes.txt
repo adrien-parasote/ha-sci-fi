@@ -1,0 +1,9 @@
+9aef0eb665f51e20986314b87b08a421fa2fd5a0 docs/MASTER.md
+5cedd922d30ded76074f2f4f43d15467c8a4d4d9 docs/specs/05_cards.md
+524006b9a3eeb26c5e37e287d786762dd504fb0b docs/specs/06_entry_migration.md
+59369ce0728375d69c4ed01351c6401d93d4fc20 docs/specs/10_card_editors.md
+bdd87f541e3a2d7964a1b90696f5fee263120ade docs/specs/11_guidelines_remediation.md
+55e5273623973f2617e8f75c46719f9ea54d26d1 tests/sci-fi.test.ts
+42641735dbd0c1a998384507481853ab0027799f docs/fixes/ids-referentiel/lot.json
+dec3e873d841163543ab75afe23e027952bd448b docs/fixes/ids-referentiel/verdicts.json
+1e40b0ebfbaa53a6b694b6646c90aa195026dbfb tests/specs/transverse-registries.test.ts

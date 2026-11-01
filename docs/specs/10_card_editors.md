@@ -1,7 +1,7 @@
 # Spec 10 — Card Editors (Graphical Configuration UI)
 
 > Document Type: Implementation
-> Covers: Step 10 — Restoration of 8 graphical card editors
+> Covers: Step 10 — Restoration of the 11 graphical card editors
 > Depends on: [Spec 03](./03_base_classes.md#L1), [Spec 04](./04_components.md#L1), [Spec 05](./05_cards.md#L1)
 
 ---
@@ -28,6 +28,11 @@
 | F-EDITOR-16 | `sci-fi-vacuum-editor` | ✅ This spec § Card Editors |
 | F-EDITOR-17 | `sci-fi-vehicles-editor` | ✅ This spec § Card Editors |
 | F-EDITOR-18 | `sci-fi-hexa-tiles-editor` | ✅ This spec § Card Editors |
+| F-EDITOR-19 | `sci-fi-tv-editor` | ✅ This spec § Card Editors |
+| F-EDITOR-20 | `sci-fi-water-management-editor` | ✅ This spec § Card Editors |
+| F-EDITOR-21 | `sci-fi-bridge-editor` | ✅ This spec § Card Editors |
+| F-EDITOR-22 | `sf-editor-action` | ✅ This spec § Editor Input Components — consommé par `sci-fi-tv-editor` |
+| F-EDITOR-23 | `sf-editor-source-list` | ✅ This spec § Editor Input Components — consommé par `sci-fi-tv-editor` |
 
 ---
 
@@ -45,7 +50,9 @@ src/
 │       ├── sf-editor-slider.ts             [NEW] Range slider
 │       ├── sf-editor-chips.ts              [NEW] Multi-value chips input
 │       ├── sf-editor-color-picker.ts       [NEW] Color picker
-│       └── sf-editor-accordion.ts          [NEW] Collapsible section
+│       ├── sf-editor-accordion.ts          [NEW] Collapsible section
+│       ├── sf-editor-action.ts             [NEW] Action-button row
+│       └── sf-editor-source-list.ts        [NEW] Ordered source list
 ├── styles/
 │   └── editor-common.ts                    [NEW] Shared editor CSS tokens
 ├── utils/
@@ -129,11 +136,11 @@ src/
 | Path / Identifier | Format | Schema location | Consumers |
 |---|---|---|---|
 | `sci-fi-*-editor` custom elements | Web Components | This spec § Card Editors | Lovelace `getConfigElement()` in Spec 05 |
-| `sf-editor-input`, `sf-editor-dropdown`, etc. | Web Components | This spec § Editor Input Components | 8 card editors in this spec |
-| `SciFiBaseEditor.getLabel(key)` | `string` method | This spec § Base Editor Enrichment | All 8 card editors |
+| `sf-editor-input`, `sf-editor-dropdown`, etc. | Web Components | This spec § Editor Input Components | les 11 éditeurs de carte de cette spec |
+| `SciFiBaseEditor.getLabel(key)` | `string` method | This spec § Base Editor Enrichment | les 11 éditeurs de carte |
 | `sharedEditorLabels()` | `Record<string,string>` function | This spec § Base Editor Enrichment | Merged into every editor's lookup |
 | `<card>Labels()` / `<card>SectionIcons()` | functions | `src/cards/<card>/labels.ts` | That card's editor only (ADR-017) |
-| `SciFiBaseEditor._getNewConfig<T>()` | `T` method | This spec § Base Editor Enrichment | All 8 card editors |
+| `SciFiBaseEditor._getNewConfig<T>()` | `T` method | This spec § Base Editor Enrichment | les 11 éditeurs de carte |
 
  ### Consumes
 
@@ -169,6 +176,11 @@ src/
 | `<sf-editor-chips>` | Card editors | Chip-list input |
 | `<sf-editor-color-picker>` | Card editors | Color picker |
 | `<sf-editor-accordion>` | Card editors | Collapsible section |
+| `<sf-editor-action>` | Card editors | Action-button row |
+| `<sf-editor-source-list>` | Card editors | Ordered source list |
+| `<sci-fi-tv-editor>` | HA Lovelace | TV editor |
+| `<sci-fi-water-management-editor>` | HA Lovelace | Water management editor |
+| `<sci-fi-bridge-editor>` | HA Lovelace | Bridge overview editor |
 
  ### External Invocations
 
@@ -177,7 +189,7 @@ src/
 | HA API | `hass.states` — read entity states for dropdowns | HA runtime (not our code) |
 | HA API | `hass.floors` — read floors for lights editor | Spec 02 § types/ha.ts |
 | HA API | `hass.areas` — read areas for lights editor | Spec 02 § types/ha.ts |
-| HA API | `hass.devices` — read devices for vehicles/plugs editors | Spec 02 § types/ha.ts |
+| HA API | `hass.devices` — read devices for the vehicles editor (`_vehiclesList`, filtré sur `manufacturer === 'Renault'`). ⚠ L'éditeur plugs ne le lit pas : il dérive ses listes de `hass.states` | Spec 02 § types/ha.ts |
 | HA event | `config-changed` CustomEvent — notify Lovelace of config update | HA Lovelace contract |
 
 ---
@@ -261,14 +273,17 @@ protected override get cardLabels(): Record<string, string> {
 `labels.ts`. A key consumed by two or more cards, or built dynamically at
 runtime, stays in `sharedEditorLabels()` in `base-editor.ts` — the kernel is
 the lookup fallback, so kernel placement is always safe. Current split:
-**142 card-owned keys, 32 shared**; section icons: **15 card-owned, 13 shared**.
+**145 card-owned keys, 32 shared** (177 distinctes) ; section icons : **15 card-owned, 13 shared**.
 
 A key with no live consumer must be deleted, not parked in the kernel: the
 fallback that makes kernel placement safe is also what hides an orphan, since
 `getLabel()` answers `''` instead of raising.
 
 **What the label guards cover, and what they do not.** TC-1017 (shared kernel)
-and TC-1018 (the 10 card dictionaries) together read all 179 keys through
+and TC-1018 (the 10 card dictionaries) together read every key both own —
+177 at the time of writing (32 in the shared kernel, 145 across the ten
+dictionaries), a count the tests derive from the dictionaries themselves
+rather than from this number — through
 `getLabel()` and fail on any that resolves to `''`. That is the *empty-label*
 half of the failure mode — the half that produced the vacuum defect in
 `85da36f`. Neither test can prove a key is *reachable*: that would need static
@@ -586,6 +601,44 @@ export class SciFi<Card>Editor extends SciFiBaseEditor {
 
 ---
 
+### `sf-editor-action` (`<sf-editor-action>`)
+
+**Tag:** `sf-editor-action`
+**Does NOT extend** `SfEditorInput`. Standalone `LitElement`.
+Consommé par `sci-fi-tv-editor` (F-EDITOR-22).
+
+**Properties:**
+| Property | Type | Attribute | Default |
+|---|---|---|---|
+| `hass` | `HomeAssistantExt \| undefined` | — (`attribute: false`) | — |
+| `label` | `string` | `label` | `''` |
+| `value` | `object` | — (`type: Object`) | — |
+| `elementId` | `string` | `element-id` | `''` |
+
+**State:** `_fallbackError: string` — message affiché quand l'action saisie n'est pas résoluble.
+
+**Event:** `input-update`, `{ id: elementId, kind, value }` — le contrat partagé du § Shared Event Contract.
+
+---
+
+### `sf-editor-source-list` (`<sf-editor-source-list>`)
+
+**Tag:** `sf-editor-source-list`
+**Does NOT extend** `SfEditorInput`. Standalone `LitElement`.
+Consommé par `sci-fi-tv-editor` (F-EDITOR-23) pour la liste ordonnée des sources.
+
+**Properties:**
+| Property | Type | Attribute | Default |
+|---|---|---|---|
+| `hass` | `HomeAssistantExt \| undefined` | — (`attribute: false`) | — |
+| `label` | `string` | `label` | `''` |
+| `values` | `any[]` | — (`type: Array`) | `[]` |
+| `elementId` | `string` | `element-id` | `''` |
+
+**Event:** `input-update`, `{ id: elementId, kind, value }` — la liste entière est renvoyée, jamais un delta.
+
+---
+
 ### `sci-fi-weather-editor`
 
 **File:** `src/cards/weather/sci-fi-weather-editor.ts`
@@ -690,20 +743,25 @@ switch (e.detail.kind) {
 **File:** `src/cards/plugs/sci-fi-plugs-editor.ts`
 **Tag:** `sci-fi-plugs-editor`
 
-**State loaded:** `_devices` from `Object.values(hass.devices).filter(d => d.entry_type !== 'service')`
+**State loaded:**
+- `_switchEntities: EditorHassEntity[]` et `_sensorEntities: EditorHassEntity[]` — dérivées de
+  `Object.values(hass.states)` au premier `set hass`, filtrées sur les domaines `switch.` et
+  `sensor.`, et non recalculées ensuite.
+
+⚠ Pas de `hass.devices` ni de filtre `entry_type` : cet éditeur ne lit pas le registre
+d'appareils, contrairement à `sci-fi-vehicles-editor`.
 
 > **Note:** The plugs editor in `main` was complex (per-device sensor configuration with a sub-editor). Port the full behavior including the inline device edit panel.
 
 **Main view sections:**
 1. List of configured devices (accordion per device using `<sf-editor-accordion>`).
-2. Per device:
-   - `<sf-editor-dropdown>` for `device_id` (items = `_devices` names, mapping to `d.id`)
-   - `<sf-editor-dropdown-entity>` for the switch `entity_id` (filtered by `entity_id.startsWith('switch.')`)
+2. Per device :
+   - `<sf-editor-dropdown-entity>` for the switch `entity_id` (filtered by `entity_id.startsWith('switch.')`) — c'est par cette entité que l'appareil est choisi. ⚠ `device_id` existe dans la config (`_addDevice` pousse `{ device_id: '', entity_id: '' }`) mais aucun champ de l'éditeur ne le renseigne
    - `<sf-editor-input>` for device custom name (`name`)
    - `<sf-editor-dropdown-icon>` for `active_icon` and `inactive_icon`
    - **Sensor sub-configuration**:
-     - `<sf-editor-dropdown-entity>` for the **Power Sensor** entity (`power_entity`, filtered by `sensor` domain)
-     - `<sf-editor-dropdown-entity>` for the **Energy Sensor** entity (`energy_entity`, filtered by `sensor` domain)
+     - `<sf-editor-dropdown-entity>` for the **Power Sensor** entity, filtered by `sensor` domain. ⚠ Il n'y a pas de champ `power_entity` : la sélection entre dans `sensors` via `_updateSensor(index, true, entityId)`, comme le décrit le § Sensor Mapping Logic ci-dessous
+     - `<sf-editor-dropdown-entity>` for the **Energy Sensor** entity, filtered by `sensor` domain. ⚠ Idem : pas de champ `energy_entity`, c'est `_updateSensor(index, false, entityId)`
 3. Add device button (`+ Add Device`) and delete button inside the device accordion.
 
 **Sensor Mapping Logic:**
@@ -779,7 +837,7 @@ The `sensors` field in `SciFiPlugDevice` is a `Record<string, SciFiPlugSensorEnt
 
 ### `sci-fi-hexa-tiles-editor`
 
-**File:** `src/cards/hexa_tiles/sci-fi-hexa-tiles-editor.ts`
+**File:** `src/cards/hexa-tiles/sci-fi-hexa-tiles-editor.ts`
 **Tag:** `sci-fi-hexa-tiles-editor`
 **2nd most complex — handles weather tile + N tiles with visibility per person**
 
@@ -800,6 +858,59 @@ The `sensors` field in `SciFiPlugDevice` is a `Record<string, SciFiPlugSensorEnt
      - Button renders the person's friendly_name or profile picture.
      - Active state: button has `active` class if person's `entity_id` is present in `tile.visibility` array.
      - On click: toggles the presence of the person's `entity_id` in the `tile.visibility` array, reassigns `tile.visibility`, and dispatches the updated config.
+
+---
+
+### `sci-fi-tv-editor`
+
+**File:** `src/cards/tv/sci-fi-tv-editor.ts`
+**Tag:** `sci-fi-tv-editor`
+Le seul éditeur qui consomme `<sf-editor-action>` et `<sf-editor-source-list>`.
+
+**State loaded:**
+- `_mediaPlayers: EditorHassEntity[]` — `hass.states` filtré sur le domaine `media_player.`
+- `_remotes: EditorHassEntity[]` — `hass.states` filtré sur le domaine `remote.`
+
+Les deux sont remplies au premier `set hass` et ne sont pas recalculées ensuite.
+
+**Main view sections**, chacune dans un `<sf-editor-accordion>` :
+1. **Settings** (`_renderSettingsAccordion`) — `<sf-editor-input>` pour le nom, puis trois
+   `<sf-editor-dropdown-entity>` pour les entités media_player et remote.
+2. **Sources** (`_renderSourcesAccordion`) — `<sf-editor-source-list>` pour la liste ordonnée.
+3. **Custom actions** (`_renderCustomActionsAccordion`) — `<sf-editor-action>` par action.
+
+---
+
+### `sci-fi-water-management-editor`
+
+**File:** `src/cards/water/sci-fi-water-management-editor.ts`
+**Tag:** `sci-fi-water-management-editor`
+N'a pas de `labels.ts` : il n'utilise que les clés du noyau partagé (`sharedEditorLabels()`).
+
+**State loaded:**
+- `_devices: Record<string, any>` et `_entities: Record<string, any>` — peuplés depuis les
+  registres HA via `callWS`, pour résoudre les entités d'un appareil d'eau.
+
+**Main view:** trois `<sf-editor-input>` pour les seuils et le nom, un
+`<sf-editor-dropdown-icon>` pour l'icône, puis un `<sf-editor-accordion>` par appareil
+détecté.
+
+---
+
+### `sci-fi-bridge-editor`
+
+**File:** `src/cards/bridge/sci-fi-bridge-editor.ts`
+**Tag:** `sci-fi-bridge-editor`
+L'éditeur le plus large : une section par section de la carte Bridge.
+
+**Main view:** un `<sf-editor-accordion>` par section, dans cet ordre —
+`_renderCrewSection`, `_renderAlertsSection`, `_renderAccessSection`,
+`_renderAutomationsSection`, `_renderAppliancesSection`, `_renderStoveSection`,
+`_renderVehicleSection`, `_renderActionsSection`.
+
+Chaque section rend un `<sf-editor-dropdown-icon>` pour son icône, sauf
+`_renderActionsSection` — voir § `sci-fi-plugs-editor` pour la même réserve, et
+[bridge.md](./cards/bridge.md#L1) § Sections de l'éditeur pour le détail des champs.
 
 ---
 
@@ -864,5 +975,9 @@ The `sensors` field in `SciFiPlugDevice` is a `Record<string, SciFiPlugSensorEnt
 | `config-changed` event not received by Lovelace | `composed: true` missing | Verified by TC-1004 | Never happens if spec followed |
 
 
-## Adversarial Fixes: Migration Race Condition
-The editor MUST NOT render its interactive elements until it verifies `config.version` matches the current schema version. If it does not match, it must display a 'Migration in progress...' state or wait for `06_entry_migration` to complete to prevent saving an outdated schema back to HA.
+## Adversarial Fixes: Migration Race Condition — sans objet
+Il n'y a pas de course à la migration : [ADR-005](../adr/ADR-005_zero-breaking-yaml.md#L1)
+interdit de renommer ou de retirer un champ YAML, donc il n'existe ni schéma versionné ni
+migration à attendre. Aucun `config.version` n'existe sous `src/`, et l'éditeur n'en lit
+aucun. Cette section prescrivait un garde-fou pour un mécanisme qui n'a jamais été livré ;
+la contrainte qui la remplace est celle d'ADR-005 : une config ancienne est déjà valide.

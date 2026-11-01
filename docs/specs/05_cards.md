@@ -1,4 +1,4 @@
-# Spec 05 — Cards Rewrite (8 cartes)
+# Spec 05 — Cards Rewrite (11 cartes)
 
 > Document Type: Implementation
 > Covers: Step 5 from [MASTER.md](../MASTER.md#spec-gate-pre-checklist)
@@ -13,7 +13,7 @@
 |---|---|---|---|
 | 1 | The production dashboards use exactly the properties backed up in '"yaml backup"/*.yaml', without undocumented parameters. | Medium | → Validated against primary config schemas and exact production YAML files. |
 | 2 | Home Assistant's Lovelace custom card registration system remains fully compatible with `@customElement` auto-registration. | Low | → Confirmed through standard custom element registry practices in HA developer docs. |
-| 3 | The Lit-based base classes and selectors from Spec 02, 03, and 04 satisfy all specific interface needs for these 8 cards. | Low | → Verified by dependency type definitions in `tsconfig.json` and base class test coverage. |
+| 3 | The Lit-based base classes and selectors from Spec 02, 03, and 04 satisfy all specific interface needs for these 11 cards. | Low | → Verified by dependency type definitions in `tsconfig.json` and base class test coverage. |
 | 4 | Chart.js can be bundled directly in the IIFE without violating HA's dashboard runtime limits or memory constraints. | Medium | → Profiled and tested on sample dashboards with active sensor state changes. |
 
 ---
@@ -22,7 +22,7 @@
 
 | Feature ID | Description | Covered here |
 |---|---|---|
-| F-CARD-01 | `sci-fi-hexa-tiles` Lovelace Card | ✅ `hexa_tiles/` |
+| F-CARD-01 | `sci-fi-hexa-tiles` Lovelace Card | ✅ `hexa-tiles/` |
 | F-CARD-02 | `sci-fi-lights` Lovelace Card | ✅ `lights/` |
 | F-CARD-03 | `sci-fi-climates` Lovelace Card | ✅ `climates/` |
 | F-CARD-04 | `sci-fi-plugs` Lovelace Card | ✅ `plugs/` |
@@ -30,6 +30,9 @@
 | F-CARD-06 | `sci-fi-stove` Lovelace Card | ✅ `stove/` |
 | F-CARD-07 | `sci-fi-vehicles` Lovelace Card | ✅ `vehicles/` |
 | F-CARD-08 | `sci-fi-vacuum` Lovelace Card | ✅ `vacuum/` |
+| F-CARD-09 | `sci-fi-tv` Lovelace Card | ✅ `tv/` |
+| F-CARD-10 | `sci-fi-water-management` Lovelace Card | ✅ `water/` |
+| F-CARD-11 | `sci-fi-bridge` Lovelace Card | ✅ `bridge/` |
 
 ---
 
@@ -51,8 +54,11 @@ See [hexa-tiles.md](./cards/hexa-tiles.md#L1) for full config contract.
 ### sci-fi-lights
  
 See [lights.md](./cards/lights.md#L1) for full config contract.
- 
----|---|
+
+Sélection initiale floor/area — le contrat que la carte applique :
+
+| Config | Comportement |
+|---|---|
 | `first_floor_to_render: 'rdc'` | Sélectionne 'rdc' SI l'ID ou le nom existe dans `hass.floors` (case-insensitive) |
 | `first_floor_to_render` absent ou inconnu | Fallback → 1er floor avec lumières → 1er floor |
 | `first_area_to_render: 'chambre'` | Sélectionne 'chambre' SI elle est dans les areas du floor actif |
@@ -113,9 +119,28 @@ See [vehicles.md](./cards/vehicles.md#L1) for full config contract.
 
 ---
 
+### sci-fi-tv
+
+See [tv.md](./cards/tv.md#L1) for full config contract.
+
+---
+
+### sci-fi-water-management
+
+See [water.md](./cards/water.md#L1) for the base config contract, and
+[water_history.md](./cards/water_history.md#L1) for the history panel it adds.
+
+---
+
+### sci-fi-bridge
+
+See [bridge.md](./cards/bridge.md#L1) for full config contract.
+
+---
+
 ## 📋 Implementation Constraints & Disambiguations
 
-To ensure robust and correct code generation across the 8 cards, the following constraints must be strictly adhered to:
+To ensure robust and correct code generation across the 11 cards, the following constraints must be strictly adhered to:
 
 ### 1. Chart.js Shadow DOM Selection (plugs & weather cards)
 * **Constraint**: Querying the canvas context using standard `document.getElementById` or global queries will fail inside Shadow DOM.
@@ -203,6 +228,9 @@ Composants privés effectivement rapatriés par ADR-017 :
 | `sci-fi-stove` | Dashboard HA | Registered custom Lovelace card |
 | `sci-fi-vehicles` | Dashboard HA | Registered custom Lovelace card |
 | `sci-fi-vacuum` | Dashboard HA | Registered custom Lovelace card |
+| `sci-fi-tv` | Dashboard HA | Registered custom Lovelace card |
+| `sci-fi-water-management` | Dashboard HA | Registered custom Lovelace card |
+| `sci-fi-bridge` | Dashboard HA | Registered custom Lovelace card |
 
  ### Consumes
 | Artefact | Provider | Description |
@@ -248,7 +276,7 @@ Composants privés effectivement rapatriés par ADR-017 :
 | TC-506 | Unit | VacuumCard execute un shortcut | Click shortcut "Bureau" | `callService` avec `segments: [16]` |
 | TC-507 | Unit | StoveCard lit `sensor_inside_temperature` | Config stove complète | Température intérieure affichée |
 | TC-508 | Unit | VehiclesCard affiche `fuel_quantity` | Config vehicles avec `fuel_quantity` | Jauge carburant visible |
-| IT-501 | Integration | 8 cartes s'enregistrent | Load 'sci-fi.min.js' | `customElements.get('sci-fi-*')` retourne toutes les classes |
+| IT-501 | Integration | les 11 cartes s'enregistrent | Import `src/sci-fi.js` — le point d'entrée que le test charge | `customElements.get('sci-fi-*')` retourne les 11 classes de `CARD_REGISTRATIONS` |
 
 > **Retirées le 2026-08-12** (bead `ha-sci-fi-9xf`) — les trois lignes d'intégration 502,
 > 503 et 504 : chargement des YAML de sauvegarde (`"yaml backup"/plugs.yaml`,

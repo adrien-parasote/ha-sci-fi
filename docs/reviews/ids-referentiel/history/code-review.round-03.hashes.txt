@@ -1,0 +1,14 @@
+27d515d1106a1420060a97338d1edf5862566ce7 docs/MASTER.md
+61d26371f1032eb577229af5ce97d74ba3691acc docs/specs/05_cards.md
+3408a7935587d90236f7f2a27a83d506c839bbcb docs/specs/06_entry_migration.md
+9be39fc0de92b221eaed10323fc4deeb526eab49 docs/specs/10_card_editors.md
+97c266c8c1814a12cbbdcdcbc5c37894344fb958 docs/specs/11_guidelines_remediation.md
+cec657a327d2c5e6f68b9f9d9c2e1b3c47cff025 tests/sci-fi.test.ts
+42641735dbd0c1a998384507481853ab0027799f docs/fixes/ids-referentiel/lot.json
+06d3c361a5140ab488cd1424ad00dc8746020652 docs/fixes/ids-referentiel/verdicts.json
+42b6c386a34a6f358e5d4167f9b335a56e534325 docs/reviews/ids-referentiel/code-review.md
+d513ea5884c22a49f3eb1235e7ca9c496d5940e8 docs/reviews/ids-referentiel/history/code-review.round-01.hashes.txt
+87cb259718af1bd25578cf0d7761161106c7800b docs/reviews/ids-referentiel/history/code-review.round-01.md
+d513ea5884c22a49f3eb1235e7ca9c496d5940e8 docs/reviews/ids-referentiel/history/code-review.round-02.hashes.txt
+05fa93dc09d59686d8f6a94b598c86782ecc7a63 docs/reviews/ids-referentiel/history/code-review.round-02.md
+4d68e1bf0394214f86312a557d2720d05464c6f1 tests/specs/transverse-registries.test.ts

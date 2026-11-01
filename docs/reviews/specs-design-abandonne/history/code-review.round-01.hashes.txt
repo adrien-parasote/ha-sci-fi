@@ -1,0 +1,5 @@
+031612d921d644217b6aea04ca3bc657f5914f1f docs/specs/cards/bridge.md
+e7c9d09e0e99620cc49687d1b2cb389b9e3e9595 docs/specs/cards/stove.md
+976a20db75e62db96a511c79a75b4d6fae893c32 docs/fixes/specs-design-abandonne/lot.json
+a9ac6cc444b5056ae2802e4e69c7f01b10b42ced docs/fixes/specs-design-abandonne/verdicts.json
+6db67b98ca312633ec03885a487a0153fc5cde27 tests/specs/delivered-design.test.ts

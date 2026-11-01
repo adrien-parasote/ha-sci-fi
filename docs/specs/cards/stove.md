@@ -1,9 +1,19 @@
-# Spec 11 — Stove Card Design Update
+# Spec 14 — Stove Card
 
 > Document Type: Implementation
-> Covers: Design alignment of `sci-fi-stove` card with `sci-fi-lights` and `sci-fi-climates` patterns
-> Depends on: [Spec 05](./05_cards.md#sci-fi-stove), [Spec 03](./03_base_classes.md#L1)
+> Covers: la carte `sci-fi-stove` telle qu'elle est livrée — en-tête, zone contenu, barre de contrôles, et le contrat d'intégration Fumis
+> Depends on: [Spec 05](../05_cards.md#sci-fi-stove), [Spec 03](../03_base_classes.md#L1)
 > ADR-005: Zero breaking YAML changes — all config fields frozen, all CSS selectors used by tests frozen
+>
+> **Renumérotée le 2026-11-01** (lot fix `specs-design-abandonne`, O8) : cet
+> en-tête disait « Spec 11 », déjà pris par
+> [11_guidelines_remediation.md](../11_guidelines_remediation.md). Le premier
+> correctif l'a mis en « Spec 12 », qui était pris deux fois —
+> [vehicles.md](./vehicles.md) et [water_history.md](./water_history.md) :
+> j'avais comparé avec le seul fichier que le bead nommait, et remplacé une
+> collision à deux par une collision à trois. Mesuré sur les 22 specs,
+> 14 était libre. Le titre disait aussi « Design Update » — un nom de
+> chantier, alors que le document est la spec de la carte.
 
 ---
 
@@ -11,13 +21,14 @@
 
 | Feature ID | Description | Spec file | Covers |
 |---|---|---|---|
-| F-STOVE-D01 | Structured header (border-top + bottom, icon + name + state) | ✅ This spec § Header | tests/cards/stove/sci-fi-stove.test.ts :: TC-1101, TC-1102, TC-1105, TC-1115, IT-1102 |
-| F-STOVE-D02 | Conditional state coloring (orange ON, grey OFF) in header | ✅ This spec § Header | tests/cards/stove/sci-fi-stove.test.ts :: TC-1103, TC-1104 |
+| F-STOVE-D01 | En-tête : le `friendly_name` seul, sur une ligne à bordure basse, avec repli localisé | ✅ This spec § Header et ligne de statut | tests/cards/stove/sci-fi-stove.test.ts :: TC-1105, TC-1115, IT-1102 |
+| F-STOVE-D02 | Statut : icône, libellé et classe de couleur choisis ensemble par `STATUS_ICONS`, sur `.status` dans la zone médiane | ✅ This spec § Header et ligne de statut | tests/cards/stove/sci-fi-stove.test.ts :: TC-1101, TC-1102, TC-1103, TC-1104, TC-1114 |
 | F-STOVE-D03 | Extract CSS into `styles.ts` (climate pattern) | ✅ This spec § styles.ts | tests/cards/stove/styles.test.ts :: TC-1113 · tests/cards/stove/sci-fi-stove.test.ts :: IT-1103 |
 | F-STOVE-D04 | `ha-card` background `var(--sf-bg)` — mesuré le 2026-11-01 dans `tests/styles/card-css-baseline.json` ; la valeur `rgba(39,40,43,0.3)` que cette ligne annonçait n'est appliquée par aucune règle de `sci-fi-stove` (elle l'est par `lights`, `vehicles`, `water-management` et `weather`) | ✅ This spec § styles.ts | tests/styles/card-css-baseline.test.ts (« sci-fi-stove resolves to the same CSS as the baseline », sans id) |
-| F-STOVE-D05 | Sensor grid tiles — refined tokens, preserved CSS selectors | ✅ This spec § _buildSensorTiles() — unchanged | tests/styles/card-css-baseline.test.ts (« sci-fi-stove resolves to the same CSS as the baseline » pine les 71 règles de la carte, sans id) |
-| F-STOVE-D06 | Pellet bar and storage counter tiles — preserved classes + refined colors | ✅ This spec § _renderPelletBar() — unchanged | tests/styles/card-css-baseline.test.ts (« sci-fi-stove resolves to the same CSS as the baseline » pine les 71 règles de la carte, sans id) |
-| F-STOVE-D07 | All existing tests remain GREEN (no CSS selector changes that break tests) | ✅ This spec § Test Selectors — Frozen Contract | tests/cards/stove/sci-fi-stove.test.ts :: TC-1111, TC-1114, IT-1101 |
+| F-STOVE-D05 | Zone contenu : l'illustration `sf-stove-image`, puis le panneau `.info` en trois zones (jauges, statut + températures, puissances) | ✅ This spec § sci-fi-stove.ts — la structure rendue | tests/cards/stove/sci-fi-stove.test.ts :: IT-1102 · tests/cards/stove/sci-fi-stove.test.ts (« renders .content with .info panel », « renders stove-image component with correct state », « renders fan speed in .powers section… », sans id) |
+| F-STOVE-D06 | Les jauges sont des composants, pas des règles de la feuille : `sf-circle-progress-bar` pour les granulés, `sf-stack-bar` pour le stock, et rien quand l'état n'est pas numérique | ✅ This spec § sci-fi-stove.ts — la structure rendue | tests/cards/stove/sci-fi-stove.test.ts (« renders sf-circle-progress-bar for pellet quantity », « renders sf-stack-bar for storage_counter », « does not render pellet gauge when state is non-numeric (NaN branch) », sans id) |
+| F-STOVE-D07 | Les sélecteurs que les tests lisent ne sont pas renommés | ✅ This spec § Test Selectors — Frozen Contract | tests/cards/stove/sci-fi-stove.test.ts :: TC-1111, TC-1114, IT-1101 |
+| F-STOVE-D08 | Barre inférieure : mode HVAC, molette de température et mode éco, chacun écrivant par un service et confirmant par `sf-toast` | ✅ This spec § Barre inférieure — les contrôles interactifs | tests/cards/stove/sci-fi-stove.test.ts :: test_O3_eco_switch_renders_a_toggle_and_reflects_its_state, test_O3_eco_switch_toggle_calls_switch_toggle, test_O3_no_dead_control_when_neither_switch_nor_presets · tests/cards/stove/sci-fi-stove.test.ts (« renders .bottom interactive section », « calls climate services and shows sf-toast on hvac/temp/preset actions », les trois chemins d'erreur et le garde `isNaN`, sans id) |
 
 ---
 
@@ -26,7 +37,7 @@
 | ID | Assumption | Risk | Source Type | Validation |
 |---|---|---|---|---|
 | 1 | The `sci:stove-heat` and `sci:stove-off` icons are already registered in the custom icon set | Low | SHOW | 'grep 'sci:stove-heat' src/cards/stove/sci-fi-stove.ts' → found |
-| 2 | CSS selectors `.bar-fill.pellet`, `.bar-fill.storage`, `.sensor-tile`, `.sensor-tile.warn` MUST be preserved — 4 tests depend on them | Low | SHOW | `npm test` → existing stove tests pass |
+| 2 | ~~CSS selectors `.bar-fill.pellet`, `.bar-fill.storage`, `.sensor-tile`, `.sensor-tile.warn` MUST be preserved — 4 tests depend on them~~ — **fausse, retirée le 2026-11-01** (O6). Mesure : `grep -c` dans `tests/cards/stove/sci-fi-stove.test.ts` rend 0 pour `bar-fill` et pour `sensor-tile`. Zéro test en dépendait, et les classes ont été supprimées le 2026-08-12 (bead `ha-sci-fi-9xf`). Le sélecteur que les tests lisent vraiment est `.stove-status` | — | SHOW | `grep -c 'bar-fill\|sensor-tile' tests/cards/stove/sci-fi-stove.test.ts` → 0 |
 | 3 | `sciFiCommonStyles` from `src/styles/common.ts` provides all `--sf-*` tokens used in the new styles | Low | SHOW | 'grep '--sf-' src/styles/common.ts' → tokens present |
 | 4 | The header uses `staveState.attributes.friendly_name` as the name (already in prod) | Low | SHOW | 'grep 'friendly_name' src/cards/stove/sci-fi-stove.ts' → usage found |
 | 5 | The stove is ON when `stoveState.state !== 'off' && stoveState.state !== 'unavailable'` | Low | SHOW | 'grep '!== "off"' src/cards/stove/sci-fi-stove.ts' → logic found |
@@ -37,9 +48,9 @@
 
 | Tier | Examples |
 |------|----------|
-| **Always do** | Preserve all existing CSS selectors used by tests (`.bar-fill.pellet`, `.bar-fill.storage`, `.sensor-tile`, `.sensor-tile.warn`, `.stove-status`); use `sciFiCommonStyles` from `src/styles/common.ts`; import `stoveStyles` from the new `styles.ts` file |
-| **Ask first** | Adding new config fields not in ADR-005; changing the `sf-icon` icon names (`sci:stove-heat`, `sci:stove-off`); altering the `_buildSensorTiles()` return shape |
-| **Never do** | Remove or rename `.bar-fill.pellet`, `.bar-fill.storage`, `.sensor-tile`, `.sensor-tile.warn`, `.stove-status` CSS classes; mutate `this.config`; change the `entity` field name to `entity_id`; import Chart.js |
+| **Always do** | Préserver les sélecteurs que les tests lisent — `.stove-status`, `.status` et ses classes de couleur, `.header` (§ Test Selectors) ; utiliser `sciFiCommonStyles` de `src/styles/common.ts` ; importer `stoveStyles` depuis `styles.ts` |
+| **Ask first** | Ajouter un champ de config hors ADR-005 ; changer les noms d'icônes (`sci:stove-heat`, `sci:stove-off`, `sci:stove-eco`, `sci:stove-cool`, `sci:stove-unknow`) ; modifier les entrées de `STATUS_ICONS` ou `STATUS_LABELS` (§ Vocabulaire de statut) |
+| **Never do** | Renommer `.stove-status` ou une classe de couleur de `.status` ; muter `this.config` ; renommer le champ `entity` en `entity_id` ; importer Chart.js ; remettre `.sensor-tile` / `.bar-fill` en CSS sans rendu qui les produise |
 
 ---
 
@@ -49,8 +60,8 @@
 
 | Path / Identifier | Format | Schema location | Consumers |
 |---|---|---|---|
-| `src/cards/stove/styles.ts` | Lit CSS export | This spec § styles.ts | `sci-fi-stove.ts` (import `stoveStyles`) |
-| Updated `sci-fi-stove` card | Web Component | This spec § Full render | Lovelace via `getConfigElement()` (Spec 05) |
+| `src/cards/stove/styles.ts` | Lit CSS export (`stoveStyles`, export unique) | This spec § styles.ts | `sci-fi-stove.ts` (import `stoveStyles`) |
+| `sci-fi-stove` card | Web Component | This spec § sci-fi-stove.ts — la structure rendue | Lovelace via `getConfigElement()` (Spec 05) |
 
  ### Consumes
 
@@ -58,7 +69,7 @@
 |---|---|---|---|
 | `sciFiCommonStyles` | Lit CSS | Spec 03 § styles/common.ts | `src/styles/common.ts` |
 | `SciFiBaseCard` | Abstract class | Spec 03 § base-card.ts | `src/utils/base-card.ts` |
-| `SciFiStoveConfig`, `SciFiStoveSensors` | TS interfaces | Spec 05 § sci-fi-stove | `src/types/config.ts` |
+| `SciFiStoveConfig` | TS interface | Spec 05 § sci-fi-stove | `src/cards/stove/config.ts` |
 | `sf-icon` | Web Component | Spec 04 § sf-icon | `src/components/sf-icon/` |
 
  ### Public Interface
@@ -79,8 +90,8 @@ N/A — No third-party APIs. Internal `hass` property only:
 
 | Concept | Status in this spec | Mentioned in |
 |---|---|---|
-| `--sf-border` token | Used in styles.ts header borders | Spec 03 § styles/common.ts |
-| `ha-card` background `rgba(39,40,43,0.3)` | Applied in styles.ts | Spec 05 (climate pattern), sci-fi-lights.ts |
+| `--sf-bg-primary` token | Repli de la bordure basse de `.header` dans styles.ts | Spec 03 § styles/common.ts |
+| `ha-card` background `var(--sf-bg)` | Hérité de `sciFiCommonStyles` — `styles.ts` ne porte **aucune** règle `ha-card` (mesuré le 2026-11-01, F-STOVE-D04) | Spec 05 (climate pattern), sci-fi-lights.ts |
 
 ---
 
@@ -200,55 +211,79 @@ exposé par l'éditeur dans la section Configuration et ajouté à `getRelevantE
 
 ---
 
-## Header
+## Header et ligne de statut
 
-### Design Specification
+> **Réécrit le 2026-11-01** — lot fix `specs-design-abandonne`, O3 (bead
+> `ha-sci-fi-zdw.3`). Cette section décrivait un en-tête à trois colonnes
+> (icône + nom + état, bordures haute et basse) qui n'a jamais été construit :
+> ni `.header-icon`, ni `.header-info`, ni `.stove-name`, ni
+> `.sf-state-on|off` n'existent dans l'arbre. Ce qui suit est mesuré sur le
+> code livré.
 
-The header follows the same pattern as `sci-fi-climates` and `sci-fi-lights`:
+### L'en-tête rendu
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│ border-top: 1px solid var(--sf-border)                      │
-│ [sf-icon stove-heat/off]  [friendly_name]  [state text]     │
-│ border-bottom: 1px solid var(--sf-border)                   │
-└─────────────────────────────────────────────────────────────┘
-```
+L'en-tête ne porte **que le nom**. `_renderHeader` (`sci-fi-stove.ts:143-145`) :
 
-**HTML structure:**
-```html
-<div class="header">
-  <div class="header-icon">
-    <sf-icon .icon="${isOn ? 'sci:stove-heat' : 'sci:stove-off'}" .connection="${this.hass.connection}"></sf-icon>
-  </div>
-  <div class="header-info">
-    <div class="stove-name">${stoveState.attributes.friendly_name ?? msg('Poêle')}</div>
-    <div class="stove-status ${isOn ? 'sf-state-on' : 'sf-state-off'}">${stoveState.state}</div>
-  </div>
-</div>
-```
-
-**CSS classes (preserved from tests):**
-- `.stove-status` — the state text line (already tested in 'sci-fi-stove.test.ts' L72)
-- `.stove-status.sf-state-on` — orange color when ON
-- `.stove-status.sf-state-off` — dim color when OFF (uses `--sf-accent-off` token)
-
-**State coloring:**
-| State | CSS class | Color |
-|---|---|---|
-| ON (heating / cool / heat / any non-off) | `.sf-state-on` | `var(--sf-accent-on)` initially, override to stove orange `#ff6b35` |
-| OFF | `.sf-state-off` | `var(--sf-accent-off)` = `rgba(224,232,255,0.25)` |
-| unavailable | `.sf-state-off` | same dim color |
-
-> [!NOTE]
-> `.stove-status.sf-state-on` color is overridden in `styles.ts` to `#ff6b35` (warm fire orange) to match the existing brand color already present in the current card.
-
-**Icon sizing:**
-```css
-.header-icon sf-icon {
-  --icon-width: var(--sf-icon-size-md, 28px);
-  --icon-height: var(--sf-icon-size-md, 28px);
+```ts
+private _renderHeader(name: string): TemplateResult {
+  return html`<div class="header">${name}</div>`;
 }
 ```
+
+Le nom lui est passé par `renderCard` :
+`stoveState.attributes.friendly_name ?? msg('Stove')` — un repli **localisé**,
+pas un littéral (TC-1115 le tient).
+
+Son CSS (`styles.ts:25-33`) n'a qu'une bordure, en bas :
+
+```css
+.header {
+  text-align: center;
+  border-bottom: var(--sf-border-width, 1px) solid var(--sf-bg-primary, #0d1117);
+  padding: 5px;
+  background-color: rgba(13, 17, 23, 0.6);
+  color: var(--sf-text-secondary, #b0bec5);
+  font-size: var(--sf-text-sm, 12px);
+  font-weight: bold;
+}
+```
+
+### L'état et sa couleur — `_renderStatus`, pas l'en-tête
+
+L'icône du poêle et son état ne sont pas dans l'en-tête : ils vivent dans la
+zone médiane du contenu, rendus par `_renderStatus` :
+
+```ts
+private _renderStatus(text: string, status: string | undefined): TemplateResult {
+  const resolved = status ?? 'N/A';
+  const meta = STATUS_ICONS[resolved] ?? { icon: 'sci:stove-unknow', color: 'off' };
+  const label = STATUS_LABELS[resolved] ?? resolved.replaceAll('_', ' ');
+  return html`
+    <div class="status ${meta.color}">
+      <sf-icon icon="${meta.icon}" .connection="${this.hass.connection}"></sf-icon>
+      <div class="label">${text}:</div>
+      <div class="stove-status">${label}</div>
+    </div>
+  `;
+}
+```
+
+La coloration conditionnelle est donc portée par la classe que
+`STATUS_ICONS[status].color` choisit, sur `.status`, et non par une classe
+d'état sur le libellé :
+
+| Classe rendue | Couleur appliquée (`styles.ts:240-284`) | États concernés (§ Vocabulaire de statut) |
+|---|---|---|
+| `.status.off` | `var(--sf-text-secondary, #7ca8c9)` | `off`, `cold_start_off`, et le repli `N/A` |
+| `.status.amber` | `rgb(250, 146, 29)` | `pre_heating`, `ignition`, `cold_start`, `hybrid_init`, `wood_start` |
+| `.status.red` | `#ff4444` | `pre_combustion`, `combustion`, `hybrid_start`, `wood_combustion` |
+| `.status.green` | `#4caf50` | `eco` |
+| `.status.blue` | `var(--primary-light-color, #6ecbf5)` | `cooling`, `wood_burning_off` |
+
+La même classe colore l'icône (`--icon-color`) et le libellé
+(`div:last-child`). `.stove-status` est le seul sélecteur de cette zone que la
+spec gèle : il porte le libellé lisible, et `display: inline`
+(`styles.ts:296-299`) est tout son style.
 
 ---
 
@@ -256,279 +291,194 @@ The header follows the same pattern as `sci-fi-climates` and `sci-fi-lights`:
 
 **File:** `src/cards/stove/styles.ts`
 
-**Export name:** `stoveStyles` (matching the `climateStyles` naming pattern from `src/cards/climates/styles.ts`)
+**Export name:** `stoveStyles` — **un seul export**, aligné sur le
+`climateStyles` de `src/cards/climates/styles.ts`.
 
-```ts
-import { css } from 'lit';
+> **Réécrit le 2026-11-01** — lot fix `specs-design-abandonne`, O10 (bead
+> `ha-sci-fi-zdw.10`). Cette section portait une feuille CSS complète en deux
+> exports, `stoveStyles` + `stoveStylesPart2`, déclarant `.header-icon`,
+> `.header-info`, `.stove-name`, `.sensors-grid`, `.sensor-tile`,
+> `.sensor-value`, `.sensor-label`, `.bar-bg`, `.bar-fill.pellet` et
+> `.bar-fill.storage`. Aucun de ces sélecteurs n'est dans l'arbre, et
+> `stoveStylesPart2` n'existe nulle part dans `src/` : c'était un brouillon de
+> conception, pas la feuille livrée. Le plan ci-dessous est relevé sur
+> `src/cards/stove/styles.ts`.
 
-export const stoveStyles = css`
-  :host {
-    font-size: var(--sf-font-size-sm, 0.75rem);
-    height: 100%;
-    width: 100%;
-    background-color: rgba(39, 40, 43, 0.3);
-  }
+### Les zones de la feuille livrée
 
-  ha-card {
-    background: rgba(39, 40, 43, 0.3) !important;
-    border: none !important;
-    height: 100%;
-    width: 100%;
-    display: block;
-    box-sizing: border-box;
-  }
+La feuille suit l'ordre du DOM rendu, chaque zone sous sa propre bannière :
 
-  /* ─── HEADER ─────────────────────────────────────────── */
-  .header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: var(--sf-spacing-sm, 8px);
-    border-top: 1px solid var(--sf-border);
-    border-bottom: 1px solid var(--sf-border);
-    padding: 8px 12px;
-    background-color: transparent;
-  }
-  .header-icon sf-icon {
-    --icon-width: 28px;
-    --icon-height: 28px;
-    --icon-color: var(--sf-primary);
-    display: block;
-  }
-  .header-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    flex: 1;
-  }
-  .stove-name {
-    font-size: var(--sf-font-size-base, 0.875rem);
-    font-weight: 600;
-    color: var(--sf-text-primary);
-  }
-  /* .stove-status preserved — tests depend on this class */
-  .stove-status {
-    font-size: var(--sf-font-size-sm, 0.75rem);
-  }
-  .stove-status.sf-state-on {
-    color: #ff6b35;
-    text-shadow: 0 0 4px #ff6b35;
-  }
-  .stove-status.sf-state-off {
-    color: var(--sf-accent-off);
-  }
+| Bannière dans `styles.ts` | Ce qu'elle habille | Sélecteurs propres à la zone |
+|---|---|---|
+| `CONTAINER` | l'enveloppe de la carte | `.container` |
+| `HEADER` | la ligne de nom | `.header` |
+| `CONTENT` | l'illustration + le panneau d'info | `.content`, `.info` |
+| `Zones e (top / bottom)` | les deux rangées encadrant la zone médiane — jauges en bas, puissances en haut | `.e.top-path`, `.e.bottom-path`, `.quantities` |
+| `Power cells` | les puissances instantanée et nominale | `.powers`, `.power` |
+| `Decorative display connector (circle + lines)` | le trait et le cercle de liaison | `.display`, `.circle`, `.h-path`, `.d-path` |
+| `N/A quantity` | le repli d'une quantité absente | `.nothing` |
+| `Middle zone` | la colonne statut + températures | `.m` |
+| `Status + temperature rows` | les lignes statut / températures / pression | `.status`, `.temperature`, `.label`, `.no-temp`, et les classes de couleur `.off`, `.amber`, `.red`, `.green`, `.blue`, `.high`, `.medium` |
+| `Status label, rendered by _renderStatus` | le libellé d'état | `.stove-status` |
+| `BOTTOM` | la barre de contrôles | `.bottom` |
 
-  /* ─── CONTAINER ──────────────────────────────────────── */
-  .container {
-    padding: var(--sf-spacing-sm, 8px) var(--sf-spacing-md, 16px);
-  }
-`;
-```
+Les jauges ne sont pas des règles CSS de cette feuille : ce sont les composants
+`sf-circle-progress-bar` (quantité de granulés) et `sf-stack-bar` (stock), qui
+portent leur propre feuille.
 
-**Part 2: Grid and Progress Bars**
+### Ce que la feuille gèle
 
-```ts
-export const stoveStylesPart2 = css`
-  /* ─── SENSOR GRID ────────────────────────────────────── */
-  /* .sensors-grid preserved — no tests depend on this class but kept for clarity */
-  .sensors-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--sf-spacing-sm, 8px);
-    margin-top: var(--sf-spacing-sm, 8px);
-  }
-
-  /* .sensor-tile preserved — tests depend on this class */
-  .sensor-tile {
-    background: var(--sf-bg-secondary);
-    border: 1px solid var(--sf-border);
-    border-radius: var(--sf-radius-sm, 6px);
-    padding: var(--sf-spacing-sm, 8px);
-    text-align: center;
-    transition: border-color 0.2s ease;
-  }
-
-  /* .sensor-tile.warn preserved — tests depend on this class */
-  .sensor-tile.warn {
-    border-color: #ff6b35;
-    box-shadow: 0 0 6px rgba(255, 107, 53, 0.3);
-  }
-
-  .sensor-value {
-    font-size: var(--sf-font-size-xl, 1.25rem);
-    font-weight: 700;
-    color: var(--sf-primary);
-    text-shadow: 0 0 4px var(--sf-primary);
-  }
-
-  .sensor-label {
-    font-size: var(--sf-font-size-sm, 0.75rem);
-    color: var(--sf-text-secondary);
-    margin-top: 2px;
-  }
-
-  /* ─── PROGRESS BARS ──────────────────────────────────── */
-  .bar-bg {
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 4px;
-    height: 6px;
-    overflow: hidden;
-    margin-top: 6px;
-  }
-
-  /* .bar-fill.pellet preserved — tests depend on this class */
-  .bar-fill {
-    height: 100%;
-    border-radius: 4px;
-    transition: width var(--sf-transition-base, 250ms);
-  }
-
-  /* .bar-fill.pellet preserved */
-  .bar-fill.pellet {
-    background: linear-gradient(90deg, #ff6b35, #ffd60a);
-  }
-
-  /* .bar-fill.storage preserved */
-  .bar-fill.storage {
-    background: linear-gradient(90deg, #669cd2, #00ff9d);
-  }
-
-  /* ─── RESPONSIVE ─────────────────────────────────────── */
-  @container sf-card (max-width: 599px) {
-    .sensors-grid { grid-template-columns: repeat(2, 1fr); }
-    .container { padding: var(--sf-spacing-sm, 8px); }
-  }
-  @container sf-card (min-width: 600px) {
-    .sensors-grid { grid-template-columns: repeat(3, 1fr); }
-  }
-`;
-```
-
-> [!IMPORTANT]
-> The following CSS classes MUST remain unchanged (tests depend on their exact names):
-> - `.sensor-tile` — used in `querySelectorAll('.sensor-tile')` → `expect(tiles.length).to.equal(0)`
-> - `.sensor-tile.warn` — used in `querySelector('.sensor-tile.warn')` → null/not-null assertions
-> - `.bar-fill.pellet` — used in `querySelector('.bar-fill.pellet')` → style.width check
-> - `.bar-fill.storage` — used in `querySelector('.bar-fill.storage')` → null check
-> - `.stove-status` — text content includes `'heating'`/`'off'` state
+Un seul sélecteur de cette feuille est un contrat : **`.stove-status`**, nommé
+en tête du module (`sci-fi-stove.ts:12` — « CSS selector required by tests »).
+Les quatre classes que cette spec gelait autrefois — `.sensor-tile`,
+`.sensor-tile.warn`, `.bar-fill.pellet`, `.bar-fill.storage` — ont été
+supprimées le 2026-08-12 (bead `ha-sci-fi-9xf`), et `styles.ts:300-305` porte
+le commentaire qui dit pourquoi : elles n'étaient rendues par aucun template et
+aucun test ne les lisait.
 
 ---
 
-## sci-fi-stove.ts changes
+## sci-fi-stove.ts — la structure rendue
 
-### Imports
+> **Réécrit le 2026-11-01** — lot fix `specs-design-abandonne`, O4 (bead
+> `ha-sci-fi-zdw.4`). Cette section décrivait un import `stoveStylesPart2`, une
+> grille `.sensors-grid` et quatre méthodes — `_buildSensorTiles()`,
+> `_renderSensorTile()`, `_renderPelletBar()`, `_renderStorageCounter()` —
+> présentées comme « unchanged ». Mesure : `grep -rl` rend **zéro** fichier de
+> `src/` pour chacun des cinq symboles. Rien de cela n'a été construit. Ce qui
+> suit est la structure réellement rendue.
 
-```ts
-// REMOVE the inline css`` block from static override styles
-// ADD:
-import { stoveStyles, stoveStylesPart2 } from './styles.js';
-```
-
-### static override styles
-
-```ts
-static override styles = [sciFiCommonStyles, stoveStyles, stoveStylesPart2];
-```
-
-> [!IMPORTANT]
-> The `sciFiCommonStyles` MUST remain as the first entry. It provides `--sf-*` tokens, `ha-card` base styles, `.sf-state-on`, `.sf-state-off` classes, and the container query setup (`container-type: inline-size`). `stoveStyles` overrides specific properties on top.
-
-### renderCard() — new HTML structure
-
-```html
-<ha-card>
-  ${this.config.header_message
-    ? html`<div class="sf-header">${this.config.header_message}</div>`
-    : ''}
-  <div class="header">
-    <div class="header-icon">
-      <sf-icon
-        .icon="${isOn ? 'sci:stove-heat' : 'sci:stove-off'}"
-        .connection="${this.hass.connection}"
-      ></sf-icon>
-    </div>
-    <div class="header-info">
-      <div class="stove-name">
-        ${stoveState.attributes.friendly_name ?? msg('Poêle')}
-      </div>
-      <div class="stove-status ${isOn ? 'sf-state-on' : 'sf-state-off'}">
-        ${stoveState.state}
-      </div>
-    </div>
-  </div>
-
-  <div class="container">
-    <div class="sensors-grid">
-      ${tiles.map(t =>
-        t.value !== null && t.value !== undefined
-          ? this._renderSensorTile(t)
-          : ''
-      )}
-      ${this._renderPelletBar(sensors)}
-      ${this._renderStorageCounter()}
-    </div>
-  </div>
-</ha-card>
-```
-
-**Key changes vs current:**
-1. The `sf-icon` moves from inside `.stove-main` (removed) into the new `.header > .header-icon` block.
-2. The friendly name + state text move into `.header > .header-info`.
-3. `.stove-main` div is removed (replaced by `.header`).
-4. `.sensors-grid` is now inside `.container` (no change in nesting level, only the outer wrapper changes).
-5. `_renderSensorTile`, `_renderPelletBar`, `_renderStorageCounter` are **unchanged** — they use the preserved CSS classes.
-
-### _buildSensorTiles() — unchanged
-
-The method signature and return value are preserved exactly. No modifications.
-
-### _renderSensorTile() — unchanged
+### Imports de style
 
 ```ts
-private _renderSensorTile(tile: SensorTile): TemplateResult {
-  return html`
-    <div class="sensor-tile">
-      <div class="sensor-value">${tile.value}${tile.unit ? ` ${tile.unit}` : ''}</div>
-      <div class="sensor-label">${tile.label}</div>
-    </div>
-  `;
-}
+static override styles = [sciFiCommonStyles, stoveStyles];
 ```
 
-No changes. CSS classes `.sensor-tile`, `.sensor-value`, `.sensor-label` preserved.
+`sciFiCommonStyles` reste la première entrée : elle fournit les jetons `--sf-*`,
+le socle `ha-card` et la requête de conteneur. `stoveStyles` surcharge par
+dessus — et c'est le seul export de `styles.ts`.
 
-### _renderPelletBar() — unchanged
+### renderCard()
 
-No changes. CSS classes `.sensor-tile`, `.sensor-tile.warn`, `.bar-bg`, `.bar-fill.pellet` preserved.
+```ts
+return html`
+  <ha-card>
+    <div class="container">
+      ${this._renderHeader(stoveState.attributes.friendly_name ?? msg('Stove'))}
+      ${this._renderContent(stoveState)}
+      ${this._renderBottom(stoveState)}
+    </div>
+    <sf-toast></sf-toast>
+  </ha-card>
+`;
+```
 
-### _renderStorageCounter() — unchanged
+Trois zones, pas de grille de tuiles :
 
-No changes. CSS classes `.sensor-tile`, `.sensor-tile.warn`, `.bar-bg`, `.bar-fill.storage` preserved.
+```
+ha-card
+├── .container
+│   ├── .header                      — _renderHeader : le friendly_name, rien d'autre
+│   ├── .content                     — _renderContent
+│   │   ├── sf-stove-image           — l'illustration SVG, state=${stoveState.state}
+│   │   └── .info
+│   │       ├── .e.bottom-path       — _renderTopZone : les deux jauges
+│   │       │   ├── .display         — .circle, .h-path, .d-path
+│   │       │   └── .quantities
+│   │       │       ├── sf-circle-progress-bar   — _renderPelletQuantity
+│   │       │       └── sf-stack-bar             — _renderPelletStock
+│   │       ├── .m                   — _renderMiddleZone
+│   │       │   ├── .display         — .circle, .h-path
+│   │       │   └── .temperatures    — cinq lignes, dans cet ordre
+│   │       │       ├── .temperature         — _renderTimeToService
+│   │       │       ├── .status.<couleur>    — _renderStatus (§ Header et ligne de statut)
+│   │       │       ├── .temperature         — _renderTemperature, externe
+│   │       │       ├── .temperature         — _renderTemperature, interne
+│   │       │       └── .temperature         — _renderPressure
+│   │       └── .e.top-path          — _renderPowerZone
+│   │           ├── .display         — .circle, .h-path, .d-path
+│   │           └── .powers          — _renderPower ×2, puis _renderFan
+│   └── .bottom                      — _renderBottom (§ Barre inférieure)
+└── sf-toast                         — le retour des appels de service
+```
+
+> ⚠ Les deux noms de classe sont contre-intuitifs et c'est le code qui
+> tranche : `_renderTopZone` — les jauges — rend `class="e bottom-path"`
+> (`sci-fi-stove.ts:166`), et `_renderPowerZone` rend `class="e top-path"`
+> (`:314`). Le nom décrit le tracé décoratif qui relie la zone au reste, pas sa
+> position. La première rédaction de cet arbre, le 2026-11-01, les avait
+> inversés — réintroduisant dans la correction la classe de défaut que ce lot
+> existe pour supprimer. Un cas épingle désormais chaque zone sur la classe que
+> sa méthode rend.
+
+Un capteur absent n'est pas rendu : chaque méthode de zone garde son
+`this.hass.states[...]` et retombe sur `.nothing` / `.no-temp` plutôt que sur
+une tuile masquée.
+
+---
+
+## Barre inférieure — les contrôles interactifs
+
+> **Ajouté le 2026-11-01** — lot fix `specs-design-abandonne`, O9 (bead
+> `ha-sci-fi-zdw.9`). Cette zone est rendue et testée depuis la livraison, et
+> n'apparaissait dans aucune ligne Blueprint, aucun TC et aucune ligne de
+> l'Error Handling Matrix : tout correctif porté sur elle l'aurait été contre
+> aucune spécification.
+
+`_renderBottom` (`sci-fi-stove.ts:353-397`) rend trois contrôles dans `.bottom`.
+Les trois écrivent, et chacun confirme par un `sf-toast` — succès ou message
+d'erreur du service.
+
+| Contrôle | Composant | Source des items | Service appelé |
+|---|---|---|---|
+| Mode | `sf-button-card-select`, `position="bottom"` | `attributes.hvac_modes`, icône par `HVAC_ICONS[m]`, repli `mdi:information-off-outline` | `climate.set_hvac_mode` |
+| Température | `sf-wheel` | `min_temp` (défaut 15) à `max_temp` (défaut 30), pas de 1, libellés `${t}°C` | `climate.set_temperature` |
+| Mode éco | trois branches — voir § Mode éco | `switch.*_eco_mode`, sinon `attributes.preset_modes`, sinon rien | `switch.toggle`, sinon `climate.set_preset_mode` |
+
+Deux points de contrat qui ont chacun coûté un défaut :
+
+- **La molette se lie par propriété, arrondie.** `.selectedId="${String(Math.round(targetTemp))}"` :
+  une liaison d'attribut passe une chaîne, et une température flottante (20.5)
+  ne correspond alors à aucun item entier — la molette s'affiche vide
+  (correction C10).
+- **L'entité cible est lue sur l'attribut, avec repli sur la config.**
+  `stoveState.attributes.entity_id ?? this.config.entity`, pour les
+  installations où l'entité `climate` expose l'identifiant de l'appareil piloté.
+
+La température cible est `attributes.temperature ?? attributes.current_temperature ?? 20`.
 
 ---
 
 ## Test Selectors — Frozen Contract
 
+> **Réécrit le 2026-11-01** — lot fix `specs-design-abandonne`, O5 (bead
+> `ha-sci-fi-zdw.5`). Cette section gelait douze lignes dont **aucune**
+> n'existait dans le fichier de test qu'elle citait : `grep -c` dans
+> `tests/cards/stove/sci-fi-stove.test.ts` rend 0 pour `bar-fill`,
+> `sensor-tile`, `1500 W` et `2 / 10`, et les numéros de ligne gelés (L71 à
+> L175) pointaient du code sans rapport. Un contrat gelé qui ne gèle rien
+> autorise exactement ce qu'il prétend interdire.
+>
+> Les lignes de numéro ne sont pas réécrites : un numéro de ligne se périme au
+> premier `it()` inséré au-dessus, et c'est ce qui a périmé la table
+> précédente. Le contrat porte sur des **noms**, que le test nomme aussi.
+
 > [!CAUTION]
-> The following selectors are used in 'tests/cards/stove/sci-fi-stove.test.ts' and MUST NOT be changed.
+> Les sélecteurs ci-dessous sont lus par `tests/cards/stove/sci-fi-stove.test.ts`.
+> Les renommer casse le test, pas seulement le rendu.
 
-| Selector | Test line | Assertion |
+| Sélecteur gelé | Ce que le test en lit | Cas |
 |---|---|---|
-| `.bar-fill.pellet` | L80 | `barFill.style.width === '75%'` |
-| `sf-icon` (first) | L84 | `.icon === 'sci:stove-heat'` when ON |
-| `sf-icon` (first) | L112 | `.icon === 'sci:stove-off'` when OFF |
-| `.sensor-tile` | L116 | `tiles.length === 0` when all sensors missing |
-| `.sensor-tile.warn` | L145 | not null when `pct < threshold` |
-| text content | L71 | includes `'Poêle Salon'` (friendly_name) |
-| text content | L72 | includes `'heating'` (state) |
-| text content | L75 | includes `'1500 W'` |
-| text content | L76 | includes `'120°'` |
-| text content | L77 | includes `'75%'` |
-| text content | L147 | includes `'2 / 10'` |
-| `.bar-fill.storage` | L175 | `null` when no maximum |
+| `.stove-status` | le libellé d'état, `textContent` | TC-1103, TC-1104, TC-1114 |
+| `.status` + sa classe de couleur (`off`, `amber`, `red`, `green`, `blue`) | la classe présente sur la ligne de statut | TC-1103, TC-1104 |
+| `sf-icon[icon="sci:stove-heat"]` / `sf-icon[icon="sci:stove-off"]` | l'icône choisie par `STATUS_ICONS` | TC-1101, TC-1102 |
+| `.header` | le `friendly_name`, ou son repli localisé | TC-1105, TC-1115 |
+| `sf-stove-image`, `sf-circle-progress-bar`, `sf-stack-bar` | la présence des composants de la zone contenu | IT-1102 |
 
-> [!NOTE]
-> The test at L71 checks `textContent` for `'Stove Status'` (from `header_message`). This continues to work because the `.sf-header` div is still rendered when `config.header_message` is set.
+Les quatre classes que cette table gelait autrefois — `.sensor-tile`,
+`.sensor-tile.warn`, `.bar-fill.pellet`, `.bar-fill.storage` — ne sont pas
+gelées : elles ont été supprimées le 2026-08-12 avec les lignes de test qui
+les promettaient (bead `ha-sci-fi-9xf`), et aucun rendu ne les produit.
 
 ---
 
@@ -536,13 +486,13 @@ No changes. CSS classes `.sensor-tile`, `.sensor-tile.warn`, `.bar-bg`, `.bar-fi
 
 | # | Anti-Pattern | Violation | Correct Behavior |
 |---|---|---|---|
-| 1 | **Removing preserved CSS selectors** | Deleting `.sensor-tile`, `.bar-fill.pellet`, `.bar-fill.storage`, `.sensor-tile.warn` | Keep these exact class names — 8 test assertions depend on them |
-| 2 | **Moving `sf-icon` inside the sensors grid** | Rendering the stove icon as a sensor tile | The icon belongs in `.header > .header-icon` |
+| 1 | **Renommer `.stove-status` ou une classe de couleur de `.status`** | Renommer `.stove-status`, ou `.status.off|amber|red|green|blue` | Ces noms sont le contrat de § Test Selectors. Les quatre classes de tuiles que cette ligne gelait autrefois (`.sensor-tile`, `.sensor-tile.warn`, `.bar-fill.pellet`, `.bar-fill.storage`) ont été supprimées le 2026-08-12 avec les lignes de test qui les promettaient : les remettre serait du CSS mort |
+| 2 | **Déplacer l'icône de statut hors de `_renderStatus`** | Rendre l'icône du poêle ailleurs que dans `.status` | L'icône, le libellé et la couleur sont une seule unité : `STATUS_ICONS[status]` donne les deux, et la classe de couleur colore les deux |
 | 3 | **Inline CSS in `sci-fi-stove.ts`** | Re-adding `css\`...\`` block inside the card file | All card CSS goes in `styles.ts` |
-| 4 | **Hardcoding token values** | `color: #00d2ff` directly | Use `var(--sf-primary)` from `sciFiCommonStyles` |
+| 4 | **Remplacer un littéral de couleur d'état ou d'illustration par un jeton chaîné sur le thème** | Passer `#4caf50` (statut `eco`) ou une couleur de `sf-stove-image` en `var(--sf-primary)` | Les laisser. ADR-018 § Decision range le poêle parmi les illustrations à littéraux, et ses points 1 et 3 disent « No theme-chained token replaces a hardcoded colour » et « No substitution is performed ». `styles.ts` en porte 14 lignes hors repli, toutes légales. Ce qui reste interdit : un littéral là où un jeton **chaîné** existe déjà — cadre, accent primaire, texte |
 | 5 | **Changing the icon binding to attribute** | `icon="${...}"` instead of `.icon="${...}"` | Must use Lit property binding `.icon=` (ADR in 'architecture.md' § sf-icon Binding Rule) |
-| 6 | **Duplicating `ha-card` background** | Setting background in both `sciFiCommonStyles` and `stoveStyles` without `!important` | Use `!important` in `stoveStyles` override (matches 'sci-fi-lights.ts' pattern) |
-| 7 | **Breaking the sensor tile 2×N grid** | Changing to `repeat(auto-fill, minmax(120px, 1fr))` without responsive constraint | Default to 2 columns on mobile, 3 on wider; keeps compact look |
+| 6 | **Lier la molette de température par attribut, ou sans arrondi** | `selected-id="${t}"`, ou `.selectedId="${t}"` sur une température flottante | `.selectedId="${String(Math.round(t))}"` — une température à 20,5 ne correspond sinon à aucun item entier et la molette s'affiche vide (correction C10) |
+| 7 | **Rendre un contrôle au-dessus d'une liste vide** | Rendre le bouton éco quand ni `switch_eco_mode` ni `preset_modes` n'est disponible | Ne rien rendre — § Mode éco, troisième branche. Un bouton qui n'ouvre rien est pire qu'un bouton absent |
 | 8 | **Mutating config** | `this.config.entity = '...'` | Always immutable — read-only access only |
 
 ---
@@ -595,8 +545,9 @@ No changes. CSS classes `.sensor-tile`, `.sensor-tile.warn`, `.bar-bg`, `.bar-fi
 | Error | Detection | Response | Fallback |
 |---|---|---|---|
 | Entity not found (`this.hass.states[this.config.entity]` undefined) | Guard at top of `renderCard()` | Return error `<ha-card>` with a localized message — « Entité poêle non trouvée : <entity> » under `fr`, `Stove entity not found: <entity>` in the source locale | None — user must fix config |
-| Sensor state not found (`this.hass.states[sensorKey]` undefined) | Guard in `_buildSensorTiles` via `get()` helper returning `undefined` | Tile not rendered (filter `t.value !== null && t.value !== undefined`) | Tile simply hidden |
-| Pellet sensor state non-numeric | `isNaN(pct)` check in `_renderPelletBar` | Early return `html\`\`` | Pellet bar not rendered |
+| Capteur absent de `hass` | Garde dans la méthode de zone qui le lit (`_renderTopZone`, `_renderMiddleZone`, `_renderPowerZone`) | La cellule rend son repli — `.nothing` pour une quantité, `.no-temp` pour une température | Rien de trompeur : l'absence se voit |
+| État du capteur de granulés non numérique | Garde `isNaN` dans `_renderPelletQuantity` | La jauge `sf-circle-progress-bar` n'est pas rendue | Zone vide plutôt qu'une jauge à `NaN%` |
+| Service `climate.*` ou `switch.toggle` en échec | `.catch` sur la promesse de `callService` | `sf-toast` en erreur, portant le message du service | L'état affiché reste celui de `hass` — rien n'est supposé appliqué |
 | No `hass` available | `SciFiBaseCard` base class guard before `renderCard()` is called | Base class returns empty template | Transparent empty card |
 | Missing `friendly_name` attribute | Nullish coalescing on a localized fallback in the header | Show « Poêle » under `fr`, `Stove` in the source locale | Always renders something |
 
@@ -606,15 +557,25 @@ No changes. CSS classes `.sensor-tile`, `.sensor-tile.warn`, `.bar-bg`, `.bar-fi
 
 | Reference | Location |
 |---|---|
-| Existing stove card implementation | [sci-fi-stove.ts](../../src/cards/stove/sci-fi-stove.ts#L1) |
-| Climate styles pattern to follow | [climates/styles.ts](../../src/cards/climates/styles.ts#L1) |
-| Light card CSS patterns | [sci-fi-lights.ts L37-L514](../../src/cards/lights/sci-fi-lights.ts#L37-L514) |
-| Common tokens source | [styles/common.ts](../../src/styles/common.ts#L1) |
-| Existing stove tests (frozen selectors) | [sci-fi-stove.test.ts](../../tests/cards/stove/sci-fi-stove.test.ts#L1) |
-| Config types contract | [Spec 05 § sci-fi-stove](./05_cards.md#sci-fi-stove) |
-| sf-icon binding rule | [architecture.md § sf-icon Binding Rule](../CODEMAPS/architecture.md#sf-icon-binding-rule) |
-| ADR-005 zero-breaking-change contract | [Spec 05 L6](./05_cards.md#L6) |
+| Existing stove card implementation | [sci-fi-stove.ts](../../../src/cards/stove/sci-fi-stove.ts#L1) |
+| Climate styles pattern to follow | [climates/styles.ts](../../../src/cards/climates/styles.ts#L1) |
+| Light card CSS patterns | [sci-fi-lights.ts](../../../src/cards/lights/sci-fi-lights.ts#L1) |
+| Common tokens source | [styles/common.ts](../../../src/styles/common.ts#L1) |
+| Existing stove tests (frozen selectors) | [sci-fi-stove.test.ts](../../../tests/cards/stove/sci-fi-stove.test.ts#L1) |
+| Config types contract | [Spec 05 § sci-fi-stove](../05_cards.md#sci-fi-stove) |
+| sf-icon binding rule | [architecture.md § sf-icon Binding Rule](../../CODEMAPS/architecture.md#sf-icon-binding-rule) |
+| ADR-018 palette fixed identity | [ADR-018](../../adr/ADR-018_palette-fixed-identity.md) |
+| ADR-005 zero-breaking-change contract | [Spec 05 L6](../05_cards.md#L6) |
 
 
 ## Adversarial Fixes: Edge Cases
-1. **Unavailable State Handling**: The card MUST disable interaction buttons and render an 'Offline' overlay or distinct visual state when `entity.state === 'unavailable' || entity.state === 'unknown'`.
+
+| # | Attendu | État |
+|---|---|---|
+| 1 | Quand `entity.state` vaut `unavailable` ou `unknown`, la carte désactive ses contrôles et rend un état visuel distinct (surcouche « Offline ») | ⬜ **non livré** — aucune branche de `sci-fi-stove.ts` ne lit `'unavailable'` ni `'unknown'` au niveau de la carte, et aucun cas ne l'exerce. Cette ligne était un MUST sans implémentation ni test : la laisser au présent de l'indicatif, c'était promettre un comportement que la carte n'a pas. Suivi par le bead `ha-sci-fi-zdw` |
+
+Le repli réel aujourd'hui : un capteur absent ou non numérique n'est pas rendu
+(§ Error Handling Matrix), et une entité `climate` absente de `hass` rend la
+carte d'erreur. Un `unavailable` traverse donc l'affichage comme une valeur
+d'état ordinaire — `STATUS_ICONS` ne le connaît pas, il tombe sur
+`sci:stove-unknow` et la couleur `off`.

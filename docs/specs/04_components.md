@@ -8,14 +8,14 @@
 
 ## Blueprint Coverage
 
-| Feature ID | Description | Covered here |
-|---|---|---|
-| F-COMP-01 | `sf-icon` — cache encapsulé | ✅ `sf-icon.ts` + `icon-cache.ts` |
-| F-COMP-02 | `sf-radiator` — one card-private Lit element | ✅ `src/cards/climates/sf-radiator.ts` — a single `@customElement`, deliberately kept whole (see [§ `sf-radiator` — one element on purpose](#sf-radiator--one-element-on-purpose)). Relocated out of `src/components/` by ADR-017 (single consumer). |
-| F-COMP-03 | Shared components migrated TypeScript | ✅ `sf-accordion`, `sf-tabs`, `sf-toggle-switch` |
-| F-COMP-04 | Iconset custom fallback | ✅ `sf-icon.ts` fallback |
-| F-COMP-05 | `sci-icon` public element | ✅ `sci-icon.ts` — global `<sci-icon>` usable in any HA card |
-| F-COMP-06 | HA icon-picker integration | ✅ `sf-iconset.ts` — `window.customIcons.sci.getIconList()` + `getIcon()` |
+| Feature ID | Description | Covered here | Covers |
+|---|---|---|---|
+| F-COMP-01 | `sf-icon` — cache encapsulé | ✅ `sf-icon.ts` + `icon-cache.ts` | tests/components/icon-cache.test.ts :: TC-401, TC-403, IT-401 |
+| F-COMP-02 | `sf-radiator` — one card-private Lit element | ✅ `src/cards/climates/sf-radiator.ts` — a single `@customElement`, deliberately kept whole (see [§ `sf-radiator` — one element on purpose](#sf-radiator--one-element-on-purpose)). Relocated out of `src/components/` by ADR-017 (single consumer). | tests/cards/climates/sf-radiator.test.ts :: TC-404, IT-402 |
+| F-COMP-03 | Shared components migrated TypeScript | ✅ `sf-toggle-switch` (`src/components/sf-toggle-switch/`) et `sf-editor-accordion` (`src/components/editor-inputs/`). ⬜ Aucun composant `sf-tabs` n'existe : le mot n'apparaît dans `src/` que comme classes CSS (`sci-fi-vacuum-editor.ts`, `styles/editor-common.ts`). | tests/components/sf-toggle-switch/sf-toggle-switch.test.ts :: TC-405 |
+| F-COMP-04 | Iconset custom fallback | ✅ `sf-icon.ts` fallback | tests/components/sf-icon/sf-icon.test.ts :: TC-402 · tests/components/sf-icon/sci-icon.test.ts :: TC-406 |
+| F-COMP-05 | `sci-icon` public element | ✅ `sci-icon.ts` — global `<sci-icon>` usable in any HA card | tests/components/sf-icon/sci-icon.test.ts :: TC-406 |
+| F-COMP-06 | HA icon-picker integration | ✅ `sf-iconset.ts` — `window.customIcons.sci.getIconList()` + `getIcon()` | tests/components/sf-icon/sf-iconset.test.ts :: TC-407, TC-408 |
 
 ---
 

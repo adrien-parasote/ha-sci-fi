@@ -130,8 +130,7 @@ describe('sci-fi-tv-editor', () => {
     expect(ids).to.not.include('info');
   });
 
-  // TC-715
-  it('handles fallback for ha-selector in mock environment without crashing', async () => {
+  it('TC-715: handles fallback for ha-selector in mock environment without crashing', async () => {
     // In Vitest happy-dom, ha-selector is not defined, so it's naturally a mock environment
     const el = await createElement();
     el.setConfig(makeConfig({

@@ -8,15 +8,15 @@
 
 ## Blueprint Coverage
 
-| Feature ID | Description | Covered here |
-|---|---|---|
-| F-DOM-01 | HomeAssistantExt types | ✅ `src/types/ha.ts` |
-| F-DOM-02 | Configuration validation schemas | ✅ `src/types/config.ts` — kernel only since ADR-017 (`SciFiBaseConfig`, `ActionConfig`, `assertString`, `assertDefined`, `isValidCardType`). Per-card config interfaces live in `src/cards/<card>/config.ts`. |
-| F-DOM-03 | Immutability on all domain structures | ✅ `src/types/ha.ts` |
-| F-DOM-04 | Immutability mapping helpers | ✅ `src/selectors/house.ts` |
-| F-DOM-05 | Immutability collection selectors | ✅ `src/selectors/climate.ts` |
-| F-DOM-06 | Immutability filter selectors | ✅ `src/selectors/light.ts` |
-| F-DOM-07 | Mocking hass extensions | ✅ `tests/fixtures/mock-hass.ts` |
+| Feature ID | Description | Covered here | Covers |
+|---|---|---|---|
+| F-DOM-01 | HomeAssistantExt types | ✅ `src/types/ha.ts` | ⬜ aucun cas de test — déclarations de types, vérifiées par TC-103 de [spec 01](./01_infrastructure.md#blueprint-coverage) |
+| F-DOM-02 | Configuration validation schemas | ✅ `src/types/config.ts` — kernel only since ADR-017 (`SciFiBaseConfig`, `ActionConfig`, `assertString`, `assertDefined`, `isValidCardType`). Per-card config interfaces live in `src/cards/<card>/config.ts`. | tests/selectors/entity.selectors.test.ts :: TC-207 |
+| F-DOM-03 | Immutability on all domain structures | ✅ `src/types/ha.ts` | tests/selectors/house.test.ts :: IT-201 |
+| F-DOM-04 | Immutability mapping helpers | ✅ `src/selectors/house.ts` | tests/selectors/house.test.ts :: TC-201, TC-202, TC-205, IT-203 |
+| F-DOM-05 | Immutability collection selectors | ✅ `src/selectors/climate.ts` | tests/selectors/entity.selectors.test.ts :: TC-204 |
+| F-DOM-06 | Immutability filter selectors | ✅ `src/selectors/light.ts` | tests/selectors/house.test.ts :: TC-203 · tests/selectors/entity.selectors.test.ts :: TC-206, IT-202 |
+| F-DOM-07 | Mocking hass extensions | ✅ `tests/fixtures/mock-hass.ts` | ⬜ aucun cas de test — fixture, moyen de TC-201 à IT-203 et non leur objet |
 
 ---
 

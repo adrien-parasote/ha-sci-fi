@@ -8,15 +8,15 @@
 
 ## Blueprint Coverage
 
-| Feature ID | Description | Covered here |
-|---|---|---|
-| F-BASE-01 | `SciFiBaseCard` abstract base | ✅ `base-card.ts` |
-| F-BASE-02 | `SciFiBaseEditor` abstract base | ✅ `base-editor.ts` |
-| F-BASE-03 | Reactivity and lifecycle hooks | ✅ `base-card.ts` |
-| F-BASE-04 | Sealed render wrapper pattern | ✅ `base-card.ts` |
-| F-BASE-05 | Shared common Lit CSS styles | ✅ `src/styles/common.ts` |
-| F-BASE-06 | Shared editor Lit CSS styles | ✅ `src/styles/editor-common.ts` |
-| F-BASE-07 | Design token families (fixed vs theme-chained) | ✅ `src/styles/common.ts` — [ADR-018](../adr/ADR-018_palette-fixed-identity.md) |
+| Feature ID | Description | Covered here | Covers |
+|---|---|---|---|
+| F-BASE-01 | `SciFiBaseCard` abstract base | ✅ `base-card.ts` | tests/utils/base-card.test.ts :: TC-301, TC-304, IT-301 |
+| F-BASE-02 | `SciFiBaseEditor` abstract base | ✅ `base-editor.ts` | tests/utils/base-editor.test.ts :: TC-305 · tests/styles/editor-common.test.ts :: IT-302 |
+| F-BASE-03 | Reactivity and lifecycle hooks | ✅ `base-card.ts` | tests/utils/base-card.test.ts :: TC-303, TC-306, IT-301 · tests/utils/base-editor.test.ts :: IT-303 |
+| F-BASE-04 | Sealed render wrapper pattern | ✅ `base-card.ts` | tests/utils/base-card.test.ts :: TC-301, TC-302 |
+| F-BASE-05 | Shared common Lit CSS styles | ✅ `src/styles/common.ts` | tests/styles/editor-common.test.ts :: IT-302 |
+| F-BASE-06 | Shared editor Lit CSS styles | ✅ `src/styles/editor-common.ts` | tests/styles/editor-common.test.ts :: IT-302 |
+| F-BASE-07 | Design token families (fixed vs theme-chained) | ✅ `src/styles/common.ts` — [ADR-018](../adr/ADR-018_palette-fixed-identity.md) | tests/styles/token-refs.test.ts :: TC-307 |
 
 ---
 

@@ -8,9 +8,9 @@
 
 ## Blueprint Coverage
 
-| Feature ID | Description | Covered here |
-|---|---|---|
-| F-CARD-09 | `sci-fi-tv` Custom Card & `sci-fi-tv-editor` | ✅ Full implementation spec of card interface, editor, dynamic dial, and D-pad. |
+| Feature ID | Description | Covered here | Covers |
+|---|---|---|---|
+| F-CARD-09 ↗ | `sci-fi-tv` Custom Card & `sci-fi-tv-editor` — exigence **détenue par** [05_cards.md § Blueprint Coverage](../05_cards.md#blueprint-coverage) ; cette spec la réalise, elle ne la déclare pas | ✅ Full implementation spec of card interface, editor, dynamic dial, and D-pad. | tests/cards/tv/sci-fi-tv.test.ts :: TC-701, TC-702, TC-703, TC-704, TC-705, TC-708, TC-709, TC-710, TC-711, TC-712, TC-713, IT-704 · tests/cards/tv/sci-fi-tv-editor.test.ts :: TC-715 |
 
 ---
 

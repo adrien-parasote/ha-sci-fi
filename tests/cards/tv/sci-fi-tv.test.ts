@@ -35,8 +35,8 @@ describe('sci-fi-tv', () => {
     expect(el.getCardSize()).to.equal(5);
   });
 
-  // TC-701: Throws error when mandatory entity is missing
-  it('TC-701: throws error when mandatory entity is missing', () => {
+  // TC-TV-U-701: Throws error when mandatory entity is missing
+  it('TC-TV-U-701: throws error when mandatory entity is missing', () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     expect(() => {
       el.setConfig({
@@ -45,8 +45,8 @@ describe('sci-fi-tv', () => {
     }).to.throw('Missing entity configuration parameter.');
   });
 
-  // TC-702: D-pad default remote command mappings use PascalCase
-  it('TC-702: D-pad default remote command mappings are correct', async () => {
+  // TC-TV-U-702: D-pad default remote command mappings use PascalCase
+  it('TC-TV-U-702: D-pad default remote command mappings are correct', async () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-tv',
@@ -77,8 +77,8 @@ describe('sci-fi-tv', () => {
     });
   });
 
-  // TC-703: Custom actions override default remote commands
-  it('TC-703: custom actions override default remote commands', async () => {
+  // TC-TV-U-703: Custom actions override default remote commands
+  it('TC-TV-U-703: custom actions override default remote commands', async () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-tv',
@@ -114,8 +114,8 @@ describe('sci-fi-tv', () => {
     expect(event.detail.config.tap_action.service).toBe('script.warp_speed_home');
   });
 
-  // TC-704: Hex grid renders all configured source names
-  it('TC-704: hex grid renders all configured source names', async () => {
+  // TC-TV-U-704: Hex grid renders all configured source names
+  it('TC-TV-U-704: hex grid renders all configured source names', async () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-tv',
@@ -139,8 +139,8 @@ describe('sci-fi-tv', () => {
     expect(sourceHexas[1]!.getAttribute('data-active')).to.equal('true');
   });
 
-  // TC-705: getRelevantEntities returns TV and remote entities
-  it('TC-705: getRelevantEntities returns TV and remote entities', () => {
+  // TC-TV-U-705: getRelevantEntities returns TV and remote entities
+  it('TC-TV-U-705: getRelevantEntities returns TV and remote entities', () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-tv',
@@ -152,8 +152,8 @@ describe('sci-fi-tv', () => {
     expect(entities).to.include('remote.bravia_4k_vh22');
   });
 
-  // TC-708: Renders orbiting planet satellite when TV is on
-  it('TC-708: renders the orbiting planet satellite when the TV is on', async () => {
+  // TC-TV-U-708: Renders orbiting planet satellite when TV is on
+  it('TC-TV-U-708: renders the orbiting planet satellite when the TV is on', async () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-tv',
@@ -175,8 +175,8 @@ describe('sci-fi-tv', () => {
     expect(satellite!.classList.contains('is-off')).to.be.false;
   });
 
-  // TC-709: Renders orbiting planet satellite in standby mode when TV is off
-  it('TC-709: renders the orbiting planet satellite in standby mode when the TV is off', async () => {
+  // TC-TV-U-709: Renders orbiting planet satellite in standby mode when TV is off
+  it('TC-TV-U-709: renders the orbiting planet satellite in standby mode when the TV is off', async () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-tv',
@@ -197,8 +197,8 @@ describe('sci-fi-tv', () => {
     expect(satellite!.classList.contains('is-off')).to.be.true;
   });
 
-  // TC-710: Renders the active application name when media title and source are missing
-  it('TC-710: renders active application name (app_name) when media title and source are missing', async () => {
+  // TC-TV-U-710: Renders the active application name when media title and source are missing
+  it('TC-TV-U-710: renders active application name (app_name) when media title and source are missing', async () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-tv',
@@ -230,8 +230,8 @@ describe('sci-fi-tv', () => {
     expect(dialTitle!.textContent).to.include('Netflix');
   });
 
-  // TC-711: Renders the active application ID when app_name, media title, and source are missing
-  it('TC-711: renders active application ID (app_id) when other metadata is missing', async () => {
+  // TC-TV-U-711: Renders the active application ID when app_name, media title, and source are missing
+  it('TC-TV-U-711: renders active application ID (app_id) when other metadata is missing', async () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-tv',
@@ -262,8 +262,8 @@ describe('sci-fi-tv', () => {
     expect(dialTitle).to.exist;
     expect(dialTitle!.textContent).to.include('com.netflix.ninja');
   });
-  // TC-712: uses app_entity metadata when provided
-  it('TC-712: uses app_entity metadata when provided', async () => {
+  // TC-TV-U-712: uses app_entity metadata when provided
+  it('TC-TV-U-712: uses app_entity metadata when provided', async () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-tv',
@@ -299,8 +299,8 @@ describe('sci-fi-tv', () => {
     expect(playingSegment!.textContent).to.equal('Netflix');
   });
 
-  // TC-713: active source highlighting guarantees only one source is highlighted, prioritizing appName
-  it('TC-713: active source highlighting guarantees only one source is highlighted, prioritizing appName', async () => {
+  // TC-TV-U-713: active source highlighting guarantees only one source is highlighted, prioritizing appName
+  it('TC-TV-U-713: active source highlighting guarantees only one source is highlighted, prioritizing appName', async () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-tv',
@@ -848,9 +848,9 @@ describe('sci-fi-tv', () => {
     });
   });
 
-  // ── IT-704: volume throttling ─────────────────────────────────────────────
+  // ── IT-TV-I-704: volume throttling ─────────────────────────────────────────────
 
-  it('IT-704: 10 rapid volume updates collapse to at most 2 callService calls (80ms window)', async () => {
+  it('IT-TV-I-704: 10 rapid volume updates collapse to at most 2 callService calls (80ms window)', async () => {
     const callServiceMock = vi.fn().mockResolvedValue({} as any);
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({ type: 'custom:sci-fi-tv', entity: 'media_player.bravia_4k_vh22' });

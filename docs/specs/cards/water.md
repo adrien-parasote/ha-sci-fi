@@ -9,9 +9,9 @@
 | F-WATER-01 | Dynamic Floor Selector — onglets hexagonaux par étage, barre de nom d'étage et bouton de synchronisation | ✅ This spec § Features | tests/cards/water/sci-fi-water-management.test.ts :: IT-1203 — le rendu des étages lui-même est couvert sans id par « renders floors and water entities based on labels » |
 | F-WATER-02 | Label-based Discovery — découverte des entités portant le label `water` ou le label configuré | ✅ This spec § Configuration & Tags (Labels) | tests/cards/water/sci-fi-water-management.test.ts (« renders floors and water entities based on labels », sans id de cas) |
 | F-WATER-03 | Smart Entity Controls — interrupteur sci-fi pour `switch`/`valve`/`automation`/`input_boolean`, valeur pour `sensor`/`number`/`select` | ✅ This spec § Features | tests/cards/water/sci-fi-water-management.test.ts :: TC-W02, TC-W03, TC-W04, TC-W05, TC-W06, TC-W07, TC-W08, TC-W09, TC-W10, TC-W12, TC-W13, TC-W14, TC-W15 |
-| F-WATER-04 | Grouped Accordions — un `sf-editor-accordion` par appareil, un accordéon « Automations » pour les entités sans appareil, état d'ouverture indépendant | ✅ This spec § Internal State | tests/cards/water/sci-fi-water-management.test.ts :: TC-006, TC-W11 |
+| F-WATER-04 | Grouped Accordions — un `sf-editor-accordion` par appareil, un accordéon « Automations » pour les entités sans appareil, état d'ouverture indépendant | ✅ This spec § Internal State | tests/cards/water/sci-fi-water-management.test.ts :: TC-WATER-U-006, TC-W11 |
 | F-WATER-05 | Execution Log per Accordion — journal filtré sur les seules entités de l'accordéon | ✅ This spec § Key Methods | tests/cards/water/sci-fi-water-management.test.ts :: TC-1201, TC-1203, IT-1205 |
-| F-WATER-06 | History Fetch Strategy — `history/history_during_period` une fois par étage sur 7 jours, repli `logbook/get_events`, domaines restreints, `significant_changes_only` | ✅ This spec § Key Methods | tests/cards/water/sci-fi-water-management.test.ts :: TC-008, TC-1202, IT-1201, IT-1202, IT-1204 |
+| F-WATER-06 | History Fetch Strategy — `history/history_during_period` une fois par étage sur 7 jours, repli `logbook/get_events`, domaines restreints, `significant_changes_only` | ✅ This spec § Key Methods | tests/cards/water/sci-fi-water-management.test.ts :: TC-WATER-U-008, TC-1202, IT-1201, IT-1202, IT-1204 |
 | F-WATER-07 | Resilient UI — aucun étage ou aucune entité eau ne provoque ni erreur ni carte vide | ✅ This spec § Features | tests/cards/water/sci-fi-water-management.test.ts (« renders empty message if no floors exist » et « … if no water entities exist in the house », sans id) |
 | F-WATER-08 | i18n — toutes les chaînes visibles passent par `@lit/localize` et suivent la langue de HA | ✅ This spec § Features | ⬜ aucun cas ne vérifie la localisation de cette carte |
 
@@ -145,20 +145,26 @@ N/A — this card renders UI only; it does not publish events or data consumed b
 | 5 | Relevant entity domains are not excluded from recorder | Medium | Verified via logbook empty-state rendering — displays message if no data |
 
 ## Test Cases
+
+> **⬜ dans la colonne ID : le cas n'est joué par aucun test.** Neuf des douze lignes, toute la plage `00x` : `tests/cards/water/sci-fi-water-management.test.ts` porte `TC-WATER-U-006` à `008` et, pour le reste, des ids nus que plus aucune spec ne déclare (bead `ha-sci-fi-78y`).
+> Le marqueur est la seule source : `tests/specs/ids-cas-uniques.test.ts` dérive
+> l'ensemble des cas non joués de ces marques et refuse l'écart dans les deux
+> sens — un cas non marqué que rien ne cite, comme un cas marqué qu'un test porte.
+
 | ID | Type | Description |
 |---|---|---|
-| TC-001 | Unit | Card renders with no floors gracefully |
-| TC-002 | Unit | Floor selection updates displayed entities and clears logs |
-| TC-003 | Unit | Toggle switch updates entity state |
-| TC-004 | Unit | Dynamic labels filter correctly |
-| TC-005 | Unit | Sensor values display correctly with units |
-| TC-006 | Unit | `_expandedMap` tracks each accordion independently |
-| TC-007 | Unit | `_renderHistoryLogs` filters rawLogs by provided entity IDs |
-| TC-008 | Unit | Sync button triggers `_fetchHistoryLogs` |
-| IT-001 | Integration | Fetching floors from HA |
-| IT-002 | Integration | Fetching entities from selected floor |
-| IT-003 | Integration | Submitting state change to HA |
-| IT-004 | Integration | history/history_during_period returns state changes for floor entities |
+| TC-WATER-U-001 ⬜ | Unit | Card renders with no floors gracefully |
+| TC-WATER-U-002 ⬜ | Unit | Floor selection updates displayed entities and clears logs |
+| TC-WATER-U-003 ⬜ | Unit | Toggle switch updates entity state |
+| TC-WATER-U-004 ⬜ | Unit | Dynamic labels filter correctly |
+| TC-WATER-U-005 ⬜ | Unit | Sensor values display correctly with units |
+| TC-WATER-U-006 | Unit | `_expandedMap` tracks each accordion independently |
+| TC-WATER-U-007 | Unit | `_renderHistoryLogs` filters rawLogs by provided entity IDs |
+| TC-WATER-U-008 | Unit | Sync button triggers `_fetchHistoryLogs` |
+| IT-WATER-I-001 ⬜ | Integration | Fetching floors from HA |
+| IT-WATER-I-002 ⬜ | Integration | Fetching entities from selected floor |
+| IT-WATER-I-003 ⬜ | Integration | Submitting state change to HA |
+| IT-WATER-I-004 ⬜ | Integration | history/history_during_period returns state changes for floor entities |
 
 ## Error Handling
 | Error | Response | Fallback | Logging |

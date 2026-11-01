@@ -36,10 +36,16 @@ règles le rendent lisible, et chacune est tenue par une garde de
 1. **Chaque ligne F porte une colonne `Covers`** qui nomme **le fichier de test qui la
    couvre**, et après ` :: ` les ids des cas de ce fichier — `tests/cards/water/sci-fi-water-management.test.ts :: TC-W03, TC-W04`,
    plusieurs groupes séparés par ` · `, le chemin seul quand le cas couvrant ne porte
-   pas d'id. **Pas un id nu :** un id de cas n'est pas unique dans le projet —
-   `TC-001` est déclaré par cinq specs, et le seul `it()` qui porte ce titre teste la
-   carte météo (bead `ha-sci-fi-cft`). Un chemin est non ambigu, et la garde le
-   vérifie : le fichier existe, et l'id y est porté par un `it()`. Une exigence que
+   pas d'id. **Le chemin reste obligatoire, même depuis que les ids sont uniques.**
+   Jusqu'au 2026-11-01 un id de cas ne l'était pas : `TC-001` était déclaré par six
+   documents — les cinq specs cartes `climates`, `lights`, `water`, `water_history`,
+   `weather`, et cette matrice — et le seul `it()` qui portait ce titre testait la
+   carte météo (bead `ha-sci-fi-cft`, lot fix `ids-cas-uniques`). Les ids des specs
+   cartes et de cette matrice portent depuis un préfixe dérivé du nom de fichier, et
+   `tests/specs/ids-cas-uniques.test.ts` refuse qu'un id soit déclaré deux fois. Le
+   chemin reste exigé parce qu'il est vérifiable : la garde lit que le fichier existe
+   et que l'id y est porté par un `it()` — ce qu'aucune convention de nommage ne
+   prouve. Une exigence que
    rien ne teste le dit en clair — la marque `⬜` suivie de la raison — plutôt que de
    laisser la colonne vide : une case vide se lit comme un oubli, une absence déclarée
    se lit comme un choix.
@@ -221,16 +227,22 @@ This section lists reference documentation, external dependencies, and assets us
 ---
 
 ## Test Case Specifications
+
+> **⬜ dans la colonne ID : le cas n'est joué par aucun test.** Les huit lignes : cette matrice décrit la validation du corpus de specs — `spec_precheck`, les ancres, l'arbre de fichiers, la présence d'ADR — et aucun test du projet ne la joue.
+> Le marqueur est la seule source : `tests/specs/ids-cas-uniques.test.ts` dérive
+> l'ensemble des cas non joués de ces marques et refuse l'écart dans les deux
+> sens — un cas non marqué que rien ne cite, comme un cas marqué qu'un test porte.
+
 | Test ID | Type | Description | Input | Expected Output |
 |---|---|---|---|---|
-| TC-001 | Unit | Test matrix coverage | Validate all specs have test IDs | All specs pass verification |
-| TC-002 | Unit | Test ADR-005 presence | Verify ADR-005 is declared | ADR-005 present in Master |
-| TC-003 | Unit | Test blueprint IDs | Verify blueprint mapping | Matrix complete |
-| TC-004 | Unit | Test cross-spec references | Validate anchors | Anchors load correctly |
-| TC-005 | Unit | Test file tree structure | Validate file tree syntax | Syntax is valid |
-| IT-001 | Integration | Global spec validation | Run `spec_precheck` on `docs/specs` | All PASS |
-| IT-002 | Integration | E2E validation cycle | Run verification loop on workspace | Validated |
-| IT-003 | Integration | HACS distribution check | Verify `hacs.json` integration | Validation succeeds |
+| TC-MASTER-U-001 ⬜ | Unit | Test matrix coverage | Validate all specs have test IDs | All specs pass verification |
+| TC-MASTER-U-002 ⬜ | Unit | Test ADR-005 presence | Verify ADR-005 is declared | ADR-005 present in Master |
+| TC-MASTER-U-003 ⬜ | Unit | Test blueprint IDs | Verify blueprint mapping | Matrix complete |
+| TC-MASTER-U-004 ⬜ | Unit | Test cross-spec references | Validate anchors | Anchors load correctly |
+| TC-MASTER-U-005 ⬜ | Unit | Test file tree structure | Validate file tree syntax | Syntax is valid |
+| IT-MASTER-I-001 ⬜ | Integration | Global spec validation | Run `spec_precheck` on `docs/specs` | All PASS |
+| IT-MASTER-I-002 ⬜ | Integration | E2E validation cycle | Run verification loop on workspace | Validated |
+| IT-MASTER-I-003 ⬜ | Integration | HACS distribution check | Verify `hacs.json` integration | Validation succeeds |
 
 ---
 

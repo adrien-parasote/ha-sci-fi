@@ -2,7 +2,7 @@
 // @vitest-environment happy-dom
 /**
  * Tests RED — Spec 13 § Plugs Card Design Update
- * TC-1301 → TC-1315 + IT-1301 → IT-1303 + Consolidated Extended Tests
+ * TC-PLUGS-U-1301 → TC-PLUGS-U-1315 + IT-PLUGS-I-1301 → IT-PLUGS-I-1303 + Consolidated Extended Tests
  */
 import { expect, describe, it, afterEach, vi } from 'vitest';
 
@@ -57,21 +57,21 @@ describe('sci-fi-plugs — Spec 13 redesign', () => {
     vi.resetAllMocks();
   });
 
-  // ── Static tests (TC-1301, TC-1302) ───────────────────────────────────────
+  // ── Static tests (TC-PLUGS-U-1301, TC-PLUGS-U-1302) ───────────────────────────────────────
 
-  it('TC-1301, TC-PLG-0001 — provides getConfigElement', () => {
+  it('TC-PLUGS-U-1301, TC-PLG-0001 — provides getConfigElement', () => {
     const el = SciFiPlugsCard.getConfigElement();
     expect(el.tagName.toLowerCase()).to.equal('sci-fi-plugs-editor');
   });
 
-  it('TC-1302, TC-PLG-0002 — provides getStubConfig', () => {
+  it('TC-PLUGS-U-1302, TC-PLG-0002 — provides getStubConfig', () => {
     const config = SciFiPlugsCard.getStubConfig();
     expect(config.type).to.equal('custom:sci-fi-plugs');
   });
 
-  // ── Without hass (TC-1303) ─────────────────────────────────────────────────
+  // ── Without hass (TC-PLUGS-U-1303) ─────────────────────────────────────────────────
 
-  it('TC-1303 — renders gracefully without hass', async () => {
+  it('TC-PLUGS-U-1303 — renders gracefully without hass', async () => {
     const el = document.createElement('sci-fi-plugs') as SciFiPlugsCard;
     (el as any).setConfig(SciFiPlugsCard.getStubConfig());
     document.body.appendChild(el);
@@ -79,18 +79,18 @@ describe('sci-fi-plugs — Spec 13 redesign', () => {
     expect(el.shadowRoot!.textContent).to.be.empty;
   });
 
-  // ── Empty devices (TC-1304) ───────────────────────────────────────────────
+  // ── Empty devices (TC-PLUGS-U-1304) ───────────────────────────────────────────────
 
-  it('TC-1304 — renders empty when no devices', async () => {
+  it('TC-PLUGS-U-1304 — renders empty when no devices', async () => {
     const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [] });
     // No header or footer — card body is essentially empty
     expect(el.shadowRoot!.querySelector('.header')).to.be.null;
     expect(el.shadowRoot!.querySelector('.footer')).to.be.null;
   });
 
-  // ── Header (TC-1305, TC-1306) ─────────────────────────────────────────────
+  // ── Header (TC-PLUGS-U-1305, TC-PLUGS-U-1306) ─────────────────────────────────────────────
 
-  it('TC-1305 — header shows plug name', async () => {
+  it('TC-PLUGS-U-1305 — header shows plug name', async () => {
     const el = await mountCard({
       type: 'custom:sci-fi-plugs',
       devices: [DEVICE_TV],
@@ -100,7 +100,7 @@ describe('sci-fi-plugs — Spec 13 redesign', () => {
     expect(title!.textContent).to.include('TV Plug');
   });
 
-  it('TC-1306 — header icon has "on" class when plug is ON, absent when OFF', async () => {
+  it('TC-PLUGS-U-1306 — header icon has "on" class when plug is ON, absent when OFF', async () => {
     // ON state
     const elOn = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_TV] });
     const iconOn = elOn.shadowRoot!.querySelector('.header sf-icon');
@@ -116,14 +116,14 @@ describe('sci-fi-plugs — Spec 13 redesign', () => {
     expect(iconOff?.classList.contains('on')).to.be.false;
   });
 
-  // ── Image zone (TC-1307, TC-1308) ─────────────────────────────────────────
+  // ── Image zone (TC-PLUGS-U-1307, TC-PLUGS-U-1308) ─────────────────────────────────────────
 
-  it('TC-1307 — image zone present in content', async () => {
+  it('TC-PLUGS-U-1307 — image zone present in content', async () => {
     const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_TV] });
     expect(el.shadowRoot!.querySelector('.image')).to.not.be.null;
   });
 
-  it('TC-1308 — click on image triggers toggle (ON → turn_off)', async () => {
+  it('TC-PLUGS-U-1308 — click on image triggers toggle (ON → turn_off)', async () => {
     const mockCallService = vi.fn(() => Promise.resolve({} as any));
     const hass = makeMockHass({
       callService: mockCallService,
@@ -135,9 +135,9 @@ describe('sci-fi-plugs — Spec 13 redesign', () => {
     expect(mockCallService).toHaveBeenCalledWith('switch', 'turn_off', { entity_id: 'switch.tv' });
   });
 
-  // ── Footer navigation (TC-1309, TC-1310, TC-1311, TC-1312, TC-1313) ────────
+  // ── Footer navigation (TC-PLUGS-U-1309, TC-PLUGS-U-1310, TC-PLUGS-U-1311, TC-PLUGS-U-1312, TC-PLUGS-U-1313) ────────
 
-  it('TC-1309 — footer prev/next containers have .hide class for single plug', async () => {
+  it('TC-PLUGS-U-1309 — footer prev/next containers have .hide class for single plug', async () => {
     const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_TV] });
     const footer = el.shadowRoot!.querySelector('.footer');
     expect(footer).to.not.be.null;
@@ -145,7 +145,7 @@ describe('sci-fi-plugs — Spec 13 redesign', () => {
     expect(hiddenDivs.length).to.be.greaterThanOrEqual(2);
   });
 
-  it('TC-1310 — footer prev/next containers have no .hide for multiple plugs', async () => {
+  it('TC-PLUGS-U-1310 — footer prev/next containers have no .hide for multiple plugs', async () => {
     const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_TV, DEVICE_LAMP] });
     const footer = el.shadowRoot!.querySelector('.footer');
     expect(footer).to.not.be.null;
@@ -156,7 +156,7 @@ describe('sci-fi-plugs — Spec 13 redesign', () => {
     expect(navDivs.every(d => !d.classList.contains('hide'))).to.be.true;
   });
 
-  it('TC-1311 — footer selector buttons count matches devices', async () => {
+  it('TC-PLUGS-U-1311 — footer selector buttons count matches devices', async () => {
     const DEVICE_3 = { device_id: 'p3', entity_id: 'switch.fan', name: 'Fan' };
     const hass = makeMockHass({
       states: {
@@ -173,7 +173,7 @@ describe('sci-fi-plugs — Spec 13 redesign', () => {
     expect(buttons.length).to.equal(3);
   });
 
-  it('TC-1312 — prev navigation wraps from idx 0 to last', async () => {
+  it('TC-PLUGS-U-1312 — prev navigation wraps from idx 0 to last', async () => {
     const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_TV, DEVICE_LAMP] });
     // Initial: idx 0 → TV Plug
     expect(el.shadowRoot!.querySelector('.header .title')!.textContent).to.include('TV Plug');
@@ -185,7 +185,7 @@ describe('sci-fi-plugs — Spec 13 redesign', () => {
     expect(el.shadowRoot!.querySelector('.header .title')!.textContent).to.include('Lamp Plug');
   });
 
-  it('TC-1313 — next navigation wraps from last to idx 0', async () => {
+  it('TC-PLUGS-U-1313 — next navigation wraps from last to idx 0', async () => {
     const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_TV, DEVICE_LAMP] });
     // Navigate to idx 1 first
     const nextBtn = el.shadowRoot!.querySelector('.footer sf-button[icon="mdi:chevron-right"]') as HTMLElement;
@@ -199,9 +199,9 @@ describe('sci-fi-plugs — Spec 13 redesign', () => {
     expect(el.shadowRoot!.querySelector('.header .title')!.textContent).to.include('TV Plug');
   });
 
-  // ── Sensors (TC-1314) ─────────────────────────────────────────────────────
+  // ── Sensors (TC-PLUGS-U-1314) ─────────────────────────────────────────────────────
 
-  it('TC-1314, TC-505 — sensor list rendered for visible sensors (non-power)', async () => {
+  it('TC-PLUGS-U-1314, TC-505 — sensor list rendered for visible sensors (non-power)', async () => {
     const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_TV] });
     // sensor.tv_energy has show: true and power: false → should appear in .sensors
     const sensorRows = el.shadowRoot!.querySelectorAll('.sensors .sensor');
@@ -210,27 +210,27 @@ describe('sci-fi-plugs — Spec 13 redesign', () => {
     expect(el.shadowRoot!.textContent).to.include('1.2');
   });
 
-  // ── Regression (TC-1315) ──────────────────────────────────────────────────
+  // ── Regression (TC-PLUGS-U-1315) ──────────────────────────────────────────────────
 
-  it('TC-1315 — regression: getConfigElement and getStubConfig still work', () => {
+  it('TC-PLUGS-U-1315 — regression: getConfigElement and getStubConfig still work', () => {
     expect(SciFiPlugsCard.getConfigElement().tagName.toLowerCase()).to.equal('sci-fi-plugs-editor');
     expect(SciFiPlugsCard.getStubConfig().type).to.equal('custom:sci-fi-plugs');
   });
 
   // ── Integration tests ─────────────────────────────────────────────────────
 
-  it('IT-1301 — card registers in customElements', () => {
+  it('IT-PLUGS-I-1301 — card registers in customElements', () => {
     expect(customElements.get('sci-fi-plugs')).to.not.be.undefined;
   });
 
-  it('IT-1302 — full render: header + content + footer all present', async () => {
+  it('IT-PLUGS-I-1302 — full render: header + content + footer all present', async () => {
     const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_TV] });
     expect(el.shadowRoot!.querySelector('.header')).to.not.be.null;
     expect(el.shadowRoot!.querySelector('.content')).to.not.be.null;
     expect(el.shadowRoot!.querySelector('.footer')).to.not.be.null;
   });
 
-  it('IT-1303 — plugs/styles.ts exported: no inline css` in sci-fi-plugs.ts', async () => {
+  it('IT-PLUGS-I-1303 — plugs/styles.ts exported: no inline css` in sci-fi-plugs.ts', async () => {
     // Verify by checking that plugStyles is imported and used (structural test)
     // The card renders with styles array containing plugStyles
     const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_TV] });

@@ -24,23 +24,23 @@ describe('sci-fi-vacuum', () => {
     vi.resetAllMocks();
   });
 
-  // ── Static tests (TC-1501, TC-1502) ─────────────────────────────────────
+  // ── Static tests (TC-VACUUM-U-1501, TC-VACUUM-U-1502) ─────────────────────────────────────
 
-  it('TC-1501 — provides getConfigElement', () => {
+  it('TC-VACUUM-U-1501 — provides getConfigElement', () => {
     const el = SciFiVacuumCard.getConfigElement();
     expect(el.tagName.toLowerCase()).to.equal('sci-fi-vacuum-editor');
   });
 
-  it('TC-1502 — provides getStubConfig', () => {
+  it('TC-VACUUM-U-1502 — provides getStubConfig', () => {
     const config = SciFiVacuumCard.getStubConfig();
     expect(config.type).to.equal('custom:sci-fi-vacuum');
     // ADR-005: entity (not entity_id)
     expect(config.vacuums[0]!.entity).to.equal('vacuum.robot');
   });
 
-  // ── TC-1503 — no hass ───────────────────────────────────────────────────
+  // ── TC-VACUUM-U-1503 — no hass ───────────────────────────────────────────────────
 
-  it('TC-1503 — renders gracefully without hass', async () => {
+  it('TC-VACUUM-U-1503 — renders gracefully without hass', async () => {
     const el = makeEl();
     document.body.appendChild(el);
     setConfig(el, SciFiVacuumCard.getStubConfig());
@@ -48,9 +48,9 @@ describe('sci-fi-vacuum', () => {
     expect(el.shadowRoot!.textContent).to.be.empty;
   });
 
-  // ── TC-1504 — empty vacuums list ────────────────────────────────────────
+  // ── TC-VACUUM-U-1504 — empty vacuums list ────────────────────────────────────────
 
-  it('TC-1504 — renders empty card when no vacuums configured', async () => {
+  it('TC-VACUUM-U-1504 — renders empty card when no vacuums configured', async () => {
     const el = makeEl();
     setConfig(el, { type: 'custom:sci-fi-vacuum', vacuums: [] });
     el.hass = makeMockHass();
@@ -60,9 +60,9 @@ describe('sci-fi-vacuum', () => {
     expect(el.shadowRoot!.querySelector('.header')).to.be.null;
   });
 
-  // ── TC-1505 — header shows vacuum name ──────────────────────────────────
+  // ── TC-VACUUM-U-1505 — header shows vacuum name ──────────────────────────────────
 
-  it('TC-1505 — header shows vacuum friendly_name', async () => {
+  it('TC-VACUUM-U-1505 — header shows vacuum friendly_name', async () => {
     const el = makeEl();
     setConfig(el, { type: 'custom:sci-fi-vacuum', vacuums: [{ entity: 'vacuum.bot' }] });
     el.hass = makeMockHass({
@@ -76,9 +76,9 @@ describe('sci-fi-vacuum', () => {
     expect(name?.textContent).to.include('Robot 1');
   });
 
-  // ── TC-1506 — header shows fan speed ────────────────────────────────────
+  // ── TC-VACUUM-U-1506 — header shows fan speed ────────────────────────────────────
 
-  it('TC-1506 — header shows fan speed from entity attributes', async () => {
+  it('TC-VACUUM-U-1506 — header shows fan speed from entity attributes', async () => {
     const el = makeEl();
     setConfig(el, { type: 'custom:sci-fi-vacuum', vacuums: [{ entity: 'vacuum.bot' }] });
     el.hass = makeMockHass({
@@ -92,9 +92,9 @@ describe('sci-fi-vacuum', () => {
     expect(select?.getAttribute('text')).to.equal('Standard');
   });
 
-  // ── TC-1507 — sub-header DOCKED class ───────────────────────────────────
+  // ── TC-VACUUM-U-1507 — sub-header DOCKED class ───────────────────────────────────
 
-  it('TC-1507 — sub-header sf-icon has class DOCKED for docked state', async () => {
+  it('TC-VACUUM-U-1507 — sub-header sf-icon has class DOCKED for docked state', async () => {
     const el = makeEl();
     setConfig(el, { type: 'custom:sci-fi-vacuum', vacuums: [{ entity: 'vacuum.bot' }] });
     el.hass = makeMockHass({
@@ -106,9 +106,9 @@ describe('sci-fi-vacuum', () => {
     expect(icon?.className).to.include('DOCKED');
   });
 
-  // ── TC-1508 — sub-header CLEAN class ────────────────────────────────────
+  // ── TC-VACUUM-U-1508 — sub-header CLEAN class ────────────────────────────────────
 
-  it('TC-1508 — sub-header sf-icon has class CLEAN for cleaning state', async () => {
+  it('TC-VACUUM-U-1508 — sub-header sf-icon has class CLEAN for cleaning state', async () => {
     const el = makeEl();
     setConfig(el, { type: 'custom:sci-fi-vacuum', vacuums: [{ entity: 'vacuum.bot' }] });
     el.hass = makeMockHass({
@@ -120,9 +120,9 @@ describe('sci-fi-vacuum', () => {
     expect(icon?.className).to.include('CLEAN');
   });
 
-  // ── TC-1509 — sub-header ALERT class ────────────────────────────────────
+  // ── TC-VACUUM-U-1509 — sub-header ALERT class ────────────────────────────────────
 
-  it('TC-1509 — sub-header sf-icon has class ALERT for error state', async () => {
+  it('TC-VACUUM-U-1509 — sub-header sf-icon has class ALERT for error state', async () => {
     const el = makeEl();
     setConfig(el, { type: 'custom:sci-fi-vacuum', vacuums: [{ entity: 'vacuum.bot' }] });
     el.hass = makeMockHass({
@@ -134,9 +134,9 @@ describe('sci-fi-vacuum', () => {
     expect(icon?.className).to.include('ALERT');
   });
 
-  // ── TC-1510 — info renders current_clean_area ───────────────────────────
+  // ── TC-VACUUM-U-1510 — info renders current_clean_area ───────────────────────────
 
-  it('TC-1510 — info renders current_clean_area sensor', async () => {
+  it('TC-VACUUM-U-1510 — info renders current_clean_area sensor', async () => {
     const el = makeEl();
     setConfig(el, {
       type: 'custom:sci-fi-vacuum',
@@ -155,9 +155,9 @@ describe('sci-fi-vacuum', () => {
     expect(el.shadowRoot!.textContent).to.include('18');
   });
 
-  // ── TC-1511 — info absent when no info sensors ──────────────────────────
+  // ── TC-VACUUM-U-1511 — info absent when no info sensors ──────────────────────────
 
-  it('TC-1511 — info section absent when no info sensors configured', async () => {
+  it('TC-VACUUM-U-1511 — info section absent when no info sensors configured', async () => {
     const el = makeEl();
     setConfig(el, {
       type: 'custom:sci-fi-vacuum',
@@ -175,9 +175,9 @@ describe('sci-fi-vacuum', () => {
     expect(info).to.be.null;
   });
 
-  // ── TC-1512 — map image rendered ────────────────────────────────────────
+  // ── TC-VACUUM-U-1512 — map image rendered ────────────────────────────────────────
 
-  it('TC-1512 — map image rendered when map entity present', async () => {
+  it('TC-VACUUM-U-1512 — map image rendered when map entity present', async () => {
     const el = makeEl();
     setConfig(el, {
       type: 'custom:sci-fi-vacuum',
@@ -200,9 +200,9 @@ describe('sci-fi-vacuum', () => {
     expect(img?.getAttribute('src')).to.equal('/api/camera/map');
   });
 
-  // ── TC-1513 — map fallback text ─────────────────────────────────────────
+  // ── TC-VACUUM-U-1513 — map fallback text ─────────────────────────────────────────
 
-  it('TC-1513 — map fallback text rendered when no map sensor configured', async () => {
+  it('TC-VACUUM-U-1513 — map fallback text rendered when no map sensor configured', async () => {
     const el = makeEl();
     setConfig(el, { type: 'custom:sci-fi-vacuum', vacuums: [{ entity: 'vacuum.bot' }] });
     const hass = makeMockHass({
@@ -217,9 +217,9 @@ describe('sci-fi-vacuum', () => {
     expect(mapContent?.textContent).to.include('No map defined');
   });
 
-  // ── TC-1514 — actions: 4 sf-buttons rendered (set_fan_speed is header-only) ────
+  // ── TC-VACUUM-U-1514 — actions: 4 sf-buttons rendered (set_fan_speed is header-only) ────
 
-  it('TC-1514 — actions: 4 sf-button in .actions .default when all enabled', async () => {
+  it('TC-VACUUM-U-1514 — actions: 4 sf-button in .actions .default when all enabled', async () => {
     const el = makeEl();
     // set_fan_speed is handled by the fan icon in the header, not the action bar
     // → only start, pause, stop, return_to_base appear (4 buttons)
@@ -233,9 +233,9 @@ describe('sci-fi-vacuum', () => {
     expect(btns.length).to.equal(4);
   });
 
-  // ── TC-1515 — actions: disabled action not rendered ─────────────────
+  // ── TC-VACUUM-U-1515 — actions: disabled action not rendered ─────────────────
 
-  it('TC-1515 — actions: 3 sf-button when start disabled', async () => {
+  it('TC-VACUUM-U-1515 — actions: 3 sf-button when start disabled', async () => {
     const el = makeEl();
     setConfig(el, {
       type: 'custom:sci-fi-vacuum',
@@ -250,9 +250,9 @@ describe('sci-fi-vacuum', () => {
     expect(btns.length).to.equal(3);
   });
 
-  // ── TC-1516 — action sf-button click calls vacuum service ───────────────
+  // ── TC-VACUUM-U-1516 — action sf-button click calls vacuum service ───────────────
 
-  it('TC-1516 — action sf-button click calls vacuum service', async () => {
+  it('TC-VACUUM-U-1516 — action sf-button click calls vacuum service', async () => {
     const el = makeEl();
     const mockCallService = vi.fn().mockResolvedValue(undefined);
     setConfig(el, {
@@ -272,9 +272,9 @@ describe('sci-fi-vacuum', () => {
     expect(mockCallService).toHaveBeenCalledWith('vacuum', 'start', { entity_id: 'vacuum.bot' });
   });
 
-  // ── TC-1517 — shortcuts: sf-button per shortcut rendered ────────────────
+  // ── TC-VACUUM-U-1517 — shortcuts: sf-button per shortcut rendered ────────────────
 
-  it('TC-1517 — shortcuts: sf-button per shortcut description rendered', async () => {
+  it('TC-VACUUM-U-1517 — shortcuts: sf-button per shortcut description rendered', async () => {
     const el = makeEl();
     setConfig(el, {
       type: 'custom:sci-fi-vacuum',
@@ -299,9 +299,9 @@ describe('sci-fi-vacuum', () => {
     expect(btns.length).to.equal(2);
   });
 
-  // ── TC-1518 — shortcut sf-button click calls shortcut service ───────────
+  // ── TC-VACUUM-U-1518 — shortcut sf-button click calls shortcut service ───────────
 
-  it('TC-1518, TC-506 — shortcut sf-button click calls shortcut service', async () => {
+  it('TC-VACUUM-U-1518, TC-506 — shortcut sf-button click calls shortcut service', async () => {
     const el = makeEl();
     const mockCallService = vi.fn().mockResolvedValue(undefined);
     setConfig(el, {
@@ -333,9 +333,9 @@ describe('sci-fi-vacuum', () => {
     });
   });
 
-  // ── TC-1519 — devices bar absent for single vacuum ───────────────────────
+  // ── TC-VACUUM-U-1519 — devices bar absent for single vacuum ───────────────────────
 
-  it('TC-1519 — devices bar absent for single vacuum', async () => {
+  it('TC-VACUUM-U-1519 — devices bar absent for single vacuum', async () => {
     const el = makeEl();
     setConfig(el, { type: 'custom:sci-fi-vacuum', vacuums: [{ entity: 'vacuum.bot' }] });
     el.hass = makeMockHass({
@@ -346,9 +346,9 @@ describe('sci-fi-vacuum', () => {
     expect(el.shadowRoot!.querySelector('.devices')).to.be.null;
   });
 
-  // ── TC-1520 — devices bar present for multiple vacuums ───────────────────
+  // ── TC-VACUUM-U-1520 — devices bar present for multiple vacuums ───────────────────
 
-  it('TC-1520 — devices bar present with 2 dots for 2 vacuums', async () => {
+  it('TC-VACUUM-U-1520 — devices bar present with 2 dots for 2 vacuums', async () => {
     const el = makeEl();
     setConfig(el, {
       type: 'custom:sci-fi-vacuum',
@@ -368,9 +368,9 @@ describe('sci-fi-vacuum', () => {
     expect(dots.length).to.equal(2);
   });
 
-  // ── TC-1521 — prev navigation wraps ─────────────────────────────────────
+  // ── TC-VACUUM-U-1521 — prev navigation wraps ─────────────────────────────────────
 
-  it('TC-1521 — prev navigation wraps from 0 to last', async () => {
+  it('TC-VACUUM-U-1521 — prev navigation wraps from 0 to last', async () => {
     const el = makeEl();
     setConfig(el, {
       type: 'custom:sci-fi-vacuum',
@@ -396,9 +396,9 @@ describe('sci-fi-vacuum', () => {
     expect(Array.from(dots).indexOf(activeDot!)).to.equal(1);
   });
 
-  // ── TC-1522 — next navigation wraps ─────────────────────────────────────
+  // ── TC-VACUUM-U-1522 — next navigation wraps ─────────────────────────────────────
 
-  it('TC-1522 — next navigation wraps from last to 0', async () => {
+  it('TC-VACUUM-U-1522 — next navigation wraps from last to 0', async () => {
     const el = makeEl();
     setConfig(el, {
       type: 'custom:sci-fi-vacuum',
@@ -427,9 +427,9 @@ describe('sci-fi-vacuum', () => {
     expect((el as any)._vacuum_selected_id).to.equal(0);
   });
 
-  // ── TC-1523 — toast success ──────────────────────────────────────────────
+  // ── TC-VACUUM-U-1523 — toast success ──────────────────────────────────────────────
 
-  it('TC-1523 — action sf-button triggers callService (toast feedback path)', async () => {
+  it('TC-VACUUM-U-1523 — action sf-button triggers callService (toast feedback path)', async () => {
     const el = makeEl();
     const mockCallService = vi.fn().mockResolvedValue(undefined);
     setConfig(el, {
@@ -451,9 +451,9 @@ describe('sci-fi-vacuum', () => {
     expect(mockCallService).toHaveBeenCalledWith('vacuum', 'start', { entity_id: 'vacuum.bot' });
   });
 
-  // ── TC-1524 — toast error ────────────────────────────────────────────────
+  // ── TC-VACUUM-U-1524 — toast error ────────────────────────────────────────────────
 
-  it('TC-1524 — ignores shortcut click when service is malformed', async () => {
+  it('TC-VACUUM-U-1524 — ignores shortcut click when service is malformed', async () => {
     const el = makeEl();
     const mockCallService = vi.fn();
     setConfig(el, {
@@ -479,15 +479,15 @@ describe('sci-fi-vacuum', () => {
     expect(mockCallService).not.toHaveBeenCalled();
   });
 
-  // ── IT-1501 — customElements registration ───────────────────────────────
+  // ── IT-VACUUM-I-1501 — customElements registration ───────────────────────────────
 
-  it('IT-1501 — card registers in customElements', () => {
+  it('IT-VACUUM-I-1501 — card registers in customElements', () => {
     expect(customElements.get('sci-fi-vacuum')).to.exist;
   });
 
-  // ── IT-1502 — full render structure ─────────────────────────────────────
+  // ── IT-VACUUM-I-1502 — full render structure ─────────────────────────────────────
 
-  it('IT-1502 — full render: header + sub-header + map + actions all present', async () => {
+  it('IT-VACUUM-I-1502 — full render: header + sub-header + map + actions all present', async () => {
     const el = makeEl();
     setConfig(el, {
       type: 'custom:sci-fi-vacuum',
@@ -512,9 +512,9 @@ describe('sci-fi-vacuum', () => {
     expect(el.shadowRoot!.querySelector('.actions')).not.to.be.null;
   });
 
-  // ── IT-1503 — no inline css` in sci-fi-vacuum.ts ────────────────────────
+  // ── IT-VACUUM-I-1503 — no inline css` in sci-fi-vacuum.ts ────────────────────────
 
-  it('IT-1503 — vacuumStyles imported from styles.ts (styles object exists on class)', async () => {
+  it('IT-VACUUM-I-1503 — vacuumStyles imported from styles.ts (styles object exists on class)', async () => {
     // If styles.ts is correctly imported and vacuumStyles applied, the card
     // should have more than 1 CSSResult in its styles array (sciFiCommonStyles + vacuumStyles)
     const styles = (SciFiVacuumCard as any).styles;
@@ -522,9 +522,9 @@ describe('sci-fi-vacuum', () => {
     expect(styles.length).to.be.greaterThan(1);
   });
 
-  // ── TC-1525 — sf-dropdown present in header ──────────────────
+  // ── TC-VACUUM-U-1525 — sf-dropdown present in header ──────────────────
 
-  it('TC-1525 — sf-dropdown present in header when fan_speed_list non-empty', async () => {
+  it('TC-VACUUM-U-1525 — sf-dropdown present in header when fan_speed_list non-empty', async () => {
     const el = makeEl();
     setConfig(el, { type: 'custom:sci-fi-vacuum', vacuums: [{ entity: 'vacuum.bot' }] });
     el.hass = makeMockHass({
@@ -550,9 +550,9 @@ describe('sci-fi-vacuum', () => {
     expect(activeItem.color).to.equal('var(--sf-accent-on, #00ff9d)');
   });
 
-  // ── TC-1526 — Fan speed dropdown selection calls set_fan_speed service ──
+  // ── TC-VACUUM-U-1526 — Fan speed dropdown selection calls set_fan_speed service ──
 
-  it('TC-1526 — Fan speed dropdown selection calls set_fan_speed service', async () => {
+  it('TC-VACUUM-U-1526 — Fan speed dropdown selection calls set_fan_speed service', async () => {
     const el = makeEl();
     const mockCallService = vi.fn().mockResolvedValue(undefined);
     setConfig(el, { type: 'custom:sci-fi-vacuum', vacuums: [{ entity: 'vacuum.bot' }] });

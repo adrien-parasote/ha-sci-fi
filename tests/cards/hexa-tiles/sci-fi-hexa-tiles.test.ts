@@ -584,7 +584,7 @@ describe('sci-fi-hexa-tiles', () => {
     return el;
   }
 
-  it('TC-706: alert banner names the phenomenon whose attribute matches a non-green level', async () => {
+  it('TC-HEXA-TILES-U-706: alert banner names the phenomenon whose attribute matches a non-green level', async () => {
     const el = await mountWithAlert({ canicule: 'Jaune', vent: 'Vert' }, 'Jaune');
     const banner = el.shadowRoot!.querySelector('.weather-alert');
     expect(banner, 'a non-green alert must render the banner').not.toBeNull();
@@ -594,7 +594,7 @@ describe('sci-fi-hexa-tiles', () => {
     expect(banner!.textContent).not.toContain('vent');
   });
 
-  it('TC-707: alert banner falls back to the entity state when no attribute matches', async () => {
+  it('TC-HEXA-TILES-U-707: alert banner falls back to the entity state when no attribute matches', async () => {
     const el = await mountWithAlert({ friendly_name: 'Vigilance' }, 'Orange');
     const banner = el.shadowRoot!.querySelector('.weather-alert');
     expect(banner).not.toBeNull();
@@ -614,7 +614,7 @@ describe('sci-fi-hexa-tiles', () => {
     'utf8',
   );
 
-  it('IT-701: the grid divides the full card width by cols + 0.5 and interlocks the rows', () => {
+  it('IT-HEXA-TILES-I-701: the grid divides the full card width by cols + 0.5 and interlocks the rows', () => {
     const css = hexaCss();
     // 2 columns → 2.5 hexagons across exactly 100% of the width; the half tile is the
     // offset that makes the interlocking read as a honeycomb rather than a table.
@@ -625,9 +625,9 @@ describe('sci-fi-hexa-tiles', () => {
     expect(css).toMatch(/--tile-height:\s*calc\(var\(--tile-width\)\s*\*\s*1\.1547\)/);
   });
 
-  it('IT-702: active tiles carry a border glow and glowing text', () => {
+  it('IT-HEXA-TILES-I-702: active tiles carry a border glow and glowing text', () => {
     const css = hexaCss();
-    // Anchored on the active-tile selector, like IT-701 anchors on .hexa-row.
+    // Anchored on the active-tile selector, like IT-HEXA-TILES-I-701 anchors on .hexa-row.
     // Unanchored, the old `box-shadow` assertion matched .avatar in the header
     // — the only box-shadow in this sheet — so the test was green on the avatar
     // while no active-tile rule declared a glow at all. The glow is drawn by
@@ -644,7 +644,7 @@ describe('sci-fi-hexa-tiles', () => {
     );
   });
 
-  it('IT-703: every themed colour reads --sf-primary with a hex fallback', () => {
+  it('IT-HEXA-TILES-I-703: every themed colour reads --sf-primary with a hex fallback', () => {
     const css = hexaCss();
     const uses = css.match(/var\(--sf-primary[^)]*\)/g) ?? [];
     expect(uses.length, '--sf-primary must drive the theme').toBeGreaterThan(5);

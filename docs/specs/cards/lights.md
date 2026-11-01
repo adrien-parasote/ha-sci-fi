@@ -66,18 +66,23 @@ custom_entities:
 
 ## Test Case Specifications
 
+> **⬜ dans la colonne ID : le cas n'est joué par aucun test.** Les huit lignes : aucun test de la carte ne cite ses ids — `sci-fi-lights-editor.test.ts` porte ceux de `10_card_editors.md`.
+> Le marqueur est la seule source : `tests/specs/ids-cas-uniques.test.ts` dérive
+> l'ensemble des cas non joués de ces marques et refuse l'écart dans les deux
+> sens — un cas non marqué que rien ne cite, comme un cas marqué qu'un test porte.
+
 > Full test suite in [tests/cards/lights/](../../tests/cards/lights/#L1).
 
 | ID | Type | Description | Input | Expected Output |
 |---|---|---|---|---|
-| TC-001 | Unit | Renders empty state when no lights in area | Config with ignored all entities | Empty state message rendered |
-| TC-002 | Unit | `first_floor_to_render` resolved by ID not light count | `first_floor_to_render: 'rdc'`, floor exists but has no lights | `rdc` floor still selected |
-| TC-003 | Unit | `ignored_entities` hides listed entities | Config with entity in `ignored_entities` | Entity not present in DOM |
-| TC-004 | Unit | `custom_entities` overrides name and icons | Config with `custom_entities` entry | Custom name/icon rendered |
-| TC-005 | Unit | `getRelevantEntities()` returns only light domain entities | Mixed entity config | Only `light.*` in result |
-| IT-001 | Integration | Floor navigation updates area list | Click floor tab | Area list updates to selected floor |
-| IT-002 | Integration | Card re-renders on hass state change |  light entity updated | DOM reflects new light state |
-| IT-003 | Integration | Editor custom_entities persisted to config | Add custom icon in editor |  updated in card |
+| TC-LIGHTS-U-001 ⬜ | Unit | Renders empty state when no lights in area | Config with ignored all entities | Empty state message rendered |
+| TC-LIGHTS-U-002 ⬜ | Unit | `first_floor_to_render` resolved by ID not light count | `first_floor_to_render: 'rdc'`, floor exists but has no lights | `rdc` floor still selected |
+| TC-LIGHTS-U-003 ⬜ | Unit | `ignored_entities` hides listed entities | Config with entity in `ignored_entities` | Entity not present in DOM |
+| TC-LIGHTS-U-004 ⬜ | Unit | `custom_entities` overrides name and icons | Config with `custom_entities` entry | Custom name/icon rendered |
+| TC-LIGHTS-U-005 ⬜ | Unit | `getRelevantEntities()` returns only light domain entities | Mixed entity config | Only `light.*` in result |
+| IT-LIGHTS-I-001 ⬜ | Integration | Floor navigation updates area list | Click floor tab | Area list updates to selected floor |
+| IT-LIGHTS-I-002 ⬜ | Integration | Card re-renders on hass state change |  light entity updated | DOM reflects new light state |
+| IT-LIGHTS-I-003 ⬜ | Integration | Editor custom_entities persisted to config | Add custom icon in editor |  updated in card |
 
 ## Error Handling
 

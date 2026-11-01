@@ -11,16 +11,16 @@
 
 | Feature ID | Description | Spec file | Covers |
 |---|---|---|---|
-| F-VAC-D01 | Header: vacuum name + fan speed (dropdown → uses sf-button-card-select) + mop_intensite (conditional) + battery (conditional, with warning/critical colors) | ✅ This spec § _renderHeader(v) | tests/cards/vacuum/sci-fi-vacuum.test.ts :: TC-1505, TC-1506, TC-1525, TC-1526 |
-| F-VAC-D02 | Sub-header: animated icon traversing card (CLEAN/RETURNING=moveAcross, DOCKED=rotate 90°, IDLE/ALERT=centered) — icon 40px, sub-header height 40px | ✅ This spec § _renderSubHeader(v) | tests/cards/vacuum/sci-fi-vacuum.test.ts :: TC-1507, TC-1508, TC-1509 |
-| F-VAC-D03 | Info sensors: `current_clean_area` + `current_clean_duration` — column cards with icon + value + unit + name, centered, duration rounded to integer minutes | ✅ This spec § _renderInfo(v) | tests/cards/vacuum/sci-fi-vacuum.test.ts :: TC-1510, TC-1511 |
-| F-VAC-D04 | Map: full-width `<img>` with border/radius; fallback text `msg('No map defined')` — fills all remaining space between info and actions via `flex: 1` | ✅ This spec § _renderMap(v) | tests/cards/vacuum/sci-fi-vacuum.test.ts :: TC-1512, TC-1513 |
-| F-VAC-D05 | Actions: `.default` row (sf-button for start/pause/stop/return_to_base only — **set_fan_speed excluded**) + `.shortcuts` row — pinned to bottom | ✅ This spec § _renderActions(v) | tests/cards/vacuum/sci-fi-vacuum.test.ts :: TC-1514, TC-1515, TC-1516, TC-1517, TC-1518 |
-| F-VAC-D06 | Device navigation: bottom bar with chevron-left/right + dot indicators (hidden if single vacuum) | ✅ This spec § _renderDevices() | tests/cards/vacuum/sci-fi-vacuum.test.ts :: TC-1519, TC-1520, TC-1521, TC-1522 |
-| F-VAC-D07 | Toast feedback on action success/failure via `<sf-toast>` | ✅ This spec § Service calls | tests/cards/vacuum/sci-fi-vacuum.test.ts :: TC-1523, TC-1524 |
-| F-VAC-D08 | Extract CSS into `styles.ts` (stove/vehicle/plugs pattern) | ✅ This spec § styles.ts | tests/cards/vacuum/sci-fi-vacuum.test.ts :: IT-1503 |
+| F-VAC-D01 | Header: vacuum name + fan speed (dropdown → uses sf-button-card-select) + mop_intensite (conditional) + battery (conditional, with warning/critical colors) | ✅ This spec § _renderHeader(v) | tests/cards/vacuum/sci-fi-vacuum.test.ts :: TC-VACUUM-U-1505, TC-VACUUM-U-1506, TC-VACUUM-U-1525, TC-VACUUM-U-1526 |
+| F-VAC-D02 | Sub-header: animated icon traversing card (CLEAN/RETURNING=moveAcross, DOCKED=rotate 90°, IDLE/ALERT=centered) — icon 40px, sub-header height 40px | ✅ This spec § _renderSubHeader(v) | tests/cards/vacuum/sci-fi-vacuum.test.ts :: TC-VACUUM-U-1507, TC-VACUUM-U-1508, TC-VACUUM-U-1509 |
+| F-VAC-D03 | Info sensors: `current_clean_area` + `current_clean_duration` — column cards with icon + value + unit + name, centered, duration rounded to integer minutes | ✅ This spec § _renderInfo(v) | tests/cards/vacuum/sci-fi-vacuum.test.ts :: TC-VACUUM-U-1510, TC-VACUUM-U-1511 |
+| F-VAC-D04 | Map: full-width `<img>` with border/radius; fallback text `msg('No map defined')` — fills all remaining space between info and actions via `flex: 1` | ✅ This spec § _renderMap(v) | tests/cards/vacuum/sci-fi-vacuum.test.ts :: TC-VACUUM-U-1512, TC-VACUUM-U-1513 |
+| F-VAC-D05 | Actions: `.default` row (sf-button for start/pause/stop/return_to_base only — **set_fan_speed excluded**) + `.shortcuts` row — pinned to bottom | ✅ This spec § _renderActions(v) | tests/cards/vacuum/sci-fi-vacuum.test.ts :: TC-VACUUM-U-1514, TC-VACUUM-U-1515, TC-VACUUM-U-1516, TC-VACUUM-U-1517, TC-VACUUM-U-1518 |
+| F-VAC-D06 | Device navigation: bottom bar with chevron-left/right + dot indicators (hidden if single vacuum) | ✅ This spec § _renderDevices() | tests/cards/vacuum/sci-fi-vacuum.test.ts :: TC-VACUUM-U-1519, TC-VACUUM-U-1520, TC-VACUUM-U-1521, TC-VACUUM-U-1522 |
+| F-VAC-D07 | Toast feedback on action success/failure via `<sf-toast>` | ✅ This spec § Service calls | tests/cards/vacuum/sci-fi-vacuum.test.ts :: TC-VACUUM-U-1523, TC-VACUUM-U-1524 |
+| F-VAC-D08 | Extract CSS into `styles.ts` (stove/vehicle/plugs pattern) | ✅ This spec § styles.ts | tests/cards/vacuum/sci-fi-vacuum.test.ts :: IT-VACUUM-I-1503 |
 | F-VAC-D09 | 'vacuum_const.ts' constants file (ported from main) | ✅ This spec § Constants — vacuum_const.ts | ⬜ aucun id TC — fichier de constantes, aucun cas déclaré |
-| F-VAC-D10 | All existing vacuum tests remain GREEN (regression gate) | ✅ This spec § Test Selectors — Frozen Contract | tests/cards/vacuum/sci-fi-vacuum.test.ts :: TC-1501, TC-1502, TC-1503, TC-1504, IT-1501, IT-1502 |
+| F-VAC-D10 | All existing vacuum tests remain GREEN (regression gate) | ✅ This spec § Test Selectors — Frozen Contract | tests/cards/vacuum/sci-fi-vacuum.test.ts :: TC-VACUUM-U-1501, TC-VACUUM-U-1502, TC-VACUUM-U-1503, TC-VACUUM-U-1504, IT-VACUUM-I-1501, IT-VACUUM-I-1502 |
 
 ---
 
@@ -836,7 +836,7 @@ private _toast(error: boolean, text: string): void {
 | `.shortcut-btn` | text button | N/A — replaced by `sf-button` in `.actions .shortcuts` |
 
 > [!NOTE]
-> The old cyclic click tests in `sci-fi-vacuum.test.ts` — the 1525/1526/1527 series — must be completely deleted or replaced with the new tests. The old error toast test (`TC-1528`) remains valid but corresponds to spec `TC-1524`. `TC-1529` (malformed shortcut) and `TC-1530` (willUpdate reset) are preserved.
+> The old cyclic click tests in `sci-fi-vacuum.test.ts` — the 1525/1526/1527 series — must be completely deleted or replaced with the new tests. The old error toast test (`TC-1528`) remains valid but corresponds to spec `TC-VACUUM-U-1524`. `TC-1529` (malformed shortcut) and `TC-1530` (willUpdate reset) are preserved.
 >
 > *(2026-08-12, bead `ha-sci-fi-9xf` — les IDs supprimés ne sont plus écrits en toutes
 > lettres ici : le contrôle de couverture P14 lisait cette consigne de suppression comme
@@ -848,8 +848,8 @@ private _toast(error: boolean, text: string): void {
 
 | Selector | Test | Assertion |
 |---|---|---|
-| `getConfigElement()` | TC-1501 | `tagName === 'sci-fi-vacuum-editor'` |
-| `getStubConfig().type` | TC-1502 | `=== 'custom:sci-fi-vacuum'` |
+| `getConfigElement()` | TC-VACUUM-U-1501 | `tagName === 'sci-fi-vacuum-editor'` |
+| `getStubConfig().type` | TC-VACUUM-U-1502 | `=== 'custom:sci-fi-vacuum'` |
 
 ---
 
@@ -881,35 +881,35 @@ private _toast(error: boolean, text: string): void {
 
 | Test ID | Type | Description | Input | Expected Output |
 |---|---|---|---|---|
-| TC-1501 | Unit | `getConfigElement()` returns correct editor tag | static call | `tagName === 'sci-fi-vacuum-editor'` |
-| TC-1502 | Unit | `getStubConfig()` returns correct type | static call | `config.type === 'custom:sci-fi-vacuum'` |
-| TC-1503 | Unit | Renders gracefully without hass | no hass set | `shadowRoot.textContent` is empty |
-| TC-1504 | Unit | Renders empty card when no vacuums | `{ type, vacuums: [] }` + hass | `.container` absent or empty ha-card |
-| TC-1505 | Unit | Header shows vacuum name | vacuum with `friendly_name: 'Robot 1'` | `.header .name` textContent includes `'Robot 1'` |
-| TC-1506 | Unit | Header shows fan speed from entity attributes | state with `fan_speed: 'Standard'` | `.header .infoH` textContent includes `'Standard'` |
-| TC-1507 | Unit | Sub-header renders sf-icon with DOCKED class | vacuum in `docked` state | `.sub-header sf-icon` has class `DOCKED` |
-| TC-1508 | Unit | Sub-header renders sf-icon with CLEAN class | vacuum in `cleaning` state | `.sub-header sf-icon` has class `CLEAN` |
-| TC-1509 | Unit | Sub-header renders sf-icon with ALERT class | vacuum in `error` state | `.sub-header sf-icon` has class `ALERT` |
-| TC-1510 | Unit | Info renders current_clean_area sensor | sensor configured and in hass | `.info .sensor` present with area value |
-| TC-1511 | Unit | Info hidden when no info sensors configured | no sensors in config | `.info` absent |
-| TC-1512 | Unit | Map image rendered when map entity present | map camera with entity_picture | `.map .image` present, `src` set |
-| TC-1513 | Unit | Map fallback text rendered when no map | no `sensors.map` | `.map .map-content` textContent includes `'No map defined'` |
-| TC-1514 | Unit | Actions: enabled action buttons rendered as sf-button | default config (all actions true) | **4** `sf-button` in `.actions .default` (set_fan_speed excluded — handled by header click) |
-| TC-1515 | Unit | Actions: disabled action not rendered | `start: false` | **3** `sf-button` in `.actions .default` |
-| TC-1516 | Unit | Actions: sf-button click calls vacuum service | click start button | `callService('vacuum', 'start', { entity_id })` called |
-| TC-1517 | Unit | Shortcuts: sf-button per shortcut description rendered | 2 shortcuts in config | 2 `sf-button` in `.actions .shortcuts` |
-| TC-1518 | Unit | Shortcuts: sf-button click calls shortcut service | click first shortcut | `callService('vacuum', 'send_command', { entity_id, command, params })` called |
-| TC-1519 | Unit | Devices bar absent for single vacuum | 1 vacuum | `.devices` absent |
-| TC-1520 | Unit | Devices bar present for multiple vacuums | 2 vacuums | `.devices` present with 2 dots |
-| TC-1521 | Unit | Prev navigation cycles correctly | 2 vacuums at idx 0, click prev | `_vacuum_selected_id` becomes 1 |
-| TC-1522 | Unit | Next navigation cycles correctly | 2 vacuums at idx 1, click next | `_vacuum_selected_id` becomes 0 |
-| TC-1523 | Unit | Toast shows success message after action | click start, service resolves | `sf-toast.addMessage` called with `('done', false)` |
-| TC-1524 | Unit | Toast shows error message after action failure | click start, service rejects with Error('fail') | `sf-toast.addMessage` called with `('fail', true)` |
-| TC-1525 | Unit | `sf-button-card-select` present in header when fan_speed_list non-empty | state with `fan_speed_list: ['quiet','turbo']` + `fan_speed: 'quiet'` | `.header sf-button-card-select` present; `.items` count = 2; active item has accent color |
-| TC-1526 | Unit | Fan speed dropdown selection calls set_fan_speed service | user selects 'turbo' from sf-button-card-select | `callService('vacuum', 'set_fan_speed', { entity_id, fan_speed: 'turbo' })` called |
-| IT-1501 | Integration | Card registers in `customElements` | load card | `customElements.get('sci-fi-vacuum')` returns class |
-| IT-1502 | Integration | Card full render: header + sub-header + map + actions | mount with full config | `.header`, `.sub-header`, `.map`, `.actions` all present |
-| IT-1503 | Integration | `vacuum/styles.ts` imported — no inline `css\`` in 'sci-fi-vacuum.ts' | grep | 'grep -c "css\'" sci-fi-vacuum.ts` returns 0 |
+| TC-VACUUM-U-1501 | Unit | `getConfigElement()` returns correct editor tag | static call | `tagName === 'sci-fi-vacuum-editor'` |
+| TC-VACUUM-U-1502 | Unit | `getStubConfig()` returns correct type | static call | `config.type === 'custom:sci-fi-vacuum'` |
+| TC-VACUUM-U-1503 | Unit | Renders gracefully without hass | no hass set | `shadowRoot.textContent` is empty |
+| TC-VACUUM-U-1504 | Unit | Renders empty card when no vacuums | `{ type, vacuums: [] }` + hass | `.container` absent or empty ha-card |
+| TC-VACUUM-U-1505 | Unit | Header shows vacuum name | vacuum with `friendly_name: 'Robot 1'` | `.header .name` textContent includes `'Robot 1'` |
+| TC-VACUUM-U-1506 | Unit | Header shows fan speed from entity attributes | state with `fan_speed: 'Standard'` | `.header .infoH` textContent includes `'Standard'` |
+| TC-VACUUM-U-1507 | Unit | Sub-header renders sf-icon with DOCKED class | vacuum in `docked` state | `.sub-header sf-icon` has class `DOCKED` |
+| TC-VACUUM-U-1508 | Unit | Sub-header renders sf-icon with CLEAN class | vacuum in `cleaning` state | `.sub-header sf-icon` has class `CLEAN` |
+| TC-VACUUM-U-1509 | Unit | Sub-header renders sf-icon with ALERT class | vacuum in `error` state | `.sub-header sf-icon` has class `ALERT` |
+| TC-VACUUM-U-1510 | Unit | Info renders current_clean_area sensor | sensor configured and in hass | `.info .sensor` present with area value |
+| TC-VACUUM-U-1511 | Unit | Info hidden when no info sensors configured | no sensors in config | `.info` absent |
+| TC-VACUUM-U-1512 | Unit | Map image rendered when map entity present | map camera with entity_picture | `.map .image` present, `src` set |
+| TC-VACUUM-U-1513 | Unit | Map fallback text rendered when no map | no `sensors.map` | `.map .map-content` textContent includes `'No map defined'` |
+| TC-VACUUM-U-1514 | Unit | Actions: enabled action buttons rendered as sf-button | default config (all actions true) | **4** `sf-button` in `.actions .default` (set_fan_speed excluded — handled by header click) |
+| TC-VACUUM-U-1515 | Unit | Actions: disabled action not rendered | `start: false` | **3** `sf-button` in `.actions .default` |
+| TC-VACUUM-U-1516 | Unit | Actions: sf-button click calls vacuum service | click start button | `callService('vacuum', 'start', { entity_id })` called |
+| TC-VACUUM-U-1517 | Unit | Shortcuts: sf-button per shortcut description rendered | 2 shortcuts in config | 2 `sf-button` in `.actions .shortcuts` |
+| TC-VACUUM-U-1518 | Unit | Shortcuts: sf-button click calls shortcut service | click first shortcut | `callService('vacuum', 'send_command', { entity_id, command, params })` called |
+| TC-VACUUM-U-1519 | Unit | Devices bar absent for single vacuum | 1 vacuum | `.devices` absent |
+| TC-VACUUM-U-1520 | Unit | Devices bar present for multiple vacuums | 2 vacuums | `.devices` present with 2 dots |
+| TC-VACUUM-U-1521 | Unit | Prev navigation cycles correctly | 2 vacuums at idx 0, click prev | `_vacuum_selected_id` becomes 1 |
+| TC-VACUUM-U-1522 | Unit | Next navigation cycles correctly | 2 vacuums at idx 1, click next | `_vacuum_selected_id` becomes 0 |
+| TC-VACUUM-U-1523 | Unit | Toast shows success message after action | click start, service resolves | `sf-toast.addMessage` called with `('done', false)` |
+| TC-VACUUM-U-1524 | Unit | Toast shows error message after action failure | click start, service rejects with Error('fail') | `sf-toast.addMessage` called with `('fail', true)` |
+| TC-VACUUM-U-1525 | Unit | `sf-button-card-select` present in header when fan_speed_list non-empty | state with `fan_speed_list: ['quiet','turbo']` + `fan_speed: 'quiet'` | `.header sf-button-card-select` present; `.items` count = 2; active item has accent color |
+| TC-VACUUM-U-1526 | Unit | Fan speed dropdown selection calls set_fan_speed service | user selects 'turbo' from sf-button-card-select | `callService('vacuum', 'set_fan_speed', { entity_id, fan_speed: 'turbo' })` called |
+| IT-VACUUM-I-1501 | Integration | Card registers in `customElements` | load card | `customElements.get('sci-fi-vacuum')` returns class |
+| IT-VACUUM-I-1502 | Integration | Card full render: header + sub-header + map + actions | mount with full config | `.header`, `.sub-header`, `.map`, `.actions` all present |
+| IT-VACUUM-I-1503 | Integration | `vacuum/styles.ts` imported — no inline `css\`` in 'sci-fi-vacuum.ts' | grep | 'grep -c "css\'" sci-fi-vacuum.ts` returns 0 |
 
 ---
 

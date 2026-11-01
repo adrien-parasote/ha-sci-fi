@@ -11,15 +11,15 @@
 
 | Feature ID | Description | Spec file | Covers |
 |---|---|---|---|
-| F-PLG-D01 | Header: area icon + plug name + model/manufacturer subtitle | ✅ This spec § _renderHeader(device) | tests/cards/plugs/sci-fi-plugs.test.ts :: TC-1305, TC-1306 |
-| F-PLG-D02 | Plug image zone: animated EU socket SVG (CSS-only) + status icon overlay + toggle on click | ✅ This spec § _renderImage(isOn, icon, device) | tests/cards/plugs/sci-fi-plugs.test.ts :: TC-1307, TC-1308 |
-| F-PLG-D03 | Sensor list: vertical list of icon + name + value (with LockSensor and SelectSensor variants) | ✅ This spec § _renderSensors(visibleSensors) | tests/cards/plugs/sci-fi-plugs.test.ts :: TC-1314 |
+| F-PLG-D01 | Header: area icon + plug name + model/manufacturer subtitle | ✅ This spec § _renderHeader(device) | tests/cards/plugs/sci-fi-plugs.test.ts :: TC-PLUGS-U-1305, TC-PLUGS-U-1306 |
+| F-PLG-D02 | Plug image zone: animated EU socket SVG (CSS-only) + status icon overlay + toggle on click | ✅ This spec § _renderImage(isOn, icon, device) | tests/cards/plugs/sci-fi-plugs.test.ts :: TC-PLUGS-U-1307, TC-PLUGS-U-1308 |
+| F-PLG-D03 | Sensor list: vertical list of icon + name + value (with LockSensor and SelectSensor variants) | ✅ This spec § _renderSensors(visibleSensors) | tests/cards/plugs/sci-fi-plugs.test.ts :: TC-PLUGS-U-1314 |
 | F-PLG-D04 | Power chart: Chart.js bar histogram of the last 24 hours of power history. The window start is a full ISO timestamp exactly 24 h back, never a bare `YYYY-MM-DD` — that reads as midnight yesterday and makes the window 24 to 48 h wide depending on the time of day. | ✅ This spec § Power chart — _loadPowerChart() | tests/cards/plugs/sci-fi-plugs.test.ts (« asks history for a rolling 24-hour window, not midnight yesterday », sans id) |
-| F-PLG-D05 | Footer navigation: prev/next arrows + plug selector icons | ✅ This spec § _renderFooter() | tests/cards/plugs/sci-fi-plugs.test.ts :: TC-1309, TC-1310, TC-1311, TC-1312, TC-1313 |
-| F-PLG-D06 | Extract CSS into `styles.ts` (stove/vehicle pattern) | ✅ This spec § styles.ts | tests/cards/plugs/sci-fi-plugs.test.ts :: IT-1303 |
-| F-PLG-D07 | Toggle plug on/off via `switch.turn_on` / `switch.turn_off` service | ✅ This spec § Toggle action | tests/cards/plugs/sci-fi-plugs.test.ts :: TC-1308 |
+| F-PLG-D05 | Footer navigation: prev/next arrows + plug selector icons | ✅ This spec § _renderFooter() | tests/cards/plugs/sci-fi-plugs.test.ts :: TC-PLUGS-U-1309, TC-PLUGS-U-1310, TC-PLUGS-U-1311, TC-PLUGS-U-1312, TC-PLUGS-U-1313 |
+| F-PLG-D06 | Extract CSS into `styles.ts` (stove/vehicle pattern) | ✅ This spec § styles.ts | tests/cards/plugs/sci-fi-plugs.test.ts :: IT-PLUGS-I-1303 |
+| F-PLG-D07 | Toggle plug on/off via `switch.turn_on` / `switch.turn_off` service | ✅ This spec § Toggle action | tests/cards/plugs/sci-fi-plugs.test.ts :: TC-PLUGS-U-1308 |
 | F-PLG-D08 | 'plug_const.ts' constants file (ported from main) | ✅ This spec § Constants — plug_const.ts | ⬜ aucun id TC — fichier de constantes, aucun cas déclaré |
-| F-PLG-D09 | All existing 8 plugs tests remain GREEN (regression gate) | ✅ This spec § Test Selectors — Frozen Contract | tests/cards/plugs/sci-fi-plugs.test.ts :: TC-1315, IT-1301, IT-1302 |
+| F-PLG-D09 | All existing 8 plugs tests remain GREEN (regression gate) | ✅ This spec § Test Selectors — Frozen Contract | tests/cards/plugs/sci-fi-plugs.test.ts :: TC-PLUGS-U-1315, IT-PLUGS-I-1301, IT-PLUGS-I-1302 |
 
 ---
 
@@ -853,24 +853,24 @@ private _toast(error: boolean, text: string): void {
 
 | Test ID | Type | Description | Input | Expected Output |
 |---|---|---|---|---|
-| TC-1301 | Unit | `getConfigElement()` returns correct editor tag | static call | `tagName === 'sci-fi-plugs-editor'` |
-| TC-1302 | Unit | `getStubConfig()` returns correct type | static call | `config.type === 'custom:sci-fi-plugs'` |
-| TC-1303 | Unit | Renders gracefully without hass | no hass set | `shadowRoot.textContent` is empty |
-| TC-1304 | Unit | Renders empty when no devices | `{ type, devices: [] }` + hass | no `.container` or empty inner |
-| TC-1305 | Unit | Header shows plug name | device with `name: 'TV Plug'` | `.header .title` textContent includes `'TV Plug'` |
-| TC-1306 | Unit | Header shows area icon based on state | plug ON | `sf-icon` has class `'on'`; plug OFF → no class `'on'` |
-| TC-1307 | Unit | Image zone present | mounted with hass | `.image` present in `.info` |
-| TC-1308 | Unit | Click on image triggers toggle call | plug ON, click `.image` | `callService` called with `'switch'`, `'turn_off'`, `{ entity_id }` |
-| TC-1309 | Unit | Footer hidden prev/next for single plug | 1 device | both nav containers have class `.hide` |
-| TC-1310 | Unit | Footer shows prev/next for multiple plugs | 2 devices | both nav containers have no `.hide` |
-| TC-1311 | Unit | Footer selector buttons count matches devices | 3 devices | 3 `sf-button` in `.footer .number` |
-| TC-1312 | Unit | Prev navigation wraps around | 2 plugs at idx 0, click prev | `_selected_plug_id` becomes 1 |
-| TC-1313 | Unit | Next navigation wraps around | 2 plugs at idx 1, click next | `_selected_plug_id` becomes 0 |
-| TC-1314 | Unit | Sensor list rendered for visible sensors | device with `show: true` sensor | `.sensors .sensor` present |
-| TC-1315 | Regression | All 2 static tests pass | `getConfigElement`, `getStubConfig` | No failures |
-| IT-1301 | Integration | Card registers in `customElements` | load card | `customElements.get('sci-fi-plugs')` returns class |
-| IT-1302 | Integration | Card full render: header + content + footer | mount with full config | `.header`, `.content`, `.footer` all present |
-| IT-1303 | Integration | `plugs/styles.ts` imported — no inline `css\`` in 'sci-fi-plugs.ts' | grep | 'grep -c "css\'" sci-fi-plugs.ts` returns 0 |
+| TC-PLUGS-U-1301 | Unit | `getConfigElement()` returns correct editor tag | static call | `tagName === 'sci-fi-plugs-editor'` |
+| TC-PLUGS-U-1302 | Unit | `getStubConfig()` returns correct type | static call | `config.type === 'custom:sci-fi-plugs'` |
+| TC-PLUGS-U-1303 | Unit | Renders gracefully without hass | no hass set | `shadowRoot.textContent` is empty |
+| TC-PLUGS-U-1304 | Unit | Renders empty when no devices | `{ type, devices: [] }` + hass | no `.container` or empty inner |
+| TC-PLUGS-U-1305 | Unit | Header shows plug name | device with `name: 'TV Plug'` | `.header .title` textContent includes `'TV Plug'` |
+| TC-PLUGS-U-1306 | Unit | Header shows area icon based on state | plug ON | `sf-icon` has class `'on'`; plug OFF → no class `'on'` |
+| TC-PLUGS-U-1307 | Unit | Image zone present | mounted with hass | `.image` present in `.info` |
+| TC-PLUGS-U-1308 | Unit | Click on image triggers toggle call | plug ON, click `.image` | `callService` called with `'switch'`, `'turn_off'`, `{ entity_id }` |
+| TC-PLUGS-U-1309 | Unit | Footer hidden prev/next for single plug | 1 device | both nav containers have class `.hide` |
+| TC-PLUGS-U-1310 | Unit | Footer shows prev/next for multiple plugs | 2 devices | both nav containers have no `.hide` |
+| TC-PLUGS-U-1311 | Unit | Footer selector buttons count matches devices | 3 devices | 3 `sf-button` in `.footer .number` |
+| TC-PLUGS-U-1312 | Unit | Prev navigation wraps around | 2 plugs at idx 0, click prev | `_selected_plug_id` becomes 1 |
+| TC-PLUGS-U-1313 | Unit | Next navigation wraps around | 2 plugs at idx 1, click next | `_selected_plug_id` becomes 0 |
+| TC-PLUGS-U-1314 | Unit | Sensor list rendered for visible sensors | device with `show: true` sensor | `.sensors .sensor` present |
+| TC-PLUGS-U-1315 | Regression | All 2 static tests pass | `getConfigElement`, `getStubConfig` | No failures |
+| IT-PLUGS-I-1301 | Integration | Card registers in `customElements` | load card | `customElements.get('sci-fi-plugs')` returns class |
+| IT-PLUGS-I-1302 | Integration | Card full render: header + content + footer | mount with full config | `.header`, `.content`, `.footer` all present |
+| IT-PLUGS-I-1303 | Integration | `plugs/styles.ts` imported — no inline `css\`` in 'sci-fi-plugs.ts' | grep | 'grep -c "css\'" sci-fi-plugs.ts` returns 0 |
 
 ---
 

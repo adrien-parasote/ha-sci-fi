@@ -2,7 +2,7 @@
 // @vitest-environment happy-dom
 /**
  * Consolidated tests — Spec 12 § Vehicles Card Design Update
- * Combines base, new (TC-1201 → TC-1215), and extended tests into a single suite.
+ * Combines base, new (TC-VEHICLES-U-1201 → TC-1215), and extended tests into a single suite.
  */
 import { expect, describe, it, afterEach, vi } from 'vitest';
 
@@ -53,21 +53,21 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
     vi.resetAllMocks();
   });
 
-  // ── TC-1201 / Static & Stub Config ─────────────────────────────────────────
+  // ── TC-VEHICLES-U-1201 / Static & Stub Config ─────────────────────────────────────────
 
-  it('TC-1201, TC-VEH-0001: getConfigElement returns correct editor tag', () => {
+  it('TC-VEHICLES-U-1201, TC-VEH-0001: getConfigElement returns correct editor tag', () => {
     const el = SciFiVehiclesCard.getConfigElement();
     expect(el.tagName.toLowerCase()).to.equal('sci-fi-vehicles-editor');
   });
 
-  it('TC-1202, TC-VEH-0002: getStubConfig returns correct type', () => {
+  it('TC-VEHICLES-U-1202, TC-VEH-0002: getStubConfig returns correct type', () => {
     const config = SciFiVehiclesCard.getStubConfig();
     expect(config.type).to.equal('custom:sci-fi-vehicles');
   });
 
-  // ── TC-1203 Empty without HASS ─────────────────────────────────────────────
+  // ── TC-VEHICLES-U-1203 Empty without HASS ─────────────────────────────────────────────
 
-  it('TC-1203: renders empty without hass', async () => {
+  it('TC-VEHICLES-U-1203: renders empty without hass', async () => {
     const el = document.createElement('sci-fi-vehicles') as SciFiVehiclesCard;
     document.body.appendChild(el);
     (el as any).setConfig(SciFiVehiclesCard.getStubConfig());
@@ -75,39 +75,39 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
     expect(el.shadowRoot!.textContent?.trim()).to.equal('');
   });
 
-  // ── TC-1204 / Header Renders ───────────────────────────────────────────────
+  // ── TC-VEHICLES-U-1204 / Header Renders ───────────────────────────────────────────────
 
-  it('TC-1204: renders vehicle name in header', async () => {
+  it('TC-VEHICLES-U-1204: renders vehicle name in header', async () => {
     const el = await mountCard([V1]);
     const header = el.shadowRoot!.querySelector('.header .title');
     expect(header?.textContent?.trim()).to.equal('Tesla');
   });
 
-  // ── TC-1205 / Single Vehicle Hide Navigation ──────────────────────────────
+  // ── TC-VEHICLES-U-1205 / Single Vehicle Hide Navigation ──────────────────────────────
 
-  it('TC-1205: prev/next navigation hidden for single vehicle', async () => {
+  it('TC-VEHICLES-U-1205: prev/next navigation hidden for single vehicle', async () => {
     const el = await mountCard([V1]);
     const hiddenDivs = el.shadowRoot!.querySelectorAll('.header .hide');
     expect(hiddenDivs.length).to.equal(2);
   });
 
-  // ── TC-1206 / Multiple Vehicles Show Navigation ────────────────────────────
+  // ── TC-VEHICLES-U-1206 / Multiple Vehicles Show Navigation ────────────────────────────
 
-  it('TC-1206: prev/next navigation visible for multiple vehicles', async () => {
+  it('TC-VEHICLES-U-1206: prev/next navigation visible for multiple vehicles', async () => {
     const el = await mountCard([V1, V2]);
     const hiddenDivs = el.shadowRoot!.querySelectorAll('.header .hide');
     expect(hiddenDivs.length).to.equal(0);
   });
 
-  // ── TC-1207 / TC-1208 sf-landspeeder in shadow DOM ──────────────────────────
+  // ── TC-VEHICLES-U-1207 / TC-VEHICLES-U-1208 sf-landspeeder in shadow DOM ──────────────────────────
 
-  it('TC-1207: sf-landspeeder is present in shadow DOM', async () => {
+  it('TC-VEHICLES-U-1207: sf-landspeeder is present in shadow DOM', async () => {
     const el = await mountCard([V1]);
     const speeder = el.shadowRoot!.querySelector('sf-landspeeder');
     expect(speeder).not.to.be.null;
   });
 
-  it('TC-1208: sf-landspeeder receives vehicle prop matching config.vehicles[0]', async () => {
+  it('TC-VEHICLES-U-1208: sf-landspeeder receives vehicle prop matching config.vehicles[0]', async () => {
     const el = await mountCard([V1]);
     const speeder = el.shadowRoot!.querySelector('sf-landspeeder') as any;
     expect(speeder).not.to.be.null;
@@ -115,33 +115,33 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
     expect(speeder.vehicle.name).to.equal('Tesla');
   });
 
-  // ── TC-1209 / Actions section ──────────────────────────────────────────────
+  // ── TC-VEHICLES-U-1209 / Actions section ──────────────────────────────────────────────
 
-  it('TC-1209: actions section is present', async () => {
+  it('TC-VEHICLES-U-1209: actions section is present', async () => {
     const el = await mountCard([V1]);
     const actions = el.shadowRoot!.querySelector('.actions');
     expect(actions).not.to.be.null;
   });
 
-  // ── TC-1210 / Temperature sf-wheel ─────────────────────────────────────────
+  // ── TC-VEHICLES-U-1210 / Temperature sf-wheel ─────────────────────────────────────────
 
-  it('TC-1210: temperature sf-wheel is present in actions', async () => {
+  it('TC-VEHICLES-U-1210: temperature sf-wheel is present in actions', async () => {
     const el = await mountCard([V1]);
     const wheel = el.shadowRoot!.querySelector('sf-wheel');
     expect(wheel).not.to.be.null;
   });
 
-  // ── TC-1211 / AC Buttons ───────────────────────────────────────────────────
+  // ── TC-VEHICLES-U-1211 / AC Buttons ───────────────────────────────────────────────────
 
-  it('TC-1211: Start and Stop AC sf-button-card elements present', async () => {
+  it('TC-VEHICLES-U-1211: Start and Stop AC sf-button-card elements present', async () => {
     const el = await mountCard([V1]);
     const buttons = el.shadowRoot!.querySelectorAll('.ac sf-button-card');
     expect(buttons.length).to.equal(2);
   });
 
-  // ── TC-1212 & TC-1213 / Navigation Cycling ─────────────────────────────────
+  // ── TC-VEHICLES-U-1212 & TC-VEHICLES-U-1213 / Navigation Cycling ─────────────────────────────────
 
-  it('TC-1212: prev navigation cycles to last vehicle from first', async () => {
+  it('TC-VEHICLES-U-1212: prev navigation cycles to last vehicle from first', async () => {
     const el = await mountCard([V1, V2]);
     // Initially shows Tesla (idx 0)
     expect(el.shadowRoot!.querySelector('.header .title')?.textContent?.trim()).to.equal('Tesla');
@@ -156,7 +156,7 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
     expect(el.shadowRoot!.querySelector('.header .title')?.textContent?.trim()).to.equal('Zoe');
   });
 
-  it('TC-1213: next navigation cycles to first vehicle from last', async () => {
+  it('TC-VEHICLES-U-1213: next navigation cycles to first vehicle from last', async () => {
     const el = await mountCard([V1, V2]);
     // Click next (move to Zoe first)
     const nextBtn = el.shadowRoot!.querySelector('.header sf-button[icon="mdi:chevron-right"]') as HTMLElement;
@@ -170,9 +170,9 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
     expect(el.shadowRoot!.querySelector('.header .title')?.textContent?.trim()).to.equal('Tesla');
   });
 
-  // ── TC-1214 / Constant Exports ─────────────────────────────────────────────
+  // ── TC-VEHICLES-U-1214 / Constant Exports ─────────────────────────────────────────────
 
-  it('TC-1214: vehicle_const.ts exports correct service and state constants', () => {
+  it('TC-VEHICLES-U-1214: vehicle_const.ts exports correct service and state constants', () => {
     expect(HASS_RENAULT_SERVICE).to.equal('renault');
     expect(HASS_RENAULT_SERVICE_ACTION_START_AC).to.equal('ac_start');
     expect(HASS_RENAULT_SERVICE_ACTION_STOP_AC).to.equal('ac_cancel');
@@ -189,16 +189,16 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
     expect((vehicleStyles as any).cssText).to.be.a('string');
   });
 
-  // ── IT-1201 / customElements Registration ──────────────────────────────────
+  // ── IT-VEHICLES-I-1201 / customElements Registration ──────────────────────────────────
 
-  it('IT-1201: sci-fi-vehicles is registered in customElements', () => {
+  it('IT-VEHICLES-I-1201: sci-fi-vehicles is registered in customElements', () => {
     const cls = customElements.get('sci-fi-vehicles');
     expect(cls).not.to.be.undefined;
   });
 
-  // ── IT-1202 / Full Render Sections ─────────────────────────────────────────
+  // ── IT-VEHICLES-I-1202 / Full Render Sections ─────────────────────────────────────────
 
-  it('IT-1202: card renders header + sf-landspeeder + actions', async () => {
+  it('IT-VEHICLES-I-1202: card renders header + sf-landspeeder + actions', async () => {
     const el = await mountCard([V1]);
     expect(el.shadowRoot!.querySelector('.header')).not.to.be.null;
     expect(el.shadowRoot!.querySelector('sf-landspeeder')).not.to.be.null;

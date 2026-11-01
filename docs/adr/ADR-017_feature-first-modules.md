@@ -284,7 +284,7 @@ Closed since:
   § F-COMP-02 now specifies the single element as the intended form.
 - ~~`ha-sci-fi-cu7` — `sci-fi-stove.ts:232` carries the same
   `replace`-only-first-underscore pattern as the vacuum defect.~~ **DONE** —
-  `replaceAll` plus TC-1114, verified to bite by reverting the fix.
+  `replaceAll` plus TC-STOVE-U-1114, verified to bite by reverting the fix.
 
 - ~~`ha-sci-fi-bjo` — split `sf-radiator` into the 4 sub-components spec 04
   § F-COMP-02 has claimed since day one but which were never written.~~

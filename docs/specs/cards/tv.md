@@ -10,7 +10,7 @@
 
 | Feature ID | Description | Covered here | Covers |
 |---|---|---|---|
-| F-CARD-09 ↗ | `sci-fi-tv` Custom Card & `sci-fi-tv-editor` — exigence **détenue par** [05_cards.md § Blueprint Coverage](../05_cards.md#blueprint-coverage) ; cette spec la réalise, elle ne la déclare pas | ✅ Full implementation spec of card interface, editor, dynamic dial, and D-pad. | tests/cards/tv/sci-fi-tv.test.ts :: TC-701, TC-702, TC-703, TC-704, TC-705, TC-708, TC-709, TC-710, TC-711, TC-712, TC-713, IT-704 · tests/cards/tv/sci-fi-tv-editor.test.ts :: TC-715 |
+| F-CARD-09 ↗ | `sci-fi-tv` Custom Card & `sci-fi-tv-editor` — exigence **détenue par** [05_cards.md § Blueprint Coverage](../05_cards.md#blueprint-coverage) ; cette spec la réalise, elle ne la déclare pas | ✅ Full implementation spec of card interface, editor, dynamic dial, and D-pad. | tests/cards/tv/sci-fi-tv.test.ts :: TC-TV-U-701, TC-TV-U-702, TC-TV-U-703, TC-TV-U-704, TC-TV-U-705, TC-TV-U-708, TC-TV-U-709, TC-TV-U-710, TC-TV-U-711, TC-TV-U-712, TC-TV-U-713, IT-TV-I-704 · tests/cards/tv/sci-fi-tv-editor.test.ts :: TC-TV-U-715 |
 
 ---
 
@@ -289,27 +289,32 @@ Follows the standard `e.detail.id` / `e.detail.value` mapping directly onto the 
 
 ## Test Cases
 
+> **⬜ dans la colonne ID : le cas n'est joué par aucun test.** Cinq des dix-neuf lignes : les trois `IT`, plus `TC-TV-U-706` et `TC-TV-U-707` dont les numéros ne sont portés que par le test d'`hexa-tiles`.
+> Le marqueur est la seule source : `tests/specs/ids-cas-uniques.test.ts` dérive
+> l'ensemble des cas non joués de ces marques et refuse l'écart dans les deux
+> sens — un cas non marqué que rien ne cite, comme un cas marqué qu'un test porte.
+
 | Test ID | Type | Description | Input | Expected Output |
 |---|---|---|---|---|
-| **TC-701** | Unit | Throws error when mandatory `entity` is missing | Config with no `entity` parameter | Throws config validation error |
-| **TC-702** | Unit | D-pad default remote command uses PascalCase | Click D-pad Up | Calls `remote.send_command` with `"Up"` (not `"UP"`) |
-| **TC-703** | Unit | Custom actions override default remote commands | D-pad Home click with `custom_actions.home` defined | Triggers custom `tap_action` script — `remote.send_command` not called |
-| **TC-704** | Unit | Hex grid renders all configured source names | Sources: `['HDMI 1', 'Netflix']` | Renders two quick source hexagons |
-| **TC-705** | Unit | `getRelevantEntities` returns TV and remote entities | Valid card config | Array of both entity IDs |
-| **TC-706** | Unit | Angle clamp: pointer in dead-zone snaps to nearest edge | `pointermove` at bottom center (270° shifted) | `volumeLevel = 1.0` (clamped, not NaN / >1.0) |
-| **TC-707** | Unit | Coordinate conversion: DOM px correctly maps to SVG viewBox | `pointermove` at DOM center of rendered SVG | Computed `svgX ≈ 100`, `svgY ≈ 100` regardless of render size |
-| **TC-708** | Unit | Orbiting planet satellite is rendered when TV is on | TV state is `'on'` | Planet orbiting satellite element exists in shadowRoot |
-| **TC-709** | Unit | Orbiting planet satellite is not rendered when TV is off | TV state is `'off'` | Planet orbiting satellite element does not exist in shadowRoot |
-| **TC-710** | Unit | Renders active application name when media title and source are missing | TV state has `app_name: 'Netflix'` | Right status segment and dial title display `"Netflix"` |
-| **TC-711** | Unit | Renders active application ID when other metadata is missing | TV state has `app_id: 'com.netflix.ninja'` | Right status segment and dial title display `"com.netflix.ninja"` |
-| **TC-712** | Unit | Uses app_entity metadata when provided | Config has `app_entity` | Prioritizes `app_entity` metadata over main TV entity for active status |
-| **TC-713** | Unit | Active source highlighting guarantees single active source | Config has multiple sources overlapping metadata | Only one source gets highlighted, prioritizing `appName` over `mediaTitle` |
-| **TC-714** | Unit | Editor UI exposes visual actions for custom_actions | Editor initialized with config | Renders 8 `<sf-editor-action>` components |
-| **TC-715** | Unit | Editor UI handles fallback for ha-selector | Editor rendered in mock environment | Disables action configuration gracefully without crashing |
-| **IT-701** | Integration | Custom elements register correctly in HA registry | Load built bundle | Elements `sci-fi-tv` and `sci-fi-tv-editor` exist |
-| **IT-702** | Integration | Workbench — Netflix active mock state renders dial at 35% | Workbench mock state `netflix_active` | Volume dial arc covers 35% of full arc; source label "Netflix" highlighted |
-| **IT-703** | Integration | Dragging orbital dial calls correct service volume | Pointer dragging to 60% position | Calls `media_player.volume_set` with `volume_level: 0.6` |
-| **IT-704** | Integration | Volume throttle: 10 rapid `pointermove` events → ≤2 `callService` calls | Fire 10 events over 50ms | `callService` called ≤2 times (80ms throttle window) |
+| **TC-TV-U-701** | Unit | Throws error when mandatory `entity` is missing | Config with no `entity` parameter | Throws config validation error |
+| **TC-TV-U-702** | Unit | D-pad default remote command uses PascalCase | Click D-pad Up | Calls `remote.send_command` with `"Up"` (not `"UP"`) |
+| **TC-TV-U-703** | Unit | Custom actions override default remote commands | D-pad Home click with `custom_actions.home` defined | Triggers custom `tap_action` script — `remote.send_command` not called |
+| **TC-TV-U-704** | Unit | Hex grid renders all configured source names | Sources: `['HDMI 1', 'Netflix']` | Renders two quick source hexagons |
+| **TC-TV-U-705** | Unit | `getRelevantEntities` returns TV and remote entities | Valid card config | Array of both entity IDs |
+| **TC-TV-U-706** ⬜ | Unit | Angle clamp: pointer in dead-zone snaps to nearest edge | `pointermove` at bottom center (270° shifted) | `volumeLevel = 1.0` (clamped, not NaN / >1.0) |
+| **TC-TV-U-707** ⬜ | Unit | Coordinate conversion: DOM px correctly maps to SVG viewBox | `pointermove` at DOM center of rendered SVG | Computed `svgX ≈ 100`, `svgY ≈ 100` regardless of render size |
+| **TC-TV-U-708** | Unit | Orbiting planet satellite is rendered when TV is on | TV state is `'on'` | Planet orbiting satellite element exists in shadowRoot |
+| **TC-TV-U-709** | Unit | Orbiting planet satellite is not rendered when TV is off | TV state is `'off'` | Planet orbiting satellite element does not exist in shadowRoot |
+| **TC-TV-U-710** | Unit | Renders active application name when media title and source are missing | TV state has `app_name: 'Netflix'` | Right status segment and dial title display `"Netflix"` |
+| **TC-TV-U-711** | Unit | Renders active application ID when other metadata is missing | TV state has `app_id: 'com.netflix.ninja'` | Right status segment and dial title display `"com.netflix.ninja"` |
+| **TC-TV-U-712** | Unit | Uses app_entity metadata when provided | Config has `app_entity` | Prioritizes `app_entity` metadata over main TV entity for active status |
+| **TC-TV-U-713** | Unit | Active source highlighting guarantees single active source | Config has multiple sources overlapping metadata | Only one source gets highlighted, prioritizing `appName` over `mediaTitle` |
+| **TC-TV-U-714** | Unit | Editor UI exposes visual actions for custom_actions | Editor initialized with config | Renders 8 `<sf-editor-action>` components |
+| **TC-TV-U-715** | Unit | Editor UI handles fallback for ha-selector | Editor rendered in mock environment | Disables action configuration gracefully without crashing |
+| **IT-TV-I-701** ⬜ | Integration | Custom elements register correctly in HA registry | Load built bundle | Elements `sci-fi-tv` and `sci-fi-tv-editor` exist |
+| **IT-TV-I-702** ⬜ | Integration | Workbench — Netflix active mock state renders dial at 35% | Workbench mock state `netflix_active` | Volume dial arc covers 35% of full arc; source label "Netflix" highlighted |
+| **IT-TV-I-703** ⬜ | Integration | Dragging orbital dial calls correct service volume | Pointer dragging to 60% position | Calls `media_player.volume_set` with `volume_level: 0.6` |
+| **IT-TV-I-704** | Integration | Volume throttle: 10 rapid `pointermove` events → ≤2 `callService` calls | Fire 10 events over 50ms | `callService` called ≤2 times (80ms throttle window) |
 
 ---
 

@@ -2,6 +2,9 @@
 
 - **Status:** Accepted
 - **Date:** 2026-05-29
+- **Amended:** 2026-11-01 — command strings corrected from uppercase to PascalCase and the
+  override key from `home_action` to `custom_actions.home`, to match `docs/specs/cards/tv.md`
+  (Interaction §2, anti-pattern 6) and `src/cards/tv/sci-fi-tv.ts`. Bead `ha-sci-fi-tyj`.
 
 ## Context
 
@@ -18,19 +21,21 @@ Hardcoding commands for a single brand makes the card non-reusable. Forcing the 
 Implement a **Hybrid Action Mapping Model**:
 
 1. **Simple Default Configuration (Zero-YAML Remote Mode)**:
-   The config accepts a `remote_entity` field (e.g. `remote.bravia_4k_vh22`). If provided, the D-pad automatically calls `remote.send_command` with uppercase button names: `UP`, `DOWN`, `LEFT`, `RIGHT`, `CONFIRM`, `BACK`, `HOME`, `MENU`.
+   The config accepts a `remote_entity` field (e.g. `remote.bravia_4k_vh22`). If provided, the D-pad automatically calls `remote.send_command` with PascalCase button names: `Up`, `Down`, `Left`, `Right`, `Confirm`, `Back`, `Home`, `Menu`
+   (the casing the Sony Bravia integration accepts; uppercase is a spec violation).
 
 2. **Full Lovelace Action Overrides (Power-User Mode)**:
-   Every D-pad button can optionally accept a standard Lovelace `tap_action` block in YAML/editor. If a custom action is specified, it completely overrides the default remote command.
+   Every D-pad button can optionally accept a standard Lovelace action block under `custom_actions.<button>` in YAML/editor. If a custom action is specified, it completely overrides the default remote command.
 
 ```yaml
 type: custom:sci-fi-tv
 entity: media_player.bravia_4k_vh22
 remote_entity: remote.bravia_4k_vh22
 # Override just the Home button:
-home_action:
-  action: call-service
-  service: script.warp_speed_home
+custom_actions:
+  home:
+    action: call-service
+    service: script.warp_speed_home
 ```
 
 ## Consequences

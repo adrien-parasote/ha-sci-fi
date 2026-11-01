@@ -25,4 +25,4 @@ LitElement relies on a complex async render cycle and injected CSS styles that c
   ```
   Then open: `http://localhost:8888/dev/workbench.html`
   > ⚠️ `python3 -m http.server` and `npx serve --single` do NOT work — the workbench JS rewrites the URL to `/dev/workbench` (no `.html`) which requires serve@14's directory-listing fallback to resolve correctly.
-- This is enforced by the release process: see [docs/release-process.md](../release-process.md).
+- This is enforced by the release sequence in [docs/MASTER.md](../MASTER.md): build, validate every card in the workbench, then release.

@@ -49,15 +49,11 @@ export default {
       },
       'HDMI 1'
     ],
+    // Default mode: D-pad calls remote.send_command with PascalCase commands (ADR-011).
+    remote_entity: 'remote.bravia_4k_vh22',
+    // Power-user mode: one button overridden, the rest stay on the default (ADR-011).
     custom_actions: {
-      up: { action: 'call-service', service: 'remote.send_command', data: { entity_id: 'remote.bravia_4k_vh22', command: 'DPAD_UP' } },
-      down: { action: 'call-service', service: 'remote.send_command', data: { entity_id: 'remote.bravia_4k_vh22', command: 'DPAD_DOWN' } },
-      left: { action: 'call-service', service: 'remote.send_command', data: { entity_id: 'remote.bravia_4k_vh22', command: 'DPAD_LEFT' } },
-      right: { action: 'call-service', service: 'remote.send_command', data: { entity_id: 'remote.bravia_4k_vh22', command: 'DPAD_RIGHT' } },
-      confirm: { action: 'call-service', service: 'remote.send_command', data: { entity_id: 'remote.bravia_4k_vh22', command: 'DPAD_CENTER' } },
-      back: { action: 'call-service', service: 'remote.send_command', data: { entity_id: 'remote.bravia_4k_vh22', command: 'BACK' } },
-      home: { action: 'call-service', service: 'remote.send_command', data: { entity_id: 'remote.bravia_4k_vh22', command: 'HOME' } },
-      menu: { action: 'call-service', service: 'remote.send_command', data: { entity_id: 'remote.bravia_4k_vh22', command: 'MENU' } }
+      home: { action: 'call-service', service: 'remote.send_command', data: { entity_id: 'remote.bravia_4k_vh22', command: 'HOME' } }
     }
   },
   scenarios: {

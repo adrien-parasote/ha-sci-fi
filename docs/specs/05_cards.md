@@ -4,6 +4,8 @@
 > Covers: Step 5 from [MASTER.md](../MASTER.md#spec-gate-pre-checklist)
 > Depends on: [Spec 01](./01_infrastructure.md#blueprint-coverage), [Spec 02](./02_domain_selectors.md#blueprint-coverage), [Spec 03](./03_base_classes.md#blueprint-coverage), [Spec 04](./04_components.md#blueprint-coverage)
 > **ADR-005 : Zero breaking YAML changes — champs gelés, features gelées**
+>
+> Tables de champs YAML par carte : [`docs/cards/<card>.md`](../cards/). Les specs `docs/specs/cards/<card>.md` portent le comportement, pas la table de champs ; c'est cette table que la règle de validation d'ADR-005 compare à `src/cards/<card>/config.ts`.
 
 ---
 

@@ -204,7 +204,8 @@ Every agent executing this specification must strictly adhere to the following b
    ```
 2. **Launch the local dev server**:
    ```bash
-   npx serve . --listen 8888 --cors
+   npm run dev &           # rollup watch
+   npx serve@14 . -p 8888  # must be serve@14, from project root (ADR-007)
    ```
 3. **Open the browser**: Navigate to `http://localhost:8888/dev/workbench.html`.
 4. **Test i18n Switcher**: Click "EN" and "FR" toolbar buttons. Verify translation reactive updates.

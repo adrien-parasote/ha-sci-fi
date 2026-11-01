@@ -2,6 +2,8 @@
 
 - **Status:** Accepted
 - **Date:** 2026-05-01
+- **Amended:** 2026-11-01 — validation rule redirected to the per-card `config.ts` files since
+  ADR-017 emptied `src/types/config.ts` of per-card fields. Bead `ha-sci-fi-tyj`.
 
 ## Context
 
@@ -17,7 +19,7 @@ YAML field names are a **public contract** between the cards and user dashboards
 
 **Source of truth:** `docs/research/discovery.md` §2 (exhaustive inventory) + `src/cards/*/config-metadata` v0.9.6.
 
-**Validation rule:** Before each PR, diff TypeScript fields in `src/types/config.ts` against `docs/research/discovery.md` §2. Any missing or renamed field blocks the merge.
+**Validation rule:** Before each PR, diff the config fields declared in `src/cards/<card>/config.ts` (the kernel in `src/types/config.ts` carries no per-card field) against `docs/research/discovery.md` §2 and the YAML tables in `docs/cards/<card>.md`. Any missing or renamed field blocks the merge.
 
 ## Consequences
 

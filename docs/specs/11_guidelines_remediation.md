@@ -63,6 +63,15 @@ hacs.json                       [MODIFY] name, render_readme, filename — PAS d
 | **Ask first** | Add any new NPM package dependencies to `package.json` |
 | **Never do** | Change card configuration YAML keys, drop existing test assertions |
 
+### ADR reflected here
+
+| ADR | Effect on this spec |
+|---|---|
+| ADR-007 | Every change is validated in `dev/workbench.html` (Mock and Live) before release; all 11 cards have a simulation in `dev/cards/_registry.js`. Server: `npm run dev &` then `npx serve@14 . -p 8888`. |
+| ADR-010 | One test file per card component and one per editor. A second file for the same module is a violation. |
+| ADR-017 | The File Tree below predates feature-first modules: each card also owns `config.ts` and `labels.ts` under `src/cards/<card>/`, not listed here. |
+| ADR-018 | Colour work follows the two palette families: frame and text use the theme-chained tokens; state and illustration colours stay literal. No substitution of a state or illustration literal by a chained token. |
+
 ---
 
 ## Cross-Spec Contracts

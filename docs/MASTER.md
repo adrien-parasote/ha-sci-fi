@@ -74,9 +74,8 @@ règles le rendent lisible, et chacune est tenue par une garde de
 > 2. [strategic/blueprint.md](./strategic/blueprint.md) — strategy + ADR summary index (full ADRs in [docs/adr/](./adr/))
 > 3. [specs/05_cards.md](./specs/05_cards.md#blueprint-coverage) — full YAML contracts per card
 > 4. [guidelines.md](./guidelines.md) — complete card development and urbanization guide
-> 5. [release-process.md](./release-process.md) — release process (versioning, build, tag, draft release, wiki)
-> 6. [`.agents/learnings.md`](../.agents/learnings.md) — 101 project-specific learnings (L012 to L120)
-> 7. [`docs/adr/`](./adr/) — 18 Architectural Decision Records (ADR-001 to ADR-018)
+> 5. [`.agents/learnings.md`](../.agents/learnings.md) — 101 project-specific learnings (L012 to L120)
+> 6. [`docs/adr/`](./adr/) — 18 Architectural Decision Records (ADR-001 to ADR-018)
 
 ---
 
@@ -101,7 +100,7 @@ règles le rendent lisible, et chacune est tenue par une garde de
        ↓
 11_guidelines_remediation
        ↓
-Release (see docs/release-process.md)
+Release
 ```
 
 ---
@@ -172,7 +171,7 @@ Before launching BUILD, verify:
 | ADR-017 | Feature-first modules — cards own their config, labels and exclusive components | ✅ Accepted — see [ADR-017](./adr/ADR-017_feature-first-modules.md) |
 | ADR-018 | Fixed palette is the identity — status colours and illustrations never follow the HA theme | ✅ Accepted — see [ADR-018](./adr/ADR-018_palette-fixed-identity.md) |
 
-> **ADR-007 rationale:** The v1.0.0 release broke production without prior visual validation. Rule: `npm run build` → validate all cards in `dev/workbench.html` → ONLY THEN release (see [release-process.md](./release-process.md)).
+> **ADR-007 rationale:** The v1.0.0 release broke production without prior visual validation. Rule: `npm run build` → validate all cards in `dev/workbench.html` → ONLY THEN release.
 
 > [!NOTE]
 > **Spec numbering:** Two numbering systems coexist:

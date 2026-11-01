@@ -289,7 +289,7 @@ Follows the standard `e.detail.id` / `e.detail.value` mapping directly onto the 
 
 ## Test Cases
 
-> **⬜ dans la colonne ID : le cas n'est joué par aucun test.** Cinq des dix-neuf lignes : les trois `IT`, plus `TC-TV-U-706` et `TC-TV-U-707` dont les numéros ne sont portés que par le test d'`hexa-tiles`.
+> **⬜ dans la colonne ID : le cas n'est joué par aucun test.** Cinq des quarante-neuf lignes : les trois `IT`, plus `TC-TV-U-706` et `TC-TV-U-707` dont les numéros ne sont portés que par le test d'`hexa-tiles`.
 > Le marqueur est la seule source : `tests/specs/ids-cas-uniques.test.ts` dérive
 > l'ensemble des cas non joués de ces marques et refuse l'écart dans les deux
 > sens — un cas non marqué que rien ne cite, comme un cas marqué qu'un test porte.
@@ -311,6 +311,36 @@ Follows the standard `e.detail.id` / `e.detail.value` mapping directly onto the 
 | **TC-TV-U-713** | Unit | Active source highlighting guarantees single active source | Config has multiple sources overlapping metadata | Only one source gets highlighted, prioritizing `appName` over `mediaTitle` |
 | **TC-TV-U-714** | Unit | Editor UI exposes visual actions for custom_actions | Editor initialized with config | Renders 8 `<sf-editor-action>` components |
 | **TC-TV-U-715** | Unit | Editor UI handles fallback for ha-selector | Editor rendered in mock environment | Disables action configuration gracefully without crashing |
+| **TC-TV-U-716** | Unit | Editor source list update dispatches the new sources | `input-update` on `sf-editor-source-list` with `['HDMI 1', 'Netflix']` | One `config-changed` event whose config has `sources` equal to `['HDMI 1', 'Netflix']` |
+| **TC-TV-U-717** | Unit | Editor source list update with an empty list clears sources | Config has `sources: ['HDMI 1']`; `input-update` with `[]` | One `config-changed` event whose config has `sources` undefined |
+| **TC-TV-U-718** | Unit | Editor action update sets a custom action | `input-update` on `sf-editor-action[element-id="home"]` with a `navigate` action to `/test` | One `config-changed` event with `custom_actions.home` equal to `{ action: 'navigate', navigation_path: '/test' }` |
+| **TC-TV-U-719** | Unit | Editor volume entity change dispatches the new entity | `input-update` on `sf-editor-dropdown-entity[element-id="volume_entity"]` with `media_player.sony_vol` | One `config-changed` event with `volume_entity` equal to `media_player.sony_vol` |
+| **TC-TV-U-720** | Unit | Card shows the offline banner when the TV is unavailable | TV entity state `unavailable` | `.offline-banner` exists in shadowRoot |
+| **TC-TV-U-721** | Unit | Card shows the offline banner when the TV entity is missing | Configured entity absent from `hass.states` | `.offline-banner` exists in shadowRoot |
+| **TC-TV-U-722** | Unit | Power button turns the TV off when it is on | TV state `on`; click `.header-power` | `callService` called with `media_player`, `turn_off`, `{ entity_id }` |
+| **TC-TV-U-723** | Unit | Power button turns the TV on when it is off | TV state `off`; click `.header-power` | `callService` called with `media_player`, `turn_on`, `{ entity_id }` |
+| **TC-TV-U-724** | Unit | Playing status is a non-empty string when the TV is unavailable | `_getPlayingStatus(true, false, …)` with no metadata | Returns a truthy string |
+| **TC-TV-U-725** | Unit | Transmission status is a non-empty string when the TV is unavailable | `_getTransmissionStatus(true, false)` | Returns a truthy string |
+| **TC-TV-U-726** | Unit | Power button title is a non-empty string when the TV is on | `_getPowerButtonTitle(true)` | Returns a truthy string |
+| **TC-TV-U-727** | Unit | Source hexagon click does nothing when the TV is off | TV state `off`, sources `['Netflix']`; click `.source-hexa` | `callService` not called |
+| **TC-TV-U-728** | Unit | Selecting a string source calls `media_player.select_source` | TV on, sources `['HDMI 1']`; click `.source-hexa` | `callService` called with `media_player`, `select_source`, `{ entity_id, source: 'HDMI 1' }` |
+| **TC-TV-U-729** | Unit | Selecting a string source targets `volume_entity` when configured | `volume_entity: media_player.sony_vol`, sources `['Netflix']`; click `.source-hexa` | `select_source` called with `entity_id: 'media_player.sony_vol'` and `source: 'Netflix'` |
+| **TC-TV-U-730** | Unit | Selecting an object source with `call-service` calls that service | Source `{ action: 'call-service', service: 'media_player.play_media', data }` | `callService` called with `media_player`, `play_media`, and the source `data` |
+| **TC-TV-U-731** | Unit | Selecting an object source with `perform-action` calls that service | Source `{ action: 'perform-action', perform_action: 'script.start_netflix', service_data: { room: 'living' } }` | `callService` called with `script`, `start_netflix`, `{ room: 'living' }` |
+| **TC-TV-U-732** | Unit | Selecting an object source with `navigate` fires `hass-action` | Source `{ action: 'navigate', navigation_path: '/lovelace/0' }` | `hass-action` event dispatched once |
+| **TC-TV-U-733** | Unit | `disconnectedCallback` resets drag state | `_isDragging` true, `_activePointerId` 42; element disconnected | `_isDragging` is false and `_activePointerId` is null |
+| **TC-TV-U-734** | Unit | Pointer down is ignored when the TV is off | TV state `off`; `_onPointerDown` | `_isDragging` stays false |
+| **TC-TV-U-735** | Unit | Pointer move with a foreign pointer id is ignored | Dragging with pointer 1; `pointermove` from pointer 99 | `_localVolume` unchanged |
+| **TC-TV-U-736** | Unit | Pointer up with the active pointer id resets drag state | Dragging with pointer 5, `_localVolume` 0.7; `pointerup` from pointer 5 | `_isDragging` false, `_activePointerId` null, `_localVolume` null |
+| **TC-TV-U-737** | Unit | `getRelevantEntities` includes `volume_entity` when set | Config with `entity` and `volume_entity` | Result includes both entity ids |
+| **TC-TV-U-738** | Unit | Volume display is read from `volume_entity` when present | Main entity volume 0.1, `volume_entity` volume 0.75 | `.dial-value` text is `75%` |
+| **TC-TV-U-739** | Unit | Editor action update to `none` removes the custom action | Config has `custom_actions.home`; `input-update` with `{ action: 'none' }` | One `config-changed` event whose config has `custom_actions` undefined |
+| **TC-TV-U-740** | Unit | Playing status is a non-empty string when the TV is off | `_getPlayingStatus(false, true, …)` with no metadata | Returns a truthy string |
+| **TC-TV-U-741** | Unit | Playing status is a non-empty string when no metadata exists | `_getPlayingStatus(false, false, …)` with no metadata | Returns a truthy string |
+| **TC-TV-U-742** | Unit | Playing status falls back to the source label | `_getPlayingStatus(false, false, …)` with no media title or app name, source `'HDMI 2'` | Returns `'HDMI 2'` |
+| **TC-TV-U-743** | Unit | Transmission status is a non-empty string when the TV is on | `_getTransmissionStatus(false, false)` | Returns a truthy string |
+| **TC-TV-U-744** | Unit | Transmission status is a non-empty string when the TV is off | `_getTransmissionStatus(false, true)` | Returns a truthy string |
+| **TC-TV-U-745** | Unit | Power button title is a non-empty string when the TV is off | `_getPowerButtonTitle(false)` | Returns a truthy string |
 | **IT-TV-I-701** ⬜ | Integration | Custom elements register correctly in HA registry | Load built bundle | Elements `sci-fi-tv` and `sci-fi-tv-editor` exist |
 | **IT-TV-I-702** ⬜ | Integration | Workbench — Netflix active mock state renders dial at 35% | Workbench mock state `netflix_active` | Volume dial arc covers 35% of full arc; source label "Netflix" highlighted |
 | **IT-TV-I-703** ⬜ | Integration | Dragging orbital dial calls correct service volume | Pointer dragging to 60% position | Calls `media_player.volume_set` with `volume_level: 0.6` |

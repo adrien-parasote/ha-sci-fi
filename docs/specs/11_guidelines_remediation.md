@@ -11,13 +11,13 @@
 | Feature ID | Description | Covered here | Covers |
 |---|---|---|---|
 | F-REMED-01 | Vacuum styling tokens refactoring | ✅ `src/cards/vacuum/styles.ts` | ⬜ aucun cas de test — jeu de tokens CSS, aucun id TC ne le pine |
-| F-REMED-02 | Hexa-tiles theme support and alerts mapping | ✅ `src/cards/hexa-tiles/styles.ts` | IT-113 (repli des variables de saison, angle voisin) ; aucun id TC propre |
-| F-REMED-03 | Climates season CSS variables & `<ha-card>` wrapping | ✅ `src/cards/climates/` | IT-112, IT-113 |
-| F-REMED-04 | Lightweight event action dispatcher | ✅ `src/utils/action.ts` | TC-111 |
-| F-REMED-05 | Lovelace action handlers for hexa-tiles and lights | ✅ `src/cards/hexa-tiles/` & `src/cards/lights/` | IT-111 |
-| F-REMED-06 | `LovelaceCard` typescript interface declaration | ✅ `src/utils/base-card.ts` | TC-113 |
-| F-REMED-07 | Card height overrides (`getCardSize()`) | ✅ les 11 classes de carte | TC-112 — couverture partielle : `tests/utils/action.test.ts` vérifie 8 des 11 cartes (hexa-tiles, climates, plugs, stove, vacuum, vehicles, weather, lights) ; `tv`, `water-management` et `bridge` ne sont vérifiées par aucun cas |
-| F-REMED-08 | Classification HACS — `hacs.json` conforme au schéma HACS 2.0, qui a **retiré** la clé `"type"` | ✅ `hacs.json` (`name`, `render_readme`, `filename`) & `src/sci-fi.ts` | TC-114, TC-115 |
+| F-REMED-02 | Hexa-tiles theme support and alerts mapping | ✅ `src/cards/hexa-tiles/styles.ts` | tests/cards/climates/sci-fi-climates.test.ts :: IT-113 — (repli des variables de saison, angle voisin) ; aucun id TC propre |
+| F-REMED-03 | Climates season CSS variables & `<ha-card>` wrapping | ✅ `src/cards/climates/` | tests/cards/climates/sci-fi-climates.test.ts :: IT-112, IT-113 |
+| F-REMED-04 | Lightweight event action dispatcher | ✅ `src/utils/action.ts` | tests/utils/action.test.ts :: TC-111 |
+| F-REMED-05 | Lovelace action handlers for hexa-tiles and lights | ✅ `src/cards/hexa-tiles/` & `src/cards/lights/` | tests/cards/hexa-tiles/sci-fi-hexa-tiles.test.ts :: IT-111 |
+| F-REMED-06 | `LovelaceCard` typescript interface declaration | ✅ `src/utils/base-card.ts` | tests/utils/base-card.test.ts :: TC-113 |
+| F-REMED-07 | Card height overrides (`getCardSize()`) | ✅ les 11 classes de carte | tests/utils/action.test.ts :: TC-112 — — couverture partielle : `tests/utils/action.test.ts` vérifie 8 des 11 cartes (hexa-tiles, climates, plugs, stove, vacuum, vehicles, weather, lights) ; `tv`, `water-management` et `bridge` ne sont vérifiées par aucun cas |
+| F-REMED-08 | Classification HACS — `hacs.json` conforme au schéma HACS 2.0, qui a **retiré** la clé `"type"` | ✅ `hacs.json` (`name`, `render_readme`, `filename`) & `src/sci-fi.ts` | tests/sci-fi.test.ts :: TC-114, TC-115 |
 
 ---
 

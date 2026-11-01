@@ -10,9 +10,9 @@
 
 | Feature ID | Description | Covered here | Covers |
 |---|---|---|---|
-| F-ENTRY-01 | Main entry point script setup | ✅ `src/sci-fi.ts` | TC-603, IT-601 |
-| F-ICON-01 | Custom iconset registrations | ✅ `src/sci-fi.ts` | TC-602, IT-603 |
-| F-I18N-01 | Dynamic language sync and localize | ✅ `src/locales/` | TC-601, TC-605, IT-602 |
+| F-ENTRY-01 | Main entry point script setup | ✅ `src/sci-fi.ts` | tests/sci-fi.test.ts :: TC-603, IT-601 |
+| F-ICON-01 | Custom iconset registrations | ✅ `src/sci-fi.ts` | tests/sci-fi.test.ts :: TC-602 · tests/components/sf-icon/sci-icon.test.ts :: IT-603 |
+| F-I18N-01 | Dynamic language sync and localize | ✅ `src/locales/` | tests/utils/base-card.test.ts :: TC-601, IT-602 · tests/sci-fi.test.ts :: TC-605 |
 | F-MIGR-01 | Configuration legacy migration | ⬜ not delivered — [ADR-005](../adr/ADR-005_zero-breaking-yaml.md#L1) forbids renaming or removing any YAML field, so no migration guide was ever needed | ⬜ aucun cas de test — le cas unitaire qui le couvrait a été retiré le 2026-08-12 (bead `ha-sci-fi-9xf`) ; son id n'est pas réécrit ici, P14 le lirait comme une promesse, et rien n'est à migrer par construction |
 | F-GIT-01 | Isolation de la réécriture v2 sur sa propre branche | ✅ accompli — plus aucune branche `v2` (sonde : `git branch -a --list '*v2*'` → 0) ; le travail vit sur `main` et les lots sur `fix/*`, `feat/*` | ⬜ aucun cas de test — fait d'historique git, pas un comportement du code |
 

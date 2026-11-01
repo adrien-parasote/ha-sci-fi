@@ -11,15 +11,15 @@
 
 | Feature ID | Description | Spec file | Covers |
 |---|---|---|---|
-| F-VEH-D01 | Header: vehicle name centered + prev/next navigation buttons (multi-vehicle) | ✅ This spec § _renderHeader() | TC-1204, TC-1205, TC-1206, TC-1212, TC-1213 |
-| F-VEH-D02 | `sf-landspeeder` component: SVG top-view image + overlaid data panels (top, middle) | ✅ This spec § sf-landspeeder.ts — New Component | TC-1207, TC-1208 |
+| F-VEH-D01 | Header: vehicle name centered + prev/next navigation buttons (multi-vehicle) | ✅ This spec § _renderHeader() | tests/cards/vehicles/sci-fi-vehicles.test.ts :: TC-1204, TC-1205, TC-1206, TC-1212, TC-1213 |
+| F-VEH-D02 | `sf-landspeeder` component: SVG top-view image + overlaid data panels (top, middle) | ✅ This spec § sf-landspeeder.ts — New Component | tests/cards/vehicles/sci-fi-vehicles.test.ts :: TC-1207, TC-1208 |
 | F-VEH-D03 | Landspeeder `.top` zone: location (with map link) + mileage | ✅ This spec § _renderTop() zone | ⬜ aucun id TC — aucun cas ne pine le contenu de la zone `.top` |
 | F-VEH-D04 | Landspeeder `.middle` zone: lock + fuel + battery + charging panels positioned on SVG | ✅ This spec § _renderMiddle() zone | ⬜ aucun id TC — aucun cas ne pine le contenu de la zone `.middle` |
-| F-VEH-D05 | Actions bar: temperature `sf-wheel` + Start AC / Stop AC buttons | ✅ This spec § _renderActions() | TC-1209, TC-1210, TC-1211 |
-| F-VEH-D06 | Extract CSS into `styles.ts` (stove/climate pattern) | ✅ This spec § styles.ts | IT-1203 |
+| F-VEH-D05 | Actions bar: temperature `sf-wheel` + Start AC / Stop AC buttons | ✅ This spec § _renderActions() | tests/cards/vehicles/sci-fi-vehicles.test.ts :: TC-1209, TC-1210, TC-1211 |
+| F-VEH-D06 | Extract CSS into `styles.ts` (stove/climate pattern) | ✅ This spec § styles.ts | tests/cards/vehicles/sci-fi-vehicles.test.ts :: TC-1215 |
 | F-VEH-D07 | Battery color thresholds: green ≥60%, orange 20-59%, red <20% | ✅ This spec § _renderMiddle() zone | ⬜ aucun id TC — les trois seuils ne sont pinés par aucun cas |
 | F-VEH-D08 | Charge state + plug state icon mapping from `vehicles/vehicle_const.ts` | ✅ This spec § Constants — vehicle_const.ts | ⬜ aucun id TC — table de correspondance, aucun cas déclaré |
-| F-VEH-D09 | All existing 6 vehicle tests remain GREEN (regression gate) | ✅ This spec § Test Selectors — Frozen Contract | TC-1201, TC-1202, TC-1203, TC-1214, IT-1201, IT-1202 |
+| F-VEH-D09 | All existing 6 vehicle tests remain GREEN (regression gate) | ✅ This spec § Test Selectors — Frozen Contract | tests/cards/vehicles/sci-fi-vehicles.test.ts :: TC-1201, TC-1202, TC-1203, TC-1214, IT-1201, IT-1202 |
 
 ---
 

@@ -16,7 +16,7 @@
 | Step 4 — Components | F-COMP-01 to 06 | [04_components.md](./specs/04_components.md#blueprint-coverage) | ✅ |
 | Step 5 — Cards (11) | F-CARD-01 to 11 | [05_cards.md](./specs/05_cards.md#blueprint-coverage) | ✅ |
 | Step 6 — Entry + i18n | F-ENTRY-01, F-ICON-01, F-I18N-01, F-MIGR-01, F-GIT-01 | [06_entry_migration.md](./specs/06_entry_migration.md#blueprint-coverage) | ✅ sauf F-MIGR-01, `⬜ not delivered` par ADR-005 — aucune migration n'était nécessaire |
-| Step 7 — Workbench + Editor i18n | F1 to F6 | [09_workbench_editor_i18n.md](./specs/09_workbench_editor_i18n.md) | ✅ |
+| Step 7 — Workbench + Editor i18n | F-WB-01 to 06 | [09_workbench_editor_i18n.md](./specs/09_workbench_editor_i18n.md) | ✅ |
 | Step 8 — Card Editors | F-EDITOR-01 to 23 | [10_card_editors.md](./specs/10_card_editors.md) | ✅ |
 | Step 9 — Guidelines Remediation | F-REMED-01 to 08 | [11_guidelines_remediation.md](./specs/11_guidelines_remediation.md) | ✅ |
 | Card specs (per card) | — | [specs/cards/](./specs/cards/) | ✅ |
@@ -33,10 +33,16 @@ Le projet trace ses exigences avec son propre schéma, `F-<DOMAINE>-NN`, dans un
 règles le rendent lisible, et chacune est tenue par une garde de
 `tests/specs/blueprint-traceability.test.ts` :
 
-1. **Chaque ligne F porte une colonne `Covers`** qui nomme les ids de cas de test
-   (`TC-…`, `IT-…`) qui la couvrent. Une exigence que rien ne teste le dit en clair —
-   `⬜ aucun id TC`, suivi de la raison — plutôt que de laisser la colonne vide : une
-   case vide se lit comme un oubli, une absence déclarée se lit comme un choix.
+1. **Chaque ligne F porte une colonne `Covers`** qui nomme **le fichier de test qui la
+   couvre**, et après ` :: ` les ids des cas de ce fichier — `tests/cards/water/sci-fi-water-management.test.ts :: TC-W03, TC-W04`,
+   plusieurs groupes séparés par ` · `, le chemin seul quand le cas couvrant ne porte
+   pas d'id. **Pas un id nu :** un id de cas n'est pas unique dans le projet —
+   `TC-001` est déclaré par cinq specs, et le seul `it()` qui porte ce titre teste la
+   carte météo (bead `ha-sci-fi-cft`). Un chemin est non ambigu, et la garde le
+   vérifie : le fichier existe, et l'id y est porté par un `it()`. Une exigence que
+   rien ne teste le dit en clair — la marque `⬜` suivie de la raison — plutôt que de
+   laisser la colonne vide : une case vide se lit comme un oubli, une absence déclarée
+   se lit comme un choix.
 2. **Une spec typée `> Document Type: Reference` ne porte PAS de table Blueprint.** Ces
    documents portent un contrat YAML, pas des exigences ; leur exigence vit dans la spec
    d'implémentation qu'ils nomment en tête — `05_cards.md` pour `climates.md`,

@@ -10,12 +10,12 @@
 
 | Feature ID | Description | Covered here | Covers |
 |---|---|---|---|
-| F1 | Language Switcher (EN/FR buttons) | § "1. Language Switcher (i18n)" | TC-903, IT-901 |
-| F2 | View/Edit Mode Toggle | § "2. Work Mode Selector" | TC-905, IT-906 |
-| F3 | Left Panel Editor Layout (Tabs) | § "3. Editor Panel Workspace" | IT-905 — la sélection d'onglet y est exercée comme déclencheur du repli ; la disposition elle-même n'est pinée par aucun cas |
-| F4 | YAML Code Editor & Validation | § "4. YAML Code Editor & js-yaml Integration" | TC-901, TC-902, IT-902, IT-903 |
-| F5 | UI Graphical Editor Dynamic Loader | § "5. Dynamic UI Graphical Editor & Fallback" | TC-904, IT-904, IT-905 |
-| F6 | Right Panel Card Live Preview | § "6. Card Preview Workspace" | TC-905, IT-902 |
+| F-WB-01 | Language Switcher (EN/FR buttons) | § "1. Language Switcher (i18n)" | tests/dev/workbench.test.ts :: TC-903, IT-901 |
+| F-WB-02 | View/Edit Mode Toggle | § "2. Work Mode Selector" | tests/dev/workbench.test.ts :: TC-905, IT-906 |
+| F-WB-03 | Left Panel Editor Layout (Tabs) | § "3. Editor Panel Workspace" | tests/dev/workbench.test.ts :: IT-905 — — la sélection d'onglet y est exercée comme déclencheur du repli ; la disposition elle-même n'est pinée par aucun cas |
+| F-WB-04 | YAML Code Editor & Validation | § "4. YAML Code Editor & js-yaml Integration" | tests/dev/workbench.test.ts :: TC-901, TC-902, IT-902, IT-903 |
+| F-WB-05 | UI Graphical Editor Dynamic Loader | § "5. Dynamic UI Graphical Editor & Fallback" | tests/dev/workbench.test.ts :: TC-904, IT-904, IT-905 |
+| F-WB-06 | Right Panel Card Live Preview | § "6. Card Preview Workspace" | tests/dev/workbench.test.ts :: TC-905, IT-902 |
 
 ---
 

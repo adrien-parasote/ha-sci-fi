@@ -1,7 +1,7 @@
 {
   "feature": "ids-tracabilite",
   "created": "2026-11-01T11:49:11Z",
-  "frozen_at": null,
+  "frozen_at": "2026-11-01T12:04:53Z",
   "epic": "ha-sci-fi-p6v",
   "observations": [
     {
@@ -62,5 +62,10 @@
     }
   ],
   "suite": "npm test",
-  "lint": "npx eslint tests/specs/blueprint-traceability.test.ts"
+  "lint": "npx eslint tests/specs/blueprint-traceability.test.ts",
+  "suite_run": {
+    "at": "2026-11-01T13:01:46Z",
+    "rc": 0,
+    "tail": ""
+  }
 }

@@ -11,15 +11,15 @@
 
 | Feature ID | Description | Spec file | Covers |
 |---|---|---|---|
-| F-PLG-D01 | Header: area icon + plug name + model/manufacturer subtitle | ✅ This spec § _renderHeader(device) | TC-1305, TC-1306 |
-| F-PLG-D02 | Plug image zone: animated EU socket SVG (CSS-only) + status icon overlay + toggle on click | ✅ This spec § _renderImage(isOn, icon, device) | TC-1307, TC-1308 |
-| F-PLG-D03 | Sensor list: vertical list of icon + name + value (with LockSensor and SelectSensor variants) | ✅ This spec § _renderSensors(visibleSensors) | TC-1314 |
-| F-PLG-D04 | Power chart: Chart.js bar histogram of the last 24 hours of power history. The window start is a full ISO timestamp exactly 24 h back, never a bare `YYYY-MM-DD` — that reads as midnight yesterday and makes the window 24 to 48 h wide depending on the time of day. | ✅ This spec § Power chart — _loadPowerChart() | ⬜ aucun id TC — le graphe de puissance et la fenêtre de 24 h ne sont pinés par aucun cas déclaré |
-| F-PLG-D05 | Footer navigation: prev/next arrows + plug selector icons | ✅ This spec § _renderFooter() | TC-1309, TC-1310, TC-1311, TC-1312, TC-1313 |
-| F-PLG-D06 | Extract CSS into `styles.ts` (stove/vehicle pattern) | ✅ This spec § styles.ts | IT-1303 |
-| F-PLG-D07 | Toggle plug on/off via `switch.turn_on` / `switch.turn_off` service | ✅ This spec § Toggle action | TC-1308 |
+| F-PLG-D01 | Header: area icon + plug name + model/manufacturer subtitle | ✅ This spec § _renderHeader(device) | tests/cards/plugs/sci-fi-plugs.test.ts :: TC-1305, TC-1306 |
+| F-PLG-D02 | Plug image zone: animated EU socket SVG (CSS-only) + status icon overlay + toggle on click | ✅ This spec § _renderImage(isOn, icon, device) | tests/cards/plugs/sci-fi-plugs.test.ts :: TC-1307, TC-1308 |
+| F-PLG-D03 | Sensor list: vertical list of icon + name + value (with LockSensor and SelectSensor variants) | ✅ This spec § _renderSensors(visibleSensors) | tests/cards/plugs/sci-fi-plugs.test.ts :: TC-1314 |
+| F-PLG-D04 | Power chart: Chart.js bar histogram of the last 24 hours of power history. The window start is a full ISO timestamp exactly 24 h back, never a bare `YYYY-MM-DD` — that reads as midnight yesterday and makes the window 24 to 48 h wide depending on the time of day. | ✅ This spec § Power chart — _loadPowerChart() | tests/cards/plugs/sci-fi-plugs.test.ts (« asks history for a rolling 24-hour window, not midnight yesterday », sans id) |
+| F-PLG-D05 | Footer navigation: prev/next arrows + plug selector icons | ✅ This spec § _renderFooter() | tests/cards/plugs/sci-fi-plugs.test.ts :: TC-1309, TC-1310, TC-1311, TC-1312, TC-1313 |
+| F-PLG-D06 | Extract CSS into `styles.ts` (stove/vehicle pattern) | ✅ This spec § styles.ts | tests/cards/plugs/sci-fi-plugs.test.ts :: IT-1303 |
+| F-PLG-D07 | Toggle plug on/off via `switch.turn_on` / `switch.turn_off` service | ✅ This spec § Toggle action | tests/cards/plugs/sci-fi-plugs.test.ts :: TC-1308 |
 | F-PLG-D08 | 'plug_const.ts' constants file (ported from main) | ✅ This spec § Constants — plug_const.ts | ⬜ aucun id TC — fichier de constantes, aucun cas déclaré |
-| F-PLG-D09 | All existing 8 plugs tests remain GREEN (regression gate) | ✅ This spec § Test Selectors — Frozen Contract | TC-1315, IT-1301, IT-1302 |
+| F-PLG-D09 | All existing 8 plugs tests remain GREEN (regression gate) | ✅ This spec § Test Selectors — Frozen Contract | tests/cards/plugs/sci-fi-plugs.test.ts :: TC-1315, IT-1301, IT-1302 |
 
 ---
 

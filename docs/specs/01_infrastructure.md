@@ -10,14 +10,14 @@
 
 | Feature ID | Description | Covered here | Covers |
 |---|---|---|---|
-| F-INFRA-01 | TypeScript 5.x strict setup | ✅ `tsconfig.json` | TC-103 |
-| F-INFRA-02 | Rollup 4 build pipeline | ✅ `rollup.config.mjs` | TC-101, TC-102 |
+| F-INFRA-01 | TypeScript 5.x strict setup | ✅ `tsconfig.json` | tests/infrastructure.test.ts :: TC-103 |
+| F-INFRA-02 | Rollup 4 build pipeline | ✅ `rollup.config.mjs` | tests/infrastructure.test.ts :: TC-101, TC-102 |
 | F-INFRA-03 | Automated dev server | ⬜ not delivered — pas de serveur de dev dédié : `npm run dev` est `rollup -c --watch` et sert `dev/workbench.html` (aucun `vite.config*` dans le dépôt) | ⬜ aucun cas de test — le cas d'intégration qui le couvrait a été retiré le 2026-08-12 (bead `ha-sci-fi-9xf`, note sous § Test Case Specifications) ; son id n'est pas réécrit ici, P14 le lirait comme une promesse à tenir |
 | F-INFRA-04 | Test runner automatisé | ✅ `vitest` + `happy-dom` | ⬜ aucun cas de test — le runner est le moyen des TC, pas leur objet |
-| F-INFRA-05 | ESLint TypeScript strict | ✅ `.eslintrc.json` | TC-104 |
+| F-INFRA-05 | ESLint TypeScript strict | ✅ `.eslintrc.json` | tests/infrastructure.test.ts :: TC-104 |
 | F-INFRA-06 | DevContainer HA dev instance | ⬜ not delivered — `.devcontainer/` n'existe pas dans le dépôt | ⬜ aucun cas de test — le cas d'intégration qui le couvrait a été retiré le 2026-08-12 (bead `ha-sci-fi-9xf`, note sous § Test Case Specifications) ; son id n'est pas réécrit ici, P14 le lirait comme une promesse à tenir |
-| F-INFRA-07 | GitHub Actions CI | ✅ `.github/workflows/ci.yml` | IT-101 |
-| F-INFRA-08 | HACS validation CI | ✅ `hacs.json` | TC-105 |
+| F-INFRA-07 | GitHub Actions CI | ✅ `.github/workflows/ci.yml` | tests/infrastructure.test.ts :: IT-101 |
+| F-INFRA-08 | HACS validation CI | ✅ `hacs.json` | tests/sci-fi.test.ts :: TC-105 |
 
 ---
 

@@ -78,14 +78,14 @@ tiles:
 
 | Feature ID | Description | Covered here | Covers |
 |---|---|---|---|
-| F-HEX-01 | User header with picture, status badge, message, and name | ✅ Section [User Header](#user-header) | TC-701, TC-702 |
-| F-HEX-02 | Interlocking rows grid with offset margins and decorative side half-tiles | ✅ Section [Interlocking Hexagon Grid](#interlocking-hexagon-grid) | TC-704, IT-701 |
-| F-HEX-03 | Custom SVG-based active/inactive border and background styling | ✅ Section [Hexagon Design and Styling](#hexagon-design-and-styling) | TC-705, IT-703 |
-| F-HEX-04 | Visible and centered custom icons in tiles | ✅ Section [Tile Content & Icons](#tile-content--icons) | IT-702 |
-| F-HEX-05 | Weather alert visibility band logic (hidden on green) | ✅ Section [Weather Alert Banner](#weather-alert-banner) | TC-703 |
-| F-HEX-06 | Fixed dimensions on all viewport sizes (priority mobile) | ✅ Section [Fixed Dimensions & Responsiveness](#fixed-dimensions--responsiveness) | IT-701 |
-| F-HEX-07 | Weather tile border glow matches alert severity color | ✅ Section [Weather Tile Alert Coloring](#weather-tile-alert-coloring) | TC-708, TC-709 |
-| F-HEX-08 | Alert banner label displays phenomenon names from entity attributes | ✅ Section [Weather Alert Banner](#weather-alert-banner) | TC-706, TC-707 |
+| F-HEX-01 | User header with picture, status badge, message, and name | ✅ Section [User Header](#user-header) | tests/cards/hexa-tiles/sci-fi-hexa-tiles.test.ts (« renders connected user profile header with message, name, circular avatar and status badge », sans id) |
+| F-HEX-02 | Interlocking rows grid with offset margins and decorative side half-tiles | ✅ Section [Interlocking Hexagon Grid](#interlocking-hexagon-grid) | tests/cards/hexa-tiles/sci-fi-hexa-tiles.test.ts :: IT-701 |
+| F-HEX-03 | Custom SVG-based active/inactive border and background styling | ✅ Section [Hexagon Design and Styling](#hexagon-design-and-styling) | tests/cards/hexa-tiles/sci-fi-hexa-tiles.test.ts :: IT-702, IT-703 |
+| F-HEX-04 | Visible and centered custom icons in tiles | ✅ Section [Tile Content & Icons](#tile-content--icons) | tests/cards/hexa-tiles/sci-fi-hexa-tiles.test.ts :: TC-501 |
+| F-HEX-05 | Weather alert visibility band logic (hidden on green) | ✅ Section [Weather Alert Banner](#weather-alert-banner) | tests/cards/hexa-tiles/sci-fi-hexa-tiles.test.ts (« does NOT render weather alert when state is green, but renders it for non-green states », sans id) |
+| F-HEX-06 | Fixed dimensions on all viewport sizes (priority mobile) | ✅ Section [Fixed Dimensions & Responsiveness](#fixed-dimensions--responsiveness) | tests/cards/hexa-tiles/sci-fi-hexa-tiles.test.ts :: IT-701 |
+| F-HEX-07 | Weather tile border glow matches alert severity color | ✅ Section [Weather Tile Alert Coloring](#weather-tile-alert-coloring) | tests/cards/hexa-tiles/sci-fi-hexa-tiles.test.ts (« covers various fallback branches including … alert levels », sans id) |
+| F-HEX-08 | Alert banner label displays phenomenon names from entity attributes | ✅ Section [Weather Alert Banner](#weather-alert-banner) | tests/cards/hexa-tiles/sci-fi-hexa-tiles.test.ts :: TC-706, TC-707 |
 
 ---
 

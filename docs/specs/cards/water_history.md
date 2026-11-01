@@ -10,10 +10,10 @@
 
 | Feature ID | Description | Spec file | Covers |
 |---|---|---|---|
-| F-WATER-HIST-01 | Monospace activity timeline console inside the automations accordion | ✅ This spec § Technical Specifications & Data Contracts | TC-002, TC-003, TC-005 |
-| F-WATER-HIST-02 | Interactive filter buttons (All, Alerts) for log categories | ✅ This spec § Technical Specifications & Data Contracts | TC-001, IT-003 |
-| F-WATER-HIST-03 | WebSocket API fetch using the **logbook/get_events** endpoint for relevant entities | ✅ This spec § 1. API Integration & Query Scope | IT-001, IT-002 |
-| F-WATER-HIST-04 | Responsive fallback mock logs for local development in workbench | ✅ This spec § Local Development | TC-004 |
+| F-WATER-HIST-01 | Monospace activity timeline console inside the automations accordion | ✅ This spec § Technical Specifications & Data Contracts | tests/cards/water/sci-fi-water-management.test.ts :: TC-1203, TC-1204, TC-1205 |
+| F-WATER-HIST-02 | Interactive filter buttons (All, Alerts) for log categories | ✅ This spec § Technical Specifications & Data Contracts | tests/cards/water/sci-fi-water-management.test.ts :: TC-1201, IT-1205 |
+| F-WATER-HIST-03 | WebSocket API fetch using the **logbook/get_events** endpoint for relevant entities | ✅ This spec § 1. API Integration & Query Scope | tests/cards/water/sci-fi-water-management.test.ts :: IT-1201, IT-1202, IT-1203 |
+| F-WATER-HIST-04 | Responsive fallback mock logs for local development in workbench | ✅ This spec § Local Development | ⬜ aucun cas ne couvre le repli en logs mockés du workbench |
 
 ---
 

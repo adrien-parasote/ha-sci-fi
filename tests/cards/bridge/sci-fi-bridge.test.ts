@@ -333,7 +333,7 @@ describe('sci-fi-bridge', () => {
 
   // ── Full render ───────────────────────────────────────────────────────────────
 
-  it('IT-BRIDGE-I-02, IT-103: renders .bridge-grid with all 8 sections for full config', async () => {
+  it('IT-BRIDGE-I-02: renders .bridge-grid with all 8 sections for full config', async () => {
     const el = document.createElement('sci-fi-bridge') as SciFiBridgeCard;
     (el as any).setConfig(FULL_CONFIG);
     el.hass = makeFullHass();

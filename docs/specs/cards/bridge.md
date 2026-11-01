@@ -1,7 +1,12 @@
 # Spec — sci-fi-bridge (v1.3 Bridge Overview)
 
 > Document Type: Implementation
-> Covers: F-BR-01 → F-BR-15 (see Blueprint Coverage below)
+> Covers: F-BR-01 → F-BR-16 (see Blueprint Coverage below)
+> Consolidated 2026-11-01 (lot fix `bridge-md-structure`) — l'historique de livraison
+> est dans [spec-history.md](../bridge-md-structure/spec-history.md) ; ce document ne
+> décrit plus que l'état courant. Les déclarations TypeScript qu'il reproduit sont
+> vérifiées champ par champ contre `src/cards/bridge/config.ts` par
+> `tests/specs/bridge-spec-structure.test.ts`.
 > Depends on: [Spec 03 — Base Classes](../03_base_classes.md#blueprint-coverage) · [Spec 04 — Components](../04_components.md#blueprint-coverage) · [Strategic Blueprint](../../strategic/bridge_overview_blueprint.md#q1--what)
 > ADR-005: Zero breaking YAML changes — all config field names frozen at first release.
 > ADR-012: Section components independent. ADR-013: Container queries. ADR-014: Crew + ACTIONS always full-width.
@@ -12,7 +17,7 @@
 
 | Feature ID | Description | Covered in |
 |---|---|---|
-| F-BR-01 | `BridgeConfig` TypeScript interfaces for all sections | This spec § TypeScript Interfaces |
+| F-BR-01 | `SciFiBridgeConfig` TypeScript interfaces for all sections | This spec § TypeScript Interfaces |
 | F-BR-02 | `config-metadata.ts` YAML validation schema | This spec § config-metadata |
 | F-BR-03 | `getRelevantEntities()` — collects all entity_ids from config | This spec § getRelevantEntities |
 | F-BR-04 | `sf-bridge-crew` — dynamic person list with zone + avatar | This spec § sf-bridge-crew |
@@ -25,7 +30,7 @@
 | F-BR-11 | `sf-bridge-actions` — quick-action buttons panel (scripts, automations, input_buttons) | This spec § sf-bridge-actions |
 | F-BR-12 | `sci-fi-bridge` card — orchestrator + CSS Grid responsive layout | This spec § sci-fi-bridge Card |
 | F-BR-13 | `sci-fi-bridge-editor` — HA config editor | This spec § Editor |
-| F-BR-14 | Tests ≥ 80% coverage — domain + composants | This spec § Test Cases |
+| F-BR-14 | Tests ≥ 80% coverage — domain + composants | This spec § Test Case Specifications |
 | F-BR-15 | Workbench mock — entities mockées pour validation visuelle | This spec § Workbench |
 | F-BR-16 | README.md + CHANGELOG.md mis à jour | This spec § README & CHANGELOG Updates |
 
@@ -222,7 +227,9 @@ actions:
 
 ## TypeScript Interfaces
 
-**Fichier :** `src/types/config.ts` (MODIFY — ajouter les interfaces Bridge)
+**Fichier :** `src/cards/bridge/config.ts` — la carte porte ses propres interfaces
+([ADR-017](../../adr/ADR-017_feature-first-modules.md) : les hubs techniques ne les
+accueillent plus ; `src/types/config.ts` ne garde que `SciFiBaseConfig`, dont elles héritent)
 
 ```ts
 // ── Bridge ─────────────────────────────────────────────────────────────────
@@ -305,11 +312,6 @@ export interface BridgeAppliancesConfig {
   consumables?: BridgeConsumableEntry[];  // OPTIONNEL
 }
 
-```
-
-> _(block continued)_
-
-```ts
 export interface BridgeStoveConfig {
   icon?: string;          // section icon (default: 'sci:stove')
   pellet_quantity: string;
@@ -321,6 +323,7 @@ export interface BridgeStoveConfig {
 export interface BridgeVehicleConfig {
   icon?: string;          // section icon (default: 'mdi:ev-station')
   power_sensor: string;
+  name?: string;          // optional display name override (e.g. entity name chip)
 }
 
 /** A single action button in the bridge Actions panel */
@@ -336,8 +339,9 @@ export interface BridgeActionsConfig {
   items: BridgeActionItem[];
 }
 
-export interface SciFiBridgeConfig {
-  type: string;
+export interface SciFiBridgeConfig extends SciFiBaseConfig {
+  readonly type: 'custom:sci-fi-bridge';
+  title?: string;
   persons?: BridgePersonEntry[];
   alerts?: BridgeAlertsConfig;
   access?: BridgeAccessConfig;           // objet {icon?, items[]}
@@ -364,8 +368,8 @@ Structure minimale pour validation et éditeur HA :
 export const bridgeConfigMetadata = {
   persons: { type: 'array', mandatory: false, default: [] },
   alerts: { type: 'object', mandatory: false },
-  access: { type: 'array', mandatory: false, default: [] },
-  automations: { type: 'array', mandatory: false, default: [] },
+  access: { type: 'object', mandatory: false },
+  automations: { type: 'object', mandatory: false },
   appliances: { type: 'object', mandatory: false },
   stove: { type: 'object', mandatory: false },
   vehicle: { type: 'object', mandatory: false },
@@ -437,49 +441,48 @@ protected override getRelevantEntities(): string[] {
 
 ```
 src/cards/bridge/
-├── sci-fi-bridge.ts          [NEW] — card orchestratrice
-├── styles.ts                 [NEW] — CSS exporté
-├── config-metadata.ts        [NEW] — validation schema
+├── sci-fi-bridge.ts            — card orchestratrice
+├── sci-fi-bridge-editor.ts     — éditeur Lovelace
+├── config.ts                   — interfaces de la carte (ADR-017)
+├── config-metadata.ts          — validation schema
+├── labels.ts                   — dictionnaire getLabel() (ADR-017)
+├── bridge-call.ts              — wrapper callService + toast
+├── bridge-toast.ts             — émission de l'event bridge-toast
+├── styles.ts                   — CSS exporté
 └── sections/
-    ├── sf-bridge-crew.ts     [NEW]
-    ├── sf-bridge-alerts.ts   [NEW]
-    ├── sf-bridge-access.ts   [NEW]
-    ├── sf-bridge-automations.ts [NEW]
-    ├── sf-bridge-appliances.ts  [NEW]
-    ├── sf-bridge-stove.ts    [NEW]
-    ├── sf-bridge-vehicle.ts  [NEW]
-    └── sf-bridge-actions.ts  [NEW]
+    ├── sf-bridge-crew.ts
+    ├── sf-bridge-alerts.ts
+    ├── sf-bridge-access.ts
+    ├── sf-bridge-automations.ts
+    ├── sf-bridge-appliances.ts
+    ├── sf-bridge-stove.ts
+    ├── sf-bridge-vehicle.ts
+    └── sf-bridge-actions.ts
 
 tests/cards/bridge/
-└── sci-fi-bridge.test.ts     [NEW]
+├── sci-fi-bridge.test.ts
+├── sci-fi-bridge-editor.test.ts
+├── bridge-call.test.ts
+├── bridge-toast.test.ts
+└── sections/
+    └── un fichier par section, plus sf-bridge-toast-timing.test.ts
+```
 
-dev/workbench.html     [NEW] — mock workbench
-├── src/cards/bridge/sci-fi-bridge-editor.ts [NEW]
-├── README.md [EXTERNAL]
-├── CHANGELOG.md [EXTERNAL]
-├── docs/cards/bridge.md [EXTERNAL]
-├── lit/decorators.js [EXTERNAL]
-├── ../../utils/base-card.js [EXTERNAL]
-├── ../../styles/common.js [EXTERNAL]
-├── ../../types/config.js [EXTERNAL]
-├── ../../locales/locales/fr.js [EXTERNAL]
-├── /local/avatars/adrien.jpg [EXTERNAL]
-├── ./sections/sf-bridge-crew.js [EXTERNAL]
+Hors du répertoire de la carte, et seulement consommés :
+`src/utils/base-card.ts`, `src/styles/common.ts`, `src/types/config.ts`
+(`SciFiBaseConfig` seul), `src/components/sf-icon/`, `src/components/sf-toast.ts`,
+`src/locales/`, `dev/workbench.html` (voir § Workbench), `README.md`,
+`CHANGELOG.md` et `docs/cards/bridge.md` (voir § README & CHANGELOG Updates).
 
-// ... (remaining file content remains unchanged)
+### Imports de `sci-fi-bridge.ts`
 
-├── ./sections/sf-bridge-alerts.js [EXTERNAL]
-├── ./sections/sf-bridge-access.js [EXTERNAL]
-├── ./sections/sf-bridge-automations.js [EXTERNAL]
-├── ./sections/sf-bridge-appliances.js [EXTERNAL]
-├── ./sections/sf-bridge-stove.js [EXTERNAL]
-├── ./sections/sf-bridge-vehicle.js [EXTERNAL]
-import { html, type TemplateResult } from 'lit';
+```ts
+import { html, nothing, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import { bridgeStyles } from './styles.js';
-import type { SciFiBridgeConfig } from '../../types/config.js';
+import type { SciFiBridgeConfig } from './config.js';
 
 import './sections/sf-bridge-crew.js';
 import './sections/sf-bridge-alerts.js';
@@ -489,11 +492,15 @@ import './sections/sf-bridge-appliances.js';
 import './sections/sf-bridge-stove.js';
 import './sections/sf-bridge-vehicle.js';
 import './sections/sf-bridge-actions.js';
+import '../../components/sf-toast.js';
 ```
 
 ### renderCard() — Structure
 
 ```html
+<!-- renderCard() rend la coquille ha-card, le titre optionnel, la grille, puis le toast -->
+<ha-card @bridge-toast="${this._onBridgeToast}">
+${config.title ? html`<div class="bridge-card-title">${config.title}</div>` : nothing}
 <div class="bridge-grid">
   <!-- CREW — toujours pleine largeur -->
   ${config.persons?.length ? html`
@@ -561,6 +568,8 @@ import './sections/sf-bridge-actions.js';
     ></sf-bridge-actions>
   ` : nothing}
 </div>
+<sf-toast></sf-toast>
+</ha-card>
 ```
 
 ### Responsive Layout — styles.ts
@@ -574,16 +583,35 @@ export const bridgeStyles = css`
     padding: var(--sf-spacing-md);
   }
 
-  /* ≥ 600px : 2 colonnes */
+  /* ≥ 600px : 2 colonnes Pinterest — COLUMN FLOW ([ADR-016](../../adr/ADR-016_bridge-column-flow.md),
+   * qui remplace la clause de layout d'ADR-013). display:block + columns:2 remplit
+   * la colonne gauche de haut en bas, puis la droite — pas un row-flow grid. */
   @container sf-card (min-width: 600px) {
     .bridge-grid {
-      grid-template-columns: 1fr 1fr;
+      display: block;
+      columns: 2;
+      column-gap: var(--sf-spacing-sm, 8px);
+      padding: var(--sf-spacing-md, 12px);
+      gap: unset;
+    }
+
+    .bridge-grid > * {
+      break-inside: avoid;
+      display: block;
+      margin-bottom: var(--sf-spacing-sm, 8px);
+      box-sizing: border-box;
+    }
+
+    /* Sections pleine largeur : elles couvrent les deux colonnes du flux */
+    .full-width {
+      column-span: all;
+      margin-top: var(--sf-spacing-sm, 8px);
     }
   }
 
-  /* CREW + ACTIONS : toujours pleine largeur */
+  /* CREW + ACTIONS : toujours pleine largeur ([ADR-014](../../adr/ADR-014_full-width-sections.md)) */
   .full-width {
-    grid-column: 1 / -1;
+    grid-column: 1 / -1;   /* portrait (mode grid) seulement — en paysage c'est column-span: all, ci-dessus */
   }
 
   /* Section card style */
@@ -1013,10 +1041,67 @@ private _setSliderValue(entity: string, value: number): void {
 ```
 
 
-## Editor
+### sf-bridge-actions
 
-**Tag :** `sci-fi-bridge-editor`
-**Extends :** `SciFiBaseEditor`
+**Tag :** `sf-bridge-actions`
+**Pleine largeur** — rendue dans `.full-width`, comme CREW.
+
+**Properties :**
+
+| Property | Type |
+|----------|------|
+| `config` | `BridgeActionsConfig` |
+| `hass` | `HomeAssistant` |
+
+**State interne :**
+
+| State | Type | Rôle |
+|-------|------|------|
+| `_loading` | `Set<string>` | les `entity_id` dont l'appel de service est en vol : le bouton est `disabled`, son icône passe à `mdi:loading` et porte `.spin` |
+
+**Derived values :**
+
+| Variable | Source |
+|----------|--------|
+| `sectionIcon` | `config.icon ?? 'mdi:lightning-bolt'` |
+| `icon` (par item) | `item.icon ?? 'mdi:play'` |
+| `label` (par item) | `item.name ?? item.entity.split('.').pop() ?? '—'` |
+| `color` (par item) | `item.color ?? 'var(--sf-primary, #00d2ff)'` |
+
+**Rendu vide :** `hass` absent ou `config.items` vide → la section ne rend rien.
+
+**Domaine d'entité → service** (`resolveActionService`) :
+
+| Domaine de l'entité | Service appelé |
+|---|---|
+| `input_button` | `input_button.press` |
+| `script` | `script.turn_on` |
+| `automation` | `automation.trigger` |
+| tout autre | `homeassistant.turn_on` |
+
+L'appel passe par `bridgeCall(...)` avec `{ entity_id: item.entity }` et le toast
+`📣 ${label}` ; son `after` retire l'entité de `_loading`, succès comme échec. Un
+clic sur un bouton déjà en vol est ignoré.
+
+**Render layout :**
+
+```
+.bridge-section
+├── .bridge-section-title
+│   └── sf-icon (config.icon ?? 'mdi:lightning-bolt') + msg('Actions')
+│
+└── .actions-grid
+    └── button.action-btn (un par config.items[], style --action-color: color, aria-label: label)
+        ├── sf-icon (loading ? 'mdi:loading' + .spin : item.icon ?? 'mdi:play', style --icon-color: color)
+        └── .action-label (label)
+```
+
+> ⚠ Cette section rend `<sf-icon>`, pas `<ha-icon>` — comme les sept autres
+> sections du module. Les blocs « Render layout » ci-dessus qui nomment encore
+> `ha-icon` décrivent une maquette que le code n'a jamais rendue : c'est l'objet
+> du bead `ha-sci-fi-ykf`, hors de ce lot.
+
+## Editor
 
 **Tag :** `sci-fi-bridge-editor`
 **Extends :** `SciFiBaseEditor`
@@ -1038,7 +1123,7 @@ L'éditeur est organisé en accordéons, un par section de la carte :
 | **Électroménager** | Icon section (text), liste cycles (entity+name+icon+running_states), liste consumables (entity+name+ok_when) |
 | **Poêle** | Icon section (text), 3 entités (pellet_quantity, pellet_stock, status), low_threshold (number) |
 | **Voiture** | Icon section (text), power_sensor (entity) |
-| **Call Kids** | entity (input_button), name (text), icon (text) |
+| **Actions** | liste items (entity + name + icon + color optionnels). ⚠ Pas de champ icône de section ici : `_renderActionsSection()` n'en rend aucun, `actions.icon` est YAML seulement |
 
 ### Composants SF utilisés (implémentation réelle — v1.3)
 
@@ -1294,7 +1379,7 @@ title="${msg('Équipage')}"
 | Path / Identifier | Format | Schema location | Consumers |
 |---|---|---|---|
 | `src/cards/bridge/sci-fi-bridge.ts` | Web Component | This spec § sci-fi-bridge Card | Lovelace via `sci-fi.ts` entry point |
-| `src/types/config.ts` (additions Bridge) | TS interfaces | This spec § TypeScript Interfaces | `src/cards/bridge/sci-fi-bridge.ts`, `src/cards/bridge/sci-fi-bridge-editor.ts` |
+| `src/cards/bridge/config.ts` | TS interfaces | This spec § TypeScript Interfaces | `src/cards/bridge/sci-fi-bridge.ts`, `src/cards/bridge/sci-fi-bridge-editor.ts` |
 
 ### Consumes
 
@@ -1320,7 +1405,10 @@ title="${msg('Équipage')}"
 | `input_boolean` | `turn_on` / `turn_off` | `{ entity_id }` | Toggle holidays |
 | `switch` | `turn_on` / `turn_off` | `{ entity_id }` | Toggle WiFi guest, smoke switch |
 | `input_number` | `set_value` | `{ entity_id, value }` | Slider tempo |
-| `input_button` | `press` | `{ entity_id }` | Call Kids |
+| `input_button` | `press` | `{ entity_id }` | Actions — entité `input_button.*` |
+| `script` | `turn_on` | `{ entity_id }` | Actions — entité `script.*` |
+| `automation` | `trigger` | `{ entity_id }` | Actions — entité `automation.*` |
+| `homeassistant` | `turn_on` | `{ entity_id }` | Actions — repli pour tout autre domaine (`resolveActionService`) |
 
 ### Tracked Concepts
 
@@ -1391,7 +1479,8 @@ title="${msg('Équipage')}"
 | IT-BRIDGE-I-04 | Integration | Breakpoint responsive : 1 col < 600px | container width 390px | `.bridge-grid` a `grid-template-columns: 1fr` |
 | IT-BRIDGE-I-05 | Integration | Breakpoint responsive : flux colonne ≥ 600px ([ADR-016](../../adr/ADR-016_bridge-column-flow.md)) | `@container sf-card (min-width: 600px)` | `.bridge-grid` passe en `display: block; columns: 2`, enfants en `break-inside: avoid` |
 | IT-BRIDGE-I-06 | Integration | Scénario 4 (Disconnected) — aucune section ne crash | Scénario unavailable | Carte rendue sans erreur JS, tous les `--` affichés |
-| IT-BRIDGE-I-07 | Integration | Scénario 5 (Minimal) — seuls CREW + CALL KIDS visibles | config partielle | `querySelector('sf-bridge-alerts')` is null, CREW et CALL KIDS présents |
+| IT-BRIDGE-I-07 | Integration | Scénario 5 (Minimal) — seuls CREW + ACTIONS visibles | config partielle | `querySelector('sf-bridge-alerts')` is null, CREW et ACTIONS présents |
+| IT-BRIDGE-I-08 | Integration | L'éditeur émet `config-changed` à chaque mise à jour de champ | update d'un champ de l'éditeur | un event `config-changed` porte la config modifiée (`tests/cards/bridge/sci-fi-bridge-editor.test.ts`) |
 
 ---
 
@@ -1409,96 +1498,25 @@ title="${msg('Équipage')}"
 | Config invalide (`setConfig`) | Validation dans `setConfig()` | Afficher `sf-error-card` avec message | Carte en erreur visible | `console.error` |
 
 > [!IMPORTANT]
-> **Behavioral claim POC gate :**
-> - `binary_sensor.rinse_aid` : ASSUMED (Medium) — comportement `on=missing / off=ok` à confirmer dans workbench avec données réelles. Config `ok_when` prévoit les deux sens.
-> - `sensor.clou_pellet_quantity` : ASSUMED (Low) — ratio 0.0–1.0 basé sur la carte Stove existante qui l'utilise déjà avec `pellet_quantity_threshold: 0.3`.
+> **Behavioral claims — tranchées (2026-11-01, lot fix bridge-md-structure).**
+> Aucune des deux ne reste ASSUMED : le livré ne dépend d'aucun des deux sens.
+> - `binary_sensor.rinse_aid` — **non load-bearing.** Le sens n'est pas câblé : la
+>   carte lit `ok_when` par consommable (`off` ou `on`) et TC-BRIDGE-U-22/23
+>   épinglent les deux sens. Si le capteur réel inverse la polarité, c'est une
+>   valeur de configuration qui change, pas le code ni cette spec.
+> - `sensor.clou_pellet_quantity` — **ratio 0.0–1.0, confirmé par l'usage.** La
+>   carte Stove livrée le consomme ainsi avec `pellet_quantity_threshold: 0.3`, et
+>   TC-BRIDGE-U-24 l'épingle à travers les deux jauges partagées.
 
 ---
 
 ## README & CHANGELOG Updates
 
-> [!IMPORTANT]
-> Ces deux fichiers **DOIVENT** être mis à jour lors du HARDEN. Ils font partie de la définition de "done" (F-BR-16).
-
-### README.md — À modifier
-
-**Fichier :** [`README.md`](../../../README.md#blueprint-coverage)
-
-#### 1. Ajouter la carte dans la table `## 🧩 Available cards`
-
-Après la ligne `| 💧 **Water Management** | ... |`, ajouter :
-
-```markdown
-| 🛠️ **Bridge Overview** | Dashboard maison — équipage, alertes, accès, automatisations, électroménager, poêle, voiture | [→ docs](./docs/cards/bridge.md#installation) |
-```
-
-#### 2. Badges tests + coverage — ✅ Complété (2026-06-02)
-
-> Badges mis à jour dans `README.md` : `tests-953%20passing` et `coverage-87%25`.
-
-### CHANGELOG.md — À modifier
-
-**Fichier :** [`CHANGELOG.md`](../../../CHANGELOG.md#blueprint-coverage)
-
-Ajouter une section v1.3 en tête du CHANGELOG (après l'en-tête, avant la section v1.2 ou v1.0 existante) :
-
-```markdown
-## v1.3 — 2026-06-02 *(Bridge Overview)*
-
-### 🏠 Bridge Overview — nouvelle carte
-
-- **`sci-fi-bridge`** : carte dashboard maison modulaire. 8 sections indépendantes (Crew, Alertes, Accès, Automatisations, Électroménager, Poêle, Voiture, Call Kids).
-- **Design responsive** : 1 colonne en portrait, 2 colonnes en paysage via container queries.
-- **Sections optionnelles** : toute section absente du YAML est simplement masquée — zéro erreur.
-- **Icônes configurables** : chaque section et chaque entrée accepte un champ `icon` via `<sf-editor-dropdown-icon>` (searchable MDI + sci-fi).
-- **i18n complète** : 20 nouvelles clés `msg()` en FR/EN.
-- **Éditeur visuel** : accordéons par section avec `<sf-editor-dropdown-entity>`, `<sf-editor-input>`, `<sf-editor-dropdown-icon>`, `<sf-editor-dropdown>`, `<sf-editor-accordion>`.
-- **Workbench** : 5 scénarios mockés (Normal, Alerte, Absent, Déconnecté, Minimal). Le workbench passe `scenarioData` à l'éditeur pour maintenir les entités après chaque modification de config.
-```
-
-### docs/cards/bridge.md — ✅ Créé (2026-06-02)
-
-**Fichier :** `docs/cards/bridge.md` (créé le 2026-06-02)
-
-La page de documentation utilisateur (référencée depuis README). Elle doit contenir :
-
-```markdown
-# 🏠 Bridge Overview (`sci-fi-bridge`)
-
-Carte dashboard maison. Affiche le statut global de la maison en temps réel.
-
-## Configuration
-
-### Exemple minimal
-
-```yaml
-type: custom:sci-fi-bridge
-persons:
-  - entity: person.adrien
-```
-
-### Exemple complet
-
-[Voir la spec → § YAML Configuration Schema](../../docs/specs/cards/bridge.md#blueprint-coverage)
-
-## Sections disponibles
-
-| Section | Clé YAML | Optionnelle | Description |
-|---------|-----------|-------------|-------------|
-| Crew | `persons` | ✔ | Présence de l'équipage avec zones HA |
-| Alertes | `alerts` | ✔ | Détecteurs fumée, toggles, occupancy |
-| Accès | `access` | ✔ | Portes, portails, verrous |
-| Automatisations | `automations` | ✔ | Toggles + slider tempo |
-| Électroménager | `appliances` | ✔ | Cycles en cours + consommables |
-| Poêle | `stove` | ✔ | Pellets + état poêle |
-| Voiture | `vehicle` | ✔ | Puissance de charge EV |
-| Actions | `actions` | ✔ | Panneau de boutons d'actions configurables |
-
-## Icônes
-
-Chaque section et chaque entrée accepte un champ `icon` optionnel (string MDI, ex: `mdi:garage`).
-Si absent, l'icône par défaut de la section est utilisée.
-```
+Honoré le 2026-06-02 (F-BR-16) : `README.md`, `CHANGELOG.md` et
+`docs/cards/bridge.md` portent la carte. La prescription elle-même — ce qu'il
+fallait écrire dans chacun des trois — est archivée dans
+[spec-history.md](../bridge-md-structure/spec-history.md) : une consigne de
+HARDEN accomplie n'est plus un contrat à confronter au code.
 
 ---
 
@@ -1510,7 +1528,7 @@ Si absent, l'icône par défaut de la section est utilisée.
 | SciFiBaseCard | [03_base_classes.md](../03_base_classes.md#blueprint-coverage) |
 | SciFiBaseEditor | [10_card_editors.md](../10_card_editors.md#blueprint-coverage) |
 | Common styles tokens | [src/styles/common.ts](../../../src/styles/common.ts#L1) |
-| config.ts (à modifier) | [src/types/config.ts](../../../src/types/config.ts#L1) |
+| Interfaces de la carte | [src/cards/bridge/config.ts](../../../src/cards/bridge/config.ts#L1) |
 | Stove spec (pattern styles) | [stove.md](./stove.md#blueprint-coverage) |
 | Vehicle spec (pattern services) | [vehicle.md](./vehicle.md#blueprint-coverage) |
 | Water Management spec (pattern structure) | [water.md](./water.md#blueprint-coverage) |
@@ -1522,7 +1540,12 @@ Si absent, l'icône par défaut de la section est utilisée.
 ### `this.config`
 | Field | Type | Description |
 |---|---|---|
-| entity | string | The main entity. |
+| type | `'custom:sci-fi-bridge'` | Readonly card type discriminator (`SciFiBaseConfig`). |
+| title | string | Optional card title. |
+| header_message | string | Hérité de `SciFiBaseConfig`, readonly, optionnel. |
+| tap_action | object | Hérité de `SciFiBaseConfig` — `ActionConfig`, readonly, optionnel. |
+| hold_action | object | Hérité de `SciFiBaseConfig` — `ActionConfig`, readonly, optionnel. |
+| double_tap_action | object | Hérité de `SciFiBaseConfig` — `ActionConfig`, readonly, optionnel. |
 | alerts | object | Alerts configuration. |
 | persons | array | Persons configuration. |
 | access | object | Access configuration. |
@@ -1538,15 +1561,3 @@ Si absent, l'icône par défaut de la section est utilisée.
 | 1 | The user has the necessary entities created in Home Assistant. | Low | Validated via HA entity registry — graceful fallback if entity missing |
 | 2 | Lovelace custom cards are enabled and correctly registered. | Medium | Verified via `customElements.get` check in `getCardSize()` |
 | 3 | The SciFiBaseCard provides all necessary styling variables. | Low | Verified via `grep -r sciFiCommonStyles src/` — imported in all card classes |
-
-## Test Case Specifications
-| ID | Type | Description |
-|---|---|---|
-| TC-101 | Unit | The bridge card renders correctly with normal scenario. |
-| TC-102 | Unit | The bridge card renders alerts correctly when smoke is detected. |
-| TC-103 | Unit | The bridge card renders correctly in disconnected scenario. |
-| IT-101 | Integration | The bridge card receives updates from Home Assistant entities. |
-| IT-102 | Integration | Editor dispatches config-changed event on field update. |
-| IT-103 | Integration | All registered sections render with full hass mock state. |
-| TC-104 | Unit | Section absent when optional config key is missing (`config.stove` undefined → `sf-bridge-stove` not rendered). |
-| TC-105 | Unit | `getRelevantEntities()` deduplicates entries when same entity appears in multiple sections. |

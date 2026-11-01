@@ -131,18 +131,31 @@ describe('Blueprint Coverage — la colonne Covers (O1)', () => {
   });
 
   it("O1: une absence de couverture est déclarée, jamais laissée implicite", () => {
+    // La marque ⬜ décide, PAS la présence d'un id quelque part dans la cellule :
+    // une cellule peut mentionner un id en prose sans le revendiquer, et un
+    // mutant qui remplaçait « ⬜ aucun cas de test — … » par « aucun cas de
+    // test, … » a survécu à la première version de ce cas, qui lisait les ids.
     let marquees = 0;
+    let couvertes = 0;
     const muettes: string[] = [];
     for (const f of WITH_TABLE) {
       for (const cells of rows(blueprint(read(f))!)) {
         const cell = cells[3] ?? '';
-        if ((cell.match(/\b(?:TC|IT)-[A-Z0-9-]*\d+\b/g) ?? []).length > 0) continue;
-        marquees += 1;
-        // Pas d'id : la cellule doit porter la marque ⬜ ET une raison après un tiret cadratin.
-        if (!cell.includes('⬜') || !/—/.test(cell)) muettes.push(`${f} ${cells[0]}: ${cell}`);
+        const ids = (cell.match(/\b(?:TC|IT)-[A-Z0-9-]*\d+\b/g) ?? []).length;
+        const delegue = /\]\(\.{1,2}\//.test(cell);
+        if (cell.includes('⬜')) {
+          marquees += 1;
+          // Une absence déclarée doit porter sa raison, après un tiret cadratin.
+          if (!/—/.test(cell)) muettes.push(`${f} ${cells[0]}: raison absente — ${cell}`);
+        } else if (ids === 0 && !delegue) {
+          muettes.push(`${f} ${cells[0]}: ni id, ni renvoi, ni marque ⬜ — ${cell}`);
+        } else {
+          couvertes += 1;
+        }
       }
     }
     expect(marquees).toBeGreaterThanOrEqual(20); // témoin positif
+    expect(couvertes).toBeGreaterThanOrEqual(100); // témoin positif
     expect(muettes).toEqual([]);
   });
 });

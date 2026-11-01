@@ -12,7 +12,7 @@
 |---|---|---|---|
 | F1 | Language Switcher (EN/FR buttons) | § "1. Language Switcher (i18n)" | TC-903, IT-901 |
 | F2 | View/Edit Mode Toggle | § "2. Work Mode Selector" | TC-905, IT-906 |
-| F3 | Left Panel Editor Layout (Tabs) | § "3. Editor Panel Workspace" | ⬜ aucun cas de test — la disposition des onglets n'est pinée par aucun cas ; la sélection d'onglet n'est couverte qu'en tant que déclencheur de IT-905 |
+| F3 | Left Panel Editor Layout (Tabs) | § "3. Editor Panel Workspace" | IT-905 — la sélection d'onglet y est exercée comme déclencheur du repli ; la disposition elle-même n'est pinée par aucun cas |
 | F4 | YAML Code Editor & Validation | § "4. YAML Code Editor & js-yaml Integration" | TC-901, TC-902, IT-902, IT-903 |
 | F5 | UI Graphical Editor Dynamic Loader | § "5. Dynamic UI Graphical Editor & Fallback" | TC-904, IT-904, IT-905 |
 | F6 | Right Panel Card Live Preview | § "6. Card Preview Workspace" | TC-905, IT-902 |

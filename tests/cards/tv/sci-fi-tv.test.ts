@@ -339,9 +339,9 @@ describe('sci-fi-tv', () => {
     expect(sourceHexas[1]!.getAttribute('data-active')).to.equal('false');
   });
 
-  // ── TC-720: TV unavailable renders offline banner ──────────────────────────
+  // ── TC-TV-U-720: TV unavailable renders offline banner ──────────────────────────
 
-  it('TC-720: renders offline-banner when TV state is unavailable', async () => {
+  it('TC-TV-U-720: renders offline-banner when TV state is unavailable', async () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-tv',
@@ -361,9 +361,9 @@ describe('sci-fi-tv', () => {
     expect(banner).to.exist;
   });
 
-  // ── TC-721: TV entity missing renders offline banner ─────────────────────
+  // ── TC-TV-U-721: TV entity missing renders offline banner ─────────────────────
 
-  it('TC-721: renders offline banner when TV entity is missing from states', async () => {
+  it('TC-TV-U-721: renders offline banner when TV entity is missing from states', async () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-tv',
@@ -379,9 +379,9 @@ describe('sci-fi-tv', () => {
     expect(banner).to.exist;
   });
 
-  // ── TC-722: _togglePower turn_off when on ──────────────────────────────────
+  // ── TC-TV-U-722: _togglePower turn_off when on ──────────────────────────────────
 
-  it('TC-722: _togglePower calls turn_off when TV is on', async () => {
+  it('TC-TV-U-722: _togglePower calls turn_off when TV is on', async () => {
     const callServiceMock = vi.fn().mockResolvedValue({} as any);
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
@@ -406,9 +406,9 @@ describe('sci-fi-tv', () => {
     expect(callServiceMock).toHaveBeenCalledWith('media_player', 'turn_off', { entity_id: 'media_player.bravia_4k_vh22' });
   });
 
-  // ── TC-723: _togglePower turn_on when off ─────────────────────────────────
+  // ── TC-TV-U-723: _togglePower turn_on when off ─────────────────────────────────
 
-  it('TC-723: _togglePower calls turn_on when TV is off', async () => {
+  it('TC-TV-U-723: _togglePower calls turn_on when TV is off', async () => {
     const callServiceMock = vi.fn().mockResolvedValue({} as any);
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
@@ -433,9 +433,9 @@ describe('sci-fi-tv', () => {
     expect(callServiceMock).toHaveBeenCalledWith('media_player', 'turn_on', { entity_id: 'media_player.bravia_4k_vh22' });
   });
 
-  // ── TC-724: _getPlayingStatus covers all branches ─────────────────────────
+  // ── TC-TV-U-724: _getPlayingStatus covers all branches ─────────────────────────
 
-  it('TC-724: _getPlayingStatus returns a truthy string when unavailable', () => {
+  it('TC-TV-U-724: _getPlayingStatus returns a truthy string when unavailable', () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({ type: 'custom:sci-fi-tv', entity: 'media_player.bravia_4k_vh22' });
     const result = (el as any)._getPlayingStatus(true, false, undefined, undefined, undefined, undefined);
@@ -443,7 +443,7 @@ describe('sci-fi-tv', () => {
     expect(typeof result).toBe('string');
   });
 
-  it('TC-724b: _getPlayingStatus returns a standby string when off', () => {
+  it('TC-TV-U-740: _getPlayingStatus returns a standby string when off', () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({ type: 'custom:sci-fi-tv', entity: 'media_player.bravia_4k_vh22' });
     const result = (el as any)._getPlayingStatus(false, true, undefined, undefined, undefined, undefined);
@@ -451,7 +451,7 @@ describe('sci-fi-tv', () => {
     expect(typeof result).toBe('string');
   });
 
-  it('TC-724c: _getPlayingStatus returns idle string when no metadata', () => {
+  it('TC-TV-U-741: _getPlayingStatus returns idle string when no metadata', () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({ type: 'custom:sci-fi-tv', entity: 'media_player.bravia_4k_vh22' });
     const result = (el as any)._getPlayingStatus(false, false, undefined, undefined, undefined, undefined);
@@ -459,16 +459,16 @@ describe('sci-fi-tv', () => {
     expect(typeof result).toBe('string');
   });
 
-  it('TC-724d: _getPlayingStatus returns sourceLabel when mediaTitle and appName are absent', () => {
+  it('TC-TV-U-742: _getPlayingStatus returns sourceLabel when mediaTitle and appName are absent', () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({ type: 'custom:sci-fi-tv', entity: 'media_player.bravia_4k_vh22' });
     const result = (el as any)._getPlayingStatus(false, false, undefined, undefined, 'HDMI 2', undefined);
     expect(result).to.equal('HDMI 2');
   });
 
-  // ── TC-725: _getTransmissionStatus branches ───────────────────────────────
+  // ── TC-TV-U-725: _getTransmissionStatus branches ───────────────────────────────
 
-  it('TC-725: _getTransmissionStatus returns a truthy string when unavailable', () => {
+  it('TC-TV-U-725: _getTransmissionStatus returns a truthy string when unavailable', () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({ type: 'custom:sci-fi-tv', entity: 'media_player.bravia_4k_vh22' });
     const result = (el as any)._getTransmissionStatus(true, false);
@@ -476,7 +476,7 @@ describe('sci-fi-tv', () => {
     expect(typeof result).toBe('string');
   });
 
-  it('TC-725b: _getTransmissionStatus returns a truthy string when on', () => {
+  it('TC-TV-U-743: _getTransmissionStatus returns a truthy string when on', () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({ type: 'custom:sci-fi-tv', entity: 'media_player.bravia_4k_vh22' });
     const result = (el as any)._getTransmissionStatus(false, false);
@@ -484,7 +484,7 @@ describe('sci-fi-tv', () => {
     expect(typeof result).toBe('string');
   });
 
-  it('TC-725c: _getTransmissionStatus returns a truthy string when off', () => {
+  it('TC-TV-U-744: _getTransmissionStatus returns a truthy string when off', () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({ type: 'custom:sci-fi-tv', entity: 'media_player.bravia_4k_vh22' });
     const result = (el as any)._getTransmissionStatus(false, true);
@@ -492,9 +492,9 @@ describe('sci-fi-tv', () => {
     expect(typeof result).toBe('string');
   });
 
-  // ── TC-726: _getPowerButtonTitle ──────────────────────────────────────────
+  // ── TC-TV-U-726: _getPowerButtonTitle ──────────────────────────────────────────
 
-  it('TC-726: _getPowerButtonTitle returns a truthy string when on', () => {
+  it('TC-TV-U-726: _getPowerButtonTitle returns a truthy string when on', () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({ type: 'custom:sci-fi-tv', entity: 'media_player.bravia_4k_vh22' });
     const result = (el as any)._getPowerButtonTitle(true);
@@ -502,7 +502,7 @@ describe('sci-fi-tv', () => {
     expect(typeof result).toBe('string');
   });
 
-  it('TC-726b: _getPowerButtonTitle returns a truthy string when off', () => {
+  it('TC-TV-U-745: _getPowerButtonTitle returns a truthy string when off', () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({ type: 'custom:sci-fi-tv', entity: 'media_player.bravia_4k_vh22' });
     const result = (el as any)._getPowerButtonTitle(false);
@@ -510,9 +510,9 @@ describe('sci-fi-tv', () => {
     expect(typeof result).toBe('string');
   });
 
-  // ── TC-727: source hexa click disabled when TV off ────────────────────────
+  // ── TC-TV-U-727: source hexa click disabled when TV off ────────────────────────
 
-  it('TC-727: source hexa click does nothing when TV is off', async () => {
+  it('TC-TV-U-727: source hexa click does nothing when TV is off', async () => {
     const callServiceMock = vi.fn().mockResolvedValue({} as any);
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
@@ -539,9 +539,9 @@ describe('sci-fi-tv', () => {
     expect(callServiceMock).not.toHaveBeenCalled();
   });
 
-  // ── TC-728: _selectSource string → select_source ─────────────────────────
+  // ── TC-TV-U-728: _selectSource string → select_source ─────────────────────────
 
-  it('TC-728: _selectSource with string source calls media_player.select_source', async () => {
+  it('TC-TV-U-728: _selectSource with string source calls media_player.select_source', async () => {
     const callServiceMock = vi.fn().mockResolvedValue({} as any);
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
@@ -570,9 +570,9 @@ describe('sci-fi-tv', () => {
     });
   });
 
-  // ── TC-729: _selectSource string → uses volume_entity when set ────────────
+  // ── TC-TV-U-729: _selectSource string → uses volume_entity when set ────────────
 
-  it('TC-729: _selectSource with string source uses volume_entity when configured', async () => {
+  it('TC-TV-U-729: _selectSource with string source uses volume_entity when configured', async () => {
     const callServiceMock = vi.fn().mockResolvedValue({} as any);
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
@@ -602,9 +602,9 @@ describe('sci-fi-tv', () => {
     });
   });
 
-  // ── TC-730: _selectSource object call-service path ────────────────────────
+  // ── TC-TV-U-730: _selectSource object call-service path ────────────────────────
 
-  it('TC-730: _selectSource with object action call-service calls the right service', async () => {
+  it('TC-TV-U-730: _selectSource with object action call-service calls the right service', async () => {
     const callServiceMock = vi.fn().mockResolvedValue({} as any);
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
@@ -637,9 +637,9 @@ describe('sci-fi-tv', () => {
     });
   });
 
-  // ── TC-731: _selectSource object perform-action path ──────────────────────
+  // ── TC-TV-U-731: _selectSource object perform-action path ──────────────────────
 
-  it('TC-731: _selectSource with object action perform-action calls the right service', async () => {
+  it('TC-TV-U-731: _selectSource with object action perform-action calls the right service', async () => {
     const callServiceMock = vi.fn().mockResolvedValue({} as any);
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
@@ -669,9 +669,9 @@ describe('sci-fi-tv', () => {
     expect(callServiceMock).toHaveBeenCalledWith('script', 'start_netflix', { room: 'living' });
   });
 
-  // ── TC-732: _selectSource object with navigate action ─────────────────────
+  // ── TC-TV-U-732: _selectSource object with navigate action ─────────────────────
 
-  it('TC-732: _selectSource with object navigate action fires hass-action event', async () => {
+  it('TC-TV-U-732: _selectSource with object navigate action fires hass-action event', async () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-tv',
@@ -701,9 +701,9 @@ describe('sci-fi-tv', () => {
     expect(actionSpy).toHaveBeenCalledOnce();
   });
 
-  // ── TC-733: disconnectedCallback resets drag state ────────────────────────
+  // ── TC-TV-U-733: disconnectedCallback resets drag state ────────────────────────
 
-  it('TC-733: disconnectedCallback resets drag state', () => {
+  it('TC-TV-U-733: disconnectedCallback resets drag state', () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({ type: 'custom:sci-fi-tv', entity: 'media_player.bravia_4k_vh22' });
     // Simulate drag state
@@ -714,9 +714,9 @@ describe('sci-fi-tv', () => {
     expect((el as any)._activePointerId).to.be.null;
   });
 
-  // ── TC-734: _onPointerDown does nothing when TV is off ────────────────────
+  // ── TC-TV-U-734: _onPointerDown does nothing when TV is off ────────────────────
 
-  it('TC-734: _onPointerDown does nothing when TV state is off', async () => {
+  it('TC-TV-U-734: _onPointerDown does nothing when TV state is off', async () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({ type: 'custom:sci-fi-tv', entity: 'media_player.bravia_4k_vh22' });
     el.hass = makeMockHass({
@@ -731,9 +731,9 @@ describe('sci-fi-tv', () => {
     expect((el as any)._isDragging).to.be.false;
   });
 
-  // ── TC-735: _onPointerMove ignores wrong pointerId ────────────────────────
+  // ── TC-TV-U-735: _onPointerMove ignores wrong pointerId ────────────────────────
 
-  it('TC-735: _onPointerMove does nothing when pointerId does not match', async () => {
+  it('TC-TV-U-735: _onPointerMove does nothing when pointerId does not match', async () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({ type: 'custom:sci-fi-tv', entity: 'media_player.bravia_4k_vh22' });
     el.hass = makeMockHass({
@@ -752,9 +752,9 @@ describe('sci-fi-tv', () => {
     expect((el as any)._localVolume).to.equal(initialVolume);
   });
 
-  // ── TC-736: _onPointerUp resets dragging state ────────────────────────────
+  // ── TC-TV-U-736: _onPointerUp resets dragging state ────────────────────────────
 
-  it('TC-736: _onPointerUp resets drag state when pointerId matches', async () => {
+  it('TC-TV-U-736: _onPointerUp resets drag state when pointerId matches', async () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({ type: 'custom:sci-fi-tv', entity: 'media_player.bravia_4k_vh22' });
     el.hass = makeMockHass({
@@ -775,9 +775,9 @@ describe('sci-fi-tv', () => {
     expect((el as any)._localVolume).to.be.null;
   });
 
-  // ── TC-737: getRelevantEntities with volume_entity ────────────────────────
+  // ── TC-TV-U-737: getRelevantEntities with volume_entity ────────────────────────
 
-  it('TC-737: getRelevantEntities includes volume_entity when set', () => {
+  it('TC-TV-U-737: getRelevantEntities includes volume_entity when set', () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-tv',
@@ -789,9 +789,9 @@ describe('sci-fi-tv', () => {
     expect(ids).to.include('media_player.sony_vol');
   });
 
-  // ── TC-738: volume_entity used for volume display ─────────────────────────
+  // ── TC-TV-U-738: volume_entity used for volume display ─────────────────────────
 
-  it('TC-738: volume is read from volume_entity when present', async () => {
+  it('TC-TV-U-738: volume is read from volume_entity when present', async () => {
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-tv',

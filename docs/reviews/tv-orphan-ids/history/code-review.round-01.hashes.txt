@@ -1,0 +1,9 @@
+7c1e36e30f72e0852a32d6937ef66300a2c6c134 docs/specs/cards/tv.md
+1d532e74ace0f7940e18ccf494dad8bdc13a567a tests/cards/tv/sci-fi-tv-editor.test.ts
+fd27d43358d863d01e787af3bbe90e30d63c846a tests/cards/tv/sci-fi-tv.test.ts
+0c5747b48452bdd8537bbf410dd247c7430f9530 docs/adversarial-review/history/tv-orphan-ids.round-01.md
+0c5747b48452bdd8537bbf410dd247c7430f9530 docs/adversarial-review/tv-orphan-ids.md
+9e5c73e11740a962b91e1bc14a5e454c770a1632 docs/specs/tv-orphan-ids/spec.md
+96d2de920480f94100f703893824da7d291aa2d2 docs/summaries/tv-orphan-ids/BUILD.md
+5758fff62f122dbcfba90a96b05371dd9c7f20e6 docs/summaries/tv-orphan-ids/SPEC.md
+920dfd43233d8ef91b01a408a765acd2b81a07de tests/cards/tv/tv-ids-declared.test.ts

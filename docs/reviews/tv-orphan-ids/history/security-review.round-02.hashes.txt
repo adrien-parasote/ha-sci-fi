@@ -1,0 +1,17 @@
+1d64930a206ef597ad0f4a50c3adf84e97461dd0 .verifyignore
+10f9baa0eeb6014c13f282690ce354e70d217bcc dist/sci-fi.min.js
+7c1e36e30f72e0852a32d6937ef66300a2c6c134 docs/specs/cards/tv.md
+1d532e74ace0f7940e18ccf494dad8bdc13a567a tests/cards/tv/sci-fi-tv-editor.test.ts
+fd27d43358d863d01e787af3bbe90e30d63c846a tests/cards/tv/sci-fi-tv.test.ts
+0c5747b48452bdd8537bbf410dd247c7430f9530 docs/adversarial-review/history/tv-orphan-ids.round-01.md
+0c5747b48452bdd8537bbf410dd247c7430f9530 docs/adversarial-review/tv-orphan-ids.md
+324c07abb3662729ef609e2cbdc25cb0f9287c96 docs/reviews/tv-orphan-ids/code-review.md
+6c74bdda02427fe8f3b4d678a7743b243d0ad4e3 docs/reviews/tv-orphan-ids/history/code-review.round-01.hashes.txt
+324c07abb3662729ef609e2cbdc25cb0f9287c96 docs/reviews/tv-orphan-ids/history/code-review.round-01.md
+6c74bdda02427fe8f3b4d678a7743b243d0ad4e3 docs/reviews/tv-orphan-ids/history/security-review.round-01.hashes.txt
+e454b5cfbc2e93d6bfb4c959e8c63698bdc8b9c1 docs/reviews/tv-orphan-ids/history/security-review.round-01.md
+e454b5cfbc2e93d6bfb4c959e8c63698bdc8b9c1 docs/reviews/tv-orphan-ids/security-review.md
+d212e9eb387151f680c989b6fb3c3e63adcaec1d docs/specs/tv-orphan-ids/spec.md
+96d2de920480f94100f703893824da7d291aa2d2 docs/summaries/tv-orphan-ids/BUILD.md
+5758fff62f122dbcfba90a96b05371dd9c7f20e6 docs/summaries/tv-orphan-ids/SPEC.md
+f874dd46d6ce50f6db203b80b7f62c69538597bc tests/cards/tv/tv-ids-declared.test.ts

@@ -20,3 +20,4 @@ P6:src/cards/bridge/sci-fi-bridge-editor.ts:Returns empty object
 
 # P8 Spec Conformance global false positives (e.g. templates, standard libs)
 P8:*:*
+P7:src/sci-fi.ts:architectural_violation  # Pre-existing accepted god file (bundle entry registering 11 cards, documented in .sentrux/rules.toml); this lot does not touch src/

@@ -2,8 +2,13 @@
  * <sf-icon> — Sci-fi icon component
  *
  * Renders icons from:
- * 1. window.customIcons['sf'] — for custom sf: prefixed icons
- * 2. HA native MDI registry (via icon-cache.ts) — for mdi: icons
+ * 1. the module-local icon sets — static paths (sf-icons.ts) and animated
+ *    templates (sf-weather-icons.ts) — for sci: / sf: names
+ * 2. string paths found in window.customIcons[prefix] (never a foreign template)
+ * 3. HA native MDI registry (via icon-cache.ts) — for mdi: icons
+ *
+ * Light DOM on purpose (createRenderRoot, declared exception to AP#3 in Spec 04).
+ * <sci-icon> is a subclass: tag plus the iconClass / logPrefix hooks only.
  *
  * Anti-patterns avoided (CRITICAL-01):
  * - Never fetches from unpkg/jsdelivr CDN
@@ -15,19 +20,49 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { resolveIcon, getSyncCache, ICON_NOT_FOUND, type HassIconConnection } from './icon-cache.js';
 import CUSTOM_ICONS from './data/sf-icons.js';
 import WEATHER_ICONS from './data/sf-weather-icons.js';
+import { ownValue } from './icon-names.js';
 
 /** Global augmentation for window.customIcons */
 declare global {
   interface Window {
-    customIcons?: Record<string, Record<string, string | TemplateResult>>;
+    // Values are icon-name -> path strings; sf-iconset.ts also hangs non-enumerable helper functions on .sci.
+    customIcons?: Record<string, Record<string, unknown>>;
   }
 }
 
-// Register custom icons defensively on startup
-if (typeof window !== 'undefined') {
+/**
+ * Seeds the static icon paths into window.customIcons.sf / .sci (idempotent).
+ * Animated weather templates are NOT put there: the page-global object is
+ * writable by anyone, so nothing in it is ever rendered as a template.
+ */
+function ensureCustomIcons(): void {
+  if (typeof window === 'undefined') return;
   window.customIcons = window.customIcons || {};
-  window.customIcons.sf = { ...window.customIcons.sf, ...CUSTOM_ICONS, ...WEATHER_ICONS };
-  window.customIcons.sci = { ...window.customIcons.sci, ...CUSTOM_ICONS, ...WEATHER_ICONS };
+  for (const prefix of ['sf', 'sci']) {
+    // Filled in place: sf-iconset.ts hangs non-enumerable helpers (getIcon, getIconList)
+    // on this very object, and replacing it would drop them whatever the import order.
+    const map = (window.customIcons[prefix] ??= {});
+    if (ownValue(map, 'stove') === undefined) Object.assign(map, CUSTOM_ICONS);
+  }
+}
+
+ensureCustomIcons();
+
+/**
+ * Built-in names first (sci: / sf: only), each by OWN key: a static path, then
+ * a weather template. Then a string path under window.customIcons[prefix], by
+ * own key. Any other foreign value is ignored.
+ */
+function lookupCustomIcon(prefix: string, name: string): string | TemplateResult | undefined {
+  if (prefix === 'sci' || prefix === 'sf') {
+    const builtIn = ownValue<string | TemplateResult>(CUSTOM_ICONS, name) ?? ownValue<TemplateResult>(WEATHER_ICONS, name);
+    if (builtIn) return builtIn;
+  }
+  // The prefix is looked up by own key too: `constructor:name` must not reach Object.name.
+  const foreignMap = window.customIcons ? ownValue<unknown>(window.customIcons, prefix) : undefined;
+  if (!foreignMap || typeof foreignMap !== 'object') return undefined;
+  const foreign = ownValue<unknown>(foreignMap as Record<string, unknown>, name);
+  return typeof foreign === 'string' && foreign ? foreign : undefined;
 }
 
 // Fallback path for mdi:help-circle when icon resolution fails
@@ -48,6 +83,16 @@ const isLiveHA = (): boolean => {
 
 @customElement('sf-icon')
 export class SfIcon extends LitElement {
+  /** CSS class of the rendered svg; the loading modifier is `<iconClass>--loading`. */
+  protected get iconClass(): string {
+    return 'sf-icon';
+  }
+
+  /** Prefix of every console message of this element. */
+  protected get logPrefix(): string {
+    return '[sf-icon]';
+  }
+
   /** Icon string in format "prefix:name" e.g. "mdi:home" or "sf:radiator" */
   @property({ type: String })
   icon = '';
@@ -75,33 +120,14 @@ export class SfIcon extends LitElement {
       }
 
       // Fast-path: synchronous lookup for custom icons (sci:/sf:) — avoids blank-flash
-      this._ensureCustomIcons();
-      if (prefix) {
-        const iconMap = (window.customIcons as Record<string, Record<string, unknown>> | undefined)?.[prefix];
-        const syncPath = iconMap?.[name];
-        if (syncPath && typeof syncPath === 'string') {
-          this._pathData = syncPath;
-          return;
-        }
-        if (syncPath && typeof syncPath === 'object') {
-          this._pathData = syncPath as import('lit').TemplateResult;
-          return;
-        }
+      ensureCustomIcons();
+      const syncIcon = prefix ? lookupCustomIcon(prefix, name) : undefined;
+      if (syncIcon) {
+        this._pathData = syncIcon;
+        return;
       }
 
       void this._resolveIcon();
-    }
-  }
-
-  /** Ensures our icon data is in window.customIcons (idempotent). */
-  private _ensureCustomIcons(): void {
-    if (typeof window === 'undefined') return;
-    window.customIcons = window.customIcons || {};
-    if (!window.customIcons.sf || !(window.customIcons.sf as Record<string, unknown>)['stove']) {
-      window.customIcons.sf = { ...(window.customIcons.sf as object | undefined), ...CUSTOM_ICONS, ...(WEATHER_ICONS as unknown as object) };
-    }
-    if (!window.customIcons.sci || !(window.customIcons.sci as Record<string, unknown>)['stove']) {
-      window.customIcons.sci = { ...(window.customIcons.sci as object | undefined), ...CUSTOM_ICONS, ...(WEATHER_ICONS as unknown as object) };
     }
   }
 
@@ -116,11 +142,9 @@ export class SfIcon extends LitElement {
       return;
     }
 
-    // Ensure our custom icons are registered in window.customIcons
-    this._ensureCustomIcons();
-
-    // 1. Check window.customIcons for custom namespaces (e.g. sf:)
-    const customPath = window.customIcons?.[prefix]?.[name];
+    // 1. Custom namespaces (sci:/sf:/foreign string paths)
+    ensureCustomIcons();
+    const customPath = lookupCustomIcon(prefix, name);
     if (customPath) {
       this._pathData = customPath;
       return;
@@ -136,7 +160,7 @@ export class SfIcon extends LitElement {
       }
 
       if (!this.connection) {
-        console.warn('[sf-icon] No hass connection provided for MDI icon fetch');
+        console.warn(`${this.logPrefix} No hass connection provided for MDI icon fetch`);
         this._pathData = FALLBACK_MDI_PATH;
         return;
       }
@@ -145,7 +169,7 @@ export class SfIcon extends LitElement {
       this._loading = false;
 
       if (result === ICON_NOT_FOUND) {
-        console.warn(`[sf-icon] Icon '${iconKey}' not found in HA registry`);
+        console.warn(`${this.logPrefix} Icon '${iconKey}' not found in HA registry`);
         this._pathData = FALLBACK_MDI_PATH; // mdi:help-circle fallback
       } else {
         this._pathData = result;
@@ -154,7 +178,7 @@ export class SfIcon extends LitElement {
     }
 
     // 3. Unknown prefix — use fallback
-    console.warn(`[sf-icon] Unknown icon namespace '${prefix}'`);
+    console.warn(`${this.logPrefix} Unknown icon namespace '${prefix}'`);
     this._pathData = FALLBACK_MDI_PATH;
   }
 
@@ -179,7 +203,7 @@ export class SfIcon extends LitElement {
     }
 
     if (this._loading) {
-      return html`<svg viewBox="0 0 24 24" class="sf-icon sf-icon--loading"></svg>`;
+      return html`<svg viewBox="0 0 24 24" class="${this.iconClass} ${this.iconClass}--loading"></svg>`;
     }
     if (!this._pathData) return nothing;
 
@@ -190,7 +214,7 @@ export class SfIcon extends LitElement {
     return html`
       <svg
         viewBox="0 0 24 24"
-        class="sf-icon"
+        class="${this.iconClass}"
         aria-hidden="true"
         style="width:var(--icon-width,24px);height:var(--icon-height,24px);fill:var(--icon-color,currentColor);display:block;"
       >

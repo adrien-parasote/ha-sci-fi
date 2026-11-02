@@ -156,12 +156,12 @@ describe('sf-icon', () => {
     expect(styleAttr).to.include('color');
   });
 
-  it('registers custom icons and weather icons onto window.customIcons on load', () => {
+  it('registers the static icon paths onto window.customIcons on load, never the weather templates', () => {
     expect(window.customIcons).to.be.an('object');
     expect(window.customIcons?.sf).to.be.an('object');
     expect(window.customIcons?.sci).to.be.an('object');
     expect(window.customIcons?.sf?.stove).to.be.a('string');
-    expect(window.customIcons?.sf?.['clear-day']).to.be.an('object'); // Lit TemplateResult
+    expect(window.customIcons?.sf?.['clear-day']).toBeUndefined(); // templates stay module-local (FR-1.1)
   });
 
   it('renders custom path-based icons correctly', async () => {

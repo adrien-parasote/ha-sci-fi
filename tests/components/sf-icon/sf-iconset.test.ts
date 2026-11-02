@@ -4,6 +4,7 @@
  * Covers: customIconsets registration, getIcon, getIconList (HA icon picker API).
  */
 import { expect, describe, it, vi } from 'vitest';
+import { STATIC_ICON_NAMES } from '../../../src/components/sf-icon/icon-names.js';
 
 describe('sf-iconset', () => {
   it('registers customIconsets.sci in window as a function', async () => {
@@ -25,6 +26,15 @@ describe('sf-iconset', () => {
     expect(result).toHaveProperty('viewBox', '0 0 24 24');
     expect(typeof result.path).toBe('string');
     expect(result.path.length).toBeGreaterThan(0);
+  });
+
+  it('TC-408: getIcon (customIconsets) takes the unknown-icon branch for a weather name', async () => {
+    await import('../../../src/components/sf-icon/sf-iconset.js');
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const getIcon = (window as any).customIconsets!.sci as (name: string) => Promise<any>;
+    expect(await getIcon('clear-night-day')).toBe('');
+    expect(consoleSpy).toHaveBeenCalledWith('[sf-iconset] Icon "sci:clear-night-day" not available');
+    consoleSpy.mockRestore();
   });
 
   it('getIcon (customIconsets) returns empty string for unknown icon and logs error', async () => {
@@ -73,6 +83,8 @@ describe('sf-iconset', () => {
     expect(list.length).toBeGreaterThan(0);
     expect(list[0]).toHaveProperty('name');
     expect(typeof list[0]!.name).toBe('string');
+    // Membership, not just non-emptiness: the list IS the static name set.
+    expect(list.map((i) => i.name).sort()).toEqual([...STATIC_ICON_NAMES].sort());
   });
 
   it('getIconList includes known icons like "stove" and "landspeeder"', async () => {

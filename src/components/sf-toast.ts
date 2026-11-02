@@ -10,9 +10,8 @@
  *   toast.addMessage('Message text', false); // false = success, true = error
  */
 
-import { LitElement, html, css, type TemplateResult } from 'lit';
+import { LitElement, html, css, render, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import { render } from 'lit-html';
 
 import './sf-icon/sf-icon.js';
 

@@ -1,4 +1,5 @@
 // @vitest-environment happy-dom
+import { readFileSync } from 'node:fs';
 import { expect, describe, it, afterEach } from 'vitest';
 import '../../../src/cards/water/sci-fi-water-management-editor.js';
 import type { SciFiWaterManagementEditor } from '../../../src/cards/water/sci-fi-water-management-editor.js';
@@ -23,6 +24,23 @@ describe('sci-fi-water-management-editor', () => {
     const el = await createElement();
     const result = el.render();
     expect(result).toBeDefined();
+  });
+
+  it('resolves every label through getLabel() and never calls msg() in its template', async () => {
+    const source = readFileSync('src/cards/water/sci-fi-water-management-editor.ts', 'utf8');
+    expect(source).not.toMatch(/\bmsg\(/);
+    const el = await createElement();
+    const keys = [
+      'input-header-message',
+      'input-filter-label',
+      'input-default-floor',
+      'input-default-icon',
+      'section-title-visibility',
+      'text-no-device',
+    ];
+    for (const key of keys) {
+      expect(el.getLabel(key), key).not.toBe('');
+    }
   });
 
   it('renders the editor structure when config is set', async () => {

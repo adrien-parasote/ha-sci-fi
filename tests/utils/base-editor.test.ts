@@ -13,6 +13,7 @@ import { stoveLabels } from '../../src/cards/stove/labels.js';
 import { tvLabels } from '../../src/cards/tv/labels.js';
 import { vacuumLabels } from '../../src/cards/vacuum/labels.js';
 import { vehiclesLabels } from '../../src/cards/vehicles/labels.js';
+import { waterLabels } from '../../src/cards/water/labels.js';
 import { weatherLabels } from '../../src/cards/weather/labels.js';
 
 import { customElement } from 'lit/decorators.js';
@@ -51,7 +52,7 @@ class MockCardEditor extends SciFiBaseEditor {
 }
 
 /**
- * The 10 card-owned dictionaries. Listed rather than globbed because
+ * The 11 card-owned dictionaries. Listed rather than globbed because
  * `import.meta.glob` would need `vite/client` in tsconfig `types`, widening the
  * whole project's type surface for one test. The list is a list of MODULES, not
  * of keys: a new label is covered automatically, and the cross-check below
@@ -67,6 +68,7 @@ const cardLabelModules: Record<string, () => Record<string, string>> = {
   tv: tvLabels,
   vacuum: vacuumLabels,
   vehicles: vehiclesLabels,
+  water: waterLabels,
   weather: weatherLabels,
 };
 

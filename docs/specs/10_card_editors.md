@@ -280,8 +280,8 @@ fallback that makes kernel placement safe is also what hides an orphan, since
 `getLabel()` answers `''` instead of raising.
 
 **What the label guards cover, and what they do not.** TC-1017 (shared kernel)
-and TC-1018 (the 10 card dictionaries) together read every key both own —
-177 at the time of writing (32 in the shared kernel, 145 across the ten
+and TC-1018 (the 11 card dictionaries) together read every key both own —
+182 at the time of writing (32 in the shared kernel, 150 across the eleven
 dictionaries), a count the tests derive from the dictionaries themselves
 rather than from this number — through
 `getLabel()` and fail on any that resolves to `''`. That is the *empty-label*

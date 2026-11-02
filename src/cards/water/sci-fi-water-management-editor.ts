@@ -1,14 +1,18 @@
 import { html, css, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { msg } from '@lit/localize';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
 import type { SciFiWaterManagementConfig } from './config.js';
+import { waterLabels } from './labels.js';
 
 const TAG = 'sci-fi-water-management-editor';
 
 @customElement(TAG)
 export class SciFiWaterManagementEditor extends SciFiBaseEditor {
+  protected override get cardLabels(): Record<string, string> {
+    return waterLabels();
+  }
+
   @state() private _devices: Record<string, any> = {};
   @state() private _entities: Record<string, any> = {};
 
@@ -67,28 +71,28 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
     return html`
       <div class="card-config">
         <sf-editor-input
-          label=${msg("Header message (optional)")}
+          label=${this.getLabel('input-header-message')}
           .value=${config.header_message ?? ''}
           .configValue=${'header_message'}
           @value-changed=${this._valueChanged}
         ></sf-editor-input>
 
         <sf-editor-input
-          label=${msg("HA filter label (e.g. water)")}
+          label=${this.getLabel('input-filter-label')}
           .value=${config.filter_label ?? 'water'}
           .configValue=${'filter_label'}
           @value-changed=${this._valueChanged}
         ></sf-editor-input>
 
         <sf-editor-input
-          label=${msg("Default floor (Floor ID)")}
+          label=${this.getLabel('input-default-floor')}
           .value=${config.first_floor_to_render ?? ''}
           .configValue=${'first_floor_to_render'}
           @value-changed=${this._valueChanged}
         ></sf-editor-input>
 
         <sf-editor-dropdown-icon
-          label=${msg("Default icon")}
+          label=${this.getLabel('input-default-icon')}
           .value=${config.default_icon ?? 'mdi:water'}
           .configValue=${'default_icon'}
           @value-changed=${this._valueChanged}
@@ -97,11 +101,11 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
         <section class="visibility-section">
           <h1 class="visibility-header">
             <sf-icon icon="mdi:eye-outline" style="--icon-width:16px;--icon-height:16px;"></sf-icon>
-            <span>${msg('Visibility')}</span>
+            <span>${this.getLabel('section-title-visibility')}</span>
           </h1>
           <div class="accordion-group">
             ${Object.entries(this._getGroupedWaterEntities()).map(([devId, entities]) => {
-              let title = msg('Automations / No device');
+              let title = this.getLabel('text-no-device');
               let icon = 'mdi:robot';
               const devicesSource = Object.keys(this._devices).length > 0 ? this._devices : (this.hass?.devices || {});
               

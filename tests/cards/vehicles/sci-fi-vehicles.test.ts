@@ -184,7 +184,7 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
 
   // ── TC-1215 / vehicleStyles Export ─────────────────────────────────────────
 
-  it('TC-1215: vehicleStyles exports a Lit CSSResult', () => {
+  it('TC-VEHICLES-U-1215: vehicleStyles exports a Lit CSSResult', () => {
     expect(vehicleStyles).to.be.an('object');
     expect((vehicleStyles as any).cssText).to.be.a('string');
   });
@@ -366,7 +366,7 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
 
   // ── TC-V01 / getRelevantEntities covers all sensor fields ──────────────────
 
-  it('TC-V01, TC-508: getRelevantEntities includes all defined sensor fields', () => {
+  it('TC-VEHICLES-U-1216, TC-508: getRelevantEntities includes all defined sensor fields', () => {
     const el = document.createElement('sci-fi-vehicles') as SciFiVehiclesCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-vehicles',
@@ -405,7 +405,7 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
 
   // ── TC-V02 / getRelevantEntities with multiple vehicles ───────────────────
 
-  it('TC-V02: getRelevantEntities includes sensors from multiple vehicles', () => {
+  it('TC-VEHICLES-U-1217: getRelevantEntities includes sensors from multiple vehicles', () => {
     const el = document.createElement('sci-fi-vehicles') as SciFiVehiclesCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-vehicles',
@@ -422,7 +422,7 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
 
   // ── TC-V03 / getRelevantEntities returns empty for vehicle without sensors ─
 
-  it('TC-V03: getRelevantEntities returns empty array when no sensors configured', () => {
+  it('TC-VEHICLES-U-1218: getRelevantEntities returns empty array when no sensors configured', () => {
     const el = document.createElement('sci-fi-vehicles') as SciFiVehiclesCard;
     (el as any).setConfig({
       type: 'custom:sci-fi-vehicles',
@@ -435,14 +435,14 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
 
   // ── TC-V04 / getCardSize ───────────────────────────────────────────────────
 
-  it('TC-V04: getCardSize returns 5 when config is set', async () => {
+  it('TC-VEHICLES-U-1219: getCardSize returns 5 when config is set', async () => {
     const el = await mountCard([V1]);
     expect(el.getCardSize()).to.equal(5);
   });
 
   // ── TC-V05 / _startAc toast on success ────────────────────────────────────
 
-  it('TC-V05: _startAc shows success toast after resolve', async () => {
+  it('TC-VEHICLES-U-1220: _startAc shows success toast after resolve', async () => {
     const mockCallService = vi.fn(() => Promise.resolve({} as any));
     const el = await mountCard([V1], makeHass(mockCallService));
 
@@ -459,7 +459,7 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
 
   // ── TC-V06 / _startAc toast on error ──────────────────────────────────────
 
-  it('TC-V06: _startAc shows error toast on reject', async () => {
+  it('TC-VEHICLES-U-1221: _startAc shows error toast on reject', async () => {
     const mockCallService = vi.fn(() => Promise.reject(new Error('AC failure')));
     const el = await mountCard([V1], makeHass(mockCallService));
 
@@ -476,7 +476,7 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
 
   // ── TC-V07 / _stopAc toast on success ─────────────────────────────────────
 
-  it('TC-V07: _stopAc shows success toast after resolve', async () => {
+  it('TC-VEHICLES-U-1222: _stopAc shows success toast after resolve', async () => {
     const mockCallService = vi.fn(() => Promise.resolve({} as any));
     const el = await mountCard([V1], makeHass(mockCallService));
 
@@ -493,7 +493,7 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
 
   // ── TC-V08 / getCardSize without config ───────────────────────────────────
 
-  it('TC-V08: getCardSize returns 3 when config is not set', () => {
+  it('TC-VEHICLES-U-1223: getCardSize returns 3 when config is not set', () => {
     const el = document.createElement('sci-fi-vehicles') as SciFiVehiclesCard;
     // Do not call setConfig
     expect(el.getCardSize()).to.equal(3);

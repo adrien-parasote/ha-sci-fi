@@ -1,0 +1,8 @@
+3fb91985e856dd0bff1706c59e7256560367583a docs/specs/cards/weather.md
+a1f195fc4d6543a7b3deb5a0685b8c95cd185d87 tests/cards/weather/sci-fi-weather.test.ts
+29e3f69117df30a4a1001bf2b8af7e588b6e4473 docs/adversarial-review/history/weather-orphan-ids.round-01.md
+29e3f69117df30a4a1001bf2b8af7e588b6e4473 docs/adversarial-review/weather-orphan-ids.md
+8dc99ae11f2756c71b9871c1f07496bd0f644175 docs/specs/weather-orphan-ids/spec.md
+ac561e8ca3e0c9f57446013bbf90063a32d65492 docs/summaries/weather-orphan-ids/BUILD.md
+d01f50cae45e8115ae5d05c4cca371b87e68fe40 docs/summaries/weather-orphan-ids/SPEC.md
+5e5a6d71a91d653daf3d07ef06c7c6c15fe09458 tests/cards/weather/weather-ids-declared.test.ts

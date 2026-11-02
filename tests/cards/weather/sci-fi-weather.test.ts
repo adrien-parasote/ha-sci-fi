@@ -234,7 +234,7 @@ describe('sci-fi-weather', () => {
       expect(newDate).to.be.greaterThan(initialDate);
     });
 
-    it('IT-004: test weatherIcon plugin directly and handles init failure gracefully', async () => {
+    it('IT-WEATHER-I-004: weatherIcon plugin draws the icon and a Chart.js init failure warns without throwing', async () => {
       const plugin = (el as any)._getChartPlugins();
       expect(plugin.id).to.equal('weatherIcon');
 
@@ -284,14 +284,14 @@ describe('sci-fi-weather', () => {
       consoleWarnSpy.mockRestore();
     });
 
-    it('IT-005: _renderIcon falls back to sf-icon when icon not in WEATHER_ICON_SET (line 389)', async () => {
+    it('_renderIcon falls back to sf-icon when the icon is not in WEATHER_ICON_SET', async () => {
       // Invoke _renderIcon directly with a key not in the weather icon set (plain mdi name)
       const result: any = (el as any)._renderIcon('unknown-weather-icon');
       // It should be a TemplateResult containing 'sf-icon' (the fallback branch at line 389)
       expect(String(result?.strings ?? '')).to.include('sf-icon');
     });
 
-    it('IT-006: _getChartData covers precipitation and wind_speed branches (lines 501-503)', () => {
+    it('_getChartData answers the precipitation and wind_speed series', () => {
       // Seed hourly forecast with precipitation and wind_speed data
       (el as any)._hourlyForecast = [
         { datetime: '2026-05-24T12:00:00Z', temperature: 22, precipitation: 3.5, wind_speed: 45, condition: 'rainy' },
@@ -315,7 +315,7 @@ describe('sci-fi-weather', () => {
       (el as any)._chartDataKind = 'temperature';
     });
 
-    it('IT-007: _selectChartDataKind updates chart when already initialized (line 419)', async () => {
+    it('_selectChartDataKind updates a chart that is already initialized', async () => {
       // Force a real chart to be present so the if (this._chart) branch fires
       (el as any)._chartDataKind = 'temperature';
       (el as any)._hourlyForecast = [

@@ -7,11 +7,13 @@
  * 3. Fetch from HA native icon registry via hass.connection
  * 4. NEVER fetch from external CDNs (breaks offline HA)
  *
- * MEDIUM-03 fix: IndexedDB blocked in incognito → in-memory Map fallback
- * with a concurrent-fetch rate limiter.
+ * MEDIUM-03 fix: IndexedDB blocked in incognito → in-memory Map fallback.
+ * Concurrent fetches are bounded by construction: all lookups of one connection
+ * share ONE frontend/get_icons request (see getMdiRegistry).
  */
 
 import { get, set } from 'idb-keyval';
+import { ownValue } from './icon-names.js';
 
 // ─── Module-level in-memory cache (survives incognito, cleared on page reload) ─
 
@@ -98,8 +100,12 @@ async function fetchMdiFromHass(
 ): Promise<string | null> {
   try {
     const response = await getMdiRegistry(connection);
-    const pathData = response?.resources?.[iconName] ?? response?.resources?.[`mdi:${iconName}`];
-    return pathData ?? null;
+    const resources = response?.resources;
+    // Own keys holding a string only: `constructor` / `__proto__` are not icons.
+    const pathData = resources
+      ? (ownValue<unknown>(resources, iconName) ?? ownValue<unknown>(resources, `mdi:${iconName}`))
+      : undefined;
+    return typeof pathData === 'string' && pathData ? pathData : null;
   } catch (err: unknown) {
     const errMsg = err && typeof err === 'object' ? JSON.stringify(err) : String(err);
     console.warn(`[sf-icon] Failed to fetch icon '${iconName}' from HA registry: ${errMsg}`);

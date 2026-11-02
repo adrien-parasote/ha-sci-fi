@@ -107,7 +107,7 @@ deferred work, it is a rejected option.
 |---|---|---|---|
 | 1 | `idb-keyval` is supported in browser local databases | Low | → Run IndexDB inspection inside active browser developer tools |
 | 2 | `window.customIcons['sf']` is registered before render | Medium | → Run console log verification check for customIcons during load |
-| 3 | Shadow DOM prevents CSS leaks into shared components | Medium | → Run style isolation inspection on elements in browser DOM |
+| 3 | Shadow DOM prevents CSS leaks into shared components — **except `sf-icon` and `sci-icon`**, which render in the light DOM on purpose (`createRenderRoot` returns `this`, defined once in `SfIcon`); their only outside styling surface is the host tag and `--icon-width/-height/-color` ([icon-contract FR-4](./icon-contract/spec.md)) | Medium | → TC-ICC-U-04 pins the set of light-DOM components to `sf-icon.ts` |
 
 ---
 
@@ -129,7 +129,7 @@ deferred work, it is a rejected option.
 | Element | Consumed by | Description |
 |---|---|---|
 | `<sf-icon>` | Lovelace Cards (internal) | Resolves and displays SVGs from package or MDI |
-| `<sci-icon>` | Any HA component or card | Public-facing icon element — identical to `<sf-icon>` but stable public tag name. Supports `sci:`, `sf:`, `mdi:` prefixes and `--icon-width`, `--icon-height`, `--icon-color` CSS custom properties |
+| `<sci-icon>` | Any HA component or card | Public-facing icon element — a subclass of `<sf-icon>` that only changes the tag name, the svg class (`sci-icon`) and the console warning prefix (`[sci-icon]`); stable public tag name. Supports `sci:`, `sf:`, `mdi:` prefixes and `--icon-width`, `--icon-height`, `--icon-color` CSS custom properties |
 | `<sf-toggle-switch>` | Card Editors | Toggles switch boolean configurations |
 
 > `<sf-radiator>` and `<sf-landspeeder>` were listed here as shared public
@@ -146,11 +146,11 @@ deferred work, it is a rejected option.
 | `window.customIcons['sci']` | `sci` | Used by `<ha-icon-picker>` search — exposes `getIcon(name)` and `getIconList()` |
 
 **`getIconList()` contract:** `() => Promise<{name: string, keywords?: string[]}[]>`
-- Returns all `sci:` icon names (static + animated weather icons)
+- Returns the 28 static `sci:` icon names (the keys of `data/sf-icons.ts`, exported as `STATIC_ICON_NAMES`). The 46 animated weather icons are NOT listed: HA draws a `path`, an animation is a template; they stay renderable through `<sf-icon>`/`<sci-icon>` ([icon-contract FR-1, FR-2](./icon-contract/spec.md))
 - Non-enumerable on the map (does not pollute icon path lookups in `sf-icon.ts`)
 
 **`getIcon(name)` contract:** `(name: string) => Promise<{ path: string; viewBox: string }>`
-- Used by HA to preview an icon before selection
+- Used by HA to preview an icon before selection. Resolves the 28 static icons only; any other name (weather, unknown) returns `{ path: '', viewBox: '0 0 24 24' }` on the picker and `''` plus a logged error on `customIconsets.sci`
 
 ---
 
@@ -160,9 +160,9 @@ deferred work, it is a rejected option.
 |---|---|---|---|
 | 1 | Heavy SVG requests | Fetch MDI icon from external CDN on every render | Query `icon-cache.ts` module-level Map first; in live HA environment (if `<ha-icon>` custom element is registered), directly bypass the deprecated `'mdi'` WebSocket registry call and render `<ha-icon .icon="${this.icon}"></ha-icon>` natively — **never unpkg/jsdelivr CDN** (breaks offline HA) |
 | 2 | Hardcoded CDN URL | `fetch('https://unpkg.com/@mdi/svg/...')` | Use HA native registry or local HACS file path 'hacsfiles/ha-sci-fi/icons/' — see CRITICAL-01 |
-| 3 | Component styles leak | Global stylesheet inclusion | Define elements within scoped Lit Shadow DOM |
+| 3 | Component styles leak | Global stylesheet inclusion | Define elements within scoped Lit Shadow DOM — declared exception: `sf-icon` / `sci-icon` render in the light DOM (see Assumption 3, TC-ICC-U-04) |
 | 4 | Manual event dispatching | Mutating card config values | Dispatch standard custom element events with `composed: true` |
-| 5 | Fetch flood in incognito | IndexedDB blocks in private window — fetching on every render with no rate limit | Use in-memory `Map` as volatile fallback cache + limit concurrent fetches to 5 max — see MEDIUM-03 |
+| 5 | Fetch flood in incognito | IndexedDB blocks in private window — fetching on every render with no rate limit | Use in-memory `Map` as volatile fallback cache; concurrent fetches are bounded by construction (all MDI lookups of one connection share ONE `frontend/get_icons` request, so ≤ 1 in flight ≤ 5). Caveats: the bound is per `connection` object, concerns only the path where no `ha-icon` is registered, and a failed request deletes its cached promise so the next render retries — TC-ICC-U-06, see MEDIUM-03 |
 | 6 | `window.customIcons` overwrite | `window.customIcons.sf = sfIconset` (direct assignment) | Merge defensively: `window.customIcons.sf = { ...window.customIcons.sf, ...sfIconset }` |
 | 7 | Attribute binding for dynamic icons | `icon="${expression}"` (HTML attribute) for a dynamic value | Use `.icon="${expression}"` (property binding) — Lit attribute binding does NOT reflect updates after first render. Dynamic values (ternary expressions, variables) MUST use property binding `.icon=` to trigger `willUpdate()` on change |
 | 8 | **Missing `:host { display: block }`** | Omitting `display: block` on `:host` in any LitElement component | All `sf-*` custom elements have `display: inline` by default (HTML spec). `margin: auto` and flex/grid centering silently fail. Add `:host { display: block; }` as the FIRST rule in every component's `styles.ts`. (L059) |
@@ -179,8 +179,8 @@ deferred work, it is a rejected option.
 | TC-404 | Unit | sf-radiator compiles correctly | Active climate configuration | Renders the radiator SVG, one `sf-wheel` and the two `sf-button-card-select` — **moved to Spec 05 § Climates** (component relocated by ADR-017); test lives in `tests/cards/climates/sf-radiator.test.ts` |
 | TC-405 | Unit | sf-toggle-switch dispatch events | Click active element | Dispatches custom change event |
 | TC-406 | Unit | sci-icon mirrors sf-icon API | sci: / sf: / mdi: icon | Renders correctly for each prefix |
-| TC-407 | Unit | getIconList() returns all sci: icons | Call getIconList() | Returns array with name for each registered icon |
-| TC-408 | Unit | getIcon() returns path+viewBox | Call getIcon('stove') | Returns `{ path: string, viewBox: '0 0 24 24' }` |
+| TC-407 | Unit | getIconList() returns all static sci: icons | Call getIconList() | Returns exactly the 28 names of `STATIC_ICON_NAMES`, none of the 46 weather names (TC-ICC-U-02) |
+| TC-408 | Unit | getIcon() returns path+viewBox | Call getIcon('stove') | Returns `{ path: string (non-empty), viewBox: '0 0 24 24' }`; a weather name returns the unknown-icon result (TC-ICC-U-01) |
 | IT-401 | Integration | Icon cache hit avoids server queries | Load cached icon again | Loads from DB without fetch requests |
 | IT-402 | Integration | Radiator buttons update HA states | Click radiator buttons | Dispatches climate service call event |
 | IT-403 | Integration | Components render on state update | Modify entity state | Component updates view immediately |
@@ -194,4 +194,5 @@ deferred work, it is a rejected option.
 | Icon not in HA registry | `<ha-icon>` fail or `resolveIcon` returns `ICON_NOT_FOUND` | Log warning, render nothing | Render `mdi:help-circle` placeholder icon |
 | IndexedDB blocked (incognito) | `idb-keyval` `get()`/`set()` throws `DOMException` | Catch, log warning: `[sf-icon] IndexedDB unavailable, using in-memory fallback` | Use module-level `Map` as volatile fallback cache |
 | Icon fetch fails entirely | Network error or 404 | Catch, warn | `nothing` rendered — no crash |
+| Weather name asked of the `ha-icon` picker-form route (`window.customIcons.sci.getIcon`) | Name is not a static icon | Returns `{ path: '', viewBox: '0 0 24 24' }`, no log; `customIconsets.sci` returns `''` and logs `[sf-iconset] Icon "sci:<name>" not available` | `<sf-icon>` still renders the animation (icon-contract FR-1, FR-1.1, TC-ICC-U-01) |
 | Event dispatch error | Event bubbling fails | Let browser log stack trace | Prevent default, execute safe error boundary catch |

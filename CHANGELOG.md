@@ -1,5 +1,11 @@
 # Changelog
 
+# Unreleased
+
+## 🆕 What's New
+
+- **Icons**: the 46 animated weather icons no longer appear in the Home Assistant icon picker, which can only draw static paths; they still render in cards through `<sf-icon>` / `<sci-icon>`, and existing configurations are unaffected
+
 # [1.3.4](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.3.4) - 2026-06-03
 
 ## 🐛 Fixes

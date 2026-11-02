@@ -11,7 +11,7 @@
 import { html, css, nothing, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { SfEditorDropdown } from './sf-editor-dropdown.js';
-import CUSTOM_ICONS from '../sf-icon/data/sf-icons.js';
+import { STATIC_ICON_NAMES } from '../sf-icon/icon-names.js';
 import '../sf-icon/sf-icon.js';
 
 /** Common MDI icons used in sci-fi cards (curated list, not the full 7000+ MDI set) */
@@ -51,7 +51,7 @@ const COMMON_MDI_ICONS: readonly string[] = [
 
 /** All available icons for the picker — loaded once at module level */
 const ALL_ICONS: readonly string[] = [
-  ...Object.keys(CUSTOM_ICONS as Record<string, string>).map(k => `sci:${k}`),
+  ...STATIC_ICON_NAMES.map(k => `sci:${k}`),
   ...COMMON_MDI_ICONS,
 ];
 

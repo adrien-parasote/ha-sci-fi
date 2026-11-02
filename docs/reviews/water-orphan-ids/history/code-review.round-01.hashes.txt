@@ -1,0 +1,13 @@
+7db46c529149126a701b8f1793f9ea211ea02543 docs/MASTER.md
+65a9913087cc09bb40458915b593b15f9f62fddf docs/specs/cards/water.md
+2f63623abbbe7642fef95386c7411a1b2ead8c56 docs/specs/cards/water_history.md
+070c2ea838cfa95d0f7fa34ad51750a36b691924 tests/cards/water/sci-fi-water-management.test.ts
+17c1f3ae38a4573c578f8f01d8494e704b72311f tests/cards/water/water-history-aligned.test.ts
+c3bc8ffce713d232c6e788e0b8e60195779fb748 tests/docs/spec-numbering.test.ts
+cc7b9f04d15e23e0a1da6fcb830c38e82977c59c docs/adversarial-review/history/water-orphan-ids.round-01.md
+cc7b9f04d15e23e0a1da6fcb830c38e82977c59c docs/adversarial-review/water-orphan-ids.md
+4a7341466cd0cc80f8bb987ac19e908d85172954 docs/specs/water-orphan-ids/spec.md
+efc8ab799b325019529d79fd5676bb1139116d1c docs/summaries/water-orphan-ids/BUILD.md
+1875cfa32154c8cf8962902e6ae08a8223d80021 docs/summaries/water-orphan-ids/SPEC.md
+658b841685a9f4cfc2c1d33a97c42bf933a09984 tests/cards/water/water-ids-declared.test.ts
+8c4c97e26d29e0c781db003d451dc92c2dd5dd80 tests/cards/water_history/sci-fi-water-management-history.test.ts

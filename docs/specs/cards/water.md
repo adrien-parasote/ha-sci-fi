@@ -6,12 +6,12 @@
 
 | Feature ID | Description | Covered here | Covers |
 |---|---|---|---|
-| F-WATER-01 | Dynamic Floor Selector — onglets hexagonaux par étage, barre de nom d'étage et bouton de synchronisation | ✅ This spec § Features | tests/cards/water/sci-fi-water-management.test.ts :: IT-1203 — le rendu des étages lui-même est couvert sans id par « renders floors and water entities based on labels » |
+| F-WATER-01 | Dynamic Floor Selector — onglets hexagonaux par étage, barre de nom d'étage et bouton de synchronisation | ✅ This spec § Features | tests/cards/water/sci-fi-water-management.test.ts (« renders floors and water entities based on labels », sans id de cas ; le cas de changement d'étage de l'historique épingle le déclencheur `expanded` hérité, que cette spec interdit : il ne compte pas comme couverture) |
 | F-WATER-02 | Label-based Discovery — découverte des entités portant le label `water` ou le label configuré | ✅ This spec § Configuration & Tags (Labels) | tests/cards/water/sci-fi-water-management.test.ts (« renders floors and water entities based on labels », sans id de cas) |
-| F-WATER-03 | Smart Entity Controls — interrupteur sci-fi pour `switch`/`valve`/`automation`/`input_boolean`, valeur pour `sensor`/`number`/`select` | ✅ This spec § Features | tests/cards/water/sci-fi-water-management.test.ts :: TC-W02, TC-W03, TC-W04, TC-W05, TC-W06, TC-W07, TC-W08, TC-W09, TC-W10, TC-W12, TC-W13, TC-W14, TC-W15 |
-| F-WATER-04 | Grouped Accordions — un `sf-editor-accordion` par appareil, un accordéon « Automations » pour les entités sans appareil, état d'ouverture indépendant | ✅ This spec § Internal State | tests/cards/water/sci-fi-water-management.test.ts :: TC-WATER-U-006, TC-W11 |
-| F-WATER-05 | Execution Log per Accordion — journal filtré sur les seules entités de l'accordéon | ✅ This spec § Key Methods | tests/cards/water/sci-fi-water-management.test.ts :: TC-1201, TC-1203, IT-1205 |
-| F-WATER-06 | History Fetch Strategy — `history/history_during_period` une fois par étage sur 7 jours, repli `logbook/get_events`, domaines restreints, `significant_changes_only` | ✅ This spec § Key Methods | tests/cards/water/sci-fi-water-management.test.ts :: TC-WATER-U-008, TC-1202, IT-1201, IT-1202, IT-1204 |
+| F-WATER-03 | Smart Entity Controls — interrupteur sci-fi pour `switch`/`valve`/`automation`/`input_boolean`, valeur pour `sensor`/`number`/`select` | ✅ This spec § Features | tests/cards/water/sci-fi-water-management.test.ts :: TC-WATER-U-010, TC-WATER-U-003, TC-WATER-U-011, TC-WATER-U-012, TC-WATER-U-013, TC-WATER-U-014, TC-WATER-U-015, TC-WATER-U-016, TC-WATER-U-018, TC-WATER-U-019, TC-WATER-U-020, TC-WATER-U-021 |
+| F-WATER-04 | Grouped Accordions — un `sf-editor-accordion` par appareil, un accordéon « Automations » pour les entités sans appareil, état d'ouverture indépendant | ✅ This spec § Internal State | tests/cards/water/sci-fi-water-management.test.ts :: TC-WATER-U-006, TC-WATER-U-017 |
+| F-WATER-05 | Execution Log per Accordion — journal filtré sur les seules entités de l'accordéon | ✅ This spec § Key Methods | tests/cards/water_history/sci-fi-water-management-history.test.ts :: TC-WATER-HISTORY-U-003, TC-WATER-HISTORY-U-008 |
+| F-WATER-06 | History Fetch Strategy — `history/history_during_period` une fois par étage sur 7 jours, repli `logbook/get_events`, domaines restreints, `significant_changes_only` | ✅ This spec § Key Methods | tests/cards/water/sci-fi-water-management.test.ts :: TC-WATER-U-008 · tests/cards/water_history/sci-fi-water-management-history.test.ts :: IT-WATER-HISTORY-I-004, IT-WATER-HISTORY-I-005, IT-WATER-HISTORY-I-008 |
 | F-WATER-07 | Resilient UI — aucun étage ou aucune entité eau ne provoque ni erreur ni carte vide | ✅ This spec § Features | tests/cards/water/sci-fi-water-management.test.ts (« renders empty message if no floors exist » et « … if no water entities exist in the house », sans id) |
 | F-WATER-08 | i18n — toutes les chaînes visibles passent par `@lit/localize` et suivent la langue de HA | ✅ This spec § Features | ⬜ aucun cas ne vérifie la localisation de cette carte |
 
@@ -146,7 +146,7 @@ N/A — this card renders UI only; it does not publish events or data consumed b
 
 ## Test Cases
 
-> **⬜ dans la colonne ID : le cas n'est joué par aucun test.** Neuf des douze lignes, toute la plage `00x` : `tests/cards/water/sci-fi-water-management.test.ts` porte `TC-WATER-U-006` à `008` et, pour le reste, des ids nus que plus aucune spec ne déclare (bead `ha-sci-fi-78y`).
+> **⬜ dans la colonne ID : le cas n'est joué par aucun test.** Neuf des vingt-cinq lignes : `TC-WATER-U-001`, `002`, `004`, `005`, `007` et `IT-WATER-I-001` à `004`. Les seize autres sont jouées par `tests/cards/water/sci-fi-water-management.test.ts` (lot `water-orphan-ids`, bead `ha-sci-fi-78y.7` : ses ids nus `TC-W01`..`TC-W15` sont devenus `TC-WATER-U-003` et `009` à `021`). `TC-WATER-U-007` n'est plus jouée : son seul titre a perdu l'id quand les cas d'historique ont quitté cette suite pour `tests/cards/water_history/`, où un id de cette spec ne peut pas être cité (`tests/specs/ids-cas-uniques.test.ts`, O1). Les cas d'historique sont déclarés par [water_history.md](./water_history.md).
 > Le marqueur est la seule source : `tests/specs/ids-cas-uniques.test.ts` dérive
 > l'ensemble des cas non joués de ces marques et refuse l'écart dans les deux
 > sens — un cas non marqué que rien ne cite, comme un cas marqué qu'un test porte.
@@ -155,12 +155,25 @@ N/A — this card renders UI only; it does not publish events or data consumed b
 |---|---|---|
 | TC-WATER-U-001 ⬜ | Unit | Card renders with no floors gracefully |
 | TC-WATER-U-002 ⬜ | Unit | Floor selection updates displayed entities and clears logs |
-| TC-WATER-U-003 ⬜ | Unit | Toggle switch updates entity state |
+| TC-WATER-U-003 | Unit | `_toggleEntity` asks HA to flip a switch: called with `true` (the switch is on) it calls `callService('switch', 'turn_off', { entity_id })`, called with `false` (off) `callService('switch', 'turn_on', { entity_id })`; the entity state itself is not read back |
 | TC-WATER-U-004 ⬜ | Unit | Dynamic labels filter correctly |
 | TC-WATER-U-005 ⬜ | Unit | Sensor values display correctly with units |
 | TC-WATER-U-006 | Unit | `_expandedMap` tracks each accordion independently |
-| TC-WATER-U-007 | Unit | `_renderHistoryLogs` filters rawLogs by provided entity IDs |
+| TC-WATER-U-007 ⬜ | Unit | `_renderHistoryLogs` filters rawLogs by provided entity IDs (no test of the card's suite calls it; the render filter is asserted under TC-WATER-HISTORY-U-003 and `-008` of [water_history.md](./water_history.md)) |
 | TC-WATER-U-008 | Unit | Sync button triggers `_fetchHistoryLogs` |
+| TC-WATER-U-009 | Unit | `getCardSize()` returns 5 once `setConfig` has received the stub config |
+| TC-WATER-U-010 | Unit | `_getStateLabel(true)` and `_getStateLabel(false)` each return a non-empty string, and the two differ |
+| TC-WATER-U-011 | Unit | `_toggleEntity` on a `sensor` entity (a domain with no turn_on/turn_off service of its own) calls `callService('homeassistant', 'turn_on', { entity_id })` |
+| TC-WATER-U-012 | Unit | `_toggleEntity` with `callService` rejecting `Error('toggle failed')` calls the toast `addMessage('toggle failed', true)` |
+| TC-WATER-U-013 | Unit | `_changeSelectEntity` on a `select` entity calls `callService('select', 'select_option', { entity_id, option })` with the option taken from the event target value |
+| TC-WATER-U-014 | Unit | `_changeSelectEntity` on an `input_select` entity calls `callService('input_select', 'select_option', { entity_id, option })` |
+| TC-WATER-U-015 | Unit | `_changeSelectEntity` with `callService` rejecting `Error('select failed')` calls the toast `addMessage('select failed', true)` |
+| TC-WATER-U-016 | Unit | When a `sf-toggle-switch` is rendered, a `sf-toggle-change` event dispatched on it calls `callService` (the test asserts nothing when no toggle is rendered) |
+| TC-WATER-U-017 | Unit | An entity carrying a `device_id` renders at least one `sf-editor-accordion`; the test checks neither which group it is nor the device name |
+| TC-WATER-U-018 | Unit | A `select` entity in state `unavailable` renders a `select.sf-select` element whose `disabled` is true |
+| TC-WATER-U-019 | Unit | A `select` entity with three `options` attributes renders at least one `option` under `select.sf-select` |
+| TC-WATER-U-020 | Unit | A `select` entity in state `unknown` renders a disabled placeholder `option[disabled]` under `select.sf-select` |
+| TC-WATER-U-021 | Unit | An entity with no state object (`states` empty) still renders exactly one `.entity-row`; the test does not read which icon it carries |
 | IT-WATER-I-001 ⬜ | Integration | Fetching floors from HA |
 | IT-WATER-I-002 ⬜ | Integration | Fetching entities from selected floor |
 | IT-WATER-I-003 ⬜ | Integration | Submitting state change to HA |

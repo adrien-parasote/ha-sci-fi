@@ -162,7 +162,13 @@ const checkU03 = (doc: string): Fails => {
   const f: Fails = [];
   const z = zones(doc, f);
   has(f, 'trigger', z.trigger, 'single query per floor load', 'sync button');
-  const outside = doc.replace(z.gaps, '');
+  // `expanded` is allowed in Known Gaps and in the TEST CASE rows (first cell a case id) that pin the legacy
+  // trigger and name D21. A table row of any other kind, or a case row that does not name D21, still fails.
+  const outside = doc
+    .replace(z.gaps, '')
+    .split('\n')
+    .filter((l) => !(/^(?:TC|IT)-WATER-HISTORY-[UI]-\d+/.test(firstCell(l)) && l.includes('D21')))
+    .join('\n');
   hasNot(f, 'doc outside Known Gaps', outside, '`expanded`');
   for (const re of [/expand/i, /when (the|an) accordion/i]) if (re.test(z.trigger)) f.push(`trigger: forbidden ${re}`);
   has(f, 'u002', z.u002, '_activeFloorId');
@@ -170,13 +176,12 @@ const checkU03 = (doc: string): Fails => {
   return f;
 };
 
-const GAPS = ['D01', 'D07', 'D12', 'D14', 'D15', 'D20', 'D21', 'D22', 'D23', 'D24'];
+const GAPS = ['D01', 'D07', 'D12', 'D15', 'D20', 'D21', 'D22', 'D23', 'D24'];
 const BEAD = /ha-sci-fi-[0-9a-z]+(\.[0-9]+)?/;
 // gap -> [construct, cited lines as the spec fixes them]
 const CITES: Record<string, [string, string[]]> = {
   D07: ['floors.filter', ['452']],
   D12: ['_rawLogs', ['146']],
-  D14: ['${dd}/${mo}', ['323']],
   D15: ['_historyLogs', ['283']],
   D20: ['style=', ['515', '570', '610', '625']],
   D21: ['expanded', ['41', '55']],
@@ -207,6 +212,19 @@ const checkU04 = (doc: string, srcLines: string[]): Fails => {
   }
   if (!/:118-122(?!\d)/.test(gapRow('D21'))) f.push('D21: row does not cite :118-122');
   if (!srcLines.slice(117, 122).some((l) => l.includes('expanded'))) f.push('D21: src:118-122 lacks "expanded"');
+  // D14 left the gap table: its line says what is pinned (the `_formatTimestamp` output) and what is not (the brackets
+  // of the template), and every line it cites is real.
+  const resolved = doc.split('\n').find((l) => l.startsWith('Resolved by alignment')) ?? '';
+  has(f, 'resolved line', resolved, 'D14', '_formatTimestamp', 'no test pins the brackets');
+  const D14_CITES: [number, string][] = [
+    [312, '_formatTimestamp(when'],
+    [323, '${dd}/${mo}'],
+    [370, '[${this._formatTimestamp('],
+  ];
+  for (const [n, construct] of D14_CITES) {
+    if (!new RegExp(`:${n}(?!\\d)`).test(resolved)) f.push(`D14: resolved line does not cite :${n}`);
+    if (!at(n).includes(construct)) f.push(`D14: src:${n} lacks "${construct}"`);
+  }
   return f;
 };
 
@@ -294,6 +312,10 @@ describe('water_history.md aligned on water.md and the code', () => {
     expect(checkU03(mutant(DOC, /Fetch on accordion open/g, 'x')).length).toBeGreaterThan(0);
     expect(checkU03(mutant(DOC, 'on the sync button (`_syncLogs`).', 'on the sync button (`_syncLogs`) and when the accordion is expanded.')).length).toBeGreaterThan(0);
     expect(checkU03(mutant(DOC, 'on the sync button (`_syncLogs`).', 'on the sync button (`_syncLogs`) and on Expand.')).length).toBeGreaterThan(0);
+    // The D21 carve-out is scoped to case rows that name D21: a case row without D21, and a row of another table
+    // that names D21, both still fail on `expanded`.
+    expect(checkU03(mutant(DOC, 'Timeline rendered when entries match', 'Timeline rendered when entries match and `expanded`')).length).toBeGreaterThan(0);
+    expect(checkU03(mutant(DOC, 'Responsive fallback mock logs for local development in workbench', 'Responsive fallback mock logs, `expanded` (D21)')).length).toBeGreaterThan(0);
   });
 
   it('TC-WSA-U-04: Known Gaps rows carry beads, D12 is honest, cited code lines are real', () => {
@@ -313,8 +335,14 @@ describe('water_history.md aligned on water.md and the code', () => {
         expect(checkU04(DOC, d).length, `${g} :${n}`).toBeGreaterThan(0);
       }
     }
-    expect(checkU04(mutant(DOC, '(`:323`)', '(`:999`)'), SRC).length).toBeGreaterThan(0);
-    expect(checkU04(mutant(DOC, '(`:323`)', '(`:3230`)'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, '(`:141`)', '(`:999`)'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, '(`:141`)', '(`:1410`)'), SRC).length).toBeGreaterThan(0);
+    // D14 sits in the resolved line now: its three cites and its "not pinned" statement are held by mutants.
+    expect(checkU04(mutant(DOC, '`:323`', '`:999`'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, '`:323`', '`:3230`'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, '`:370`', '`:999`'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, '`:312`', '`:999`'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, 'no test pins the brackets', 'a test pins the brackets'), SRC).length).toBeGreaterThan(0);
   });
 
   it('TC-WSA-U-05: title is Spec 16 and IT-003 has no third filter', () => {

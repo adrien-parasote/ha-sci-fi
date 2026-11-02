@@ -34,7 +34,7 @@ règles le rendent lisible, et chacune est tenue par une garde de
 `tests/specs/blueprint-traceability.test.ts` :
 
 1. **Chaque ligne F porte une colonne `Covers`** qui nomme **le fichier de test qui la
-   couvre**, et après ` :: ` les ids des cas de ce fichier — `tests/cards/water/sci-fi-water-management.test.ts :: TC-W03, TC-W04`,
+   couvre**, et après ` :: ` les ids des cas de ce fichier — `tests/cards/water/sci-fi-water-management.test.ts :: TC-WATER-U-003, TC-WATER-U-010`,
    plusieurs groupes séparés par ` · `, le chemin seul quand le cas couvrant ne porte
    pas d'id. **Le chemin reste obligatoire, même depuis que les ids sont uniques.**
    Jusqu'au 2026-11-01 un id de cas ne l'était pas : `TC-001` était déclaré par six

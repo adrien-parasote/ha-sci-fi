@@ -83,7 +83,7 @@ describe('Renumérotation Spec 12 / Spec 16', () => {
   });
 
   it('TC-RN-U-05: le describe de l’eau porte Spec 16', () => {
-    const t = read('tests/cards/water/sci-fi-water-management.test.ts');
+    const t = read('tests/cards/water_history/sci-fi-water-management-history.test.ts');
     expect(t).toContain('Automation History Logs (Spec 16)');
     expect(t).not.toContain('Automation History Logs (Spec 12)');
   });

@@ -19,6 +19,7 @@ import { sciFiCommonStyles } from '../../../styles/common.js';
 import { bridgeStyles } from '../styles.js';
 import type { BridgeActionsConfig, BridgeActionItem } from '../config.js';
 import { bridgeCall } from '../bridge-call.js';
+import { warnOnce } from '../bridge-warn.js';
 import '../../../components/sf-icon/sf-icon.js';
 
 const TAG = 'sf-bridge-actions';
@@ -68,12 +69,14 @@ export class SfBridgeActions extends LitElement {
     const label   = item.name  ?? item.entity.split('.').pop() ?? '—';
     const color   = item.color ?? 'var(--sf-primary, #00d2ff)';
     const loading = this._loading.has(item.entity);
+    const absent = this.hass.states[item.entity] === undefined;
+    if (absent) warnOnce('not-found', item.entity);
 
     return html`
       <button
         class="action-btn"
         style="--action-color: ${color};"
-        ?disabled="${loading}"
+        ?disabled="${loading || absent}"
         @click="${() => this._trigger(item)}"
         aria-label="${label}"
       >

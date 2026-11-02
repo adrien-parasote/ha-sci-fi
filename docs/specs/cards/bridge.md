@@ -1003,7 +1003,7 @@ private _setSliderValue(entity: string, value: number): void {
 ```
 
 > [!WARNING]
-> `pelletQty` est un ratio 0.0–1.0 (d'après le sensor Austroflamm Clou). Si `parseFloat` retourne NaN (sensor unavailable), afficher `--` et cacher la barre de progression.
+> `pelletQty` est un ratio 0.0–1.0 (d'après le sensor Austroflamm Clou). Si l'entité est absente ou si la valeur n'est pas mesurable (non finie, `Number.isFinite` faux, ou négative, `< 0` ; sensor unavailable), afficher `-- %` (`.stove-pellet-placeholder`) et cacher la barre de progression ; même règle pour `pellet_stock` (`--`, `.stove-stock-placeholder`). Log : `console.warn` une fois par entité (cf. § Error Handling Matrix).
 
 ---
 
@@ -1036,9 +1036,12 @@ private _setSliderValue(entity: string, value: number): void {
 │
 └── .vehicle-row (flex-row, align-center, gap: 12px)
     ├── sf-icon (config.icon ?? 'mdi:ev-station', color: isCharging → --sf-accent-on, else --sf-text-disabled)
-    ├── .vehicle-power ("${power} ${unit}", 1rem, --sf-primary si isCharging, else --sf-text-secondary)
-    └── .vehicle-status (msg('En charge') | msg('Non connectée'), 0.75rem)
+    ├── .vehicle-power-value ("${power} ${unit}", 1rem, --sf-primary si isCharging, else --sf-text-secondary)
+    └── .vehicle-status-label (msg('En charge') | msg('Non connectée'), 0.75rem)
 ```
+
+> [!NOTE]
+> Capteur absent ou `power` non mesurable (non fini, `Number.isFinite` faux, ou négatif, `< 0`) : `.vehicle-power-value` affiche `-- W` (jamais `0 W`) et `.vehicle-status-label` affiche `msg('Unavailable')` (« Indisponible ») ; la section reste visible. Log : `console.warn` une fois par entité (cf. § Error Handling Matrix).
 
 
 ### sf-bridge-actions
@@ -1491,12 +1494,12 @@ title="${msg('Équipage')}"
 |---|---|---|---|---|
 | `hass` absent | `SciFiBaseCard` guard | — | Carte vide transparente | — |
 | Section config absente | `config.section === undefined` | Section non rendue | Sections définies restent visibles | — |
-| Entité absente de `hass.states` | `hass.states[id]?.state === undefined` | Indicateur individuel affiche `--` | Section reste visible | `console.warn('[sf-bridge] entity not found:', id)` |
-| Entité `unavailable` / `unknown` | `state === 'unavailable'` ou `'unknown'` | Valeur affichée en gris désaturé | Section reste visible | — |
+| Entité absente de `hass.states` | `hass.states[id]?.state === undefined` | Indicateur individuel affiche `--` sur un emplacement de valeur (pastille fumée, occupation, cycle, consommable, statut poêle, valeur du slider) ou `Unavailable` sur une étiquette d'état (accès, véhicule) ; ailleurs un état neutre (ni « on/ok » ni « off/idle ») et les contrôles liés sont désactivés. Une `entity` vide n'est jamais journalisée | Section reste visible | `console.warn('[sf-bridge] entity not found:', id)` **une fois par entité** (`Set` de module, vidé par `setConfig()`) |
+| Entité `unavailable` / `unknown` | `state === 'unavailable'` ou `'unknown'` | Valeur affichée en gris désaturé ; sur un emplacement numérique (pellet, stock, puissance EV) : `--` | Section reste visible | `—` ; `console.warn('[sf-bridge] non-numeric state:', id)` une fois par entité sur les trois emplacements numériques |
 | `callService` echec (toggle/cover/etc.) | `.catch((e) => ...)` | Aucun message visible — log console | État HA inchangé | `console.error('[sf-bridge] callService error:', e)` |
-| `pellet_quantity` NaN | `isNaN(parseFloat(state))` | Afficher `-- %`, cacher barre | Stock sacs reste visible | `console.warn` |
-| EV power NaN | `isNaN(parseFloat(state))` | Afficher `-- W`, "Indisponible" | Section reste visible | `console.warn` |
-| Config invalide (`setConfig`) | Validation dans `setConfig()` | Afficher `sf-error-card` avec message | Carte en erreur visible | `console.error` |
+| `pellet_quantity` non numérique | `!Number.isFinite(parseFloat(state))` ou valeur `< 0` | Afficher `-- %`, cacher barre | Stock sacs reste visible | `console.warn('[sf-bridge] non-numeric state:', id)` une fois par entité (`Set` vidé par `setConfig()`) |
+| EV power non numérique | `!Number.isFinite(parseFloat(state))` ou valeur `< 0` | Afficher `-- W`, "Indisponible" | Section reste visible | `console.warn('[sf-bridge] non-numeric state:', id)` une fois par entité (`Set` vidé par `setConfig()`) |
+| Config invalide (`setConfig`) | Validation dans `setConfig()` | Afficher `sf-error-card` avec message | Carte en erreur visible | `console.error('[sf-bridge] invalid config:', message)` |
 
 > [!IMPORTANT]
 > **Behavioral claims — tranchées (2026-11-01, lot fix bridge-md-structure).**

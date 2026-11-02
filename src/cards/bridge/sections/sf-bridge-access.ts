@@ -12,6 +12,7 @@ import { sciFiCommonStyles } from '../../../styles/common.js';
 import { bridgeStyles } from '../styles.js';
 import type { BridgeAccessConfig } from '../config.js';
 import { bridgeCall } from '../bridge-call.js';
+import { warnOnce } from '../bridge-warn.js';
 import '../../../components/sf-icon/sf-icon.js';
 
 const TAG = 'sf-bridge-access';
@@ -30,7 +31,8 @@ function coverStateInfo(state: string): { cls: string; label: string; iconColor:
   }
 }
 
-function lockClass(state: string | null): string {
+function lockClass(state: string | null | undefined): string {
+  if (state === undefined) return 'lock-unknown';
   if (state === 'locked')   return 'lock-locked';
   if (state === 'unlocked') return 'lock-unlocked';
   return 'lock-unavailable';
@@ -56,19 +58,22 @@ export class SfBridgeAccess extends LitElement {
         </div>
         ${this.config.items.map(entry => {
           const stateObj = this.hass.states[entry.entity];
+          if (stateObj === undefined) warnOnce('not-found', entry.entity);
           const state = stateObj?.state ?? 'unavailable';
           const { cls, label, iconColor } = coverStateInfo(state);
           const entryIcon = entry.icon ?? 'mdi:garage';
 
           const lockEntity = entry.lock;
-          const lockState = lockEntity
-            ? this.hass.states[lockEntity]?.state ?? 'unknown'
-            : null;
+          const lockObj = lockEntity ? this.hass.states[lockEntity] : undefined;
+          if (lockEntity && lockObj === undefined) warnOnce('not-found', lockEntity);
+          // null: no lock configured · undefined: configured but absent
+          const lockState = lockEntity ? lockObj?.state ?? undefined : null;
           const lockCls = lockClass(lockState);
 
           const isOpen = state === 'open';
           const isClosed = state === 'closed';
           const unavailable = state === 'unavailable';
+          const absent = stateObj === undefined;
 
           return html`
             <div class="access-entry">
@@ -92,6 +97,7 @@ export class SfBridgeAccess extends LitElement {
                 <!-- Open button -->
                 <button
                   class="access-btn ${isOpen || unavailable ? 'disabled' : ''}"
+                  ?disabled="${absent}"
                   title="${msg('Open')}"
                   @click="${() => this._openCover(entry.entity, entry.name)}"
                 >
@@ -101,6 +107,7 @@ export class SfBridgeAccess extends LitElement {
                 <!-- Close button -->
                 <button
                   class="access-btn ${isClosed || unavailable ? 'disabled' : ''}"
+                  ?disabled="${absent}"
                   title="${msg('Close')}"
                   @click="${() => this._closeCover(entry.entity, entry.name)}"
                 >
@@ -110,7 +117,7 @@ export class SfBridgeAccess extends LitElement {
                 <!-- Lock indicator (visual only) -->
                 ${lockEntity && lockState !== null ? html`
                   <sf-icon
-                    icon="${lockState === 'locked' ? 'mdi:lock' : 'mdi:lock-open'}"
+                    icon="${lockState === undefined ? 'mdi:lock-question' : lockState === 'locked' ? 'mdi:lock' : 'mdi:lock-open'}"
                     class="${lockCls}"
                     .connection="${this.hass.connection}"
                   ></sf-icon>

@@ -9,6 +9,7 @@ import { localized, msg } from '@lit/localize';
 import { sciFiCommonStyles } from '../../../styles/common.js';
 import { bridgeStyles } from '../styles.js';
 import type { BridgeAppliancesConfig, BridgeCycleEntry } from '../config.js';
+import { warnOnce } from '../bridge-warn.js';
 import '../../../components/sf-icon/sf-icon.js';
 
 const TAG = 'sf-bridge-appliances';
@@ -58,6 +59,8 @@ export class SfBridgeAppliances extends LitElement {
       <div class="appliances-cycles">
         ${this.config.cycles.map(entry => {
           const stateObj = this.hass.states[entry.entity];
+          const absent = stateObj === undefined;
+          if (absent) warnOnce('not-found', entry.entity);
           const running = isCycleRunning(stateObj, entry);
           return html`
             <div class="cycle-item">
@@ -69,8 +72,8 @@ export class SfBridgeAppliances extends LitElement {
                 ></sf-icon>
               </div>
               <div class="cycle-name">${entry.name}</div>
-              <div class="cycle-status ${running ? 'running' : 'idle'}">
-                ${running ? msg('Running') : msg('Inactive')}
+              <div class="cycle-status ${absent ? 'unknown' : running ? 'running' : 'idle'}">
+                ${absent ? '--' : running ? msg('Running') : msg('Inactive')}
               </div>
             </div>
           `;
@@ -85,11 +88,12 @@ export class SfBridgeAppliances extends LitElement {
       <div class="consumables-row">
         ${this.config.consumables.map(entry => {
           const stateObj = this.hass.states[entry.entity];
-          const state = stateObj?.state ?? 'unknown';
-          const isOk = state === entry.ok_when;
+          const absent = stateObj === undefined;
+          if (absent) warnOnce('not-found', entry.entity);
+          const isOk = stateObj?.state === entry.ok_when;
           return html`
-            <div class="consumable-chip ${isOk ? 'consumable-ok' : 'consumable-warn'}">
-              ${entry.name} ${isOk ? '✓' : '✗'}
+            <div class="consumable-chip ${absent ? 'consumable-unknown' : isOk ? 'consumable-ok' : 'consumable-warn'}">
+              ${entry.name} ${absent ? '--' : isOk ? '✓' : '✗'}
             </div>
           `;
         })}

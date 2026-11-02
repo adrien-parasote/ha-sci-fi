@@ -180,7 +180,7 @@ describe('sf-bridge-appliances', () => {
 
   // ── isCycleRunning: no stateObj → false ──────────────────────────────────
 
-  it('shows idle when stateObj is missing', async () => {
+  it('shows the unknown state when stateObj is missing', async () => {
     const el = makeEl();
     el.config = {
       cycles: [
@@ -190,7 +190,8 @@ describe('sf-bridge-appliances', () => {
     el.hass = makeHass({});
     document.body.appendChild(el);
     await el.updateComplete;
-    expect(el.shadowRoot!.querySelector('.idle')).not.to.be.null;
+    expect(el.shadowRoot!.querySelector('.cycle-status.unknown')).not.to.be.null;
+    expect(el.shadowRoot!.querySelector('.idle')).to.be.null;
   });
 
   // ── _renderConsumables: ok branch ─────────────────────────────────────────

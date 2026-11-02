@@ -9,7 +9,7 @@
  */
 import { expect, describe, it, afterEach, vi } from 'vitest';
 import '../../../../src/cards/bridge/sections/sf-bridge-actions.js';
-import { makeMockHass } from '../../../fixtures/mock-hass.js';
+import { makeMockHass, makeMockEntity } from '../../../fixtures/mock-hass.js';
 
 // ── Stubs ─────────────────────────────────────────────────────────────────────
 const STUB_ELEMENTS = ['sf-icon'];
@@ -29,7 +29,11 @@ function makeEl(): any {
 }
 
 function makeHass(callService: (...args: any[]) => Promise<any> = () => Promise.resolve({})) {
-  return makeMockHass({ callService });
+  // Every configured entity exists: an absent one disables its button (bridge-error-matrix FR-6.2)
+  const states = new Proxy({} as Record<string, any>, {
+    get: (_t, id) => makeMockEntity({ entity_id: String(id), state: 'idle' }),
+  });
+  return makeMockHass({ callService, states });
 }
 
 // ── Tests ─────────────────────────────────────────────────────────────────────

@@ -12,6 +12,8 @@ import { sciFiCommonStyles } from '../../../styles/common.js';
 import { bridgeStyles } from '../styles.js';
 import type { BridgeAlertsConfig } from '../config.js';
 import { bridgeCall } from '../bridge-call.js';
+import { warnOnce } from '../bridge-warn.js';
+import { renderSfToggle } from '../bridge-toggle.js';
 import '../../../components/sf-icon/sf-icon.js';
 
 const TAG = 'sf-bridge-alerts';
@@ -62,21 +64,24 @@ export class SfBridgeAlerts extends LitElement {
       <div class="alerts-smoke-row">
         ${this.config.smoke.map(entry => {
           const stateObj = this.hass.states[entry.entity];
-          const state = stateObj?.state ?? 'unavailable';
-          const isActive = state === 'on';
+          const absent = stateObj === undefined;
+          if (absent) warnOnce('not-found', entry.entity);
+          const isActive = stateObj?.state === 'on';
           // Use smoke-detector-variant icons (user spec)
           const icon = entry.icon ?? (isActive
             ? 'mdi:smoke-detector-variant-alert'
             : 'mdi:smoke-detector-variant');
 
           return html`
-            <div class="smoke-chip ${isActive ? 'smoke-active' : 'smoke-ok'}">
+            <div class="smoke-chip ${absent ? 'smoke-unknown' : isActive ? 'smoke-active' : 'smoke-ok'}">
               <sf-icon icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
               <span class="smoke-name">${entry.name}</span>
-              <sf-icon
-                icon="${isActive ? 'mdi:alert-circle' : 'mdi:check-circle'}"
-                .connection="${this.hass.connection}"
-              ></sf-icon>
+              ${absent
+                ? html`<span class="smoke-state-placeholder">--</span>`
+                : html`<sf-icon
+                    icon="${isActive ? 'mdi:alert-circle' : 'mdi:check-circle'}"
+                    .connection="${this.hass.connection}"
+                  ></sf-icon>`}
             </div>
           `;
         })}
@@ -90,6 +95,8 @@ export class SfBridgeAlerts extends LitElement {
       <div class="alerts-toggles-row">
         ${this.config.toggles.map(entry => {
           const stateObj = this.hass.states[entry.entity];
+          const absent = stateObj === undefined;
+          if (absent) warnOnce('not-found', entry.entity);
           const state = stateObj?.state ?? 'off';
           const isOn = state === 'on' || state === 'enabled';
           const icon = entry.icon ?? toggleDefaultIcon(entry.entity);
@@ -102,17 +109,8 @@ export class SfBridgeAlerts extends LitElement {
                 .connection="${this.hass.connection}"
               ></sf-icon>
               <!-- Name colored to match state -->
-              <span class="toggle-name ${isOn ? 'toggle-on' : 'toggle-off'}">${entry.name}</span>
-              <button
-                class="sf-toggle"
-                data-on="${isOn}"
-                aria-pressed="${isOn}"
-                @click="${() => this._toggle(entry.entity, isOn, entry.name)}"
-              >
-                <div class="sf-toggle-track">
-                  <div class="sf-toggle-thumb"></div>
-                </div>
-              </button>
+              <span class="toggle-name ${absent ? 'toggle-unknown' : isOn ? 'toggle-on' : 'toggle-off'}">${entry.name}</span>
+              ${renderSfToggle(absent, isOn, () => this._toggle(entry.entity, isOn, entry.name))}
             </div>
           `;
         })}
@@ -121,8 +119,10 @@ export class SfBridgeAlerts extends LitElement {
   }
 
   private _renderOccupancy(): TemplateResult | typeof nothing {
-    if (!this.config.occupancy) return nothing;
+    if (this.config.occupancy === undefined || this.config.occupancy === null) return nothing;
     const stateObj = this.hass.states[this.config.occupancy];
+    const absent = stateObj === undefined;
+    if (absent) warnOnce('not-found', this.config.occupancy);
     const isOccupied = stateObj?.state === 'on';
     return html`
       <div class="occupancy-badge">
@@ -131,8 +131,8 @@ export class SfBridgeAlerts extends LitElement {
           style="--icon-color: ${isOccupied ? 'var(--sf-accent-on, #00ff9d)' : 'var(--sf-text-disabled, #555)'};"
           .connection="${this.hass.connection}"
         ></sf-icon>
-        <span class="occupancy-pill ${isOccupied ? 'occupied' : 'empty'}">
-          ${isOccupied ? msg('Occupied') : msg('Empty')}
+        <span class="occupancy-pill ${absent ? 'unknown' : isOccupied ? 'occupied' : 'empty'}">
+          ${absent ? '--' : isOccupied ? msg('Occupied') : msg('Empty')}
         </span>
       </div>
     `;

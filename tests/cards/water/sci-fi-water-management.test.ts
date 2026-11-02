@@ -120,7 +120,7 @@ describe('sci-fi-water-management', () => {
     expect(el.shadowRoot!.textContent).to.include('No floor configured');
   });
 
-  describe('Automation History Logs (Spec 12)', () => {
+  describe('Automation History Logs (Spec 16)', () => {
     it('TC-1201, TC-WATER-U-007: filters alerts and success logs correctly', async () => {
       const el = document.createElement('sci-fi-water-management') as any;
       el.config = { type: 'custom:sci-fi-water-management', filter_label: 'water' };

@@ -17,7 +17,7 @@
 | F-REMED-05 | Lovelace action handlers for hexa-tiles and lights | ✅ `src/cards/hexa-tiles/` & `src/cards/lights/` | tests/cards/hexa-tiles/sci-fi-hexa-tiles.test.ts :: IT-111 |
 | F-REMED-06 | `LovelaceCard` typescript interface declaration | ✅ `src/utils/base-card.ts` | tests/utils/base-card.test.ts :: TC-113 |
 | F-REMED-07 | Card height overrides (`getCardSize()`) | ✅ les 11 classes de carte | tests/utils/action.test.ts :: TC-112 — — couverture partielle : `tests/utils/action.test.ts` vérifie 8 des 11 cartes (hexa-tiles, climates, plugs, stove, vacuum, vehicles, weather, lights) ; `tv`, `water-management` et `bridge` ne sont vérifiées par aucun cas |
-| F-REMED-08 | Classification HACS — `hacs.json` conforme au schéma HACS 2.0, qui a **retiré** la clé `"type"` | ✅ `hacs.json` (`name`, `render_readme`, `filename`) & `src/sci-fi.ts` | tests/sci-fi.test.ts :: TC-114, TC-115 |
+| F-REMED-08 | Classification HACS — `hacs.json` conforme au schéma HACS 2.0, qui a **retiré** la clé `"type"` | ✅ `hacs.json` (`name`, `render_readme`, `filename`) & `src/sci-fi.ts` | tests/sci-fi.test.ts :: TC-114, TC-115, TC-116 |
 
 ---
 
@@ -181,6 +181,7 @@ export interface LovelaceCard extends HTMLElement {
 | TC-113 | Unit | `SciFiBaseCard` complies with `LovelaceCard` | Subclass contract verification | Class implements `getCardSize()`, `setConfig()`, `set hass()`, and supports Lit lifecycle |
 | TC-114 | Unit | customCards array contains `documentationURL` for all 11 cards | `sci-fi.ts` export | `window.customCards` entries have `documentationURL` string |
 | TC-115 | Unit | `hacs.json` suit le schéma HACS 2.0 | Parse `hacs.json` | Le JSON ne porte **pas** de clé `"type"` — `expect(hacsJson).to.not.have.property('type')` dans `tests/sci-fi.test.ts` |
+| TC-116 | Unit | Aucun type de `window.customCards` ne porte le préfixe `custom:` | Parcourir `window.customCards`, module `src/sci-fi.js` chargé | `card.type` ne contient pas `custom:` (Home Assistant l'ajoute) — `tests/sci-fi.test.ts` |
 | IT-111 | Integration | Hexa-tiles handles custom click action | Click tile element with tap_action config | `hass-action` CustomEvent fired up the DOM tree |
 | IT-112 | Integration | Climates card renders surrounded by `<ha-card>` wrapper | Render `sci-fi-climates` | Top element in shadow root is `<ha-card>` |
 | IT-113 | Integration | Season variables fallback to hexes when undefined | Render climates card | Season icon color maps to default hexes |

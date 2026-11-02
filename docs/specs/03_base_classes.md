@@ -11,7 +11,7 @@
 | Feature ID | Description | Covered here | Covers |
 |---|---|---|---|
 | F-BASE-01 | `SciFiBaseCard` abstract base | ✅ `base-card.ts` | tests/utils/base-card.test.ts :: TC-301, TC-304, IT-301 |
-| F-BASE-02 | `SciFiBaseEditor` abstract base | ✅ `base-editor.ts` | tests/utils/base-editor.test.ts :: TC-305 · tests/styles/editor-common.test.ts :: IT-302 |
+| F-BASE-02 | `SciFiBaseEditor` abstract base | ✅ `base-editor.ts` | tests/utils/base-editor.test.ts :: TC-305, TC-308 · tests/styles/editor-common.test.ts :: IT-302 |
 | F-BASE-03 | Reactivity and lifecycle hooks | ✅ `base-card.ts` | tests/utils/base-card.test.ts :: TC-303, TC-306, IT-301 · tests/utils/base-editor.test.ts :: IT-303 |
 | F-BASE-04 | Sealed render wrapper pattern | ✅ `base-card.ts` | tests/utils/base-card.test.ts :: TC-301, TC-302 |
 | F-BASE-05 | Shared common Lit CSS styles | ✅ `src/styles/common.ts` | tests/styles/editor-common.test.ts :: IT-302 |
@@ -290,6 +290,7 @@ prescrire l'AP#7 contre du code déjà relu.
 | TC-305 | Unit | baseEditor updates properties | Change value in editor | Dispatches config-changed custom event |
 | TC-306 | Unit | Subclass overriding willUpdate must call super | A compliant subclass AND one that omits `super.willUpdate` | The inherited hook fires for the compliant override and NOT for the faulty one; every `extends SciFiBaseCard` in `src/**/*.ts` that overrides `willUpdate` **as a method declaration** has `super.willUpdate(changedProperties)` as its first statement. The tree-wide half is scoped to method declarations in files that textually `extends SciFiBaseCard` — that is what a source walk can see. Two override shapes fall outside it and are tracked by bead `ha-sci-fi-2t4`, not by this row: a class-field arrow (`override willUpdate = (c) => …`, which shadows the prototype method) and a card extending an intermediate subclass declared elsewhere. The `override` keyword itself is enforced by `noImplicitOverride` in `tsconfig.json`, a different property from the super call: a compiler flag cannot express the latter, and dropping the walk in favour of the flag leaves the clause unchecked |
 | TC-307 | Unit | No `var(--x)` without fallback targets an undefined token | Every `` css` ` `` block and inline `style=` in `src/**/*.ts`, CSS comments excluded | Zero references; a violation is reported with the token name and its `file:line`. Guards rule 2 above — a reference that is neither defined nor defaulted is invalid at computed-value time and the property renders unset |
+| TC-308 | Unit | `getLabel` renvoie la chaîne française quand la locale est `fr` | `hass.locale.language = fr`, attendre le chargement de la locale | `getLabel('section-title-header')` vaut `En-tête` — `tests/utils/base-editor.test.ts` |
 | TC-309 | Unit | Le défaut `[]` re-rend sur tout | Une sous-classe qui ne surcharge **pas** `getRelevantEntities()` ; réassigner `hass` en changeant une entité qu'elle ne lit pas | `renderCard` est rappelé — le repli conservateur du § Contrat de rendu sélectif, point 3. C'est le pendant d'IT-301, qui prouve le veto quand la liste est fournie |
 | TC-310 | Unit | Chaque carte surcharge le hook | Les fichiers de carte de `src/cards/*/` | Toute classe qui `extends SciFiBaseCard` déclare `override getRelevantEntities()`. Le compte des cartes est dérivé de l'arbre, jamais gelé dans le cas |
 

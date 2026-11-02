@@ -1,0 +1,8 @@
+51bb77cf82edd511f27f9825a111dc777ee87684 docs/specs/03_base_classes.md
+90cb4f40a0c713997a119c1c532535cd02bde80c docs/specs/11_guidelines_remediation.md
+50814ac29bbd08987d7b97958ca584aaabc48257 docs/adversarial-review/bare-range-ids.md
+50814ac29bbd08987d7b97958ca584aaabc48257 docs/adversarial-review/history/bare-range-ids.round-01.md
+2600d115769590c3320a65fcbfd7705f3d7570bd docs/specs/bare-range-ids/spec.md
+2491d8db87c9cb389326523ba2190b45bd769726 docs/summaries/bare-range-ids/BUILD.md
+f79eb4fcd35531b37a5317be343c96f9f6571ebb docs/summaries/bare-range-ids/SPEC.md
+83f7c40f8883803bd0fe6daac6bffd8f0721348f tests/utils/bare-range-ids-declared.test.ts

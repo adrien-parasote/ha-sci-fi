@@ -91,7 +91,7 @@ export const bridgeStyles = css`
     display: flex;
     align-items: center;
     gap: var(--sf-spacing-xs, 4px);
-    font-size: var(--sf-font-size-sm, 0.75rem);
+    font-size: var(--sf-font-size-sm, 12px);
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -672,7 +672,7 @@ export const bridgeStyles = css`
     border: 1px solid var(--sf-primary, #00d2ff);
     border-radius: var(--sf-radius, 8px);
     color: var(--sf-primary, #00d2ff);
-    font-size: var(--sf-font-size-base, 0.875rem);
+    font-size: var(--sf-font-size-base, 14px);
     font-weight: 600;
     letter-spacing: 0.05em;
     text-transform: uppercase;

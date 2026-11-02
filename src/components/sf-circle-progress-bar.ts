@@ -24,7 +24,7 @@ export class SciFiCircleProgressBar extends LitElement {
         flex-direction: column;
         gap: 5px;
         color: var(--sf-text-secondary);
-        font-size: var(--sf-font-size-sm, 0.75rem);
+        font-size: var(--sf-font-size-sm, 12px);
         position: relative;
         background: transparent;
       }

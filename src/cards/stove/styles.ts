@@ -136,7 +136,7 @@ export const stoveStyles = css`
     flex: 1;
   }
   .content .info .e.top-path .powers .power div:last-child {
-    font-size: var(--sf-text-base, 0.875rem);
+    font-size: var(--sf-text-base, 14px);
     color: var(--primary-light-color, #6ecbf5);
   }
   .content .info .e.top-path .powers .power div:last-child.nothing {

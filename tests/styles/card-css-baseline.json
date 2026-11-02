@@ -148,7 +148,7 @@
       "display": "flex",
       "align-items": "center",
       "gap": "var(--sf-spacing-xs, 4px)",
-      "font-size": "var(--sf-font-size-sm, 0.75rem)",
+      "font-size": "var(--sf-font-size-sm, 12px)",
       "font-weight": "600",
       "letter-spacing": "0.08em",
       "text-transform": "uppercase",
@@ -684,7 +684,7 @@
       "border": "1px solid var(--sf-primary, #00d2ff)",
       "border-radius": "var(--sf-radius, 8px)",
       "color": "var(--sf-primary, #00d2ff)",
-      "font-size": "var(--sf-font-size-base, 0.875rem)",
+      "font-size": "var(--sf-font-size-base, 14px)",
       "font-weight": "600",
       "letter-spacing": "0.05em",
       "text-transform": "uppercase",
@@ -2509,7 +2509,7 @@
       "flex": "1"
     },
     ".content .info .e.top-path .powers .power div:last-child": {
-      "font-size": "var(--sf-text-base, 0.875rem)",
+      "font-size": "var(--sf-text-base, 14px)",
       "color": "var(--primary-light-color, #6ecbf5)"
     },
     ".content .info .e.top-path .powers .power div:last-child.nothing": {

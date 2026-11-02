@@ -47,7 +47,7 @@ export const sciFiEditorCommonStyles = css`
   }
 
   section h1 {
-    font-size: var(--font-size-normal, 0.875rem);
+    font-size: var(--font-size-normal, 14px);
     border-bottom: 1px solid var(--editor-border);
     margin: 10px 0 5px 0;
     padding-bottom: 5px;
@@ -88,7 +88,7 @@ export const sciFiEditorCommonStyles = css`
   .editor .head span {
     flex: 1;
     align-content: center;
-    font-size: var(--font-size-normal, 0.875rem);
+    font-size: var(--font-size-normal, 14px);
     color: var(--primary-text-color, #e0e8ff);
   }
 

@@ -98,7 +98,7 @@ describe('house selectors', () => {
       expect(areas.every(a => a.floor_id === 'floor1')).to.be.true;
     });
 
-    it('TC-202b: getAreasByFloor() returns [] when floor has no areas', () => {
+    it('TC-208: getAreasByFloor() returns [] when floor has no areas', () => {
       const hass = makeMockHass();
       const areas = getAreasByFloor(hass, 'nonexistent_floor');
       expect(areas).toEqual([]);

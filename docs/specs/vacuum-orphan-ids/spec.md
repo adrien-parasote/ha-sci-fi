@@ -18,7 +18,7 @@ Bead `ha-sci-fi-78y.2`, child of `78y`; the repo-wide guard is `78y.8`. Two vacu
 
 ## Requirements
 
-- **FR-1**: Every id cited in a test title (`it(`, `test(`, `it.each(`) of `tests/cards/vacuum/sci-fi-vacuum.test.ts` and `sci-fi-vacuum-editor.test.ts` is declared as a row head in the Test Cases table of `docs/specs/cards/vacuum.md`, and starts with `TC-VACUUM-U-` or `IT-VACUUM-I-`. The guard `tests/cards/vacuum/vacuum-ids-declared.test.ts` enforces it, fails on a fixture that cites an undeclared id, and fails when the declared set is empty. When `78y.8` ships, it absorbs this guard or retires it.
+- **FR-1**: Every id cited in a test title (`it(`, `test(`, `it.each(`) of `tests/cards/vacuum/sci-fi-vacuum.test.ts` and `sci-fi-vacuum-editor.test.ts` is declared as a row head in the Test Cases table of `docs/specs/cards/vacuum.md`, and starts with `TC-VACUUM-U-` or `IT-VACUUM-I-`. The guard `tests/cards/vacuum/vacuum-ids-declared.test.ts` enforces the prefix and fails when the declared set is empty; the declaration half is held by `tests/docs/repo-wide-ids-guard.test.ts`, the guard keeps the prefix and the other cases.
 - **FR-2**: Nine cases have a row in `vacuum.md` (type `Unit`, description, input, expected) written from the assertions of their test body, and their titles take the new id:
 
   | Old title id | New id |
@@ -63,8 +63,8 @@ Bead `ha-sci-fi-78y.2`, child of `78y`; the repo-wide guard is `78y.8`. Two vacu
 
 | ID | Scenario | Covers | Expected |
 |----|----------|--------|----------|
-| TC-VOI-U-01 | Every id cited by a vacuum test title is declared in vacuum.md; a row head matches with or without `**` | FR-1 | Guard finds no orphan |
-| TC-VOI-U-02 | The guard rejects a fixture title citing an undeclared id | FR-1 | The check returns that id as orphan |
+| TC-VOI-U-01 [RETIRED] | Every id cited by a vacuum test title is declared in vacuum.md; a row head matches with or without `**` | FR-1 | Guard finds no orphan |
+| TC-VOI-U-02 [RETIRED] | The guard rejects a fixture title citing an undeclared id | FR-1 | The check returns that id as orphan |
 | TC-VOI-U-03 | The nine ids 1528..1536 are each a row head in vacuum.md exactly once, and 1527 is not a row head | FR-2 | Each found once, 1527 absent |
 | TC-VOI-U-04 | No vacuum test title carries an unprefixed `TC-15xx`, `TC-VE`, `TC-1016` or `TC-506` id | FR-3 | No match |
 | TC-VOI-U-05 | No vacuum test uses `it.skip`, `it.todo` or `it.only` | FR-3 | No match |
@@ -92,7 +92,7 @@ Answers to a cold builder's questions. Calls marked *mine* are the author's, not
 - Guard: one file `tests/cards/vacuum/vacuum-ids-declared.test.ts`, same shape as `tests/cards/tv/tv-ids-declared.test.ts` (reads the two test files, `sci-fi-plugs.ts`, the `src/` tree and `docs/specs/cards/vacuum.md` with `fs` from `process.cwd()`, holds the check as a local pure function, fixtures inline). A row head is `| TC-VACUUM-U-<n> |` or `| **TC-VACUUM-U-<n>** |`; a cited id is any `TC-…` or `IT-…` token in a title.
 - Token pattern (agent's call: whole tokens, so a prefixed id never matches as a substring): a cited id is `\b(?:TC|IT)-[A-Z0-9]+(?:-[A-Za-z0-9]+)*`, matched whole; every id in a title is checked, not only the first. `TC-VACUUM-U-<n>` and `IT-VACUUM-I-<n>` in `src/` are fine; only an unprefixed id fails.
 - The FR-5 note drops the `TC-1528` mention without replacement text (agent's call: the row `TC-VACUUM-U-1524` already holds that case). `TC-VACUUM-U-1526` exists as a row head; the new rows follow it.
-- `TC-VOI-U-01..10` are ten separate `it` blocks in that guard, each citing its id in the title.
+- `TC-VOI-U-03`..`-10` are eight separate `it` blocks in that guard, each citing its id in the title.
 
 ## Error Handling
 

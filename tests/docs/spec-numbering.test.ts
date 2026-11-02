@@ -95,7 +95,7 @@ describe('Renumérotation Spec 12 / Spec 16', () => {
     }
   });
 
-  it('TC-RN-U-07b: la note historique de stove.md nomme toujours les deux fichiers', () => {
+  it('TC-RN-U-07: la note historique de stove.md nomme toujours les deux fichiers', () => {
     const stove = read('docs/specs/cards/stove.md');
     expect(stove).toContain('vehicles.md');
     expect(stove).toContain('water_history.md');

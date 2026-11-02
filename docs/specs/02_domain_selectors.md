@@ -13,7 +13,7 @@
 | F-DOM-01 | HomeAssistantExt types | ✅ `src/types/ha.ts` | ⬜ aucun cas de test — déclarations de types, vérifiées par TC-103 de [spec 01](./01_infrastructure.md#blueprint-coverage) |
 | F-DOM-02 | Configuration validation schemas | ✅ `src/types/config.ts` — kernel only since ADR-017 (`SciFiBaseConfig`, `ActionConfig`, `assertString`, `assertDefined`, `isValidCardType`). Per-card config interfaces live in `src/cards/<card>/config.ts`. | tests/selectors/entity.selectors.test.ts :: TC-207 |
 | F-DOM-03 | Immutability on all domain structures | ✅ `src/types/ha.ts` | tests/selectors/house.test.ts :: IT-201 |
-| F-DOM-04 | Immutability mapping helpers | ✅ `src/selectors/house.ts` | tests/selectors/house.test.ts :: TC-201, TC-202, TC-205, IT-203 |
+| F-DOM-04 | Immutability mapping helpers | ✅ `src/selectors/house.ts` | tests/selectors/house.test.ts :: TC-201, TC-202, TC-205, TC-208, IT-203 |
 | F-DOM-05 | Immutability collection selectors | ✅ `src/selectors/climate.ts` | tests/selectors/entity.selectors.test.ts :: TC-204 |
 | F-DOM-06 | Immutability filter selectors | ✅ `src/selectors/light.ts` | tests/selectors/house.test.ts :: TC-203 · tests/selectors/entity.selectors.test.ts :: TC-206, IT-202 |
 | F-DOM-07 | Mocking hass extensions | ✅ `tests/fixtures/mock-hass.ts` | ⬜ aucun cas de test — fixture, moyen de TC-201 à IT-203 et non leur objet |
@@ -173,6 +173,7 @@ sont le compte de cette frontière plus la dette.
 | TC-205 | Unit | `getFloors()` empty if no floors registered | `mockHass` with empty floors registry | Returns `[]` (no crash) |
 | TC-206 | Unit | `countActiveLights()` correct count | 3 lights: 2 on, 1 off | Returns `2` |
 | TC-207 | Unit | Type guard rejects invalid config | `{ type: 'custom:sci-fi-lights' }` missing required field | Throws `Error` with field name |
+| TC-208 | Unit | `getAreasByFloor()` returns an empty list for an unknown floor | `mockHass`, floor id `nonexistent_floor` | Returns `[]` — tests/selectors/house.test.ts |
 | IT-201 | Integration | Selectors are pure — no mutation | Call `getFloors()` twice | Returns equal data, and `hass.floors` is unchanged (same contents, same key order). Reference identity is NOT required: `getFloors` sorts, so it must allocate a fresh array rather than sort the registry in place — requiring identical references would mandate a cache no other requirement asks for, and would risk serving stale floors |
 | IT-202 | Integration | Performance: 500 entities | `mockHass` with 500 states | `getLightEntities()` completes under 5ms |
 | IT-203 | Integration | End-to-end selector pipeline | Chain `getFloors` -> `getAreasByFloor` -> `getEntitiesByArea` | Correct entities resolved across hierarchy |

@@ -20,21 +20,6 @@ const rowHeads = (spec: string, id: string): number =>
     .length;
 const rowOf = (spec: string, id: string): string =>
   spec.split('\n').find((l) => new RegExp(`^\\|\\s*(?:\\*\\*)?(${id})(?:\\*\\*)?\\s*\\|`).test(l)) ?? '';
-const declared = (spec: string): Set<string> =>
-  new Set(
-    spec
-      .split('\n')
-      .map((l) => l.match(/^\|\s*(?:\*\*)?((?:TC|IT)-\d+)(?:\*\*)?\s*\|/)?.[1])
-      .filter((x): x is string => !!x),
-  );
-const orphans = (src: string, spec: string): string[] => {
-  const dec = declared(spec);
-  const out: string[] = [];
-  for (const t of titlesOf(src))
-    for (const id of t.match(/\b(?:TC|IT)-\d+\b/g) ?? [])
-      if (!dec.has(id) && !out.includes(id)) out.push(id);
-  return out;
-};
 const walk = (dir: string): string[] =>
   readdirSync(dir).flatMap((n) => {
     if (n === 'node_modules') return [];
@@ -65,15 +50,6 @@ describe('bare range ids declared', () => {
     for (const [id, file] of Object.entries(TESTS)) {
       expect(titlesOf(read(file)).some((t) => t.startsWith(`${id}:`)), file).toBe(true);
     }
-  });
-
-  it('TC-BRI-U-03: orphan detector reports a ghost id, then none once declared', () => {
-    const fixture = "it('TC-9999: ghost', () => {});";
-    expect(orphans(fixture, '| TC-1 | Unit | x |')).toEqual(['TC-9999']);
-    expect(orphans(fixture, '| TC-9999 | Unit | x |')).toEqual([]);
-    const specs = read(SPEC_03) + '\n' + read(SPEC_11);
-    for (const [id, file] of Object.entries(TESTS))
-      expect(orphans(read(file), specs).filter((o) => o === id)).toEqual([]);
   });
 
   it('TC-BRI-U-04: the new rows name what their tests assert', () => {

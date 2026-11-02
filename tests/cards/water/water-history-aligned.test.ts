@@ -345,7 +345,7 @@ describe('water_history.md aligned on water.md and the code', () => {
     expect(checkU04(mutant(DOC, 'no test pins the brackets', 'a test pins the brackets'), SRC).length).toBeGreaterThan(0);
   });
 
-  it('TC-WSA-U-05: title is Spec 16 and IT-003 has no third filter', () => {
+  it('TC-WSA-U-05: title is Spec 16 and the alerts filter row has no third filter', () => {
     expect(checkU05(DOC)).toEqual([]);
     expect(checkU05(mutant(DOC, '# Spec 16', '# Spec 99')).length).toBeGreaterThan(0);
     expect(checkU05(mutant(DOC, 'there is no third (Warning) filter', 'a third Warning filter shows warnings')).length).toBeGreaterThan(0);

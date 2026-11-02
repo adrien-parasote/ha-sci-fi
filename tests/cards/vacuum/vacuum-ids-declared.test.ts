@@ -16,10 +16,6 @@ const citedIds = (title: string): string[] =>
   title.match(/\b(?:TC|IT)-[A-Z0-9]+(?:-[A-Za-z0-9]+)*/g) ?? [];
 const declaredIds = (spec: string): string[] =>
   [...spec.matchAll(/^\|\s*(?:\*\*)?((?:TC|IT)-[A-Z0-9]+(?:-[A-Za-z0-9]+)*)(?:\*\*)?\s*\|/gm)].map((m) => m[1] ?? '');
-const orphans = (src: string, spec: string): string[] => {
-  const declared = new Set(declaredIds(spec));
-  return titlesOf(src).flatMap(citedIds).filter((id) => !declared.has(id));
-};
 const walk = (dir: string): string[] =>
   readdirSync(join(root, dir)).flatMap((n) => {
     const p = `${dir}/${n}`;
@@ -30,15 +26,6 @@ const spec = read(SPEC);
 const sources = TEST_FILES.map(read);
 
 describe('vacuum ids declared', () => {
-  it('TC-VOI-U-01: every id cited by a vacuum test title is declared in vacuum.md', () => {
-    for (const src of sources) expect(orphans(src, spec)).toEqual([]);
-    expect(orphans("it('TC-VACUUM-U-1501 x', () => {});", '| **TC-VACUUM-U-1501** | a |')).toEqual([]);
-  });
-
-  it('TC-VOI-U-02: rejects a fixture title citing an undeclared id', () => {
-    expect(orphans("it('TC-VACUUM-U-99999: ghost', () => {});", spec)).toEqual(['TC-VACUUM-U-99999']);
-  });
-
   it('TC-VOI-U-03: ids 1528..1536 are each a row head exactly once, 1527 is not', () => {
     const heads = declaredIds(spec);
     for (let n = 1528; n <= 1536; n++) {
@@ -47,7 +34,7 @@ describe('vacuum ids declared', () => {
     expect(heads).not.toContain('TC-VACUUM-U-1527');
   });
 
-  it('TC-VOI-U-04: no vacuum test title carries an unprefixed TC-15xx, TC-VE, TC-1016 or TC-506', () => {
+  it('TC-VOI-U-04: no vacuum test title carries an unprefixed TC-15xx, a retired VE id, TC-1016 or TC-506', () => {
     for (const src of sources) {
       expect(titlesOf(src).filter((t) => /(?<![A-Z-])TC-(?:15\d\d|VE|1016|506)/.test(t))).toEqual([]);
     }
@@ -83,7 +70,7 @@ describe('vacuum ids declared', () => {
     for (const src of sources) expect(nonLiteralTitles(src)).toEqual([]);
   });
 
-  it('TC-VOI-U-10: the vacuum.md note names 1534 and 1535 and no unprefixed TC-1528, TC-1529, TC-1530', () => {
+  it('TC-VOI-U-10: the vacuum.md note names 1534 and 1535 and no unprefixed retired id', () => {
     const note = spec.split('\n').find((l) => l.includes('must be completely deleted or replaced')) ?? '';
     expect(note).toContain('TC-VACUUM-U-1534');
     expect(note).toContain('TC-VACUUM-U-1535');

@@ -1,0 +1,14 @@
+bec4b49e13a0a2a829c9d76b4b97e482fb0fa0f4 docs/specs/02_domain_selectors.md
+0ed669371d2ff34db8df003339feb5b0318c4e85 docs/specs/bare-range-ids/spec.md
+ff5e4480536066aae612b71a6e9f1fbf2ef97a49 docs/specs/vacuum-orphan-ids/spec.md
+c46290ed291985b107de479b527bb049e5af9de0 tests/cards/vacuum/vacuum-ids-declared.test.ts
+3a3381c3d10d932b68c001a132f4ae2e41c88797 tests/cards/water/water-history-aligned.test.ts
+057757b3623a74bdf2863284f68edf4b93ad96df tests/docs/spec-numbering.test.ts
+7452ce966331518c28f41e012f2345f517f85368 tests/selectors/house.test.ts
+2af226dec56a5ea1f08666514eab6020bf627313 tests/utils/bare-range-ids-declared.test.ts
+1505a449812d2b3f3b37bcd17b3b99d2e874856b docs/adversarial-review/history/repo-wide-ids-guard.round-01.md
+1505a449812d2b3f3b37bcd17b3b99d2e874856b docs/adversarial-review/repo-wide-ids-guard.md
+5827dfa97d8a327c36af52ebab7dcc3fa82241f6 docs/specs/repo-wide-ids-guard/spec.md
+163ae054f674e0a20c44177de6d3212d60117576 docs/summaries/repo-wide-ids-guard/BUILD.md
+c5122606e597cb3dc62de171b1e89f8863e7ba79 docs/summaries/repo-wide-ids-guard/SPEC.md
+7b8268194d12552f2acf0032a313ba961f4b6ca0 tests/docs/repo-wide-ids-guard.test.ts

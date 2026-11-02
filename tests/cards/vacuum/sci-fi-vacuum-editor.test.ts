@@ -155,7 +155,7 @@ describe('sci-fi-vacuum-editor', () => {
     expect(received[0]!.detail.config.vacuums[0].sensors?.battery).toBe('sensor.battery');
   });
 
-  it('TC-1016: renders a non-empty label for every sensor field', async () => {
+  it('TC-VACUUM-U-1536: renders a non-empty label for every sensor field', async () => {
     // Regression: the label key was built with `f.replace('_', '-')`, which
     // replaces only the FIRST underscore, so 'current_clean_area' produced
     // 'input-current-clean_area' — a key no dictionary defines. getLabel()
@@ -349,8 +349,8 @@ describe('sci-fi-vacuum-editor', () => {
     expect((el as any)._vacuumEntities).toBe(first);
   });
 
-  // TC-VE01: _updateShortcutField (icon) dispatches config-changed
-  it('TC-VE01: dispatches config-changed on shortcut icon update', async () => {
+  // TC-VACUUM-U-1528: _updateShortcutField (icon) dispatches config-changed
+  it('TC-VACUUM-U-1528: dispatches config-changed on shortcut icon update', async () => {
     const el = await createElement();
     el.setConfig(makeConfig({
       vacuums: [makeVacuum({ shortcuts: { description: [{ name: 'Zone 1', icon: '', segments: [] }] } })],
@@ -376,8 +376,8 @@ describe('sci-fi-vacuum-editor', () => {
     expect(received[0]!.detail.config.vacuums[0].shortcuts.description[0].icon).toBe('mdi:broom');
   });
 
-  // TC-VE02: _addShortcutSegment appends a segment
-  it('TC-VE02: dispatches config-changed with new segment when add-segment clicked', async () => {
+  // TC-VACUUM-U-1529: _addShortcutSegment appends a segment
+  it('TC-VACUUM-U-1529: dispatches config-changed with new segment when add-segment clicked', async () => {
     const el = await createElement();
     el.setConfig(makeConfig({
       vacuums: [makeVacuum({ shortcuts: { description: [{ name: 'Z1', segments: [1] }] } })],
@@ -401,8 +401,8 @@ describe('sci-fi-vacuum-editor', () => {
     expect(segs[1]).toBe(0); // new segment value
   });
 
-  // TC-VE03: _removeShortcutSegment removes the correct segment
-  it('TC-VE03: dispatches config-changed with segment removed when delete-btn clicked', async () => {
+  // TC-VACUUM-U-1530: _removeShortcutSegment removes the correct segment
+  it('TC-VACUUM-U-1530: dispatches config-changed with segment removed when delete-btn clicked', async () => {
     const el = await createElement();
     el.setConfig(makeConfig({
       vacuums: [makeVacuum({ shortcuts: { description: [{ name: 'Z1', segments: [10, 20] }] } })],
@@ -427,8 +427,8 @@ describe('sci-fi-vacuum-editor', () => {
     expect(segs[0]).toBe(20); // only segment 20 remains
   });
 
-  // TC-VE04: _updateShortcutSegment updates segment value
-  it('TC-VE04: dispatches config-changed with updated segment value', async () => {
+  // TC-VACUUM-U-1531: _updateShortcutSegment updates segment value
+  it('TC-VACUUM-U-1531: dispatches config-changed with updated segment value', async () => {
     const el = await createElement();
     el.setConfig(makeConfig({
       vacuums: [makeVacuum({ shortcuts: { description: [{ name: 'Z1', segments: [5] }] } })],
@@ -455,8 +455,8 @@ describe('sci-fi-vacuum-editor', () => {
     expect(segs[0]).toBe(42);
   });
 
-  // TC-VE05: _deleteShortcut removes shortcut and exits edit mode
-  it('TC-VE05: dispatches config-changed and exits edit mode when shortcut deleted', async () => {
+  // TC-VACUUM-U-1532: _deleteShortcut removes shortcut and exits edit mode
+  it('TC-VACUUM-U-1532: dispatches config-changed and exits edit mode when shortcut deleted', async () => {
     const el = await createElement();
     el.setConfig(makeConfig({
       vacuums: [makeVacuum({ shortcuts: { description: [{ name: 'Z1', segments: [] }] } })],
@@ -482,8 +482,8 @@ describe('sci-fi-vacuum-editor', () => {
     expect((el as any)._shortcutId).toBeNull();
   });
 
-  // TC-VE06: _updateShortcutsTop updates the command field
-  it('TC-VE06: dispatches config-changed on shortcuts command field update', async () => {
+  // TC-VACUUM-U-1533: _updateShortcutsTop updates the command field
+  it('TC-VACUUM-U-1533: dispatches config-changed on shortcuts command field update', async () => {
     const el = await createElement();
     el.setConfig(makeConfig({
       vacuums: [makeVacuum({ shortcuts: { service: 'vacuum.send_command', command: '', description: [] } })],

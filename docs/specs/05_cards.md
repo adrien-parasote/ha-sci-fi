@@ -31,7 +31,7 @@
 | F-CARD-05 | `sci-fi-weather` Lovelace Card | ✅ `weather/` | tests/cards/weather/sci-fi-weather.test.ts :: TC-502, TC-503 · tests/sci-fi.test.ts :: IT-501 — cas propres dans [weather.md](./cards/weather.md#test-case-specifications) |
 | F-CARD-06 | `sci-fi-stove` Lovelace Card | ✅ `stove/` | tests/cards/stove/sci-fi-stove.test.ts :: TC-507 · tests/sci-fi.test.ts :: IT-501 — cas propres dans [stove.md](./cards/stove.md#blueprint-coverage) |
 | F-CARD-07 | `sci-fi-vehicles` Lovelace Card | ✅ `vehicles/` | tests/cards/vehicles/sci-fi-vehicles.test.ts :: TC-508 · tests/sci-fi.test.ts :: IT-501 — cas propres dans [vehicles.md](./cards/vehicles.md#blueprint-coverage) |
-| F-CARD-08 | `sci-fi-vacuum` Lovelace Card | ✅ `vacuum/` | tests/cards/vacuum/sci-fi-vacuum.test.ts :: TC-506 · tests/sci-fi.test.ts :: IT-501 — cas propres dans [vacuum.md](./cards/vacuum.md#blueprint-coverage) |
+| F-CARD-08 | `sci-fi-vacuum` Lovelace Card | ✅ `vacuum/` | tests/cards/vacuum/sci-fi-vacuum.test.ts :: TC-VACUUM-U-1518 · tests/sci-fi.test.ts :: IT-501 — cas propres dans [vacuum.md](./cards/vacuum.md#blueprint-coverage) |
 | F-CARD-09 | `sci-fi-tv` Lovelace Card | ✅ `tv/` | tests/sci-fi.test.ts :: IT-501 — cas propres dans [tv.md](./cards/tv.md#blueprint-coverage) |
 | F-CARD-10 | `sci-fi-water-management` Lovelace Card | ✅ `water/` | tests/sci-fi.test.ts :: IT-501 — cas propres dans [water.md](./cards/water.md#blueprint-coverage) et [water_history.md](./cards/water_history.md#blueprint-coverage) |
 | F-CARD-11 | `sci-fi-bridge` Lovelace Card | ✅ `bridge/` | tests/sci-fi.test.ts :: IT-501 — cas propres dans [bridge.md](./cards/bridge.md#blueprint-coverage) |

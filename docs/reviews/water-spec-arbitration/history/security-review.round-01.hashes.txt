@@ -1,0 +1,7 @@
+10c78ab577709286ebaca94c15ae0b291cad52a8 docs/specs/cards/water_history.md
+b107ba10aa8a068faf3b545d0ec060882e38ef04 docs/adversarial-review/history/water-spec-arbitration.round-01.md
+b107ba10aa8a068faf3b545d0ec060882e38ef04 docs/adversarial-review/water-spec-arbitration.md
+01d15968954978df7d26dc1aa665d97b6c2ce050 docs/specs/water-spec-arbitration/spec.md
+11b27f3fb5c19fd52d577e0ca3c49a7f8584419c docs/summaries/water-spec-arbitration/BUILD.md
+1418ad69cac300202956f6ebb679168278954982 docs/summaries/water-spec-arbitration/SPEC.md
+3db59f4d7e7bd11ba28b3a00ebb09a0f2076bad3 tests/cards/water/water-history-aligned.test.ts

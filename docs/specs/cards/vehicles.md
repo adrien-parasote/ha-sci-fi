@@ -108,7 +108,7 @@ src/cards/vehicles/
 └── src/cards/vehicles/vehicle_const.ts                [NEW]    — service names, charge/plug state constants
 
 tests/cards/vehicles/
-└── tests/cards/vehicles/sci-fi-vehicles.test.ts      [MODIFY] — rewrite to match new layout selectors; preserve TC-VEH-0001 (getConfigElement) and TC-VEH-0002 (getStubConfig)
+└── tests/cards/vehicles/sci-fi-vehicles.test.ts      [MODIFY] — rewrite to match new layout selectors; preserve TC-VEHICLES-U-1201 (getConfigElement) and TC-VEHICLES-U-1202 (getStubConfig)
 
 xliff/
 └── xliff/fr.xlf                                      [MODIFY]

@@ -3,12 +3,13 @@
  * Layout: status row (icon + chip) | graphs row (circle-progress + stack-bar)
  * Both graphs have fixed wrapper dimensions so they don't overflow the card.
  */
-import { html, LitElement, nothing, type TemplateResult } from 'lit';
+import { html, LitElement, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { localized, msg } from '@lit/localize';
 import { sciFiCommonStyles } from '../../../styles/common.js';
 import { bridgeStyles } from '../styles.js';
 import type { BridgeStoveConfig } from '../config.js';
+import { readSlotOrWarn, warnOnce } from '../bridge-warn.js';
 import '../../../components/sf-icon/sf-icon.js';
 import '../../../components/sf-circle-progress-bar.js';
 import '../../../components/sf-stack-bar.js';
@@ -40,7 +41,6 @@ const STOVE_OFF_STATES = new Set([
 
 // Normalize pellet quantity to 0–100 int for sf-circle-progress-bar
 function normalizePelletPct(raw: number): number {
-  if (isNaN(raw)) return NaN;
   const pct = raw > 1 ? raw : raw * 100;
   return Math.min(Math.max(Math.round(pct), 0), 100);
 }
@@ -58,13 +58,14 @@ export class SfBridgeStove extends LitElement {
     const sectionIcon = this.config.icon ?? 'sci:stove';
 
     // Pellet quantity — normalized to 0–100 for circle-progress-bar
-    const rawQty = parseFloat(this.hass.states[this.config.pellet_quantity]?.state ?? 'NaN');
-    const pelletPct = normalizePelletPct(rawQty);
+    const rawQty = readSlotOrWarn(this.hass.states, this.config.pellet_quantity);
+    const pelletPct = rawQty === undefined ? undefined : normalizePelletPct(rawQty);
     const threshold = this.config.low_threshold ?? 0.3; // ratio 0–1
 
     // Pellet stock — val + max from entity attributes
     const stockState = this.hass.states[this.config.pellet_stock];
-    const pelletStock = stockState ? parseInt(stockState.state, 10) : NaN;
+    const stockRaw = readSlotOrWarn(this.hass.states, this.config.pellet_stock);
+    const pelletStock = stockRaw === undefined ? undefined : Math.floor(stockRaw);
     const stockMax: number =
       (stockState?.attributes?.maximum as number | undefined) ??
       (stockState?.attributes?.max as number | undefined) ??
@@ -72,10 +73,9 @@ export class SfBridgeStove extends LitElement {
 
     // Stove on/off — membership, not equality (see STOVE_OFF_STATES)
     const rawStatus: string | undefined = this.hass.states[this.config.status]?.state;
-    const isOn = rawStatus !== undefined && !STOVE_OFF_STATES.has(rawStatus);
-
-    const hasCircle = !isNaN(pelletPct);
-    const hasStack  = !isNaN(pelletStock);
+    const statusAbsent = rawStatus === undefined;
+    if (statusAbsent) warnOnce('not-found', this.config.status);
+    const isOn = !statusAbsent && !STOVE_OFF_STATES.has(rawStatus);
 
     return html`
       <div class="bridge-section">
@@ -91,14 +91,18 @@ export class SfBridgeStove extends LitElement {
             style="--icon-color: ${isOn ? 'var(--sf-warning, #ffd60a)' : 'var(--sf-text-disabled, #666)'};"
             .connection="${this.hass.connection}"
           ></sf-icon>
-          <span class="stove-status-chip ${isOn ? 'stove-on' : 'stove-off'}">
-            ${isOn ? msg('Active') : msg('Inactive')}
+          <span class="stove-status-chip ${isOn ? 'stove-on' : 'stove-off'} ${statusAbsent ? 'stove-unknown' : ''}">
+            ${statusAbsent ? '--' : isOn ? msg('Active') : msg('Inactive')}
           </span>
         </div>
 
         <!-- Graphs row — each graph wrapped in fixed-size container -->
         <div class="stove-graphs-row">
-          ${hasCircle ? html`
+          ${pelletPct === undefined ? html`
+            <div class="stove-graph-wrap stove-circle-wrap">
+              <span class="stove-pellet-placeholder">--\u00a0%</span>
+            </div>
+          ` : html`
             <div class="stove-graph-wrap stove-circle-wrap">
               <sf-circle-progress-bar
                 text="${msg('Fuel quantity')}"
@@ -107,9 +111,13 @@ export class SfBridgeStove extends LitElement {
                 style="background:transparent;"
               ></sf-circle-progress-bar>
             </div>
-          ` : nothing}
+          `}
 
-          ${hasStack ? html`
+          ${pelletStock === undefined ? html`
+            <div class="stove-graph-wrap stove-stack-wrap">
+              <span class="stove-stock-placeholder">--</span>
+            </div>
+          ` : html`
             <div class="stove-graph-wrap stove-stack-wrap">
               <sf-stack-bar
                 text="${msg('Stock')}"
@@ -119,7 +127,7 @@ export class SfBridgeStove extends LitElement {
                 style="background:transparent;"
               ></sf-stack-bar>
             </div>
-          ` : nothing}
+          `}
         </div>
       </div>
     `;

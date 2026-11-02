@@ -12,6 +12,7 @@ import { localized, msg } from '@lit/localize';
 import { sciFiCommonStyles } from '../../../styles/common.js';
 import { bridgeStyles } from '../styles.js';
 import type { BridgeVehicleConfig } from '../config.js';
+import { readSlotOrWarn } from '../bridge-warn.js';
 import '../../../components/sf-icon/sf-icon.js';
 
 const TAG = 'sf-bridge-vehicle';
@@ -39,12 +40,12 @@ export class SfBridgeVehicle extends LitElement {
     if (!this.hass || !this.config) return html``;
 
     const stateObj = this.hass.states[this.config.power_sensor];
-    const rawPower = parseFloat(stateObj?.state ?? 'NaN');
-    const isCharging = !isNaN(rawPower) && rawPower > 0;
-    const isUnavailable = isNaN(rawPower);
+    const rawPower = readSlotOrWarn(this.hass.states, this.config.power_sensor);
+    const isUnavailable = rawPower === undefined;
+    const isCharging = rawPower !== undefined && rawPower > 0;
 
-    let powerDisplay = '0 W';
-    if (!isUnavailable) {
+    let powerDisplay = `--\u00a0W`;
+    if (rawPower !== undefined) {
       if (rawPower >= 1000) {
         powerDisplay = `${(rawPower / 1000).toFixed(1)}\u00a0kW`;
       } else {
@@ -56,7 +57,7 @@ export class SfBridgeVehicle extends LitElement {
     const statusLabel = isCharging
       ? msg('Charging')
       : isUnavailable
-      ? msg('N/A')
+      ? msg('Unavailable')
       : msg('Not connected');
 
     // Optional friendly name from entity

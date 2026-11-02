@@ -13,6 +13,8 @@ import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import { bridgeStyles } from './styles.js';
 import type { SciFiBridgeConfig } from './config.js';
+import { resetBridgeWarnings } from './bridge-warn.js';
+import { validateBridgeConfig } from './bridge-validate.js';
 
 import './sections/sf-bridge-crew.js';
 import './sections/sf-bridge-alerts.js';
@@ -32,6 +34,30 @@ export class SciFiBridgeCard extends SciFiBaseCard {
   declare protected config: SciFiBridgeConfig;
 
   static override styles = [sciFiCommonStyles, bridgeStyles];
+
+  /** Set when the last setConfig() was invalid; cleared by the next valid one (FR-8, FR-11). */
+  private _configError: string | null = null;
+
+  // ── Config ──────────────────────────────────────────────────────────────────
+
+  /**
+   * Never throws. Clears the warn-once memory on every call (FR-2). An invalid
+   * config is logged once and rendered as an error card; the base `render()`
+   * returns nothing without a config, so a placeholder `{type}` reaches
+   * `renderCard()` (no base-card hook — FR-11).
+   */
+  override setConfig(config: SciFiBridgeConfig): void {
+    resetBridgeWarnings();
+    const message = validateBridgeConfig(config);
+    if (message === null) {
+      this._configError = null;
+      super.setConfig(config);
+      return;
+    }
+    console.error('[sf-bridge] invalid config:', message);
+    this._configError = message;
+    this.config = Object.freeze({ type: 'custom:sci-fi-bridge' });
+  }
 
   // ── Static HA card contract ─────────────────────────────────────────────────
 
@@ -99,6 +125,16 @@ export class SciFiBridgeCard extends SciFiBaseCard {
   // ── Render ──────────────────────────────────────────────────────────────────
 
   protected override renderCard(): TemplateResult {
+    if (this._configError !== null) {
+      return html`
+        <ha-card>
+          <div class="sf-error-card">
+            <span class="sf-error-icon">⚠️</span>
+            <span class="sf-error-message">${this._configError}</span>
+          </div>
+        </ha-card>
+      `;
+    }
     const config = this.config;
     const hass = this.hass;
 

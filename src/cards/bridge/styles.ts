@@ -211,6 +211,7 @@ export const bridgeStyles = css`
   }
 
   .smoke-chip.smoke-ok { color: var(--sf-accent-on, #00ff9d); }
+  .smoke-chip.smoke-unknown { color: var(--sf-text-disabled, #777); }
   .smoke-chip.smoke-active { color: var(--sf-error, #ff4d6d); border-color: var(--sf-error, #ff4d6d); }
 
   .alerts-toggles-row {
@@ -231,6 +232,7 @@ export const bridgeStyles = css`
   .toggle-name { flex: 1; font-size: 0.875rem; transition: color 0.2s; }
   .toggle-on  { color: var(--sf-text, #e0e0e0); }
   .toggle-off { color: var(--sf-text-disabled, #777); }
+  .toggle-unknown { color: var(--sf-text-disabled, #777); }
 
   .occupancy-badge {
     display: flex;
@@ -252,6 +254,11 @@ export const bridgeStyles = css`
     background: color-mix(in srgb, var(--sf-accent-on, #00ff9d) 15%, transparent);
     color: var(--sf-accent-on, #00ff9d);
     border: 1px solid var(--sf-accent-on, #00ff9d);
+  }
+
+  .occupancy-pill.unknown {
+    color: var(--sf-text-disabled, #555);
+    border: 1px solid var(--sf-text-disabled, #555);
   }
 
   .occupancy-pill.empty {
@@ -370,6 +377,7 @@ export const bridgeStyles = css`
   /* Lock: visual indicator only (not a button) */
   .lock-locked      { color: var(--sf-accent-on, #00ff9d); --icon-width: 20px; --icon-height: 20px; }
   .lock-unlocked    { color: var(--sf-error, #ff4d6d);    --icon-width: 20px; --icon-height: 20px; }
+  .lock-unknown     { color: var(--sf-text-disabled, #555); --icon-width: 20px; --icon-height: 20px; }
   .lock-unavailable { color: var(--sf-text-disabled, #555); --icon-width: 20px; --icon-height: 20px; }
 
   /* ── Automations ── */
@@ -525,6 +533,7 @@ export const bridgeStyles = css`
   }
 
   .cycle-status.running { color: var(--sf-primary, #00d2ff); }
+  .cycle-status.unknown { color: var(--sf-text-disabled, #666); }
   .cycle-status.idle    { color: var(--sf-text-disabled, #666); }
 
   .consumables-row {
@@ -545,6 +554,7 @@ export const bridgeStyles = css`
   }
 
   .consumable-ok { color: var(--sf-accent-on, #00ff9d); }
+  .consumable-unknown { color: var(--sf-text-disabled, #777); }
   .consumable-warn { color: var(--sf-error, #ff4d6d); }
 
   /* ── Stove ── */
@@ -570,6 +580,8 @@ export const bridgeStyles = css`
 
   .stove-on  { color: var(--sf-warning, #ffd60a); }
   .stove-off { color: var(--sf-text-disabled, #555); }
+  .stove-pellet-placeholder,
+  .stove-stock-placeholder { color: var(--sf-text-disabled, #777); font-weight: 700; }
 
   /* Graphs row — flex row, centered */
   .stove-graphs-row {

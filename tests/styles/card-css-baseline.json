@@ -243,6 +243,9 @@
     ".smoke-chip.smoke-ok": {
       "color": "var(--sf-accent-on, #00ff9d)"
     },
+    ".smoke-chip.smoke-unknown": {
+      "color": "var(--sf-text-disabled, #777)"
+    },
     ".smoke-chip.smoke-active": {
       "color": "var(--sf-error, #ff4d6d)",
       "border-color": "var(--sf-error, #ff4d6d)"
@@ -271,6 +274,9 @@
     ".toggle-off": {
       "color": "var(--sf-text-disabled, #777)"
     },
+    ".toggle-unknown": {
+      "color": "var(--sf-text-disabled, #777)"
+    },
     ".occupancy-badge": {
       "display": "flex",
       "align-items": "center",
@@ -289,6 +295,10 @@
       "background": "color-mix(in srgb, var(--sf-accent-on, #00ff9d) 15%, transparent)",
       "color": "var(--sf-accent-on, #00ff9d)",
       "border": "1px solid var(--sf-accent-on, #00ff9d)"
+    },
+    ".occupancy-pill.unknown": {
+      "color": "var(--sf-text-disabled, #555)",
+      "border": "1px solid var(--sf-text-disabled, #555)"
     },
     ".occupancy-pill.empty": {
       "background": "color-mix(in srgb, var(--sf-text-disabled, #555) 15%, transparent)",
@@ -401,6 +411,11 @@
     },
     ".lock-unlocked": {
       "color": "var(--sf-error, #ff4d6d)",
+      "--icon-width": "20px",
+      "--icon-height": "20px"
+    },
+    ".lock-unknown": {
+      "color": "var(--sf-text-disabled, #555)",
       "--icon-width": "20px",
       "--icon-height": "20px"
     },
@@ -552,6 +567,9 @@
     ".cycle-status.running": {
       "color": "var(--sf-primary, #00d2ff)"
     },
+    ".cycle-status.unknown": {
+      "color": "var(--sf-text-disabled, #666)"
+    },
     ".cycle-status.idle": {
       "color": "var(--sf-text-disabled, #666)"
     },
@@ -572,6 +590,9 @@
     },
     ".consumable-ok": {
       "color": "var(--sf-accent-on, #00ff9d)"
+    },
+    ".consumable-unknown": {
+      "color": "var(--sf-text-disabled, #777)"
     },
     ".consumable-warn": {
       "color": "var(--sf-error, #ff4d6d)"
@@ -597,6 +618,14 @@
     },
     ".stove-off": {
       "color": "var(--sf-text-disabled, #555)"
+    },
+    ".stove-pellet-placeholder": {
+      "color": "var(--sf-text-disabled, #777)",
+      "font-weight": "700"
+    },
+    ".stove-stock-placeholder": {
+      "color": "var(--sf-text-disabled, #777)",
+      "font-weight": "700"
     },
     ".stove-graphs-row": {
       "display": "flex",

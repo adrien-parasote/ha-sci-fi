@@ -10,6 +10,8 @@ import { sciFiCommonStyles } from '../../../styles/common.js';
 import { bridgeStyles } from '../styles.js';
 import type { BridgeAutomationsConfig, BridgeAutomationEntry } from '../config.js';
 import { bridgeCall } from '../bridge-call.js';
+import { warnOnce } from '../bridge-warn.js';
+import { renderSfToggle } from '../bridge-toggle.js';
 import '../../../components/sf-icon/sf-icon.js';
 
 const TAG = 'sf-bridge-automations';
@@ -64,6 +66,8 @@ export class SfBridgeAutomations extends LitElement {
 
   private _renderToggle(entry: BridgeAutomationEntry): TemplateResult {
     const stateObj = this.hass.states[entry.entity];
+    const absent = stateObj === undefined;
+    if (absent) warnOnce('not-found', entry.entity);
     const state = stateObj?.state ?? 'off';
     const isOn = state === 'on' || state === 'enabled';
     const icon = entry.icon ?? autoDefaultIcon(entry.entity);
@@ -76,23 +80,16 @@ export class SfBridgeAutomations extends LitElement {
           style="--icon-color: ${isOn ? 'var(--sf-accent-on, #00ff9d)' : 'var(--sf-text-disabled, #555)'}"
           .connection="${this.hass.connection}"
         ></sf-icon>
-        <span class="auto-name ${isOn ? 'toggle-on' : 'toggle-off'}">${entry.name}</span>
-        <button
-          class="sf-toggle"
-          data-on="${isOn}"
-          aria-pressed="${isOn}"
-          @click="${() => this._toggle(entry.entity, isOn, entry.name)}"
-        >
-          <div class="sf-toggle-track">
-            <div class="sf-toggle-thumb"></div>
-          </div>
-        </button>
+        <span class="auto-name ${absent ? 'toggle-unknown' : isOn ? 'toggle-on' : 'toggle-off'}">${entry.name}</span>
+        ${renderSfToggle(absent, isOn, () => this._toggle(entry.entity, isOn, entry.name))}
       </div>
     `;
   }
 
   private _renderSlider(entry: BridgeAutomationEntry): TemplateResult {
     const stateObj = this.hass.states[entry.entity];
+    const absent = stateObj === undefined;
+    if (absent) warnOnce('not-found', entry.entity);
     const rawValue = parseFloat(stateObj?.state ?? '0');
     const hassValue = isNaN(rawValue) ? (entry.min ?? 0) : rawValue;
     // Use local value for immediate display feedback
@@ -105,7 +102,7 @@ export class SfBridgeAutomations extends LitElement {
         <div class="slider-header">
           <sf-icon icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
           <span class="auto-name">${entry.name}</span>
-          <span class="slider-value">${value}${unit ? `\u00a0${unit}` : ''}</span>
+          <span class="slider-value">${absent ? '--' : `${value}${unit ? `\u00a0${unit}` : ''}`}</span>
         </div>
         <input
           type="range"
@@ -113,6 +110,7 @@ export class SfBridgeAutomations extends LitElement {
           max="${entry.max ?? 100}"
           step="${entry.step ?? 1}"
           .value="${String(value)}"
+          ?disabled="${absent}"
           @input="${(e: Event) => this._onSliderInput(entry, e)}"
         />
       </div>
@@ -132,6 +130,8 @@ export class SfBridgeAutomations extends LitElement {
   }
 
   private _onSliderInput(entry: BridgeAutomationEntry, e: Event): void {
+    // A control bound to an absent entity never calls a service (FR-6.2)
+    if (this.hass.states[entry.entity] === undefined) return;
     const target = e.target as HTMLInputElement;
     const value = parseFloat(target.value);
     if (isNaN(value)) return;

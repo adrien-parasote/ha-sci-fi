@@ -14,6 +14,7 @@ import { localized, msg } from '@lit/localize';
 import { sciFiCommonStyles } from '../../../styles/common.js';
 import { bridgeStyles } from '../styles.js';
 import type { BridgePersonEntry } from '../config.js';
+import { warnOnce } from '../bridge-warn.js';
 import '../../../components/sf-icon/sf-icon.js';
 
 const TAG = 'sf-bridge-crew';
@@ -88,7 +89,10 @@ export class SfBridgeCrew extends LitElement {
 
   private _renderBadge(p: BridgePersonEntry): TemplateResult {
     const stateObj = this.hass.states[p.entity];
-    if (!stateObj) return nothing as unknown as TemplateResult;
+    if (!stateObj) {
+      warnOnce('not-found', p.entity);
+      return nothing as unknown as TemplateResult;
+    }
 
     const state: string = stateObj.state ?? 'unknown';
     const name: string = stateObj.attributes?.friendly_name ?? p.entity;

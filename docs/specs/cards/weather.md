@@ -151,3 +151,4 @@ The `sci-fi-weather` component has lost its original, complex UI during the migr
 | IT-WEATHER-I-001 | Chart Interaction | Component rendered | Click dropdown menu | `_chartDataKind` updates, chart type changes |
 | IT-WEATHER-I-002 | Day Selection | Component rendered | Click a day in footer | `_day_selected` updates, chart updates hourly data |
 | IT-WEATHER-I-003 | Clock Update | Component rendered | Wait 10 seconds | Header time updates |
+| IT-WEATHER-I-004 | weatherIcon plugin | Chart plugin from _getChartPlugins() | Call afterDatasetsDraw with a datum carrying a weather icon name (Image load mocked); then make Chart.js construction throw and render the chart | drawImage is called for the datum; the failure calls console.warn with "Chart.js failed to init" and the error, and does not throw |

@@ -4,7 +4,7 @@ import { showToast } from '../../src/utils/toast.js';
 
 describe('showToast', () => {
   afterEach(() => {
-    document.body.innerHTML = '';
+    document.body.replaceChildren();
     vi.useRealTimers();
   });
 

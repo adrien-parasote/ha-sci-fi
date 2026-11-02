@@ -21,7 +21,7 @@ async function createElement(
 
 describe('SfEditorSourceList', () => {
   afterEach(() => {
-    document.body.innerHTML = '';
+    document.body.replaceChildren();
   });
 
   it('renders add button when values is empty', async () => {

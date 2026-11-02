@@ -19,7 +19,7 @@ async function createElement(
 
 describe('SfEditorAction', () => {
   afterEach(() => {
-    document.body.innerHTML = '';
+    document.body.replaceChildren();
   });
 
   it('renders the label in .label', async () => {

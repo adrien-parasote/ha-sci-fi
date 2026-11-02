@@ -101,7 +101,7 @@ function makeCardStub() {
 }
 
 afterEach(() => {
-  document.body.innerHTML = '';
+  document.body.replaceChildren();
   delete (window as any).jsyaml;
   localStorage.clear();
 });

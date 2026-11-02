@@ -25,6 +25,13 @@ describe('remediation utils', () => {
     expect(event.detail.action).toBe('tap');
     expect(event.bubbles).toBe(true);
     expect(event.composed).toBe(true);
+
+    // Type-level pin: tap_action is an ActionConfig, a bare string is refused by tsc.
+    const rejected = () => {
+      // @ts-expect-error tap_action must be an ActionConfig
+      fireHassAction(element, { tap_action: 'toggle' }, 'tap');
+    };
+    void rejected;
   });
 
   it('TC-112: getCardSize() returns specific values per card class and handles guard clauses', () => {

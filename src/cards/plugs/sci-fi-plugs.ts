@@ -78,7 +78,7 @@ export class SciFiPlugsCard extends SciFiBaseCard {
   /**
    * An edit that shortens `devices` leaves the selected index out of bounds,
    * and _renderHeader then dereferences undefined — the whole card becomes the
-   * error card. The vacuum card specifies this clamp (TC-1530); the plugs spec
+   * error card. The vacuum card specifies this clamp (its willUpdate reset case); the plugs spec
    * declared the case impossible instead.
    */
   override willUpdate(changedProperties: Map<string | number | symbol, unknown>): void {

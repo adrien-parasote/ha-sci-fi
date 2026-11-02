@@ -301,7 +301,7 @@ describe('sci-fi-vacuum', () => {
 
   // ── TC-VACUUM-U-1518 — shortcut sf-button click calls shortcut service ───────────
 
-  it('TC-VACUUM-U-1518, TC-506 — shortcut sf-button click calls shortcut service', async () => {
+  it('TC-VACUUM-U-1518 — shortcut sf-button click calls shortcut service', async () => {
     const el = makeEl();
     const mockCallService = vi.fn().mockResolvedValue(undefined);
     setConfig(el, {
@@ -578,9 +578,9 @@ describe('sci-fi-vacuum', () => {
     });
   });
 
-  // ── TC-1528 — action call error toast ─────────────────────────────────────
+  // ── _callAction error toast (same case as TC-VACUUM-U-1524) ───────────────
 
-  it('TC-1528 — _callAction shows error toast on callService rejection', async () => {
+  it('_callAction shows error toast on callService rejection (same case as TC-VACUUM-U-1524)', async () => {
     const el = makeEl();
     const mockCallService = vi.fn().mockRejectedValue(new Error('service failed'));
     setConfig(el, {
@@ -602,9 +602,9 @@ describe('sci-fi-vacuum', () => {
     expect(mockCallService).toHaveBeenCalled();
   });
 
-  // ── TC-1529 — _callShortcut: no sc.service → early return ────────────────
+  // ── TC-VACUUM-U-1534 — _callShortcut: no sc.service → early return ────────────────
 
-  it('TC-1529 — _callShortcut ignores click when shortcuts.service is absent', async () => {
+  it('TC-VACUUM-U-1534 — _callShortcut ignores click when shortcuts.service is absent', async () => {
     const el = makeEl();
     const mockCallService = vi.fn();
     setConfig(el, {
@@ -632,9 +632,9 @@ describe('sci-fi-vacuum', () => {
     expect(mockCallService).not.toHaveBeenCalled();
   });
 
-  // ── TC-1530 — willUpdate: resets selected id if > vacuums length ──────────
+  // ── TC-VACUUM-U-1535 — willUpdate: resets selected id if > vacuums length ──────────
 
-  it('TC-1530 — willUpdate resets _vacuum_selected_id when vacuums list shrinks', async () => {
+  it('TC-VACUUM-U-1535 — willUpdate resets _vacuum_selected_id when vacuums list shrinks', async () => {
     const el = makeEl();
     setConfig(el, {
       type: 'custom:sci-fi-vacuum',

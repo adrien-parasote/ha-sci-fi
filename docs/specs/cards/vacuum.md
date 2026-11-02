@@ -836,7 +836,7 @@ private _toast(error: boolean, text: string): void {
 | `.shortcut-btn` | text button | N/A — replaced by `sf-button` in `.actions .shortcuts` |
 
 > [!NOTE]
-> The old cyclic click tests in `sci-fi-vacuum.test.ts` — the 1525/1526/1527 series — must be completely deleted or replaced with the new tests. The old error toast test (`TC-1528`) remains valid but corresponds to spec `TC-VACUUM-U-1524`. `TC-1529` (malformed shortcut) and `TC-1530` (willUpdate reset) are preserved.
+> The old cyclic click tests in `sci-fi-vacuum.test.ts` — the 1525/1526/1527 series — must be completely deleted or replaced with the new tests. The old error toast test remains valid; it carries no id of its own and its case is the spec row `TC-VACUUM-U-1524` (the test titled `TC-VACUUM-U-1524` is the malformed-service one). The missing-service test (`TC-VACUUM-U-1534`) and the willUpdate-reset test (`TC-VACUUM-U-1535`) are preserved.
 >
 > *(2026-08-12, bead `ha-sci-fi-9xf` — les IDs supprimés ne sont plus écrits en toutes
 > lettres ici : le contrôle de couverture P14 lisait cette consigne de suppression comme
@@ -907,6 +907,15 @@ private _toast(error: boolean, text: string): void {
 | TC-VACUUM-U-1524 | Unit | Toast shows error message after action failure | click start, service rejects with Error('fail') | `sf-toast.addMessage` called with `('fail', true)` |
 | TC-VACUUM-U-1525 | Unit | `sf-button-card-select` present in header when fan_speed_list non-empty | state with `fan_speed_list: ['quiet','turbo']` + `fan_speed: 'quiet'` | `.header sf-button-card-select` present; `.items` count = 2; active item has accent color |
 | TC-VACUUM-U-1526 | Unit | Fan speed dropdown selection calls set_fan_speed service | user selects 'turbo' from sf-button-card-select | `callService('vacuum', 'set_fan_speed', { entity_id, fan_speed: 'turbo' })` called |
+| TC-VACUUM-U-1528 | Unit | Editor: changing the icon of a shortcut dispatches `config-changed` | shortcut 0 in edit mode, `sf-editor-dropdown-icon` receives `input-update` `{id:'icon', kind:'shortcut-icon', value:'mdi:broom'}` | exactly one `config-changed`; `vacuums[0].shortcuts.description[0].icon` is `'mdi:broom'` |
+| TC-VACUUM-U-1529 | Unit | Editor: add-segment button appends a segment | shortcut 0 with `segments: [1]` in edit mode, click `.editor .add-btn` | one `config-changed`; segments has length 2 and the new segment `[1]` is `0` |
+| TC-VACUUM-U-1530 | Unit | Editor: delete button on a segment removes that segment | shortcut 0 with `segments: [10, 20]` in edit mode, `button-click` on the first `.editor .delete-btn sf-button` | one `config-changed`; segments has length 1 and only `20` remains |
+| TC-VACUUM-U-1531 | Unit | Editor: editing a segment input updates its value | shortcut 0 with `segments: [5]` in edit mode, `input-update` on `segment_0` `{kind:'segment', value:'42'}` | one `config-changed`; `segments[0]` is `42` |
+| TC-VACUUM-U-1532 | Unit | Editor: deleting a shortcut removes it and exits edit mode | shortcut 0 with no segments in edit mode, `button-click` on the last `.editor sf-button` | one `config-changed`; `description` has length 0; `_edit` is `false` and `_shortcutId` is `null` |
+| TC-VACUUM-U-1533 | Unit | Editor: updating the shortcuts command field dispatches `config-changed` (conditional) | `shortcuts: {service:'vacuum.send_command', command:'', description:[]}`; look for an `sf-editor-input` with `element-id="command"` and send `input-update` `{kind:'shortcuts-top', value:'clean_spot'}` | if that input is found: one `config-changed` with `shortcuts.command` equal to `'clean_spot'`; if not found (happy-dom does not reflect the attribute), only `el.config` is defined |
+| TC-VACUUM-U-1534 | Unit | `_callShortcut` ignores a click when `shortcuts.service` is absent | card config with shortcuts that have no `service`; `_callShortcut` called with a shortcut config and index 0 | `callService` is not called |
+| TC-VACUUM-U-1535 | Unit | `willUpdate` resets `_vacuum_selected_id` when the vacuums list shrinks | two vacuums, `_vacuum_selected_id = 1`, config replaced by one vacuum | `_vacuum_selected_id` equals 0 |
+| TC-VACUUM-U-1536 | Unit | Editor: every sensor field renders a non-empty label | default vacuum config; all `sf-editor-input[kind="vacuum-sensor"]` | at least one such input; none has an empty `label` attribute (regression: label key built with a single-underscore replace) |
 | IT-VACUUM-I-1501 | Integration | Card registers in `customElements` | load card | `customElements.get('sci-fi-vacuum')` returns class |
 | IT-VACUUM-I-1502 | Integration | Card full render: header + sub-header + map + actions | mount with full config | `.header`, `.sub-header`, `.map`, `.actions` all present |
 | IT-VACUUM-I-1503 | Integration | `vacuum/styles.ts` imported — no inline `css\`` in 'sci-fi-vacuum.ts' | grep | 'grep -c "css\'" sci-fi-vacuum.ts` returns 0 |

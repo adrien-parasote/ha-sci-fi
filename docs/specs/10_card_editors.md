@@ -25,7 +25,7 @@
 | F-EDITOR-13 | `sci-fi-lights-editor` | ✅ This spec § Card Editors | tests/cards/lights/sci-fi-lights-editor.test.ts :: TC-1014 · tests/utils/base-editor.test.ts :: TC-1018 |
 | F-EDITOR-14 | `sci-fi-plugs-editor` | ✅ This spec § Card Editors | tests/utils/base-editor.test.ts :: TC-1018 — (libellés seuls) — aucun id TC pour l'éditeur, testé par `tests/cards/plugs/sci-fi-plugs-editor.test.ts` |
 | F-EDITOR-15 | `sci-fi-stove-editor` | ✅ This spec § Card Editors | tests/utils/base-editor.test.ts :: TC-1018 — (libellés seuls) — aucun id TC pour l'éditeur, testé par `tests/cards/stove/sci-fi-stove-editor.test.ts` |
-| F-EDITOR-16 | `sci-fi-vacuum-editor` | ✅ This spec § Card Editors | tests/cards/vacuum/sci-fi-vacuum-editor.test.ts :: TC-1016 · tests/utils/base-editor.test.ts :: TC-1018 |
+| F-EDITOR-16 | `sci-fi-vacuum-editor` | ✅ This spec § Card Editors | tests/cards/vacuum/sci-fi-vacuum-editor.test.ts :: TC-VACUUM-U-1536 · tests/utils/base-editor.test.ts :: TC-1018 |
 | F-EDITOR-17 | `sci-fi-vehicles-editor` | ✅ This spec § Card Editors | tests/utils/base-editor.test.ts :: TC-1018 — (libellés seuls) — aucun id TC pour l'éditeur, testé par `tests/cards/vehicles/sci-fi-vehicles-editor.test.ts` |
 | F-EDITOR-18 | `sci-fi-hexa-tiles-editor` | ✅ This spec § Card Editors | tests/utils/base-editor.test.ts :: TC-1018 — (libellés seuls) — aucun id TC pour l'éditeur, testé par `tests/cards/hexa-tiles/sci-fi-hexa-tiles-editor.test.ts` |
 | F-EDITOR-19 | `sci-fi-tv-editor` | ✅ This spec § Card Editors | tests/utils/base-editor.test.ts :: TC-1018 — (libellés seuls) — aucun id TC pour l'éditeur, testé par `tests/cards/tv/sci-fi-tv-editor.test.ts` |

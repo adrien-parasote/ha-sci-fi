@@ -1,0 +1,12 @@
+0a5e8acfca3e4fc91d2e3b15d7625a31f65dd3bf docs/specs/cards/plugs.md
+d2cd394dc72526c382f8c5d4225ea9dc317c9f8a docs/specs/cards/vehicles.md
+f3b0dfe8ebd80748b5044c868a5925448321b057 tests/cards/plugs/sci-fi-plugs.test.ts
+c8b8f1c2ff9d0efb6af20b589fc720ed55ed856e tests/cards/vehicles/sci-fi-vehicles.test.ts
+2d998d8edf8a99002f8d3ea9891bb634216270a8 docs/adversarial-review/alias-orphan-ids.md
+2d998d8edf8a99002f8d3ea9891bb634216270a8 docs/adversarial-review/history/alias-orphan-ids.round-01.md
+4c90f6d6926807005b0ae938a00de9af44a65bf5 docs/reviews/alias-orphan-ids/code-review.md
+f915a3f824ca11550e266ec63c47cc1b95d5ebe6 docs/reviews/alias-orphan-ids/security-review.md
+d5d5864b1e9e6bc0487d67f4bdfe46a3d98680bb docs/specs/alias-orphan-ids/spec.md
+0ccea9fcc3a13edce8634478f23a84dff240f118 docs/summaries/alias-orphan-ids/BUILD.md
+c25a55f5e84b4c8d940466afa43a4490ab08033d docs/summaries/alias-orphan-ids/SPEC.md
+b2752cfb23aa2926ea9852fcf63210adc1cd5e23 tests/cards/plugs/alias-ids-declared.test.ts

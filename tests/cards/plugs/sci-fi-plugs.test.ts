@@ -59,12 +59,12 @@ describe('sci-fi-plugs — Spec 13 redesign', () => {
 
   // ── Static tests (TC-PLUGS-U-1301, TC-PLUGS-U-1302) ───────────────────────────────────────
 
-  it('TC-PLUGS-U-1301, TC-PLG-0001 — provides getConfigElement', () => {
+  it('TC-PLUGS-U-1301 — provides getConfigElement', () => {
     const el = SciFiPlugsCard.getConfigElement();
     expect(el.tagName.toLowerCase()).to.equal('sci-fi-plugs-editor');
   });
 
-  it('TC-PLUGS-U-1302, TC-PLG-0002 — provides getStubConfig', () => {
+  it('TC-PLUGS-U-1302 — provides getStubConfig', () => {
     const config = SciFiPlugsCard.getStubConfig();
     expect(config.type).to.equal('custom:sci-fi-plugs');
   });

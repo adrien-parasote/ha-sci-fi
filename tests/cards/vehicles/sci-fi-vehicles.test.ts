@@ -55,12 +55,12 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
 
   // ── TC-VEHICLES-U-1201 / Static & Stub Config ─────────────────────────────────────────
 
-  it('TC-VEHICLES-U-1201, TC-VEH-0001: getConfigElement returns correct editor tag', () => {
+  it('TC-VEHICLES-U-1201: getConfigElement returns correct editor tag', () => {
     const el = SciFiVehiclesCard.getConfigElement();
     expect(el.tagName.toLowerCase()).to.equal('sci-fi-vehicles-editor');
   });
 
-  it('TC-VEHICLES-U-1202, TC-VEH-0002: getStubConfig returns correct type', () => {
+  it('TC-VEHICLES-U-1202: getStubConfig returns correct type', () => {
     const config = SciFiVehiclesCard.getStubConfig();
     expect(config.type).to.equal('custom:sci-fi-vehicles');
   });

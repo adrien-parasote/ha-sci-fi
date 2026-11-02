@@ -102,7 +102,7 @@ src/cards/plugs/
 └── src/cards/plugs/plug_const.ts               [NEW]    — switch service constants (ported from main:src/helpers/entities/plug/plug_const.js)
 
 tests/cards/plugs/
-└── tests/cards/plugs/sci-fi-plugs.test.ts      [MODIFY] — rewrite to match new layout selectors; preserve TC-PLG-0001 (getConfigElement) and TC-PLG-0002 (getStubConfig)
+└── tests/cards/plugs/sci-fi-plugs.test.ts      [MODIFY] — rewrite to match new layout selectors; preserve TC-PLUGS-U-1301 (getConfigElement) and TC-PLUGS-U-1302 (getStubConfig)
 
 xliff/
 └── xliff/fr.xlf                                [MODIFY] — add new msg() translation keys

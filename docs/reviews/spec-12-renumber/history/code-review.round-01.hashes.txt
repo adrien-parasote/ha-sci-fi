@@ -1,0 +1,13 @@
+de383a78506f25d784b78a17513894c246ea2c4a docs/specs/cards/plugs.md
+c715b5a1d5cb351d6d768b71705b1e1ba898d3ef docs/specs/cards/vacuum.md
+d2e7895209dd1da5e8625b8d085671cdd74cb26f docs/specs/cards/water_history.md
+fb1a1c97f2ebd5cec66c74ad3e77097a05bf3594 tests/cards/water/sci-fi-water-management.test.ts
+60a8038b8c9ca23f8711dddb47e3e43a57c9b29e tests/specs/delivered-design.test.ts
+80db7f5bc867a0187721797e8429c4978fbf8d72 docs/adversarial-review/history/spec-12-renumber.round-01.md
+2c35d7d9340f80ce4e006dabc421cc9317239b26 docs/adversarial-review/history/spec-12-renumber.round-02.md
+2c35d7d9340f80ce4e006dabc421cc9317239b26 docs/adversarial-review/spec-12-renumber.md
+dd402f30f42cba12776ecb6cc10b85dcd03a44d4 docs/specs/spec-12-renumber/spec.md
+a4901efc5dfdb0232a64146f7e4cf3c2df270e2e docs/summaries/spec-12-renumber/BUILD.md
+fdf6a7ff4ae601d6c7c74673a029f8556ace2684 docs/summaries/spec-12-renumber/SPEC.md
+334b5856c86d7a3fbdb79facbace80d83fafa443 tests/docs/spec-numbering.test.ts
+4c192250cda47dec5ba279e9c3cb2654163b24e0 tests/fixtures/spec-numbers.ts

@@ -1,4 +1,4 @@
-# Spec 12 — Tactical Water Management History Log
+# Spec 16 — Tactical Water Management History Log
 
 > Document Type: Implementation
 > Covers: Feature-Water-History-01 (Unified activity and execution log inside the Automations accordion)

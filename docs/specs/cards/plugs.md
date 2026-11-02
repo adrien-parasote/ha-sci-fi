@@ -920,7 +920,7 @@ private _toast(error: boolean, text: string): void {
 | sf-icon component | [sf-icon/](../../src/components/sf-icon/#L1) |
 | Common tokens | [styles/common.ts](../../src/styles/common.ts#L1) |
 | Existing plugs tests | [sci-fi-plugs.test.ts](../../tests/cards/plugs/sci-fi-plugs.test.ts#L1) |
-| Vehicle spec (navigation pattern) | [Spec 12](./12_vehicle_card_design_update.md#L1) |
+| Vehicle spec (navigation pattern) | [Spec 12](./vehicles.md#L1) |
 | Stove spec (styles.ts pattern) | [Spec 11](./11_stove_card_design_update.md#L1) |
 | Screenshots (main UX) | 'git show main:screenshot/plug_1.jpeg' |
 

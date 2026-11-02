@@ -32,6 +32,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { resolve, dirname, isAbsolute } from 'node:path';
+import { collidingNumbers, collisionReport, isTitledSpec, specNumbers } from '../fixtures/spec-numbers';
 
 const ROOT = resolve(__dirname, '../..');
 
@@ -47,6 +48,11 @@ function lsFiles(dir: string): string[] {
     .split('\n')
     .filter((f) => f !== '')
     .sort();
+}
+
+/** Les specs qui portent un titre `# Spec N` : docs/specs/*.md et docs/specs/cards/*.md. */
+function titledSpecFiles(): string[] {
+  return lsFiles('docs/specs').filter(isTitledSpec);
 }
 
 /** Les specs que la règle couvre, et le fichier qui porte leurs exemptions. */
@@ -277,31 +283,19 @@ describe('Les zones de stove.md sont épinglées sur la classe que leur méthode
 });
 
 describe('Présence — ce que l’extraction ne sait pas porter', () => {
-  it('le numéro des specs que ce lot couvre ne collisionne avec aucune autre', () => {
-    const numeros = new Map<string, string[]>();
-    for (const f of lsFiles('docs/specs')) {
-      const m = /^#\s+Spec\s+(\d+)/.exec(read(f).split('\n')[0]!);
-      if (m === null) continue;
-      numeros.set(m[1]!, [...(numeros.get(m[1]!) ?? []), f]);
-    }
-    // Témoin : la sonde a bien lu des numéros sur l'ENSEMBLE de docs/specs/.
-    // C'est en ne comparant qu'avec UN fichier — celui que le bead nommait —
-    // que la première correction a remplacé une collision à deux par une
-    // collision à trois.
+  it('le numéro des specs ne collisionne avec aucune autre (hors Spec 07, connue)', () => {
+    const files = titledSpecFiles().map((f) => ({ path: f, text: read(f) }));
+    const numeros = specNumbers(files);
+    // Témoin : la sonde a bien lu des numéros sur l'ENSEMBLE des specs.
     expect(numeros.size).toBeGreaterThan(8);
-
-    const collisions = [...numeros.entries()]
-      .filter(([, fs]) => fs.length > 1 && fs.some((f) => SPECS.includes(f)))
-      .map(([n, fs]) => `Spec ${n}: ${fs.join(', ')}`);
-    expect(collisions).toEqual([]);
-
-    // La collision `Spec 12` entre vehicles.md et water_history.md est réelle
-    // et antérieure — hors du diff de ce lot, donc portée par le bead
-    // ha-sci-fi-b8g, pas corrigée ici. Élargir ce filtre à tout docs/specs/
-    // est le geste qui ferme ce bead ; le cas échouera jusque-là, et c'est
-    // voulu : il n'est pas borné par ignorance mais par périmètre.
-    const horsDiff = [...numeros.entries()].filter(([, fs]) => fs.length > 1);
-    expect(horsDiff.map(([n]) => n)).toEqual(['12']);
+    const collisions = collidingNumbers(files);
+    // Seule la collision Spec 07 (bead ha-sci-fi-13j) est épinglée, par nom.
+    expect(collisionReport(collisions)).toEqual([]);
+    expect([...collisions.keys()]).toEqual([7]);
+    expect(collisions.get(7)!.slice().sort()).toEqual([
+      'docs/specs/cards/hexa-tiles.md',
+      'docs/specs/cards/tv.md',
+    ]);
   });
 
   it('chaque sélecteur gelé par stove.md est lu par le test cité — tous les noms de la ligne', () => {

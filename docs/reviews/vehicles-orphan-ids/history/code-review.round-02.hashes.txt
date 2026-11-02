@@ -1,0 +1,14 @@
+a65cc9e6a5ff9973b6b12b7d1ac057a9eb0e6db2 docs/specs/cards/vehicles.md
+7b0a830b93169cfe919ca1f5f6948363b5498cbc tests/cards/vehicles/sci-fi-vehicles.test.ts
+60254c3b535eb9fc46fcd35677c1bd1a92ae187d docs/adversarial-review/history/vehicles-orphan-ids.round-01.md
+60254c3b535eb9fc46fcd35677c1bd1a92ae187d docs/adversarial-review/vehicles-orphan-ids.md
+7306995a12c4a938328e1f0853cac444e3462104 docs/reviews/vehicles-orphan-ids/code-review.md
+4937d188f7e5010ed7d16314d2f289ce85f08534 docs/reviews/vehicles-orphan-ids/history/code-review.round-01.hashes.txt
+7306995a12c4a938328e1f0853cac444e3462104 docs/reviews/vehicles-orphan-ids/history/code-review.round-01.md
+4937d188f7e5010ed7d16314d2f289ce85f08534 docs/reviews/vehicles-orphan-ids/history/security-review.round-01.hashes.txt
+8605f343233aa93b5de4ee17e8ef88ab55b124d9 docs/reviews/vehicles-orphan-ids/history/security-review.round-01.md
+8605f343233aa93b5de4ee17e8ef88ab55b124d9 docs/reviews/vehicles-orphan-ids/security-review.md
+8b9a42d94be69ec6352d0612bfd0c569f985bf5b docs/specs/vehicles-orphan-ids/spec.md
+b898a6050f409069532f17ed9fda05e038c891e6 docs/summaries/vehicles-orphan-ids/BUILD.md
+9f6a9912ae43612b0bc9ba4dc9f73cf1f2b16c8a docs/summaries/vehicles-orphan-ids/SPEC.md
+b38e533e59b3958da12c4e92e55e2d151d226077 tests/cards/vehicles/vehicles-ids-declared.test.ts

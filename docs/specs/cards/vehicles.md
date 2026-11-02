@@ -16,7 +16,7 @@
 | F-VEH-D03 | Landspeeder `.top` zone: location (with map link) + mileage | ✅ This spec § _renderTop() zone | ⬜ aucun id TC — aucun cas ne pine le contenu de la zone `.top` |
 | F-VEH-D04 | Landspeeder `.middle` zone: lock + fuel + battery + charging panels positioned on SVG | ✅ This spec § _renderMiddle() zone | ⬜ aucun id TC — aucun cas ne pine le contenu de la zone `.middle` |
 | F-VEH-D05 | Actions bar: temperature `sf-wheel` + Start AC / Stop AC buttons | ✅ This spec § _renderActions() | tests/cards/vehicles/sci-fi-vehicles.test.ts :: TC-VEHICLES-U-1209, TC-VEHICLES-U-1210, TC-VEHICLES-U-1211 |
-| F-VEH-D06 | Extract CSS into `styles.ts` (stove/climate pattern) | ✅ This spec § styles.ts | tests/cards/vehicles/sci-fi-vehicles.test.ts :: TC-1215 |
+| F-VEH-D06 | Extract CSS into `styles.ts` (stove/climate pattern) | ✅ This spec § styles.ts | tests/cards/vehicles/sci-fi-vehicles.test.ts :: TC-VEHICLES-U-1215 |
 | F-VEH-D07 | Battery color thresholds: green ≥60%, orange 20-59%, red <20% | ✅ This spec § _renderMiddle() zone | ⬜ aucun id TC — les trois seuils ne sont pinés par aucun cas |
 | F-VEH-D08 | Charge state + plug state icon mapping from `vehicles/vehicle_const.ts` | ✅ This spec § Constants — vehicle_const.ts | ⬜ aucun id TC — table de correspondance, aucun cas déclaré |
 | F-VEH-D09 | All existing 6 vehicle tests remain GREEN (regression gate) | ✅ This spec § Test Selectors — Frozen Contract | tests/cards/vehicles/sci-fi-vehicles.test.ts :: TC-VEHICLES-U-1201, TC-VEHICLES-U-1202, TC-VEHICLES-U-1203, TC-VEHICLES-U-1214, IT-VEHICLES-I-1201, IT-VEHICLES-I-1202 |
@@ -641,7 +641,7 @@ The component CSS is ported 1:1 from 'main:src/components/landspeeder/style.js',
 
 ## Test Case Specifications
 
-> **⬜ dans la colonne ID : le cas n'est joué par aucun test.** Une ligne sur dix-sept : `tests/cards/vehicles/sci-fi-vehicles.test.ts` s'arrête à `IT-VEHICLES-I-1202`.
+> **⬜ dans la colonne ID : le cas n'est joué par aucun test.** Une ligne sur vingt-six : `tests/cards/vehicles/sci-fi-vehicles.test.ts` s'arrête à `IT-VEHICLES-I-1202`.
 > Le marqueur est la seule source : `tests/specs/ids-cas-uniques.test.ts` dérive
 > l'ensemble des cas non joués de ces marques et refuse l'écart dans les deux
 > sens — un cas non marqué que rien ne cite, comme un cas marqué qu'un test porte.
@@ -662,6 +662,15 @@ The component CSS is ported 1:1 from 'main:src/components/landspeeder/style.js',
 | TC-VEHICLES-U-1212 | Unit | Prev navigation cycles to last vehicle | 2 vehicles, click prev from idx 0 | `.title` textContent changes to second vehicle name |
 | TC-VEHICLES-U-1213 | Unit | Next navigation cycles to first vehicle | 2 vehicles, click next from idx 1 | `.title` textContent changes to first vehicle name |
 | TC-VEHICLES-U-1214 | Regression | All existing 2 static tests pass | `getConfigElement`, `getStubConfig` | No failures |
+| TC-VEHICLES-U-1215 | Unit | `vehicleStyles` exports a Lit `CSSResult` | import `vehicles/styles.ts` | `vehicleStyles` is an object whose `cssText` is a string |
+| TC-VEHICLES-U-1216 | Unit | `getRelevantEntities()` lists every configured entity field | one vehicle with its twelve entity fields set (`charging`, `lock_status`, `location`, `battery_autonomy`, `fuel_autonomy`, `battery_level`, `location_last_activity`, `charge_state`, `plug_state`, `mileage`, `fuel_quantity`, `charging_remaining_time`) | the result includes all twelve entity ids |
+| TC-VEHICLES-U-1217 | Unit | `getRelevantEntities()` lists the sensors of several vehicles | two vehicles, `battery_level` on the first, `fuel_quantity` on the second | the result includes both entity ids |
+| TC-VEHICLES-U-1218 | Unit | `getRelevantEntities()` is empty without sensors | one vehicle holding only `id` and `name` | the result is an empty list |
+| TC-VEHICLES-U-1219 | Unit | `getCardSize()` returns 5 once configured | card mounted with one vehicle | `getCardSize() === 5` |
+| TC-VEHICLES-U-1220 | Unit | Start AC success shows a success toast | mounted card, `callService` resolves, click on the `mdi:play` button | the toast `addMessage` is called with a string and `false` |
+| TC-VEHICLES-U-1221 | Unit | Start AC failure shows the error toast | mounted card, `callService` rejects `Error('AC failure')`, click on the `mdi:play` button | the toast `addMessage` is called with `'AC failure'` and `true` |
+| TC-VEHICLES-U-1222 | Unit | Stop AC success shows a success toast | mounted card, `callService` resolves, click on the `mdi:stop` button | the toast `addMessage` is called with a string and `false` |
+| TC-VEHICLES-U-1223 | Unit | `getCardSize()` returns 3 without a config | element created, `setConfig` never called | `getCardSize() === 3` |
 | IT-VEHICLES-I-1201 | Integration | Card registers in `customElements` | load card | `customElements.get('sci-fi-vehicles')` returns class |
 | IT-VEHICLES-I-1202 | Integration | Card full render: header + landspeeder + actions | mount with full config | All 3 sections present |
 | IT-VEHICLES-I-1203 ⬜ | Integration | `vehicles/styles.ts` imported — no inline `css\`` in `vehicles/sci-fi-vehicles.ts` | grep | 'grep -c "css\`" sci-fi-vehicles.ts' returns 0 |

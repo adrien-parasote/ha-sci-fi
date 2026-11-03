@@ -74,6 +74,8 @@ export function makeMockHass(
     entities?: Record<string, HassEntityEntry>;
     states?: Record<string, HassEntity>;
     callService?: any;
+    /** hass.locale.language; default 'fr' (FR-11). A card still needs `await setLocale(...)`. */
+    language?: string;
   } = {}
 ): HomeAssistantExt {
   const callService = overrides.callService ?? (() =>
@@ -102,7 +104,7 @@ export function makeMockHass(
       'climate.salon': makeMockEntity({ entity_id: 'climate.salon', state: 'heat' }),
     },
     devices: {},
-    locale: { language: 'fr', number_format: 'comma', time_format: '24' },
+    locale: { language: overrides.language ?? 'fr', number_format: 'comma', time_format: '24' },
     user: { id: '1', name: 'Adrien', is_admin: true },
     connection: {
       sendMessagePromise: () => Promise.resolve({} as never),

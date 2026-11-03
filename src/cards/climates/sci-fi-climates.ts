@@ -218,7 +218,7 @@ export class SciFiClimatesCard extends SciFiBaseCard {
     allClimates.forEach(c => {
       void this.hass.callService('climate', 'set_hvac_mode', { entity_id: c.entity_id, hvac_mode: action });
     });
-    this.__toast(false, 'Mode appliqué');
+    this.__toast(false, msg('Mode applied'));
   }
 
   private __displayFloors(excluded: readonly string[]): TemplateResult {
@@ -350,19 +350,19 @@ export class SciFiClimatesCard extends SciFiBaseCard {
 
   private _changeTemperature(e: CustomEvent): void {
     void this.hass.callService('climate', 'set_temperature', { entity_id: e.detail.id, temperature: e.detail.temperature })
-      .then(() => this.__toast(false, 'Température modifiée'))
+      .then(() => this.__toast(false, msg('Temperature changed')))
       .catch((err) => this.__toast(true, String(err)));
   }
 
   private _changeHvacMode(e: CustomEvent): void {
     void this.hass.callService('climate', 'set_hvac_mode', { entity_id: e.detail.id, hvac_mode: e.detail.mode })
-      .then(() => this.__toast(false, 'Mode HVAC modifié'))
+      .then(() => this.__toast(false, msg('HVAC mode changed')))
       .catch((err) => this.__toast(true, String(err)));
   }
 
   private _changePresetMode(e: CustomEvent): void {
     void this.hass.callService('climate', 'set_preset_mode', { entity_id: e.detail.id, preset_mode: e.detail.mode })
-      .then(() => this.__toast(false, 'Preset modifié'))
+      .then(() => this.__toast(false, msg('Preset changed')))
       .catch((err) => this.__toast(true, String(err)));
   }
 

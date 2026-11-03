@@ -1245,6 +1245,138 @@
   <source>Sirens on</source>
 <target>Sirènes allumées</target>
 </trans-unit>
+<trans-unit id="sc85268826108439f">
+  <source>Mode applied</source>
+  <target>Mode appliqué</target>
+</trans-unit>
+<trans-unit id="sa485bd3ee9e95051">
+  <source>Hey, Welcome Back!</source>
+  <target>Hey, bon retour !</target>
+</trans-unit>
+<trans-unit id="s750624988261feb2">
+  <source>⚠️ Weather alert: <x id="0" equiv-text="${label}"/></source>
+  <target>⚠️ Alerte météo : <x id="0" equiv-text="${label}"/></target>
+</trans-unit>
+<trans-unit id="s115ec7a860300000">
+  <source>No lights configured for this floor</source>
+  <target>Aucune lumière configurée pour cet étage</target>
+</trans-unit>
+<trans-unit id="s79622bcab9e57294">
+  <source>Lights</source>
+  <target>Lumières</target>
+</trans-unit>
+<trans-unit id="sd62d1dd8af2f1382">
+  <source>Turn all on</source>
+  <target>Tout allumer</target>
+</trans-unit>
+<trans-unit id="s1dd8cb31ad15e5b4">
+  <source>Turn all off</source>
+  <target>Tout éteindre</target>
+</trans-unit>
+<trans-unit id="s4146c302ab144aed">
+  <source>Turn this floor on</source>
+  <target>Allumer cet étage</target>
+</trans-unit>
+<trans-unit id="sff6cf888b363fda9">
+  <source>Turn this floor off</source>
+  <target>Éteindre cet étage</target>
+</trans-unit>
+<trans-unit id="s5467d70d2cfc306d">
+  <source>Select a room</source>
+  <target>Sélectionnez une pièce</target>
+</trans-unit>
+<trans-unit id="sabe7d9a5497e71e1">
+  <source>Turn the room on</source>
+  <target>Allumer la pièce</target>
+</trans-unit>
+<trans-unit id="s994d6adbe1c43bdd">
+  <source>Turn the room off</source>
+  <target>Éteindre la pièce</target>
+</trans-unit>
+<trans-unit id="s9fa26dbaefdeeb53">
+  <source>No lights</source>
+  <target>Aucune lumière</target>
+</trans-unit>
+<trans-unit id="sfe80ea068e2967f4">
+  <source>Light turned on</source>
+  <target>Lumière allumée</target>
+</trans-unit>
+<trans-unit id="s9e5a4b239044508e">
+  <source>Light turned off</source>
+  <target>Lumière éteinte</target>
+</trans-unit>
+<trans-unit id="s21fed327e823290d">
+  <source>Room turned on</source>
+  <target>Pièce allumée</target>
+</trans-unit>
+<trans-unit id="se70e47cf73a70149">
+  <source>Room turned off</source>
+  <target>Pièce éteinte</target>
+</trans-unit>
+<trans-unit id="s5f7d0d7261672d1a">
+  <source>Floor turned on</source>
+  <target>Étage allumé</target>
+</trans-unit>
+<trans-unit id="sa890255b823b306c">
+  <source>Floor turned off</source>
+  <target>Étage éteint</target>
+</trans-unit>
+<trans-unit id="sb2e7783f3bf8c4cf">
+  <source>All turned on</source>
+  <target>Tout allumé</target>
+</trans-unit>
+<trans-unit id="sf830ec72e7ccd7b3">
+  <source>All turned off</source>
+  <target>Tout éteint</target>
+</trans-unit>
+<trans-unit id="s282ac33f44063a02">
+  <source>Volume entity</source>
+  <target>Entité Volume</target>
+</trans-unit>
+<trans-unit id="s839a31e7d7b8eba8">
+  <source>Application entity</source>
+  <target>Entité Application</target>
+</trans-unit>
+<trans-unit id="s351870fdc429b247">
+  <source>Button <x id="0" equiv-text="${actionId}"/></source>
+  <target>Bouton <x id="0" equiv-text="${actionId}"/></target>
+</trans-unit>
+<trans-unit id="sb33bb95923d3a4cb">
+  <source>My vehicle</source>
+  <target>Mon véhicule</target>
+</trans-unit>
+<trans-unit id="sfe19be48a068773f">
+  <source>Weather entity not found</source>
+  <target>Entité météo non trouvée</target>
+</trans-unit>
+<trans-unit id="sf8207977ea91cbd1">
+  <source>Action type (e.g. call-service, navigate, none)</source>
+  <target>Type d'action (ex: call-service, navigate, none)</target>
+</trans-unit>
+<trans-unit id="s347848898f41ce8c">
+  <source>Service (e.g. media_player.play_media)</source>
+  <target>Service (ex: media_player.play_media)</target>
+</trans-unit>
+<trans-unit id="s7ba00339d2e4df0b">
+  <source>Entity ID (data.entity_id)</source>
+  <target>ID d'entité (data.entity_id)</target>
+</trans-unit>
+<trans-unit id="s6fb317163d60d862">
+  <source>Navigation path</source>
+  <target>Chemin de navigation</target>
+</trans-unit>
+<trans-unit id="s779fab94ff680b0b">
+  <source>Source name</source>
+  <target>Nom de la source</target>
+</trans-unit>
+<trans-unit id="s791d8a0d4d4ff572">
+  <source>Remove source</source>
+  <target>Supprimer la source</target>
+</trans-unit>
+<trans-unit id="sd47f686a056aed69">
+  <source>Add source</source>
+  <target>Ajouter une source</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

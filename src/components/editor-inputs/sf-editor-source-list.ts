@@ -1,4 +1,5 @@
 import { LitElement, html, css, type CSSResultGroup, type TemplateResult } from 'lit';
+import { msg, updateWhenLocaleChanges } from '@lit/localize';
 import { customElement, property } from 'lit/decorators.js';
 import type { HomeAssistantExt } from '../../types/ha.js';
 import { InputUpdateDetail } from './sf-editor-input.js';
@@ -94,6 +95,11 @@ export class SfEditorSourceList extends LitElement {
     }
   `;
 
+  constructor() {
+    super();
+    updateWhenLocaleChanges(this);
+  }
+
   private _dispatch(): void {
     const detail: InputUpdateDetail = {
       id: this.elementId,
@@ -161,7 +167,7 @@ export class SfEditorSourceList extends LitElement {
             <div class="source-item">
               <div class="source-header">
                 <sf-editor-input
-                  label="Nom de la source"
+                  label=${msg('Source name')}
                   .value=${name}
                   @input-update=${(e: CustomEvent) => {
                     e.stopPropagation();
@@ -169,13 +175,13 @@ export class SfEditorSourceList extends LitElement {
                   }}
                   style="flex: 1;"
                 ></sf-editor-input>
-                <button class="delete-btn" @click=${() => this._removeSource(index)} title="Remove source">
+                <button class="delete-btn" @click=${() => this._removeSource(index)} title=${msg('Remove source')}>
                   <sf-icon icon="mdi:delete" style="--icon-width:18px;--icon-height:18px;"></sf-icon>
                 </button>
               </div>
               
               <sf-editor-action
-                label="Action"
+                label=${msg('Action')}
                 .hass=${this.hass}
                 .value=${actionConfig}
                 @input-update=${(e: CustomEvent) => {
@@ -189,7 +195,7 @@ export class SfEditorSourceList extends LitElement {
         
         <button class="add-btn" @click=${this._addSource}>
           <sf-icon icon="mdi:plus" style="--icon-width:18px;--icon-height:18px;"></sf-icon>
-          Ajouter une source
+          ${msg('Add source')}
         </button>
       </div>
     `;

@@ -159,7 +159,7 @@ Every agent executing this specification must strictly adhere to the following b
 |---|---|---|
 | 1 | Crashing on syntax error | Wrap the `jsyaml.load` call in a try/catch block, display a user-friendly error banner, and maintain the last valid card preview. |
 | 2 | Deleting mobile/tablet CSS | Keep all phone/tablet simulator frames and CSS styles operational for View mode. Only disable and hide them during Edit mode. |
-| 3 | Hardcoded locale keys in cards | Override the dynamic `hass.locale.language` and let the Lit components reactive localization engine handle translations via `@lit/localize`. |
+| 3 | Hardcoded locale keys in cards | Override the dynamic `hass.locale.language` and let the Lit components reactive localization engine handle translations via `@lit/localize`. Guarded by `tests/i18n/no-hardcoded-literals.test.ts` ([i18n-hardcoded-fr](./i18n-hardcoded-fr/spec.md) FR-1). |
 | 4 | Bypassing the card `setConfig()` | Always call `cardEl.setConfig(config)` when a new configuration is parsed, as cards rely on it for structural initialization and validation. |
 | 5 | Writing back YAML to files via server APIs | Keep the workbench completely client-side. Rely on a premium "Copier le YAML" clipboard button. |
 | 6 | Symmetric ternary calls inside `msg()` | Avoid writing `cond ? msg('A') : msg('B')` because Rollup/Terser optimizer compiles this into a dynamic call `msg(cond ? 'A' : 'B')`, which fails static XLIFF key parsing. Use robust un-collapsible static array-tuple lookups instead: `[msg('B'), msg('A')][cond ? 1 : 0] as string`. |
@@ -186,7 +186,7 @@ Every agent executing this specification must strictly adhere to the following b
 | TC-903 | Unit | Language selection propagates to mock HASS | Set currentLanguage to 'fr' | hass.language and hass.locale.language update to 'fr' |
 | TC-904 | Unit | Dynamic UI editor instantiates card editor | Registered editor class | Dynamic HTML element instantiated and configured |
 | TC-905 | Unit | View mode renders tablet and phone frames | Set View mode to 'panel' | Shows device viewport options and styles |
-| IT-901 | Integration | Switching language translates card | Click EN button on lights card | Lights card labels ("Lumières", "Plafond") translate instantly to English |
+| IT-901 | Integration | Switching language translates card | Click EN button on lights card | Lights card strings ("Lights", "Turn all off", the empty states) translate instantly to English; area names come from the Home Assistant registry and are not translated by the card. This test asserts the language carried by the hass handed to the card; the translation of the strings is proved by `IT-I18N-I-01` of [i18n-hardcoded-fr](./i18n-hardcoded-fr/spec.md) |
 | IT-902 | Integration | Entering valid YAML updates card | Type valid YAML into code editor | Preview card re-renders with the newly configured properties |
 | IT-903 | Integration | Entering invalid YAML shows banner | Type malformed YAML (missing indent) | Shows validation warning, card remains visible in last valid state |
 | IT-904 | Integration | UI editor updates code editor | Trigger click in UI editor | Textarea YAML content is instantly regenerated to match the new config |

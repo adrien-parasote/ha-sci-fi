@@ -496,7 +496,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
   protected override renderCard(): TemplateResult {
     if (!this.hass || !this.config?.weather_entity) return html``;
     const weatherEntity = this.hass.states[this.config.weather_entity];
-    if (!weatherEntity) return html`<ha-card><div class="container">Entité météo non trouvée</div></ha-card>`;
+    if (!weatherEntity) return html`<ha-card><div class="container">${msg('Weather entity not found')}</div></ha-card>`;
 
     return html`
       <ha-card>

@@ -5,6 +5,7 @@
  */
 
 import { html, type TemplateResult } from 'lit';
+import { msg } from '@lit/localize';
 import { customElement, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { SciFiBaseCard } from '../../utils/base-card.js';
@@ -74,7 +75,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
   protected override renderCard(): TemplateResult {
     const floors = getFloors(this.hass);
     if (floors.length === 0) {
-      return html`<ha-card><div class="empty-state">Aucun étage configuré</div></ha-card>`;
+      return html`<ha-card><div class="empty-state">${msg('No floor configured')}</div></ha-card>`;
     }
 
     const ignored = this.config.ignored_entities ?? [];
@@ -157,7 +158,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
               <div class="area-content ${this._activeAreaId && hasActiveLights(this.hass, this._activeAreaId) ? '' : 'area-off'}">
                 ${this._renderAreaContent(activeLights)}
               </div>
-            ` : html`<div class="empty-state">Aucune lumière configurée pour cet étage</div>`}
+            ` : html`<div class="empty-state">${msg('No lights configured for this floor')}</div>`}
           </div>
         </div>
         <sf-toast></sf-toast>
@@ -175,13 +176,13 @@ export class SciFiLightsCard extends SciFiBaseCard {
   }
 
   private _renderHeader(houseActive: boolean): TemplateResult {
-    const label = this.config.header_message ?? 'Lumières';
+    const label = this.config.header_message ?? msg('Lights');
     return html`
       <div class="header">
         <div class="info">
           <button
             class="power-btn header-power ${houseActive ? '' : 'is-off'}"
-            title="${houseActive ? 'Tout éteindre' : 'Tout allumer'}"
+            title="${[msg('Turn all on'), msg('Turn all off')][houseActive ? 1 : 0]}"
             @click="${() => this._toggleAllLights(houseActive)}"
           >${this._powerSvg()}</button>
           <span class="header-text" @click="${this._handleHeaderClick}" style="${this.config.tap_action ? 'cursor: pointer;' : ''}">${label}</span>
@@ -249,7 +250,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
             ${floor.name}
             <button
               class="power-btn ${active ? '' : 'is-off'}"
-              title="${active ? 'Éteindre cet étage' : 'Allumer cet étage'}"
+              title="${[msg('Turn this floor on'), msg('Turn this floor off')][active ? 1 : 0]}"
               @click="${() => this._toggleFloorLights(floor.floor_id, active)}"
             >${this._powerSvg()}</button>
           </div>
@@ -299,7 +300,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
 
   private _renderAreaContent(lights: readonly HassEntityEntry[]): TemplateResult {
     if (!this._activeAreaId) {
-      return html`<div class="empty-state">Sélectionnez une pièce</div>`;
+      return html`<div class="empty-state">${msg('Select a room')}</div>`;
     }
 
     const area = getAreaById(this.hass, this._activeAreaId);
@@ -311,13 +312,13 @@ export class SciFiLightsCard extends SciFiBaseCard {
         ${area?.name ?? ''}
         <button
           class="power-btn ${active ? '' : 'is-off'}"
-          title="${active ? 'Éteindre la pièce' : 'Allumer la pièce'}"
+          title="${[msg('Turn the room on'), msg('Turn the room off')][active ? 1 : 0]}"
           @click="${() => this._toggleAreaLights(this._activeAreaId!, active)}"
         >${this._powerSvg()}</button>
       </div>
       <div class="lights-grid">
         ${lights.length === 0
-          ? html`<div class="empty-state" style="grid-column:1/-1">Aucune lumière</div>`
+          ? html`<div class="empty-state" style="grid-column:1/-1">${msg('No lights')}</div>`
           : repeat(lights, l => l.entity_id, l => this._renderLightBtn(l, overrides))
         }
       </div>
@@ -387,7 +388,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
   private _toggleLight(entityId: string, isOn: boolean): void {
     void this.hass
       .callService('light', isOn ? 'turn_off' : 'turn_on', { entity_id: entityId })
-      .then(() => { this._showToast(false, isOn ? 'Lumière éteinte' : 'Lumière allumée'); })
+      .then(() => { this._showToast(false, [msg('Light turned on'), msg('Light turned off')][isOn ? 1 : 0] as string); })
       .catch((e: Error) => { this._showToast(true, e.message); });
   }
 
@@ -399,7 +400,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
     if (entityIds.length === 0) return;
     void this.hass
       .callService('light', active ? 'turn_off' : 'turn_on', { entity_id: entityIds })
-      .then(() => { this._showToast(false, active ? 'Pièce éteinte' : 'Pièce allumée'); })
+      .then(() => { this._showToast(false, [msg('Room turned on'), msg('Room turned off')][active ? 1 : 0] as string); })
       .catch((e: Error) => { this._showToast(true, e.message); });
   }
 
@@ -413,7 +414,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
     if (entityIds.length === 0) return;
     void this.hass
       .callService('light', active ? 'turn_off' : 'turn_on', { entity_id: entityIds })
-      .then(() => { this._showToast(false, active ? 'Étage éteint' : 'Étage allumé'); })
+      .then(() => { this._showToast(false, [msg('Floor turned on'), msg('Floor turned off')][active ? 1 : 0] as string); })
       .catch((e: Error) => { this._showToast(true, e.message); });
   }
 
@@ -429,7 +430,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
     if (entityIds.length === 0) return;
     void this.hass
       .callService('light', active ? 'turn_off' : 'turn_on', { entity_id: entityIds })
-      .then(() => { this._showToast(false, active ? 'Tout éteint' : 'Tout allumé'); })
+      .then(() => { this._showToast(false, [msg('All turned on'), msg('All turned off')][active ? 1 : 0] as string); })
       .catch((e: Error) => { this._showToast(true, e.message); });
   }
 

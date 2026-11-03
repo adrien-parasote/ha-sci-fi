@@ -7,6 +7,7 @@ import * as path from 'path';
 import '../../../src/cards/hexa-tiles/sci-fi-hexa-tiles.js';
 import { SciFiHexaTilesCard } from '../../../src/cards/hexa-tiles/sci-fi-hexa-tiles.js';
 import { makeMockHass, makeMockEntity } from '../../fixtures/mock-hass.js';
+import { setLocale } from '../../../src/locales/localization.js';
 
 describe('sci-fi-hexa-tiles', () => {
   it('provides getConfigElement', () => {
@@ -25,7 +26,8 @@ describe('sci-fi-hexa-tiles', () => {
     vi.stubGlobal('innerHeight', 812);
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    await setLocale('fr');
     document.body.replaceChildren();
     vi.resetAllMocks();
     vi.unstubAllGlobals();
@@ -584,7 +586,8 @@ describe('sci-fi-hexa-tiles', () => {
     return el;
   }
 
-  it('TC-HEXA-TILES-U-706: alert banner names the phenomenon whose attribute matches a non-green level', async () => {
+  it('TC-HEXA-TILES-U-706 TC-I18N-U-15: alert banner names the phenomenon whose attribute matches a non-green level', async () => {
+    await setLocale('fr');
     const el = await mountWithAlert({ canicule: 'Jaune', vent: 'Vert' }, 'Jaune');
     const banner = el.shadowRoot!.querySelector('.weather-alert');
     expect(banner, 'a non-green alert must render the banner').not.toBeNull();
@@ -594,7 +597,8 @@ describe('sci-fi-hexa-tiles', () => {
     expect(banner!.textContent).not.toContain('vent');
   });
 
-  it('TC-HEXA-TILES-U-707: alert banner falls back to the entity state when no attribute matches', async () => {
+  it('TC-HEXA-TILES-U-707 TC-I18N-U-15: alert banner falls back to the entity state when no attribute matches', async () => {
+    await setLocale('fr');
     const el = await mountWithAlert({ friendly_name: 'Vigilance' }, 'Orange');
     const banner = el.shadowRoot!.querySelector('.weather-alert');
     expect(banner).not.toBeNull();

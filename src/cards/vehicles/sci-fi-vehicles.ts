@@ -220,7 +220,7 @@ export class SciFiVehiclesCard extends SciFiBaseCard {
   }
 
   static getStubConfig(): SciFiVehiclesConfig {
-    return { type: `custom:${TAG}`, vehicles: [{ id: 'v1', name: 'Mon véhicule' }] };
+    return { type: `custom:${TAG}`, vehicles: [{ id: 'v1', name: msg('My vehicle') }] };
   }
 }
 

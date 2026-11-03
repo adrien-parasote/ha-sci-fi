@@ -3,6 +3,7 @@
  */
 
 import type { HomeAssistantExt } from '../../types/ha.js';
+import { DOMAIN } from '../../types/domains.js';
 import { html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
@@ -53,7 +54,7 @@ export class SciFiTVEditor extends SciFiBaseEditor {
     const states = Object.values(hass.states);
     
     this._mediaPlayers = states
-      .filter(e => e.entity_id.startsWith('media_player.'))
+      .filter(e => e.entity_id.startsWith(`${DOMAIN.MEDIA_PLAYER}.`))
       .map(e => ({
         entity_id: e.entity_id,
         attributes: {
@@ -63,7 +64,7 @@ export class SciFiTVEditor extends SciFiBaseEditor {
       }));
     
     this._remotes = states
-      .filter(e => e.entity_id.startsWith('remote.'))
+      .filter(e => e.entity_id.startsWith(`${DOMAIN.REMOTE}.`))
       .map(e => ({
         entity_id: e.entity_id,
         attributes: {

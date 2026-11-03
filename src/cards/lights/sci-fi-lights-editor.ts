@@ -17,6 +17,7 @@
  */
 
 import type { HomeAssistantExt } from '../../types/ha.js';
+import { DOMAIN } from '../../types/domains.js';
 import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
@@ -77,7 +78,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
     for (const floor of floors) {
       const areas = getAreasByFloor(hass, floor.floor_id);
       for (const area of areas) {
-        const entries = getEntitiesByAreaAndDomain(hass, area.area_id, 'light');
+        const entries = getEntitiesByAreaAndDomain(hass, area.area_id, DOMAIN.LIGHT);
         for (const entry of entries) {
           const state = hass.states[entry.entity_id];
           allLights.push({
@@ -107,7 +108,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
     for (const floor of floors) {
       const areas = getAreasByFloor(hass, floor.floor_id);
       const hasLights = areas.some(area =>
-        getEntitiesByAreaAndDomain(hass, area.area_id, 'light').length > 0
+        getEntitiesByAreaAndDomain(hass, area.area_id, DOMAIN.LIGHT).length > 0
       );
       if (hasLights) {
         this._autoSetupDone = true;
@@ -129,7 +130,7 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
     if (!floorId) { this._areaItems = []; return; }
 
     const areas = getAreasByFloor(hass, floorId).filter(area =>
-      getEntitiesByAreaAndDomain(hass, area.area_id, 'light').length > 0
+      getEntitiesByAreaAndDomain(hass, area.area_id, DOMAIN.LIGHT).length > 0
     );
     this._areaItems = areas.map(a => ({
       entity_id: a.area_id,

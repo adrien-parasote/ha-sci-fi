@@ -31,6 +31,7 @@ import '../../components/sf-icon/sf-icon.js';
 import '../../components/sf-wheel.js';
 import '../../components/buttons/sf-button-card.js';
 import '../../components/buttons/sf-button-card-select.js';
+import { DOMAIN } from '../../types/domains.js';
 
 const TAG = 'sci-fi-stove';
 
@@ -460,7 +461,7 @@ export class SciFiStoveCard extends SciFiBaseCard {
   private _onHvacSelect(e: CustomEvent, entityId: string): void {
     const mode: string = e.detail.id;
     void this.hass
-      .callService('climate', 'set_hvac_mode', { entity_id: entityId, hvac_mode: mode })
+      .callService(DOMAIN.CLIMATE, 'set_hvac_mode', { entity_id: entityId, hvac_mode: mode })
       .then(() => { this._showToast(false, msg('HVAC mode changed')); })
       .catch((err: Error) => { this._showToast(true, err.message); });
   }
@@ -469,7 +470,7 @@ export class SciFiStoveCard extends SciFiBaseCard {
     const temp = parseFloat(e.detail.id);
     if (!isNaN(temp)) {
       void this.hass
-        .callService('climate', 'set_temperature', { entity_id: entityId, temperature: temp })
+        .callService(DOMAIN.CLIMATE, 'set_temperature', { entity_id: entityId, temperature: temp })
         .then(() => { this._showToast(false, msg('Temperature changed')); })
         .catch((err: Error) => { this._showToast(true, err.message); });
     }
@@ -477,7 +478,7 @@ export class SciFiStoveCard extends SciFiBaseCard {
 
   private _onEcoToggle(switchEntityId: string): void {
     void this.hass
-      .callService('switch', 'toggle', { entity_id: switchEntityId })
+      .callService(DOMAIN.SWITCH, 'toggle', { entity_id: switchEntityId })
       .then(() => { this._showToast(false, msg('Eco mode changed')); })
       .catch((err: Error) => { this._showToast(true, err.message); });
   }
@@ -485,7 +486,7 @@ export class SciFiStoveCard extends SciFiBaseCard {
   private _onPresetSelect(e: CustomEvent, entityId: string): void {
     const preset: string = e.detail.id;
     void this.hass
-      .callService('climate', 'set_preset_mode', { entity_id: entityId, preset_mode: preset })
+      .callService(DOMAIN.CLIMATE, 'set_preset_mode', { entity_id: entityId, preset_mode: preset })
       .then(() => { this._showToast(false, msg('Preset changed')); })
       .catch((err: Error) => { this._showToast(true, err.message); });
   }

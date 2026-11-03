@@ -4,6 +4,7 @@
  */
 
 import type { HomeAssistantExt, HassEntityEntry, HassEntity } from '../types/ha.js';
+import { DOMAIN } from '../types/domains.js';
 
 /**
  * Returns all climate entity entries registered in HA.
@@ -12,7 +13,7 @@ import type { HomeAssistantExt, HassEntityEntry, HassEntity } from '../types/ha.
 export function getClimateEntities(hass: HomeAssistantExt): readonly HassEntityEntry[] {
   if (!hass.entities) return [];
   return Object.values(hass.entities).filter(
-    entry => entry.entity_id.startsWith('climate.') && !entry.disabled_by
+    entry => entry.entity_id.startsWith(`${DOMAIN.CLIMATE}.`) && !entry.disabled_by
   );
 }
 

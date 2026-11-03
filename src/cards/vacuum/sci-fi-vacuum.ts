@@ -30,6 +30,7 @@ import '../../components/sf-icon/sf-icon.js';
 import '../../components/buttons/sf-button.js';
 import '../../components/sf-dropdown.js';
 import '../../components/sf-toast.js';
+import { DOMAIN } from '../../types/domains.js';
 
 const TAG = 'sci-fi-vacuum';
 
@@ -306,13 +307,13 @@ export class SciFiVacuumCard extends SciFiBaseCard {
   }
 
   private _setFanSpeed(entityId: string, fanSpeed: string): void {
-    void this.hass.callService('vacuum', 'set_fan_speed', { entity_id: entityId, fan_speed: fanSpeed })
+    void this.hass.callService(DOMAIN.VACUUM, 'set_fan_speed', { entity_id: entityId, fan_speed: fanSpeed })
       .then(() => this._toast(false, msg('done')))
       .catch((e: Error) => this._toast(true, e.message));
   }
 
   private _callAction(entityId: string, service: string): void {
-    void this.hass.callService('vacuum', service, { entity_id: entityId })
+    void this.hass.callService(DOMAIN.VACUUM, service, { entity_id: entityId })
       .then(() => this._toast(false, msg('done')))
       .catch((e: Error) => this._toast(true, e.message));
   }

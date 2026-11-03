@@ -10,6 +10,7 @@
  */
 
 import type { HomeAssistantExt } from '../../types/ha.js';
+import { DOMAIN } from '../../types/domains.js';
 import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
@@ -53,7 +54,7 @@ export class SciFiClimatesEditor extends SciFiBaseEditor {
     super.hass = hass;
     if (!hass || this._climateEntities.length > 0) return;
     this._climateEntities = Object.values(hass.states)
-      .filter(e => e.entity_id.startsWith('climate.'))
+      .filter(e => e.entity_id.startsWith(`${DOMAIN.CLIMATE}.`))
       .map(e => ({
         entity_id: e.entity_id,
         attributes: {

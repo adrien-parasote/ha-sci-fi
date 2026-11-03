@@ -5,6 +5,7 @@
 
 import type { HomeAssistantExt, HassEntityEntry, HassEntity } from '../types/ha.js';
 import { getEntitiesByAreaAndDomain } from './house.js';
+import { DOMAIN } from '../types/domains.js';
 
 /**
  * Returns all light entity entries in a given area.
@@ -14,7 +15,7 @@ export function getLightEntities(
   hass: HomeAssistantExt,
   areaId: string
 ): readonly HassEntityEntry[] {
-  return getEntitiesByAreaAndDomain(hass, areaId, 'light');
+  return getEntitiesByAreaAndDomain(hass, areaId, DOMAIN.LIGHT);
 }
 
 /**

@@ -13,7 +13,7 @@ import WEATHER_ICON_SET from '../../components/sf-icon/data/sf-weather-icons.js'
 import '../../components/editor-inputs/sf-editor-accordion.js';
 
 import { waterStyles } from './styles.js';
-
+import { DOMAIN } from '../../types/domains.js';
 const TAG = 'sci-fi-water-management';
 
 // SVG hexagon points (pointy-top, portrait orientation)
@@ -137,8 +137,8 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
    * common config), power/energy sensors are the best proxy for device activity
    * (e.g. water heater on/off).
    */
-  private static readonly MEANINGFUL_DOMAINS = new Set([
-    'switch', 'valve', 'automation', 'binary_sensor', 'input_boolean', 'sensor',
+  private static readonly MEANINGFUL_DOMAINS = new Set<string>([
+    DOMAIN.SWITCH, DOMAIN.VALVE, DOMAIN.AUTOMATION, DOMAIN.BINARY_SENSOR, DOMAIN.INPUT_BOOLEAN, DOMAIN.SENSOR,
   ]);
 
   async _fetchHistoryLogs(): Promise<void> {
@@ -271,7 +271,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
       filtered = filtered.filter(log => {
         const isWarningState = ['unavailable', 'unknown', 'problem'].includes(log.state);
         const deviceClass = this.hass?.states[log.entity_id]?.attributes?.device_class || log.device_class;
-        const isMoistureAlert = (log.entity_id.startsWith('binary_sensor.') || log.entity_id.startsWith('sensor.')) && deviceClass === 'moisture' && log.state === 'on';
+        const isMoistureAlert = (log.entity_id.startsWith(`${DOMAIN.BINARY_SENSOR}.`) || log.entity_id.startsWith(`${DOMAIN.SENSOR}.`)) && deviceClass === 'moisture' && log.state === 'on';
         return isWarningState || isMoistureAlert;
       });
     }
@@ -291,7 +291,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
   private _getLogStatus(log: any): 'success' | 'running' | 'warning' {
     const isWarningState = ['unavailable', 'unknown', 'problem'].includes(log.state);
     const deviceClass = this.hass?.states[log.entity_id]?.attributes?.device_class || log.device_class;
-    const isMoistureAlert = (log.entity_id.startsWith('binary_sensor.') || log.entity_id.startsWith('sensor.')) && deviceClass === 'moisture' && log.state === 'on';
+    const isMoistureAlert = (log.entity_id.startsWith(`${DOMAIN.BINARY_SENSOR}.`) || log.entity_id.startsWith(`${DOMAIN.SENSOR}.`)) && deviceClass === 'moisture' && log.state === 'on';
     
     if (isWarningState || isMoistureAlert) {
       return 'warning';
@@ -335,7 +335,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
       filtered = filtered.filter(log => {
         const isWarningState = ['unavailable', 'unknown', 'problem'].includes(log.state);
         const deviceClass = this.hass?.states[log.entity_id]?.attributes?.device_class || log.device_class;
-        const isMoistureAlert = (log.entity_id.startsWith('binary_sensor.') || log.entity_id.startsWith('sensor.')) && deviceClass === 'moisture' && log.state === 'on';
+        const isMoistureAlert = (log.entity_id.startsWith(`${DOMAIN.BINARY_SENSOR}.`) || log.entity_id.startsWith(`${DOMAIN.SENSOR}.`)) && deviceClass === 'moisture' && log.state === 'on';
         return isWarningState || isMoistureAlert;
       });
     }
@@ -638,8 +638,8 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     const stateObj = this.hass.states[entityEntry.entity_id];
     const isOn = stateObj?.state === 'on';
     const domain = entityEntry.entity_id.split('.')[0];
-    const isSensor = domain === 'sensor' || domain === 'number';
-    const isSelect = domain === 'select';
+    const isSensor = domain === DOMAIN.SENSOR || domain === DOMAIN.NUMBER;
+    const isSelect = domain === DOMAIN.SELECT;
     const name = stateObj?.attributes?.friendly_name || entityEntry.entity_id;
     
     // Formatting sensor values
@@ -695,7 +695,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
   }
 
   private _toggleEntity(entityId: string, isOn: boolean, domain: string): void {
-    const serviceDomain = ['switch', 'valve', 'automation', 'input_boolean'].includes(domain) ? domain : 'homeassistant';
+    const serviceDomain = new Set<string>([DOMAIN.SWITCH, DOMAIN.VALVE, DOMAIN.AUTOMATION, DOMAIN.INPUT_BOOLEAN]).has(domain) ? domain : DOMAIN.HOMEASSISTANT;
     
     void this.hass
       .callService(serviceDomain, isOn ? 'turn_off' : 'turn_on', { entity_id: entityId })
@@ -710,7 +710,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     const target = e.target as HTMLSelectElement;
     if (!target) return;
     const domain = entityId.split('.')[0];
-    const serviceDomain = domain === 'input_select' ? 'input_select' : 'select';
+    const serviceDomain = domain === DOMAIN.INPUT_SELECT ? DOMAIN.INPUT_SELECT : DOMAIN.SELECT;
     void this.hass
       .callService(serviceDomain, 'select_option', { entity_id: entityId, option: target.value })
       .then(() => { this._showToast(false, msg('Option changed')); })

@@ -187,7 +187,7 @@ const CITES: Record<string, [string, string[]]> = {
   D21: ['expanded', ['41', '55']],
   D22: ['toUpperCase', ['374']],
   D23: ['_fetchId', ['159']],
-  D24: ['input_boolean', ['141']],
+  D24: ['INPUT_BOOLEAN', ['141']],
 };
 
 const checkU04 = (doc: string, srcLines: string[]): Fails => {

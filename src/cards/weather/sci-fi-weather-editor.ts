@@ -24,6 +24,7 @@ import '../../components/editor-inputs/sf-editor-dropdown-entity.js';
 import '../../components/editor-inputs/sf-editor-slider.js';
 import '../../components/editor-inputs/sf-editor-dropdown.js';
 import { weatherLabels, weatherSectionIcons } from './labels.js';
+import { DOMAIN } from '../../types/domains.js';
 
 const CHART_KINDS: Record<string, 'temperature' | 'precipitation' | 'wind'> = {
   Temperature: 'temperature',
@@ -58,7 +59,7 @@ export class SciFiWeatherEditor extends SciFiBaseEditor {
     super.hass = hass;
     if (!hass || this._weatherEntities.length > 0) return;
     this._weatherEntities = Object.values(hass.states)
-      .filter(e => e.entity_id.startsWith('weather.'))
+      .filter(e => e.entity_id.startsWith(`${DOMAIN.WEATHER}.`))
       .map(e => ({
         entity_id: e.entity_id,
         attributes: {

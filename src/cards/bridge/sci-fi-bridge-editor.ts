@@ -34,6 +34,7 @@ import '../../components/editor-inputs/sf-editor-input.js';
 import '../../components/sf-icon/sf-icon.js';
 import '../../components/buttons/sf-button.js';
 import { bridgeLabels } from './labels.js';
+import { DOMAIN, type Domain } from '../../types/domains.js';
 
 const TAG = 'sci-fi-bridge-editor';
 
@@ -204,7 +205,7 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
   }
 
   /** Filter hass entities by domain prefix(es) */
-  private _entitiesByDomain(...domains: string[]): unknown[] {
+  private _entitiesByDomain(...domains: Domain[]): unknown[] {
     return Object.values(this._hassEntities).filter(e =>
       domains.some(d => e.entity_id.startsWith(`${d}.`))
     );
@@ -233,7 +234,7 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
   private get _hassPersons(): Array<{ entityId: string; friendlyName: string; entityPicture: string | null }> {
     if (!this.hass?.states) return [];
     return Object.values(this.hass.states)
-      .filter(e => e.entity_id.startsWith('person.'))
+      .filter(e => e.entity_id.startsWith(`${DOMAIN.PERSON}.`))
       .map(e => ({
         entityId: e.entity_id,
         friendlyName: (e.attributes['friendly_name']) ?? e.entity_id,
@@ -304,8 +305,8 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
   private _renderAlertsSection(): TemplateResult {
     const alerts = this._config.alerts;
     const enabled = !!alerts;
-    const binarySensors = this._entitiesByDomain('binary_sensor');
-    const switches = this._entitiesByDomain('switch', 'input_boolean', 'automation');
+    const binarySensors = this._entitiesByDomain(DOMAIN.BINARY_SENSOR);
+    const switches = this._entitiesByDomain(DOMAIN.SWITCH, DOMAIN.INPUT_BOOLEAN, DOMAIN.AUTOMATION);
 
     return html`
       <sf-editor-accordion title="${this.getLabel('section-title-alerts')}" icon="mdi:shield-alert" ?open="${enabled}">
@@ -444,8 +445,8 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
   private _renderAccessSection(): TemplateResult {
     const access = this._config.access;
     const enabled = !!access;
-    const covers = this._entitiesByDomain('cover');
-    const locks = this._entitiesByDomain('lock');
+    const covers = this._entitiesByDomain(DOMAIN.COVER);
+    const locks = this._entitiesByDomain(DOMAIN.LOCK);
 
     return html`
       <sf-editor-accordion title="${this.getLabel('section-title-access')}" icon="mdi:door-closed" ?open="${enabled}">
@@ -523,7 +524,7 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
   private _renderAutomationsSection(): TemplateResult {
     const automations = this._config.automations;
     const enabled = !!automations;
-    const allEntities = this._entitiesByDomain('automation', 'input_number', 'switch', 'input_boolean', 'number');
+    const allEntities = this._entitiesByDomain(DOMAIN.AUTOMATION, DOMAIN.INPUT_NUMBER, DOMAIN.SWITCH, DOMAIN.INPUT_BOOLEAN, DOMAIN.NUMBER);
     const typeItems = ['toggle', 'slider'];
 
     return html`
@@ -619,8 +620,8 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
   private _renderAppliancesSection(): TemplateResult {
     const appliances = this._config.appliances;
     const enabled = !!appliances;
-    const allSensors = this._entitiesByDomain('binary_sensor', 'sensor');
-    const binarySensors = this._entitiesByDomain('binary_sensor');
+    const allSensors = this._entitiesByDomain(DOMAIN.BINARY_SENSOR, DOMAIN.SENSOR);
+    const binarySensors = this._entitiesByDomain(DOMAIN.BINARY_SENSOR);
     const okItems = ['off', 'on'];
 
     return html`
@@ -650,7 +651,7 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
                     @input-update="${(e: CustomEvent) => this._updateCycle(i, { icon: e.detail.value })}">
                   </sf-editor-dropdown-icon>
                 </div>
-                ${typeof cycle.entity === 'string' && cycle.entity.startsWith('sensor.') ? html`
+                ${typeof cycle.entity === 'string' && cycle.entity.startsWith(`${DOMAIN.SENSOR}.`) ? html`
                   <sf-editor-input
                     .label="${this.getLabel('input-running-states')}"
                     .value="${this._runningStatesValue(i, cycle.running_states)}"
@@ -739,7 +740,7 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
 
   private _updateCycle(i: number, patch: Partial<BridgeCycleEntry>): void {
     const c = this._getNewConfig<SciFiBridgeConfig>();
-    const leavesSensor = patch.entity !== undefined && !patch.entity.startsWith('sensor.');
+    const leavesSensor = patch.entity !== undefined && !patch.entity.startsWith(`${DOMAIN.SENSOR}.`);
     if (leavesSensor) this._runningStatesRaw.delete(i);
     const cycles: BridgeCycleEntry[] = (c.appliances?.cycles ?? []).map((cycle, idx) => {
       if (idx !== i) return cycle;
@@ -773,12 +774,12 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
   private _renderStoveSection(): TemplateResult {
     const stove = this._config.stove;
     const enabled = !!stove;
-    const sensors = this._entitiesByDomain('sensor');
-    const counters = this._entitiesByDomain('counter');
+    const sensors = this._entitiesByDomain(DOMAIN.SENSOR);
+    const counters = this._entitiesByDomain(DOMAIN.COUNTER);
     // bead ha-sci-fi-jq5 — `status` n'est pas un binary_sensor sur l'intégration
     // core fumis (sensor enum) : la liste doit offrir les deux domaines, comme
     // _renderAppliancesSection (spec bridge.md § sf-bridge-stove / isOn).
-    const statusSensors = this._entitiesByDomain('binary_sensor', 'sensor');
+    const statusSensors = this._entitiesByDomain(DOMAIN.BINARY_SENSOR, DOMAIN.SENSOR);
 
     return html`
       <sf-editor-accordion title="${this.getLabel('section-title-stove')}" icon="sci:stove" ?open="${enabled}">
@@ -829,7 +830,7 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
   private _renderVehicleSection(): TemplateResult {
     const vehicle = this._config.vehicle;
     const enabled = !!vehicle;
-    const sensors = this._entitiesByDomain('sensor');
+    const sensors = this._entitiesByDomain(DOMAIN.SENSOR);
 
     return html`
       <sf-editor-accordion title="${this.getLabel('section-title-vehicle')}" icon="sci:landspeeder" ?open="${enabled}">
@@ -864,7 +865,7 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
   private _renderActionsSection(): TemplateResult {
     const actions = this._config.actions;
     const enabled = !!actions;
-    const allEntities = this._entitiesByDomain('input_button', 'script', 'automation');
+    const allEntities = this._entitiesByDomain(DOMAIN.INPUT_BUTTON, DOMAIN.SCRIPT, DOMAIN.AUTOMATION);
 
     return html`
       <sf-editor-accordion title="${this.getLabel('section-title-actions')}" icon="mdi:lightning-bolt" ?open="${enabled}">

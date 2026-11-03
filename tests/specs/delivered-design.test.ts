@@ -342,7 +342,7 @@ describe('Présence — ce que l’extraction ne sait pas porter', () => {
     const src = read('src/cards/stove/sci-fi-stove.ts');
     const services = [
       ...new Set(
-        [...src.matchAll(/callService\('(\w+)',\s*'(\w+)'/g)].map((m) => `${m[1]}.${m[2]}`),
+        [...src.matchAll(/callService\((?:'(\w+)'|DOMAIN\.(\w+)),\s*'(\w+)'/g)].map((m) => `${m[1] ?? m[2]!.toLowerCase()}.${m[3]}`),
       ),
     ];
     expect(services.length).toBeGreaterThan(2);

@@ -7,6 +7,7 @@
 import { html, type TemplateResult } from 'lit';
 import { msg } from '@lit/localize';
 import { customElement, state } from 'lit/decorators.js';
+import { DOMAIN } from '../../types/domains.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
@@ -53,7 +54,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
 
     const ignored = this.config.ignored_entities ?? [];
     for (const entityId of Object.keys(this.hass?.states || {})) {
-      if (entityId.startsWith('light.') && !ignored.includes(entityId)) {
+      if (entityId.startsWith(`${DOMAIN.LIGHT}.`) && !ignored.includes(entityId)) {
         entities.add(entityId);
       }
     }
@@ -387,7 +388,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
 
   private _toggleLight(entityId: string, isOn: boolean): void {
     void this.hass
-      .callService('light', isOn ? 'turn_off' : 'turn_on', { entity_id: entityId })
+      .callService(DOMAIN.LIGHT, isOn ? 'turn_off' : 'turn_on', { entity_id: entityId })
       .then(() => { this._showToast(false, [msg('Light turned on'), msg('Light turned off')][isOn ? 1 : 0] as string); })
       .catch((e: Error) => { this._showToast(true, e.message); });
   }
@@ -399,7 +400,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
       .map(l => l.entity_id);
     if (entityIds.length === 0) return;
     void this.hass
-      .callService('light', active ? 'turn_off' : 'turn_on', { entity_id: entityIds })
+      .callService(DOMAIN.LIGHT, active ? 'turn_off' : 'turn_on', { entity_id: entityIds })
       .then(() => { this._showToast(false, [msg('Room turned on'), msg('Room turned off')][active ? 1 : 0] as string); })
       .catch((e: Error) => { this._showToast(true, e.message); });
   }
@@ -413,7 +414,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
     );
     if (entityIds.length === 0) return;
     void this.hass
-      .callService('light', active ? 'turn_off' : 'turn_on', { entity_id: entityIds })
+      .callService(DOMAIN.LIGHT, active ? 'turn_off' : 'turn_on', { entity_id: entityIds })
       .then(() => { this._showToast(false, [msg('Floor turned on'), msg('Floor turned off')][active ? 1 : 0] as string); })
       .catch((e: Error) => { this._showToast(true, e.message); });
   }
@@ -429,7 +430,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
     );
     if (entityIds.length === 0) return;
     void this.hass
-      .callService('light', active ? 'turn_off' : 'turn_on', { entity_id: entityIds })
+      .callService(DOMAIN.LIGHT, active ? 'turn_off' : 'turn_on', { entity_id: entityIds })
       .then(() => { this._showToast(false, [msg('All turned on'), msg('All turned off')][active ? 1 : 0] as string); })
       .catch((e: Error) => { this._showToast(true, e.message); });
   }

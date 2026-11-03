@@ -96,6 +96,7 @@ function normalizeChartKind(kind: string | undefined): string {
 }
 
 import { weatherStyles } from './styles.js';
+import { DOMAIN } from '../../types/domains.js';
 
 @customElement(TAG)
 export class SciFiWeatherCard extends SciFiBaseCard {
@@ -377,7 +378,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
     // Look up extra sensors
     const city = weatherEntity.entity_id.split('.')[1]; // e.g. "home"
     const getSensorVal = (suffix: string) => {
-      const s = this.hass?.states[`sensor.${city}_${suffix}`];
+      const s = this.hass?.states[`${DOMAIN.SENSOR}.${city}_${suffix}`];
       return s ? `${s.state}${s.attributes.unit_of_measurement ? String(s.attributes.unit_of_measurement) : ''}` : '0';
     };
 

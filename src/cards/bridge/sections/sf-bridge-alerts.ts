@@ -14,6 +14,7 @@ import type { BridgeAlertsConfig } from '../config.js';
 import { bridgeCall } from '../bridge-call.js';
 import { warnOnce } from '../bridge-warn.js';
 import { renderSfToggle } from '../bridge-toggle.js';
+import { DOMAIN } from '../../../types/domains.js';
 import '../../../components/sf-icon/sf-icon.js';
 
 const TAG = 'sf-bridge-alerts';
@@ -165,7 +166,7 @@ export class SfBridgeAlerts extends LitElement {
     void bridgeCall(
       this,
       this.hass,
-      'switch',
+      DOMAIN.SWITCH,
       isOn ? 'turn_off' : 'turn_on',
       { entity_id: entity },
       isOn ? msg('Sirens off') : msg('Sirens on')

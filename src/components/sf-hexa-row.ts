@@ -44,7 +44,7 @@ export class SciFiHexaRow extends LitElement {
         );
         --row-icon-off-color: var(
           --sf-hexa-row-icon-off-color,
-          var(--sf-bg-secondary, #1a2235)
+          var(--sf-bg-secondary, rgba(255, 255, 255, 0.04))
         );
       }
       sf-hexa-tile {

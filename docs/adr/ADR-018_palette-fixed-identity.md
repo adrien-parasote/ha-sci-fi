@@ -231,3 +231,37 @@ Two further sites are knowingly left alone, outside this ADR's scope:
 the non-existent `--secondary-bg-color`, but their fallbacks are bespoke colours
 with no token equivalent, so correcting the variable name would be a colour choice,
 not a mechanical fix.
+
+## Erratum — 2026-11-03 (`sf-token-declarations`, bead `ha-sci-fi-5wj`)
+
+The Accepted text above is left as written; this section corrects it.
+
+**The premise was false.** § Corrected here says neither `sf-dropdown` nor
+`sf-button-card` includes `sciFiCommonStyles`. `sf-button-card` extends
+`SciFiButton`, whose `static styles` lists `sciFiCommonStyles` first, and its own
+`static get styles()` returns `[super.styles, …]`; `sf-button-card-select` extends
+`sf-button-card`. Only `sf-dropdown` has no inclusion in its chain. The rule was
+applied to the syntax of the import, not to the inheritance chain, and no test
+encoded the negative case. The guard now follows the chain
+(`includesCommonStyles`, `tests/styles/token-scan.ts`, spec
+`docs/specs/sf-token-declarations/spec.md`).
+
+**Fallbacks changed, rendering unchanged** (each element includes the common
+styles, so the token always resolved and the old fallback was dead):
+`--sf-text-secondary` on `sf-button-card` and `sf-wheel`, `--sf-border` on
+`sf-button-card`, `--sf-bg-secondary` on `sf-hexa-row` and `sf-hexa-tile`,
+`--sf-primary-dim` on `sf-hexa-tile`; all now equal the `common.ts` value or its
+terminal literal. `sf-dropdown`'s `rgba(0, 210, 255, 0.3)` stays: it is live.
+
+**Declarations added** to `common.ts`, at the value each fallback rendered:
+`--sf-border-width`, `--sf-icon-size-xs/sm/md/lg`, `--sf-text-xs/sm/base` (px, not
+rem), `--sf-bg-primary`, `--sf-bg-tile` (the hexa-tile fill, `#101626`),
+`--sf-bg-tertiary`, and `--sf-border-light` as an alias of `--sf-bg-tertiary`.
+
+**Accepted limit (FR-11).** Once a token is declared on `:host`, a value of the same
+token set on an **ancestor** (card-mod on an outer container, an HA theme) no longer
+wins over the declaration, for the card's own host and for every nested `sf-*`
+component that includes `sciFiCommonStyles` and re-declares the tokens on its own
+`:host`. A card-mod rule on the card's host reaches the card's own tree but not
+those nested components; for them the only workaround is a rule that targets the
+nested element. The user accepted this limit; there is no promise beyond that.

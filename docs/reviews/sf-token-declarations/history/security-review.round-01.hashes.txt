@@ -1,0 +1,16 @@
+23b1930a789f48a38a0732066f2beb15360383ac docs/adr/ADR-018_palette-fixed-identity.md
+e1d91f51effc5a65d7a5ea82e0c690f3eb778628 docs/specs/03_base_classes.md
+35c7049232e57c616ee723dd45ef11c5404894fc src/components/buttons/sf-button-card.ts
+3b01ea317271477d114aa6fb6177b36455edcd8b src/components/sf-hexa-row.ts
+560cf4f6bf7f302d9a186a53cf9a11843bdcde66 src/components/sf-hexa-tile.ts
+ca0f717d47a85ca9a616286a8c4c7df041336ec1 src/components/sf-wheel.ts
+0ab352f007f6d39ec0a1923ef5a84a61006ef0cf src/styles/common.ts
+d97a2cdfb8fe97401e8b7676483e8a64b841e705 tests/styles/card-css-baseline.json
+b0875ebb5a7e0131475480d9f8ec9bb954a218b3 tests/styles/token-refs.test.ts
+f8ea8e9f14560d81cee32728b7a44bbf899cfc1c docs/adversarial-review/history/sf-token-declarations.round-01.md
+b405b121faeb20dc0dd1626da5a8a7976f2eea24 docs/adversarial-review/sf-token-declarations.md
+39474c0973d5794077ad33e6c795094044e46e27 docs/specs/sf-token-declarations/spec.md
+285e71ff50f2844d78dab71da50a038111b2bc07 docs/summaries/sf-token-declarations/BUILD.md
+69f3025edee522563928f1cfa09d24bae8c181dd docs/summaries/sf-token-declarations/SPEC.md
+8cb444bfa304e615ecf38e71fdbb2a32bd0e2f70 tests/styles/token-declarations.test.ts
+74ff2c157a536cd105c9b195dbf8c81a56c386cb tests/styles/token-scan.ts

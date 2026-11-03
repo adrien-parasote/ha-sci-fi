@@ -16,7 +16,7 @@ export class SciFiWheel extends LitElement {
     css`
       :host {
         /* --item-font-size: fallback set directly in .slider-item to avoid circular self-ref */
-        --item--color: var(--wheel-item-color, var(--sf-text-secondary, #b0bec5));
+        --item--color: var(--wheel-item-color, var(--sf-text-secondary, rgba(224, 232, 255, 0.6)));
         --wheel-text-color: var(--text-font-color, var(--sf-text-secondary));
         --wheel-text-size: var(--text-size, var(--sf-text-base, 14px));
         --container-padding: var(--padding, 10px);

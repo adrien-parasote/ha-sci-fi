@@ -20,8 +20,18 @@ export const sciFiCommonStyles = css`
     --sf-accent-off: rgba(224, 232, 255, 0.25);
     --sf-error: #ff4d6d;
     --sf-warning: #ffd60a;
+    --sf-bg-primary: #0d1117;
+    /* Hexa-tile fill: one name cannot hold two values, and it renders #101626. */
+    --sf-bg-tile: #101626;
+    --sf-bg-tertiary: rgba(0, 210, 255, 0.1);
+    --sf-border-light: var(--sf-bg-tertiary);
 
     /* ── Layout tokens ───────────────────────────── */
+    --sf-border-width: 1px;
+    --sf-icon-size-xs: 12px;
+    --sf-icon-size-sm: 16px;
+    --sf-icon-size-md: 24px;
+    --sf-icon-size-lg: 36px;
     --sf-radius: 12px;
     --sf-radius-sm: 6px;
     --sf-spacing-xs: 4px;
@@ -31,6 +41,10 @@ export const sciFiCommonStyles = css`
 
     /* ── Typography ──────────────────────────────── */
     --sf-font-family: var(--paper-font-body1_-_font-family, 'Inter', system-ui, sans-serif);
+    /* px on purpose: HA sets 24px on :root, so a rem token renders 18px (see --sf-font-size-*). */
+    --sf-text-xs: 10px;
+    --sf-text-sm: 12px;
+    --sf-text-base: 14px;
     --sf-font-size-sm: 0.75rem;
     --sf-font-size-base: 0.875rem;
     --sf-font-size-lg: 1rem;

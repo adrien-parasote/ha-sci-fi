@@ -25,14 +25,14 @@ export class SciFiHexaTile extends LitElement {
         width: var(--sf-hexa-width, 100px);
       }
       .hexa svg .background {
-        fill: var(--sf-bg-primary, #101626);
+        fill: var(--sf-bg-tile, #101626);
         stroke-width: 4px;
-        stroke: var(--sf-bg-secondary, #1a2235);
+        stroke: var(--sf-bg-secondary, rgba(255, 255, 255, 0.04));
         stroke-opacity: 0.8;
         stroke-linejoin: round;
       }
       .hexa svg .border {
-        fill: var(--sf-bg-primary, #101626);
+        fill: var(--sf-bg-tile, #101626);
         stroke: var(--custom-border);
         stroke-width: 5px;
         stroke-linejoin: round;
@@ -64,7 +64,7 @@ export class SciFiHexaTile extends LitElement {
       }
       .item-on .item-content {
         color: var(--sf-primary, #00d2ff);
-        text-shadow: 0px 0px 5px var(--sf-primary-dim, rgba(0, 210, 255, 0.3));
+        text-shadow: 0px 0px 5px var(--sf-primary-dim, color-mix(in srgb, var(--sf-primary) 40%, transparent));
       }
       .item-off .item-content {
         color: var(--custom-border, var(--sf-text-secondary));
@@ -119,13 +119,13 @@ export class SciFiHexaHalfTile extends LitElement {
     sciFiCommonStyles,
     css`
       .hexa svg .border {
-        fill: var(--sf-bg-primary, #101626);
+        fill: var(--sf-bg-tile, #101626);
         stroke: var(--sf-border);
         stroke-width: 5px;
         stroke-linejoin: round;
       }
       .hexa svg .background {
-        fill: var(--sf-bg-primary, #101626);
+        fill: var(--sf-bg-tile, #101626);
         stroke-width: 4px;
         stroke: var(--sf-bg-secondary);
         stroke-opacity: 0.8;

@@ -9,7 +9,7 @@ export class SciFiCardButton extends SciFiButton {
       super.styles,
       css`
       :host {
-        --title-text-color: var(--title-color, var(--sf-text-secondary, #b0bec5));
+        --title-text-color: var(--title-color, var(--sf-text-secondary, rgba(224, 232, 255, 0.6)));
         --label-text-color: var(--label-color, var(--sf-text-primary, #e0e8ff));
         --btn-icon-color: var(--sf-primary-icon-color, var(--sf-primary));
         --btn-icon-size: var(--icon-size, var(--sf-icon-size-sm, 16px));
@@ -18,7 +18,7 @@ export class SciFiCardButton extends SciFiButton {
         --btn-font-size: var(--font-size, var(--sf-text-sm, 12px));
         --btn-border: var(
           --border,
-          var(--sf-border-width, 1px) solid var(--sf-border, rgba(224, 232, 255, 0.1))
+          var(--sf-border-width, 1px) solid var(--sf-border, rgba(0, 210, 255, 0.15))
         );
         --btn-min-width: var(--min-width, 90px);
         --btn-label-text-alignment: var(--text-align, start);

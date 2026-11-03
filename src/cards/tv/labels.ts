@@ -10,7 +10,7 @@
  * lookup so labels follow a locale change.
  */
 
-import { msg } from '@lit/localize';
+import { msg, str } from '@lit/localize';
 
 export function tvLabels(): Record<string, string> {
   return {
@@ -20,8 +20,15 @@ export function tvLabels(): Record<string, string> {
     'input-media-player-entity': msg('Media Player entity'),
     'input-quadrant-name': msg('Quadrant name'),
     'input-remote-entity': msg('Remote entity'),
+    'input-volume-entity': msg('Volume entity'),
+    'input-app-entity': msg('Application entity'),
     'input-media-sources': msg('Quick-Select sources (Press Enter to add)'),
   };
+}
+
+/** Label of the editor row binding a custom action to one remote button. */
+export function tvButtonLabel(actionId: string): string {
+  return msg(str`Button ${actionId}`);
 }
 
 export function tvSectionIcons(): Record<string, string> {

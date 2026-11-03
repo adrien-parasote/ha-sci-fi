@@ -5,6 +5,7 @@
  */
 
 import { html, type TemplateResult } from 'lit';
+import { msg, str } from '@lit/localize';
 import { customElement, state } from 'lit/decorators.js';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
@@ -227,7 +228,7 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
           </div>
         </div>
         <div class="header-info">
-          <div class="header-message">${this.config.header_message ?? 'Hey, Welcome Back!'}</div>
+          <div class="header-message">${this.config.header_message ?? msg('Hey, Welcome Back!')}</div>
           <div class="header-name">${userName}</div>
         </div>
       </div>
@@ -301,7 +302,7 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
 
     return html`
       <div class="weather-alert" data-level="${level}">
-        ⚠️ Alerte météo : ${label}
+        ${msg(str`⚠️ Weather alert: ${label}`)}
       </div>
     `;
   }
@@ -310,7 +311,7 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     if (!weather?.weather_entity) return html``;
     const state = this.hass.states[weather.weather_entity];
     if (!state) return html``;
-    const name = state.attributes.friendly_name ?? 'Météo';
+    const name = state.attributes.friendly_name ?? msg('Weather');
     const condition = state.state?.toLowerCase() ?? 'unknown';
     
     // Determine day/night for animated weather icons

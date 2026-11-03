@@ -100,3 +100,7 @@ custom_entities:
 | `SciFiEntityOverride` | [Spec 05](../05_cards.md#sci-fi-lights) | YAML field names frozen — `icon_on`/`icon_off`/`name` |
 | `hass.floors` / `hass.areas` | [Spec 02](../02_domain_selectors.md#blueprint-coverage) | HA registry selectors — floor/area hierarchy |
 | `sciFiCommonStyles` | [Spec 03](../03_base_classes.md#blueprint-coverage) | Shared CSS tokens — import, do not redefine |
+
+## Localization
+
+Every user-visible string of the card is an English `msg()` source, French in `xliff/fr.xlf` (project `sourceLocale` is `en`; stove contract C12): the default header `Lights`, the empty states `No floor configured`, `No lights configured for this floor`, `No lights` and `Select a room`, the turn on/off button titles (`Turn all off`, `Turn all on`, `Turn this floor off`, `Turn this floor on`, `Turn the room off`, `Turn the room on`) and the eight toasts (`Light|Room|Floor|All turned off|on`). `header_message` from the config replaces the default header. An editor label is a key of `src/cards/lights/labels.ts` read by `getLabel` (ADR-017). Area and floor names come from the Home Assistant registry and are never translated by the card. Full list and tests: [i18n-hardcoded-fr](../i18n-hardcoded-fr/spec.md) FR-2.

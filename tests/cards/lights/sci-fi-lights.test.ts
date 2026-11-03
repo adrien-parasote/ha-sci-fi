@@ -5,6 +5,7 @@ import { expect, describe, it, beforeEach, afterEach, vi } from 'vitest';
 import '../../../src/cards/lights/sci-fi-lights.js';
 import { SciFiLightsCard } from '../../../src/cards/lights/sci-fi-lights.js';
 import { makeMockHass, makeMockFloor, makeMockArea, makeMockEntityEntry, makeMockEntity } from '../../fixtures/mock-hass.js';
+import { setLocale } from '../../../src/locales/localization.js';
 
 if (!customElements.get('sf-toast')) {
   customElements.define('sf-toast', class extends HTMLElement {
@@ -23,8 +24,9 @@ describe('sci-fi-lights', () => {
     expect(config.type).to.equal('custom:sci-fi-lights');
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     document.body.replaceChildren();
+    await setLocale('fr');
   });
 
   it('renders gracefully without hass', async () => {
@@ -41,7 +43,8 @@ describe('sci-fi-lights', () => {
     expect(el.getCardSize()).to.equal(5);
   });
 
-  it('renders empty message if no floors exist', async () => {
+  it('TC-I18N-U-15 renders empty message if no floors exist', async () => {
+    await setLocale('fr');
     const el = document.createElement('sci-fi-lights') as SciFiLightsCard;
     (el as any).setConfig(SciFiLightsCard.getStubConfig());
     el.hass = makeMockHass({ floors: {} });

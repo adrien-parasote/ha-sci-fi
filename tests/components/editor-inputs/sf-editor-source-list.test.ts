@@ -2,6 +2,7 @@
 import { expect, describe, it, afterEach } from 'vitest';
 import '../../../src/components/editor-inputs/sf-editor-source-list.js';
 import { SfEditorSourceList } from '../../../src/components/editor-inputs/sf-editor-source-list.js';
+import { setLocale } from '../../../src/locales/localization.js';
 
 for (const tag of ['sf-editor-input', 'sf-editor-action', 'sf-icon']) {
   if (!customElements.get(tag)) {
@@ -20,11 +21,13 @@ async function createElement(
 }
 
 describe('SfEditorSourceList', () => {
-  afterEach(() => {
+  afterEach(async () => {
     document.body.replaceChildren();
+    await setLocale('fr');
   });
 
   it('renders add button when values is empty', async () => {
+    await setLocale('fr');
     const el = await createElement({ values: [] });
     const btn = el.shadowRoot!.querySelector('.add-btn');
     expect(btn).not.toBeNull();

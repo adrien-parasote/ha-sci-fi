@@ -15,7 +15,7 @@ import '../../components/editor-inputs/sf-editor-dropdown-entity.js';
 import '../../components/editor-inputs/sf-editor-source-list.js';
 import '../../components/editor-inputs/sf-editor-action.js';
 import '../../components/editor-inputs/sf-editor-accordion.js';
-import { tvLabels, tvSectionIcons } from './labels.js';
+import { tvButtonLabel, tvLabels, tvSectionIcons } from './labels.js';
 
 /**
  * Remote buttons the user can bind a custom action to — every one of them a
@@ -138,7 +138,7 @@ export class SciFiTVEditor extends SciFiBaseEditor {
       <div class="card">
         <div class="container">
           <section>
-            <h1>${this.getSectionTitle('section-title-tv') ?? 'Configuration TV'}</h1>
+            <h1>${this.getSectionTitle('section-title-tv')}</h1>
 
             <!-- Entity selection (Required) -->
             <sf-editor-dropdown-entity
@@ -180,7 +180,7 @@ export class SciFiTVEditor extends SciFiBaseEditor {
         <sf-editor-dropdown-entity
           element-id="volume_entity"
           kind="media-player"
-          label="Entité Volume (Optionnel)"
+          .label=${this.getLabel('input-volume-entity') + ' ' + this.getLabel('text-optional')}
           icon="mdi:volume-high"
           .value="${config.volume_entity ?? ''}"
           .items="${this._mediaPlayers}"
@@ -190,7 +190,7 @@ export class SciFiTVEditor extends SciFiBaseEditor {
         <sf-editor-dropdown-entity
           element-id="app_entity"
           kind="media-player"
-          label="Entité Application (Optionnel)"
+          .label=${this.getLabel('input-app-entity') + ' ' + this.getLabel('text-optional')}
           icon="mdi:cast"
           .value="${config.app_entity ?? ''}"
           .items="${this._mediaPlayers}"
@@ -213,7 +213,7 @@ export class SciFiTVEditor extends SciFiBaseEditor {
   private _renderSourcesAccordion(config: SciFiTVConfig): TemplateResult {
     return html`
       <sf-editor-accordion
-        .title=${this.getLabel('section-title-media-sources') ?? 'Sources'}
+        .title=${this.getLabel('section-title-media-sources')}
         element-id="shortcuts"
         icon="mdi:link-variant"
       >
@@ -231,14 +231,14 @@ export class SciFiTVEditor extends SciFiBaseEditor {
   private _renderCustomActionsAccordion(config: SciFiTVConfig): TemplateResult {
     return html`
       <sf-editor-accordion
-        title="Actions Personnalisées"
+        .title=${this.getLabel('section-title-custom-actions')}
         element-id="custom_actions"
         icon="mdi:remote-tv"
       >
         ${TV_CUSTOM_ACTION_IDS.map(actionId => html`
           <sf-editor-action
             element-id="${actionId}"
-            label="Bouton ${actionId}"
+            .label=${tvButtonLabel(actionId)}
             .hass="${this.hass}"
             .value="${actionId === 'confirm'
               ? (config.custom_actions?.confirm ?? config.custom_actions?.enter)

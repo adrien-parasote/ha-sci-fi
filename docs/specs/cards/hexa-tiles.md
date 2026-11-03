@@ -142,7 +142,7 @@ The weather alert band is displayed only when the alert state is NOT green.
 
 ### Alert Label — Phenomenon Name from Entity Attributes
 
-The label displayed after `Alerte météo :` is **not** the entity `state` (which is the color code, e.g., `"Jaune"`). It is derived from the **entity attributes** using the same logic as `sci-fi-weather`:
+The label displayed after the localized prefix (`msg()`: English `Weather alert:`, French `Alerte météo :`) is **not** the entity `state` (which is the color code, e.g., `"Jaune"`). It is derived from the **entity attributes** using the same logic as `sci-fi-weather`:
 
 1. Collect the set of non-green level values (state_yellow / state_orange / state_red, lowercased).
 2. Iterate `Object.keys(alertEntity.attributes)` — each key is a phenomenon name (e.g., `"canicule"`, `"vent"`).
@@ -150,7 +150,7 @@ The label displayed after `Alerte météo :` is **not** the entity `state` (whic
 4. Join matching keys with `", "` → this is the label.
 5. Fallback to `alertEntity.state` if no attribute key matches.
 
-**Result:** `⚠️ Alerte météo : canicule` instead of `⚠️ Alerte météo : Jaune`.
+**Result:** `⚠️ Weather alert: canicule` in English and `⚠️ Alerte météo : canicule` in French (the French sentence is the catalogue's rendering of the `msg()` source, not a literal of the code; spec [i18n-hardcoded-fr](../i18n-hardcoded-fr/spec.md) FR-4), instead of the same prefix followed by `Jaune`.
 
 **Why attributes, not state:** The entity `state` is the max alert color level. The phenomenon names ("canicule", "vent", etc.) are stored as attribute keys whose values hold the corresponding color.
 
@@ -246,8 +246,8 @@ Instead of fixed sizing, hexagons dynamically resize to fit exactly 100% of thei
 | TC-HEXA-TILES-U-703 ⬜ | Unit | Weather alert hidden when green | Alert state = "Vert" | Alert banner is not rendered in the DOM |
 | TC-HEXA-TILES-U-704 ⬜ | Unit | Interlocking rows structured with half-hexagons | 6 tiles configured (portrait) | Row 0 starts with Left Half-Hexagon (`HL`), Row 1 ends with Right Half-Hexagon (`HR`). Total 5 rows padded. |
 | TC-HEXA-TILES-U-705 ⬜ | Unit | Active vs Inactive tiles have correct data-active attributes | Tiles with active and inactive states | Active tile has `data-active="true"`, inactive has `data-active="false"` |
-| TC-HEXA-TILES-U-706 | Unit | Alert banner shows phenomenon name from entity attributes | Alert entity with `attributes.canicule = 'Jaune'`, state_yellow = 'Jaune' | Banner renders `Alerte météo : canicule` |
-| TC-HEXA-TILES-U-707 | Unit | Alert banner fallback to state when no attribute matches | Alert entity with state = 'orange', no matching attribute keys | Banner renders `Alerte météo : orange` |
+| TC-HEXA-TILES-U-706 | Unit | Alert banner shows phenomenon name from entity attributes | Alert entity with `attributes.canicule = 'Jaune'`, state_yellow = 'Jaune' | Banner renders the localized prefix (English `Weather alert:`, French `Alerte météo :`) followed by `canicule`; both languages are played by case 06 of the [i18n-hardcoded-fr spec](../i18n-hardcoded-fr/spec.md) |
+| TC-HEXA-TILES-U-707 | Unit | Alert banner fallback to state when no attribute matches | Alert entity with state = 'orange', no matching attribute keys | Banner renders the localized prefix: `Weather alert: orange` in English, `Alerte météo : orange` in French |
 | TC-HEXA-TILES-U-708 ⬜ | Unit | Weather tile `data-alert-level` set from alert entity state | Alert entity state = 'Jaune', state_yellow = 'Jaune' | Weather tile div has `data-alert-level="yellow"` |
 | TC-HEXA-TILES-U-709 ⬜ | Unit | Weather tile `data-alert-level` defaults to green when no alert entity | No `weather_alert_entity` configured | Weather tile div has `data-alert-level="green"` |
 | IT-HEXA-TILES-I-701 | Integration | Entire grid interlocking behaves correctly on mobile portrait | Mobile viewport width 375px | Renders 2 columns (2.5 hexagons) taking exactly 100% card width with no gaps |

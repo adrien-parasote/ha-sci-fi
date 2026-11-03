@@ -1,4 +1,5 @@
 import { LitElement, html, css, nothing, type CSSResultGroup, type TemplateResult } from 'lit';
+import { msg, updateWhenLocaleChanges } from '@lit/localize';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { HomeAssistantExt } from '../../types/ha.js';
 import { InputUpdateDetail } from './sf-editor-input.js';
@@ -61,6 +62,11 @@ export class SfEditorAction extends LitElement {
     }
   `;
 
+  constructor() {
+    super();
+    updateWhenLocaleChanges(this);
+  }
+
   private _onSelectorChanged(e: CustomEvent): void {
     e.stopPropagation();
     this._dispatch(e.detail.value);
@@ -116,19 +122,19 @@ export class SfEditorAction extends LitElement {
             ` : html`
               <div class="fallback-ui">
                 <sf-editor-input
-                  label="Type d'action (ex: call-service, navigate, none)"
+                  label=${msg('Action type (e.g. call-service, navigate, none)')}
                   .value=${this.value?.action || ''}
                   @input-update=${(e: CustomEvent) => this._updateFallbackField('action', e.detail.value)}
                 ></sf-editor-input>
                 
                 ${this.value?.action === 'call-service' ? html`
                   <sf-editor-input
-                    label="Service (ex: media_player.play_media)"
+                    label=${msg('Service (e.g. media_player.play_media)')}
                     .value=${this.value?.service || ''}
                     @input-update=${(e: CustomEvent) => this._updateFallbackField('service', e.detail.value)}
                   ></sf-editor-input>
                   <sf-editor-input
-                    label="Entity ID (data.entity_id)"
+                    label=${msg('Entity ID (data.entity_id)')}
                     .value=${this.value?.data?.entity_id || ''}
                     @input-update=${(e: CustomEvent) => this._updateFallbackField('data.entity_id', e.detail.value)}
                   ></sf-editor-input>
@@ -136,7 +142,7 @@ export class SfEditorAction extends LitElement {
                 
                 ${this.value?.action === 'navigate' ? html`
                   <sf-editor-input
-                    label="Chemin de navigation"
+                    label=${msg('Navigation path')}
                     .value=${this.value?.navigation_path || ''}
                     @input-update=${(e: CustomEvent) => this._updateFallbackField('navigation_path', e.detail.value)}
                   ></sf-editor-input>

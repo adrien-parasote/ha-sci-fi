@@ -1,0 +1,17 @@
+b187da55f8a9d381444a037ba127686e344d0a3d docs/specs/10_card_editors.md
+48878e18abaa74e725f4ec5f459878acc88a7d20 docs/specs/cards/bridge.md
+2d30263fb34c6c76b6fb01fb852a00cefe8c3a61 src/cards/bridge/config.ts
+78c86c8eefcaf5ab45f194f4402a6da537bd3e6a src/cards/bridge/labels.ts
+ff8a96b758ddae769e1ceacf936b80a17bf7fb50 src/cards/bridge/sci-fi-bridge-editor.ts
+3b742781b9f3b0a7d465c570f30612d9503626a2 src/cards/bridge/sections/sf-bridge-access.ts
+53a25b062ce7876151095609969dc3b1b7675c64 src/cards/bridge/sections/sf-bridge-alerts.ts
+9920044f33909177a826800352167841badcf318 src/cards/bridge/sections/sf-bridge-vehicle.ts
+a4f48b5e12cbfbcb18e5c2f4d9688e6b401a8b58 src/cards/bridge/styles.ts
+7b11aa3126c46820d5219781cd5fc651b3bdafd0 tests/styles/card-css-baseline.json
+807954106c8c447bf7da3f99c01e75e9c05f8f35 xliff/fr.xlf
+d66281b18cf1f17939cbd320b02eb5fa07b3e565 docs/adversarial-review/bridge-unrendered-config.md
+d66281b18cf1f17939cbd320b02eb5fa07b3e565 docs/adversarial-review/history/bridge-unrendered-config.round-01.md
+846268a51504c4a160a91d09dca2028b118f2287 docs/specs/bridge-unrendered-config/spec.md
+4296767668c205bf44f584fe7086a8608741244b docs/summaries/bridge-unrendered-config/BUILD.md
+8cff82fac0d365d9ceada179e5528656f5810663 docs/summaries/bridge-unrendered-config/SPEC.md
+e651d4442185abfef1b51a229040280ff0d5638c tests/cards/bridge/bridge-unrendered-config.test.ts

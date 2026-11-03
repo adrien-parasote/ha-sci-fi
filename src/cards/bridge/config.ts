@@ -96,7 +96,7 @@ export interface BridgeStoveConfig {
 }
 
 export interface BridgeVehicleConfig {
-  icon?: string;          // section icon (default: 'mdi:ev-station')
+  icon?: string;          // section icon (default: 'sci:landspeeder')
   power_sensor: string;
   name?: string;          // optional display name override (e.g. entity name chip)
 }

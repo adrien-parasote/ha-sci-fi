@@ -37,6 +37,13 @@ import { bridgeLabels } from './labels.js';
 
 const TAG = 'sci-fi-bridge-editor';
 
+/** The cycle without its `running_states` key (a blank value leaves no `undefined` behind). */
+function withoutRunningStates(cycle: BridgeCycleEntry): BridgeCycleEntry {
+  return Object.fromEntries(
+    Object.entries(cycle).filter(([k]) => k !== 'running_states')
+  ) as unknown as BridgeCycleEntry;
+}
+
 @customElement(TAG)
 export class SciFiBridgeEditor extends SciFiBaseEditor {
   protected override get cardLabels(): Record<string, string> {
@@ -176,7 +183,18 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
     return this.config as SciFiBridgeConfig;
   }
 
+  /** Raw running_states strings being typed, by cycle index (FR-4); dropped on blur. */
+  private readonly _runningStatesRaw = new Map<number, string>();
+  private _lastEmitted: unknown;
+
+  /** A config the editor did not emit comes from outside: the typed strings no longer apply. */
+  override setConfig(config: SciFiBridgeConfig): void {
+    if (config !== this._lastEmitted) this._runningStatesRaw.clear();
+    super.setConfig(config);
+  }
+
   private _dispatch(updated: SciFiBridgeConfig): void {
+    this._lastEmitted = updated;
     this._dispatchChange(updated);
   }
 
@@ -632,6 +650,14 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
                     @input-update="${(e: CustomEvent) => this._updateCycle(i, { icon: e.detail.value })}">
                   </sf-editor-dropdown-icon>
                 </div>
+                ${typeof cycle.entity === 'string' && cycle.entity.startsWith('sensor.') ? html`
+                  <sf-editor-input
+                    .label="${this.getLabel('input-running-states')}"
+                    .value="${this._runningStatesValue(i, cycle.running_states)}"
+                    @input-update="${(e: CustomEvent) => this._updateRunningStates(i, e.detail.value)}"
+                    @focusout="${() => this._normalizeRunningStates(i)}"
+                  ></sf-editor-input>
+                ` : nothing}
                 <button class="btn-delete" @click="${() => this._removeCycle(i)}">✕ ${this.getLabel('action-remove')}</button>
               </div>
             `)}
@@ -673,13 +699,39 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
     `;
   }
 
+  /** What the running_states input shows: the raw typed string while typing, else the stored value. */
+  private _runningStatesValue(i: number, stored: unknown): string {
+    const raw = this._runningStatesRaw.get(i);
+    if (raw !== undefined) return raw;
+    if (Array.isArray(stored)) return stored.join(', ');
+    return typeof stored === 'string' ? stored : '';
+  }
+
+  private _updateRunningStates(i: number, raw: string): void {
+    this._runningStatesRaw.set(i, raw);
+    const states = raw.split(',').map(s => s.trim()).filter(s => s !== '');
+    const c = this._getNewConfig<SciFiBridgeConfig>();
+    const cycles: BridgeCycleEntry[] = (c.appliances?.cycles ?? []).map((cycle, idx) => {
+      if (idx !== i) return cycle;
+      const rest = withoutRunningStates(cycle);
+      return states.length ? { ...rest, running_states: states } : rest;
+    });
+    this._dispatch({ ...c, appliances: { ...(c.appliances ?? { cycles: [] }), cycles } });
+  }
+
+  private _normalizeRunningStates(i: number): void {
+    if (this._runningStatesRaw.delete(i)) this.requestUpdate();
+  }
+
   private _addCycle(): void {
+    this._runningStatesRaw.clear();
     const c = this._getNewConfig<SciFiBridgeConfig>();
     const cycles: BridgeCycleEntry[] = [...(c.appliances?.cycles ?? []), { entity: '', name: '', icon: 'mdi:washing-machine' }];
     this._dispatch({ ...c, appliances: { ...(c.appliances ?? { cycles: [] }), cycles } });
   }
 
   private _removeCycle(i: number): void {
+    this._runningStatesRaw.clear();
     const c = this._getNewConfig<SciFiBridgeConfig>();
     const cycles = (c.appliances?.cycles ?? []).filter((_, idx) => idx !== i);
     this._dispatch({ ...c, appliances: { ...(c.appliances ?? { cycles: [] }), cycles } });
@@ -687,9 +739,12 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
 
   private _updateCycle(i: number, patch: Partial<BridgeCycleEntry>): void {
     const c = this._getNewConfig<SciFiBridgeConfig>();
-    const cycles: BridgeCycleEntry[] = (c.appliances?.cycles ?? []).map((cycle, idx) =>
-      idx === i ? { ...cycle, ...patch } : cycle
-    );
+    const leavesSensor = patch.entity !== undefined && !patch.entity.startsWith('sensor.');
+    if (leavesSensor) this._runningStatesRaw.delete(i);
+    const cycles: BridgeCycleEntry[] = (c.appliances?.cycles ?? []).map((cycle, idx) => {
+      if (idx !== i) return cycle;
+      return leavesSensor ? { ...withoutRunningStates(cycle), ...patch } : { ...cycle, ...patch };
+    });
     this._dispatch({ ...c, appliances: { ...(c.appliances ?? { cycles: [] }), cycles } });
   }
 
@@ -777,12 +832,12 @@ export class SciFiBridgeEditor extends SciFiBaseEditor {
     const sensors = this._entitiesByDomain('sensor');
 
     return html`
-      <sf-editor-accordion title="${this.getLabel('section-title-vehicle')}" icon="mdi:ev-station" ?open="${enabled}">
+      <sf-editor-accordion title="${this.getLabel('section-title-vehicle')}" icon="sci:landspeeder" ?open="${enabled}">
         <div class="panel">
           ${enabled && vehicle ? html`
             <sf-editor-dropdown-icon
               .label="${this.getLabel('input-icon-section')}"
-              .value="${vehicle.icon ?? 'mdi:ev-station'}"
+              .value="${vehicle.icon ?? 'sci:landspeeder'}"
               @input-update="${(e: CustomEvent) => { const c = this._getNewConfig<SciFiBridgeConfig>(); this._dispatch({ ...c, vehicle: { ...c.vehicle!, icon: e.detail.value } }); }}"
             ></sf-editor-dropdown-icon>
             <sf-editor-dropdown-entity

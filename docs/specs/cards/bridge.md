@@ -164,7 +164,7 @@ stove:
 
 # VOITURE — si absent, section masquée.
 vehicle:
-  icon: "mdi:ev-station"            # optionnel — défaut: mdi:ev-station
+  icon: "mdi:car-electric"          # optionnel — défaut: sci:landspeeder
   power_sensor: sensor.mureva_evlink_power
 
 # ACTIONS — si absent, section masquée. Liste d'actions rapides.
@@ -321,7 +321,7 @@ export interface BridgeStoveConfig {
 }
 
 export interface BridgeVehicleConfig {
-  icon?: string;          // section icon (default: 'mdi:ev-station')
+  icon?: string;          // section icon (default: 'sci:landspeeder')
   power_sensor: string;
   name?: string;          // optional display name override (e.g. entity name chip)
 }
@@ -725,6 +725,11 @@ export const bridgeStyles = css`
 │       │   color: state='off' → --sf-accent-on vert | state='on' → --sf-error rouge
 │       └── .smoke-name + status icon (✓ ou ⚠)
 │
+├── [SI config.smoke_switch] .toggle-row.siren-row (flex-row, align-center)
+│   ├── sf-icon (mdi:alarm-light, --sf-accent-on si state = 'on', sinon --sf-text-disabled)
+│   ├── .toggle-name msg('Sirens') (flex: 1) — .toggle-on | .toggle-off | .toggle-unknown (entité absente ou unavailable/unknown)
+│   └── toggle partagé renderSfToggle (désactivé si l'entité est absente ou unavailable/unknown) → switch.turn_on / switch.turn_off
+│
 ├── [SI config.toggles?.length] .alerts-toggles-row (flex-col, gap: 4px)
 │   └── [per toggle] .toggle-row (flex-row, align-center)
 │       ├── sf-icon (entry.icon ?? icône auto par domain, --sf-text-secondary)
@@ -781,7 +786,7 @@ export const bridgeStyles = css`
     ├── .access-name (flex: 1)
     ├── .access-state-label (state text, color selon état)
     ├── [si cover] action buttons (open: mdi:arrow-up / close: mdi:arrow-down)
-    └── [si entry.lock] lock icon (mdi:lock = locked --sf-accent-on / mdi:lock-open = --sf-error)
+    └── [si entry.lock] button.lock-btn enveloppant l'icône (mdi:lock = locked --sf-accent-on / mdi:lock-open = --sf-error) ; désactivé (disabled + aria-disabled) hors états locked/unlocked ou entité absente
 ```
 
 **Cover states → label + couleur :**
@@ -805,11 +810,17 @@ private _closeCover(entity: string): void {
 ```
 
 **Lock actions :**
-Le clic sur l'icône de verrou déclenche l'inversion de l'état du verrou.
+Le clic sur le bouton `.lock-btn` déclenche l'inversion de l'état du verrou (`locked` → `lock.unlock`, `unlocked` → `lock.lock`) ; tout autre état (`unavailable`, `jammed`, `locking`, …), une entité absente, un verrou dont `attributes.code_format` est défini (code requis, non géré par la carte) ou un appel en cours désactive le bouton. Pas de confirmation (décision utilisateur : un seul clic). `locking`/`unlocking` : icône `mdi:lock-clock`, classe `lock-pending` ; `jammed` : icône `mdi:lock-alert`, classe `lock-jammed`. Le bouton porte `title` et `aria-label` (action ou état).
 ```ts
-private _toggleLock(entity: string, currentState: string): void {
-  const service = currentState === 'locked' ? 'unlock' : 'lock';
-  void this.hass.callService('lock', service, { entity_id: entity });
+// @state() private _lockPending: ReadonlySet<string> = new Set();  — remplacé, jamais muté (Lit re-rend)
+private _toggleLock(entity: string, lockState: string | undefined): void {
+  if (this._lockPending.has(entity)) return;
+  const service = lockState === 'locked' ? 'unlock' : lockState === 'unlocked' ? 'lock' : undefined;
+  if (service === undefined) return;
+  this._lockPending = new Set(this._lockPending).add(entity);
+  void bridgeCall(this, this.hass, 'lock', service, { entity_id: entity },
+    service === 'unlock' ? msg('Door unlocked') : msg('Door locked'),
+    { after: () => { const next = new Set(this._lockPending); next.delete(entity); this._lockPending = next; } });
 }
 ```
 
@@ -1032,10 +1043,10 @@ private _setSliderValue(entity: string, value: number): void {
 ```
 .bridge-section
 ├── .bridge-section-title
-│   └── sf-icon (config.icon ?? 'mdi:ev-station') + msg('Voiture')
+│   └── sf-icon (config.icon ?? 'sci:landspeeder') + msg('Voiture')
 │
 └── .vehicle-row (flex-row, align-center, gap: 12px)
-    ├── sf-icon (config.icon ?? 'mdi:ev-station', color: isCharging → --sf-accent-on, else --sf-text-disabled)
+    ├── sf-icon (icône de prise selon l'état, color: isCharging → --sf-accent-on, else --sf-text-disabled)
     ├── .vehicle-power-value ("${power} ${unit}", 1rem, --sf-primary si isCharging, else --sf-text-secondary)
     └── .vehicle-status-label (msg('En charge') | msg('Non connectée'), 0.75rem)
 ```
@@ -1121,12 +1132,12 @@ L'éditeur est organisé en accordéons, un par section de la carte :
 | Section | Type de champ |
 |---------|---------------|
 | **Crew** | Liste d'entités `person.*` (bouton + / bouton -) |
-| **Alertes** | Icon section (text), liste smoke (entity+name+icon), smoke_switch (entity), liste toggles (entity+name+icon), occupancy (entity) |
+| **Alertes** | Icon section (text), liste smoke (entity+name+icon), smoke_switch (entity, rendu en ligne `.siren-row`), liste toggles (entity+name+icon), occupancy (entity) |
 | **Accès** | Icon section (text), liste items (entity+name+icon+lock optionnel) |
 | **Automatisations** | Icon section (text), liste items (entity+name+type+icon + champs slider si type=slider) |
-| **Électroménager** | Icon section (text), liste cycles (entity+name+icon+running_states), liste consumables (entity+name+ok_when) |
+| **Électroménager** | Icon section (text), liste cycles (entity+name+icon+running_states — `running_states` : champ texte séparé par des virgules, cycles `sensor.*` uniquement), liste consumables (entity+name+ok_when) |
 | **Poêle** | Icon section (text), 3 entités (pellet_quantity, pellet_stock, status), low_threshold (number) |
-| **Voiture** | Icon section (text), power_sensor (entity) |
+| **Voiture** | Icon section (text, défaut `sci:landspeeder`, lue par le titre de section), power_sensor (entity) |
 | **Actions** | liste items (entity + name + icon + color optionnels). ⚠ Pas de champ icône de section ici : `_renderActionsSection()` n'en rend aucun, `actions.icon` est YAML seulement |
 
 ### Composants SF utilisés (implémentation réelle — v1.3)

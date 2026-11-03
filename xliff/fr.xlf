@@ -975,9 +975,6 @@
 <trans-unit id="sd9994f251f1280cf">
   <source>Step</source>
 <target>Step</target></trans-unit>
-<trans-unit id="s383de319c4012f21">
-  <source>N/A</source>
-<target>N/A</target></trans-unit>
 <trans-unit id="sf1fba6284b519393">
   <source>LOGS D'EXÉCUTION</source>
 <target>LOGS D'EXÉCUTION</target></trans-unit>
@@ -1195,6 +1192,58 @@
 <trans-unit id="s437558b3f6ef6130">
   <source>Stove entity not found: <x id="0" equiv-text="${this.config.entity}"/></source>
   <target>Entité poêle non trouvée : <x id="0" equiv-text="${this.config.entity}"/></target>
+</trans-unit>
+<trans-unit id="s639d196dba3ed936">
+  <source>Running states (comma-separated)</source>
+<target>États en cours (séparés par des virgules)</target>
+</trans-unit>
+<trans-unit id="s896296f0894907f5">
+  <source>Code required</source>
+<target>Code requis</target>
+</trans-unit>
+<trans-unit id="s5d303fbc88281c15">
+  <source>Unlock</source>
+<target>Déverrouiller</target>
+</trans-unit>
+<trans-unit id="s4f27f6b48a68b5c2">
+  <source>Lock</source>
+<target>Verrouiller</target>
+</trans-unit>
+<trans-unit id="sec3db9f67433a4e8">
+  <source>Locking…</source>
+<target>Verrouillage…</target>
+</trans-unit>
+<trans-unit id="s10559186dad1fa37">
+  <source>Unlocking…</source>
+<target>Déverrouillage…</target>
+</trans-unit>
+<trans-unit id="sdfced8c3aad2e338">
+  <source>Lock jammed</source>
+<target>Serrure bloquée</target>
+</trans-unit>
+<trans-unit id="s18506f6a1733d578">
+  <source>Lock unavailable</source>
+<target>Serrure indisponible</target>
+</trans-unit>
+<trans-unit id="sbf22aaa121be61d2">
+  <source>Door unlocked</source>
+<target>Porte déverrouillée</target>
+</trans-unit>
+<trans-unit id="sc1d6508a8c1ab835">
+  <source>Door locked</source>
+<target>Porte verrouillée</target>
+</trans-unit>
+<trans-unit id="sf3f3d80393e6cb27">
+  <source>Sirens</source>
+<target>Sirènes</target>
+</trans-unit>
+<trans-unit id="s6408b6d6e5a6edaa">
+  <source>Sirens off</source>
+<target>Sirènes éteintes</target>
+</trans-unit>
+<trans-unit id="sffb4949016e41530">
+  <source>Sirens on</source>
+<target>Sirènes allumées</target>
 </trans-unit>
 </body>
 </file>

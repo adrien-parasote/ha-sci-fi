@@ -180,16 +180,6 @@ export const bridgeStyles = css`
     /* NO background, NO border, NO border-radius — icon only */
   }
 
-  .crew-badge-name {
-    font-size: 0.7rem;
-    color: var(--sf-text, #e0e0e0);
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 60px;
-  }
-
   /* ── Alerts ── */
   .alerts-smoke-row {
     display: flex;
@@ -374,11 +364,32 @@ export const bridgeStyles = css`
     pointer-events: none;
   }
 
-  /* Lock: visual indicator only (not a button) */
+  /* Lock button wrapping the state icon */
+  .lock-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    background: transparent;
+    border: none;
+    border-radius: var(--sf-radius, 8px);
+    cursor: pointer;
+  }
+
+  .lock-btn:hover:not([disabled]) {
+    background: var(--sf-primary-dim, rgba(0, 210, 255, 0.12));
+  }
+
+  .lock-btn[disabled] {
+    cursor: default;
+  }
+
   .lock-locked      { color: var(--sf-accent-on, #00ff9d); --icon-width: 20px; --icon-height: 20px; }
   .lock-unlocked    { color: var(--sf-error, #ff4d6d);    --icon-width: 20px; --icon-height: 20px; }
   .lock-unknown     { color: var(--sf-text-disabled, #555); --icon-width: 20px; --icon-height: 20px; }
   .lock-unavailable { color: var(--sf-text-disabled, #555); --icon-width: 20px; --icon-height: 20px; }
+  .lock-pending     { color: var(--sf-primary, #00d2ff);  --icon-width: 20px; --icon-height: 20px; }
+  .lock-jammed      { color: var(--sf-warning, #ffd60a);  --icon-width: 20px; --icon-height: 20px; }
 
   /* ── Automations ── */
   .auto-row {
@@ -619,24 +630,6 @@ export const bridgeStyles = css`
     gap: 12px;
   }
 
-  .vehicle-icon-square {
-    width: 54px;
-    height: 54px;
-    flex-shrink: 0;
-    border-radius: var(--sf-radius, 8px);
-    background: var(--sf-primary-dim, rgba(0,210,255,0.12));
-    border: 1px solid var(--sf-primary, #00d2ff);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: border-color 0.3s, box-shadow 0.3s;
-  }
-
-  .vehicle-icon-square.charging {
-    border-color: var(--sf-accent-on, #00ff9d);
-    box-shadow: 0 0 8px color-mix(in srgb, var(--sf-accent-on, #00ff9d) 30%, transparent);
-  }
-
   .vehicle-right {
     flex: 1;
     display: flex;
@@ -674,39 +667,6 @@ export const bridgeStyles = css`
     border-radius: 999px;
     border: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
     align-self: flex-start;
-  }
-
-  /* ── Call Kids ── */
-  .call-kids-btn {
-    width: 100%;
-    height: 48px;
-    background: transparent;
-    border: 1px solid var(--sf-primary, #00d2ff);
-    border-radius: var(--sf-radius, 8px);
-    color: var(--sf-primary, #00d2ff);
-    font-size: var(--sf-font-size-base, 14px);
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--sf-spacing-sm, 8px);
-    transition: background var(--sf-transition-fast, 0.15s);
-  }
-
-  .call-kids-btn:hover {
-    background: var(--sf-primary-dim, rgba(0,210,255,0.1));
-  }
-
-  .call-kids-btn:active {
-    background: color-mix(in srgb, var(--sf-primary, #00d2ff) 25%, transparent);
-  }
-
-  .call-kids-btn[disabled] {
-    opacity: 0.5;
-    pointer-events: none;
   }
 
   @keyframes spin {

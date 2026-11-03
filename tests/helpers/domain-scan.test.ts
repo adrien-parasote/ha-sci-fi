@@ -89,3 +89,22 @@ describe('domain scanner', () => {
     expect(visitedDiff(['a.ts', 'c.ts'], ['a.ts'])).toEqual(['unexpected: c.ts']);
   });
 });
+
+describe('domain scanner: instrument powers (review round 1, MEDIUM)', () => {
+  it('TC-DC-U-03 flags a domain written as a plain template string', () => {
+    const hits = flagged('const d = `light`;');
+    expect(hits.length).toBe(1);
+    expect(hits[0]!.token).toBe('light');
+  });
+
+  it('TC-DC-U-05 the regex cross-check sees a template prefix the AST did not report', () => {
+    const missed = crossCheck([{ file: 'f.ts', text: 'const t = `sensor.${x}`;' }], []);
+    expect(missed).toEqual(["f.ts:1 'sensor'"]);
+  });
+
+  it('TC-DC-U-05 the cross-check compares line numbers: a finding on another line explains nothing', () => {
+    const text = "const a = 'light';\nconst b = 'light';";
+    const onLine2: Finding = { file: 'f.ts', line: 2, token: 'light', cls: 'exact', context: 'x' };
+    expect(crossCheck([{ file: 'f.ts', text }], [onLine2])).toEqual(["f.ts:1 'light'"]);
+  });
+});

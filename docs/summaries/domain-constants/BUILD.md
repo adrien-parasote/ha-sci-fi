@@ -18,4 +18,4 @@
 
 **Next action:** VERIFY (fresh context), then HARDEN: flip AP#5, commit.
 
-**Tests:** files +4 ~3 −0 · cases +20 −0 · 1600 pass, tsc x2 and eslint clean.
+**Tests:** files +3 ~3 −0 · cases +14 −0 · 3 earlier test file(s) edited, none lost a case

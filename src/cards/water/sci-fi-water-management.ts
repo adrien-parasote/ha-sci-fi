@@ -268,12 +268,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     let filtered = [...this._rawLogs];
     
     if (this._activeFilter === 'alerts') {
-      filtered = filtered.filter(log => {
-        const isWarningState = ['unavailable', 'unknown', 'problem'].includes(log.state);
-        const deviceClass = this.hass?.states[log.entity_id]?.attributes?.device_class || log.device_class;
-        const isMoistureAlert = (log.entity_id.startsWith(`${DOMAIN.BINARY_SENSOR}.`) || log.entity_id.startsWith(`${DOMAIN.SENSOR}.`)) && deviceClass === 'moisture' && log.state === 'on';
-        return isWarningState || isMoistureAlert;
-      });
+      filtered = filtered.filter(log => this._isAlertLog(log));
     }
 
     // Sort in reverse-chronological order (newest first)
@@ -288,12 +283,15 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     this._applyFiltersAndLimit();
   }
 
-  private _getLogStatus(log: any): 'success' | 'running' | 'warning' {
+  private _isAlertLog(log: any): boolean {
     const isWarningState = ['unavailable', 'unknown', 'problem'].includes(log.state);
     const deviceClass = this.hass?.states[log.entity_id]?.attributes?.device_class || log.device_class;
     const isMoistureAlert = (log.entity_id.startsWith(`${DOMAIN.BINARY_SENSOR}.`) || log.entity_id.startsWith(`${DOMAIN.SENSOR}.`)) && deviceClass === 'moisture' && log.state === 'on';
-    
-    if (isWarningState || isMoistureAlert) {
+    return isWarningState || isMoistureAlert;
+  }
+
+  private _getLogStatus(log: any): 'success' | 'running' | 'warning' {
+    if (this._isAlertLog(log)) {
       return 'warning';
     }
     if (['on', 'active', 'open'].includes(log.state)) {
@@ -332,12 +330,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
 
     let filtered = this._rawLogs.filter(log => filterSet.has(log.entity_id));
     if (this._activeFilter === 'alerts') {
-      filtered = filtered.filter(log => {
-        const isWarningState = ['unavailable', 'unknown', 'problem'].includes(log.state);
-        const deviceClass = this.hass?.states[log.entity_id]?.attributes?.device_class || log.device_class;
-        const isMoistureAlert = (log.entity_id.startsWith(`${DOMAIN.BINARY_SENSOR}.`) || log.entity_id.startsWith(`${DOMAIN.SENSOR}.`)) && deviceClass === 'moisture' && log.state === 'on';
-        return isWarningState || isMoistureAlert;
-      });
+      filtered = filtered.filter(log => this._isAlertLog(log));
     }
     filtered.sort((a, b) => new Date(b.when).getTime() - new Date(a.when).getTime());
     const logs = filtered.slice(0, 50);

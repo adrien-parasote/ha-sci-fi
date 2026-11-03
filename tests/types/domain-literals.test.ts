@@ -74,10 +74,10 @@ export const ALLOW: readonly AllowEntry[] = [
 ];
 
 describe('domain literals guard (real tree)', () => {
-  it('IT-DC-I-01 leaves no domain literal outside the allow-list, and DOMAIN is referenced 115 times', () => {
+  it('IT-DC-I-01 leaves no domain literal outside the allow-list, and DOMAIN is referenced 111 times', () => {
     const { findings } = scanTree(expectedFiles());
     expect(checkAllowList(findings, ALLOW)).toEqual([]);
-    expect(countDomainRefs(expectedFiles()).total).toBeGreaterThanOrEqual(115);
+    expect(countDomainRefs(expectedFiles()).total).toBeGreaterThanOrEqual(111);
   });
 
   it('TC-DC-U-09 holds an allow-list of 13 tokens, each with reason, max and context, no renault', () => {
@@ -153,11 +153,11 @@ interface SiteTable {
 const table = (): SiteTable => JSON.parse(read('tests/specs/domain-site-table.json')) as SiteTable;
 
 describe('per-file per-key table', () => {
-  it('TC-DC-U-08 and IT-DC-I-02 match the committed table: each card uses the same domain keys as before, 115 in all', () => {
+  it('TC-DC-U-08 and IT-DC-I-02 match the committed table: each card uses the same domain keys as before, 111 in all', () => {
     const t = table();
     expect(t.base).toBe('35f1020');
-    expect(t.total).toBe(115);
-    expect(Object.values(t.files).flatMap((r) => Object.values(r)).reduce((a, b) => a + b, 0)).toBe(115);
+    expect(t.total).toBe(111);
+    expect(Object.values(t.files).flatMap((r) => Object.values(r)).reduce((a, b) => a + b, 0)).toBe(111);
     expect(countDomainRefs(expectedFiles()).perFile).toEqual(t.files);
   });
 

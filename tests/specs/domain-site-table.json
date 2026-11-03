@@ -1,6 +1,6 @@
 {
   "base": "35f1020",
-  "total": 115,
+  "total": 111,
   "files": {
     "src/cards/bridge/sci-fi-bridge-editor.ts": {
       "AUTOMATION": 3,
@@ -91,13 +91,13 @@
     },
     "src/cards/water/sci-fi-water-management.ts": {
       "AUTOMATION": 2,
-      "BINARY_SENSOR": 4,
+      "BINARY_SENSOR": 2,
       "HOMEASSISTANT": 1,
       "INPUT_BOOLEAN": 2,
       "INPUT_SELECT": 2,
       "NUMBER": 1,
       "SELECT": 2,
-      "SENSOR": 5,
+      "SENSOR": 3,
       "SWITCH": 2,
       "VALVE": 2
     },

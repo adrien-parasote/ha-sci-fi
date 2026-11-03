@@ -180,12 +180,12 @@ const GAPS = ['D01', 'D07', 'D12', 'D15', 'D20', 'D21', 'D22', 'D23', 'D24'];
 const BEAD = /ha-sci-fi-[0-9a-z]+(\.[0-9]+)?/;
 // gap -> [construct, cited lines as the spec fixes them]
 const CITES: Record<string, [string, string[]]> = {
-  D07: ['floors.filter', ['452']],
+  D07: ['floors.filter', ['445']],
   D12: ['_rawLogs', ['146']],
-  D15: ['_historyLogs', ['283']],
-  D20: ['style=', ['515', '570', '610', '625']],
+  D15: ['_historyLogs', ['278']],
+  D20: ['style=', ['508', '563', '603', '618']],
   D21: ['expanded', ['41', '55']],
-  D22: ['toUpperCase', ['374']],
+  D22: ['toUpperCase', ['367']],
   D23: ['_fetchId', ['159']],
   D24: ['INPUT_BOOLEAN', ['141']],
 };
@@ -217,9 +217,9 @@ const checkU04 = (doc: string, srcLines: string[]): Fails => {
   const resolved = doc.split('\n').find((l) => l.startsWith('Resolved by alignment')) ?? '';
   has(f, 'resolved line', resolved, 'D14', '_formatTimestamp', 'no test pins the brackets');
   const D14_CITES: [number, string][] = [
-    [312, '_formatTimestamp(when'],
-    [323, '${dd}/${mo}'],
-    [370, '[${this._formatTimestamp('],
+    [310, '_formatTimestamp(when'],
+    [321, '${dd}/${mo}'],
+    [363, '[${this._formatTimestamp('],
   ];
   for (const [n, construct] of D14_CITES) {
     if (!new RegExp(`:${n}(?!\\d)`).test(resolved)) f.push(`D14: resolved line does not cite :${n}`);
@@ -326,7 +326,7 @@ describe('water_history.md aligned on water.md and the code', () => {
     expect(checkU04(DOC + '\nspec not bent', SRC).length).toBeGreaterThan(0);
     expect(checkU04(mutant(DOC, 'no cached data', 'cached data shown dim orange'), SRC).length).toBeGreaterThan(0);
     const drifted = [...SRC];
-    drifted[373] = '';
+    drifted[366] = '';
     expect(checkU04(DOC, drifted).length).toBeGreaterThan(0);
     for (const [g, cites] of Object.entries(CITES)) {
       for (const n of cites[1]) {
@@ -338,10 +338,10 @@ describe('water_history.md aligned on water.md and the code', () => {
     expect(checkU04(mutant(DOC, '(`:141`)', '(`:999`)'), SRC).length).toBeGreaterThan(0);
     expect(checkU04(mutant(DOC, '(`:141`)', '(`:1410`)'), SRC).length).toBeGreaterThan(0);
     // D14 sits in the resolved line now: its three cites and its "not pinned" statement are held by mutants.
-    expect(checkU04(mutant(DOC, '`:323`', '`:999`'), SRC).length).toBeGreaterThan(0);
-    expect(checkU04(mutant(DOC, '`:323`', '`:3230`'), SRC).length).toBeGreaterThan(0);
-    expect(checkU04(mutant(DOC, '`:370`', '`:999`'), SRC).length).toBeGreaterThan(0);
-    expect(checkU04(mutant(DOC, '`:312`', '`:999`'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, '`:321`', '`:999`'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, '`:321`', '`:3230`'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, '`:363`', '`:999`'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, '`:310`', '`:999`'), SRC).length).toBeGreaterThan(0);
     expect(checkU04(mutant(DOC, 'no test pins the brackets', 'a test pins the brackets'), SRC).length).toBeGreaterThan(0);
   });
 

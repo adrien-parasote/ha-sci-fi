@@ -6,14 +6,24 @@ max_fn_lines = 100
 no_god_files = true
 
 # ─────────────────────────────────────────────────────────────────────────────
-# EXPECTED STATE OF `sentrux check .` — exactly ONE violation
+# EXPECTED STATE OF `sentrux check .` — three violations, one of them the god-file rule
 # ─────────────────────────────────────────────────────────────────────────────
-#   ✗ [Error] no_god_files: 1 god file(s) found (fan-out > 15)
+#   ✗ [Error] no_god_files: 2 god file(s) found (fan-out > 15)
 #       src/sci-fi.ts (fan-out=28)
-#   ✗ 1 violation(s) found
+#       src/cards/hexa-tiles/sci-fi-hexa-tiles-editor.ts (fan-out=16)
+#   ✗ [Error] max_cc: tests/docs/repo-wide-ids-guard.test.ts:extract (cc=42),
+#       tests/i18n/french-literals.ts:analyseSource (cc=39)   (older, not this lot's)
+#   ✗ [Error] max_fn_lines: tests/i18n/french-literals.ts:analyseSource (109 lines)   (older)
+#   ✗ 3 violation(s) found
 #
-# That red is expected and accepted. Any OTHER violation, or a second god file,
+# That red is expected and accepted. Any OTHER violation, or a THIRD god file,
 # is new — treat it as a regression, not as noise.
+#
+# sci-fi-hexa-tiles-editor.ts was already at fan-out 15 (one short of the
+# threshold); the domain-constants lot adds the single shared
+# `import { DOMAIN }` (typed constants, FR-3), which takes it to 16. The lot did
+# not otherwise rewrite it; the user accepted the exception rather than split an
+# unrelated editor.
 #
 # Why a comment and not an exclusion: sentrux 0.5.7 has NO path-exclusion syntax
 # for rules.toml. Verified against the shipped binary, not assumed — the parser's
@@ -31,9 +41,9 @@ no_god_files = true
 # away would mean deleting the entry point. A barrel is not a god file.
 #
 # `no_god_files` stays ARMED rather than being deleted to clear this one line. A
-# disarmed rule stops reporting the NEXT god file; an armed rule with a single
-# named violation is still a usable signal, and it degrades loudly the day a
-# second file trips it — which is the point.
+# disarmed rule stops reporting the NEXT god file; an armed rule with two
+# named, accepted violations is still a usable signal, and it degrades loudly
+# the day a third file trips it — which is the point.
 #
 # Do NOT silence this by loosening the numbers above: dropping `no_god_files` or
 # raising `max_fn_lines` relaxes the rule for the whole of src/, which is exactly

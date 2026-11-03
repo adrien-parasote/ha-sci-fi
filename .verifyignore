@@ -20,4 +20,5 @@ P6:src/cards/bridge/sci-fi-bridge-editor.ts:Returns empty object
 
 # P8 Spec Conformance global false positives (e.g. templates, standard libs)
 P8:*:*
-P7:src/sci-fi.ts:architectural_violation  # Pre-existing accepted god file (bundle entry registering 11 cards, documented in .sentrux/rules.toml); this lot does not touch src/
+P7:src/sci-fi.ts:architectural_violation  # Pre-existing accepted god file (bundle entry registering 11 cards, documented in .sentrux/rules.toml)
+P7:src/cards/hexa-tiles/sci-fi-hexa-tiles-editor.ts:architectural_violation  # editor already a wide-import file (fan-out 15 on base); this lot adds the single shared DOMAIN import (16), the typed constant module the whole lot introduces; the user accepted this exception rather than splitting an unrelated editor; recorded in .sentrux/rules.toml (2 god files expected)

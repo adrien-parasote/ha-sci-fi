@@ -24,7 +24,7 @@
 | ID | Assumption | Risk | Source Type | Validation |
 |---|---|---|---|---|
 | 1 | The recorder WebSocket API `history/history_during_period` is the primary source; **logbook/get_events** is the fallback when it rejects | Low | SHOW | Verified HA Core API specs; `_fetchHistoryLogs` in `src/cards/water/sci-fi-water-management.ts` |
-| 2 | Water entities on the current floor can be retrieved using the same logic as the main card | Low | SHOW | `_getWaterEntitiesForFloor` in `src/cards/water/sci-fi-water-management.ts` (`:414`) |
+| 2 | Water entities on the current floor can be retrieved using the same logic as the main card | Low | SHOW | `_getWaterEntitiesForFloor` in `src/cards/water/sci-fi-water-management.ts` (`:407`) |
 | 3 | `sf-editor-accordion` supports custom DOM elements injected into its slot | Low | SHOW | Checked `sf-editor-accordion.ts` implementation |
 
 ---
@@ -156,16 +156,16 @@ Arbitrage `ha-sci-fi-enr`: [water.md](./water.md) is the reference and the code 
 | Gap | Code today | Bead |
 |---|---|---|
 | D01 sync button never spins | `styles.ts:60` targets `.floor-sync-btn.syncing ha-icon`, the template renders `<sf-icon>` whose content sits in its own shadow root | `ha-sci-fi-9vv` |
-| D07 floor absent from the selector can still render | the floor list is prefiltered to floors with at least one water entity (`:452`), so the selector never offers an empty floor; but `first_floor_to_render` naming an existing floor with no water entity passes the floor check and renders "No water equipment configured for this floor" (`:494`) for a floor the selector does not list | `ha-sci-fi-rd4` |
+| D07 floor absent from the selector can still render | the floor list is prefiltered to floors with at least one water entity (`:445`), so the selector never offers an empty floor; but `first_floor_to_render` naming an existing floor with no water entity passes the floor check and renders "No water equipment configured for this floor" (`:487`) for a floor the selector does not list | `ha-sci-fi-rd4` |
 | D12 offline cache and `[ OFFLINE ]` withdrawn | This spec withdraws its former requirement (cached data shown dim orange under an `[ OFFLINE ]` header); water.md never had it. The requirement no longer exists in either spec, yet bead `ha-sci-fi-1k7` stays open: it now tracks a product decision (re-introduce an offline display, or close), not a defect against a spec. Code today: `_fetchHistoryLogs` empties `_rawLogs` before the call (`:146`), both-fail renders the same empty state as "no history", no timeout, no retry | `ha-sci-fi-1k7` |
-| D15 `_historyLogs` never read | written by `_applyFiltersAndLimit` (`:283`), no render path reads it; `_renderHistoryLogs` filters, sorts and truncates `_rawLogs` itself | `ha-sci-fi-ijw` |
-| D20 inline CSS | 4 `style="…"` in the template (`:515`, `:570`, `:610`, `:625`) against AP#5 | `ha-sci-fi-ln3` |
+| D15 `_historyLogs` never read | written by `_applyFiltersAndLimit` (`:278`), no render path reads it; `_renderHistoryLogs` filters, sorts and truncates `_rawLogs` itself | `ha-sci-fi-ijw` |
+| D20 inline CSS | 4 `style="…"` in the template (`:508`, `:563`, `:603`, `:618`) against AP#5 | `ha-sci-fi-ln3` |
 | D21 `expanded` trigger | the code declares an `expanded` property (`:41`, `:55`) and `updated()` fetches when it turns `true` and skips the floor-load fetch when it is `false` (`:118-122`); water.md forbids both ("Fetch on accordion open", "Global expanded state") and nothing in `src/` sets it | `ha-sci-fi-xrc` |
-| D22 malformed rows not ignored | see the Error Handling Matrix: no validation on the logbook path (`:251`), `log.state.toUpperCase()` (`:374`) throws on a row without `state`, no `console.warn` on skipped rows | `ha-sci-fi-5aw` |
+| D22 malformed rows not ignored | see the Error Handling Matrix: no validation on the logbook path (`:251`), `log.state.toUpperCase()` (`:367`) throws on a row without `state`, no `console.warn` on skipped rows | `ha-sci-fi-5aw` |
 | D23 early returns keep a stale fetch alive | `_fetchId` is incremented after the early returns (`:159`), so a response in flight for the previous floor is not discarded when the new floor has no entities | `ha-sci-fi-p5a` |
 | D24 domain list | the code and this spec query six domains, `input_boolean` included (`:141`); water.md F-WATER-06 lists five | `ha-sci-fi-7kb` |
 
-Resolved by alignment, not by a bead: D16 (the "Warning" filter of IT-003 never existed, removed above), window and endpoint (`ha-sci-fi-o5p`), D14 (TC-WATER-HISTORY-U-005, played since lot `water-orphan-ids`, bead `ha-sci-fi-78y.7`, pins what `_formatTimestamp` returns, `DD/MM HH:MM` (`:312`, the `return` at `:323`) with the `00/00 00:00` fallback; the brackets come from the template that wraps it (`:370`) and no test pins the brackets: a render test of `.log-time` would close that).
+Resolved by alignment, not by a bead: D16 (the "Warning" filter of IT-003 never existed, removed above), window and endpoint (`ha-sci-fi-o5p`), D14 (TC-WATER-HISTORY-U-005, played since lot `water-orphan-ids`, bead `ha-sci-fi-78y.7`, pins what `_formatTimestamp` returns, `DD/MM HH:MM` (`:310`, the `return` at `:321`) with the `00/00 00:00` fallback; the brackets come from the template that wraps it (`:363`) and no test pins the brackets: a render test of `.log-time` would close that).
 
 ## Local Development
 

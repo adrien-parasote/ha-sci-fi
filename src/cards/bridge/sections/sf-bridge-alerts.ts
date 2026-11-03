@@ -52,6 +52,7 @@ export class SfBridgeAlerts extends LitElement {
           ${msg('Alerts')}
         </div>
         ${this._renderSmoke()}
+        ${this._renderSiren()}
         ${this._renderToggles()}
         ${this._renderOccupancy()}
       </div>
@@ -85,6 +86,28 @@ export class SfBridgeAlerts extends LitElement {
             </div>
           `;
         })}
+      </div>
+    `;
+  }
+
+  /** Siren switch row: a structural marker class only (`.siren-row`), styled by `.toggle-row`. */
+  private _renderSiren(): TemplateResult | typeof nothing {
+    const id = this.config.smoke_switch;
+    if (typeof id !== 'string' || id === '') return nothing;
+    const stateObj = this.hass.states[id];
+    if (stateObj === undefined) warnOnce('not-found', id);
+    const state: string | undefined = stateObj?.state;
+    const unusable = state === undefined || state === 'unavailable' || state === 'unknown';
+    const isOn = state === 'on';
+    return html`
+      <div class="toggle-row siren-row">
+        <sf-icon
+          icon="mdi:alarm-light"
+          style="--icon-color: ${isOn ? 'var(--sf-accent-on, #00ff9d)' : 'var(--sf-text-disabled, #555)'};"
+          .connection="${this.hass.connection}"
+        ></sf-icon>
+        <span class="toggle-name ${unusable ? 'toggle-unknown' : isOn ? 'toggle-on' : 'toggle-off'}">${msg('Sirens')}</span>
+        ${renderSfToggle(unusable, isOn, () => this._toggleSiren(id, isOn))}
       </div>
     `;
   }
@@ -136,6 +159,17 @@ export class SfBridgeAlerts extends LitElement {
         </span>
       </div>
     `;
+  }
+
+  private _toggleSiren(entity: string, isOn: boolean): void {
+    void bridgeCall(
+      this,
+      this.hass,
+      'switch',
+      isOn ? 'turn_off' : 'turn_on',
+      { entity_id: entity },
+      isOn ? msg('Sirens off') : msg('Sirens on')
+    );
   }
 
   private _toggle(entity: string, isOn: boolean, name: string): void {

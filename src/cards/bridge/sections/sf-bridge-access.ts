@@ -6,7 +6,7 @@
  * - Toast feedback on button press
  */
 import { html, LitElement, nothing, type TemplateResult } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import { localized, msg } from '@lit/localize';
 import { sciFiCommonStyles } from '../../../styles/common.js';
 import { bridgeStyles } from '../styles.js';
@@ -35,7 +35,33 @@ function lockClass(state: string | null | undefined): string {
   if (state === undefined) return 'lock-unknown';
   if (state === 'locked')   return 'lock-locked';
   if (state === 'unlocked') return 'lock-unlocked';
+  if (state === 'locking' || state === 'unlocking') return 'lock-pending';
+  if (state === 'jammed')   return 'lock-jammed';
   return 'lock-unavailable';
+}
+
+function lockIcon(state: string | undefined): string {
+  switch (state) {
+    case undefined:   return 'mdi:lock-question';
+    case 'locked':    return 'mdi:lock';
+    case 'locking':
+    case 'unlocking': return 'mdi:lock-clock';
+    case 'jammed':    return 'mdi:lock-alert';
+    default:          return 'mdi:lock-open';
+  }
+}
+
+/** Action or state named on the lock button (title and aria-label). */
+function lockTitle(state: string | undefined, codeRequired: boolean): string {
+  if (codeRequired) return msg('Code required');
+  switch (state) {
+    case 'locked':    return msg('Unlock');
+    case 'unlocked':  return msg('Lock');
+    case 'locking':   return msg('Locking…');
+    case 'unlocking': return msg('Unlocking…');
+    case 'jammed':    return msg('Lock jammed');
+    default:          return msg('Lock unavailable');
+  }
 }
 
 @localized()
@@ -45,6 +71,9 @@ export class SfBridgeAccess extends LitElement {
 
   @property({ attribute: false }) config!: BridgeAccessConfig;
   @property({ attribute: false }) hass: any;
+
+  /** Lock entities with a service call in flight; replaced, never mutated, so Lit re-renders. */
+  @state() private _lockPending: ReadonlySet<string> = new Set();
 
   override render(): TemplateResult {
     if (!this.hass || !this.config?.items?.length) return html``;
@@ -69,6 +98,10 @@ export class SfBridgeAccess extends LitElement {
           // null: no lock configured · undefined: configured but absent
           const lockState = lockEntity ? lockObj?.state ?? undefined : null;
           const lockCls = lockClass(lockState);
+          const codeRequired = !!lockObj?.attributes?.code_format;
+          const lockUsable = (lockState === 'locked' || lockState === 'unlocked') && !codeRequired
+            && !(lockEntity && this._lockPending.has(lockEntity));
+          const lockLabel = lockTitle(lockState ?? undefined, codeRequired);
 
           const isOpen = state === 'open';
           const isClosed = state === 'closed';
@@ -114,13 +147,22 @@ export class SfBridgeAccess extends LitElement {
                   <sf-icon icon="mdi:arrow-down" .connection="${this.hass.connection}"></sf-icon>
                 </button>
 
-                <!-- Lock indicator (visual only) -->
+                <!-- Lock button: one click, no confirmation -->
                 ${lockEntity && lockState !== null ? html`
-                  <sf-icon
-                    icon="${lockState === undefined ? 'mdi:lock-question' : lockState === 'locked' ? 'mdi:lock' : 'mdi:lock-open'}"
-                    class="${lockCls}"
-                    .connection="${this.hass.connection}"
-                  ></sf-icon>
+                  <button
+                    class="lock-btn"
+                    title="${lockLabel}"
+                    aria-label="${lockLabel}"
+                    ?disabled="${!lockUsable}"
+                    aria-disabled="${lockUsable ? 'false' : 'true'}"
+                    @click="${() => this._toggleLock(lockEntity, lockState)}"
+                  >
+                    <sf-icon
+                      icon="${lockIcon(lockState)}"
+                      class="${lockCls}"
+                      .connection="${this.hass.connection}"
+                    ></sf-icon>
+                  </button>
                 ` : nothing}
               </div>
             </div>
@@ -128,6 +170,28 @@ export class SfBridgeAccess extends LitElement {
         })}
       </div>
     `;
+  }
+
+  private _toggleLock(entity: string, lockState: string | undefined): void {
+    if (this._lockPending.has(entity)) return;
+    const service = lockState === 'locked' ? 'unlock' : lockState === 'unlocked' ? 'lock' : undefined;
+    if (service === undefined) return;
+    this._lockPending = new Set(this._lockPending).add(entity);
+    void bridgeCall(
+      this,
+      this.hass,
+      'lock',
+      service,
+      { entity_id: entity },
+      service === 'unlock' ? msg('Door unlocked') : msg('Door locked'),
+      {
+        after: () => {
+          const next = new Set(this._lockPending);
+          next.delete(entity);
+          this._lockPending = next;
+        },
+      }
+    );
   }
 
   private _openCover(entity: string, name: string): void {

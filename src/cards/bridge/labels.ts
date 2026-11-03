@@ -53,5 +53,6 @@ export function bridgeLabels(): Record<string, string> {
     'input-bag-counter': msg('Bag stock counter'),
     'input-pellet-low-threshold': msg('Pellet low threshold (0.0–1.0)'),
     'input-ok-when': msg('OK when'),
+    'input-running-states': msg('Running states (comma-separated)'),
   };
 }

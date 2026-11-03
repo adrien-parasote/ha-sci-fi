@@ -68,9 +68,8 @@ export class SfBridgeVehicle extends LitElement {
     return html`
       <div class="bridge-section">
         <div class="bridge-section-title">
-          <!-- sci:landspeeder as section title icon -->
           <sf-icon
-            icon="sci:landspeeder"
+            icon="${this.config.icon ?? 'sci:landspeeder'}"
             .connection="${this.hass.connection}"
           ></sf-icon>
           ${msg('Vehicle')}

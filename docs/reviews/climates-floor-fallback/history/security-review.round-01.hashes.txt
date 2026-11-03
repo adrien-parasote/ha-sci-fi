@@ -1,0 +1,10 @@
+84843d9b6be13dfb5a1740adccdd3f3ef0563b41 docs/specs/cards/climates.md
+3284bfff123e6f223f71ff479d83077c7d03c6da src/cards/climates/sci-fi-climates.ts
+4caed04421567e2de83e81bbf0ae4fb48674ba3c src/selectors/house.ts
+5799079954e3cc4bbc816850dc32f6c2eb715c2f tests/cards/climates/sci-fi-climates.test.ts
+673fdce1c07aee5d377101c4a936e5527b8ad4d4 docs/adversarial-review/climates-floor-fallback.md
+b6d6b4aba47e9e9c235a51133ba9ed42407cfed3 docs/adversarial-review/history/climates-floor-fallback.round-01.md
+673fdce1c07aee5d377101c4a936e5527b8ad4d4 docs/adversarial-review/history/climates-floor-fallback.round-02.md
+52bb7507c370b8fbdf6d79ef019519950df5f537 docs/specs/climates-floor-fallback/spec.md
+ee3b1916ef7c2f6ea7062a1fcd9e79ea83cb17f2 docs/summaries/climates-floor-fallback/BUILD.md
+fc6df40bae3402a021c514ca6374da46f69114b7 docs/summaries/climates-floor-fallback/SPEC.md

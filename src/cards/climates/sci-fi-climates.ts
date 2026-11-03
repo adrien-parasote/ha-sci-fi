@@ -66,16 +66,14 @@ export class SciFiClimatesCard extends SciFiBaseCard {
       const allFloors = getFloors(this.hass);
       // Find first floor containing climates
       for (const floor of allFloors) {
-        if (this.__hasClimateInFloor(floor.floor_id, excluded)) {
+        if (floor && this.__hasClimateInFloor(floor.floor_id, excluded)) {
           this._active_floor_id = floor.floor_id;
           break;
         }
       }
-      if ((this.config as any)?.filter_by === 'floor') {
-        const allFloors = getFloors(this.hass);
-        if (allFloors && allFloors.length > 0 && !this._active_floor_id) {
-          this._active_floor_id = (allFloors as any)[0].floor_id;
-        }
+      // No floor holds a radiator: show the first floor rather than a blank card.
+      if (!this._active_floor_id) {
+        this._active_floor_id = allFloors[0]?.floor_id ?? null;
       }
     }
 
@@ -93,11 +91,9 @@ export class SciFiClimatesCard extends SciFiBaseCard {
           }
         }
       }
-      if ((this.config as any)?.filter_by === 'area') {
-        const areas = getAreas(this.hass);
-        if (areas && areas.length > 0 && !this._active_area_id) {
-          this._active_area_id = (areas as any)[0].area_id;
-        }
+      // No area of the active floor holds a radiator: first area of the house.
+      if (!this._active_area_id) {
+        this._active_area_id = getAreas(this.hass)[0]?.area_id ?? null;
       }
     }
 
@@ -222,7 +218,7 @@ export class SciFiClimatesCard extends SciFiBaseCard {
   }
 
   private __displayFloors(excluded: readonly string[]): TemplateResult {
-    const floors = getFloors(this.hass).filter(f => this.__hasClimateInFloor(f.floor_id, excluded));
+    const floors = getFloors(this.hass).filter(f => f && this.__hasClimateInFloor(f.floor_id, excluded));
     
     const cells = floors.map(floor => {
       return {

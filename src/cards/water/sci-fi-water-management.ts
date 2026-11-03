@@ -345,10 +345,10 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     return html`
       <div class="log-console">
         <div class="log-header">
-          <span class="log-title">${msg("LOGS D'EXÉCUTION")}</span>
+          <span class="log-title">${msg('RUNTIME LOGS')}</span>
           <div class="log-filters">
-            <button class="log-filter-btn ${this._activeFilter === 'all' ? 'active' : ''}" @click="${() => this._setFilter('all')}">${msg("Tout")}</button>
-            <button class="log-filter-btn ${this._activeFilter === 'alerts' ? 'active' : ''}" @click="${() => this._setFilter('alerts')}">${msg("Alertes")}</button>
+            <button class="log-filter-btn ${this._activeFilter === 'all' ? 'active' : ''}" @click="${() => this._setFilter('all')}">${msg('All')}</button>
+            <button class="log-filter-btn ${this._activeFilter === 'alerts' ? 'active' : ''}" @click="${() => this._setFilter('alerts')}">${msg('Alerts')}</button>
           </div>
         </div>
         
@@ -358,7 +358,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
             <span>${msg("SYSTEM SCANNING...")}</span>
           </div>
         ` : logs.length === 0 ? html`
-          <div class="empty-log">${msg("Aucun événement enregistré.")}</div>
+          <div class="empty-log">${msg('No events recorded.')}</div>
         ` : html`
           <div class="log-timeline">
             ${logs.map(log => {
@@ -564,7 +564,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
         </div>
         <button
           class="floor-sync-btn ${this._historyLogsLoading ? 'syncing' : ''}"
-          title="${msg('Rafraîchir les logs')}"
+          title="${msg('Refresh logs')}"
           @click="${() => this._syncLogs()}"
         >
           <sf-icon icon="mdi:refresh" style="--icon-width:18px;--icon-height:18px;" .connection="${this.hass.connection}"></sf-icon>

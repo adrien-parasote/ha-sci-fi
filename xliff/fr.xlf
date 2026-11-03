@@ -975,24 +975,9 @@
 <trans-unit id="sd9994f251f1280cf">
   <source>Step</source>
 <target>Step</target></trans-unit>
-<trans-unit id="sf1fba6284b519393">
-  <source>LOGS D'EXÉCUTION</source>
-<target>LOGS D'EXÉCUTION</target></trans-unit>
-<trans-unit id="s5a86ddfb3a2500b5">
-  <source>Tout</source>
-<target>Tout</target></trans-unit>
-<trans-unit id="s1e540ef066e896e5">
-  <source>Alertes</source>
-<target>Alertes</target></trans-unit>
 <trans-unit id="sa927ed3da4162c8b">
   <source>SYSTEM SCANNING...</source>
 <target>SYSTEM SCANNING...</target></trans-unit>
-<trans-unit id="s6e4e347a655e8aa2">
-  <source>Aucun événement enregistré.</source>
-<target>Aucun événement enregistré.</target></trans-unit>
-<trans-unit id="sbc14f113b45009a6">
-  <source>Rafraîchir les logs</source>
-<target>Rafraîchir les logs</target></trans-unit>
 <trans-unit id="s6dbbe2646b239ca5">
   <source>Closed</source>
 <target>Fermée</target>
@@ -1376,6 +1361,22 @@
 <trans-unit id="sd47f686a056aed69">
   <source>Add source</source>
   <target>Ajouter une source</target>
+</trans-unit>
+<trans-unit id="sb33d425fd2fb8a5a">
+  <source>RUNTIME LOGS</source>
+<target>LOGS D'EXÉCUTION</target>
+</trans-unit>
+<trans-unit id="sf993bb199fefbe04">
+  <source>All</source>
+<target>Tout</target>
+</trans-unit>
+<trans-unit id="sc7403d7f738b1f6d">
+  <source>No events recorded.</source>
+<target>Aucun événement enregistré.</target>
+</trans-unit>
+<trans-unit id="sc541608082c5d497">
+  <source>Refresh logs</source>
+<target>Rafraîchir les logs</target>
 </trans-unit>
 </body>
 </file>

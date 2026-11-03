@@ -2,6 +2,7 @@
 import { expect, describe, it, afterEach } from 'vitest';
 
 import '../../../src/cards/water/sci-fi-water-management.js';
+import { setLocale } from '../../../src/locales/localization.js';
 import { makeMockHass, makeMockFloor, makeMockArea, makeMockEntityEntry, makeMockEntity } from '../../fixtures/mock-hass.js';
 
 describe('sci-fi-water-management', () => {
@@ -55,6 +56,8 @@ describe('sci-fi-water-management', () => {
     // Helpers for the cases below. _renderHistoryLogs returns a Lit template,
     // so it must be rendered before anything can be asserted.
     const renderLogs = async (el: any, filterEntityIds: string[]) => {
+      // The empty-state source is English; its French wording is the catalogue's.
+      await setLocale('fr');
       const temp = document.createElement('div');
       const { render } = await import('lit');
       render(el._renderHistoryLogs(filterEntityIds), temp);

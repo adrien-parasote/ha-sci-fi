@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { SciFiBaseCard } from '../../src/utils/base-card.js';
@@ -395,5 +395,269 @@ describe('SciFiBaseCard', () => {
     expect(roots.length, 'src/cards/ holds no card root').toBeGreaterThan(0);
     expect(found, 'a card root stopped matching the SciFiBaseCard walk').toBe(roots.length);
     expect(missing, 'these cards inherit the [] default and re-render on everything').toEqual([]);
+  });
+});
+
+// ── config-error-card: setup banner and missing-entity banner ────────────────
+
+class BannerCard extends SciFiBaseCard {
+  ids: unknown = [];
+  rendered = 0;
+  protected override getConfiguredEntities(): string[] {
+    if (this.ids === 'throw') throw new Error('configured boom');
+    return this.ids as string[];
+  }
+  protected renderCard(): TemplateResult {
+    this.rendered++;
+    return html`<div class="test-content">ok</div>`;
+  }
+}
+class PlainCard extends TestCard {}
+if (!customElements.get('banner-sf-card')) customElements.define('banner-sf-card', BannerCard);
+if (!customElements.get('plain-sf-card')) customElements.define('plain-sf-card', PlainCard);
+
+type Spies = Record<'warn' | 'error' | 'log', ReturnType<typeof vi.spyOn>>;
+const spyConsole = (): Spies => ({
+  warn: vi.spyOn(console, 'warn').mockImplementation(() => {}),
+  error: vi.spyOn(console, 'error').mockImplementation(() => {}),
+  log: vi.spyOn(console, 'log').mockImplementation(() => {}),
+});
+const consoleCalls = (s: Spies): number =>
+  s.warn.mock.calls.length + s.error.mock.calls.length + s.log.mock.calls.length;
+const statesHass = (states: Record<string, unknown>): HomeAssistantExt =>
+  ({ states } as unknown as HomeAssistantExt);
+const CFG = { type: 'custom:banner-sf-card' };
+
+async function mountBanner<T extends SciFiBaseCard>(
+  tag: string,
+  opts: { config?: boolean; hass?: HomeAssistantExt; ids?: unknown } = {},
+): Promise<T> {
+  const el = document.createElement(tag) as T;
+  if (opts.ids !== undefined) (el as unknown as BannerCard).ids = opts.ids;
+  if (opts.config !== false) el.setConfig(CFG);
+  if (opts.hass) el.hass = opts.hass;
+  document.body.appendChild(el);
+  await el.updateComplete;
+  return el;
+}
+const msgText = (el: Element): string | null =>
+  el.shadowRoot!.querySelector('.sf-error-message')?.textContent ?? null;
+
+describe('config-error-card base behaviour', () => {
+  beforeEach(async () => {
+    await setLocale('en');
+  });
+  afterEach(async () => {
+    vi.restoreAllMocks();
+    document.body.innerHTML = '';
+    await setLocale('en');
+  });
+
+  it('TC-CEC-U-01: config unset with hass set renders the setup banner, silently, 20 times', async () => {
+    const spies = spyConsole();
+    const el = await mountBanner<BannerCard>('banner-sf-card', { config: false, hass: statesHass({}) });
+    for (let i = 0; i < 20; i++) {
+      el.requestUpdate();
+      await el.updateComplete;
+    }
+    expect(msgText(el)).toBe('Card setup required: configuration is missing.');
+    expect(el.shadowRoot!.querySelector('.sf-error-card .sf-error-message')).not.toBeNull();
+    expect(consoleCalls(spies)).toBe(0);
+    expect(el['_renderError']).toBeNull();
+  });
+
+  it('TC-CEC-U-02: hass unset renders nothing, with config set and with neither', async () => {
+    const spies = spyConsole();
+    const withConfig = await mountBanner<BannerCard>('banner-sf-card');
+    const neither = await mountBanner<BannerCard>('banner-sf-card', { config: false });
+    expect(withConfig.shadowRoot!.querySelector('ha-card')).toBeNull();
+    expect(neither.shadowRoot!.querySelector('ha-card')).toBeNull();
+    expect(consoleCalls(spies)).toBe(0);
+  });
+
+  it('TC-CEC-U-03: all configured ids absent shows the banner and skips renderCard', async () => {
+    const el = await mountBanner<BannerCard>('banner-sf-card', { ids: ['a', 'b', 'c'], hass: statesHass({}) });
+    expect(msgText(el)).toBe('Entity not found: a, b, c');
+    expect(el.rendered).toBe(0);
+  });
+
+  it.each([
+    [['a', 'b', 'c', 'd'], 'Entity not found: a, b, c, … (+1)'],
+    [['a', 'b', 'c', 'd', 'e'], 'Entity not found: a, b, c, … (+2)'],
+    [['a', 'a', '', 'a', 5, null], 'Entity not found: a'],
+  ])('TC-CEC-U-04: truncation and cleaning %j', async (ids, expected) => {
+    const el = await mountBanner<BannerCard>('banner-sf-card', { ids, hass: statesHass({}) });
+    expect(msgText(el)).toBe(expected);
+  });
+
+  it.each([
+    ['present on', { a: { state: 'on' } }, ['a', 'b']],
+    ['present unavailable', { a: { state: 'unavailable' } }, ['a', 'b']],
+    ['no override', {}, 'default'],
+    ['states undefined', undefined, ['a']],
+  ])('TC-CEC-U-05: no banner when %s', async (_n, states, ids) => {
+    const tag = ids === 'default' ? 'plain-sf-card' : 'banner-sf-card';
+    const el = await mountBanner(tag, {
+      ids: ids === 'default' ? undefined : ids,
+      hass: statesHass(states as Record<string, unknown>),
+    });
+    expect(el.shadowRoot!.querySelector('.test-content')).not.toBeNull();
+    expect(el.shadowRoot!.textContent).not.toContain('Entity not found');
+  });
+
+  it('TC-CEC-U-06 and TC-CEC-U-07: hostile ids stay text, English and French', async () => {
+    const hostile = ['<img src=x onerror=alert(1)>', '<svg onload=alert(1)>'];
+    for (const lang of ['en', 'fr']) {
+      await setLocale(lang as 'en' | 'fr');
+      for (const id of hostile) {
+        const el = await mountBanner<BannerCard>('banner-sf-card', { ids: [id], hass: statesHass({}) });
+        const prefix = lang === 'fr' ? 'Entité introuvable : ' : 'Entity not found: ';
+        expect(msgText(el)).toBe(prefix + id);
+        expect(el.shadowRoot!.querySelector('img, svg')).toBeNull();
+        expect(el.shadowRoot!.querySelectorAll('*').length).toBe(4); // ha-card, div, icon span, message span
+      }
+    }
+  });
+
+  it('TC-CEC-U-07: French wording of both messages', async () => {
+    await setLocale('fr');
+    const noCfg = await mountBanner<BannerCard>('banner-sf-card', { config: false, hass: statesHass({}) });
+    expect(msgText(noCfg)).toBe('Configuration requise : la configuration de la carte est absente.');
+    const two = await mountBanner<BannerCard>('banner-sf-card', { ids: ['a', 'b'], hass: statesHass({}) });
+    expect(msgText(two)).toBe('Entité introuvable : a, b');
+  });
+
+  it('TC-CEC-U-12: wrong-type, null, throwing and null-states cases never throw out of render()', async () => {
+    const spies = spyConsole();
+    for (const ids of [5, null]) {
+      const el = await mountBanner<BannerCard>('banner-sf-card', { ids, hass: statesHass({}) });
+      expect(el.shadowRoot!.querySelector('.test-content')).not.toBeNull();
+    }
+    const nullStates = await mountBanner<BannerCard>('banner-sf-card', {
+      ids: ['a'],
+      hass: statesHass(null as unknown as Record<string, unknown>),
+    });
+    expect(nullStates.shadowRoot!.querySelector('.test-content')).not.toBeNull();
+    expect(consoleCalls(spies)).toBe(0);
+
+    const thrower = await mountBanner<BannerCard>('banner-sf-card', { ids: 'throw', hass: statesHass({}) });
+    expect(msgText(thrower)).toBe('configured boom');
+    expect(thrower['_renderError']).toBe('configured boom');
+    expect(spies.error).toHaveBeenCalledTimes(1);
+  });
+
+  it('TC-CEC-U-13: absence is an own-property test', async () => {
+    const proto = await mountBanner<BannerCard>('banner-sf-card', {
+      ids: ['constructor', 'toString', '__proto__'],
+      hass: statesHass({}),
+    });
+    expect(msgText(proto)).toBe('Entity not found: constructor, toString, __proto__');
+    const undef = await mountBanner<BannerCard>('banner-sf-card', {
+      ids: ['constructor'],
+      hass: statesHass({ constructor: undefined }),
+    });
+    expect(msgText(undef)).toBe('Entity not found: constructor');
+    const real = await mountBanner<BannerCard>('banner-sf-card', {
+      ids: ['constructor', 'x'],
+      hass: statesHass({ x: { state: 'on' } }),
+    });
+    expect(real.shadowRoot!.querySelector('.test-content')).not.toBeNull();
+  });
+
+  it('TC-CEC-U-14: ids are capped at 64 code points without splitting a surrogate pair', async () => {
+    const long = await mountBanner<BannerCard>('banner-sf-card', { ids: ['x'.repeat(50000)], hass: statesHass({}) });
+    expect(msgText(long)).toBe(`Entity not found: ${'x'.repeat(64)}…`);
+    expect(msgText(long)!.length).toBeLessThan(200);
+    const exact = '😀'.repeat(64);
+    const e64 = await mountBanner<BannerCard>('banner-sf-card', { ids: [exact], hass: statesHass({}) });
+    expect(msgText(e64)).toBe(`Entity not found: ${exact}`);
+    const cut = 'a'.repeat(63) + '😀' + 'b';
+    const e65 = await mountBanner<BannerCard>('banner-sf-card', { ids: [cut], hass: statesHass({}) });
+    expect(msgText(e65)).toBe(`Entity not found: ${'a'.repeat(63)}😀…`);
+  });
+
+  it('TC-CEC-U-16: three, four and ten ids, then French', async () => {
+    const letters = 'abcdefghij'.split('');
+    const text = async (n: number) =>
+      msgText(await mountBanner<BannerCard>('banner-sf-card', { ids: letters.slice(0, n), hass: statesHass({}) }));
+    expect(await text(3)).toBe('Entity not found: a, b, c');
+    expect(await text(4)).toBe('Entity not found: a, b, c, … (+1)');
+    expect(await text(10)).toBe('Entity not found: a, b, c, … (+7)');
+    await setLocale('fr');
+    expect(await text(4)).toBe('Entité introuvable : a, b, c, … (+1)');
+  });
+
+  it('TC-CEC-U-17: the error card is a status region with a hidden icon', async () => {
+    spyConsole();
+    const banner = await mountBanner<BannerCard>('banner-sf-card', { config: false, hass: statesHass({}) });
+    const thrower = new ThrowingCard();
+    thrower.setConfig({ type: 'custom:throwing' });
+    thrower.hass = statesHass({});
+    document.body.appendChild(thrower);
+    await thrower.updateComplete;
+    for (const el of [banner, thrower]) {
+      const card = el.shadowRoot!.querySelector('.sf-error-card')!;
+      expect(card.getAttribute('role')).toBe('status');
+      expect(card.querySelector('.sf-error-icon')!.getAttribute('aria-hidden')).toBe('true');
+      expect(card.querySelector('.sf-error-message')).not.toBeNull();
+    }
+  });
+
+  it('TC-CEC-U-18: control and bidi characters never reach the message', async () => {
+    const dirty = (c: string) => `a${c}b`;
+    const ids = [dirty('‮'), dirty('\u0000'), dirty('\u001B'), dirty('\u0085'), dirty('⁦'), 'p, q'];
+    const el = await mountBanner<BannerCard>('banner-sf-card', { ids, hass: statesHass({}) });
+    const t = msgText(el)!;
+    expect(t).toBe('Entity not found: ab, ab, ab, … (+3)');
+    const el2 = await mountBanner<BannerCard>('banner-sf-card', {
+      ids: [ids[0], ids[5]],
+      hass: statesHass({}),
+    });
+    expect(msgText(el2)).toBe('Entity not found: ab, p, q');
+    // eslint-disable-next-line no-control-regex
+    expect(t).not.toMatch(/[\u0000-\u001F\u007F-\u009F؜‎‏‪-‮⁦-⁩]/);
+  });
+
+  it('IT-CEC-I-01: the banner follows the data', async () => {
+    const spies = spyConsole();
+    const el = await mountBanner<BannerCard>('banner-sf-card', { ids: ['a', 'b'], hass: statesHass({}) });
+    expect(msgText(el)).toBe('Entity not found: a, b');
+    el.hass = statesHass({ a: { state: 'on' } });
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('.test-content')).not.toBeNull();
+    expect(msgText(el)).toBeNull();
+    el.hass = statesHass({});
+    await el.updateComplete;
+    expect(msgText(el)).toBe('Entity not found: a, b');
+    expect(consoleCalls(spies)).toBe(0);
+  });
+
+  it('TC-CEC-U-20: hass pushes while config was never set never throw out of shouldUpdate', async () => {
+    class Unguarded extends BannerCard {
+      protected override getRelevantEntities(): string[] {
+        return [(this.config as unknown as { id: string }).id];
+      }
+    }
+    if (!customElements.get('unguarded-sf-card')) customElements.define('unguarded-sf-card', Unguarded);
+    const el = await mountBanner<BannerCard>('unguarded-sf-card', { config: false, hass: statesHass({}) });
+    expect(msgText(el)).toBe('Card setup required: configuration is missing.');
+    expect(() => {
+      el.hass = statesHass({ a: { state: 'on' } });
+    }).not.toThrow();
+    await el.updateComplete;
+    expect(msgText(el)).toBe('Card setup required: configuration is missing.');
+    // a language-only change must still repaint the setup banner
+    const old = statesHass({});
+    (old as unknown as { locale: { language: string } }).locale = { language: 'fr' };
+    expect(el['shouldUpdate'](new Map([['hass', old]]))).toBe(true);
+  });
+
+  it('IT-CEC-I-04: hass first, setConfig later: setup banner then the card', async () => {
+    const el = await mountBanner<BannerCard>('banner-sf-card', { config: false, hass: statesHass({}) });
+    expect(msgText(el)).toBe('Card setup required: configuration is missing.');
+    el.setConfig(CFG);
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('.test-content')).not.toBeNull();
+    expect(msgText(el)).toBeNull();
   });
 });

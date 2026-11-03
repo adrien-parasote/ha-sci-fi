@@ -1378,6 +1378,14 @@
   <source>Refresh logs</source>
 <target>Rafraîchir les logs</target>
 </trans-unit>
+<trans-unit id="se09cd21852af1fb7">
+  <source>Card setup required: configuration is missing.</source>
+  <target>Configuration requise : la configuration de la carte est absente.</target>
+</trans-unit>
+<trans-unit id="s8adbb8549b19efd5">
+  <source>Entity not found: <x id="0" equiv-text="${this._missingIdsLabel()}"/></source>
+  <target>Entité introuvable : <x id="0" equiv-text="${this._missingIdsLabel()}"/></target>
+</trans-unit>
 </body>
 </file>
 </xliff>

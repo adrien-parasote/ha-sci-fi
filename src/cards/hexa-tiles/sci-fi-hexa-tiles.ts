@@ -24,6 +24,17 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     hexaTilesStyles,
   ];
 
+  /**
+   * Configured ids only: tile entities, plus the weather ids when the weather
+   * header is on. Never person/zone ids nor `entity_kind` expansions.
+   */
+  protected override getConfiguredEntities(): string[] {
+    const weather = this.config?.weather;
+    const ids = (this.config?.tiles ?? []).map(t => t.entity);
+    if (weather?.activate) ids.push(weather.weather_entity, weather.weather_alert_entity);
+    return ids.filter((id): id is string => !!id);
+  }
+
   protected override getRelevantEntities(): string[] {
     const entities = new Set<string>();
 

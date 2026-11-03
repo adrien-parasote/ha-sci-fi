@@ -1460,7 +1460,7 @@ title="${msg('Équipage')}"
 | TC-BRIDGE-U-01 | Unit | `getConfigElement()` retourne le bon tag éditeur | Static call | `tagName === 'sci-fi-bridge-editor'` |
 | TC-BRIDGE-U-02 | Unit | `getStubConfig()` retourne le bon type | Static call | `config.type === 'custom:sci-fi-bridge'` |
 | TC-BRIDGE-U-03 | Unit | Render vide sans `hass` | No hass | `shadowRoot.textContent` is empty |
-| TC-BRIDGE-U-04 | Unit | Render vide sans `config` | No config | `shadowRoot.textContent` is empty |
+| TC-BRIDGE-U-04 | Unit | Render vide sans `config` | No config | `shadowRoot.textContent` is empty while `hass` is unset; once `hass` is set, the setup banner (`.sf-error-message`) shows (config-error-card FR-1) |
 | TC-BRIDGE-U-05 | Unit | Section CREW absente si `config.persons` non défini | config sans persons | `querySelector('sf-bridge-crew')` is null |
 | TC-BRIDGE-U-06 | Unit | Section CREW présente si `config.persons` défini | config avec persons | `querySelector('sf-bridge-crew')` not null |
 | TC-BRIDGE-U-07 | Unit | Section AUTOMATIONS absente si `config.automations` non défini | config sans automations | `querySelector('sf-bridge-automations')` is null |

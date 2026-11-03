@@ -89,6 +89,11 @@ export class SciFiTVCard extends SciFiBaseCard {
 
   declare config: SciFiTVConfig;
 
+  /** Configured ids only: when all are absent the base card shows its banner. */
+  protected override getConfiguredEntities(): string[] {
+    return this.getRelevantEntities();
+  }
+
   protected override getRelevantEntities(): string[] {
     return [
       this.config.entity,

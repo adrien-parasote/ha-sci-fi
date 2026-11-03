@@ -175,20 +175,23 @@ n'existait pas. Voici ce que le socle livre.
 
 1. **plus d'une propriété a changé**, ou une seule qui n'est pas `hass` — une
    propriété réactive de la carte a bougé, Lit sait pourquoi ;
-2. `hass` a changé et **la langue diffère** (`oldHass.locale?.language !==
+2. **`config` absent** — évalué juste après la branche 1, avant toute lecture de
+   `getRelevantEntities()` (que les cartes écrivent en lisant `this.config`) :
+   l'état de la bannière de configuration manquante se repeint, il ne lève pas ;
+3. `hass` a changé et **la langue diffère** (`oldHass.locale?.language !==
    this.hass.locale?.language`) — cf. AP#6 ;
-3. `hass` a changé et **`getRelevantEntities()` rend une liste vide** — le repli
+4. `hass` a changé et **`getRelevantEntities()` rend une liste vide** — le repli
    conservateur : sans liste, la carte ne peut pas savoir ce qui la concerne,
    donc elle se re-rend ;
-4. `hass` a changé et **au moins une entité de la liste a changé d'objet d'état**
+5. `hass` a changé et **au moins une entité de la liste a changé d'objet d'état**
    (`oldHass.states[e] !== this.hass.states[e]`, comparaison d'identité : HA
    remplace l'objet à chaque mise à jour) ;
-5. **tout le reste** — le `return true` final : premier rendu (`oldHass` absent),
+6. **tout le reste** — le `return true` final : premier rendu (`oldHass` absent),
    `this.hass` encore absent, ou `changedProps` vide. Le défaut est le rendu ;
-   seule la branche 4 peut le refuser.
+   seule la branche 5 peut le refuser.
 
-Il rend `false` dans un seul cas : `hass` seul a changé, `oldHass` **et**
-`this.hass` sont là, la langue est la même, la liste est non vide, et aucune de
+Il rend `false` dans un seul cas : `hass` seul a changé, `config` est présent,
+`oldHass` **et** `this.hass` sont là, la langue est la même, la liste est non vide, et aucune de
 ses entités n'a changé d'objet d'état.
 
 ### Ce que la carte doit fournir
@@ -311,6 +314,6 @@ prescrire l'AP#7 contre du code déjà relu.
 | Error | Detection | Response | Fallback |
 |---|---|---|---|
 | Render Card Failure | `try`/`catch` autour de `renderCard()` dans `render()` | `console.error('[<tag>] Render error:', err)` et `_renderError` renseigné | `<ha-card>` portant `.sf-error-card` : l'icône `.sf-error-icon` et le message `.sf-error-message` |
-| Missing Configuration | `!this.config \|\| !this.hass` en tête de `render()` | **Rien n'est rendu** : `return nothing` | ⬜ **non livré** — la ligne promettait « Render setup required warning card » jusqu'au 2026-11-01. Une carte mal configurée disparaît de la vue au lieu de dire ce qui manque, et c'est un cas fréquent (une entité renommée dans HA). Le `_renderErrorCard()` qui l'afficherait existe déjà. Bead `ha-sci-fi-l3z` |
+| Missing Configuration | en tête de `render()` : `!this.hass` ; puis `!this.config` ; puis, pour une carte qui surcharge `getConfiguredEntities()`, toutes ses entités configurées absentes de `hass.states` | `hass` absent : `return nothing` (état normal, HA fournit `hass` après `setConfig` : un message ferait clignoter chaque chargement). `config` absent avec `hass` : `_renderErrorCard(msg('Card setup required: configuration is missing.'))`. Toutes les entités configurées absentes : `_renderErrorCard(msg(str`Entity not found: ${ids}`))`, trois ids au plus puis `, … (+N)` | Dès qu'une entité configurée existe, la carte se rend comme avant ; le crochet `getConfiguredEntities()` est opt-in (défaut `[]`), sept cartes l'implémentent, le pont, lights, climates et water non. Aucun journal : `render()` s'exécute à chaque rendu. Lot `config-error-card`, bead `ha-sci-fi-l3z` |
 | Configuration invalide | `setConfig()` : non-objet, ou `validateConfig()` de la sous-classe | `throw new Error('[<Classe>] setConfig: …')` | HA affiche sa propre carte d'erreur de configuration — ce chemin-là est tenu |
 | Style Injection Error | ⬜ **aucune détection** | ⬜ — | ⬜ **non implémenté du tout**, mesuré le 2026-11-01. La ligne promettait « Load fallback styling tokens seamlessly » ; aucun code ne surveille le chargement d'une feuille. Les feuilles sont des `css` littéraux compilés dans le bundle : il n'y a pas de chargement à échouer, donc l'erreur décrite ne peut pas se produire sous cette architecture. La ligne est conservée barrée plutôt que supprimée, pour que personne ne la réintroduise en croyant combler un trou. Bead `ha-sci-fi-l3z` |

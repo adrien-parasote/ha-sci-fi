@@ -1,4 +1,4 @@
-import { expect, describe, it } from 'vitest';
+import { expect, describe, it, vi } from 'vitest';
 import {
   getFloors,
   getFloorById,
@@ -201,5 +201,25 @@ describe('house selectors', () => {
       expect(getEntitiesByArea(hass, 'bedroom').map(e => e.entity_id)).toEqual(['light.bedroom']);
       expect(getEntitiesByArea(hass, 'garage').map(e => e.entity_id)).toEqual(['cover.garage']);
     });
+  });
+});
+
+describe('TC-CEC-U-10: null registry is silent', () => {
+  it('TC-CEC-U-10: getAreas and getAreaById write nothing to the console without hass.areas', async () => {
+    const fs = await import('node:fs');
+    const path = await import('node:path');
+    const spies = (['warn', 'error', 'log', 'info', 'debug'] as const).map(m =>
+      vi.spyOn(console, m).mockImplementation(() => {}));
+    const hass = { ...makeMockHass(), areas: undefined } as unknown as ReturnType<typeof makeMockHass>;
+    for (let i = 0; i < 100; i++) {
+      expect(getAreas(hass)).toEqual([]);
+      expect(getAreaById(hass, 'x')).toBeUndefined();
+    }
+    expect(spies.every(s => s.mock.calls.length === 0)).toBe(true);
+    spies.forEach(s => s.mockRestore());
+    const dir = path.resolve(__dirname, '../../src/selectors');
+    for (const f of fs.readdirSync(dir).filter(n => n.endsWith('.ts'))) {
+      expect(fs.readFileSync(path.join(dir, f), 'utf8'), f).not.toMatch(/console\./);
+    }
   });
 });

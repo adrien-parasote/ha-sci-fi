@@ -42,8 +42,9 @@ describe('sci-fi-stove', () => {
 
   it('TC-STOVE-U-1111: renders error message if entity not found', async () => {
     const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
-    (el as any).setConfig({ type: 'custom:sci-fi-stove', entity: 'climate.poele' });
-    el.hass = makeMockHass();
+    // a configured sensor is present, so only the main entity is missing (config-error-card FR-10)
+    (el as any).setConfig({ type: 'custom:sci-fi-stove', entity: 'climate.poele', sensors: { sensor_power: 'sensor.poele_power' } });
+    el.hass = makeMockHass({ states: { 'sensor.poele_power': makeMockEntity({ entity_id: 'sensor.poele_power', state: '1' }) } });
     document.body.appendChild(el);
     await el.updateComplete;
     expect(el.shadowRoot!.textContent).to.include('Entité poêle non trouvée');

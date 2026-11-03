@@ -210,17 +210,15 @@ cette fonction, donc rien ne dirait qu'on l'a changée. Bead `ha-sci-fi-djb`.
 
 ## Error Handling
 
-> **« Null Registry State » n'est pas implémenté comme écrit** (mesuré le
-> 2026-11-01) : la ligne ci-dessous promet « Log warning in console », et il n'y a
-> aucun `console.*` dans `src/selectors/`. Les sélecteurs rendent bien `[]` sur un
-> registre absent — le repli est tenu, la trace ne l'est pas. Un sélecteur appelé
-> à chaque rendu qui journalise à chaque appel noierait la console ; c'est
-> probablement pour ça que personne ne l'a écrit. La ligne reste telle quelle
-> jusqu'à ce que quelqu'un tranche entre « journaliser une fois » et « ne pas
-> journaliser », bead `ha-sci-fi-l3z`.
+> **« Null Registry State » : pas de journal — the decision is taken** (lot
+> `config-error-card`, bead `ha-sci-fi-l3z`). Il n'y a aucun `console.*` dans
+> `src/selectors/` et il n'y en aura pas : un sélecteur est une fonction pure
+> appelée à chaque rendu, il ne peut pas journaliser à chaque appel, et lui donner
+> une mémoire « une fois » ajouterait un état à une fonction pure sans lecteur du
+> journal. Le repli (`[]` ou `undefined`) est le contrat.
 
 | Error | Detection | Response | Fallback |
 |---|---|---|---|
 | Invalid Configuration | Lightweight TypeScript type-guard assertions (`if (typeof config.entity_id !== 'string')`) — **no Zod** (Zod adds ~45KB to IIFE bundle) | Throw `Error('Invalid config: entity_id is required')` | Block rendering, `SciFiBaseCard.render()` catches and shows error banner |
-| Null Registry State | `hass.areas` undefined | Return default empty records | Log warning in console and fall back safely |
+| Null Registry State | `hass.areas` undefined | Return default empty records (`[]`, or `undefined` for a single lookup), no log | Fall back safely: the caller shows an empty list |
 | Type Mismatch | Compiler type checker | Interrupt build process | Exit build with compiler type mismatch log |

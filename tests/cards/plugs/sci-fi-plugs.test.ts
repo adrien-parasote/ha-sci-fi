@@ -341,7 +341,9 @@ describe('sci-fi-plugs — Spec 13 redesign', () => {
       callService: mockCallService,
       states: {}, // switch.tv not in states
     });
-    const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_TV] }, hass);
+    // switch.tv is absent but the lamp exists: partial absence keeps the card (config-error-card FR-10)
+    const states = { ...hass.states, 'switch.lamp': makeMockEntity({ entity_id: 'switch.lamp', state: 'on' }) };
+    const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_TV, DEVICE_LAMP] }, { ...hass, states });
     const image = el.shadowRoot!.querySelector('.image') as HTMLElement;
     image.click();
     expect(mockCallService).not.toHaveBeenCalled();

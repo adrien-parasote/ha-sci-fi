@@ -118,7 +118,8 @@ describe('sci-fi-climates-editor', () => {
     expect(received[0]!.detail.config.entities_to_exclude).toContain('climate.salon');
   });
 
-  it('dispatches config-changed on exclude entity remove', async () => {
+  // Mutant: the remove event is not fired, or the updated list is written under another key.
+  it('IT-BTG-I-05 IT-CLIMATES-I-002: removing an entity from the exclude list emits config-changed with entities_to_exclude updated', async () => {
     const el = await createElement();
     el.setConfig(makeConfig({ entities_to_exclude: ['climate.salon', 'climate.bedroom'] }));
     await el.updateComplete;
@@ -134,7 +135,7 @@ describe('sci-fi-climates-editor', () => {
     }));
 
     expect(received).toHaveLength(1);
-    expect(received[0]!.detail.config.entities_to_exclude).toHaveLength(1);
+    expect(received[0]!.detail.config.entities_to_exclude).toEqual(['climate.bedroom']);
   });
 
   it('enters edit mode when edit button clicked', async () => {

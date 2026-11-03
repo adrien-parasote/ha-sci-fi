@@ -289,7 +289,7 @@ Follows the standard `e.detail.id` / `e.detail.value` mapping directly onto the 
 
 ## Test Cases
 
-> **⬜ dans la colonne ID : le cas n'est joué par aucun test.** Cinq des quarante-neuf lignes : les trois `IT`, plus `TC-TV-U-706` et `TC-TV-U-707` dont les numéros ne sont portés que par le test d'`hexa-tiles`.
+> **⬜ dans la colonne ID : le cas n'est joué par aucun test.** Deux des quarante-neuf lignes : `IT-TV-I-701` (exige le bundle construit) et `IT-TV-I-702` (exige le workbench) ; ni l'une ni l'autre ne tourne sous vitest.
 > Le marqueur est la seule source : `tests/specs/ids-cas-uniques.test.ts` dérive
 > l'ensemble des cas non joués de ces marques et refuse l'écart dans les deux
 > sens — un cas non marqué que rien ne cite, comme un cas marqué qu'un test porte.
@@ -301,8 +301,8 @@ Follows the standard `e.detail.id` / `e.detail.value` mapping directly onto the 
 | **TC-TV-U-703** | Unit | Custom actions override default remote commands | D-pad Home click with `custom_actions.home` defined | Triggers custom `tap_action` script — `remote.send_command` not called |
 | **TC-TV-U-704** | Unit | Hex grid renders all configured source names | Sources: `['HDMI 1', 'Netflix']` | Renders two quick source hexagons |
 | **TC-TV-U-705** | Unit | `getRelevantEntities` returns TV and remote entities | Valid card config | Array of both entity IDs |
-| **TC-TV-U-706** ⬜ | Unit | Angle clamp: pointer in dead-zone snaps to nearest edge | `pointermove` at bottom center (270° shifted) | `volumeLevel = 1.0` (clamped, not NaN / >1.0) |
-| **TC-TV-U-707** ⬜ | Unit | Coordinate conversion: DOM px correctly maps to SVG viewBox | `pointermove` at DOM center of rendered SVG | Computed `svgX ≈ 100`, `svgY ≈ 100` regardless of render size |
+| **TC-TV-U-706** | Unit | Angle clamp: pointer in dead-zone snaps to nearest edge | `pointermove` at bottom center (270° shifted) | `volumeLevel = 1.0` (clamped, not NaN / >1.0) |
+| **TC-TV-U-707** | Unit | Coordinate conversion: DOM px correctly maps to SVG viewBox | `pointermove` at DOM center of rendered SVG | Computed `svgX ≈ 100`, `svgY ≈ 100` regardless of render size |
 | **TC-TV-U-708** | Unit | Orbiting planet satellite is rendered when TV is on | TV state is `'on'` | Planet orbiting satellite element exists in shadowRoot |
 | **TC-TV-U-709** | Unit | Orbiting planet satellite is not rendered when TV is off | TV state is `'off'` | Planet orbiting satellite element does not exist in shadowRoot |
 | **TC-TV-U-710** | Unit | Renders active application name when media title and source are missing | TV state has `app_name: 'Netflix'` | Right status segment and dial title display `"Netflix"` |
@@ -341,9 +341,9 @@ Follows the standard `e.detail.id` / `e.detail.value` mapping directly onto the 
 | **TC-TV-U-743** | Unit | Transmission status is a non-empty string when the TV is on | `_getTransmissionStatus(false, false)` | Returns a truthy string |
 | **TC-TV-U-744** | Unit | Transmission status is a non-empty string when the TV is off | `_getTransmissionStatus(false, true)` | Returns a truthy string |
 | **TC-TV-U-745** | Unit | Power button title is a non-empty string when the TV is off | `_getPowerButtonTitle(false)` | Returns a truthy string |
-| **IT-TV-I-701** ⬜ | Integration | Custom elements register correctly in HA registry | Load built bundle | Elements `sci-fi-tv` and `sci-fi-tv-editor` exist |
-| **IT-TV-I-702** ⬜ | Integration | Workbench — Netflix active mock state renders dial at 35% | Workbench mock state `netflix_active` | Volume dial arc covers 35% of full arc; source label "Netflix" highlighted |
-| **IT-TV-I-703** ⬜ | Integration | Dragging orbital dial calls correct service volume | Pointer dragging to 60% position | Calls `media_player.volume_set` with `volume_level: 0.6` |
+| **IT-TV-I-701** ⬜ | Integration | Custom elements register correctly in HA registry (non jouable sous vitest : exige le bundle construit) | Load built bundle | Elements `sci-fi-tv` and `sci-fi-tv-editor` exist |
+| **IT-TV-I-702** ⬜ | Integration | Workbench — Netflix active mock state renders dial at 35% (non jouable sous vitest : exige le workbench) | Workbench mock state `netflix_active` | Volume dial arc covers 35% of full arc; source label "Netflix" highlighted |
+| **IT-TV-I-703** | Integration | Dragging orbital dial calls correct service volume | Pointer dragging to 60% position | Calls `media_player.volume_set` with `volume_level: 0.6` |
 | **IT-TV-I-704** | Integration | Volume throttle: 10 rapid `pointermove` events → ≤2 `callService` calls | Fire 10 events over 50ms | `callService` called ≤2 times (80ms throttle window) |
 
 ---

@@ -306,3 +306,209 @@ describe('sci-fi-lights', () => {
   });
 });
 
+
+// ─── behavioural-test-gaps (famille D) : TC-LIGHTS-U-001..005, IT-LIGHTS-I-001/002 ───
+
+describe('lights behavioural gaps', () => {
+  const light = (id: string, areaId: string) =>
+    makeMockEntityEntry({ entity_id: id, area_id: areaId, domain: 'light' });
+
+  const mountCard = async (config: Record<string, unknown>, hass: any) => {
+    const el = document.createElement('sci-fi-lights') as any;
+    el.setConfig({ type: 'custom:sci-fi-lights', ...config });
+    el.hass = hass;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    return el;
+  };
+
+  afterEach(async () => {
+    document.body.replaceChildren();
+    await setLocale('fr');
+  });
+
+  // Mutant: the empty state is not rendered (the grid is rendered anyway).
+  it('TC-BTG-U-10 TC-LIGHTS-U-001: every light ignored, or a floor with no lights, renders the empty state', async () => {
+    await setLocale('fr');
+    const el = await mountCard(
+      { ignored_entities: ['light.salon'] },
+      makeMockHass({
+        floors: { ground: makeMockFloor({ floor_id: 'ground', name: 'Ground', level: 0 }) },
+        areas: { living: makeMockArea({ area_id: 'living', name: 'Living', floor_id: 'ground' }) },
+        entities: { 'light.salon': light('light.salon', 'living') },
+        states: { 'light.salon': makeMockEntity({ entity_id: 'light.salon', state: 'on' }) },
+      })
+    );
+    const empty = el.shadowRoot.querySelector('.areas-section .empty-state');
+    expect(empty).to.not.equal(null);
+    expect(empty.textContent.trim()).to.equal('Aucune lumière configurée pour cet étage');
+    expect(el.shadowRoot.querySelector('.area-list')).to.equal(null);
+    expect(el.shadowRoot.querySelectorAll('.light-btn').length).to.equal(0);
+    document.body.replaceChildren();
+
+    // Floor with no light entity at all.
+    const bare = await mountCard(
+      {},
+      makeMockHass({
+        floors: { ground: makeMockFloor({ floor_id: 'ground', name: 'Ground', level: 0 }) },
+        areas: { living: makeMockArea({ area_id: 'living', name: 'Living', floor_id: 'ground' }) },
+      })
+    );
+    expect(bare.shadowRoot.querySelector('.areas-section .empty-state')).to.not.equal(null);
+    expect(bare.shadowRoot.querySelectorAll('.light-btn').length).to.equal(0);
+  });
+
+  // Mutant: the floor is selected by light count (the floor with lights wins over the configured one).
+  it('TC-BTG-U-11 TC-LIGHTS-U-002: first_floor_to_render resolves by id even when that floor holds no light', async () => {
+    const el = await mountCard(
+      { first_floor_to_render: 'rdc' },
+      makeMockHass({
+        floors: {
+          etage: makeMockFloor({ floor_id: 'etage', name: 'Etage', level: 1 }),
+          rdc: makeMockFloor({ floor_id: 'rdc', name: 'Rdc', level: 0 }),
+        },
+        areas: {
+          hall: makeMockArea({ area_id: 'hall', name: 'Hall', floor_id: 'rdc' }),
+          bed: makeMockArea({ area_id: 'bed', name: 'Bed', floor_id: 'etage' }),
+        },
+        entities: { 'light.chambre': light('light.chambre', 'bed') },
+        states: { 'light.chambre': makeMockEntity({ entity_id: 'light.chambre', state: 'on' }) },
+      })
+    );
+    const selected = [...el.shadowRoot.querySelectorAll('.floor-hexa')]
+      .filter((f: Element) => f.getAttribute('data-selected') === 'true')
+      .map((f: Element) => f.getAttribute('title'));
+    expect(selected).to.deep.equal(['Rdc']);
+    expect(el._activeFloorId).to.equal('rdc');
+  });
+
+  // Mutant: ignored_entities is not read, or the name / icon priority is swapped.
+  it('TC-BTG-U-12 TC-LIGHTS-U-003 TC-LIGHTS-U-004: ignored_entities hides an entity, custom_entities beats friendly_name beats entity_id', async () => {
+    const el = await mountCard(
+      {
+        ignored_entities: ['light.hidden'],
+        custom_entities: {
+          'light.custom': { name: 'Custom Name', icon_on: 'mdi:lamp-on', icon_off: 'mdi:lamp-off' },
+          'light.custom_off': { name: 'Custom Off', icon_on: 'mdi:lamp-on', icon_off: 'mdi:lamp-off' },
+        },
+      },
+      makeMockHass({
+        floors: { ground: makeMockFloor({ floor_id: 'ground', level: 0 }) },
+        areas: { living: makeMockArea({ area_id: 'living', floor_id: 'ground' }) },
+        entities: {
+          'light.custom': light('light.custom', 'living'),
+          'light.custom_off': light('light.custom_off', 'living'),
+          'light.friendly': light('light.friendly', 'living'),
+          'light.bare': light('light.bare', 'living'),
+          'light.hidden': light('light.hidden', 'living'),
+        },
+        states: {
+          'light.custom': makeMockEntity({ entity_id: 'light.custom', state: 'on', attributes: { friendly_name: 'Friendly Of Custom' } }),
+          'light.custom_off': makeMockEntity({ entity_id: 'light.custom_off', state: 'off', attributes: { friendly_name: 'Friendly Of Custom Off' } }),
+          'light.friendly': makeMockEntity({ entity_id: 'light.friendly', state: 'on', attributes: { friendly_name: 'Friendly Name' } }),
+          'light.bare': makeMockEntity({ entity_id: 'light.bare', state: 'on', attributes: { friendly_name: undefined } }),
+          'light.hidden': makeMockEntity({ entity_id: 'light.hidden', state: 'on', attributes: { friendly_name: 'Hidden Light' } }),
+        },
+      })
+    );
+    const buttons = [...el.shadowRoot.querySelectorAll('.light-btn')] as HTMLElement[];
+    const rendered = buttons.map(b => ({
+      label: b.querySelector('.light-label')!.textContent!.trim(),
+      icon: (b.querySelector('sf-icon') as any).icon,
+    }));
+    expect(rendered).to.deep.equal([
+      { label: 'Custom Name', icon: 'mdi:lamp-on' },
+      { label: 'Custom Off', icon: 'mdi:lamp-off' },
+      { label: 'Friendly Name', icon: 'mdi:lightbulb-on-outline' },
+      { label: 'light.bare', icon: 'mdi:lightbulb-on-outline' },
+    ]);
+    expect(el.shadowRoot.textContent).to.not.include('Hidden Light');
+    expect(el.shadowRoot.textContent).to.not.include('light.hidden');
+  });
+
+  // Mutant: getRelevantEntities returns every domain (or forgets ignored_entities).
+  it('TC-BTG-U-13 TC-LIGHTS-U-005: getRelevantEntities returns only light.* entities that are not ignored (plus sun.sun, read by the header)', async () => {
+    const el = await mountCard(
+      { ignored_entities: ['light.hidden'] },
+      makeMockHass({
+        floors: { ground: makeMockFloor({ floor_id: 'ground', level: 0 }) },
+        areas: { living: makeMockArea({ area_id: 'living', floor_id: 'ground' }) },
+        entities: {
+          'light.a': light('light.a', 'living'),
+          'light.hidden': light('light.hidden', 'living'),
+        },
+        states: {
+          'light.a': makeMockEntity({ entity_id: 'light.a', state: 'on' }),
+          'light.b': makeMockEntity({ entity_id: 'light.b', state: 'off' }),
+          'light.hidden': makeMockEntity({ entity_id: 'light.hidden', state: 'on' }),
+          'switch.prise': makeMockEntity({ entity_id: 'switch.prise', state: 'on' }),
+          'climate.salon': makeMockEntity({ entity_id: 'climate.salon', state: 'heat' }),
+          'sensor.temp': makeMockEntity({ entity_id: 'sensor.temp', state: '20' }),
+        },
+      })
+    );
+    const relevant: string[] = el.getRelevantEntities();
+    expect(relevant.filter(id => id !== 'sun.sun').sort()).to.deep.equal(['light.a', 'light.b']);
+    expect(relevant.every(id => id === 'sun.sun' || id.startsWith('light.'))).to.equal(true);
+  });
+
+  // Mutant: the floor click is ignored (the area list keeps the previous floor).
+  it('IT-BTG-I-06 IT-LIGHTS-I-001: clicking a floor tab switches the area list to that floor', async () => {
+    const el = await mountCard(
+      {},
+      makeMockHass({
+        floors: {
+          ground: makeMockFloor({ floor_id: 'ground', name: 'Ground', level: 0 }),
+          first: makeMockFloor({ floor_id: 'first', name: 'First', level: 1 }),
+        },
+        areas: {
+          living: makeMockArea({ area_id: 'living', name: 'Living', floor_id: 'ground' }),
+          kitchen: makeMockArea({ area_id: 'kitchen', name: 'Kitchen', floor_id: 'ground' }),
+          bed: makeMockArea({ area_id: 'bed', name: 'Bedroom', floor_id: 'first' }),
+        },
+        entities: {
+          'light.salon': light('light.salon', 'living'),
+          'light.cuisine': light('light.cuisine', 'kitchen'),
+          'light.chambre': light('light.chambre', 'bed'),
+        },
+        states: {
+          'light.salon': makeMockEntity({ entity_id: 'light.salon', state: 'on' }),
+          'light.cuisine': makeMockEntity({ entity_id: 'light.cuisine', state: 'off' }),
+          'light.chambre': makeMockEntity({ entity_id: 'light.chambre', state: 'off' }),
+        },
+      })
+    );
+    const areaTitles = () =>
+      [...el.shadowRoot.querySelectorAll('.area-hexa')].map((a: Element) => a.getAttribute('title'));
+    expect(areaTitles()).to.deep.equal(['Living', 'Kitchen']);
+
+    (el.shadowRoot.querySelectorAll('.floor-hexa')[1] as HTMLElement).click();
+    await el.updateComplete;
+
+    expect(areaTitles()).to.deep.equal(['Bedroom']);
+    expect(el.shadowRoot.querySelector('.area-title')!.textContent).to.include('Bedroom');
+  });
+
+  // Mutant: no re-render on a hass change (stale light state).
+  it('IT-LIGHTS-I-002: a second hass with a light turned on is reflected in the DOM', async () => {
+    const hassWith = (state: string) =>
+      makeMockHass({
+        floors: { ground: makeMockFloor({ floor_id: 'ground', level: 0 }) },
+        areas: { living: makeMockArea({ area_id: 'living', floor_id: 'ground' }) },
+        entities: { 'light.salon': light('light.salon', 'living') },
+        states: { 'light.salon': makeMockEntity({ entity_id: 'light.salon', state }) },
+      });
+    const el = await mountCard({}, hassWith('off'));
+    const btn = () => el.shadowRoot.querySelector('.light-btn') as HTMLElement;
+    expect(btn().classList.contains('light-off')).to.equal(true);
+    expect((btn().querySelector('sf-icon') as any).icon).to.equal('mdi:lightbulb-outline');
+    expect(el.shadowRoot.querySelector('.area-hexa')!.getAttribute('data-active')).to.equal('false');
+
+    el.hass = hassWith('on');
+    await el.updateComplete;
+
+    expect(btn().classList.contains('light-off')).to.equal(false);
+    expect((btn().querySelector('sf-icon') as any).icon).to.equal('mdi:lightbulb-on-outline');
+    expect(el.shadowRoot.querySelector('.area-hexa')!.getAttribute('data-active')).to.equal('true');
+  });
+});

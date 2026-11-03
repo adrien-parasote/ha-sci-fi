@@ -397,6 +397,13 @@ describe('sci-fi-weather', () => {
       expect((card as any)._chartDataKind).to.equal('wind_speed');
     });
 
+    // Mutant: normalizeChartKind checks SENSORS_MAP without hasOwnProperty (a prototype key passes the guard)
+    it('TC-BTG-U-17: falls back to temperature on a prototype key such as toString', async () => {
+      await mount('toString');
+      expect(card.shadowRoot!.querySelector('.sf-error-card')).to.be.null;
+      expect((card as any)._chartDataKind).to.equal('temperature');
+    });
+
     it('falls back to temperature on a value no series answers', async () => {
       await mount('tornado');
       expect(card.shadowRoot!.querySelector('.sf-error-card')).to.be.null;

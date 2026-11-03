@@ -193,6 +193,34 @@ describe('sci-fi-lights-editor', () => {
     expect(received[0]!.detail.config.custom_entities['light.salon'].name).toBe('New Name');
   });
 
+  // Mutant: the icon is dropped from the emitted custom_entities entry (or written under another key).
+  it('IT-LIGHTS-I-003: changing the active icon in the editor emits config-changed with the icon in custom_entities', async () => {
+    const el = await createElement();
+    el.setConfig(makeConfig({
+      custom_entities: { 'light.salon': { name: 'Salon', icon_on: 'mdi:bulb', icon_off: 'mdi:bulb-off' } },
+    }));
+    await el.updateComplete;
+
+    (el as any)._editTarget = 'light.salon';
+    (el as any)._edit = true;
+    await el.updateComplete;
+
+    const received: CustomEvent[] = [];
+    el.addEventListener('config-changed', (e) => received.push(e as CustomEvent));
+
+    const iconOn = el.shadowRoot!.querySelector('.editor.true sf-editor-dropdown-icon[element-id="icon_on"]')!;
+    iconOn.dispatchEvent(new CustomEvent('input-update', {
+      bubbles: true,
+      composed: true,
+      detail: { id: 'icon_on', kind: 'custom-entity', value: 'mdi:lamp' },
+    }));
+
+    expect(received).toHaveLength(1);
+    expect(received[0]!.detail.config.custom_entities['light.salon']).toEqual({
+      name: 'Salon', icon_on: 'mdi:lamp', icon_off: 'mdi:bulb-off',
+    });
+  });
+
   it('dispatches config-changed when entity id is renamed', async () => {
     const el = await createElement();
     el.setConfig(makeConfig({

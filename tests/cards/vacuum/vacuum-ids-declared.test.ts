@@ -51,9 +51,9 @@ describe('vacuum ids declared', () => {
     }
   });
 
-  it('TC-VOI-U-07: every id cited in a title starts with TC-VACUUM-U- or IT-VACUUM-I-', () => {
+  it('TC-VOI-U-07: every id cited in a title starts with TC-VACUUM-U-, IT-VACUUM-I- or a behavioural-test-gaps id', () => {
     for (const src of sources) {
-      expect(titlesOf(src).flatMap(citedIds).filter((id) => !/^(?:TC-VACUUM-U-|IT-VACUUM-I-)/.test(id))).toEqual([]);
+      expect(titlesOf(src).flatMap(citedIds).filter((id) => !/^(?:TC-VACUUM-U-|IT-VACUUM-I-|TC-BTG-U-|IT-BTG-I-)/.test(id))).toEqual([]);
     }
   });
 

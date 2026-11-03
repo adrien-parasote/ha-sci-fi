@@ -8,6 +8,8 @@ import { expect, describe, it, afterEach, vi } from 'vitest';
 
 import '../../../src/cards/plugs/sci-fi-plugs.js';
 import { SciFiPlugsCard } from '../../../src/cards/plugs/sci-fi-plugs.js';
+import { readFileSync } from 'node:fs';
+import { blankComments } from '../../helpers/blank-comments.js';
 import { makeMockHass, makeMockEntity } from '../../fixtures/mock-hass.js';
 
 // ── Shared device configs ────────────────────────────────────────────────────
@@ -230,13 +232,15 @@ describe('sci-fi-plugs — Spec 13 redesign', () => {
     expect(el.shadowRoot!.querySelector('.footer')).to.not.be.null;
   });
 
-  it('IT-PLUGS-I-1303 — plugs/styles.ts exported: no inline css` in sci-fi-plugs.ts', async () => {
-    // Verify by checking that plugStyles is imported and used (structural test)
-    // The card renders with styles array containing plugStyles
+  // Mutant: an inline css`` block added to sci-fi-plugs.ts
+  it('TC-BTG-U-15: IT-PLUGS-I-1303 — plugs/styles.ts exported: no inline css` in sci-fi-plugs.ts', async () => {
+    // Source scan (stated exception): comments blanked, css tagged templates counted.
+    const source = blankComments(readFileSync('src/cards/plugs/sci-fi-plugs.ts', 'utf8'));
+    expect(source.match(/css`/g) ?? []).toHaveLength(0);
+
+    // Class-level check: the card's styles array carries plugStyles next to the common sheet.
     const el = await mountCard({ type: 'custom:sci-fi-plugs', devices: [DEVICE_TV] });
-    // If styles are loaded correctly, the card should be non-empty
     expect(el.shadowRoot!.innerHTML).to.not.be.empty;
-    // Static class check: styles array must include plugStyles (not a raw css literal)
     const stylesArray = (SciFiPlugsCard as any).styles;
     expect(Array.isArray(stylesArray)).to.be.true;
     expect(stylesArray.length).to.be.greaterThanOrEqual(2); // sciFiCommonStyles + plugStyles
@@ -703,6 +707,8 @@ describe('sci-fi-plugs — Chart Private Methods', () => {
 
   // ── O5: edge cases plugs.md § Adversarial Fixes already demanded ──────────
 
+  // TC-BTG-U-18 (audit, no new test): the four O5 mutants — no state class on the cable, no willUpdate bound,
+  // _historyStart date-only, unavailable still clickable — each turn this suite red (checked on a scratch copy).
   describe('O5 — unavailable, animation and history window (regression)', () => {
 
     // plugs.md § Adversarial Fixes 1.

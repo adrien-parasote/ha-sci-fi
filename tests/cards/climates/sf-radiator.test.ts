@@ -316,6 +316,8 @@ describe('sf-radiator', () => {
       expect(btn.getAttribute('style')).to.include(color as string);
     });
 
+    // TC-BTG-U-19 (audit, no new test): mutating the unmapped-mode fallback to the placeholder icon/colour turns
+    // the two cases below red (checked on a scratch copy).
     // 05_cards.md §8 and TC-CLIMATES-U-005: an unmapped mode falls back to `off`, not to a
     // generic placeholder icon and the primary colour.
     it('falls back to the off icon and colour for an unmapped preset', async () => {

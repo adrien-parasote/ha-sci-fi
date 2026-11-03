@@ -394,6 +394,8 @@ export class SciFiTVCard extends SciFiBaseCard {
 
   private _onPointerMove(e: PointerEvent): void {
     if (this._isDragging && this._activePointerId === e.pointerId) {
+      const tvState = this.hass.states[this.config.entity];
+      if (!tvState || tvState.state === 'off' || tvState.state === 'unavailable') return;
       e.preventDefault();
       this._handleDrag(e);
     }
@@ -422,6 +424,7 @@ export class SciFiTVCard extends SciFiBaseCard {
 
     // Coordinate conversion (DOM -> SVG viewbox)
     const bbox = this._dialSvg.getBoundingClientRect();
+    if (bbox.width === 0 || bbox.height === 0) return;
     const svgX = ((e.clientX - bbox.left) / bbox.width) * 200;
     const svgY = ((e.clientY - bbox.top) / bbox.height) * 200;
     
@@ -431,8 +434,8 @@ export class SciFiTVCard extends SciFiBaseCard {
     // Angle math & clamp
     const thetaDeg = Math.atan2(svgY - cy, svgX - cx) * (180 / Math.PI);
     
-    // Shift origin so -135deg (top-left) corresponds to 0deg
-    const shiftedDeg = (thetaDeg + 135 + 360) % 360;
+    // Shift origin so +135deg (bottom-left, the arc start in SVG coordinates, y down) corresponds to 0deg
+    const shiftedDeg = (thetaDeg - 135 + 360) % 360;
     
     // Dead-zone clamp: if pointer lands in bottom 90-degree gap, snap to nearest end
     const clampedDeg = shiftedDeg > 270 ? (shiftedDeg > 315 ? 0 : 270) : shiftedDeg;

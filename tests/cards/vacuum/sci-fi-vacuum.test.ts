@@ -1,10 +1,13 @@
  
 // @vitest-environment happy-dom
 import { expect, describe, it, afterEach, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 import '../../../src/cards/vacuum/sci-fi-vacuum.js';
 import { SciFiVacuumCard } from '../../../src/cards/vacuum/sci-fi-vacuum.js';
 import { makeMockHass, makeMockEntity } from '../../fixtures/mock-hass.js';
+import { blankComments } from '../../helpers/blank-comments.js';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -512,11 +515,13 @@ describe('sci-fi-vacuum', () => {
     expect(el.shadowRoot!.querySelector('.actions')).not.to.be.null;
   });
 
-  // ── IT-VACUUM-I-1503 — no inline css` in sci-fi-vacuum.ts ────────────────────────
-
-  it('IT-VACUUM-I-1503 — vacuumStyles imported from styles.ts (styles object exists on class)', async () => {
-    // If styles.ts is correctly imported and vacuumStyles applied, the card
-    // should have more than 1 CSSResult in its styles array (sciFiCommonStyles + vacuumStyles)
+  // Mutant: add an inline css` block to sci-fi-vacuum.ts (or drop vacuumStyles from the class)
+  it('TC-BTG-U-32 IT-VACUUM-I-1503 — no inline css template in sci-fi-vacuum.ts (comments blanked), vacuumStyles applied', async () => {
+    // Exception stated by the spec (FR-6): a read of the card's main source file.
+    const srcPath = resolve(process.cwd(), 'src/cards/vacuum/sci-fi-vacuum.ts');
+    const code = blankComments(readFileSync(srcPath, 'utf8'));
+    expect((code.match(/css`/g) ?? []).length).to.equal(0);
+    // Class-level check kept: sciFiCommonStyles + vacuumStyles
     const styles = (SciFiVacuumCard as any).styles;
     expect(Array.isArray(styles)).to.be.true;
     expect(styles.length).to.be.greaterThan(1);
@@ -658,5 +663,148 @@ describe('sci-fi-vacuum', () => {
 
     // Should reset to 0
     expect((el as any)._vacuum_selected_id).to.equal(0);
+  });
+});
+
+// ─── Header battery / mop blocks (TC-BTG-U-06, -07) and text rendering (TC-BTG-U-34) ───
+
+async function mountHeader(
+  sensors: Record<string, string>,
+  extra: Record<string, ReturnType<typeof makeMockEntity>>,
+  vacuumAttrs: Record<string, unknown> = {},
+): Promise<SciFiVacuumCard> {
+  const el = makeEl();
+  setConfig(el, { type: 'custom:sci-fi-vacuum', vacuums: [{ entity: 'vacuum.bot', sensors }] });
+  el.hass = makeMockHass({
+    states: {
+      'vacuum.bot': makeMockEntity({ entity_id: 'vacuum.bot', state: 'docked', attributes: vacuumAttrs }),
+      ...extra,
+    },
+  });
+  document.body.appendChild(el);
+  await el.updateComplete;
+  return el;
+}
+
+function battery(state: string, attributes: Record<string, unknown> = {}) {
+  return { 'sensor.bat': makeMockEntity({ entity_id: 'sensor.bat', state, attributes }) };
+}
+
+function mop(state: string, attributes: Record<string, unknown> = {}) {
+  return { 'sensor.mop': makeMockEntity({ entity_id: 'sensor.mop', state, attributes }) };
+}
+
+/** icon + text div of the header block whose icon has the given default/explicit icon name */
+function block(el: SciFiVacuumCard, iconName: string) {
+  const icon = el.shadowRoot!.querySelector(`.header .infoH sf-icon[icon="${iconName}"]`);
+  return { icon, text: icon?.nextElementSibling ?? null };
+}
+
+describe('sci-fi-vacuum header battery and mop', () => {
+  afterEach(() => {
+    document.body.replaceChildren();
+  });
+
+  // Mutant: `< 20` -> `<= 20`; `< 30` -> `<= 30`; swap the classes; drop the NaN guard
+  it('TC-BTG-U-06 — battery: class thresholds, text with unit (unavailable% observed wart), icon, absent cases — TC-VACUUM-U-1537', async () => {
+    const cases: Array<[string, string]> = [
+      ['19.9', 'battery-critical'],
+      ['20', 'battery-warn'],
+      ['29.9', 'battery-warn'],
+      ['30', ''],
+      ['unavailable', ''],
+      ['unknown', ''],
+    ];
+    for (const [state, cls] of cases) {
+      const cel = await mountHeader({ battery: 'sensor.bat' }, battery(state));
+      const { icon, text } = block(cel, 'mdi:battery');
+      expect(icon, state).not.to.be.null;
+      // The class is on both the sf-icon and the text div
+      for (const node of [icon!, text!]) {
+        expect(node.classList.contains('battery-critical'), state).to.equal(cls === 'battery-critical');
+        expect(node.classList.contains('battery-warn'), state).to.equal(cls === 'battery-warn');
+      }
+      document.body.replaceChildren();
+    }
+
+    // Text: state + unit with no space (mutant: drop the unit; add a space). unavailable% is an observed wart.
+    let el: SciFiVacuumCard;
+    document.body.replaceChildren();
+    el = await mountHeader({ battery: 'sensor.bat' }, battery('45', { unit_of_measurement: '%' }));
+    expect(block(el, 'mdi:battery').text!.textContent).to.equal('45%');
+    document.body.replaceChildren();
+
+    el = await mountHeader({ battery: 'sensor.bat' }, battery('45'));
+    expect(block(el, 'mdi:battery').text!.textContent).to.equal('45');
+    document.body.replaceChildren();
+
+    // Observed wart, pinned as is (no src change): the unit is appended even for a non-numeric state
+    el = await mountHeader({ battery: 'sensor.bat' }, battery('unavailable', { unit_of_measurement: '%' }));
+    expect(block(el, 'mdi:battery').text!.textContent).to.equal('unavailable%');
+
+    // Icon: entity icon attribute, else mdi:battery (mutant: replace the default icon / ignore the entity icon)
+    el = await mountHeader({ battery: 'sensor.bat' }, battery('50', { icon: 'mdi:battery-50' }));
+    expect(block(el, 'mdi:battery-50').icon).not.to.be.null;
+    expect(block(el, 'mdi:battery').icon).to.be.null;
+    document.body.replaceChildren();
+    el = await mountHeader({ battery: 'sensor.bat' }, battery('50'));
+    expect(block(el, 'mdi:battery').icon).not.to.be.null;
+
+    // Absent when the sensor is unset or the entity is missing (mutant: render the block anyway)
+    document.body.replaceChildren();
+    el = await mountHeader({}, battery('50'));
+    expect(el.shadowRoot!.querySelectorAll('.header .infoH sf-icon').length).to.equal(0);
+    document.body.replaceChildren();
+    el = await mountHeader({ battery: 'sensor.bat' }, {});
+    expect(el.shadowRoot!.querySelectorAll('.header .infoH sf-icon').length).to.equal(0);
+    expect(el.shadowRoot!.querySelector('.header .infoH')).not.to.be.null;
+  });
+
+  // Mutant: swap with the battery default icon; append the unit; add a threshold class
+  it('TC-BTG-U-07 — mop block: default icon mdi:water-opacity, text is the state alone, no class, absent cases — TC-VACUUM-U-1538', async () => {
+    let el = await mountHeader({ mop_intensite: 'sensor.mop' }, mop('2', { unit_of_measurement: '%' }));
+    const m = block(el, 'mdi:water-opacity');
+    expect(m.icon).not.to.be.null;
+    expect(block(el, 'mdi:battery').icon).to.be.null;
+    expect(m.text!.textContent).to.equal('2');
+    expect(m.icon!.className).to.equal('');
+    expect(m.text!.className).to.equal('');
+    document.body.replaceChildren();
+
+    el = await mountHeader({ mop_intensite: 'sensor.mop' }, mop('10', { icon: 'mdi:water' }));
+    expect(block(el, 'mdi:water').icon).not.to.be.null;
+    expect(block(el, 'mdi:water-opacity').icon).to.be.null;
+
+    // Absent when the sensor is unset or the entity is missing (mutant: render the mop block anyway)
+    document.body.replaceChildren();
+    el = await mountHeader({}, mop('2'));
+    expect(el.shadowRoot!.querySelectorAll('.header .infoH sf-icon').length).to.equal(0);
+    document.body.replaceChildren();
+    el = await mountHeader({ mop_intensite: 'sensor.mop' }, {});
+    expect(el.shadowRoot!.querySelectorAll('.header .infoH sf-icon').length).to.equal(0);
+  });
+
+  // Mutant: render the name or the unit through unsafeHTML
+  it('TC-BTG-U-34 — friendly name and battery unit reach the DOM as text, never as markup', async () => {
+    // Benign marker first: both fields reach the DOM in this state
+    let el = await mountHeader(
+      { battery: 'sensor.bat' },
+      battery('45', { unit_of_measurement: 'UNITMARK' }),
+      { friendly_name: 'NAMEMARK' },
+    );
+    expect(el.shadowRoot!.querySelector('.header .name')!.textContent).to.include('NAMEMARK');
+    expect(block(el, 'mdi:battery').text!.textContent).to.equal('45UNITMARK');
+    document.body.replaceChildren();
+
+    const hostile = '<img src=x onerror=alert(1)>';
+    el = await mountHeader(
+      { battery: 'sensor.bat' },
+      battery('45', { unit_of_measurement: hostile }),
+      { friendly_name: hostile },
+    );
+    const root = el.shadowRoot!;
+    expect(root.querySelectorAll('img').length).to.equal(0);
+    expect(root.querySelector('.header .name')!.textContent).to.equal(hostile);
+    expect(block(el, 'mdi:battery').text!.textContent).to.equal('45' + hostile);
   });
 });

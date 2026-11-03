@@ -641,7 +641,7 @@ The component CSS is ported 1:1 from 'main:src/components/landspeeder/style.js',
 
 ## Test Case Specifications
 
-> **⬜ dans la colonne ID : le cas n'est joué par aucun test.** Une ligne sur vingt-six : `tests/cards/vehicles/sci-fi-vehicles.test.ts` s'arrête à `IT-VEHICLES-I-1202`.
+> **⬜ dans la colonne ID : le cas n'est joué par aucun test.** Aucune ligne sur vingt-six n'est marquée : chaque cas est joué (`IT-VEHICLES-I-1203` par `TC-BTG-U-31`, `tests/cards/vehicles/sci-fi-vehicles.test.ts`).
 > Le marqueur est la seule source : `tests/specs/ids-cas-uniques.test.ts` dérive
 > l'ensemble des cas non joués de ces marques et refuse l'écart dans les deux
 > sens — un cas non marqué que rien ne cite, comme un cas marqué qu'un test porte.
@@ -673,7 +673,7 @@ The component CSS is ported 1:1 from 'main:src/components/landspeeder/style.js',
 | TC-VEHICLES-U-1223 | Unit | `getCardSize()` returns 3 without a config | element created, `setConfig` never called | `getCardSize() === 3` |
 | IT-VEHICLES-I-1201 | Integration | Card registers in `customElements` | load card | `customElements.get('sci-fi-vehicles')` returns class |
 | IT-VEHICLES-I-1202 | Integration | Card full render: header + landspeeder + actions | mount with full config | All 3 sections present |
-| IT-VEHICLES-I-1203 ⬜ | Integration | `vehicles/styles.ts` imported — no inline `css\`` in `vehicles/sci-fi-vehicles.ts` | grep | 'grep -c "css\`" sci-fi-vehicles.ts' returns 0 |
+| IT-VEHICLES-I-1203 | Integration | `vehicles/styles.ts` imported — no inline `css\`` in `vehicles/sci-fi-vehicles.ts` | grep | 'grep -c "css\`" sci-fi-vehicles.ts' returns 0 |
 
 ---
 

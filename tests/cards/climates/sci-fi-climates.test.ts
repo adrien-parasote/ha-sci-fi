@@ -734,3 +734,127 @@ describe('climates floor/area fallback', () => {
     expect(el.shadowRoot.querySelector('.area-content')).to.equal(null);
   });
 });
+
+// ─── behavioural-test-gaps (famille D) : lignes TC-CLIMATES-U-001/003/004, IT-CLIMATES-I-001/003 ───
+
+describe('climates behavioural gaps', () => {
+  const climateEntry = (id: string, areaId = 'living_room') =>
+    makeMockEntityEntry({ entity_id: id, area_id: areaId, domain: 'climate' });
+
+  const mountCard = async (config: Record<string, unknown>, hass: any) => {
+    const el = document.createElement('sci-fi-climates') as any;
+    el.setConfig(config);
+    el.hass = hass;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    return el;
+  };
+
+  const modeButton = async (el: any, index: number) => {
+    const radiator = el.shadowRoot.querySelectorAll('sf-radiator')[index];
+    await radiator.updateComplete;
+    return radiator.shadowRoot.querySelector('sf-button-card-select[title="mode"]') as any;
+  };
+
+  afterEach(() => {
+    document.body.replaceChildren();
+  });
+
+  // Mutant: render() reads an optional key unguarded (config.header.display with no header) and throws.
+  it('TC-BTG-U-08 TC-CLIMATES-U-001: renders with the minimal config (type only)', async () => {
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const el = await mountCard(
+      { type: 'custom:sci-fi-climates' },
+      makeMockHass({
+        entities: { 'climate.salon': climateEntry('climate.salon') },
+        states: {
+          'climate.salon': makeMockEntity({
+            entity_id: 'climate.salon',
+            state: 'heat',
+            attributes: { friendly_name: 'Salon', current_temperature: 21.5, temperature: 22 },
+          }),
+        },
+      })
+    );
+    expect(errors).not.toHaveBeenCalled();
+    expect(el._renderError).to.equal(null);
+    expect(el.shadowRoot.querySelector('ha-card')).to.not.equal(null);
+    expect(el.shadowRoot.querySelectorAll('sf-radiator').length).to.equal(1);
+    errors.mockRestore();
+  });
+
+  // Mutant: the state_icons / state_colors override is ignored, or applied to every state.
+  it('TC-BTG-U-09 TC-CLIMATES-U-003 TC-CLIMATES-U-004: state_icons.heat and state_colors.heat apply to the heat tile only', async () => {
+    const el = await mountCard(
+      {
+        type: 'custom:sci-fi-climates',
+        header: { display: false },
+        state_icons: { heat: 'mdi:fire' },
+        state_colors: { heat: '#ff0000' },
+      },
+      makeMockHass({
+        entities: {
+          'climate.hot': climateEntry('climate.hot'),
+          'climate.cold': climateEntry('climate.cold'),
+        },
+        states: {
+          'climate.hot': makeMockEntity({
+            entity_id: 'climate.hot',
+            state: 'heat',
+            attributes: { friendly_name: 'Hot', current_temperature: 21, temperature: 22, hvac_modes: ['off', 'heat'] },
+          }),
+          'climate.cold': makeMockEntity({
+            entity_id: 'climate.cold',
+            state: 'off',
+            attributes: { friendly_name: 'Cold', current_temperature: 17, temperature: 17, hvac_modes: ['off', 'heat'] },
+          }),
+        },
+      })
+    );
+    const hot = await modeButton(el, 0);
+    const cold = await modeButton(el, 1);
+    expect(hot.icon).to.equal('mdi:fire');
+    expect(hot.getAttribute('style')).to.include('#ff0000');
+    expect(cold.icon).to.not.equal('mdi:fire');
+    expect(cold.getAttribute('style')).to.not.include('#ff0000');
+  });
+
+  // Mutant: shouldUpdate (base-card) returns false on a hass change (stale DOM), or the radiator keeps a cached entity.
+  it('IT-BTG-I-04 IT-CLIMATES-I-001 IT-CLIMATES-I-003: a second hass updates the temperature, the mode icon and its colour in the DOM', async () => {
+    const config = {
+      type: 'custom:sci-fi-climates',
+      header: { display: false },
+      state_icons: { off: 'mdi:power', heat: 'mdi:fire' },
+      state_colors: { off: '#111111', heat: '#ff0000' },
+    };
+    const hassWith = (state: string, temp: number) =>
+      makeMockHass({
+        entities: { 'climate.salon': climateEntry('climate.salon') },
+        states: {
+          'climate.salon': makeMockEntity({
+            entity_id: 'climate.salon',
+            state,
+            attributes: { friendly_name: 'Salon', current_temperature: temp, temperature: 22, hvac_modes: ['off', 'heat'] },
+          }),
+        },
+      });
+    const el = await mountCard(config, hassWith('off', 18.5));
+    const radiator = el.shadowRoot.querySelector('sf-radiator') as any;
+    await radiator.updateComplete;
+    expect(radiator.shadowRoot.querySelector('.radical').textContent.trim()).to.equal('18');
+    expect(radiator.shadowRoot.querySelector('.decimal').textContent).to.include('.5');
+    const before = await modeButton(el, 0);
+    expect(before.icon).to.equal('mdi:power');
+    expect(before.getAttribute('style')).to.include('#111111');
+
+    el.hass = hassWith('heat', 23.5);
+    await el.updateComplete;
+    await radiator.updateComplete;
+
+    expect(radiator.shadowRoot.querySelector('.radical').textContent.trim()).to.equal('23');
+    expect(radiator.shadowRoot.querySelector('.decimal').textContent).to.include('.5');
+    const after = await modeButton(el, 0);
+    expect(after.icon).to.equal('mdi:fire');
+    expect(after.getAttribute('style')).to.include('#ff0000');
+  });
+});

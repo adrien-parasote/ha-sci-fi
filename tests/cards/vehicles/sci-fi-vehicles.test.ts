@@ -8,6 +8,8 @@ import { expect, describe, it, afterEach, vi } from 'vitest';
 
 import '../../../src/cards/vehicles/sci-fi-vehicles.js';
 import { SciFiVehiclesCard } from '../../../src/cards/vehicles/sci-fi-vehicles.js';
+import { readFileSync } from 'node:fs';
+import { blankComments } from '../../helpers/blank-comments.js';
 import { makeMockHass, makeMockEntity } from '../../fixtures/mock-hass.js';
 
 if (!customElements.get('sf-toast')) {
@@ -180,6 +182,18 @@ describe('sci-fi-vehicles — Spec 12 design', () => {
     expect(VEHICLE_CHARGE_STATES_CHARGE_IN_PROGRESS).to.equal('charge_in_progress');
     expect(VEHICLE_PLUG_STATES_UNPLUGGED).to.equal('unplugged');
     expect(VEHICLE_PLUG_STATES_PLUGGED).to.equal('plugged');
+  });
+
+  // ── IT-VEHICLES-I-1203 — no inline css`` in the card source ────────────────
+
+  // Mutant: an inline css`` block added to sci-fi-vehicles.ts
+  it('TC-BTG-U-31: IT-VEHICLES-I-1203 — vehicles/styles.ts imported: no inline css` in sci-fi-vehicles.ts', () => {
+    // Source scan (stated exception): comments blanked, css tagged templates counted.
+    const source = blankComments(readFileSync('src/cards/vehicles/sci-fi-vehicles.ts', 'utf8'));
+    expect(source.match(/css`/g) ?? []).toHaveLength(0);
+
+    // Class-level check: vehicleStyles is part of the card's styles array.
+    expect((SciFiVehiclesCard as any).styles).to.include(vehicleStyles);
   });
 
   // ── TC-1215 / vehicleStyles Export ─────────────────────────────────────────

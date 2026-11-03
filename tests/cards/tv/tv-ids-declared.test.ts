@@ -17,7 +17,11 @@ const orphans = (src: string, spec: string): string[] => {
   return titlesOf(src).flatMap(citedIds).filter((id) => !declared.has(id));
 };
 
-const spec = read(SPEC);
+// Ids of the behavioural-test-gaps lot (TC-BTG-U-NN / IT-BTG-I-NN) are declared in its own spec.
+const LOT_SPEC = 'docs/specs/behavioural-test-gaps/spec.md';
+const lotIds = (): string[] =>
+  [...readFileSync(join(process.cwd(), LOT_SPEC), 'utf8').matchAll(/^\|\s*((?:TC-BTG-U|IT-BTG-I)-\d+)\s*\|/gm)].map((m) => m[1] ?? '');
+const spec = read(SPEC) + '\n' + lotIds().map((id) => `| **${id}** |`).join('\n');
 const sources = TEST_FILES.map(read);
 
 describe('tv ids declared', () => {

@@ -234,22 +234,22 @@ Instead of fixed sizing, hexagons dynamically resize to fit exactly 100% of thei
 
 ## Test Case Specifications
 
-> **⬜ dans la colonne ID : le cas n'est joué par aucun test.** Sept des douze lignes : `tests/cards/hexa-tiles/sci-fi-hexa-tiles.test.ts` ne porte que `TC-HEXA-TILES-U-706` et `TC-HEXA-TILES-U-707`.
+> **⬜ dans la colonne ID : le cas n'est joué par aucun test.** Plus aucune ligne n'est marquée : tous les cas sont portés par `tests/cards/hexa-tiles/`.
 > Le marqueur est la seule source : `tests/specs/ids-cas-uniques.test.ts` dérive
 > l'ensemble des cas non joués de ces marques et refuse l'écart dans les deux
 > sens — un cas non marqué que rien ne cite, comme un cas marqué qu'un test porte.
 
 | Test ID | Type | Description | Input | Expected Output |
 |---|---|---|---|---|
-| TC-HEXA-TILES-U-701 ⬜ | Unit | User header correctly identifies connected person | HASS states with matching `user_id` | Renders user picture, welcome message, and name |
-| TC-HEXA-TILES-U-702 ⬜ | Unit | Status badge shows active zone icon | Person associated with a zone entity | Status badge renders correct zone icon |
-| TC-HEXA-TILES-U-703 ⬜ | Unit | Weather alert hidden when green | Alert state = "Vert" | Alert banner is not rendered in the DOM |
-| TC-HEXA-TILES-U-704 ⬜ | Unit | Interlocking rows structured with half-hexagons | 6 tiles configured (portrait) | Row 0 starts with Left Half-Hexagon (`HL`), Row 1 ends with Right Half-Hexagon (`HR`). Total 5 rows padded. |
-| TC-HEXA-TILES-U-705 ⬜ | Unit | Active vs Inactive tiles have correct data-active attributes | Tiles with active and inactive states | Active tile has `data-active="true"`, inactive has `data-active="false"` |
+| TC-HEXA-TILES-U-701 | Unit | User header correctly identifies connected person | HASS states with matching `user_id` | Renders user picture, welcome message, and name |
+| TC-HEXA-TILES-U-702 | Unit | Status badge shows active zone icon | Person associated with a zone entity | Status badge renders correct zone icon |
+| TC-HEXA-TILES-U-703 | Unit | Weather alert hidden when green | Alert state = "Vert" | Alert banner is not rendered in the DOM |
+| TC-HEXA-TILES-U-704 | Unit | Interlocking rows structured with half-hexagons | 6 tiles configured (portrait) | Row 0 starts with Left Half-Hexagon (`HL`), Row 1 ends with Right Half-Hexagon (`HR`). Total 5 rows padded. |
+| TC-HEXA-TILES-U-705 | Unit | Active vs Inactive tiles have correct data-active attributes | Tiles with active and inactive states | Active tile has `data-active="true"`, inactive has `data-active="false"` |
 | TC-HEXA-TILES-U-706 | Unit | Alert banner shows phenomenon name from entity attributes | Alert entity with `attributes.canicule = 'Jaune'`, state_yellow = 'Jaune' | Banner renders the localized prefix (English `Weather alert:`, French `Alerte météo :`) followed by `canicule`; both languages are played by case 06 of the [i18n-hardcoded-fr spec](../i18n-hardcoded-fr/spec.md) |
 | TC-HEXA-TILES-U-707 | Unit | Alert banner fallback to state when no attribute matches | Alert entity with state = 'orange', no matching attribute keys | Banner renders the localized prefix: `Weather alert: orange` in English, `Alerte météo : orange` in French |
-| TC-HEXA-TILES-U-708 ⬜ | Unit | Weather tile `data-alert-level` set from alert entity state | Alert entity state = 'Jaune', state_yellow = 'Jaune' | Weather tile div has `data-alert-level="yellow"` |
-| TC-HEXA-TILES-U-709 ⬜ | Unit | Weather tile `data-alert-level` defaults to green when no alert entity | No `weather_alert_entity` configured | Weather tile div has `data-alert-level="green"` |
+| TC-HEXA-TILES-U-708 | Unit | Weather tile `data-alert-level` set from alert entity state | Alert entity state = 'Jaune', state_yellow = 'Jaune' | Weather tile div has `data-alert-level="yellow"` |
+| TC-HEXA-TILES-U-709 | Unit | Weather tile `data-alert-level` defaults to green when no alert entity | No `weather_alert_entity` configured | Weather tile div has `data-alert-level="green"` |
 | IT-HEXA-TILES-I-701 | Integration | Entire grid interlocking behaves correctly on mobile portrait | Mobile viewport width 375px | Renders 2 columns (2.5 hexagons) taking exactly 100% card width with no gaps |
 | IT-HEXA-TILES-I-702 | Integration | Icons and text glow is rendered when tiles are active | Active switch tile config | Rendered SVG border and text-shadow reflect CSS shadow styles |
 | IT-HEXA-TILES-I-703 | Integration | Home Assistant theme variables are applied dynamically | Dynamic state and theme updates | Elements pick up `--sf-primary` correctly |

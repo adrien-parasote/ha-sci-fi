@@ -41,7 +41,11 @@ const spec = read(SPEC);
 const cards = read(CARDS);
 const vehHeads = headsOf(spec);
 const f07 = cardIds(cards);
-const declared = [...vehHeads, ...f07];
+// Ids of the behavioural-test-gaps lot (TC-BTG-U-NN / IT-BTG-I-NN) are declared in its own spec.
+const LOT_SPEC = 'docs/specs/behavioural-test-gaps/spec.md';
+const lotIds = (): string[] =>
+  [...readFileSync(join(process.cwd(), LOT_SPEC), 'utf8').matchAll(/^\|\s*((?:TC-BTG-U|IT-BTG-I)-\d+)\s*\|/gm)].map((m) => m[1] ?? '');
+const declared = [...vehHeads, ...f07, ...lotIds()];
 const specLines = spec.split('\n');
 const rowOf = (id: string): string => specLines.find((l) => l.startsWith(`| ${id} |`)) ?? '';
 

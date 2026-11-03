@@ -1,13 +1,12 @@
  
 // @vitest-environment happy-dom
 import { expect, describe, it, beforeEach, afterEach, vi } from 'vitest';
-import * as fs from 'fs';
-import * as path from 'path';
 
 import '../../../src/cards/hexa-tiles/sci-fi-hexa-tiles.js';
 import { SciFiHexaTilesCard } from '../../../src/cards/hexa-tiles/sci-fi-hexa-tiles.js';
 import { makeMockHass, makeMockEntity } from '../../fixtures/mock-hass.js';
 import { setLocale } from '../../../src/locales/localization.js';
+import { hexaTilesStyles } from '../../../src/cards/hexa-tiles/styles.js';
 
 describe('sci-fi-hexa-tiles', () => {
   it('provides getConfigElement', () => {
@@ -71,7 +70,9 @@ describe('sci-fi-hexa-tiles', () => {
     expect(alert.textContent).to.include('Rouge');
   });
 
-  it('renders connected user profile header with message, name, circular avatar and status badge', async () => {
+  // Mutant: header built from the wrong person (first person.* instead of the one whose user_id
+  // matches hass.user.id), or the zone lookup dropped (badge stuck on the default icon).
+  it('TC-BTG-U-04 TC-HEXA-TILES-U-701 TC-HEXA-TILES-U-702: header names the connected user with the zone icon of their zone, falls back when absent', async () => {
     const el = document.createElement('sci-fi-hexa-tiles') as SciFiHexaTilesCard;
     el.setConfig({
       type: 'custom:sci-fi-hexa-tiles',
@@ -89,6 +90,17 @@ describe('sci-fi-hexa-tiles', () => {
             friendly_name: 'Adrien',
             entity_picture: 'profile_pic.jpg'
           }
+        }),
+        // Another person, listed after, with another user_id and its own zone: must be ignored.
+        'person.autre': makeMockEntity({
+          entity_id: 'person.autre',
+          state: 'home',
+          attributes: { user_id: '2', friendly_name: 'Autre' }
+        }),
+        'zone.work': makeMockEntity({
+          entity_id: 'zone.work',
+          state: '0',
+          attributes: { persons: ['person.autre'], icon: 'mdi:briefcase' }
         }),
         'zone.home': makeMockEntity({
           entity_id: 'zone.home',
@@ -114,9 +126,33 @@ describe('sci-fi-hexa-tiles', () => {
     expect(name.textContent).to.include('Adrien');
     expect(avatar.src).to.include('profile_pic.jpg');
     expect(badge.icon).to.equal('mdi:home-heart');
+    expect(name.textContent).not.to.include('Autre');
+
+    // Connected user matching no person: hass.user.name, initial, default home icon.
+    const absent = document.createElement('sci-fi-hexa-tiles') as SciFiHexaTilesCard;
+    absent.setConfig({ type: 'custom:sci-fi-hexa-tiles', tiles: [] } as unknown as any);
+    absent.hass = {
+      ...makeMockHass({
+        states: {
+          'person.autre': makeMockEntity({
+            entity_id: 'person.autre',
+            state: 'home',
+            attributes: { user_id: '2', friendly_name: 'Autre' }
+          })
+        }
+      }),
+      user: { id: '9', name: 'Zoe', is_admin: false }
+    } as any;
+    document.body.appendChild(absent);
+    await absent.updateComplete;
+    expect(absent.shadowRoot!.querySelector('.header-name')!.textContent).to.include('Zoe');
+    expect(absent.shadowRoot!.querySelector('.avatar-initials')!.textContent).to.equal('Z');
+    expect((absent.shadowRoot!.querySelector('.status-badge sf-icon') as any).icon).to.equal('mdi:home');
   });
 
-  it('renders interlocking rows of 2 columns with left and right decorative half-hexagons', async () => {
+  // Mutant: always render the banner on green; drop a half-hexagon (left of row 0 / right of row 1);
+  // invert data-active.
+  it('TC-BTG-U-05 TC-HEXA-TILES-U-703 TC-HEXA-TILES-U-704 TC-HEXA-TILES-U-705: green alert has no banner, rows interlock with half-hexagons, data-active follows the state', async () => {
     const el = document.createElement('sci-fi-hexa-tiles') as SciFiHexaTilesCard;
     el.setConfig({
       type: 'custom:sci-fi-hexa-tiles',
@@ -164,6 +200,82 @@ describe('sci-fi-hexa-tiles', () => {
     expect(row2.querySelectorAll('.hexa-tile').length).to.equal(2);
     expect(row2.querySelector('.hexa-half.left')).not.to.be.null;
     expect(row2.querySelector('.hexa-half.right')).to.be.null;
+
+    // data-active: the six tiles are off.
+    const offTiles = Array.from(el.shadowRoot!.querySelectorAll('.hexa-tile[role="button"]'));
+    expect(offTiles.length).to.equal(6);
+    for (const t of offTiles) expect(t.getAttribute('data-active')).to.equal('false');
+
+    // One tile on, one off: data-active true / false, not inverted.
+    el.hass = makeMockHass({
+      states: {
+        'switch.t1': makeMockEntity({ entity_id: 'switch.t1', state: 'on' }),
+        'switch.t2': makeMockEntity({ entity_id: 'switch.t2', state: 'off' })
+      }
+    });
+    await el.updateComplete;
+    const tiles = el.shadowRoot!.querySelectorAll('.hexa-tile[role="button"]');
+    expect(tiles[0]?.getAttribute('data-active')).to.equal('true');
+    expect(tiles[1]?.getAttribute('data-active')).to.equal('false');
+
+    // Green alert on a weather header: no banner in the DOM.
+    const green = document.createElement('sci-fi-hexa-tiles') as SciFiHexaTilesCard;
+    green.setConfig({
+      type: 'custom:sci-fi-hexa-tiles',
+      weather: {
+        activate: true,
+        weather_entity: 'weather.home',
+        weather_alert_entity: 'sensor.alert',
+        state_green: 'Vert', state_yellow: 'Jaune', state_orange: 'Orange', state_red: 'Rouge'
+      }
+    } as unknown as any);
+    green.hass = makeMockHass({
+      states: {
+        'weather.home': makeMockEntity({ entity_id: 'weather.home', state: 'sunny' }),
+        'sensor.alert': makeMockEntity({ entity_id: 'sensor.alert', state: 'Vert' })
+      }
+    });
+    document.body.appendChild(green);
+    await green.updateComplete;
+    expect(green.shadowRoot!.querySelector('.weather-tile'), 'the weather tile is rendered').not.to.be.null;
+    expect(green.shadowRoot!.querySelector('.weather-alert')).to.be.null;
+  });
+
+  // Mutant: swap two levels (yellow/orange); 'green' hard-coded; data-alert-level attribute not written.
+  it('TC-BTG-U-03 TC-HEXA-TILES-U-708 TC-HEXA-TILES-U-709: weather tile data-alert-level follows the alert entity state, green when unmapped or absent', async () => {
+    const levelFor = async (alertState: string | null) => {
+      const el = document.createElement('sci-fi-hexa-tiles') as SciFiHexaTilesCard;
+      el.setConfig({
+        type: 'custom:sci-fi-hexa-tiles',
+        weather: {
+          activate: true,
+          weather_entity: 'weather.home',
+          ...(alertState === null ? {} : { weather_alert_entity: 'sensor.alert' }),
+          state_green: 'Vert', state_yellow: 'Jaune', state_orange: 'Orange', state_red: 'Rouge'
+        }
+      } as unknown as any);
+      const states: Record<string, any> = {
+        'weather.home': makeMockEntity({ entity_id: 'weather.home', state: 'sunny' })
+      };
+      if (alertState !== null) {
+        states['sensor.alert'] = makeMockEntity({ entity_id: 'sensor.alert', state: alertState });
+      }
+      el.hass = makeMockHass({ states });
+      document.body.appendChild(el);
+      await el.updateComplete;
+      const tile = el.shadowRoot!.querySelector('.weather-tile');
+      expect(tile, 'the weather tile must render').not.toBeNull();
+      const level = tile!.getAttribute('data-alert-level');
+      el.remove();
+      return level;
+    };
+
+    expect(await levelFor('Jaune')).to.equal('yellow');
+    expect(await levelFor('Orange')).to.equal('orange');
+    expect(await levelFor('Rouge')).to.equal('red');
+    expect(await levelFor('Vert')).to.equal('green');
+    expect(await levelFor('EtatInconnu')).to.equal('green');
+    expect(await levelFor(null)).to.equal('green');
   });
 
   it('renders weather tile with custom weather icon and city name and link navigation', async () => {
@@ -608,56 +720,92 @@ describe('sci-fi-hexa-tiles', () => {
 
   // ── Layout & theming contracts ────────────────────────────────────────────
   //
-  // These three rows describe rendered geometry and paint. happy-dom performs no
-  // layout, so the assertions read styles.ts: the formulas ARE the contract, and
-  // the tests fail the moment one is dropped or reworded. A true pixel check needs
-  // the playwright runner (web-test-runner.config.mjs, currently unwired).
+  // IT-BTG-I-03: the sheet is mounted in the card and read through getComputedStyle.
+  // CANARY (spec assumption 4): happy-dom resolves an adopted stylesheet. Measured at
+  // BUILD: the branch COMPUTED held (the :host rule of the adopted sheet is read back,
+  // `var(--cols, 2)` resolved to 2). Note: happy-dom does not inherit custom properties
+  // to descendants, so --tile-width is read on the host, where the :host rule applies.
+  // If the canary ever fails, the test fails loudly (accepted-limit branch = cssText
+  // regexes, not needed today).
 
-  const hexaCss = () => fs.readFileSync(
-    path.resolve(__dirname, '../../../src/cards/hexa-tiles/styles.ts'),
-    'utf8',
-  );
+  async function mountGrid() {
+    const el = document.createElement('sci-fi-hexa-tiles') as SciFiHexaTilesCard;
+    el.setConfig({
+      type: 'custom:sci-fi-hexa-tiles',
+      tiles: [{ entity: 'switch.a', name: 'A' }, { entity: 'switch.b', name: 'B' }],
+    } as unknown as any);
+    el.hass = makeMockHass({
+      states: {
+        'switch.a': makeMockEntity({ entity_id: 'switch.a', state: 'on' }),
+        'switch.b': makeMockEntity({ entity_id: 'switch.b', state: 'off' }),
+      },
+    });
+    document.body.appendChild(el);
+    await el.updateComplete;
+    return el;
+  }
 
-  it('IT-HEXA-TILES-I-701: the grid divides the full card width by cols + 0.5 and interlocks the rows', () => {
-    const css = hexaCss();
-    // 2 columns → 2.5 hexagons across exactly 100% of the width; the half tile is the
-    // offset that makes the interlocking read as a honeycomb rather than a table.
-    expect(css).toMatch(/--tile-width:\s*calc\(\s*100%\s*\/\s*\(var\(--cols,\s*2\)\s*\+\s*0\.5\)\s*\)/);
-    // Row overlap: each row climbs a quarter of a tile into the one above it.
-    expect(css).toMatch(/\.hexa-row\s*{[^}]*margin-bottom:\s*calc\(var\(--tile-height\)\s*\*\s*-0\.25\)/);
-    // Height is derived from width by the hexagon ratio, so nothing can stretch.
-    expect(css).toMatch(/--tile-height:\s*calc\(var\(--tile-width\)\s*\*\s*1\.1547\)/);
-  });
+  // Mutant: 0.5 -> 1 in --tile-width; row overlap factor dropped; a level colour changed;
+  // the glow (drop-shadow / text-shadow) dropped; a --sf-primary fallback removed.
+  it('IT-BTG-I-03 IT-HEXA-TILES-I-701 IT-HEXA-TILES-I-702 IT-HEXA-TILES-I-703: grid divides the width by cols + 0.5, active tiles glow, each alert level has its stroke, --sf-primary has fallbacks', async () => {
+    const el = await mountGrid();
+    const sr = el.shadowRoot!;
 
-  it('IT-HEXA-TILES-I-702: active tiles carry a border glow and glowing text', () => {
-    const css = hexaCss();
-    // Anchored on the active-tile selector, like IT-HEXA-TILES-I-701 anchors on .hexa-row.
-    // Unanchored, the old `box-shadow` assertion matched .avatar in the header
-    // — the only box-shadow in this sheet — so the test was green on the avatar
-    // while no active-tile rule declared a glow at all. The glow is drawn by
-    // drop-shadow on the SVG border and text-shadow on the label, never
-    // box-shadow: there is no box-shadow of an active tile to assert.
-    expect(css, 'active SVG hexagon glow').toMatch(
-      /\.hexa-tile\[data-active="true"\]\s+\.hexa-border\s*{[^}]*filter:\s*drop-shadow\(0 0 \d+px var\(--sf-primary/,
-    );
-    expect(css, 'active tile label glow').toMatch(
-      /\.hexa-tile\[data-active="true"\]\s+\.tile-label\s*{[^}]*text-shadow:\s*0 0 \d+px var\(--sf-primary/,
-    );
-    expect(css, 'active tile icon glow').toMatch(
-      /\.hexa-tile\[data-active="true"\]\s+\.hexa-content\s+sf-icon\s*{[^}]*filter:\s*drop-shadow\(0 0 \d+px var\(--sf-primary/,
-    );
-  });
+    // Canary: the adopted sheet is resolved by getComputedStyle.
+    const tileWidth = getComputedStyle(el).getPropertyValue('--tile-width');
+    expect(tileWidth, 'happy-dom does not resolve this sheet').not.toBe('');
 
-  it('IT-HEXA-TILES-I-703: every themed colour reads --sf-primary with a hex fallback', () => {
-    const css = hexaCss();
-    const uses = css.match(/var\(--sf-primary[^)]*\)/g) ?? [];
+    // 701: 2 columns -> 2.5 hexagons across exactly 100% of the width.
+    expect(tileWidth).to.equal('calc(100% / (2 + 0.5))');
+    expect(getComputedStyle(el).getPropertyValue('--tile-height')).to.contain('* 1.1547');
+    // Each row climbs a quarter of a tile into the one above.
+    expect(getComputedStyle(sr.querySelector('.hexa-row')!).marginBottom).to.contain('* -0.25');
+
+    // 702: the active tile glows (SVG border and label).
+    const active = sr.querySelector('.hexa-tile[data-active="true"]')!;
+    const inactive = sr.querySelector('.hexa-tile[data-active="false"]')!;
+    expect(getComputedStyle(active.querySelector('.hexa-border')!).filter).to.contain('drop-shadow');
+    expect(getComputedStyle(active.querySelector('.tile-label')!).textShadow).not.to.be.oneOf(['', 'none']);
+    // The inactive tile has no glow: the rule is anchored on data-active.
+    expect(getComputedStyle(inactive.querySelector('.hexa-border')!).filter).not.to.contain('drop-shadow');
+
+    // 702: each alert level has its stroke.
+    const strokes: Record<string, string> = { Jaune: '#ffd60a', Orange: '#ff6b35', Rouge: '#ff4d6d' };
+    for (const [state, stroke] of Object.entries(strokes)) {
+      document.body.replaceChildren();
+      const w = await (async () => {
+        const e = document.createElement('sci-fi-hexa-tiles') as SciFiHexaTilesCard;
+        e.setConfig({
+          type: 'custom:sci-fi-hexa-tiles',
+          weather: {
+            activate: true, weather_entity: 'weather.home', weather_alert_entity: 'sensor.alert',
+            state_green: 'Vert', state_yellow: 'Jaune', state_orange: 'Orange', state_red: 'Rouge'
+          }
+        } as unknown as any);
+        e.hass = makeMockHass({
+          states: {
+            'weather.home': makeMockEntity({ entity_id: 'weather.home', state: 'sunny' }),
+            'sensor.alert': makeMockEntity({ entity_id: 'sensor.alert', state }),
+          },
+        });
+        document.body.appendChild(e);
+        await e.updateComplete;
+        return e;
+      })();
+      const border = w.shadowRoot!.querySelector('.weather-tile .hexa-border')!;
+      expect(getComputedStyle(border).stroke, `alert ${state}`).to.equal(stroke);
+    }
+
+    // 703: computation erases var(), so the fallbacks are read on the exported cssText.
+    const cssText = hexaTilesStyles.cssText;
+    // The bare variable is only accepted inside color-mix(), by design: strip those declarations.
+    const withoutMix = cssText.replace(/color-mix\([^;]*;/g, ';');
+    const uses = withoutMix.match(/var\(--sf-primary[^)]*\)/g) ?? [];
     expect(uses.length, '--sf-primary must drive the theme').toBeGreaterThan(5);
-    // Every plain usage carries a fallback, so an HA theme that does not define the
-    // variable still paints. (color-mix() usages take the bare variable by design.)
+    // Every plain usage carries a fallback so an HA theme without the variable still paints
+    // (color-mix() declarations are stripped above).
     for (const use of uses) {
-      if (use === 'var(--sf-primary)') continue;
       expect(use, `${use} must carry a hex fallback`).toMatch(/var\(--sf-primary,\s*#[0-9a-fA-F]{3,6}\)/);
     }
   });
 });
-

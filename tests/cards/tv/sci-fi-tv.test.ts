@@ -1,5 +1,7 @@
  
 // @vitest-environment happy-dom
+// TC-BTG-U-16 (guard, no new test): after this lot only the two tv rows that need the built bundle or the workbench keep their no-test marker in
+// docs/specs/cards/tv.md; the guards tests/specs/ids-cas-uniques.test.ts and blueprint-traceability.test.ts enforce it.
 import { expect, describe, it, beforeEach, afterEach, vi } from 'vitest';
 
 import '../../../src/cards/tv/sci-fi-tv.js';
@@ -850,42 +852,247 @@ describe('sci-fi-tv', () => {
     });
   });
 
-  // ── IT-TV-I-704: volume throttling ─────────────────────────────────────────────
+  // ── Dial drag: real pointer events on .dial-svg (TC-BTG-U-01.., IT-BTG-I-01/02) ──
+  // happy-dom ne fait aucun layout : getBoundingClientRect renvoie des zéros, on le
+  // stube donc sur .dial-svg. setPointerCapture / releasePointerCapture sont stubés
+  // sur l'élément s'ils manquent (le test le dit, le spec risque 3).
 
-  it('IT-TV-I-704: 10 rapid volume updates collapse to at most 2 callService calls (80ms window)', async () => {
-    const callServiceMock = vi.fn().mockResolvedValue({} as any);
+  describe('dial drag (pointer events)', () => {
+    const TV = 'media_player.bravia_4k_vh22';
+    type Box = { left: number; top: number; width: number; height: number };
+    const BOX: Box = { left: 0, top: 0, width: 200, height: 200 };
+
+    const hassFor = (callService: ReturnType<typeof vi.fn>, state = 'on', extra: Record<string, unknown> = {}) =>
+      makeMockHass({
+        callService,
+        states: { [TV]: makeMockEntity({ entity_id: TV, state, attributes: { volume_level: 0.2 } }), ...extra },
+      } as any);
+
+    const mountDial = async (config: Record<string, unknown> = {}, state = 'on') => {
+      const callService = vi.fn().mockResolvedValue({} as any);
+      const el = document.createElement('sci-fi-tv') as SciFiTVCard;
+      (el as any).setConfig({ type: 'custom:sci-fi-tv', entity: TV, ...config });
+      el.hass = hassFor(callService, state);
+      document.body.appendChild(el);
+      await el.updateComplete;
+      const svg = el.shadowRoot!.querySelector('.dial-svg') as SVGSVGElement;
+      expect(svg).to.exist;
+      let box: Box = { ...BOX };
+      svg.getBoundingClientRect = () =>
+        ({ ...box, right: box.left + box.width, bottom: box.top + box.height, x: box.left, y: box.top }) as DOMRect;
+      if (typeof (svg as any).setPointerCapture !== 'function') (svg as any).setPointerCapture = () => {};
+      if (typeof (svg as any).releasePointerCapture !== 'function') (svg as any).releasePointerCapture = () => {};
+      return { el, svg, callService, setBox: (b: Box) => { box = b; } };
+    };
+
+    // Pointer at SVG units (x, y) of the 200x200 viewBox, mapped into the current box.
+    const fire = (svg: SVGSVGElement, type: string, x: number, y: number, box: Box = BOX, pointerId = 1) =>
+      svg.dispatchEvent(new PointerEvent(type, {
+        pointerId,
+        bubbles: true,
+        cancelable: true,
+        clientX: box.left + (x / 200) * box.width,
+        clientY: box.top + (y / 200) * box.height,
+      }));
+
+    // Point at angle theta (degrees, atan2 convention, y down) on a circle of radius 80 around (100,100).
+    const polar = (thetaDeg: number): [number, number] => {
+      const r = (thetaDeg * Math.PI) / 180;
+      return [100 + 80 * Math.cos(r), 100 + 80 * Math.sin(r)];
+    };
+
+    // Volume resolved by a fresh drag start at the given SVG point.
+    const volumeAt = async (x: number, y: number, box: Box = BOX) => {
+      const { svg, callService, setBox } = await mountDial();
+      setBox(box);
+      fire(svg, 'pointerdown', x, y, box);
+      expect(callService).toHaveBeenCalledTimes(1);
+      return (callService.mock.calls[0] as any[])[2].volume_level as number;
+    };
+
+    // Mutant: `+135` instead of `-135` (today's code), `> 315` -> `> 290`, remove the clamp
+    it('TC-BTG-U-01: pointer angle maps to the rendered dial and clamps in the gap, never NaN (TC-TV-U-706)', async () => {
+      const cases: Array<[string, [number, number], number]> = [
+        ['arc start (bottom-left)', polar(135), 0],
+        ['arc end (bottom-right)', polar(45), 1],
+        ['top', polar(-90), 0.5],
+        ['right', polar(0), 0.83],
+        ['gap, start side (theta 100)', polar(100), 0],
+        ['gap, end side (theta 80)', polar(80), 1],
+        ['bottom-centre', polar(90), 1],
+      ];
+      for (const [label, [x, y], expected] of cases) {
+        const v = await volumeAt(x, y);
+        expect(Number.isNaN(v), label).to.be.false;
+        expect(v, label).to.be.within(0, 1);
+        expect(v, label).to.equal(expected);
+        document.body.replaceChildren();
+      }
+    });
+
+    // Mutant: drop bbox.left / bbox.top; scale 200 -> 100; bbox.left used for y
+    it('TC-BTG-U-02: DOM to SVG conversion is the same on a square, an offset and a rescaled box (TC-TV-U-707)', async () => {
+      const offset: Box = { left: 50, top: 20, width: 400, height: 400 };
+      for (const theta of [-90, 0, 20, 160, -150]) {
+        const [x, y] = polar(theta);
+        const base = await volumeAt(x, y, BOX);
+        document.body.replaceChildren();
+        const moved = await volumeAt(x, y, offset);
+        document.body.replaceChildren();
+        expect(moved, `theta ${theta}`).to.equal(base);
+      }
+      // The centre of the box lands on the SVG centre: a point straight above is 0.5.
+      expect(await volumeAt(100, 20, offset)).to.equal(0.5);
+    });
+
+    // Mutant: remove the zero-size guard of _handleDrag
+    it('TC-BTG-U-20: a collapsed dial box (zero width or height) makes no call and shows no NaN', async () => {
+      const { el, svg, callService, setBox } = await mountDial();
+      for (const b of [
+        { ...BOX, width: 0 },
+        { ...BOX, height: 0 },
+        { ...BOX, width: 0, height: 0 },
+      ]) {
+        setBox(b);
+        fire(svg, 'pointerdown', 100, 20, BOX, 1);
+        fire(svg, 'pointermove', 100, 20, BOX, 1);
+        fire(svg, 'pointerup', 100, 20, BOX, 1);
+        await el.updateComplete;
+        expect(callService).not.toHaveBeenCalled();
+        expect(el.shadowRoot!.querySelector('.dial-value')!.textContent).not.to.match(/NaN|Infinity/);
+      }
+      // Normal box restored: the drag works, so the guard (not a dead drag) caused the zeros.
+      setBox({ ...BOX });
+      fire(svg, 'pointerdown', 100, 20, BOX, 1);
+      expect(callService).toHaveBeenCalledTimes(1);
+    });
+
+    // Mutant: drop the move-time liveness guard of _onPointerMove
+    it('TC-BTG-U-21: a pointermove after the TV went off, unavailable or vanished makes no volume call', async () => {
+      const { el, svg, callService } = await mountDial();
+      fire(svg, 'pointerdown', ...polar(-90), BOX, 1);
+      expect(callService).toHaveBeenCalledTimes(1);
+      await el.updateComplete;
+      const localBefore = (el as any)._localVolume;
+      expect(localBefore).to.equal(0.5);
+
+      for (const state of ['off', 'unavailable']) {
+        el.hass = hassFor(callService, state);
+        await el.updateComplete;
+        // The hass update keeps the drag flag and _localVolume (FR-13).
+        expect((el as any)._isDragging, state).to.be.true;
+        expect((el as any)._localVolume, state).to.equal(localBefore);
+        const shown = el.shadowRoot!.querySelector('.dial-value')!.textContent;
+        fire(svg, 'pointermove', ...polar(0), BOX, 1);
+        await el.updateComplete;
+        expect(callService, state).toHaveBeenCalledTimes(1);
+        expect((el as any)._localVolume, state).to.equal(localBefore);
+        expect(el.shadowRoot!.querySelector('.dial-value')!.textContent, state).to.equal(shown);
+      }
+
+      // Entity removed: only asserted if .dial-svg is still rendered; with the
+      // config-error banner no pointer event is possible (case n/a).
+      el.hass = makeMockHass({ callService, states: {} } as any);
+      await el.updateComplete;
+      const still = el.shadowRoot!.querySelector('.dial-svg');
+      if (still) {
+        fire(still as SVGSVGElement, 'pointermove', ...polar(0), BOX, 1);
+        expect(callService).toHaveBeenCalledTimes(1);
+      }
+    });
+
+    // Mutant: add a radial guard ignoring the readout area (the future bead ha-sci-fi-9zpl)
+    it('TC-BTG-U-22: readout taps resolve to 1 / 1 / 0 (accepted by design, angle-only; radial guard is bead ha-sci-fi-9zpl)', async () => {
+      expect(await volumeAt(100, 152)).to.equal(1);
+      document.body.replaceChildren();
+      expect(await volumeAt(110, 152)).to.equal(1);
+      document.body.replaceChildren();
+      expect(await volumeAt(90, 152)).to.equal(0);
+    });
+
+    // Mutant: wrong entity (always `entity`); no off-guard on pointerdown; `+135`
+    it('IT-BTG-I-01: dragging to 60 % calls media_player.volume_set on volume_entity ?? entity; nothing when the TV is off (IT-TV-I-703)', async () => {
+      const sixty: [number, number] = [134.05, 33.17];
+
+      const withVol = await mountDial({ volume_entity: 'media_player.sony_vol' });
+      fire(withVol.svg, 'pointerdown', ...sixty);
+      expect(withVol.callService).toHaveBeenCalledTimes(1);
+      expect(withVol.callService).toHaveBeenCalledWith('media_player', 'volume_set', {
+        entity_id: 'media_player.sony_vol',
+        volume_level: 0.6,
+      });
+      document.body.replaceChildren();
+
+      const plain = await mountDial();
+      fire(plain.svg, 'pointerdown', ...sixty);
+      expect(plain.callService).toHaveBeenCalledTimes(1);
+      expect(plain.callService).toHaveBeenCalledWith('media_player', 'volume_set', {
+        entity_id: TV,
+        volume_level: 0.6,
+      });
+      document.body.replaceChildren();
+
+      for (const state of ['off', 'unavailable']) {
+        const dead = await mountDial({}, state);
+        fire(dead.svg, 'pointerdown', ...sixty);
+        expect(dead.callService, state).not.toHaveBeenCalled();
+        document.body.replaceChildren();
+      }
+    });
+
+    // Mutant: window 80 -> 40 (2nd call at T+40), 80 -> 0 (11 calls), throttle removed
+    it('IT-BTG-I-02: a burst of pointermove inside one 80 ms window yields exact call counts (IT-TV-I-704)', async () => {
+      const { svg, callService } = await mountDial();
+      const T = 1_000_000;
+      const nowSpy = vi.spyOn(Date, 'now');
+      try {
+        nowSpy.mockReturnValue(T);
+        fire(svg, 'pointerdown', ...polar(-90));
+        for (let i = 1; i <= 10; i++) {
+          nowSpy.mockReturnValue(T + i * 5);
+          fire(svg, 'pointermove', ...polar(-90 + i * 5));
+        }
+        expect(callService).toHaveBeenCalledTimes(1);
+
+        nowSpy.mockReturnValue(T + 80);
+        fire(svg, 'pointermove', ...polar(0));
+        expect(callService).toHaveBeenCalledTimes(2);
+        expect(callService).toHaveBeenLastCalledWith('media_player', 'volume_set', {
+          entity_id: TV,
+          volume_level: 0.83,
+        });
+      } finally {
+        nowSpy.mockRestore();
+      }
+    });
+  });
+
+  // Mutant: render the media title through unsafeHTML
+  // (the friendly name is not read by the tv template — only config.name is — so it is dropped here)
+  it('TC-BTG-U-33: a hostile media title renders as text, never as markup', async () => {
+    const hostile = '<img src=x onerror=alert(1)>';
     const el = document.createElement('sci-fi-tv') as SciFiTVCard;
     (el as any).setConfig({ type: 'custom:sci-fi-tv', entity: 'media_player.bravia_4k_vh22' });
-    el.hass = makeMockHass({
-      callService: callServiceMock,
+    const mk = (title: string) => makeMockHass({
       states: {
-        'media_player.bravia_4k_vh22': makeMockEntity({ entity_id: 'media_player.bravia_4k_vh22', state: 'on' }),
+        'media_player.bravia_4k_vh22': makeMockEntity({
+          entity_id: 'media_player.bravia_4k_vh22',
+          state: 'on',
+          attributes: { media_title: title, friendly_name: hostile },
+        }),
       },
-    });
+    } as any);
     document.body.appendChild(el);
+
+    // Benign marker first: the field does reach the DOM.
+    el.hass = mk('BENIGN-MARKER');
     await el.updateComplete;
+    expect(el.shadowRoot!.textContent).to.contain('BENIGN-MARKER');
 
-    const nowSpy = vi.spyOn(Date, 'now');
-    try {
-      // 10 updates spread over 50ms — inside a single 80ms window.
-      for (let i = 0; i < 10; i++) {
-        nowSpy.mockReturnValue(1_000_000 + i * 5);
-        (el as any)._throttleVolumeCall('media_player.bravia_4k_vh22', 0.1 + i * 0.05);
-      }
-      expect(callServiceMock.mock.calls.length).toBeLessThanOrEqual(2);
-
-      // Past the window, the next update goes through.
-      const before = callServiceMock.mock.calls.length;
-      nowSpy.mockReturnValue(1_000_000 + 200);
-      (el as any)._throttleVolumeCall('media_player.bravia_4k_vh22', 0.9);
-      expect(callServiceMock.mock.calls.length).toBe(before + 1);
-      expect(callServiceMock).toHaveBeenLastCalledWith('media_player', 'volume_set', {
-        entity_id: 'media_player.bravia_4k_vh22',
-        volume_level: 0.9,
-      });
-    } finally {
-      nowSpy.mockRestore();
-    }
+    el.hass = mk(hostile);
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('img')).to.be.null;
+    expect(el.shadowRoot!.textContent).to.contain(hostile);
   });
 
   // ── O2: the keys docs/cards/tv.md advertises must all be honoured ─────────

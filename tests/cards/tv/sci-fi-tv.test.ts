@@ -368,9 +368,11 @@ describe('sci-fi-tv', () => {
     (el as any).setConfig({
       type: 'custom:sci-fi-tv',
       entity: 'media_player.missing_tv',
+      volume_entity: 'media_player.present_vol',
     });
 
-    el.hass = makeMockHass({ states: {} });
+    // partial absence: the generic banner only shows when ALL configured entities are absent
+    el.hass = makeMockHass({ states: { 'media_player.present_vol': makeMockEntity({ entity_id: 'media_player.present_vol', state: 'on' }) } });
 
     document.body.appendChild(el);
     await el.updateComplete;

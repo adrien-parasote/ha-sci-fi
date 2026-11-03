@@ -234,8 +234,11 @@ describe('weather card (FR-5)', () => {
     'TC-I18N-U-07 missing entity message in %s', async (lang, expected) => {
       await setLocale(lang);
       const el = document.createElement('sci-fi-weather') as SciFiWeatherCard;
-      (el as any).setConfig({ type: 'custom:sci-fi-weather', weather_entity: 'weather.absent' });
-      el.hass = makeMockHass({ language: lang });
+      (el as any).setConfig({ type: 'custom:sci-fi-weather', weather_entity: 'weather.absent', alert: { entity_id: 'sensor.alert' } });
+      el.hass = makeMockHass({
+        language: lang,
+        states: { 'sensor.alert': makeMockEntity({ entity_id: 'sensor.alert', state: 'Vert', attributes: {} }) },
+      });
       document.body.appendChild(el);
       await el.updateComplete;
       expect(el.shadowRoot!.textContent).toContain(expected);

@@ -143,6 +143,13 @@ export class SciFiWeatherCard extends SciFiBaseCard {
     }
   }
 
+  /** Configured ids only: `sun.sun` is infrastructure, never "missing". */
+  protected override getConfiguredEntities(): string[] {
+    return [this.config?.weather_entity, this.config?.alert?.entity_id].filter(
+      (id): id is string => !!id
+    );
+  }
+
   protected override getRelevantEntities(): string[] {
     const entities = new Set<string>();
     entities.add('sun.sun');
@@ -166,7 +173,14 @@ export class SciFiWeatherCard extends SciFiBaseCard {
 
   override updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    
+
+    // The canvas is re-created when the card goes banner -> card: a chart bound to
+    // the removed one must not be updated in place.
+    if (this._chart && this._chartCanvas && this._chart.canvas !== this._chartCanvas) {
+      this._chart.destroy();
+      this._chart = undefined;
+    }
+
     const shouldRenderChart = !this._chart || 
       changedProps.has('_hourlyForecast') ||
       changedProps.has('_dailyForecast') ||

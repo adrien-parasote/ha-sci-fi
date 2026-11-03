@@ -90,6 +90,11 @@ const PRESET_ICONS: Record<string, string> = {
 export class SciFiStoveCard extends SciFiBaseCard {
   static override styles = [sciFiCommonStyles, stoveStyles];
 
+  /** Configured ids only: when all are absent the base card shows its banner. */
+  protected override getConfiguredEntities(): string[] {
+    return this.getRelevantEntities();
+  }
+
   protected override getRelevantEntities(): string[] {
     const entities = new Set<string>();
 

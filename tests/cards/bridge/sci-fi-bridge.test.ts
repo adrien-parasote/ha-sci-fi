@@ -393,10 +393,13 @@ describe('sci-fi-bridge', () => {
 
   it('TC-BRIDGE-U-04: renders nothing when config is not set', async () => {
     const el = document.createElement('sci-fi-bridge') as SciFiBridgeCard;
-    el.hass = makeFullHass();
     document.body.appendChild(el);
     await el.updateComplete;
     expect(el.shadowRoot!.textContent?.trim()).to.equal('');
+    // config-error-card FR-1: once hass is wired a never-configured card says so
+    el.hass = makeFullHass();
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('.sf-error-message')).to.exist;
   });
 
   it('TC-BRIDGE-U-30: renders only .bridge-grid and zero sf-bridge-* sections for empty config', async () => {

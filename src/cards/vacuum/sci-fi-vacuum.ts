@@ -37,6 +37,11 @@ const TAG = 'sci-fi-vacuum';
 export class SciFiVacuumCard extends SciFiBaseCard {
   static override styles = [sciFiCommonStyles, vacuumStyles];
 
+  /** Configured ids only: when all are absent the base card shows its banner. */
+  protected override getConfiguredEntities(): string[] {
+    return this.getRelevantEntities();
+  }
+
   protected override getRelevantEntities(): string[] {
     const entities = new Set<string>();
 

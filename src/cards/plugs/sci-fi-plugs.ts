@@ -45,6 +45,11 @@ const HISTORY_WINDOW_MS = 24 * 60 * 60 * 1000;
 export class SciFiPlugsCard extends SciFiBaseCard {
   static override styles = [sciFiCommonStyles, plugStyles];
 
+  /** Configured ids only: when all are absent the base card shows its banner. */
+  protected override getConfiguredEntities(): string[] {
+    return this.getRelevantEntities();
+  }
+
   protected override getRelevantEntities(): string[] {
     const entities = new Set<string>();
 
@@ -119,10 +124,19 @@ export class SciFiPlugsCard extends SciFiBaseCard {
     //   1. Initial card load (hass set for the first time, no chart yet)
     //   2. User selects a different plug (prev/next)
     // NOT on every hass update (entity state polling)
+    // No `.chart-container` means the card body is not on screen (the missing-entity
+    // banner replaced it): drop the latch and the chart bound to the removed canvas,
+    // so the first render that shows the card again loads from the plug cache.
+    if (!this.shadowRoot?.querySelector('.chart-container')) {
+      this._chartLoaded = false;
+      this._chart?.destroy();
+      this._chart = null;
+      return;
+    }
     const plugChanged = changedProperties.has('_selected_plug_id');
     const isInitialLoad = !this._chartLoaded && changedProperties.has('hass');
     if (plugChanged || isInitialLoad) {
-      const device = this.config.devices?.[this._selected_plug_id];
+      const device = this.config?.devices?.[this._selected_plug_id];
       if (!device) return;
       const powerEntry = Object.entries(device.sensors ?? {}).find(([, e]) => e.power === true);
       if (powerEntry) {
@@ -470,6 +484,14 @@ export class SciFiPlugsCard extends SciFiBaseCard {
     delete this._chart_generation[this._selected_plug_id];
   }
 
+  /** Empty-history message vs chart container; also re-applied on a cache replay. */
+  private _showChartState(hasData: boolean): void {
+    const msgContainer = this.shadowRoot?.querySelector('.msg-container');
+    const chartContainer = this.shadowRoot?.querySelector('.chart-container') as HTMLElement | null;
+    if (msgContainer) msgContainer.textContent = hasData ? '' : msg('No power data to display');
+    if (chartContainer) chartContainer.style.display = hasData ? 'block' : 'none';
+  }
+
   private async _loadPowerChart(device: SciFiPlugDevice, powerEntityId: string): Promise<void> {
     const idx = this._selected_plug_id;
 
@@ -477,6 +499,7 @@ export class SciFiPlugsCard extends SciFiBaseCard {
     // Cache is cleared when _clearChart() is called (plug navigation), not by time.
     const cache = this._chart_generation[idx];
     if (cache) {
+      this._showChartState(cache.labels.length > 0);
       if (!this._chart) {
         this._drawChart(cache.datasets, cache.labels);
       } else {
@@ -494,16 +517,7 @@ export class SciFiPlugsCard extends SciFiBaseCard {
       ) as unknown[][];
 
       const history = this._parseHistory(data[0] ?? []);
-      const msgContainer = this.shadowRoot?.querySelector('.msg-container');
-      const chartContainer = this.shadowRoot?.querySelector('.chart-container') as HTMLElement | null;
-
-      if (!Object.keys(history).length) {
-        if (msgContainer) msgContainer.textContent = msg('No power data to display');
-        if (chartContainer) chartContainer.style.display = 'none';
-      } else {
-        if (msgContainer) msgContainer.textContent = '';
-        if (chartContainer) chartContainer.style.display = 'block';
-      }
+      this._showChartState(Object.keys(history).length > 0);
 
       const datasets = this._buildChartDatasets(Object.values(history));
       const labels = this._buildChartLabels(Object.keys(history));

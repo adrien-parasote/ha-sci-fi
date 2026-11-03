@@ -12,6 +12,7 @@ import { tvStyles } from './style.js';
 import { fireHassAction } from '../../utils/action.js';
 import type { HassEntity } from '../../types/ha.js';
 import type { SciFiTVConfig } from './config.js';
+import { DOMAIN } from '../../types/domains.js';
 
 const TAG = 'sci-fi-tv';
 
@@ -451,7 +452,7 @@ export class SciFiTVCard extends SciFiBaseCard {
     const now = Date.now();
     if (now - this._lastVolumeCall >= 80) {
       this._lastVolumeCall = now;
-      void this.hass.callService('media_player', 'volume_set', {
+      void this.hass.callService(DOMAIN.MEDIA_PLAYER, 'volume_set', {
         entity_id: entityId,
         volume_level: volume
       }).catch((err: Error) => {
@@ -474,7 +475,7 @@ export class SciFiTVCard extends SciFiBaseCard {
       fireHassAction(this, { tap_action: customAction }, 'tap');
     } else if (this.config.remote_entity) {
       // Default remote mapping mode (PascalCase command strings)
-      void this.hass.callService('remote', 'send_command', {
+      void this.hass.callService(DOMAIN.REMOTE, 'send_command', {
         entity_id: this.config.remote_entity,
         command: D_PAD_KEYS[btn],
       }).catch(() => {
@@ -499,7 +500,7 @@ export class SciFiTVCard extends SciFiBaseCard {
 
     const entityId = this.config.volume_entity || this.config.entity;
     const isMuted = this.hass.states[entityId]?.attributes?.is_volume_muted === true;
-    void this.hass.callService('media_player', 'volume_mute', {
+    void this.hass.callService(DOMAIN.MEDIA_PLAYER, 'volume_mute', {
       entity_id: entityId,
       is_volume_muted: !isMuted,
     }).catch((err: Error) => {
@@ -510,7 +511,7 @@ export class SciFiTVCard extends SciFiBaseCard {
   private _selectSource(source: string | Record<string, any>): void {
     if (typeof source === 'string') {
       const targetEntityId = this.config.volume_entity || this.config.entity;
-      void this.hass.callService('media_player', 'select_source', {
+      void this.hass.callService(DOMAIN.MEDIA_PLAYER, 'select_source', {
         entity_id: targetEntityId,
         source,
       }).catch((err: Error) => {
@@ -546,7 +547,7 @@ export class SciFiTVCard extends SciFiBaseCard {
       return;
     }
 
-    void this.hass.callService('media_player', isOn ? 'turn_off' : 'turn_on', {
+    void this.hass.callService(DOMAIN.MEDIA_PLAYER, isOn ? 'turn_off' : 'turn_on', {
       entity_id: this.config.entity,
     }).catch((err: Error) => {
       this._showToast(err.message);

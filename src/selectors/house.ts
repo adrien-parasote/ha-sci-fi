@@ -11,6 +11,7 @@
  */
 
 import type { HomeAssistantExt, HassFloor, HassArea, HassEntityEntry } from '../types/ha.js';
+import type { Domain } from '../types/domains.js';
 
 /**
  * Resolves the effective area_id for an entity entry.
@@ -117,7 +118,7 @@ export function getEntitiesByArea(
 export function getEntitiesByAreaAndDomain(
   hass: HomeAssistantExt,
   areaId: string,
-  domain: string
+  domain: Domain
 ): readonly HassEntityEntry[] {
   return getEntitiesByArea(hass, areaId).filter(entry => {
     const entryDomain = entry.entity_id.split('.')[0];

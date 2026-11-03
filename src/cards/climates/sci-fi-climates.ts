@@ -5,6 +5,7 @@ import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import { climateStyles } from './styles.js';
 import type { SciFiClimatesConfig } from './config.js';
+import { DOMAIN } from '../../types/domains.js';
 import { getClimateEntitiesExcluding, isClimateActive } from '../../selectors/climate.js';
 import { getFloors, getAreasByFloor, getEntitiesByAreaAndDomain, getFloorById, getAreaById, getAreas } from '../../selectors/house.js';
 
@@ -25,7 +26,7 @@ export class SciFiClimatesCard extends SciFiBaseCard {
     const excluded = this.config.entities_to_exclude ?? [];
 
     for (const entityId of Object.keys(this.hass?.states || {})) {
-      if (entityId.startsWith('climate.') && !excluded.includes(entityId)) {
+      if (entityId.startsWith(`${DOMAIN.CLIMATE}.`) && !excluded.includes(entityId)) {
         entities.add(entityId);
       }
     }
@@ -129,7 +130,7 @@ export class SciFiClimatesCard extends SciFiBaseCard {
   }
 
   private __hasClimateInArea(areaId: string, excluded: readonly string[]): boolean {
-    const climates = getEntitiesByAreaAndDomain(this.hass, areaId, 'climate');
+    const climates = getEntitiesByAreaAndDomain(this.hass, areaId, DOMAIN.CLIMATE);
     return climates.some(c => !excluded.includes(c.entity_id));
   }
 
@@ -141,7 +142,7 @@ export class SciFiClimatesCard extends SciFiBaseCard {
   private __isFloorActive(floorId: string, excluded: readonly string[]): boolean {
     const areas = getAreasByFloor(this.hass, floorId);
     for (const a of areas) {
-      const climates = getEntitiesByAreaAndDomain(this.hass, a.area_id, 'climate');
+      const climates = getEntitiesByAreaAndDomain(this.hass, a.area_id, DOMAIN.CLIMATE);
       for (const c of climates) {
         if (!excluded.includes(c.entity_id) && isClimateActive(this.hass, c.entity_id)) {
           return true;
@@ -152,7 +153,7 @@ export class SciFiClimatesCard extends SciFiBaseCard {
   }
 
   private __isAreaActive(areaId: string, excluded: readonly string[]): boolean {
-    const climates = getEntitiesByAreaAndDomain(this.hass, areaId, 'climate');
+    const climates = getEntitiesByAreaAndDomain(this.hass, areaId, DOMAIN.CLIMATE);
     return climates.some(c => !excluded.includes(c.entity_id) && isClimateActive(this.hass, c.entity_id));
   }
 
@@ -212,7 +213,7 @@ export class SciFiClimatesCard extends SciFiBaseCard {
   private __globalOnOffClimates(allClimates: any[], isCurrentlyActive: boolean): void {
     const action = isCurrentlyActive ? 'off' : 'heat';
     allClimates.forEach(c => {
-      void this.hass.callService('climate', 'set_hvac_mode', { entity_id: c.entity_id, hvac_mode: action });
+      void this.hass.callService(DOMAIN.CLIMATE, 'set_hvac_mode', { entity_id: c.entity_id, hvac_mode: action });
     });
     this.__toast(false, msg('Mode applied'));
   }
@@ -250,7 +251,7 @@ export class SciFiClimatesCard extends SciFiBaseCard {
     const areas = getAreasByFloor(this.hass, this._active_floor_id);
     let allFloorClimates: any[] = [];
     for (const a of areas) {
-      const clim = getEntitiesByAreaAndDomain(this.hass, a.area_id, 'climate');
+      const clim = getEntitiesByAreaAndDomain(this.hass, a.area_id, DOMAIN.CLIMATE);
       allFloorClimates = [...allFloorClimates, ...clim.filter(c => !excluded.includes(c.entity_id))];
     }
     
@@ -300,7 +301,7 @@ export class SciFiClimatesCard extends SciFiBaseCard {
     if (!area) return nothing;
     
     const active = this.__isAreaActive(area.area_id, excluded);
-    const climates = getEntitiesByAreaAndDomain(this.hass, area.area_id, 'climate').filter(c => !excluded.includes(c.entity_id));
+    const climates = getEntitiesByAreaAndDomain(this.hass, area.area_id, DOMAIN.CLIMATE).filter(c => !excluded.includes(c.entity_id));
     
     return html`
       <div class="area-content ${active ? 'on' : 'off'}">
@@ -345,19 +346,19 @@ export class SciFiClimatesCard extends SciFiBaseCard {
   }
 
   private _changeTemperature(e: CustomEvent): void {
-    void this.hass.callService('climate', 'set_temperature', { entity_id: e.detail.id, temperature: e.detail.temperature })
+    void this.hass.callService(DOMAIN.CLIMATE, 'set_temperature', { entity_id: e.detail.id, temperature: e.detail.temperature })
       .then(() => this.__toast(false, msg('Temperature changed')))
       .catch((err) => this.__toast(true, String(err)));
   }
 
   private _changeHvacMode(e: CustomEvent): void {
-    void this.hass.callService('climate', 'set_hvac_mode', { entity_id: e.detail.id, hvac_mode: e.detail.mode })
+    void this.hass.callService(DOMAIN.CLIMATE, 'set_hvac_mode', { entity_id: e.detail.id, hvac_mode: e.detail.mode })
       .then(() => this.__toast(false, msg('HVAC mode changed')))
       .catch((err) => this.__toast(true, String(err)));
   }
 
   private _changePresetMode(e: CustomEvent): void {
-    void this.hass.callService('climate', 'set_preset_mode', { entity_id: e.detail.id, preset_mode: e.detail.mode })
+    void this.hass.callService(DOMAIN.CLIMATE, 'set_preset_mode', { entity_id: e.detail.id, preset_mode: e.detail.mode })
       .then(() => this.__toast(false, msg('Preset changed')))
       .catch((err) => this.__toast(true, String(err)));
   }

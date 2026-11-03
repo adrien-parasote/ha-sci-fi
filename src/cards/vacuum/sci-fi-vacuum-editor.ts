@@ -29,6 +29,7 @@ import '../../components/editor-inputs/sf-editor-accordion.js';
 import '../../components/sf-toggle-switch/sf-toggle-switch.js';
 import '../../components/buttons/sf-button.js';
 import { vacuumLabels, vacuumSectionIcons } from './labels.js';
+import { DOMAIN } from '../../types/domains.js';
 
 type ActionKey = 'start' | 'pause' | 'stop' | 'return_to_base' | 'set_fan_speed';
 
@@ -62,7 +63,7 @@ export class SciFiVacuumEditor extends SciFiBaseEditor {
     super.hass = hass;
     if (!hass || this._vacuumEntities.length > 0) return;
     this._vacuumEntities = Object.values(hass.states)
-      .filter(e => e.entity_id.startsWith('vacuum.'))
+      .filter(e => e.entity_id.startsWith(`${DOMAIN.VACUUM}.`))
       .map(e => ({
         entity_id: e.entity_id,
         attributes: {

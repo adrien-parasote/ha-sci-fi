@@ -12,6 +12,7 @@ import type { BridgeAutomationsConfig, BridgeAutomationEntry } from '../config.j
 import { bridgeCall } from '../bridge-call.js';
 import { warnOnce } from '../bridge-warn.js';
 import { renderSfToggle } from '../bridge-toggle.js';
+import { DOMAIN } from '../../../types/domains.js';
 import '../../../components/sf-icon/sf-icon.js';
 
 const TAG = 'sf-bridge-automations';
@@ -20,10 +21,10 @@ const TAG = 'sf-bridge-automations';
 function autoDefaultIcon(entity: string): string {
   const domain = entity.split('.')[0];
   const icons: Record<string, string> = {
-    automation: 'mdi:robot',
-    switch: 'mdi:power-plug',
-    input_boolean: 'mdi:toggle-switch',
-    input_number: 'mdi:tune',
+    [DOMAIN.AUTOMATION]: 'mdi:robot',
+    [DOMAIN.SWITCH]: 'mdi:power-plug',
+    [DOMAIN.INPUT_BOOLEAN]: 'mdi:toggle-switch',
+    [DOMAIN.INPUT_NUMBER]: 'mdi:tune',
   };
   return icons[domain ?? ''] ?? 'mdi:robot';
 }

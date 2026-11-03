@@ -345,7 +345,7 @@ describe('bridge.md — les faits qu\'il affirme sur le code', () => {
       join(ROOT, 'src', 'cards', 'bridge', 'sections', 'sf-bridge-actions.ts'),
       'utf8',
     );
-    const called = [...resolver.matchAll(/return \['(\w+)', '(\w+)'\]/g)].map((m) => `${m[1]}.${m[2]}`);
+    const called = [...resolver.matchAll(/return \[(?:'(\w+)'|DOMAIN\.(\w+)), '(\w+)'\]/g)].map((m) => `${m[1] ?? m[2]!.toLowerCase()}.${m[3]}`);
     expect(called, 'témoin positif : resolveActionService mappe des services').toHaveLength(4);
 
     const block = section('### External Invocations').join('\n');

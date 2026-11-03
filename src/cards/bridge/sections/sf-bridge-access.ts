@@ -13,6 +13,7 @@ import { bridgeStyles } from '../styles.js';
 import type { BridgeAccessConfig } from '../config.js';
 import { bridgeCall } from '../bridge-call.js';
 import { warnOnce } from '../bridge-warn.js';
+import { DOMAIN } from '../../../types/domains.js';
 import '../../../components/sf-icon/sf-icon.js';
 
 const TAG = 'sf-bridge-access';
@@ -180,7 +181,7 @@ export class SfBridgeAccess extends LitElement {
     void bridgeCall(
       this,
       this.hass,
-      'lock',
+      DOMAIN.LOCK,
       service,
       { entity_id: entity },
       service === 'unlock' ? msg('Door unlocked') : msg('Door locked'),
@@ -198,7 +199,7 @@ export class SfBridgeAccess extends LitElement {
     void bridgeCall(
       this,
       this.hass,
-      'cover',
+      DOMAIN.COVER,
       'open_cover',
       { entity_id: entity },
       `${name} — ${msg('Opening…')}`
@@ -209,7 +210,7 @@ export class SfBridgeAccess extends LitElement {
     void bridgeCall(
       this,
       this.hass,
-      'cover',
+      DOMAIN.COVER,
       'close_cover',
       { entity_id: entity },
       `${name} — ${msg('Closing…')}`

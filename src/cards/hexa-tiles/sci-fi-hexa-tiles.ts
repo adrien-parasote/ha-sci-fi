@@ -14,6 +14,7 @@ import type { HassEntity } from '../../types/ha.js';
 import { fireHassAction } from '../../utils/action.js';
 
 import { hexaTilesStyles } from './styles.js';
+import { DOMAIN } from '../../types/domains.js';
 
 const TAG = 'sci-fi-hexa-tiles';
 
@@ -47,7 +48,7 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
 
     // Track person and zone entities for header
     for (const entityId of Object.keys(this.hass?.states || {})) {
-      if (entityId.startsWith('person.') || entityId.startsWith('zone.')) {
+      if (entityId.startsWith(`${DOMAIN.PERSON}.`) || entityId.startsWith(`${DOMAIN.ZONE}.`)) {
         entities.add(entityId);
       }
     }
@@ -141,7 +142,7 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
 
     // connected user details
     const connectedPerson = Object.values(this.hass.states).find(
-      state => state.entity_id.startsWith('person.') && state.attributes.user_id === this.hass.user?.id
+      state => state.entity_id.startsWith(`${DOMAIN.PERSON}.`) && state.attributes.user_id === this.hass.user?.id
     );
     const userId = connectedPerson?.entity_id;
 
@@ -209,7 +210,7 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     let zoneIcon = 'mdi:home';
     if (personId) {
       const activeZone = Object.values(this.hass.states).find(
-        s => s.entity_id.startsWith('zone.') && 
+        s => s.entity_id.startsWith(`${DOMAIN.ZONE}.`) && 
              Array.isArray(s.attributes.persons) && 
              s.attributes.persons.includes(personId)
       );
@@ -368,7 +369,7 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
 
     // Helper to evaluate active state of a single entity based on config criteria
     const isEntityActive = (entityState: string, id?: string): boolean => {
-      const isMedia = id?.startsWith('media_player.');
+      const isMedia = id?.startsWith(`${DOMAIN.MEDIA_PLAYER}.`);
       if (tile.state_on) {
         if (tile.state_on.includes(entityState)) return true;
         // Special case: if state_on contains 'on', also accept common active states for media_player

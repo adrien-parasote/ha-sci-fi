@@ -1,0 +1,117 @@
+{
+  "base": "35f1020",
+  "total": 111,
+  "files": {
+    "src/cards/bridge/sci-fi-bridge-editor.ts": {
+      "AUTOMATION": 3,
+      "BINARY_SENSOR": 4,
+      "COUNTER": 1,
+      "COVER": 1,
+      "INPUT_BOOLEAN": 2,
+      "INPUT_BUTTON": 1,
+      "INPUT_NUMBER": 1,
+      "LOCK": 1,
+      "NUMBER": 1,
+      "PERSON": 1,
+      "SCRIPT": 1,
+      "SENSOR": 6,
+      "SWITCH": 2
+    },
+    "src/cards/bridge/sections/sf-bridge-access.ts": {
+      "COVER": 2,
+      "LOCK": 1
+    },
+    "src/cards/bridge/sections/sf-bridge-actions.ts": {
+      "AUTOMATION": 2,
+      "HOMEASSISTANT": 1,
+      "INPUT_BUTTON": 2,
+      "SCRIPT": 2
+    },
+    "src/cards/bridge/sections/sf-bridge-alerts.ts": {
+      "SWITCH": 1
+    },
+    "src/cards/bridge/sections/sf-bridge-appliances.ts": {
+      "BINARY_SENSOR": 1
+    },
+    "src/cards/bridge/sections/sf-bridge-automations.ts": {
+      "AUTOMATION": 1,
+      "INPUT_BOOLEAN": 1,
+      "INPUT_NUMBER": 1,
+      "SWITCH": 1
+    },
+    "src/cards/climates/sci-fi-climates-editor.ts": {
+      "CLIMATE": 1
+    },
+    "src/cards/climates/sci-fi-climates.ts": {
+      "CLIMATE": 10
+    },
+    "src/cards/hexa-tiles/sci-fi-hexa-tiles-editor.ts": {
+      "PERSON": 1,
+      "WEATHER": 1
+    },
+    "src/cards/hexa-tiles/sci-fi-hexa-tiles.ts": {
+      "MEDIA_PLAYER": 1,
+      "PERSON": 2,
+      "ZONE": 2
+    },
+    "src/cards/lights/sci-fi-lights-editor.ts": {
+      "LIGHT": 3
+    },
+    "src/cards/lights/sci-fi-lights.ts": {
+      "LIGHT": 5
+    },
+    "src/cards/plugs/plug_const.ts": {
+      "SWITCH": 1
+    },
+    "src/cards/plugs/sci-fi-plugs-editor.ts": {
+      "SENSOR": 1,
+      "SWITCH": 1
+    },
+    "src/cards/plugs/sci-fi-plugs.ts": {
+      "SELECT": 2,
+      "SWITCH": 2
+    },
+    "src/cards/stove/sci-fi-stove.ts": {
+      "CLIMATE": 3,
+      "SWITCH": 1
+    },
+    "src/cards/tv/sci-fi-tv-editor.ts": {
+      "MEDIA_PLAYER": 1,
+      "REMOTE": 1
+    },
+    "src/cards/tv/sci-fi-tv.ts": {
+      "MEDIA_PLAYER": 4,
+      "REMOTE": 1
+    },
+    "src/cards/vacuum/sci-fi-vacuum-editor.ts": {
+      "VACUUM": 1
+    },
+    "src/cards/vacuum/sci-fi-vacuum.ts": {
+      "VACUUM": 2
+    },
+    "src/cards/water/sci-fi-water-management.ts": {
+      "AUTOMATION": 2,
+      "BINARY_SENSOR": 2,
+      "HOMEASSISTANT": 1,
+      "INPUT_BOOLEAN": 2,
+      "INPUT_SELECT": 2,
+      "NUMBER": 1,
+      "SELECT": 2,
+      "SENSOR": 3,
+      "SWITCH": 2,
+      "VALVE": 2
+    },
+    "src/cards/weather/sci-fi-weather-editor.ts": {
+      "WEATHER": 1
+    },
+    "src/cards/weather/sci-fi-weather.ts": {
+      "SENSOR": 1
+    },
+    "src/selectors/climate.ts": {
+      "CLIMATE": 1
+    },
+    "src/selectors/light.ts": {
+      "LIGHT": 1
+    }
+  }
+}

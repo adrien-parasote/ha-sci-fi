@@ -34,6 +34,7 @@ import '../../components/sf-toggle-switch/sf-toggle-switch.js';
 import '../../components/sf-icon/sf-icon.js';
 import '../../components/buttons/sf-button.js';
 import { hexaTilesLabels, hexaTilesSectionIcons } from './labels.js';
+import { DOMAIN } from '../../types/domains.js';
 
 const ENTITY_KINDS = ['light', 'climate', 'vacuum', 'plug', 'switch'];
 
@@ -76,7 +77,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
 
     // Always recompute persons — their picture/name can change at any time.
     const people = allEntities
-      .filter(e => e.entity_id.startsWith('person.'))
+      .filter(e => e.entity_id.startsWith(`${DOMAIN.PERSON}.`))
       .map(e => ({
         entityId: e.entity_id,
         friendlyName: (e.attributes['friendly_name']) ?? e.entity_id,
@@ -91,7 +92,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
     if (Object.keys(this._entitiesByDomain).length > 0) return;
 
     this._weatherEntities = allEntities
-      .filter(e => e.entity_id.startsWith('weather.'))
+      .filter(e => e.entity_id.startsWith(`${DOMAIN.WEATHER}.`))
       .map(e => ({
         entity_id: e.entity_id,
         attributes: {

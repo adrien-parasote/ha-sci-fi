@@ -12,6 +12,7 @@
  */
 
 import type { HomeAssistantExt } from '../../types/ha.js';
+import { DOMAIN } from '../../types/domains.js';
 import { html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
@@ -49,7 +50,7 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
     if (!hass || this._switchEntities.length > 0) return;
     const states = Object.values(hass.states);
     this._switchEntities = states
-      .filter(e => e.entity_id.startsWith('switch.'))
+      .filter(e => e.entity_id.startsWith(`${DOMAIN.SWITCH}.`))
       .map(e => ({
         entity_id: e.entity_id,
         attributes: {
@@ -58,7 +59,7 @@ export class SciFiPlugsEditor extends SciFiBaseEditor {
         },
       }));
     this._sensorEntities = states
-      .filter(e => e.entity_id.startsWith('sensor.'))
+      .filter(e => e.entity_id.startsWith(`${DOMAIN.SENSOR}.`))
       .map(e => ({
         entity_id: e.entity_id,
         attributes: {

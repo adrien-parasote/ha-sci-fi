@@ -10,6 +10,7 @@ import { sciFiCommonStyles } from '../../../styles/common.js';
 import { bridgeStyles } from '../styles.js';
 import type { BridgeAppliancesConfig, BridgeCycleEntry } from '../config.js';
 import { warnOnce } from '../bridge-warn.js';
+import { DOMAIN } from '../../../types/domains.js';
 import '../../../components/sf-icon/sf-icon.js';
 
 const TAG = 'sf-bridge-appliances';
@@ -19,7 +20,7 @@ function isCycleRunning(stateObj: any, entry: BridgeCycleEntry): boolean {
   if (!stateObj) return false;
   const state: string = stateObj.state;
   const domain = entry.entity.split('.')[0];
-  if (domain === 'binary_sensor') return state === 'on';
+  if (domain === DOMAIN.BINARY_SENSOR) return state === 'on';
   // sensor: check against running_states (case-insensitive)
   if (entry.running_states?.length) {
     return entry.running_states.some(

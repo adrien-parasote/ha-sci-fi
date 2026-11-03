@@ -20,6 +20,7 @@ import { bridgeStyles } from '../styles.js';
 import type { BridgeActionsConfig, BridgeActionItem } from '../config.js';
 import { bridgeCall } from '../bridge-call.js';
 import { warnOnce } from '../bridge-warn.js';
+import { DOMAIN } from '../../../types/domains.js';
 import '../../../components/sf-icon/sf-icon.js';
 
 const TAG = 'sf-bridge-actions';
@@ -28,10 +29,10 @@ const TAG = 'sf-bridge-actions';
 function resolveActionService(entity: string): [string, string] {
   const domain = entity.split('.')[0] as string;
   switch (domain) {
-    case 'input_button': return ['input_button', 'press'];
-    case 'script':       return ['script', 'turn_on'];
-    case 'automation':   return ['automation', 'trigger'];
-    default:             return ['homeassistant', 'turn_on'];
+    case DOMAIN.INPUT_BUTTON: return [DOMAIN.INPUT_BUTTON, 'press'];
+    case DOMAIN.SCRIPT:       return [DOMAIN.SCRIPT, 'turn_on'];
+    case DOMAIN.AUTOMATION:   return [DOMAIN.AUTOMATION, 'trigger'];
+    default:             return [DOMAIN.HOMEASSISTANT, 'turn_on'];
   }
 }
 

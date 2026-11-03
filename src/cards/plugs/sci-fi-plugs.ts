@@ -16,6 +16,7 @@ import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import { plugStyles } from './styles.js';
 import type { SciFiPlugsConfig, SciFiPlugDevice, SciFiPlugSensorEntry } from './config.js';
+import { DOMAIN } from '../../types/domains.js';
 import {
   PLUG_STATE_ON,
   HASS_PLUG_SERVICE,
@@ -299,10 +300,10 @@ export class SciFiPlugsCard extends SciFiBaseCard {
             // plural: the child-lock toggle and the select dropdown are
             // interaction buttons too, and stayed live while the socket was
             // unreachable (review round 1).
-            if (domain === 'select') {
+            if (domain === DOMAIN.SELECT) {
               return this._renderSelectSensor(entityId, entry, sensorState, isUnavailable);
             }
-            if (domain === 'switch') {
+            if (domain === DOMAIN.SWITCH) {
               return this._renderLockSensor(entityId, entry, sensorState, isUnavailable);
             }
             return this._renderValueSensor(entityId, entry, sensorState);
@@ -402,7 +403,7 @@ export class SciFiPlugsCard extends SciFiBaseCard {
   private _onSelectChange(e: CustomEvent, entityId: string): void {
     const value: string = (e.detail as ButtonSelectItem).id;
     void this.hass
-      .callService('select', 'select_option', { entity_id: entityId, option: value })
+      .callService(DOMAIN.SELECT, 'select_option', { entity_id: entityId, option: value })
       .then(() => this._toast(false, msg('done')))
       .catch((err: Error) => this._toast(true, err.message));
   }
@@ -411,7 +412,7 @@ export class SciFiPlugsCard extends SciFiBaseCard {
     const currentState = this.hass.states[entityId]?.state;
     const service = currentState === 'on' ? 'turn_off' : 'turn_on';
     void this.hass
-      .callService('switch', service, { entity_id: entityId })
+      .callService(DOMAIN.SWITCH, service, { entity_id: entityId })
       .then(() => this._toast(false, msg('done')))
       .catch((err: Error) => this._toast(true, err.message));
   }

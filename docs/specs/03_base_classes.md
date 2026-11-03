@@ -16,7 +16,7 @@
 | F-BASE-04 | Sealed render wrapper pattern | ✅ `base-card.ts` | tests/utils/base-card.test.ts :: TC-301, TC-302 |
 | F-BASE-05 | Shared common Lit CSS styles | ✅ `src/styles/common.ts` | tests/styles/editor-common.test.ts :: IT-302 |
 | F-BASE-06 | Shared editor Lit CSS styles | ✅ `src/styles/editor-common.ts` | tests/styles/editor-common.test.ts :: IT-302 |
-| F-BASE-07 | Design token families (fixed vs theme-chained) | ✅ `src/styles/common.ts` — [ADR-018](../adr/ADR-018_palette-fixed-identity.md) | tests/styles/token-refs.test.ts :: TC-307 |
+| F-BASE-07 | Design token families (fixed vs theme-chained) | ✅ `src/styles/common.ts` — [ADR-018](../adr/ADR-018_palette-fixed-identity.md) | tests/styles/token-refs.test.ts :: TC-307; tests/styles/token-declarations.test.ts |
 | F-BASE-08 | Rendu sélectif : `shouldUpdate()` scellé + `getRelevantEntities()` surchargeable | ✅ `base-card.ts` — § Contrat de rendu sélectif | tests/utils/base-card.test.ts :: IT-301, TC-309, TC-310 |
 
 ---
@@ -111,10 +111,13 @@ Rules that follow from it:
    `sciFiCommonStyles` in its own `static styles`, the token always resolves and
    the fallback is dead — keep it **character-identical** to the declaration in
    `common.ts`, because a fallback that says something else is read as the token's
-   value and is wrong. Where the element does *not* declare it (`sf-dropdown`,
-   `sf-button-card` — both rely on their mount point), the fallback is live
+   value and is wrong. "Declares" follows the **inheritance chain**, not the import
+   line, so an element that extends one which declares it and returns `super.styles`
+   declares it too (see the ADR-018 Erratum). Where the element does *not* declare it
+   (`sf-dropdown` is the only one; it relies on its mount point), the fallback is live
    insurance: it is what renders off-tree, and it is deliberately not the token's
-   value.
+   value. A `--sf-*` name read in `src/` must be declared (`common.ts`) whether or not
+   it carries a fallback — see `tests/styles/token-declarations.test.ts`.
 3. **A bespoke colour with one consumer does not get a token.** Illustration and
    domain palettes (landspeeder, radiator, stove, plugs, weather icons) stay
    literal in their own sheet.
@@ -292,7 +295,7 @@ prescrire l'AP#7 contre du code déjà relu.
 | TC-304 | Unit | setConfig stores config | Configuration object | config gets updated and stored |
 | TC-305 | Unit | baseEditor updates properties | Change value in editor | Dispatches config-changed custom event |
 | TC-306 | Unit | Subclass overriding willUpdate must call super | A compliant subclass AND one that omits `super.willUpdate` | The inherited hook fires for the compliant override and NOT for the faulty one; every `extends SciFiBaseCard` in `src/**/*.ts` that overrides `willUpdate` **as a method declaration** has `super.willUpdate(changedProperties)` as its first statement. The tree-wide half is scoped to method declarations in files that textually `extends SciFiBaseCard` — that is what a source walk can see. Two override shapes fall outside it and are tracked by bead `ha-sci-fi-2t4`, not by this row: a class-field arrow (`override willUpdate = (c) => …`, which shadows the prototype method) and a card extending an intermediate subclass declared elsewhere. The `override` keyword itself is enforced by `noImplicitOverride` in `tsconfig.json`, a different property from the super call: a compiler flag cannot express the latter, and dropping the walk in favour of the flag leaves the clause unchecked |
-| TC-307 | Unit | No `var(--x)` without fallback targets an undefined token | Every `` css` ` `` block and inline `style=` in `src/**/*.ts`, CSS comments excluded | Zero references; a violation is reported with the token name and its `file:line`. Guards rule 2 above — a reference that is neither defined nor defaulted is invalid at computed-value time and the property renders unset |
+| TC-307 | Unit | No undeclared `--sf-*` name, fallback or not; no non-`--sf-` `var(--x)` without fallback targets an undefined token | Every `` css` ` `` block and inline `style=` in `src/**/*.ts`, CSS comments excluded | Zero references; a violation is reported with the token name and its `file:line`. Guards rule 2 above — a reference that is neither defined nor defaulted is invalid at computed-value time and the property renders unset |
 | TC-308 | Unit | `getLabel` renvoie la chaîne française quand la locale est `fr` | `hass.locale.language = fr`, attendre le chargement de la locale | `getLabel('section-title-header')` vaut `En-tête` — `tests/utils/base-editor.test.ts` |
 | TC-309 | Unit | Le défaut `[]` re-rend sur tout | Une sous-classe qui ne surcharge **pas** `getRelevantEntities()` ; réassigner `hass` en changeant une entité qu'elle ne lit pas | `renderCard` est rappelé — le repli conservateur du § Contrat de rendu sélectif, point 3. C'est le pendant d'IT-301, qui prouve le veto quand la liste est fournie |
 | TC-310 | Unit | Chaque carte surcharge le hook | Les fichiers de carte de `src/cards/*/` | Toute classe qui `extends SciFiBaseCard` déclare `override getRelevantEntities()`. Le compte des cartes est dérivé de l'arbre, jamais gelé dans le cas |

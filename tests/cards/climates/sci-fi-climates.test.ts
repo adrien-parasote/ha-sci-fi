@@ -6,7 +6,7 @@ import * as path from 'path';
 
 import '../../../src/cards/climates/sci-fi-climates.js';
 import { SciFiClimatesCard } from '../../../src/cards/climates/sci-fi-climates.js';
-import { makeMockHass, makeMockEntity, makeMockEntityEntry } from '../../fixtures/mock-hass.js';
+import { makeMockHass, makeMockEntity, makeMockEntityEntry, makeMockFloor, makeMockArea } from '../../fixtures/mock-hass.js';
 
 if (!customElements.get('sf-toast')) {
   customElements.define('sf-toast', class extends HTMLElement {
@@ -412,3 +412,325 @@ describe('sci-fi-climates', () => {
 });
 
 
+
+// ─── climates-floor-fallback (bead ha-sci-fi-r9a) ─────────────────────────────
+
+describe('climates floor/area fallback', () => {
+  const root = path.resolve(__dirname, '../../..');
+  const read = (rel: string): string => fs.readFileSync(path.join(root, rel), 'utf8');
+
+  const floor = (id: string, name: string, level: number) =>
+    makeMockFloor({ floor_id: id, name, level });
+  const area = (id: string, name: string, floorId: string | null) =>
+    makeMockArea({ area_id: id, name, floor_id: floorId });
+  const rad = (id: string, areaId: string | null) =>
+    makeMockEntityEntry({ entity_id: id, area_id: areaId, domain: 'climate' });
+  const heat = (id: string) =>
+    makeMockEntity({ entity_id: id, state: 'heat', attributes: { friendly_name: id, current_temperature: 20 } });
+
+  type Spec = {
+    floors: Record<string, any>;
+    areas: Record<string, any>;
+    radAreaId: string | null;
+  };
+
+  const build = (s: Spec) =>
+    makeMockHass({
+      floors: s.floors,
+      areas: s.areas,
+      entities: { 'climate.r1': rad('climate.r1', s.radAreaId) },
+      states: { 'climate.r1': heat('climate.r1') },
+    });
+
+  // A: radiator in unfloored `salon`, floor `ground` holds only `cave`
+  const scenarioA = (order: 'salon' | 'cave' = 'salon', radAreaId: string | null = 'salon'): Spec => ({
+    floors: { ground: floor('ground', 'Ground', 0) },
+    areas:
+      order === 'salon'
+        ? { salon: area('salon', 'Salon', null), cave: area('cave', 'Cave', 'ground') }
+        : { cave: area('cave', 'Cave', 'ground'), salon: area('salon', 'Salon', null) },
+    radAreaId,
+  });
+  const scenarioB: Spec = {
+    floors: {},
+    areas: { salon: area('salon', 'Salon', null) },
+    radAreaId: 'salon',
+  };
+  const scenarioC: Spec = {
+    floors: { ground: floor('ground', 'Ground', 0) },
+    areas: { cave: area('cave', 'Cave', 'ground') },
+    radAreaId: null,
+  };
+  const scenarioD: Spec = {
+    floors: { ground: floor('ground', 'Ground', 0) },
+    areas: { salon: area('salon', 'Salon', 'ground') },
+    radAreaId: 'salon',
+  };
+  const scenarioE: Spec = {
+    floors: { ground: floor('ground', 'Ground', 0) },
+    areas: { garage: area('garage', 'Garage', null), salon: area('salon', 'Salon', 'ground') },
+    radAreaId: 'salon',
+  };
+  const scenarioF = (radAreaId: string | null = 'salon'): Spec => ({
+    floors: { rdc: floor('rdc', 'Rdc', 0), up: floor('up', 'Up', 1) },
+    areas: { hall: area('hall', 'Hall', 'rdc'), salon: area('salon', 'Salon', radAreaId === 'salon' ? null : 'up') },
+    radAreaId,
+  });
+
+  const mount = async (hass: any, config: Record<string, unknown> = { type: 'custom:sci-fi-climates' }) => {
+    const el = document.createElement('sci-fi-climates') as any;
+    el.setConfig(config);
+    el.hass = hass;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    return el;
+  };
+  const squash = (s: string | null | undefined) => (s ?? '').replace(/\s+/g, ' ').trim();
+  const floorText = (el: any) => squash(el.shadowRoot.querySelector('.floor-content')?.textContent);
+  const areaTitle = (el: any) => squash(el.shadowRoot.querySelector('.area-content .title')?.textContent);
+  const radiators = (el: any) => el.shadowRoot.querySelectorAll('sf-radiator').length;
+  const cells = (el: any, row: '.floors' | '.area-list') =>
+    (el.shadowRoot.querySelector(`${row} sf-hexa-row`) as any).cells as unknown[];
+  const snapshot = (el: any) => ({
+    floor: floorText(el),
+    area: areaTitle(el),
+    radiators: radiators(el),
+    f: el._active_floor_id,
+    a: el._active_area_id,
+  });
+
+  afterEach(() => {
+    document.body.replaceChildren();
+    vi.restoreAllMocks();
+  });
+
+  it('TC-CFF-U-01: scenario A falls back to the first floor', async () => {
+    const el = await mount(build(scenarioA()));
+    expect(el._active_floor_id).to.equal('ground');
+    expect(floorText(el)).to.equal('Ground - Off');
+    expect(cells(el, '.floors')).to.have.length(0);
+  });
+
+  it('TC-CFF-U-02: the area fallback takes the first area of the registry', async () => {
+    const salonFirst = await mount(build(scenarioA('salon')));
+    expect(salonFirst._active_area_id).to.equal('salon');
+    expect(areaTitle(salonFirst)).to.equal('Salon');
+    expect(radiators(salonFirst)).to.equal(1);
+    expect(cells(salonFirst, '.area-list')).to.have.length(0);
+    document.body.replaceChildren();
+
+    const caveFirst = await mount(build(scenarioA('cave')));
+    expect(caveFirst._active_area_id).to.equal('cave');
+    expect(areaTitle(caveFirst)).to.equal('Cave');
+    expect(radiators(caveFirst)).to.equal(0);
+    document.body.replaceChildren();
+
+    const integerLike = await mount(
+      build({
+        floors: { ground: floor('ground', 'Ground', 0) },
+        areas: { salon: area('salon', 'Salon', null), 1: area('1', 'Un', null) },
+        radAreaId: 'salon',
+      })
+    );
+    expect(integerLike._active_area_id).to.equal('1');
+    expect(areaTitle(integerLike)).to.equal('Un');
+  });
+
+  it('TC-CFF-U-03: a floor holding a radiator wins, a user selection is kept', async () => {
+    const d = await mount(build(scenarioD));
+    expect(d._active_floor_id).to.equal('ground');
+    expect(d._active_area_id).to.equal('salon');
+    expect(floorText(d)).to.equal('Ground - 20°C');
+    expect(radiators(d)).to.equal(1);
+    document.body.replaceChildren();
+
+    const e = await mount(build(scenarioE));
+    expect(e._active_floor_id).to.equal('ground');
+    expect(e._active_area_id).to.equal('salon');
+    expect(floorText(e)).to.equal('Ground - 20°C');
+    expect(radiators(e)).to.equal(1);
+    expect(e._active_area_id).to.not.equal('garage');
+    document.body.replaceChildren();
+
+    const hass = makeMockHass({
+      floors: { ground: floor('ground', 'Ground', 0), up: floor('up', 'Up', 1) },
+      areas: { salon: area('salon', 'Salon', 'ground'), bed: area('bed', 'Bed', 'up') },
+      entities: { 'climate.r1': rad('climate.r1', 'salon'), 'climate.r2': rad('climate.r2', 'bed') },
+      states: { 'climate.r1': heat('climate.r1'), 'climate.r2': heat('climate.r2') },
+    });
+    const two = await mount(hass);
+    const row = two.shadowRoot.querySelector('.floors sf-hexa-row');
+    await row.updateComplete;
+    const tiles = row.shadowRoot.querySelectorAll('sf-hexa-tile');
+    expect(tiles.length).to.equal(2);
+    (tiles[1] as HTMLElement).click();
+    await two.updateComplete;
+    two.hass = { ...hass };
+    await two.updateComplete;
+    expect(two._active_floor_id).to.equal('up');
+    expect(two._active_area_id).to.equal('bed');
+  });
+
+  it('TC-CFF-U-04: measured outcomes of scenarios B, C and F are pinned', async () => {
+    const b = await mount(build(scenarioB));
+    const bFloor = b.shadowRoot.querySelector('.floor-content');
+    expect(bFloor).to.not.equal(null);
+    expect(bFloor.children.length).to.equal(0);
+    expect(squash(bFloor.textContent)).to.equal('');
+    expect(b.shadowRoot.querySelector('.area-content')).to.equal(null);
+    expect(radiators(b)).to.equal(0);
+    document.body.replaceChildren();
+
+    const c = await mount(build(scenarioC));
+    expect(floorText(c)).to.equal('Ground - Off');
+    expect(areaTitle(c)).to.equal('Cave');
+    expect(radiators(c)).to.equal(0);
+    document.body.replaceChildren();
+
+    const f = await mount(build(scenarioF()));
+    expect(floorText(f)).to.equal('Rdc - Off');
+    expect(areaTitle(f)).to.equal('Hall');
+    expect(radiators(f)).to.equal(0);
+  });
+
+  it('TC-CFF-U-05: filter_by is not a config key', async () => {
+    for (const value of ['floor', 'area', 'bogus']) {
+      for (const spec of [scenarioA(), scenarioD]) {
+        const without = await mount(build(spec));
+        const expected = snapshot(without);
+        document.body.replaceChildren();
+        const withKey = await mount(build(spec), { type: 'custom:sci-fi-climates', filter_by: value });
+        expect(snapshot(withKey)).to.deep.equal(expected);
+        document.body.replaceChildren();
+      }
+    }
+    const walk = (dir: string): string[] =>
+      fs.readdirSync(path.join(root, dir), { withFileTypes: true }).flatMap(e =>
+        e.isDirectory() ? walk(path.join(dir, e.name)) : [path.join(dir, e.name)]
+      );
+    for (const rel of walk('src')) expect(read(rel), rel).to.not.include('filter_by');
+    const src = read('src/cards/climates/sci-fi-climates.ts');
+    expect(src).to.not.match(/this\.config\s+as\s+any/);
+    expect(src).to.not.match(/\(\s*this\.config\s+as\s+any\s*\)/);
+    for (const rel of [
+      'src/cards/climates/config.ts',
+      'src/cards/climates/sci-fi-climates-editor.ts',
+      'docs/specs/05_cards.md',
+    ]) {
+      expect(read(rel), rel).to.not.include('filter_by');
+    }
+    expect(JSON.stringify(SciFiClimatesCard.getStubConfig())).to.not.include('filter_by');
+  });
+
+  it('TC-CFF-U-06: climates.md states the selection and the fallback', () => {
+    const doc = read('docs/specs/cards/climates.md');
+    expect(doc).to.match(/^#{2,3} Floor and area selection$/m);
+    for (const word of ['first floor', 'first area', 'getAreas']) expect(doc).to.include(word);
+    expect(doc).to.match(/^\|\s*Radiators in areas with no floor\s*\|/m);
+    expect(doc).to.not.include('filter_by');
+    expect(doc).to.not.include('TC-CFF-');
+  });
+
+  it('TC-CFF-U-07: no msg() source is added', async () => {
+    const el = await mount(build(scenarioA()));
+    expect(radiators(el)).to.equal(1);
+    const src = read('src/cards/climates/sci-fi-climates.ts');
+    const sources = [...src.matchAll(/msg\(\s*(['"`])([^'"`]*)\1/g)].map(m => m[2]).sort();
+    expect(sources).to.deep.equal(
+      [
+        'No radiator configured',
+        'Summer time',
+        'Winter is coming',
+        'Mode applied',
+        'Temperature changed',
+        'HVAC mode changed',
+        'Preset changed',
+      ].sort()
+    );
+  });
+
+  it('TC-CFF-U-08: a nullish first registry element selects nothing and does not throw', async () => {
+    // base-card turns a render exception into an error card + console.error: assert on those, not on a throw.
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const a = scenarioA();
+    const el = await mount(
+      build({ ...a, floors: { ghost: undefined, ...a.floors } as any, areas: { ghost: undefined, ...a.areas } as any })
+    );
+    expect(errors).not.toHaveBeenCalled();
+    expect(el._renderError).to.equal(null);
+    expect(el._active_floor_id).to.equal('ground');
+    expect(el._active_area_id).to.equal(null);
+    expect(el.shadowRoot.querySelector('.area-content')).to.equal(null);
+    document.body.replaceChildren();
+
+    const noFloored = await mount(
+      build({
+        floors: { ground: floor('ground', 'Ground', 0) },
+        areas: { ghost: undefined, cave: area('cave', 'Cave', 'ground') } as any,
+        radAreaId: null,
+      })
+    );
+    expect(errors).not.toHaveBeenCalled();
+    expect(noFloored._active_area_id).to.equal(null);
+    document.body.replaceChildren();
+
+    const nullFloor = await mount(
+      build({ ...a, floors: { ghost: null, ...a.floors } as any, areas: { ghost: null, ...a.areas } as any })
+    );
+    expect(errors).not.toHaveBeenCalled();
+    expect(nullFloor._renderError).to.equal(null);
+    expect(nullFloor._active_floor_id).to.equal('ground');
+  });
+
+  it('IT-CFF-I-04: the fallback floor is kept when the area moves to another floor', async () => {
+    const el = await mount(build(scenarioF()));
+    expect(floorText(el)).to.equal('Rdc - Off');
+    expect(areaTitle(el)).to.equal('Hall');
+    el.hass = build({
+      ...scenarioF(),
+      areas: { hall: area('hall', 'Hall', 'rdc'), salon: area('salon', 'Salon', 'up') },
+    });
+    await el.updateComplete;
+    expect(floorText(el)).to.equal('Rdc - Off');
+    expect(areaTitle(el)).to.equal('Hall');
+    expect(radiators(el)).to.equal(0);
+  });
+
+  it('IT-CFF-I-01: the radiator area later assigned to the fallback floor shows up', async () => {
+    const el = await mount(build(scenarioA()));
+    expect(floorText(el)).to.equal('Ground - Off');
+    expect(areaTitle(el)).to.equal('Salon');
+    expect(radiators(el)).to.equal(1);
+    el.hass = build({
+      ...scenarioA(),
+      areas: { salon: area('salon', 'Salon', 'ground'), cave: area('cave', 'Cave', 'ground') },
+    });
+    await el.updateComplete;
+    expect(cells(el, '.floors').map((c: any) => c.id)).to.deep.equal(['ground']);
+    expect(floorText(el)).to.equal('Ground - 20°C');
+    expect(cells(el, '.area-list').map((c: any) => c.id)).to.deep.equal(['salon']);
+    expect(radiators(el)).to.equal(1);
+  });
+
+  it('IT-CFF-I-02: repeated hass replacements are stable and silent', async () => {
+    const spies = (['warn', 'error', 'log'] as const).map(k => vi.spyOn(console, k).mockImplementation(() => {}));
+    const el = await mount(build(scenarioA()));
+    const first = snapshot(el);
+    for (let i = 0; i < 3; i++) {
+      el.hass = build(scenarioA());
+      await el.updateComplete;
+      expect(snapshot(el)).to.deep.equal(first);
+    }
+    for (const s of spies) expect(s).not.toHaveBeenCalled();
+  });
+
+  it('IT-CFF-I-03: excluding the only radiator empties the card', async () => {
+    const el = await mount(build(scenarioA()));
+    expect(radiators(el)).to.equal(1);
+    el.setConfig({ type: 'custom:sci-fi-climates', entities_to_exclude: ['climate.r1'] });
+    await el.updateComplete;
+    expect(squash(el.shadowRoot.querySelector('.empty-message')?.textContent)).to.equal('Aucun radiateur configuré');
+    expect(el.shadowRoot.querySelector('.floor-content')).to.equal(null);
+    expect(el.shadowRoot.querySelector('.area-content')).to.equal(null);
+  });
+});

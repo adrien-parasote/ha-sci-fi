@@ -74,6 +74,14 @@ mode_colors:
   comfort: "#ffff8f"
 ```
 
+## Floor and area selection
+
+> Behaviour spec: [climates-floor-fallback](../climates-floor-fallback/spec.md) (FR-1..FR-6, measured scenarios).
+
+The card opens on the first floor that holds a non-excluded radiator and, inside it, on the first area that holds one. A selection made by the user is kept across re-renders.
+
+Fallback, unconditional and without any config key: when no floor holds a radiator (radiators in areas with no floor, or in no area) and at least one floor is registered, the **first floor** (lowest `level`, null levels last) is selected; then, when a floor is active and none of its areas was selected, the **first area** of `getAreas()` (registry order, any floor) is selected. The fallback never runs when a floor holds a radiator. It does not search for the radiators: they show only when that first area happens to hold them; otherwise the card shows the floor title and an empty area. With no floor registered the body stays empty. The normal display needs a floor assigned to the radiators' areas in Home Assistant.
+
 ## Anti-Patterns
 
 > This file is a Reference (YAML contract). Full anti-patterns are in [05_cards.md Anti-Patterns](../05_cards.md#anti-patterns).
@@ -113,6 +121,7 @@ mode_colors:
 | No `hass` object | Null check in `render()` | Return `nothing` | Blank render |
 | HVAC mode not in `mode_icons` | Lookup returns undefined | Use `off` icon/color as fallback | No crash |
 | Missing `sensor.season` | `hass.states['sensor.season']` undefined | Season icon hidden | No crash |
+| Radiators in areas with no floor | No floor holds a radiator | First floor then first registry area selected (see Floor and area selection) | No crash, no log |
 
 ## Cross-Spec Contracts
 

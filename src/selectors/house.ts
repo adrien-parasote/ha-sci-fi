@@ -34,7 +34,9 @@ function resolveEntityAreaId(
  */
 export function getFloors(hass: HomeAssistantExt): readonly HassFloor[] {
   if (!hass.floors) return [];
-  return Object.values(hass.floors).sort((a, b) => {
+  return Object.values(hass.floors)
+    .filter((f): f is HassFloor => f !== null && f !== undefined)
+    .sort((a, b) => {
     if (a.level === null && b.level === null) return 0;
     if (a.level === null) return 1;
     if (b.level === null) return -1;
@@ -77,7 +79,7 @@ export function getAreasByFloor(
   hass: HomeAssistantExt,
   floorId: string
 ): readonly HassArea[] {
-  return getAreas(hass).filter(area => area.floor_id === floorId);
+  return getAreas(hass).filter(area => area?.floor_id === floorId);
 }
 
 /**

@@ -28,14 +28,17 @@ export function getClimateEntitiesExcluding(
   return getClimateEntities(hass).filter(entry => !excluded.has(entry.entity_id));
 }
 
+/** States that never count as "on": off, and a thermostat HA cannot read (spec 02, decision 2026-11-04). */
+const CLIMATE_NOT_ON_STATES: ReadonlySet<string> = new Set(['off', 'unavailable', 'unknown']);
+
 /**
- * Returns true if the climate entity exists and its state is anything but 'off'
- * (unavailable and unknown included) — "not off", not "heating" (spec 02).
+ * Returns true if the climate entity exists and is on and reachable: its state is
+ * neither 'off', 'unavailable' nor 'unknown' — "on", not "heating" (spec 02).
  */
-export function isClimateNotOff(
+export function isClimateOn(
   hass: HomeAssistantExt,
   entityId: string
 ): boolean {
   const entity = hass.states[entityId];
-  return entity !== undefined && entity.state !== 'off';
+  return entity !== undefined && !CLIMATE_NOT_ON_STATES.has(entity.state);
 }

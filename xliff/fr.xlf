@@ -1386,6 +1386,22 @@
   <source>Entity not found: <x id="0" equiv-text="${this._missingIdsLabel()}"/></source>
   <target>Entité introuvable : <x id="0" equiv-text="${this._missingIdsLabel()}"/></target>
 </trans-unit>
+<trans-unit id="s76009519d15ad2db">
+  <source>Radiator</source>
+  <target>Radiateur</target>
+</trans-unit>
+<trans-unit id="sa48f81f001b893d2">
+  <source>User</source>
+  <target>Utilisateur</target>
+</trans-unit>
+<trans-unit id="s949f18464d0962a3">
+  <source>Remote command failed</source>
+  <target>Échec de la commande télécommande</target>
+</trans-unit>
+<trans-unit id="s8145da0073b16ef8">
+  <source>No config</source>
+  <target>Aucune configuration</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

@@ -205,7 +205,7 @@ export abstract class SciFiBaseEditor extends LitElement {
   // ─── Sealed render ──────────────────────────────────────────────────────────
 
   override render(): TemplateResult {
-    if (!this.config) return html`<div>No config</div>`;
+    if (!this.config) return html`<div>${msg('No config')}</div>`;
     return this.renderEditor();
   }
 

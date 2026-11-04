@@ -67,9 +67,14 @@ export interface SciFiTVCustomActions {
   readonly power?: LovelaceAction;      // header power button
   readonly volume_mute?: LovelaceAction;// mute button under the dial
   readonly enter?: LovelaceAction;      // read-only alias of `confirm` (ADR-005)
-  readonly info?: LovelaceAction;       // accepted, bound to no button — see ha-sci-fi-ecr
 }
 ```
+
+**`info` is not part of the contract** (fix lot `ui`, O5, bead `ha-sci-fi-ecr`).
+No info button was ever rendered and no document promised one: the key could
+only hold dead config. It is removed from `SciFiTVCustomActions`. A dashboard
+that still carries `custom_actions.info` loads unchanged — the key is ignored
+like any unknown key, never rejected — so no saved YAML breaks (ADR-005).
 
 **`enter` is an alias, not a second binding.** The editor wrote `enter` for the
 button this card renders as `confirm`, so saved dashboards carry both spellings.
@@ -136,6 +141,8 @@ custom_actions:
   const cx = 100, cy = 100; // fixed SVG viewBox center
   ```
 
+* **Radial guard** (bead `ha-sci-fi-9zpl`, fix lot `ui` O4): a pointer whose distance to `(cx, cy)` in SVG units is below `55` (inside the inner dashed grid circle, where the volume readout sits) or above `100` (outside the dial ring) is ignored — no `volume_set`, no local volume change. Only the ring drives the volume.
+
 * **Angle normalization + clamp (full formula):**
   ```typescript
   // src/cards/tv/sci-fi-tv.ts — _handleDrag(), continued
@@ -201,7 +208,7 @@ The `custom:sci-fi-tv-editor` relies exclusively on the components established i
    - Wraps HA's native action editor.
 4. **Custom Actions (Accordion)**
    - Exposes 10 action selectors (`<sf-editor-action>`), one per button the card renders: the D-pad and supplementary buttons (`up`, `down`, `left`, `right`, `confirm`, `back`, `home`, `menu`), the header `power` button and the `volume_mute` button under the dial.
-   - A selector is offered only for a button that exists. `info` is accepted in the YAML but has no button, so it gets no selector; the `confirm` selector shows `confirm ?? enter` so a dashboard saved with the old `enter` spelling still displays its binding.
+   - A selector is offered only for a button that exists. `info` is not a key of the contract (no button), so it gets no selector; the `confirm` selector shows `confirm ?? enter` so a dashboard saved with the old `enter` spelling still displays its binding.
 5. **Action Editor Component (`<sf-editor-action>`)**
    - A wrapper around Home Assistant's native `<ha-selector .selector=${{ action: {} }}>` to ensure 100% compatibility with the Lovelace Action schema.
    - Includes a graceful fallback UI (JSON text area or disabled placeholder) for mock environments where `<ha-selector>` is absent.

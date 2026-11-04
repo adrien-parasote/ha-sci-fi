@@ -88,7 +88,7 @@ cellule qui ne l'égale pas — voir § Pourquoi cette colonne est mesurée.
 | `getEntitiesByAreaAndDomain(hass, areaId, domain)` | climates, lights | Filtre par espace **et** domaine ; la primitive sur laquelle `getLightEntities` est bâti |
 | `hasActiveLights(hass, areaId)` | lights | Vrai si l'espace a au moins une lumière `'on'` |
 | `getClimateEntitiesExcluding(hass, excluded)` | climates | Tous les `climate.*` hors une liste d'`entity_id` |
-| `isClimateNotOff(hass, entityId)` | climates | Vrai si l'entité existe et que son état n'est pas `'off'` — cf. § `isClimateNotOff` |
+| `isClimateOn(hass, entityId)` | climates | Vrai si l'entité existe et que son état n'est ni `'off'`, ni `'unavailable'`, ni `'unknown'` — cf. § `isClimateOn` |
 
 ### Pourquoi cette colonne est mesurée
 
@@ -186,16 +186,16 @@ le dérive du préfixe d'`entity_id`. `src/types/ha.ts` le déclare donc optionn
 (`readonly domain?: string`) : un code qui en a besoin le dérive de l'`entity_id`,
 il ne le lit pas sur l'entrée (lot fix `socle`, O3, bead `ha-sci-fi-kw1`).
 
-### `isClimateNotOff` — « pas éteint », pas « en chauffe »
+### `isClimateOn` — « allumé et joignable », pas « en chauffe »
 
-La fonction rend `entity !== undefined && entity.state !== 'off'` : `unavailable`
-et `unknown` comptent. Elle s'appelait `isClimateActive`, documentée « currently
-heating », ce qu'elle n'a jamais fait. Ses appelants (carte climates : étage et
-espace actifs, bascule été/hiver de l'en-tête) lisent « pas éteint », et aucune
-spec de carte ne dit « en chauffe » : le contrat livré est gardé, le nom dit
-désormais ce qu'il rend (lot fix `socle`, O4, bead `ha-sci-fi-djb`). Qu'un
-thermostat injoignable ne compte plus comme actif serait un changement de
-comportement — une décision produit, pas ce correctif.
+La fonction rend vrai si l'entité existe et que son état n'est ni `'off'`, ni
+`'unavailable'`, ni `'unknown'`. **Décision utilisateur du 2026-11-04** (lot fix
+`ui`, O6, bead `ha-sci-fi-jbun`) : un thermostat injoignable ou d'état inconnu
+ne compte plus comme actif — ni pour l'étage et l'espace actifs de la carte
+climates, ni pour la bascule été/hiver de l'en-tête. Elle s'appelait
+`isClimateNotOff` (lot fix `socle`, O4, bead `ha-sci-fi-djb`), nom devenu faux
+une fois ces deux états exclus ; avant encore `isClimateActive`, documentée
+« currently heating », ce qu'elle n'a jamais fait.
 
 ---
 

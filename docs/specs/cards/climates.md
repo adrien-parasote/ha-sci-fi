@@ -82,6 +82,8 @@ The card opens on the first floor that holds a non-excluded radiator and, inside
 
 Fallback, unconditional and without any config key: when no floor holds a radiator (radiators in areas with no floor, or in no area) and at least one floor is registered, the **first floor** (lowest `level`, null levels last) is selected; then, when a floor is active and none of its areas was selected, the **first area** of `getAreas()` (registry order, any floor) is selected. The fallback never runs when a floor holds a radiator. It does not search for the radiators: they show only when that first area happens to hold them; otherwise the card shows the floor title and an empty area. With no floor registered the body stays empty. The normal display needs a floor assigned to the radiators' areas in Home Assistant.
 
+A floor or an area is shown **active**, and the header's summer/winter toggle reads "on", when at least one of its non-excluded radiators is on per `isClimateOn` ([Spec 02](../02_domain_selectors.md)): a state of `off`, `unavailable` or `unknown` does not count (user decision 2026-11-04, fix lot `ui`, O6, bead `ha-sci-fi-jbun`).
+
 ## Anti-Patterns
 
 > This file is a Reference (YAML contract). Full anti-patterns are in [05_cards.md Anti-Patterns](../05_cards.md#anti-patterns).

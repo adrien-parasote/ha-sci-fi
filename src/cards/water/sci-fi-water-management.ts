@@ -627,7 +627,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     const name = stateObj?.attributes?.friendly_name || entityEntry.entity_id;
     
     // Formatting sensor values
-    let stateDisplay = stateObj?.state || 'Unknown';
+    let stateDisplay = stateObj?.state || msg('Unknown');
     if (isSensor && stateObj?.attributes?.unit_of_measurement) {
       stateDisplay += String(stateObj.attributes.unit_of_measurement);
     }

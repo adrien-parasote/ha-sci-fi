@@ -1,0 +1,63 @@
+{
+  "feature": "ui",
+  "created": "2026-11-04T20:48:53Z",
+  "frozen_at": "2026-11-04T20:57:10Z",
+  "epic": "ha-sci-fi-rskp",
+  "observations": [
+    {
+      "id": "O1",
+      "text": "[ha-sci-fi-33v] `.empty-message` n'a aucune règle CSS : l'état vide de climates et de vehicles rend en texte nu",
+      "bead": "ha-sci-fi-rskp.1",
+      "test": "npx vitest run tests/fixes/ui/O1.test.ts",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O2",
+      "text": "[ha-sci-fi-8fb] i18n : litteraux anglais en dur hors msg() (User, Radiator, Unknown, No config x2, Remote command failed, title=preset/mode du sf-radiator)",
+      "bead": "ha-sci-fi-rskp.2",
+      "test": "npx vitest run tests/fixes/ui/O2.test.ts",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O3",
+      "text": "[ha-sci-fi-rq0] icônes météo : les identifiants SVG (x1, x2, b) se heurtent dans le DOM léger quand deux icônes cohabitent",
+      "bead": "ha-sci-fi-rskp.3",
+      "test": "npx vitest run tests/fixes/ui/O3.test.ts",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O4",
+      "text": "[ha-sci-fi-9zpl] tv : garde radiale de la molette de volume (tap sur le readout = 0 ou 1)",
+      "bead": "ha-sci-fi-rskp.4",
+      "test": "npx vitest run tests/cards/tv/sci-fi-tv.test.ts -t test_O4",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O5",
+      "text": "[ha-sci-fi-ecr] tv : custom_actions.info n'a aucun bouton — ajouter le bouton ou retirer la clé du contrat",
+      "bead": "ha-sci-fi-rskp.5",
+      "test": "npx vitest run tests/fixes/ui/O5.test.ts",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O6",
+      "text": "[ha-sci-fi-jbun] climates: un thermostat unavailable/unknown ne compte plus comme actif (décision utilisateur 2026-11-04) — isClimateNotOff exclut aussi unavailable et unknown, spec 02 amendée",
+      "bead": "ha-sci-fi-rskp.6",
+      "test": "npx vitest run tests/fixes/ui/O6.test.ts",
+      "unreproduced": null,
+      "escalated": null
+    }
+  ],
+  "suite": "npx vitest run",
+  "lint": "npx eslint --max-warnings 166 src/**/*.ts tests/**/*.ts",
+  "suite_run": {
+    "at": "2026-11-04T21:01:25Z",
+    "rc": 0,
+    "tail": ""
+  }
+}

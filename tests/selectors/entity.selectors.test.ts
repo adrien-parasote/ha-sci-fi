@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { makeMockHass, makeMockEntityEntry, makeMockEntity } from '../fixtures/mock-hass.js';
 import { getLightEntities, countActiveLights, hasActiveLights } from '../../src/selectors/light.js';
-import { getClimateEntities, getClimateEntitiesExcluding, isClimateActive } from '../../src/selectors/climate.js';
+import { getClimateEntities, getClimateEntitiesExcluding, isClimateNotOff } from '../../src/selectors/climate.js';
 import { assertString, assertDefined, isValidCardType } from '../../src/types/config.js';
 
 describe('entity selectors', () => {
@@ -66,17 +66,17 @@ describe('entity selectors', () => {
     expect(result[0]?.entity_id).toBe('climate.b');
   });
 
-  it('isClimateActive() returns true when state is not off', () => {
+  it('isClimateNotOff() returns true when state is not off', () => {
     const hass = makeMockHass(); // climate.salon state = 'heat'
-    expect(isClimateActive(hass, 'climate.salon')).toBe(true);
+    expect(isClimateNotOff(hass, 'climate.salon')).toBe(true);
   });
 
-  it('isClimateActive() returns false when state is off', () => {
+  it('isClimateNotOff() returns false when state is off', () => {
     const hass = makeMockHass({
       states: { 'climate.salon': makeMockEntity({ entity_id: 'climate.salon', state: 'off' }) },
       entities: { 'climate.salon': makeMockEntityEntry({ entity_id: 'climate.salon', area_id: 'living_room', domain: 'climate' }) },
     });
-    expect(isClimateActive(hass, 'climate.salon')).toBe(false);
+    expect(isClimateNotOff(hass, 'climate.salon')).toBe(false);
   });
 
   // TC-207: type-guard rejects invalid config

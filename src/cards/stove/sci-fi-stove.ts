@@ -32,6 +32,7 @@ import '../../components/sf-wheel.js';
 import '../../components/buttons/sf-button-card.js';
 import '../../components/buttons/sf-button-card-select.js';
 import { DOMAIN } from '../../types/domains.js';
+import { ENTITY_ID } from '../../types/entity-ids.js';
 
 const TAG = 'sci-fi-stove';
 
@@ -507,7 +508,7 @@ export class SciFiStoveCard extends SciFiBaseCard {
   }
 
   static getStubConfig(): SciFiStoveConfig {
-    return { type: `custom:${TAG}`, entity: 'climate.poele' };
+    return { type: `custom:${TAG}`, entity: ENTITY_ID.STUB_STOVE };
   }
 }
 

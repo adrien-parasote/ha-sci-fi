@@ -1,0 +1,55 @@
+{
+  "feature": "socle",
+  "created": "2026-11-04T20:13:48Z",
+  "frozen_at": "2026-11-04T20:20:33Z",
+  "epic": "ha-sci-fi-oyir",
+  "observations": [
+    {
+      "id": "O1",
+      "text": "[ha-sci-fi-14z] bridgeConfigMetadata est un export mort : aucun consommateur dans src, tests ni dev",
+      "bead": "ha-sci-fi-oyir.1",
+      "test": null,
+      "unreproduced": null,
+      "escalated": "ha-sci-fi-14z"
+    },
+    {
+      "id": "O2",
+      "text": "[ha-sci-fi-u9a] socle: six exports de src/selectors n'ont aucun appelant",
+      "bead": "ha-sci-fi-oyir.2",
+      "test": "npx vitest run tests/fixes/socle/O2.test.ts",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O3",
+      "text": "[ha-sci-fi-kw1] socle: HassEntityEntry.domain est obligatoire pour un champ que HA n'envoie pas",
+      "bead": "ha-sci-fi-oyir.3",
+      "test": "npx vitest run tests/fixes/socle/O3.test.ts",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O4",
+      "text": "[ha-sci-fi-djb] socle: isClimateActive dit heating et rend pas-eteint",
+      "bead": "ha-sci-fi-oyir.4",
+      "test": "npx vitest run tests/fixes/socle/O4.test.ts",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O5",
+      "text": "[ha-sci-fi-4syw] socle: constante d'identifiants d'entite complets (sun.sun, stubs) — suite de domain-constants",
+      "bead": "ha-sci-fi-oyir.5",
+      "test": "npx vitest run tests/fixes/socle/O5.test.ts",
+      "unreproduced": null,
+      "escalated": null
+    }
+  ],
+  "suite": "npx vitest run",
+  "lint": "npm run lint",
+  "suite_run": {
+    "at": "2026-11-04T20:27:01Z",
+    "rc": 0,
+    "tail": ""
+  }
+}

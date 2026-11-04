@@ -13,6 +13,7 @@ import { fireHassAction } from '../../utils/action.js';
 import type { HassEntity } from '../../types/ha.js';
 import type { SciFiTVConfig } from './config.js';
 import { DOMAIN } from '../../types/domains.js';
+import { ENTITY_ID } from '../../types/entity-ids.js';
 
 const TAG = 'sci-fi-tv';
 
@@ -596,7 +597,7 @@ export class SciFiTVCard extends SciFiBaseCard {
   static getStubConfig(): SciFiTVConfig {
     return {
       type: `custom:${TAG}`,
-      entity: 'media_player.bravia_4k_vh22',
+      entity: ENTITY_ID.STUB_TV,
     };
   }
 

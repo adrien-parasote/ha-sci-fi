@@ -27,6 +27,7 @@ import {
 import WEATHER_ICON_SET from '../../components/sf-icon/data/sf-weather-icons.js';
 
 import { lightStyles } from './styles.js';
+import { ENTITY_ID } from '../../types/entity-ids.js';
 
 const TAG = 'sci-fi-lights';
 
@@ -50,7 +51,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
 
   protected override getRelevantEntities(): string[] {
     const entities = new Set<string>();
-    entities.add('sun.sun');
+    entities.add(ENTITY_ID.SUN);
 
     const ignored = this.config.ignored_entities ?? [];
     for (const entityId of Object.keys(this.hass?.states || {})) {
@@ -170,7 +171,7 @@ export class SciFiLightsCard extends SciFiBaseCard {
   // ── Header ──────────────────────────────────────────────────────────────────
 
   private _getDayNightIcon(): TemplateResult {
-    const sun = this.hass?.states['sun.sun'];
+    const sun = this.hass?.states[ENTITY_ID.SUN];
     const isDay = sun ? sun.state === 'above_horizon' : true;
     const key = isDay ? 'sunny-day' : 'sunny-night';
     return (WEATHER_ICON_SET as Record<string, TemplateResult>)[key] ?? html``;

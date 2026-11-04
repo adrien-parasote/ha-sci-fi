@@ -2,7 +2,6 @@ import { expect, describe, it, vi } from 'vitest';
 import {
   getFloors,
   getFloorById,
-  getFirstFloor,
   getAreas,
   getAreasByFloor,
   getAreaById,
@@ -54,21 +53,6 @@ describe('house selectors', () => {
       expect(getFloorById(hass, 'rooftop')).toBeUndefined();
     });
 
-    it('getFirstFloor returns the lowest level floor', () => {
-      const hass = makeMockHass({
-        floors: {
-          'top': makeMockFloor({ floor_id: 'top', level: 2 }),
-          'ground': makeMockFloor({ floor_id: 'ground', level: 0 }),
-        },
-      });
-      const first = getFirstFloor(hass);
-      expect(first!.floor_id).to.equal('ground');
-    });
-
-    it('getFirstFloor() returns undefined when no floors registry', () => {
-      const hass = makeMockHass({ floors: {} });
-      expect(getFirstFloor(hass)).toBeUndefined();
-    });
   });
 
   describe('areas', () => {

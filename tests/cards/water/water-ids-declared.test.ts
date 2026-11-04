@@ -252,7 +252,7 @@ describe('water ids declared', () => {
     expect(waterDoc).toContain('Neuf des vingt-cinq');
     expect(histDoc.split('\n').filter((l) => /^\|\s*D14\b/.test(l))).toEqual([]);
     const resolved = histDoc.split('\n').find((l) => l.startsWith('Resolved by alignment')) ?? '';
-    for (const tok of ['D14', '_formatTimestamp', ':306', ':317', ':352', 'no test pins the brackets']) {
+    for (const tok of ['D14', '_formatTimestamp', ':307', ':318', ':353', 'no test pins the brackets']) {
       expect(resolved, tok).toContain(tok);
     }
   });
@@ -287,7 +287,7 @@ describe('water ids declared', () => {
   it('TC-WATOI-U-11: the aligned guard keeps the D14 cites and the case-row carve-out with its mutants', () => {
     const src = read(ALIGNED);
     const carve = ['(?:TC|IT)', 'WATER', 'HISTORY', '[UI]'].join('-');
-    for (const tok of ['D14_CITES', '306', '317', '352', carve, 'Timeline rendered when entries match and', 'expanded` (D21)']) {
+    for (const tok of ['D14_CITES', '307', '318', '353', carve, 'Timeline rendered when entries match and', 'expanded` (D21)']) {
       expect(src, tok).toContain(tok);
     }
   });

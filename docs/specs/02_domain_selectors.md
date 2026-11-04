@@ -85,13 +85,10 @@ cellule qui ne l'égale pas — voir § Pourquoi cette colonne est mesurée.
 | `countActiveLights(hass, areaId)` | ⬜ aucun appelant | Nombre de lumières `'on'` dans un espace |
 | `getAreas(hass)` | climates | Tous les espaces du registre, `readonly HassArea[]` |
 | `getAreaById(hass, areaId)` | climates, lights | Un espace, `HassArea \| undefined` |
-| `getFirstFloor(hass)` | ⬜ aucun appelant | Le premier étage après tri |
 | `getEntitiesByAreaAndDomain(hass, areaId, domain)` | climates, lights | Filtre par espace **et** domaine ; la primitive sur laquelle `getLightEntities` est bâti |
-| `getLightState(hass, entityEntry)` | ⬜ aucun appelant | L'état live d'une entrée de registre de lumière |
 | `hasActiveLights(hass, areaId)` | lights | Vrai si l'espace a au moins une lumière `'on'` |
-| `getClimateState(hass, entityEntry)` | ⬜ aucun appelant | L'état live d'une entrée de registre de climat |
 | `getClimateEntitiesExcluding(hass, excluded)` | climates | Tous les `climate.*` hors une liste d'`entity_id` |
-| `isClimateActive(hass, entityId)` | climates | Vrai si l'entité existe et que son état n'est pas `'off'` — cf. § `isClimateActive` |
+| `isClimateNotOff(hass, entityId)` | climates | Vrai si l'entité existe et que son état n'est pas `'off'` — cf. § `isClimateNotOff` |
 
 ### Pourquoi cette colonne est mesurée
 
@@ -107,9 +104,13 @@ indistinguable d'une attribution vraie à la lecture, et c'est exactement le
 défaut que ce lot existe pour retirer — y compris quand c'est le lot qui
 l'écrit.
 
-**Les six `⬜ aucun appelant` sont du code exporté que rien n'appelle**, couvert
-par ses seuls tests unitaires. Ce n'est pas une erreur de spec : c'est du code
-mort à décider, bead `ha-sci-fi-u9a`.
+**Les trois `⬜ aucun appelant` restants sont des primitives documentées** :
+`getEntitiesByArea`, `getClimateEntities` et `countActiveLights` sont chacune la
+base d'un export appelé (`getEntitiesByAreaAndDomain`, `getClimateEntitiesExcluding`,
+`hasActiveLights`) et portent un cas de test de cette spec (TC-203, TC-204,
+TC-206). Les trois autres exports sans appelant ni cas de test — `getFirstFloor`,
+`getLightState`, `getClimateState` — ont été supprimés (lot fix `socle`, O2,
+bead `ha-sci-fi-u9a`).
 
 ---
 
@@ -178,33 +179,23 @@ sont le compte de cette frontière plus la dette.
 | IT-202 | Integration | Performance: 500 entities | `mockHass` with 500 states | `getLightEntities()` completes under 5ms |
 | IT-203 | Integration | End-to-end selector pipeline | Chain `getFloors` -> `getAreasByFloor` -> `getEntitiesByArea` | Correct entities resolved across hierarchy |
 
-### `HassEntityEntry.domain` — déclaré obligatoire, dérivé en pratique
+### `HassEntityEntry.domain` — optionnel, dérivé en pratique
 
-`src/types/ha.ts` déclare `readonly domain: string` sans `?`, donc obligatoire.
-`src/selectors/house.ts` dit l'inverse en commentaire : « Domain is DERIVED from
-entity_id prefix — the HA entity_registry API does NOT send a `domain` field »,
-et le dérive effectivement du préfixe d'`entity_id`.
+L'API entity_registry de HA n'envoie pas de champ `domain` ; `src/selectors/house.ts`
+le dérive du préfixe d'`entity_id`. `src/types/ha.ts` le déclare donc optionnel
+(`readonly domain?: string`) : un code qui en a besoin le dérive de l'`entity_id`,
+il ne le lit pas sur l'entrée (lot fix `socle`, O3, bead `ha-sci-fi-kw1`).
 
-**Le contrat qui tient est celui du sélecteur**, parce que c'est lui qui est
-confronté à l'API : le champ n'arrive pas de HA, il est calculé par le projet.
-Le type dit juste pour ce que le projet construit lui-même (`mock-hass.ts` le
-remplit), et faux pour ce qu'il reçoit. Tant qu'aucun code ne lit `entry.domain`
-sur une entrée venue telle quelle du registre, la contradiction ne coûte rien ;
-le jour où il le fera, il lira `undefined` sur un champ que le compilateur
-affirme présent. Bead `ha-sci-fi-kw1` — la correction est un `?` plus les
-dérivations explicites, pas un commentaire de plus.
+### `isClimateNotOff` — « pas éteint », pas « en chauffe »
 
-### `isClimateActive` — « currently heating » est faux pour deux états
-
-La fonction est documentée « Returns true if the climate entity is currently
-heating » et rend `entity !== undefined && entity.state !== 'off'`. Donc
-`unavailable` et `unknown` comptent comme chauffant, et un thermostat injoignable
-s'affiche actif.
-
-**Le contrat livré est « pas éteint », pas « en chauffe »**, et c'est ce que cette
-spec énonce désormais — la Public Interface ci-dessus le dit dans ces termes.
-Lequel des deux le projet VEUT n'est pas tranché ici : aucun cas de test ne porte
-cette fonction, donc rien ne dirait qu'on l'a changée. Bead `ha-sci-fi-djb`.
+La fonction rend `entity !== undefined && entity.state !== 'off'` : `unavailable`
+et `unknown` comptent. Elle s'appelait `isClimateActive`, documentée « currently
+heating », ce qu'elle n'a jamais fait. Ses appelants (carte climates : étage et
+espace actifs, bascule été/hiver de l'en-tête) lisent « pas éteint », et aucune
+spec de carte ne dit « en chauffe » : le contrat livré est gardé, le nom dit
+désormais ce qu'il rend (lot fix `socle`, O4, bead `ha-sci-fi-djb`). Qu'un
+thermostat injoignable ne compte plus comme actif serait un changement de
+comportement — une décision produit, pas ce correctif.
 
 ---
 

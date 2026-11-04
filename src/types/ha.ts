@@ -41,7 +41,8 @@ export interface HassEntityEntry {
   readonly area_id: string | null;
   readonly device_id: string | null;
   readonly disabled_by: string | null;
-  readonly domain: string;
+  /** Not sent by the HA entity_registry API: derive the domain from the entity_id prefix. */
+  readonly domain?: string;
   readonly platform: string;
   readonly labels: readonly string[];
 }

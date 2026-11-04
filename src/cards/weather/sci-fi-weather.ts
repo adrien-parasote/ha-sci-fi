@@ -97,6 +97,7 @@ function normalizeChartKind(kind: string | undefined): string {
 
 import { weatherStyles } from './styles.js';
 import { DOMAIN } from '../../types/domains.js';
+import { ENTITY_ID } from '../../types/entity-ids.js';
 
 @customElement(TAG)
 export class SciFiWeatherCard extends SciFiBaseCard {
@@ -153,7 +154,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
 
   protected override getRelevantEntities(): string[] {
     const entities = new Set<string>();
-    entities.add('sun.sun');
+    entities.add(ENTITY_ID.SUN);
 
     if (this.config?.weather_entity) {
       entities.add(this.config.weather_entity);
@@ -273,7 +274,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
 
   private _isDay(): boolean {
     if (!this.hass) return true;
-    const sun = this.hass.states['sun.sun'];
+    const sun = this.hass.states[ENTITY_ID.SUN];
     if (!sun) return true;
     return sun.state !== 'below_horizon';
   }
@@ -285,7 +286,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
 
   private _getIconForHourly(hourlyItem: any): string {
     const dt = new Date(hourlyItem.datetime);
-    const sun = this.hass?.states['sun.sun'];
+    const sun = this.hass?.states[ENTITY_ID.SUN];
     let state = 'day';
     
     if (sun) {
@@ -328,7 +329,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
     const time = new Intl.DateTimeFormat(this.hass?.locale?.language || navigator.language, timeOptions).format(this._date);
     const date = new Intl.DateTimeFormat(this.hass?.locale?.language || navigator.language, dateOptions).format(this._date);
 
-    const sunEntity = this.hass?.states['sun.sun'];
+    const sunEntity = this.hass?.states[ENTITY_ID.SUN];
     const isDay = sunEntity ? sunEntity.state !== 'below_horizon' : true;
     const condition = weatherEntity.state;
     const temp = weatherEntity.attributes.temperature;
@@ -636,7 +637,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
   }
 
   static getStubConfig(): SciFiWeatherConfig {
-    return { type: `custom:${TAG}`, weather_entity: 'weather.forecast_home' };
+    return { type: `custom:${TAG}`, weather_entity: ENTITY_ID.STUB_WEATHER };
   }
 }
 

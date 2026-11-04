@@ -55,14 +55,6 @@ export function getFloorById(
   return hass.floors?.[floorId];
 }
 
-/**
- * Returns the first floor (lowest level), or undefined if none configured.
- */
-export function getFirstFloor(hass: HomeAssistantExt): HassFloor | undefined {
-  const floors = getFloors(hass);
-  return floors[0];
-}
-
 // ─── Areas ────────────────────────────────────────────────────────────────────
 
 /**

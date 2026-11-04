@@ -15,6 +15,7 @@ import { fireHassAction } from '../../utils/action.js';
 
 import { hexaTilesStyles } from './styles.js';
 import { DOMAIN } from '../../types/domains.js';
+import { ENTITY_ID } from '../../types/entity-ids.js';
 
 const TAG = 'sci-fi-hexa-tiles';
 
@@ -327,7 +328,7 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
     const condition = state.state?.toLowerCase() ?? 'unknown';
     
     // Determine day/night for animated weather icons
-    const sunEntity = this.hass?.states['sun.sun'];
+    const sunEntity = this.hass?.states[ENTITY_ID.SUN];
     const isDay = sunEntity ? sunEntity.state !== 'below_horizon' : true;
     
     // Default fallback to cloudy if condition is unknown/unsupported by sf icons

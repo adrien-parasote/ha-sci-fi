@@ -3,7 +3,7 @@
  * Pure, stateless functions. No mutation.
  */
 
-import type { HomeAssistantExt, HassEntityEntry, HassEntity } from '../types/ha.js';
+import type { HomeAssistantExt, HassEntityEntry } from '../types/ha.js';
 import { getEntitiesByAreaAndDomain } from './house.js';
 import { DOMAIN } from '../types/domains.js';
 
@@ -16,17 +16,6 @@ export function getLightEntities(
   areaId: string
 ): readonly HassEntityEntry[] {
   return getEntitiesByAreaAndDomain(hass, areaId, DOMAIN.LIGHT);
-}
-
-/**
- * Returns the HassEntity state for a light entity entry.
- * Returns undefined if the entity is not in hass.states.
- */
-export function getLightState(
-  hass: HomeAssistantExt,
-  entityEntry: HassEntityEntry
-): HassEntity | undefined {
-  return hass.states[entityEntry.entity_id];
 }
 
 /**

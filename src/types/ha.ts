@@ -93,6 +93,8 @@ export interface HomeAssistantExt {
       params: Record<string, unknown>
     ) => Promise<() => void | Promise<void>>;
   };
+  /** Frontend helper over connection.sendMessagePromise; absent on some hosts (dev workbench). */
+  callWS?: <T>(message: Record<string, unknown>) => Promise<T>;
   callService(
     domain: string,
     service: string,

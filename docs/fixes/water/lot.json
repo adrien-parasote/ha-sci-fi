@@ -1,0 +1,90 @@
+{
+  "feature": "water",
+  "created": "2026-11-04T19:06:48Z",
+  "frozen_at": null,
+  "epic": "ha-sci-fi-d6nc",
+  "observations": [
+    {
+      "id": "O1",
+      "text": "[ha-sci-fi-1k7] [bug] water : _fetchHistoryLogs vide _rawLogs avant l'appel, le cache n'est jamais affiche hors-ligne et [ OFFLINE ] n'existe pas (D12)",
+      "bead": "ha-sci-fi-d6nc.1",
+      "test": null,
+      "unreproduced": null,
+      "escalated": "ha-sci-fi-8fn3"
+    },
+    {
+      "id": "O2",
+      "text": "[ha-sci-fi-5aw] water : lignes de logbook sans state ou mal formees non validees, log.state.toUpperCase() leve (F-02)",
+      "bead": "ha-sci-fi-d6nc.2",
+      "test": "npx vitest run tests/cards/water/fix-water.test.ts -t test_O2_",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O3",
+      "text": "[ha-sci-fi-9vv] [bug] water : le bouton de synchro ne tourne jamais (D01, styles.ts:60 vise ha-icon, le template rend sf-icon)",
+      "bead": "ha-sci-fi-d6nc.3",
+      "test": "npx vitest run tests/cards/water/fix-water.test.ts -t test_O3_",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O4",
+      "text": "[ha-sci-fi-ijw] [bug] water : _historyLogs ecrit (:283) mais jamais lu, tri/retention dupliques dans _renderHistoryLogs (D15)",
+      "bead": "ha-sci-fi-d6nc.4",
+      "test": "npx vitest run tests/cards/water/fix-water.test.ts -t test_O4_",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O5",
+      "text": "[ha-sci-fi-ln3] [bug] water : 4 attributs style= inline dans le template, contre AP#5 (D20, :515 :570 :610 :625)",
+      "bead": "ha-sci-fi-d6nc.5",
+      "test": "npx vitest run tests/cards/water/fix-water.test.ts -t test_O5_",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O6",
+      "text": "[ha-sci-fi-rd4] [bug] water : branche 'aucun equipement pour cet etage' atteignable seulement par first_floor_to_render sur un etage sans entite eau (D07, floors prefiltres :452)",
+      "bead": "ha-sci-fi-d6nc.6",
+      "test": "npx vitest run tests/cards/water/fix-water.test.ts -t test_O6_",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O7",
+      "text": "[ha-sci-fi-xrc] water : le declencheur 'expanded' de updated() contredit water.md (AP Fetch on accordion open) et personne ne le pose (F-01)",
+      "bead": "ha-sci-fi-d6nc.7",
+      "test": "npx vitest run tests/cards/water/fix-water.test.ts -t test_O7_",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O8",
+      "text": "[ha-sci-fi-p5a] water : les retours anticipes de _fetchHistoryLogs (entityIds vide, sandbox) n'incrementent pas _fetchId (F-16)",
+      "bead": "ha-sci-fi-d6nc.8",
+      "test": "npx vitest run tests/cards/water/fix-water.test.ts -t test_O8_",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O9",
+      "text": "[ha-sci-fi-uvk] water editor : echec de registre avale avec log-and-continue, et cast (hass as any).callWS",
+      "bead": "ha-sci-fi-d6nc.9",
+      "test": "npx vitest run tests/cards/water/fix-water.test.ts -t test_O9_",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O10",
+      "text": "[ha-sci-fi-7kb] water.md F-WATER-06 liste cinq domaines sans input_boolean, le code et water_history.md en interrogent six (F-14)",
+      "bead": "ha-sci-fi-d6nc.10",
+      "test": "npx vitest run tests/cards/water/fix-water.test.ts -t test_O10_",
+      "unreproduced": null,
+      "escalated": null
+    }
+  ],
+  "suite": "npx vitest run",
+  "lint": "npx eslint src/cards/water src/utils/ws.ts src/types/ha.ts tests/cards/water tests/cards/water_history tests/styles/card-css-baseline.test.ts"
+}

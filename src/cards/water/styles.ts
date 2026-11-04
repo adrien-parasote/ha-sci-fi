@@ -57,12 +57,25 @@ export const waterStyles = css`
   .floor-sync-btn:hover {
     opacity: 1;
   }
-  .floor-sync-btn.syncing ha-icon {
+  .sync-icon {
+    --icon-width: 18px;
+    --icon-height: 18px;
+  }
+  .floor-sync-btn.syncing sf-icon {
+    display: inline-block;
     animation: spin 1s linear infinite;
   }
   @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
+  }
+
+  .header-text.clickable {
+    cursor: pointer;
+  }
+  .device-accordion {
+    margin-bottom: 12px;
+    display: block;
   }
 
   /* ── Entities List Section ────────────────────────────── */

@@ -4,6 +4,7 @@ import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
 import type { SciFiWaterManagementConfig } from './config.js';
 import { waterLabels } from './labels.js';
+import { callWS } from '../../utils/ws.js';
 
 const TAG = 'sci-fi-water-management-editor';
 
@@ -28,9 +29,8 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
 
   private async _fetchRegistry() {
     try {
-      const callWS = (this.hass as any).callWS || this.hass!.connection.sendMessagePromise.bind(this.hass!.connection);
-      const devices = await callWS({ type: 'config/device_registry/list' });
-      const entities = await callWS({ type: 'config/entity_registry/list' });
+      const devices = await callWS<unknown>(this.hass!, { type: 'config/device_registry/list' });
+      const entities = await callWS<unknown>(this.hass!, { type: 'config/entity_registry/list' });
       
       const deviceDict: Record<string, any> = {};
       if (Array.isArray(devices)) {
@@ -45,6 +45,9 @@ export class SciFiWaterManagementEditor extends SciFiBaseEditor {
       this._devices = deviceDict;
       this._entities = entityDict;
     } catch (e) {
+      // water.md Error Handling "Registry fetch failure": the editor falls back
+      // to hass.entities / hass.devices (see the *Source lookups), it is not
+      // left empty. ha-sci-fi-uvk
       console.warn('Sci-Fi Water: Failed to fetch HA registry', e);
     }
   }

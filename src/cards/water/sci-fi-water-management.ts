@@ -14,6 +14,7 @@ import '../../components/editor-inputs/sf-editor-accordion.js';
 
 import { waterStyles } from './styles.js';
 import { DOMAIN } from '../../types/domains.js';
+import { callWS } from '../../utils/ws.js';
 const TAG = 'sci-fi-water-management';
 
 // SVG hexagon points (pointy-top, portrait orientation)
@@ -31,14 +32,12 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
   @state() private _devices: Record<string, any> = {};
   @state() private _entities: Record<string, any> = {};
   @state() private _rawLogs: any[] = [];
-  @state() private _historyLogs: any[] = [];
   @state() private _historyLogsLoading: boolean = false;
   @state() private _activeFilter: 'all' | 'alerts' = 'all';
   @state() private _expandedMap: Map<string, boolean> = new Map();
 
   declare config: SciFiWaterManagementConfig;
   declare entityIds: string[];
-  declare expanded?: boolean;
   private _fetchId: number = 0;
 
   constructor() {
@@ -51,8 +50,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     return {
       hass: { type: Object },
       config: { type: Object },
-      entityIds: { type: Array },
-      expanded: { type: Boolean }
+      entityIds: { type: Array }
     };
   }
 
@@ -65,9 +63,8 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
 
   private async _fetchRegistry() {
     try {
-      const callWS = (this.hass as any).callWS || this.hass.connection.sendMessagePromise.bind(this.hass.connection);
-      const devices = await callWS({ type: 'config/device_registry/list' });
-      const entities = await callWS({ type: 'config/entity_registry/list' });
+      const devices = await callWS<unknown>(this.hass, { type: 'config/device_registry/list' });
+      const entities = await callWS<unknown>(this.hass, { type: 'config/entity_registry/list' });
       
       const deviceDict: Record<string, any> = {};
       if (Array.isArray(devices)) {
@@ -97,7 +94,6 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
       if (changedProperties.has('_activeFloorId')) {
         // Floor changed: clear stale logs and reset accordion states
         this._rawLogs = [];
-        this._historyLogs = [];
         this._expandedMap = new Map();
       }
       if (this._activeFloorId) {
@@ -113,15 +109,9 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
   protected override updated(changedProperties: Map<string | number | symbol, unknown>): void {
     super.updated(changedProperties);
 
-    const floorChanged = changedProperties.has('_activeFloorId');
-    const entityIdsChanged = changedProperties.has('entityIds');
-    const expandedChanged = changedProperties.has('expanded');
-
-    const shouldFetch = 
-      (expandedChanged && this.expanded === true) ||
-      (this.expanded !== false && (floorChanged || entityIdsChanged));
-
-    if (shouldFetch) {
+    // Fetch once per floor load (water.md AP "Fetch on accordion open"); the
+    // sync button is the only other trigger. ha-sci-fi-xrc
+    if (changedProperties.has('_activeFloorId') || changedProperties.has('entityIds')) {
       void this._fetchHistoryLogs();
     }
   }
@@ -142,12 +132,15 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
   ]);
 
   async _fetchHistoryLogs(): Promise<void> {
+    // Every call supersedes the one in flight, early returns included, so a
+    // late response for the previous floor never lands. ha-sci-fi-p5a
+    this._fetchId += 1;
+    const currentFetchId = this._fetchId;
     // Clear old logs immediately to prevent stale state display while fetching or on floor switch
     this._rawLogs = [];
-    this._historyLogs = [];
 
     if (!this.hass) {
-      await this._loadSandboxLogs();
+      await this._loadSandboxLogs(currentFetchId);
       return;
     }
 
@@ -156,13 +149,10 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
       return;
     }
 
-    this._fetchId = (this._fetchId || 0) + 1;
-    const currentFetchId = this._fetchId;
     this._historyLogsLoading = true;
 
     try {
       const startTime = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-      const callWS = (this.hass as any).callWS || this.hass.connection.sendMessagePromise.bind(this.hass.connection);
 
       // Query only the domains that carry meaningful events.
       const queryIds = this.entityIds.filter(
@@ -171,16 +161,15 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
 
       if (queryIds.length === 0) {
         this._historyLogsLoading = false;
-        this._applyFiltersAndLimit();
         return;
       }
 
       let logs: any[];
       try {
-        logs = await this._queryHistory(callWS, startTime, queryIds);
+        logs = await this._queryHistory(startTime, queryIds);
       } catch (histErr) {
         console.warn('[SciWater] history API failed, falling back to logbook:', histErr);
-        logs = await this._queryLogbook(callWS, startTime, queryIds);
+        logs = await this._queryLogbook(startTime, queryIds);
       }
 
       if (this._fetchId !== currentFetchId) return; // Discard superseded response
@@ -191,15 +180,15 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     } finally {
       if (this._fetchId === currentFetchId) {
         this._historyLogsLoading = false;
-        this._applyFiltersAndLimit();
       }
     }
   }
 
   /** Local development sandbox: no hass, so serve a fixture after a fake latency. */
-  private async _loadSandboxLogs(): Promise<void> {
+  private async _loadSandboxLogs(fetchId: number): Promise<void> {
     this._historyLogsLoading = true;
     await new Promise(resolve => setTimeout(resolve, 500)); // Simulated network latency
+    if (this._fetchId !== fetchId) return; // superseded while waiting
 
     this._rawLogs = [
       { name: 'Arrosage Jardin', entity_id: 'switch.arrosage_terrasse', state: 'off', when: new Date(Date.now() - 15 * 60 * 1000).toISOString() },
@@ -208,7 +197,6 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
       { name: 'Remplissage Cuve', entity_id: 'switch.arrosage_terrasse', state: 'on', when: new Date(Date.now() - 4 * 3600 * 1000).toISOString() }
     ];
     this._historyLogsLoading = false;
-    this._applyFiltersAndLimit();
   }
 
   /**
@@ -217,17 +205,18 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
    * meaningful threshold crossings come back (e.g. water heater power:
    * 5W standby -> 2000W heating).
    */
-  private async _queryHistory(callWS: any, startTime: string, queryIds: string[]): Promise<any[]> {
-    const result = await callWS({
+  private async _queryHistory(startTime: string, queryIds: string[]): Promise<any[]> {
+    const result = await callWS<Record<string, any[]>>(this.hass, {
       type: 'history/history_during_period',
       start_time: startTime,
       entity_ids: queryIds,
       no_attributes: true,
       minimal_response: true,
       significant_changes_only: true,
-    }) as Record<string, any[]>;
+    });
 
     const logs: any[] = [];
+    let skipped = 0;
     for (const [entityId, states] of Object.entries(result)) {
       if (!Array.isArray(states)) continue;
       const stateObj = this.hass.states[entityId];
@@ -239,23 +228,35 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
         const when = entry.lu
           ? new Date(entry.lu * 1000).toISOString()
           : (entry.last_changed || entry.last_updated || '');
-        if (state && when) {
+        if (typeof state === 'string' && state && typeof when === 'string' && when) {
           logs.push({ entity_id: entityId, state, when, name, device_class: deviceClass });
+        } else {
+          skipped += 1;
         }
       }
     }
+    if (skipped > 0) console.warn(`[SciWater] ignored ${skipped} history row(s) without state or time`);
     return logs;
   }
 
   /** Fallback for older HA, or when the history API is unavailable. */
-  private async _queryLogbook(callWS: any, startTime: string, queryIds: string[]): Promise<any[]> {
-    const events = await callWS({
+  private async _queryLogbook(startTime: string, queryIds: string[]): Promise<any[]> {
+    const events = await callWS<unknown>(this.hass, {
       type: 'logbook/get_events',
       start_time: startTime,
       entity_ids: queryIds,
     });
     if (!Array.isArray(events)) return [];
-    return events.map((e: any) => ({
+    // Logbook entries of automations and scripts carry no state: a row is kept
+    // only when it names an entity, a state and a time. ha-sci-fi-5aw
+    const valid = events.filter((e: any) =>
+      typeof e?.entity_id === 'string' && typeof e.state === 'string' && e.state !== '' &&
+      typeof e.when === 'string' && e.when !== ''
+    );
+    if (valid.length < events.length) {
+      console.warn(`[SciWater] ignored ${events.length - valid.length} logbook row(s) without entity, state or time`);
+    }
+    return valid.map((e: any) => ({
       entity_id: e.entity_id,
       state: e.state,
       when: e.when,
@@ -264,23 +265,22 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     }));
   }
 
-  _applyFiltersAndLimit(): void {
-    let filtered = [...this._rawLogs];
-    
-    if (this._activeFilter === 'alerts') {
-      filtered = filtered.filter(log => this._isAlertLog(log));
-    }
-
-    // Sort in reverse-chronological order (newest first)
-    filtered.sort((a, b) => new Date(b.when).getTime() - new Date(a.when).getTime());
-
-    // Apply the 50 limit *after* filtering
-    this._historyLogs = filtered.slice(0, 50);
+  /**
+   * The one place the log contract lives: the entries of `entityIds`, the
+   * active filter, newest first, 50 at most (the limit applies after the
+   * filter). ha-sci-fi-ijw
+   */
+  _visibleLogs(entityIds: string[]): any[] {
+    const ids = new Set(entityIds);
+    return this._rawLogs
+      .filter(log => ids.has(log.entity_id))
+      .filter(log => this._activeFilter !== 'alerts' || this._isAlertLog(log))
+      .sort((a, b) => new Date(b.when).getTime() - new Date(a.when).getTime())
+      .slice(0, 50);
   }
 
   private _setFilter(filter: 'all' | 'alerts'): void {
     this._activeFilter = filter;
-    this._applyFiltersAndLimit();
   }
 
   private _isAlertLog(log: any): boolean {
@@ -326,14 +326,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
 
   // Render history logs filtered to a specific set of entity_ids
   private _renderHistoryLogs(filterEntityIds: string[]): TemplateResult {
-    const filterSet = new Set(filterEntityIds);
-
-    let filtered = this._rawLogs.filter(log => filterSet.has(log.entity_id));
-    if (this._activeFilter === 'alerts') {
-      filtered = filtered.filter(log => this._isAlertLog(log));
-    }
-    filtered.sort((a, b) => new Date(b.when).getTime() - new Date(a.when).getTime());
-    const logs = filtered.slice(0, 50);
+    const logs = this._visibleLogs(filterEntityIds);
 
     return html`
       <div class="log-console">
@@ -448,8 +441,9 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
       return html`<ha-card><div class="empty-state">${msg('No floor configured')}</div></ha-card>`;
     }
 
-    // Validate active floor or fallback
-    const floorExists = !!this._activeFloorId && !!this.hass.floors?.[this._activeFloorId];
+    // The active floor must be one the selector offers: a configured floor
+    // without water entity falls back to the first listed. ha-sci-fi-rd4
+    const floorExists = !!this._activeFloorId && floors.some(f => f.floor_id === this._activeFloorId);
     if (!floorExists) {
       if (!this.hass.floors) {
         // HA floors not loaded yet, preserve config target
@@ -463,7 +457,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
           const matched = Object.values(this.hass.floors).find(
             f => f.floor_id.toLowerCase() === target || (f.name && f.name.toLowerCase() === target)
           );
-          if (matched) resolvedFloorId = matched.floor_id;
+          if (matched && floors.some(f => f.floor_id === matched.floor_id)) resolvedFloorId = matched.floor_id;
         }
 
         this._activeFloorId = resolvedFloorId ?? floors[0]?.floor_id ?? null;
@@ -505,7 +499,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     return html`
       <div class="header">
         <div class="info">
-          <span class="header-text" @click="${this._handleHeaderClick}" style="${this.config.tap_action ? 'cursor: pointer;' : ''}">${label}</span>
+          <span class="header-text ${this.config.tap_action ? 'clickable' : ''}" @click="${this._handleHeaderClick}">${label}</span>
         </div>
         <div class="weather-icon">${this._getDayNightIcon()}</div>
       </div>
@@ -560,7 +554,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
           title="${msg('Refresh logs')}"
           @click="${() => this._syncLogs()}"
         >
-          <sf-icon icon="mdi:refresh" style="--icon-width:18px;--icon-height:18px;" .connection="${this.hass.connection}"></sf-icon>
+          <sf-icon class="sync-icon" icon="mdi:refresh" .connection="${this.hass.connection}"></sf-icon>
         </button>
       </div>
     `;
@@ -600,7 +594,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
             @sf-accordion-toggle="${(e: CustomEvent<{open: boolean}>) => {
               this._expandedMap = new Map(this._expandedMap).set(devId, e.detail.open);
             }}"
-            style="margin-bottom: 12px; display: block;"
+            class="device-accordion"
           >
             ${repeat(groupEntities, (e: any) => e.entity_id, (e: any) => this._renderEntityRow(e))}
             ${this._renderHistoryLogs(groupEntityIds)}
@@ -615,7 +609,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
             @sf-accordion-toggle="${(e: CustomEvent<{open: boolean}>) => {
               this._expandedMap = new Map(this._expandedMap).set(devId, e.detail.open);
             }}"
-            style="margin-bottom: 12px; display: block;"
+            class="device-accordion"
           >
             ${repeat(groupEntities, (e: any) => e.entity_id, (e: any) => this._renderEntityRow(e))}
             ${this._renderHistoryLogs(groupEntityIds)}

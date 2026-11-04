@@ -13,6 +13,10 @@ export const bridgeStyles = css`
    * --sf-bg-secondary → bridge-section panel background (styles.ts: line 58)
    */
   :host {
+    /* Bridge-only names, one consumer (ADR-018 option B, ha-sci-fi-yj6): they keep the
+       render the bridge always had, distinct from --sf-text-primary / --sf-font-family. */
+    --sf-text: #e0e0e0;
+    --sf-font: 'Inter', sans-serif;
     --sf-bg: #000000;
     --sf-bg-secondary: rgba(255,255,255,0.04);   /* panels: très légèrement visibles sur le noir */
   }
@@ -21,7 +25,7 @@ export const bridgeStyles = css`
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--sf-spacing-sm, 8px);
-    padding: var(--sf-spacing-md, 12px);
+    padding: var(--sf-spacing-md, 16px);
   }
 
   /* ≥ 600px : mode 2 colonnes Pinterest — COLUMN FLOW (container query — ADR-016,
@@ -34,7 +38,7 @@ export const bridgeStyles = css`
       display: block;                           /* quitte le mode grid */
       columns: 2;
       column-gap: var(--sf-spacing-sm, 8px);
-      padding: var(--sf-spacing-md, 12px);
+      padding: var(--sf-spacing-md, 16px);
       gap: unset;
     }
 
@@ -48,7 +52,7 @@ export const bridgeStyles = css`
 
     /* Restaurer le style individuel des sections (bord-radius, border) */
     .bridge-section {
-      border-radius: var(--sf-radius, 8px);
+      border-radius: var(--sf-radius, 12px);
       border: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
     }
 
@@ -68,8 +72,8 @@ export const bridgeStyles = css`
   .bridge-section {
     background: var(--sf-bg-secondary, rgba(255,255,255,0.04));
     border: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
-    border-radius: var(--sf-radius, 8px);
-    padding: var(--sf-spacing-md, 12px);
+    border-radius: var(--sf-radius, 12px);
+    padding: var(--sf-spacing-md, 16px);
   }
 
   /* Card title header — same format as TV remote .header-text */
@@ -80,7 +84,7 @@ export const bridgeStyles = css`
     text-transform: uppercase;
     color: var(--sf-glow-cyan, hsl(190, 100%, 50%));
     text-shadow: 0 0 6px var(--sf-glow-cyan, hsl(190, 100%, 50%));
-    padding: var(--sf-spacing-md, 12px) var(--sf-spacing-md, 12px) 0;
+    padding: var(--sf-spacing-md, 16px) var(--sf-spacing-md, 16px) 0;
     border-bottom: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
     padding-bottom: var(--sf-spacing-sm, 8px);
     margin-bottom: 0;
@@ -96,7 +100,7 @@ export const bridgeStyles = css`
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--sf-primary, #00d2ff);
-    padding-bottom: var(--sf-spacing-xs, 6px);
+    padding-bottom: var(--sf-spacing-xs, 4px);
     margin-bottom: var(--sf-spacing-sm, 8px);
     border-bottom: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
   }
@@ -195,13 +199,13 @@ export const bridgeStyles = css`
     align-items: center;
     gap: 4px;
     padding: 4px 8px;
-    border-radius: var(--sf-radius, 6px);
+    border-radius: var(--sf-radius, 12px);
     border: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
     font-size: 0.75rem;
   }
 
   .smoke-chip.smoke-ok { color: var(--sf-accent-on, #00ff9d); }
-  .smoke-chip.smoke-unknown { color: var(--sf-text-disabled, #777); }
+  .smoke-chip.smoke-unknown { color: var(--sf-text-disabled, rgba(224, 232, 255, 0.3)); }
   .smoke-chip.smoke-active { color: var(--sf-error, #ff4d6d); border-color: var(--sf-error, #ff4d6d); }
 
   .alerts-toggles-row {
@@ -221,8 +225,8 @@ export const bridgeStyles = css`
 
   .toggle-name { flex: 1; font-size: 0.875rem; transition: color 0.2s; }
   .toggle-on  { color: var(--sf-text, #e0e0e0); }
-  .toggle-off { color: var(--sf-text-disabled, #777); }
-  .toggle-unknown { color: var(--sf-text-disabled, #777); }
+  .toggle-off { color: var(--sf-text-disabled, rgba(224, 232, 255, 0.3)); }
+  .toggle-unknown { color: var(--sf-text-disabled, rgba(224, 232, 255, 0.3)); }
 
   .occupancy-badge {
     display: flex;
@@ -247,14 +251,14 @@ export const bridgeStyles = css`
   }
 
   .occupancy-pill.unknown {
-    color: var(--sf-text-disabled, #555);
-    border: 1px solid var(--sf-text-disabled, #555);
+    color: var(--sf-text-disabled, rgba(224, 232, 255, 0.3));
+    border: 1px solid var(--sf-text-disabled, rgba(224, 232, 255, 0.3));
   }
 
   .occupancy-pill.empty {
-    background: color-mix(in srgb, var(--sf-text-disabled, #555) 15%, transparent);
-    color: var(--sf-text-disabled, #555);
-    border: 1px solid var(--sf-text-disabled, #555);
+    background: color-mix(in srgb, var(--sf-text-disabled, rgba(224, 232, 255, 0.3)) 15%, transparent);
+    color: var(--sf-text-disabled, rgba(224, 232, 255, 0.3));
+    border: 1px solid var(--sf-text-disabled, rgba(224, 232, 255, 0.3));
   }
 
   /* ── Access ── */
@@ -281,7 +285,7 @@ export const bridgeStyles = css`
   .access-icon-wrap {
     width: 36px;
     height: 36px;
-    border-radius: var(--sf-radius, 8px);
+    border-radius: var(--sf-radius, 12px);
     background: var(--sf-bg-secondary, rgba(255,255,255,0.06));
     border: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
     display: flex;
@@ -321,7 +325,7 @@ export const bridgeStyles = css`
   .state-closed      { color: var(--sf-accent-on, #00ff9d); }
   .state-open        { color: var(--sf-warning, #ffd60a); }
   .state-moving      { color: var(--sf-primary, #00d2ff); }
-  .state-unavailable { color: var(--sf-text-disabled, #555); }
+  .state-unavailable { color: var(--sf-text-disabled, rgba(224, 232, 255, 0.3)); }
 
   /* Right block: small icon buttons + lock indicator */
   .access-actions {
@@ -336,7 +340,7 @@ export const bridgeStyles = css`
   .access-btn {
     background: transparent;
     border: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
-    border-radius: var(--sf-radius, 6px);
+    border-radius: var(--sf-radius, 12px);
     padding: 8px;
     cursor: pointer;
     color: var(--sf-text, #e0e0e0);
@@ -372,12 +376,12 @@ export const bridgeStyles = css`
     padding: 4px;
     background: transparent;
     border: none;
-    border-radius: var(--sf-radius, 8px);
+    border-radius: var(--sf-radius, 12px);
     cursor: pointer;
   }
 
   .lock-btn:hover:not([disabled]) {
-    background: var(--sf-primary-dim, rgba(0, 210, 255, 0.12));
+    background: var(--sf-primary-dim, color-mix(in srgb, var(--sf-primary) 40%, transparent));
   }
 
   .lock-btn[disabled] {
@@ -386,8 +390,8 @@ export const bridgeStyles = css`
 
   .lock-locked      { color: var(--sf-accent-on, #00ff9d); --icon-width: 20px; --icon-height: 20px; }
   .lock-unlocked    { color: var(--sf-error, #ff4d6d);    --icon-width: 20px; --icon-height: 20px; }
-  .lock-unknown     { color: var(--sf-text-disabled, #555); --icon-width: 20px; --icon-height: 20px; }
-  .lock-unavailable { color: var(--sf-text-disabled, #555); --icon-width: 20px; --icon-height: 20px; }
+  .lock-unknown     { color: var(--sf-text-disabled, rgba(224, 232, 255, 0.3)); --icon-width: 20px; --icon-height: 20px; }
+  .lock-unavailable { color: var(--sf-text-disabled, rgba(224, 232, 255, 0.3)); --icon-width: 20px; --icon-height: 20px; }
   .lock-pending     { color: var(--sf-primary, #00d2ff);  --icon-width: 20px; --icon-height: 20px; }
   .lock-jammed      { color: var(--sf-warning, #ffd60a);  --icon-width: 20px; --icon-height: 20px; }
 
@@ -410,7 +414,7 @@ export const bridgeStyles = css`
   }
   /* auto-name also reuses toggle-on/toggle-off classes */
   .auto-name.toggle-on  { color: var(--sf-text, #e0e0e0); }
-  .auto-name.toggle-off { color: var(--sf-text-disabled, #777); }
+  .auto-name.toggle-off { color: var(--sf-text-disabled, rgba(224, 232, 255, 0.3)); }
 
   /* Custom toggle switch (remplace ha-switch non dispo hors HA) */
   .sf-toggle {
@@ -440,7 +444,7 @@ export const bridgeStyles = css`
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: var(--sf-text-disabled, #666);
+    background: var(--sf-text-disabled, rgba(224, 232, 255, 0.3));
     position: absolute;
     left: 2px;
     transition: transform 0.2s, background 0.2s;
@@ -509,7 +513,7 @@ export const bridgeStyles = css`
   .cycle-icon-wrap {
     width: 64px;
     height: 64px;
-    border-radius: var(--sf-radius, 8px);
+    border-radius: var(--sf-radius, 12px);
     background: var(--sf-bg-secondary, rgba(255,255,255,0.06));
     border: 1.5px solid var(--sf-border, rgba(0, 210, 255, 0.15));
     display: flex;
@@ -544,8 +548,8 @@ export const bridgeStyles = css`
   }
 
   .cycle-status.running { color: var(--sf-primary, #00d2ff); }
-  .cycle-status.unknown { color: var(--sf-text-disabled, #666); }
-  .cycle-status.idle    { color: var(--sf-text-disabled, #666); }
+  .cycle-status.unknown { color: var(--sf-text-disabled, rgba(224, 232, 255, 0.3)); }
+  .cycle-status.idle    { color: var(--sf-text-disabled, rgba(224, 232, 255, 0.3)); }
 
   .consumables-row {
     display: flex;
@@ -565,7 +569,7 @@ export const bridgeStyles = css`
   }
 
   .consumable-ok { color: var(--sf-accent-on, #00ff9d); }
-  .consumable-unknown { color: var(--sf-text-disabled, #777); }
+  .consumable-unknown { color: var(--sf-text-disabled, rgba(224, 232, 255, 0.3)); }
   .consumable-warn { color: var(--sf-error, #ff4d6d); }
 
   /* ── Stove ── */
@@ -590,9 +594,9 @@ export const bridgeStyles = css`
   }
 
   .stove-on  { color: var(--sf-warning, #ffd60a); }
-  .stove-off { color: var(--sf-text-disabled, #555); }
+  .stove-off { color: var(--sf-text-disabled, rgba(224, 232, 255, 0.3)); }
   .stove-pellet-placeholder,
-  .stove-stock-placeholder { color: var(--sf-text-disabled, #777); font-weight: 700; }
+  .stove-stock-placeholder { color: var(--sf-text-disabled, rgba(224, 232, 255, 0.3)); font-weight: 700; }
 
   /* Graphs row — flex row, centered */
   .stove-graphs-row {
@@ -653,16 +657,16 @@ export const bridgeStyles = css`
   }
 
   .vehicle-power-value.charging { color: var(--sf-accent-on, #00ff9d); }
-  .vehicle-power-value.idle     { color: var(--sf-text-secondary, #aaa); }
+  .vehicle-power-value.idle     { color: var(--sf-text-secondary, rgba(224, 232, 255, 0.6)); }
 
   .vehicle-status-label {
     font-size: 0.8rem;
-    color: var(--sf-text-secondary, #aaa);
+    color: var(--sf-text-secondary, rgba(224, 232, 255, 0.6));
   }
 
   .vehicle-entity-name {
     font-size: 0.7rem;
-    color: var(--sf-text-disabled, #555);
+    color: var(--sf-text-disabled, rgba(224, 232, 255, 0.3));
     padding: 1px 8px;
     border-radius: 999px;
     border: 1px solid var(--sf-border, rgba(0, 210, 255, 0.15));
@@ -699,7 +703,7 @@ export const bridgeStyles = css`
     justify-content: center;
     gap: 6px;
     padding: 10px 8px;
-    border-radius: var(--sf-radius, 8px);
+    border-radius: var(--sf-radius, 12px);
     border: 1px solid var(--action-color, var(--sf-primary, #00d2ff));
     background: color-mix(in srgb, var(--action-color, var(--sf-primary, #00d2ff)) 8%, transparent);
     color: var(--action-color, var(--sf-primary, #00d2ff));

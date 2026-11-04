@@ -88,7 +88,7 @@ export class SfBridgeStove extends LitElement {
         <div class="stove-status-row">
           <sf-icon
             icon="${isOn ? 'sci:stove-heat' : 'sci:stove-off'}"
-            style="--icon-color: ${isOn ? 'var(--sf-warning, #ffd60a)' : 'var(--sf-text-disabled, #666)'};"
+            style="--icon-color: ${isOn ? 'var(--sf-warning, #ffd60a)' : 'var(--sf-text-disabled, rgba(224, 232, 255, 0.3))'};"
             .connection="${this.hass.connection}"
           ></sf-icon>
           <span class="stove-status-chip ${isOn ? 'stove-on' : 'stove-off'} ${statusAbsent ? 'stove-unknown' : ''}">

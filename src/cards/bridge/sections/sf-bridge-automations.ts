@@ -78,7 +78,7 @@ export class SfBridgeAutomations extends LitElement {
         <!-- Icon colored to match state -->
         <sf-icon
           icon="${icon}"
-          style="--icon-color: ${isOn ? 'var(--sf-accent-on, #00ff9d)' : 'var(--sf-text-disabled, #555)'}"
+          style="--icon-color: ${isOn ? 'var(--sf-accent-on, #00ff9d)' : 'var(--sf-text-disabled, rgba(224, 232, 255, 0.3))'}"
           .connection="${this.hass.connection}"
         ></sf-icon>
         <span class="auto-name ${absent ? 'toggle-unknown' : isOn ? 'toggle-on' : 'toggle-off'}">${entry.name}</span>

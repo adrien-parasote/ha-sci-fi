@@ -495,7 +495,7 @@ export function findDrift(s: Scan, opt: DriftOptions): Map<string, FileRef[]> {
   for (const r of s.refs) {
     const accepted = opt.canon.get(r.token);
     if (!accepted || !r.hasFallback) continue;
-    if (r.file === 'src/styles/common.ts' || r.token.startsWith('--sf-font-size-')) continue;
+    if (r.file === 'src/styles/common.ts') continue;
     if (accepted.has(norm(r.fallback))) continue;
     if (!includeCache.has(r.file)) includeCache.set(r.file, opt.includes(r.file));
     if (includeCache.get(r.file) === false) continue; // live fallback (FR-5); null (unresolved sheet) is policed

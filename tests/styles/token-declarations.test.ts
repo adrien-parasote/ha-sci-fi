@@ -61,17 +61,17 @@ function hostDeclarations(css: string): Record<string, string> {
 }
 
 describe('--sf-* token declarations (sf-token-declarations)', () => {
-  it('TC-SFT-U-02: common.ts declares the 12 tokens at their rendered values, in px, rem tokens untouched', () => {
+  it('TC-SFT-U-02: common.ts declares the 12 tokens at their rendered values, in px, --sf-font-size-* in px too (ha-sci-fi-x6e)', () => {
     const host = hostDeclarations(read('src/styles/common.ts'));
     for (const [name, value] of Object.entries(DECLARED)) {
       expect(host[name], name).toBeDefined();
       expect(ws(host[name]!), name).toBe(ws(value));
       expect(host[name], name).not.toMatch(/rem/);
     }
-    expect(host['--sf-font-size-sm']).toBe('0.75rem');
-    expect(host['--sf-font-size-base']).toBe('0.875rem');
-    expect(host['--sf-font-size-lg']).toBe('1rem');
-    expect(host['--sf-font-size-xl']).toBe('1.25rem');
+    expect(host['--sf-font-size-sm']).toBe('12px');
+    expect(host['--sf-font-size-base']).toBe('14px');
+    expect(host['--sf-font-size-lg']).toBe('16px');
+    expect(host['--sf-font-size-xl']).toBe('20px');
   });
 
   describe('IT-SFT-I-02: zero visual change on the touched components (happy-dom)', () => {

@@ -12,7 +12,7 @@ export const vacuumStyles = css`
   :host {
     display: flex;
     flex-direction: column;
-    background-color: var(--sf-bg, black);
+    background-color: var(--sf-bg, rgba(10, 14, 26, 0.92));
     height: 100%;
     width: 100%;
     min-height: 732px;
@@ -165,7 +165,7 @@ export const vacuumStyles = css`
   }
   .map .image {
     border: 1px solid var(--sf-border);
-    border-radius: var(--sf-radius, 8px);
+    border-radius: var(--sf-radius, 12px);
     width: auto;
     height: 100%;
     max-width: 100%;

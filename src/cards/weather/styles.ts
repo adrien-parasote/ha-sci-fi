@@ -188,8 +188,8 @@ export const weatherStyles = css`
     display: none;
     position: absolute;
     right: 0;
-    border: 1px solid var(--primary-bg-color, rgba(255,255,255,0.1));
-    background-color: var(--primary-bg-color, #1a2332);
+    border: 1px solid rgba(255,255,255,0.1);
+    background-color: #1a2332;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.5);
     z-index: 10;
   }
@@ -203,11 +203,11 @@ export const weatherStyles = css`
     padding: 8px 10px;
     min-width: 150px;
     color: var(--primary-light-alpha-color, #c5d6e6);
-    border-bottom: 1px solid var(--secondary-bg-color, rgba(255,255,255,0.05));
+    border-bottom: 1px solid rgba(255,255,255,0.05);
     cursor: pointer;
   }
   .chart-container .dropdown .dropdown-content .dropdown-item:hover {
-    background-color: var(--secondary-bg-color, rgba(255,255,255,0.1));
+    background-color: rgba(255,255,255,0.1);
   }
   .chart-container .dropdown .dropdown-content .dropdown-item:last-child {
     border: none;
@@ -254,7 +254,7 @@ export const weatherStyles = css`
     cursor: pointer;
     border-radius: 10px;
     padding: 5px;
-    border: 1px solid var(--primary-bg-color, rgba(255,255,255,0.05));
+    border: 1px solid rgba(255,255,255,0.05);
   }
   .days-forecast .content .weather.selected {
     border-color: var(--primary-light-color, #6ecbf5);

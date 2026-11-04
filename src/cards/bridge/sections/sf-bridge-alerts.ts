@@ -104,7 +104,7 @@ export class SfBridgeAlerts extends LitElement {
       <div class="toggle-row siren-row">
         <sf-icon
           icon="mdi:alarm-light"
-          style="--icon-color: ${isOn ? 'var(--sf-accent-on, #00ff9d)' : 'var(--sf-text-disabled, #555)'};"
+          style="--icon-color: ${isOn ? 'var(--sf-accent-on, #00ff9d)' : 'var(--sf-text-disabled, rgba(224, 232, 255, 0.3))'};"
           .connection="${this.hass.connection}"
         ></sf-icon>
         <span class="toggle-name ${unusable ? 'toggle-unknown' : isOn ? 'toggle-on' : 'toggle-off'}">${msg('Sirens')}</span>
@@ -129,7 +129,7 @@ export class SfBridgeAlerts extends LitElement {
               <!-- Icon colored to match state -->
               <sf-icon
                 icon="${icon}"
-                style="--icon-color: ${isOn ? 'var(--sf-accent-on, #00ff9d)' : 'var(--sf-text-disabled, #555)'};"
+                style="--icon-color: ${isOn ? 'var(--sf-accent-on, #00ff9d)' : 'var(--sf-text-disabled, rgba(224, 232, 255, 0.3))'};"
                 .connection="${this.hass.connection}"
               ></sf-icon>
               <!-- Name colored to match state -->
@@ -152,7 +152,7 @@ export class SfBridgeAlerts extends LitElement {
       <div class="occupancy-badge">
         <sf-icon
           icon="${isOccupied ? 'mdi:home-account' : 'mdi:home-off'}"
-          style="--icon-color: ${isOccupied ? 'var(--sf-accent-on, #00ff9d)' : 'var(--sf-text-disabled, #555)'};"
+          style="--icon-color: ${isOccupied ? 'var(--sf-accent-on, #00ff9d)' : 'var(--sf-text-disabled, rgba(224, 232, 255, 0.3))'};"
           .connection="${this.hass.connection}"
         ></sf-icon>
         <span class="occupancy-pill ${absent ? 'unknown' : isOccupied ? 'occupied' : 'empty'}">

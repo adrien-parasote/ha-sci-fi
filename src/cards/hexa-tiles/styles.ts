@@ -87,7 +87,7 @@ export const hexaTilesStyles = css`
   .header-name {
     font-size: 1.2rem;
     font-weight: bold;
-    color: var(--sf-text-primary, #ffffff);
+    color: var(--sf-text-primary, #e0e8ff);
     text-shadow: 0 0 6px var(--sf-primary, #00d2ff);
   }
 
@@ -100,6 +100,14 @@ export const hexaTilesStyles = css`
   }
 
   :host {
+    /* Hexa-tiles-only palette, one consumer (ADR-018 option B, ha-sci-fi-7ge9). */
+    --sf-orange: #ff6b35;
+    --sf-orange-dim: rgba(255,107,53,0.1);
+    --sf-success-dim: rgba(0,255,157,0.1);
+    --sf-warning-dim: rgba(255,214,10,0.1);
+    --sf-error-dim: rgba(255,77,109,0.15);
+    --sf-tile-active-bg: color-mix(in srgb, var(--sf-primary) 8%, transparent);
+    --sf-tile-inactive-bg: rgba(16, 22, 38, 0.6);
     --tile-width: calc(100% / (var(--cols, 2) + 0.5));
     --tile-height: calc(var(--tile-width) * 1.1547);
     display: block;
@@ -210,7 +218,7 @@ export const hexaTilesStyles = css`
     filter: drop-shadow(0 0 3px var(--sf-primary, #00d2ff));
   }
   .hexa-tile[data-active="false"] .hexa-content sf-icon {
-    --icon-color: var(--sf-text-disabled, rgba(224, 232, 255, 0.4));
+    --icon-color: var(--sf-text-disabled, rgba(224, 232, 255, 0.3));
   }
   .hexa-tile.weather-tile[data-active="true"] .hexa-content sf-icon {
     --icon-color: var(--sf-warning, #ffd60a);
@@ -229,9 +237,9 @@ export const hexaTilesStyles = css`
     filter: drop-shadow(0 0 6px var(--sf-orange, #ff6b35));
   }
   .hexa-tile.weather-tile[data-alert-level="red"] .hexa-border {
-    stroke: var(--sf-error, #ff4d6d);
+    stroke: var(--sf-error);
     stroke-width: 2.5px;
-    filter: drop-shadow(0 0 8px var(--sf-error, #ff4d6d));
+    filter: drop-shadow(0 0 8px var(--sf-error));
   }
   .hexa-tile.weather-tile[data-alert-level="yellow"] .hexa-content sf-icon {
     --icon-color: var(--sf-warning, #ffd60a);
@@ -242,8 +250,8 @@ export const hexaTilesStyles = css`
     filter: drop-shadow(0 0 4px var(--sf-orange, #ff6b35));
   }
   .hexa-tile.weather-tile[data-alert-level="red"] .hexa-content sf-icon {
-    --icon-color: var(--sf-error, #ff4d6d);
-    filter: drop-shadow(0 0 6px var(--sf-error, #ff4d6d));
+    --icon-color: var(--sf-error);
+    filter: drop-shadow(0 0 6px var(--sf-error));
   }
 
   .tile-label {
@@ -264,7 +272,7 @@ export const hexaTilesStyles = css`
     text-shadow: 0 0 5px var(--sf-primary, #00d2ff);
   }
   .hexa-tile[data-active="false"] .tile-label {
-    color: var(--sf-text-disabled, rgba(224, 232, 255, 0.4));
+    color: var(--sf-text-disabled, rgba(224, 232, 255, 0.3));
   }
 
   .weather-alert {
@@ -280,5 +288,5 @@ export const hexaTilesStyles = css`
   .weather-alert[data-level="green"] { background: var(--sf-success-dim, rgba(0,255,157,0.1)); color: var(--sf-accent-on, #00ff9d); }
   .weather-alert[data-level="yellow"] { background: var(--sf-warning-dim, rgba(255,214,10,0.1)); color: var(--sf-warning, #ffd60a); }
   .weather-alert[data-level="orange"] { background: var(--sf-orange-dim, rgba(255,107,53,0.1)); color: var(--sf-orange, #ff6b35); }
-  .weather-alert[data-level="red"] { background: var(--sf-error-dim, rgba(255,77,109,0.15)); color: var(--sf-error, #ff4d6d); }
+  .weather-alert[data-level="red"] { background: var(--sf-error-dim, rgba(255,77,109,0.15)); color: var(--sf-error); }
 `;

@@ -39,4 +39,47 @@ describe('O3', () => {
       for (const ref of refs) expect(own.has(ref), `#${ref} not in its own icon`).toBe(true);
     }
   });
+
+  it('test_O3_smil_syncbases_still_name_an_own_id_so_animations_loop', async () => {
+    for (const name of ['sf:lightning-day', 'sf:pouring-day', 'sf:hail-day']) {
+      const host = document.createElement('div');
+      document.body.appendChild(host);
+      const icons = [name, name].map(n => {
+        const el = document.createElement('sf-icon') as SfIcon;
+        el.icon = n;
+        host.appendChild(el);
+        return el;
+      });
+      await settle();
+      await Promise.all(icons.map(el => el.updateComplete));
+      for (const el of icons) {
+        const own = new Set(Array.from(el.querySelectorAll('[id]')).map(e => e.id));
+        const syncbases: string[] = [];
+        for (const node of Array.from(el.querySelectorAll('[begin], [end]'))) {
+          for (const attrName of ['begin', 'end']) {
+            for (const item of (node.getAttribute(attrName) ?? '').split(';')) {
+              const m = /^\s*([^\s.;+-][^\s.;+]*)\.(begin|end|repeat\()/.exec(item);
+              if (m) syncbases.push(m[1]!);
+            }
+          }
+        }
+        expect(syncbases.length, `${name} carries SMIL syncbases`).toBeGreaterThan(0);
+        for (const ref of syncbases) expect(own.has(ref), `${name}: ${ref}.end not in its own icon`).toBe(true);
+      }
+      host.remove();
+    }
+  });
+
+  it('test_O3_scoping_is_idempotent_on_rerender', async () => {
+    const el = document.createElement('sf-icon') as SfIcon;
+    el.icon = 'sf:lightning-day';
+    document.body.appendChild(el);
+    await settle();
+    await el.updateComplete;
+    const before = Array.from(el.querySelectorAll('[begin]')).map(n => n.getAttribute('begin'));
+    el.requestUpdate();
+    await el.updateComplete;
+    const after = Array.from(el.querySelectorAll('[begin]')).map(n => n.getAttribute('begin'));
+    expect(after).toEqual(before);
+  });
 });

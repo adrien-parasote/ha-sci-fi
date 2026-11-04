@@ -19,7 +19,7 @@
 | F-PLG-D06 | Extract CSS into `styles.ts` (stove/vehicle pattern) | ✅ This spec § styles.ts | tests/cards/plugs/sci-fi-plugs.test.ts :: IT-PLUGS-I-1303 |
 | F-PLG-D07 | Toggle plug on/off via `switch.turn_on` / `switch.turn_off` service | ✅ This spec § Toggle action | tests/cards/plugs/sci-fi-plugs.test.ts :: TC-PLUGS-U-1308 |
 | F-PLG-D08 | 'plug_const.ts' constants file (ported from main) | ✅ This spec § Constants — plug_const.ts | ⬜ aucun id TC — fichier de constantes, aucun cas déclaré |
-| F-PLG-D09 | All existing 8 plugs tests remain GREEN (regression gate) | ✅ This spec § Test Selectors — Frozen Contract | tests/cards/plugs/sci-fi-plugs.test.ts :: TC-PLUGS-U-1315, IT-PLUGS-I-1301, IT-PLUGS-I-1302 |
+| F-PLG-D09 | All existing plugs tests remain GREEN (regression gate) | ✅ This spec § Test Selectors — Frozen Contract | tests/cards/plugs/sci-fi-plugs.test.ts :: TC-PLUGS-U-1315, IT-PLUGS-I-1301, IT-PLUGS-I-1302 |
 
 ---
 
@@ -27,7 +27,7 @@
 
 | ID | Assumption | Risk | Source Type | Validation |
 |---|---|---|---|---|
-| 1 | `SciFiPlugDevice` and `SciFiPlugsConfig` config fields are frozen — no new fields needed | Low | SHOW | 'grep -n "SciFiPlugDevice\|SciFiPlugsConfig" src/types/config.ts' → L119–L138 define all fields |
+| 1 | `SciFiPlugDevice` and `SciFiPlugsConfig` config fields are frozen — no new fields needed | Low | SHOW | 'grep -n "SciFiPlugDevice\|SciFiPlugsConfig" src/cards/plugs/config.ts' → defines all fields |
 | 2 | Existing CSS selectors `.plug-tile`, `.plug-name`, `.plug-power`, `.sensor-row`, `.plug-btn` in existing tests MUST be **updated** — layout changes completely | Medium | SHOW | 'grep -n "querySelector" tests/cards/plugs/sci-fi-plugs.test.ts' → all 8 tests reference old grid selectors |
 | 3 | Chart.js `^4.4.7` is already in `package.json` — no new dependency needed | Low | SHOW | `cat package.json \| grep chart` → `"chart.js": "^4.4.7"` present |
 | 4 | The EU socket SVG (`.icon` with 3 circles) is reproduced in pure CSS — no SVG import needed | Low | SHOW | 'git show main:src/cards/plugs/style.js' → all styling is CSS, no `<svg>` tag, no external file |
@@ -64,7 +64,7 @@
 |---|---|---|---|
 | `sciFiCommonStyles` | Lit CSS | Spec 03 § styles/common.ts | `src/styles/common.ts` |
 | `SciFiBaseCard` | Abstract class | Spec 03 § base-card.ts | `src/utils/base-card.ts` |
-| `SciFiPlugsConfig`, `SciFiPlugDevice`, `SciFiPlugSensorEntry` | TS interfaces | Spec 05 § sci-fi-plugs | `src/types/config.ts` |
+| `SciFiPlugsConfig`, `SciFiPlugDevice`, `SciFiPlugSensorEntry` | TS interfaces | Spec 05 § sci-fi-plugs | `src/cards/plugs/config.ts` |
 | `sf-icon` | Web Component | Spec 04 § sf-icon | `src/components/sf-icon/` |
 | `sf-button` | Web Component | Spec 04 § sf-button | `src/components/buttons/sf-button.ts` |
 
@@ -142,22 +142,22 @@ export const CHART_BORDER_COLOR = 'rgb(102, 156, 210)';
 
 **Export name:** `plugStyles`
 
-Ported 1:1 from 'main:src/cards/plugs/style.js' with CSS variable adaptations:
+Ported 1:1 from 'main:src/cards/plugs/style.js'. The `main` variables become literals: they are the plugs card's own domain palette, which ADR-017 and ADR-018 keep as bespoke literals in the card's sheet rather than `var(--sf-*)` tokens.
 
 | main CSS variable | TS equivalent |
 |---|---|
-| `--primary-bg-color` | `var(--sf-border)` |
+| `--primary-bg-color` | `rgb(39, 40, 43)` |
 | `--primary-bg-alpha-color` | `rgba(39, 40, 43, 0.3)` |
-| `--secondary-light-color` | `var(--sf-text-primary)` |
-| `--secondary-light-alpha-color` | `var(--sf-text-secondary)` |
-| `--secondary-bg-color` | `var(--sf-bg-secondary)` |
-| `--primary-light-color` | `var(--sf-accent-on, #00ff9d)` |
+| `--secondary-light-color` | `rgb(102, 156, 210)` |
+| `--secondary-light-alpha-color` | `rgba(102, 156, 210, 0.5)` |
+| `--secondary-bg-color` | `rgb(55, 61, 69)` |
+| `--primary-light-color` | `rgb(105, 211, 251)` |
 | `--border-width` | `1px` |
-| `--border-radius` | `var(--sf-radius, 8px)` |
-| `--font-size-normal` | `var(--sf-font-size-base, 14px)` |
-| `--font-size-small` | `var(--sf-font-size-sm, 12px)` |
+| `--border-radius` | `5px` |
+| `--font-size-normal` | `14px` |
+| `--font-size-small` | `12px` |
 | `--icon-size-small` | `20px` |
-| `--icon-size-normal` | `28px` |
+| `--icon-size-normal` | `25px` |
 
 ```ts
 import { css } from 'lit';
@@ -375,7 +375,7 @@ import Chart from 'chart.js/auto';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import { plugStyles } from './styles.js';
-import type { SciFiPlugsConfig, SciFiPlugDevice, SciFiPlugSensorEntry } from '../../types/config.js';
+import type { SciFiPlugsConfig, SciFiPlugDevice, SciFiPlugSensorEntry } from './config.js';
 import {
   PLUG_STATE_ON,
   HASS_PLUG_SERVICE,
@@ -387,6 +387,10 @@ import {
 
 import '../../components/sf-icon/sf-icon.js';
 import '../../components/buttons/sf-button.js';
+import '../../components/buttons/sf-button-card.js';
+import '../../components/buttons/sf-button-card-select.js';
+import '../../components/sf-toast.js';
+import type { ButtonSelectItem } from '../../components/buttons/sf-button-card-select.js';
 ```
 
 ### static override styles
@@ -544,12 +548,12 @@ Sensor type dispatch based on entityId domain prefix:
 
 | Domain prefix | Render |
 |---|---|
-| `lock` | LockSensor: icon + name + value (text button via sf-button-card) |
-| `select` | SelectSensor: sf-dropdown-input (label + value + options) |
+| `lock` | `<sf-button-card>` toggling the lock (icon + name + value) |
+| `select` | `<sf-button-card-select>` dropdown (label + value + options), `button-select` → `select.select_option` |
 | default | `<sf-icon>` + `.name` + `.value` (state + unit) |
 
 > [!NOTE]
-> `LockSensor` and `SelectSensor` component patterns are not yet ported to TS. For this iteration, **lock** and **select** domains are rendered as the default template (icon + name + value as text). Typed dispatch remains in architecture for future extension — no custom component needed now.
+> The block below shows the dispatch frame and the **default** branch only. The `lock` and `select` branches render the components of the table above; their template lives in `src/cards/plugs/sci-fi-plugs.ts`.
 
 ```ts
 private _renderSensors(visibleSensors: [string, SciFiPlugSensorEntry][]): TemplateResult {
@@ -673,7 +677,7 @@ private async _loadPowerChart(device: SciFiPlugDevice, powerEntityId: string): P
     // [unverified — query params ported from main:src/helpers/entities/plug/plug.js; validate against HA REST API docs if HA version changes]
     const data = await (this.hass as any).callApi(
       'GET',
-      'history/period' + yesterday + '?minimal_response=true&no_attributes=true&significant_changes_only=false&filter_entity_id=' + powerEntityId
+      'history/period/' + yesterday + '?minimal_response=true&no_attributes=true&significant_changes_only=false&filter_entity_id=' + powerEntityId
     ) as unknown[][];
 
     const history = this._parseHistory(data[0] ?? []);
@@ -909,7 +913,7 @@ private _toast(error: boolean, text: string): void {
 | Reference | Location |
 |---|---|
 | Current plugs card (to replace) | [sci-fi-plugs.ts](../../src/cards/plugs/sci-fi-plugs.ts#L1) |
-| Plugs config types (frozen) | [config.ts L119-L139](../../src/types/config.ts#L119-L139) |
+| Plugs config types (frozen) | [config.ts](../../src/cards/plugs/config.ts#L1) |
 | Main branch card.js (reference) | 'git show main:src/cards/plugs/card.js' |
 | Main branch style.js (reference) | 'git show main:src/cards/plugs/style.js' |
 | Main branch plug_const.js | 'git show main:src/helpers/entities/plug/plug_const.js' |

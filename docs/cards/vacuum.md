@@ -7,6 +7,7 @@
 ## Features
 
 - Battery + mop intensity bars
+- Fan speed dropdown selection in the header
 - State animation (cleaning / docked / sleeping / returning)
 - Clean area and duration sensors
 - Live map image (if camera sensor provided)

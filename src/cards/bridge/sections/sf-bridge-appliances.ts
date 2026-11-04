@@ -68,7 +68,7 @@ export class SfBridgeAppliances extends LitElement {
               <div class="cycle-icon-wrap ${running ? 'cycle-running' : ''}">
                 <sf-icon
                   icon="${entry.icon}"
-                  style="color: ${running ? 'var(--sf-primary, #00d2ff)' : 'var(--sf-text-disabled, #555)'}"
+                  style="color: ${running ? 'var(--sf-primary, #00d2ff)' : 'var(--sf-text-disabled, rgba(224, 232, 255, 0.3))'}"
                   .connection="${this.hass.connection}"
                 ></sf-icon>
               </div>

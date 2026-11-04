@@ -27,7 +27,7 @@ export const stoveStyles = css`
     border-bottom: var(--sf-border-width, 1px) solid var(--sf-bg-primary, #0d1117);
     padding: 5px;
     background-color: rgba(13, 17, 23, 0.6);
-    color: var(--sf-text-secondary, #b0bec5);
+    color: var(--sf-text-secondary, rgba(224, 232, 255, 0.6));
     font-size: var(--sf-text-sm, 12px);
     font-weight: bold;
   }
@@ -130,7 +130,7 @@ export const stoveStyles = css`
     row-gap: 5px;
     align-self: center;
     font-size: var(--sf-text-sm, 12px);
-    color: var(--sf-text-secondary, #b0bec5);
+    color: var(--sf-text-secondary, rgba(224, 232, 255, 0.6));
     text-align: center;
     font-weight: bold;
     flex: 1;
@@ -140,7 +140,7 @@ export const stoveStyles = css`
     color: var(--primary-light-color, #6ecbf5);
   }
   .content .info .e.top-path .powers .power div:last-child.nothing {
-    color: var(--sf-text-secondary, #7ca8c9);
+    color: var(--sf-text-secondary, rgba(224, 232, 255, 0.6));
   }
   /* icon color in power cells — matches main --secondary-light-color */
   .content .info .e.top-path .powers .power sf-icon {
@@ -185,7 +185,7 @@ export const stoveStyles = css`
     flex-direction: column;
     row-gap: 10px;
     font-size: var(--sf-text-sm, 12px);
-    color: var(--sf-text-secondary, #b0bec5);
+    color: var(--sf-text-secondary, rgba(224, 232, 255, 0.6));
     text-align: center;
     align-items: center;
     min-width: 100px;
@@ -234,7 +234,7 @@ export const stoveStyles = css`
   }
   .content .info .m .temperatures .status .label,
   .content .info .m .temperatures .temperature .label {
-    color: var(--sf-text-secondary, #b0bec5);
+    color: var(--sf-text-secondary, rgba(224, 232, 255, 0.6));
     font-size: var(--sf-text-sm, 12px);
   }
   .content .info .m .temperatures .status div:last-child {
@@ -242,7 +242,7 @@ export const stoveStyles = css`
   }
   .content .info .m .temperatures .status.off div:last-child,
   .content .info .m .temperatures .temperature.off div:last-child {
-    color: var(--sf-text-secondary, #7ca8c9);
+    color: var(--sf-text-secondary, rgba(224, 232, 255, 0.6));
   }
   .content .info .m .temperatures .status.amber div:last-child {
     color: rgb(250, 146, 29); /* amber — exact main branch --primary-error-color */
@@ -271,7 +271,7 @@ export const stoveStyles = css`
   }
   .content .info .m .temperatures .status.off sf-icon,
   .content .info .m .temperatures .temperature.off sf-icon {
-    --icon-color: var(--sf-text-secondary, #7ca8c9);
+    --icon-color: var(--sf-text-secondary, rgba(224, 232, 255, 0.6));
   }
   .content .info .m .temperatures .status.red sf-icon,
   .content .info .m .temperatures .temperature.high sf-icon {
@@ -321,14 +321,14 @@ export const stoveStyles = css`
    * it replaces, so the bottom bar keeps its three-slot rhythm. */
   .bottom sf-button-card-select,
   .bottom sf-button-card {
-    --title-color: var(--secondary-bg-color, #7ca8c9);
+    --title-color: #7ca8c9;
     --label-text-color: var(--primary-light-color, #6ecbf5);
     align-self: center; /* vertically center relative to the wheel */
   }
   .bottom sf-wheel {
     --item-font-size: 12px;
     --wheel-item-color: var(--sf-primary, #00d2ff);
-    --text-font-color: var(--sf-text-secondary, #b0bec5);
+    --text-font-color: var(--sf-text-secondary, rgba(224, 232, 255, 0.6));
     --text-size: var(--sf-text-sm, 12px); /* match sf-button-card-select title size */
     border: 1px solid var(--sf-primary, #00d2ff);
     border-radius: 8px;

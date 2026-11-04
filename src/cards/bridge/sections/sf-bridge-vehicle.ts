@@ -25,7 +25,7 @@ function plugIcon(isCharging: boolean, isUnavailable: boolean): { icon: string; 
   if (isCharging) {
     return { icon: 'sci:landspeeder-plugged', color: 'var(--sf-primary, #00d2ff)' };
   }
-  return { icon: 'sci:landspeeder', color: 'var(--sf-text-disabled, #666)' };
+  return { icon: 'sci:landspeeder', color: 'var(--sf-text-disabled, rgba(224, 232, 255, 0.3))' };
 }
 
 @localized()

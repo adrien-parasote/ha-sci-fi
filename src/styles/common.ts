@@ -25,6 +25,8 @@ export const sciFiCommonStyles = css`
     --sf-bg-tile: #101626;
     --sf-bg-tertiary: rgba(0, 210, 255, 0.1);
     --sf-border-light: var(--sf-bg-tertiary);
+    /* Read by tv and bridge (ha-sci-fi-3z0j, ha-sci-fi-yj6). */
+    --sf-glow-cyan: hsl(190, 100%, 50%);
 
     /* ── Layout tokens ───────────────────────────── */
     --sf-border-width: 1px;
@@ -41,14 +43,14 @@ export const sciFiCommonStyles = css`
 
     /* ── Typography ──────────────────────────────── */
     --sf-font-family: var(--paper-font-body1_-_font-family, 'Inter', system-ui, sans-serif);
-    /* px on purpose: HA sets 24px on :root, so a rem token renders 18px (see --sf-font-size-*). */
+    /* px on purpose: HA sets 24px on :root, so a rem token would render 0.75rem as 18px (ha-sci-fi-x6e). */
     --sf-text-xs: 10px;
     --sf-text-sm: 12px;
     --sf-text-base: 14px;
-    --sf-font-size-sm: 0.75rem;
-    --sf-font-size-base: 0.875rem;
-    --sf-font-size-lg: 1rem;
-    --sf-font-size-xl: 1.25rem;
+    --sf-font-size-sm: 12px;
+    --sf-font-size-base: 14px;
+    --sf-font-size-lg: 16px;
+    --sf-font-size-xl: 20px;
 
     /* ── Animation ───────────────────────────────── */
     --sf-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);

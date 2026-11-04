@@ -2,6 +2,11 @@ import { css } from 'lit';
 
 export const climateStyles = css`
   :host {
+    /* Season colours, one consumer (ADR-018 option B, ha-sci-fi-rhd). */
+    --sf-season-blue: #acd5f3;
+    --sf-season-green: #ace1af;
+    --sf-season-yellow: #fdda0d;
+    --sf-season-orange: #f47b20;
     font-size: var(--sf-text-sm, 12px);
     height: 100%;
     width: 100%;

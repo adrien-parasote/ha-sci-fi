@@ -52,29 +52,7 @@ const SINCE = '2026-11-03';
  * `--sf-*` names read by a card and declared nowhere in `src/`. Each line is deleted by the lot of the
  * bead that settles it; the ratchet fails on a name that is declared or no longer referenced.
  */
-export const OPEN_CARD_NAMES: Record<string, OpenName> = {
-  '--sf-bg-active': { bead: '3z0j', since: SINCE },
-  '--sf-glow-cyan': { bead: '3z0j', since: SINCE, also: 'yj6' },
-  '--sf-glow-cyan-active': { bead: '3z0j', since: SINCE },
-  '--sf-glow-navy': { bead: '3z0j', since: SINCE },
-  '--sf-glow-red': { bead: '3z0j', since: SINCE },
-  '--sf-telemetry-border': { bead: '3z0j', since: SINCE },
-  '--sf-error-dim': { bead: '7ge9', since: SINCE },
-  '--sf-orange': { bead: '7ge9', since: SINCE },
-  '--sf-orange-dim': { bead: '7ge9', since: SINCE },
-  '--sf-success-dim': { bead: '7ge9', since: SINCE },
-  '--sf-tile-active-bg': { bead: '7ge9', since: SINCE },
-  '--sf-tile-inactive-bg': { bead: '7ge9', since: SINCE },
-  '--sf-warning-dim': { bead: '7ge9', since: SINCE },
-  '--sf-season-blue': { bead: 'rhd', since: SINCE },
-  '--sf-season-green': { bead: 'rhd', since: SINCE },
-  '--sf-season-orange': { bead: 'rhd', since: SINCE },
-  '--sf-season-yellow': { bead: 'rhd', since: SINCE },
-  '--sf-text': { bead: 'yj6', since: SINCE },
-  '--sf-font': { bead: 'yj6', since: SINCE },
-  '--sf-font-body': { bead: 'td4b', since: SINCE },
-  '--sf-font-mono': { bead: 'td4b', since: SINCE },
-};
+export const OPEN_CARD_NAMES: Record<string, OpenName> = {};
 
 /** Public override points: read with a fallback, set by no one in `src/`. */
 export const HOOKS: Record<string, string> = {
@@ -88,25 +66,7 @@ export const HOOKS: Record<string, string> = {
  * Card-sheet fallbacks that differ from `common.ts`, per `<file>::<token>`; `max` is the measured
  * number of drifting sites. Each line is deleted by the lot of the bead that canonises it.
  */
-export const OPEN_DRIFT: Record<string, OpenDriftEntry> = {
-  'src/cards/bridge/sections/sf-bridge-access.ts::--sf-text-disabled': { bead: 'yj6', since: SINCE, max: 1 },
-  'src/cards/bridge/sections/sf-bridge-alerts.ts::--sf-text-disabled': { bead: 'yj6', since: SINCE, max: 3 },
-  'src/cards/bridge/sections/sf-bridge-appliances.ts::--sf-text-disabled': { bead: 'yj6', since: SINCE, max: 1 },
-  'src/cards/bridge/sections/sf-bridge-automations.ts::--sf-text-disabled': { bead: 'yj6', since: SINCE, max: 1 },
-  'src/cards/bridge/sections/sf-bridge-stove.ts::--sf-text-disabled': { bead: 'yj6', since: SINCE, max: 1 },
-  'src/cards/bridge/sections/sf-bridge-vehicle.ts::--sf-text-disabled': { bead: 'yj6', since: SINCE, max: 1 },
-  'src/cards/bridge/styles.ts::--sf-primary-dim': { bead: 'yj6', since: SINCE, max: 1 },
-  'src/cards/bridge/styles.ts::--sf-radius': { bead: 'yj6', since: SINCE, max: 8 },
-  'src/cards/bridge/styles.ts::--sf-spacing-md': { bead: 'yj6', since: SINCE, max: 5 },
-  'src/cards/bridge/styles.ts::--sf-spacing-xs': { bead: 'yj6', since: SINCE, max: 1 },
-  'src/cards/bridge/styles.ts::--sf-text-disabled': { bead: 'yj6', since: SINCE, max: 19 },
-  'src/cards/bridge/styles.ts::--sf-text-secondary': { bead: 'yj6', since: SINCE, max: 2 },
-  'src/cards/hexa-tiles/styles.ts::--sf-text-disabled': { bead: '7ge9', since: SINCE, max: 2 },
-  'src/cards/hexa-tiles/styles.ts::--sf-text-primary': { bead: '7ge9', since: SINCE, max: 1 },
-  'src/cards/stove/styles.ts::--sf-text-secondary': { bead: 'xi7', since: SINCE, max: 8 },
-  'src/cards/vacuum/styles.ts::--sf-bg': { bead: '03i', since: SINCE, max: 1 },
-  'src/cards/vacuum/styles.ts::--sf-radius': { bead: '03i', since: SINCE, max: 1 },
-};
+export const OPEN_DRIFT: Record<string, OpenDriftEntry> = {};
 
 /** The 11 names `common.ts` settles (all undeclared before the lot); `--sf-bg-tile` is the 12th declaration. */
 const SETTLED = [
@@ -210,15 +170,13 @@ describe('CSS custom-property references (Spec 03 § Palette rule 2)', () => {
     expect(findUndeclared(real, HOOKS, OPEN_CARD_NAMES)).toEqual([]);
     expect(checkNameTables(real, HOOKS, OPEN_CARD_NAMES)).toEqual([]);
 
-    // a name read by two families is keyed once
-    expect(OPEN_CARD_NAMES['--sf-glow-cyan']).toMatchObject({ bead: '3z0j', also: 'yj6' });
     for (const [name, e] of Object.entries(OPEN_CARD_NAMES)) {
       expect(FOLLOW_UP_BEADS as readonly string[], name).toContain(e.bead);
     }
     for (const [name, reason] of Object.entries(HOOKS)) expect(reason.trim(), name).not.toBe('');
 
     // mutant: a name in both tables fails
-    const mutant = checkNameTables(real, { ...HOOKS, '--sf-bg-active': 'x' }, OPEN_CARD_NAMES);
+    const mutant = checkNameTables(real, { ...HOOKS, '--sf-hexa-border-x': 'x' }, { '--sf-hexa-border-x': { bead: '3z0j', since: SINCE } });
     expect(mutant.some((v) => /both HOOKS and OPEN_CARD_NAMES/.test(v))).toBe(true);
   });
 
@@ -473,14 +431,14 @@ describe('CSS custom-property references (Spec 03 § Palette rule 2)', () => {
       expect(key.startsWith('src/cards/'), key).toBe(true);
       expect(FOLLOW_UP_BEADS as readonly string[], key).toContain(e.bead);
     }
-    // --sf-font-size-* is x6e's: exempt even when its fallback differs
+    // --sf-font-size-* is px since ha-sci-fi-x6e: a differing fallback is a drift like any other
     const x6e = findDrift(
       scan([
-        fx('src/styles/common.ts', 'export const c = css`:host { --sf-font-size-sm: 0.75rem; }`;'),
-        fx('src/cards/tv/style.ts', 'css`.a { font-size: var(--sf-font-size-sm, 12px); }`;'),
+        fx('src/styles/common.ts', 'export const c = css`:host { --sf-font-size-sm: 12px; }`;'),
+        fx('src/cards/tv/style.ts', 'css`.a { font-size: var(--sf-font-size-sm, 0.75rem); }`;'),
       ]),
-      { canon: canonicalValues('export const c = css`:host { --sf-font-size-sm: 0.75rem; }`;'), includes: () => true },
+      { canon: canonicalValues('export const c = css`:host { --sf-font-size-sm: 12px; }`;'), includes: () => true },
     );
-    expect([...x6e.keys()]).toEqual([]);
+    expect([...x6e.keys()]).toEqual(['src/cards/tv/style.ts::--sf-font-size-sm']);
   });
 });

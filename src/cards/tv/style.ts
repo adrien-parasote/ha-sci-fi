@@ -2,6 +2,12 @@ import { css } from 'lit';
 
 export const tvStyles = css`
   :host {
+    /* TV-only palette, one consumer (ADR-018 option B, ha-sci-fi-3z0j). */
+    --sf-glow-navy: hsl(230, 40%, 15%);
+    --sf-glow-red: hsl(0, 100%, 50%);
+    --sf-glow-cyan-active: hsl(190, 100%, 70%);
+    --sf-bg-active: hsl(240, 30%, 15%);
+    --sf-telemetry-border: rgba(0, 210, 255, 0.2);
     display: block;
     height: 100%;
   }
@@ -137,7 +143,7 @@ export const tvStyles = css`
 
   .segment-value.highlight {
     color: var(--sf-glow-cyan, hsl(190, 100%, 50%));
-    text-shadow: 0 0 4px var(--sf-glow-cyan, rgba(0, 210, 255, 0.3));
+    text-shadow: 0 0 4px rgba(0, 210, 255, 0.3);
     font-weight: bold;
     max-width: 140px;
     overflow: hidden;

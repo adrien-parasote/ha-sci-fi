@@ -28,7 +28,7 @@ function coverStateInfo(state: string): { cls: string; label: string; iconColor:
     case 'closing':
       return { cls: 'state-moving', label: msg('Moving…'), iconColor: 'var(--sf-primary, #00d2ff)' };
     default:
-      return { cls: 'state-unavailable', label: msg('Unavailable'), iconColor: 'var(--sf-text-disabled, #555)' };
+      return { cls: 'state-unavailable', label: msg('Unavailable'), iconColor: 'var(--sf-text-disabled, rgba(224, 232, 255, 0.3))' };
   }
 }
 

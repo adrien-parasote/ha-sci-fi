@@ -3,6 +3,8 @@ import { css } from 'lit';
 export const waterStyles = css`
   /* ── Host / Card shell ───────────────────────────────── */
   :host {
+    /* Telemetry font, one consumer (ADR-018 option B, ha-sci-fi-td4b). */
+    --sf-font-mono: monospace;
     --water-on-color: #00d2ff;
     --hexa-w: 60px;
     --hexa-h: calc(var(--hexa-w) * 1.1547);
@@ -202,7 +204,7 @@ export const waterStyles = css`
     border: 1px solid rgba(0, 210, 255, 0.3);
     border-radius: 4px;
     padding: 4px 8px;
-    font-family: var(--sf-font-body, monospace);
+    font-family: var(--sf-font-mono);
     font-size: 0.8rem;
     outline: none;
     cursor: pointer;
@@ -238,7 +240,7 @@ export const waterStyles = css`
     background: rgba(13, 17, 23, 0.7);
     border: 1px dashed rgba(0, 210, 255, 0.2);
     border-radius: 6px;
-    font-family: var(--sf-font-mono, monospace);
+    font-family: var(--sf-font-mono);
     box-sizing: border-box;
     text-align: left;
   }

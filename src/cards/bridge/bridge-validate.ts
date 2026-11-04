@@ -58,6 +58,20 @@ function firstBadOptionalString(config: Obj): string | null {
       if (present(lock) && typeof lock !== 'string') return `access.items[${i}].lock: expected a string`;
     }
   }
+  return firstBadRunningStates(config);
+}
+
+/** running_states feeds isCycleRunning, which calls .some() on it (bead ha-sci-fi-prw). */
+function firstBadRunningStates(config: Obj): string | null {
+  const appliances = config.appliances;
+  const cycles = isObject(appliances) ? appliances.cycles : undefined;
+  if (!Array.isArray(cycles)) return null;
+  for (let i = 0; i < cycles.length; i++) {
+    const rs = (cycles[i] as Obj).running_states;
+    if (present(rs) && !(Array.isArray(rs) && rs.every(s => typeof s === 'string'))) {
+      return `appliances.cycles[${i}].running_states: expected an array of strings`;
+    }
+  }
   return null;
 }
 

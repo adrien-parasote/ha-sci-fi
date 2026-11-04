@@ -34,7 +34,7 @@ const scenarioNormal = {
   'binary_sensor.salt_missing':            { state: 'off' },
   'sensor.clou_pellet_quantity':           { state: '0.65' },
   'counter.pellet_stock':                  { state: '18', attributes: { maximum: 20 } },
-  'binary_sensor.clou_stove_status':       { state: 'off' },
+  'sensor.clou_detailed_stove_status':       { state: 'off' },
   'sensor.mureva_evlink_power':            { state: '0', attributes: { unit_of_measurement: 'W' } },
 };
 
@@ -50,7 +50,7 @@ const scenarioAlert = {
   'sensor.electrolux_lave_vaisselle_appliancestate': { state: 'Running' },
   'binary_sensor.rinse_aid':     { state: 'on' },
   'sensor.clou_pellet_quantity': { state: '0.15' },
-  'binary_sensor.clou_stove_status': { state: 'on' },
+  'sensor.clou_detailed_stove_status': { state: 'combustion' },
   'sensor.mureva_evlink_power':  { state: '2300', attributes: { unit_of_measurement: 'W' } },
 };
 
@@ -86,7 +86,7 @@ const scenarioDisconnected = {
   'binary_sensor.salt_missing':          { state: 'unavailable' },
   'sensor.clou_pellet_quantity':         { state: 'unavailable' },
   'counter.pellet_stock':                { state: 'unavailable' },
-  'binary_sensor.clou_stove_status':     { state: 'unavailable' },
+  'sensor.clou_detailed_stove_status':     { state: 'unavailable' },
   'sensor.mureva_evlink_power':          { state: 'unavailable', attributes: { unit_of_measurement: 'W' } },
   'input_button.call_kids':               { state: '2024-01-01T00:00:00Z' },
   'input_button.action_wifi_guest':        { state: '2024-01-01T00:00:00Z' },
@@ -164,7 +164,7 @@ export default {
     stove: {
       pellet_quantity: 'sensor.clou_pellet_quantity',
       pellet_stock:    'counter.pellet_stock',
-      status:          'binary_sensor.clou_stove_status',
+      status:          'sensor.clou_detailed_stove_status',
       low_threshold:   0.3,
     },
     vehicle: {

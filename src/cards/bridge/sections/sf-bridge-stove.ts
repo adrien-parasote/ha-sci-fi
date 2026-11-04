@@ -10,6 +10,7 @@ import { sciFiCommonStyles } from '../../../styles/common.js';
 import { bridgeStyles } from '../styles.js';
 import type { BridgeStoveConfig } from '../config.js';
 import { readSlotOrWarn, warnOnce } from '../bridge-warn.js';
+import { normalizePelletPct } from '../../../utils/pellet.js';
 import '../../../components/sf-icon/sf-icon.js';
 import '../../../components/sf-circle-progress-bar.js';
 import '../../../components/sf-stack-bar.js';
@@ -38,12 +39,6 @@ const STOVE_OFF_STATES = new Set([
   'unknown',
   'unavailable',
 ]);
-
-// Normalize pellet quantity to 0–100 int for sf-circle-progress-bar
-function normalizePelletPct(raw: number): number {
-  const pct = raw > 1 ? raw : raw * 100;
-  return Math.min(Math.max(Math.round(pct), 0), 100);
-}
 
 @localized()
 @customElement(TAG)

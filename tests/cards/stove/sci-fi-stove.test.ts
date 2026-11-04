@@ -48,6 +48,9 @@ describe('sci-fi-stove', () => {
     document.body.appendChild(el);
     await el.updateComplete;
     expect(el.shadowRoot!.textContent).to.include('Entité poêle non trouvée');
+    // a config without `entity` never reaches the render: setConfig refuses it (decision 2026-11-04)
+    const bare = document.createElement('sci-fi-stove') as SciFiStoveCard;
+    expect(() => (bare as any).setConfig({ type: 'custom:sci-fi-stove' })).toThrow('You need to define an entity');
   });
 
   it('TC-STOVE-U-1105: renders header with friendly_name', async () => {

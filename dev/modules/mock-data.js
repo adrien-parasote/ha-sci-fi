@@ -22,7 +22,9 @@ export const MOCK_STATES = {
   'sensor.smart_energy_monitor_poele_power': { entity_id: 'sensor.smart_energy_monitor_poele_power', state: '65', attributes: { unit_of_measurement: 'W' } },
   'sensor.clou_pellet_quantity': { entity_id: 'sensor.clou_pellet_quantity', state: '45', attributes: { unit_of_measurement: '%' } },
   'sensor.clou_time_to_service': { entity_id: 'sensor.clou_time_to_service', state: '234', attributes: { unit_of_measurement: 'h' } },
-  'binary_sensor.clou_stove_status': { entity_id: 'binary_sensor.clou_stove_status', state: 'on', attributes: { friendly_name: 'Statut poêle' } },
+  // Core fumis integration (HA 2026.5+): detailed status sensor + eco switch (bead ha-sci-fi-jex)
+  'sensor.clou_detailed_stove_status': { entity_id: 'sensor.clou_detailed_stove_status', state: 'combustion', attributes: { friendly_name: 'Statut poêle' } },
+  'switch.clou_eco_mode': { entity_id: 'switch.clou_eco_mode', state: 'off', attributes: { friendly_name: 'Mode éco' } },
   'counter.pellet_stock': { entity_id: 'counter.pellet_stock', state: '8', attributes: { friendly_name: 'Stock sacs', minimum: 0, maximum: 20 } },
   'vacuum.dobby': { entity_id: 'vacuum.dobby', state: 'docked', attributes: { friendly_name: 'Dobby', fan_speed: 'Standard', fan_speed_list: ['Silent', 'Standard', 'Boost', 'MAX'] } },
   'sensor.s7_batterie': { entity_id: 'sensor.s7_batterie', state: '100', attributes: { unit_of_measurement: '%', icon: 'mdi:battery' } },

@@ -16,6 +16,8 @@ import { customElement } from 'lit/decorators.js';
 import { msg, str } from '@lit/localize';
 
 import { SciFiBaseCard } from '../../utils/base-card.js';
+import type { SciFiBaseConfig } from '../../types/config.js';
+import { normalizePelletPct } from '../../utils/pellet.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import { stoveStyles } from './styles.js';
 import {
@@ -127,6 +129,15 @@ export class SciFiStoveCard extends SciFiBaseCard {
 
   declare config: SciFiStoveConfig;
 
+  /** A config without `entity` is refused here, as HA cards do (bead ha-sci-fi-bnf). */
+  protected override validateConfig(config: SciFiBaseConfig): void {
+    super.validateConfig(config);
+    const entity: unknown = (config as Partial<SciFiStoveConfig>).entity;
+    if (typeof entity !== 'string' || entity === '') {
+      throw new Error('You need to define an entity');
+    }
+  }
+
   protected override renderCard(): TemplateResult {
     const stoveState = this.hass.states[this.config.entity];
     if (!stoveState) {
@@ -189,12 +200,12 @@ export class SciFiStoveCard extends SciFiBaseCard {
     const pelletState = this.hass.states[s.sensor_pellet_quantity];
     if (!pelletState) return nothing;
     const val = parseFloat(pelletState.state);
-    if (isNaN(val)) return nothing;
+    if (!Number.isFinite(val)) return nothing;
     const threshold = this.config.pellet_quantity_threshold ?? STOVE_PELLET_QUANTITY_THRESHOLD_DEFAULT;
     return html`
       <sf-circle-progress-bar
         text="${msg('Fuel quantity')}"
-        .val=${Math.round(val)}
+        .val=${normalizePelletPct(val)}
         .threshold=${threshold}
       ></sf-circle-progress-bar>
     `;

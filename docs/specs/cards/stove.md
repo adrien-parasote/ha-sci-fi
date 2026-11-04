@@ -506,7 +506,7 @@ les promettaient (bead `ha-sci-fi-9xf`), et aucun rendu ne les produit.
 | TC-STOVE-U-1103 | Unit | La ligne de statut porte sa classe de couleur en combustion | `sensor_status: 'combustion'` | `.status.red` présent, `.stove-status` = `combustion` |
 | TC-STOVE-U-1104 | Unit | La ligne de statut porte sa classe de couleur à l'arrêt | `sensor_status: 'off'` | `.status.off` présent, `.stove-status` = `off` |
 | TC-STOVE-U-1105 | Unit | `friendly_name` appears in header info | `attributes.friendly_name: 'Poêle Salon'` | textContent includes `'Poêle Salon'` |
-| TC-STOVE-U-1111 | Unit | Error message when entity not found | `entity: 'climate.missing'`, hass empty | textContent includes `'Entité poêle non trouvée'` |
+| TC-STOVE-U-1111 | Unit | Error message when entity not found; config without `entity` refused | `entity: 'climate.missing'`, hass empty; then `setConfig({ type })` without `entity` | textContent includes `'Entité poêle non trouvée'`; `setConfig({ type })` throws `'You need to define an entity'` (decision 2026-11-04) |
 | TC-STOVE-U-1113 | Unit | `styles.ts` exports `stoveStyles` as a Lit CSSResult | Import check | `typeof stoveStyles === 'object'` with `cssText` property |
 | TC-STOVE-U-1114 | Unit | Le repli de libellé d'un statut absent de `STATUS_LABELS` remplace **tous** les underscores | `sensor_status: 'some_unknown_state'` | `.stove-status` = `some unknown state` (et non `some unknown_state`) |
 | TC-STOVE-U-1115 | Unit | Le repli d'en-tête d'une entité sans `friendly_name` est **localisé** — il suit la langue de HA, il n'est pas un littéral | Entité sans `friendly_name`, `hass.locale.language` = `fr` puis `en` | `.header` = « Poêle » sous `fr`, `Stove` sous `en` |
@@ -544,9 +544,11 @@ les promettaient (bead `ha-sci-fi-9xf`), et aucun rendu ne les produit.
 
 | Error | Detection | Response | Fallback |
 |---|---|---|---|
+| Config without `entity` (key absent, or not a non-empty string) | `validateConfig()` override, called by `setConfig()` | Throws `Error('You need to define an entity')` — the standard HA refusal; Lovelace renders its own configuration-error card | None — user must fix config. Amended 2026-11-04 (user decision, fix lot stove-bridge O2, bead ha-sci-fi-bnf): the card no longer accepts the config to fail at render with « … : undefined » |
 | Entity not found (`this.hass.states[this.config.entity]` undefined) | Guard at top of `renderCard()` | Return error `<ha-card>` with a localized message — « Entité poêle non trouvée : <entity> » under `fr`, `Stove entity not found: <entity>` in the source locale | None — user must fix config |
 | Capteur absent de `hass` | Garde dans la méthode de zone qui le lit (`_renderTopZone`, `_renderMiddleZone`, `_renderPowerZone`) | La cellule rend son repli — `.nothing` pour une quantité, `.no-temp` pour une température | Rien de trompeur : l'absence se voit |
 | État du capteur de granulés non numérique | Garde `isNaN` dans `_renderPelletQuantity` | La jauge `sf-circle-progress-bar` n'est pas rendue | Zone vide plutôt qu'une jauge à `NaN%` |
+| Capteur de granulés publié en ratio (0–1) | `normalizePelletPct` (`src/utils/pellet.ts`), partagé avec `sf-bridge-stove` | Une valeur ≤ 1 est un ratio (×100), au-delà un pourcentage ; bornée à 0–100 et arrondie | Amendé le 2026-11-04 (décision utilisateur, lot fix stove-bridge O1, bead ha-sci-fi-15v) : la carte et le bridge lisent la même entité de la même façon |
 | Service `climate.*` ou `switch.toggle` en échec | `.catch` sur la promesse de `callService` | `sf-toast` en erreur, portant le message du service | L'état affiché reste celui de `hass` — rien n'est supposé appliqué |
 | No `hass` available | `SciFiBaseCard` base class guard before `renderCard()` is called | Base class returns empty template | Transparent empty card |
 | Missing `friendly_name` attribute | Nullish coalescing on a localized fallback in the header | Show « Poêle » under `fr`, `Stove` in the source locale | Always renders something |

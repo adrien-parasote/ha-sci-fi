@@ -80,7 +80,7 @@ storage_counter_threshold: 0.1
 | `sensor_power` | String | Power consumption sensor |
 | `sensor_combustion_chamber_temperature` | String | Combustion chamber temp |
 | `sensor_inside_temperature` | String | Room temperature |
-| `sensor_pellet_quantity` | String | Internal pellet level (0–100%) |
+| `sensor_pellet_quantity` | String | Internal pellet level — a percentage (0–100) or a ratio (0–1: a value ≤ 1 is read ×100), as the bridge reads it |
 | `sensor_status` | String | `binary_sensor` state |
 | `sensor_fan_speed` | String | Fan speed sensor |
 | `sensor_pressure` | String | Pressure sensor |

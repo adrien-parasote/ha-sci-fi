@@ -39,21 +39,22 @@ describe('remediation utils', () => {
       { CardClass: SciFiHexaTilesCard, type: 'custom:sci-fi-hexa-tiles', size: 6 },
       { CardClass: SciFiClimatesCard, type: 'custom:sci-fi-climates', size: 5 },
       { CardClass: SciFiPlugsCard, type: 'custom:sci-fi-plugs', size: 5 },
-      { CardClass: SciFiStoveCard, type: 'custom:sci-fi-stove', size: 4 },
+      // the stove card refuses a config without entity (fix lot stove-bridge O2)
+      { CardClass: SciFiStoveCard, type: 'custom:sci-fi-stove', size: 4, entity: 'climate.poele' },
       { CardClass: SciFiVacuumCard, type: 'custom:sci-fi-vacuum', size: 6 },
       { CardClass: SciFiVehiclesCard, type: 'custom:sci-fi-vehicles', size: 5 },
       { CardClass: SciFiWeatherCard, type: 'custom:sci-fi-weather', size: 4 },
       { CardClass: SciFiLightsCard, type: 'custom:sci-fi-lights', size: 5 },
     ];
 
-    for (const { CardClass, type, size } of cases) {
+    for (const { CardClass, type, size, entity } of cases as Array<(typeof cases)[number] & { entity?: string }>) {
       const card = new CardClass();
       
       // 1. Guard clause: returns default 3 when config is not yet set
       expect(card.getCardSize()).toBe(3);
 
       // 2. Returns correct overridden size after setConfig
-      card.setConfig({ type } as any);
+      card.setConfig((entity ? { type, entity } : { type }) as any);
       expect(card.getCardSize()).toBe(size);
     }
   });

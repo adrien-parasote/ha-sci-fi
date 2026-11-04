@@ -781,10 +781,10 @@ The `sensors` field in `SciFiPlugDevice` is a `Record<string, SciFiPlugSensorEnt
 **File:** `src/cards/stove/sci-fi-stove-editor.ts`
 **Tag:** `sci-fi-stove-editor`
 
-**State loaded:** `_climates: HassEntity[]` — filtered by `entity_id.startsWith('climate.')`
+**State loaded:** none — the editor keeps no entity list (amended 2026-11-04, fix lot stove-bridge O3, bead ha-sci-fi-e9r: the `_climates` state once prescribed here was never shipped).
 
 **Sections:**
-1. **Config** — inputs for all sensor entity IDs (`sensor_actual_power`, `sensor_combustion_chamber_temperature`, etc.)
+1. **Config** — free-text `<sf-editor-input>` fields: `entity` (the `climate.*` entity, label key `input-stove-entity`), then every sensor entity ID (`sensor_actual_power`, `sensor_combustion_chamber_temperature`, etc.), `storage_counter` and `switch_eco_mode`
 2. **Technical** — sliders for `pellet_quantity_threshold` (0–1, step 0.1), `storage_counter_threshold` (0–1, step 0.1)
 
 ---

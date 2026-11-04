@@ -28,4 +28,27 @@ describe('O1', () => {
     expect(await gaugeVal('45')).toBe(45);
     expect(await gaugeVal('150')).toBe(100);
   });
+
+  it('test_O1_ratio_boundary_is_one_inclusive', async () => {
+    // ≤ 1 is a ratio (user decision): 1 is full, just above 1 is a percentage
+    expect(await gaugeVal('1')).toBe(100);
+    expect(await gaugeVal('1.0001')).toBe(1);
+  });
+
+  it('test_O1_non_finite_pellet_state_renders_no_gauge', async () => {
+    for (const state of ['Infinity', '-Infinity', 'NaN', 'unavailable']) {
+      const el = document.createElement('sci-fi-stove') as SciFiStoveCard;
+      (el as any).setConfig({ type: 'custom:sci-fi-stove', entity: 'climate.poele', sensors: { sensor_pellet_quantity: 'sensor.p' } });
+      el.hass = makeMockHass({
+        states: {
+          'climate.poele': makeMockEntity({ entity_id: 'climate.poele', state: 'heat', attributes: { hvac_modes: ['off', 'heat'] } }),
+          'sensor.p': makeMockEntity({ entity_id: 'sensor.p', state }),
+        },
+      });
+      document.body.appendChild(el);
+      await el.updateComplete;
+      expect(el.shadowRoot!.querySelector('sf-circle-progress-bar'), state).toBeNull();
+      el.remove();
+    }
+  });
 });

@@ -200,7 +200,7 @@ export class SciFiStoveCard extends SciFiBaseCard {
     const pelletState = this.hass.states[s.sensor_pellet_quantity];
     if (!pelletState) return nothing;
     const val = parseFloat(pelletState.state);
-    if (isNaN(val)) return nothing;
+    if (!Number.isFinite(val)) return nothing;
     const threshold = this.config.pellet_quantity_threshold ?? STOVE_PELLET_QUANTITY_THRESHOLD_DEFAULT;
     return html`
       <sf-circle-progress-bar

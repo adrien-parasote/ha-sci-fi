@@ -1,7 +1,6 @@
 import { expect, describe, it, beforeEach } from 'vitest';
 import {
   getLightEntities,
-  getLightState,
   countActiveLights,
   hasActiveLights,
 } from '../../src/selectors/light.js';
@@ -20,19 +19,6 @@ describe('light selectors', () => {
     const lights = getLightEntities(hass, 'area1');
     expect(lights.length).to.equal(1);
     expect(lights[0]!.entity_id).to.equal('light.1');
-  });
-
-  it('getLightState returns the state if present', () => {
-    const hass = makeMockHass({
-      states: {
-        'light.salon': makeMockEntity({ entity_id: 'light.salon', state: 'on' }),
-      },
-    });
-    const entry = makeMockEntityEntry({ entity_id: 'light.salon' });
-
-    const state = getLightState(hass, entry);
-    expect(state).to.exist;
-    expect(state!.state).to.equal('on');
   });
 
   it('countActiveLights counts lights that are on', () => {

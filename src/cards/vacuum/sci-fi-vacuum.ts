@@ -31,6 +31,7 @@ import '../../components/buttons/sf-button.js';
 import '../../components/sf-dropdown.js';
 import '../../components/sf-toast.js';
 import { DOMAIN } from '../../types/domains.js';
+import { ENTITY_ID } from '../../types/entity-ids.js';
 
 const TAG = 'sci-fi-vacuum';
 
@@ -353,7 +354,7 @@ export class SciFiVacuumCard extends SciFiBaseCard {
 
   static getStubConfig(): SciFiVacuumConfig {
     // ADR-005: entity (not entity_id)
-    return { type: `custom:${TAG}`, vacuums: [{ entity: 'vacuum.robot' }] };
+    return { type: `custom:${TAG}`, vacuums: [{ entity: ENTITY_ID.STUB_VACUUM }] };
   }
 }
 

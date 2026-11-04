@@ -256,7 +256,7 @@ describe('spec 02 — la Public Interface est complète ET mesurée', () => {
    */
   it('chaque ligne nomme exactement les cartes qui appellent la fonction', () => {
     const table = rows('docs/specs/02_domain_selectors.md', ' ### Public Interface', /\n---/);
-    expect(table.length, 'la table de Public Interface n’a pas été lue').toBeGreaterThan(14);
+    expect(table.length, 'la table de Public Interface n’a pas été lue').toBeGreaterThan(12);
 
     const ecarts: string[] = [];
     let avecAppelant = 0;
@@ -294,7 +294,7 @@ describe('spec 02 — la Public Interface est complète ET mesurée', () => {
     // Témoin : l'extraction doit voir la fonction que la table portait déjà et
     // une de celles qui manquaient.
     expect(exportes).toContain('getFloors');
-    expect(exportes).toContain('isClimateActive');
+    expect(exportes).toContain('isClimateNotOff');
     expect(exportes.length, 'l’extraction des exports est cassée').toBeGreaterThan(12);
 
     // La table, pas le document : un nom cité ailleurs dans la spec — dans une

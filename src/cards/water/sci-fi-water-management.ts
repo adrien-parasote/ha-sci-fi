@@ -15,6 +15,7 @@ import '../../components/editor-inputs/sf-editor-accordion.js';
 import { waterStyles } from './styles.js';
 import { DOMAIN } from '../../types/domains.js';
 import { callWS } from '../../utils/ws.js';
+import { ENTITY_ID } from '../../types/entity-ids.js';
 const TAG = 'sci-fi-water-management';
 
 // SVG hexagon points (pointy-top, portrait orientation)
@@ -187,10 +188,10 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     if (this._fetchId !== fetchId) return; // superseded while waiting
 
     this._rawLogs = [
-      { name: 'Arrosage Jardin', entity_id: 'switch.arrosage_terrasse', state: 'off', when: new Date(Date.now() - 15 * 60 * 1000).toISOString() },
-      { name: 'Fuite Cuisine', entity_id: 'sensor.leak_kitchen', state: 'on', when: new Date(Date.now() - 45 * 60 * 1000).toISOString(), device_class: 'moisture' },
-      { name: 'Vanne Principale', entity_id: 'switch.arrosage_haie', state: 'unavailable', when: new Date(Date.now() - 2 * 3600 * 1000).toISOString() },
-      { name: 'Remplissage Cuve', entity_id: 'switch.arrosage_terrasse', state: 'on', when: new Date(Date.now() - 4 * 3600 * 1000).toISOString() }
+      { name: 'Arrosage Jardin', entity_id: ENTITY_ID.DEMO_IRRIGATION_TERRACE, state: 'off', when: new Date(Date.now() - 15 * 60 * 1000).toISOString() },
+      { name: 'Fuite Cuisine', entity_id: ENTITY_ID.DEMO_LEAK_KITCHEN, state: 'on', when: new Date(Date.now() - 45 * 60 * 1000).toISOString(), device_class: 'moisture' },
+      { name: 'Vanne Principale', entity_id: ENTITY_ID.DEMO_IRRIGATION_HEDGE, state: 'unavailable', when: new Date(Date.now() - 2 * 3600 * 1000).toISOString() },
+      { name: 'Remplissage Cuve', entity_id: ENTITY_ID.DEMO_IRRIGATION_TERRACE, state: 'on', when: new Date(Date.now() - 4 * 3600 * 1000).toISOString() }
     ];
     this._historyLogsLoading = false;
   }
@@ -367,7 +368,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
 
   protected override getRelevantEntities(): string[] {
     const entities = new Set<string>();
-    entities.add('sun.sun');
+    entities.add(ENTITY_ID.SUN);
 
     const label = this.config.filter_label || 'water';
     const ignored = this.config.ignored_entities || [];
@@ -484,7 +485,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
   }
 
   private _getDayNightIcon(): TemplateResult {
-    const sun = this.hass?.states['sun.sun'];
+    const sun = this.hass?.states[ENTITY_ID.SUN];
     const isDay = sun ? sun.state === 'above_horizon' : true;
     const key = isDay ? 'sunny-day' : 'sunny-night';
     return (WEATHER_ICON_SET as Record<string, TemplateResult>)[key] ?? html``;

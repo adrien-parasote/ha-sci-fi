@@ -39,6 +39,7 @@ import '../../components/editor-inputs/sf-editor-dropdown-icon.js';
 import '../../components/editor-inputs/sf-editor-multi-entity.js';
 import '../../components/buttons/sf-button.js';
 import { lightsLabels, lightsSectionIcons } from './labels.js';
+import { ENTITY_ID } from '../../types/entity-ids.js';
 
 @customElement('sci-fi-lights-editor')
 export class SciFiLightsEditor extends SciFiBaseEditor {
@@ -172,9 +173,9 @@ export class SciFiLightsEditor extends SciFiBaseEditor {
     const newConfig = this._getNewConfig<SciFiLightsConfig>();
     const custom = { ...(newConfig.custom_entities ?? {}) };
     // Find a unique key (light.new, light.new1, …)
-    let key = 'light.new';
+    let key: string = ENTITY_ID.NEW_CUSTOM_LIGHT;
     let i = 1;
-    while (key in custom) { key = `light.new${i++}`; }
+    while (key in custom) { key = `${ENTITY_ID.NEW_CUSTOM_LIGHT}${i++}`; }
     custom[key] = {
       name: '',
       icon_on: 'mdi:lightbulb-on-outline',

@@ -25,6 +25,7 @@ import './sections/sf-bridge-stove.js';
 import './sections/sf-bridge-vehicle.js';
 import './sections/sf-bridge-actions.js';
 import '../../components/sf-toast.js';
+import { ENTITY_ID } from '../../types/entity-ids.js';
 
 const TAG = 'sci-fi-bridge';
 
@@ -68,7 +69,7 @@ export class SciFiBridgeCard extends SciFiBaseCard {
   static getStubConfig(): SciFiBridgeConfig {
     return {
       type: 'custom:sci-fi-bridge',
-      persons: [{ entity: 'person.CHANGE_ME' }],
+      persons: [{ entity: ENTITY_ID.STUB_PERSON }],
     };
   }
 

@@ -3,7 +3,7 @@
  * Pure, stateless functions. No mutation.
  */
 
-import type { HomeAssistantExt, HassEntityEntry, HassEntity } from '../types/ha.js';
+import type { HomeAssistantExt, HassEntityEntry } from '../types/ha.js';
 import { DOMAIN } from '../types/domains.js';
 
 /**
@@ -29,20 +29,10 @@ export function getClimateEntitiesExcluding(
 }
 
 /**
- * Returns the HassEntity state for a climate entity entry.
- * Returns undefined if not in hass.states.
+ * Returns true if the climate entity exists and its state is anything but 'off'
+ * (unavailable and unknown included) — "not off", not "heating" (spec 02).
  */
-export function getClimateState(
-  hass: HomeAssistantExt,
-  entityEntry: HassEntityEntry
-): HassEntity | undefined {
-  return hass.states[entityEntry.entity_id];
-}
-
-/**
- * Returns true if the climate entity is currently heating (state !== 'off').
- */
-export function isClimateActive(
+export function isClimateNotOff(
   hass: HomeAssistantExt,
   entityId: string
 ): boolean {

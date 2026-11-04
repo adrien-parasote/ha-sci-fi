@@ -1,0 +1,114 @@
+{
+  "O1": {
+    "green": null,
+    "proved": null
+  },
+  "O2": {
+    "green": {
+      "at": "2026-11-04T19:27:45Z",
+      "rc": 0,
+      "tail": " 2%, tests 2%, setup 1%)\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning."
+    },
+    "proved": {
+      "at": "2026-11-04T19:28:02Z",
+      "rc": 0,
+      "tail": " 3%, tests 2%, setup 1%)\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning."
+    }
+  },
+  "O3": {
+    "green": {
+      "at": "2026-11-04T19:27:46Z",
+      "rc": 0,
+      "tail": " 2%, setup 2%, tests 1%)\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning."
+    },
+    "proved": {
+      "at": "2026-11-04T19:28:03Z",
+      "rc": 0,
+      "tail": " 3%, setup 1%, tests 1%)\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning."
+    }
+  },
+  "O4": {
+    "green": {
+      "at": "2026-11-04T19:27:48Z",
+      "rc": 0,
+      "tail": "8%, worker 2%, setup 2%)\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning."
+    },
+    "proved": {
+      "at": "2026-11-04T19:28:05Z",
+      "rc": 0,
+      "tail": "8%, worker 2%, setup 2%)\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning."
+    }
+  },
+  "O5": {
+    "green": {
+      "at": "2026-11-04T19:27:49Z",
+      "rc": 0,
+      "tail": "8%, worker 2%, setup 1%)\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning."
+    },
+    "proved": {
+      "at": "2026-11-04T19:28:06Z",
+      "rc": 0,
+      "tail": "8%, worker 2%, setup 1%)\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning."
+    }
+  },
+  "O6": {
+    "green": {
+      "at": "2026-11-04T19:27:51Z",
+      "rc": 0,
+      "tail": "8%, worker 2%, setup 1%)\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning."
+    },
+    "proved": {
+      "at": "2026-11-04T19:28:08Z",
+      "rc": 0,
+      "tail": "8%, worker 2%, setup 1%)\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning."
+    }
+  },
+  "O7": {
+    "green": {
+      "at": "2026-11-04T19:27:52Z",
+      "rc": 0,
+      "tail": "4%, worker 3%, setup 1%)\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning."
+    },
+    "proved": {
+      "at": "2026-11-04T19:28:09Z",
+      "rc": 0,
+      "tail": "4%, worker 2%, setup 2%)\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning."
+    }
+  },
+  "O8": {
+    "green": {
+      "at": "2026-11-04T19:27:54Z",
+      "rc": 0,
+      "tail": " 2%, tests 2%, setup 1%)\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning."
+    },
+    "proved": {
+      "at": "2026-11-04T19:28:10Z",
+      "rc": 0,
+      "tail": " 3%, tests 2%, setup 1%)\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning."
+    }
+  },
+  "O9": {
+    "green": {
+      "at": "2026-11-04T19:27:55Z",
+      "rc": 0,
+      "tail": "8%, worker 2%, setup 1%)\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning."
+    },
+    "proved": {
+      "at": "2026-11-04T19:28:12Z",
+      "rc": 0,
+      "tail": "8%, worker 2%, setup 1%)\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning."
+    }
+  },
+  "O10": {
+    "green": {
+      "at": "2026-11-04T19:27:57Z",
+      "rc": 0,
+      "tail": " 2%, tests 2%, setup 2%)\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning."
+    },
+    "proved": {
+      "at": "2026-11-04T19:28:13Z",
+      "rc": 0,
+      "tail": " 3%, tests 2%, setup 1%)\n\n(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning."
+    }
+  }
+}

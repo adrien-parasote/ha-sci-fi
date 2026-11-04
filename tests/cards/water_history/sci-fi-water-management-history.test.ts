@@ -23,17 +23,17 @@ describe('sci-fi-water-management', () => {
         { entity_id: 'switch.valve_1', state: 'unavailable', when: '2026-06-01T08:20:00Z', name: 'Valve 1' } // Alert
       ];
       
+      const ids = ['switch.valve_1', 'sensor.leak_sensor'];
       el._activeFilter = 'all';
-      el._applyFiltersAndLimit();
-      expect(el._historyLogs.length).to.equal(3);
+      expect(el._visibleLogs(ids).length).to.equal(3);
 
       el._activeFilter = 'alerts';
-      el._applyFiltersAndLimit();
-      expect(el._historyLogs.length).to.equal(2);
-      expect(el._historyLogs[0].state).to.equal('unavailable');
+      const alerts = el._visibleLogs(ids);
+      expect(alerts.length).to.equal(2);
+      expect(alerts[0].state).to.equal('unavailable');
     });
 
-    it('TC-WATER-HISTORY-U-007: triggers fetch exactly once when expanded becomes true', async () => {
+    it('TC-WATER-HISTORY-U-007: never fetches when expanded becomes true', async () => {
       const el = document.createElement('sci-fi-water-management') as any;
       el.config = { type: 'custom:sci-fi-water-management', filter_label: 'water' };
       el.hass = makeMockHass({});
@@ -45,12 +45,12 @@ describe('sci-fi-water-management', () => {
       document.body.appendChild(el);
       el.expanded = false;
       await el.updateComplete;
-      expect(fetchCount).to.equal(0);
+      fetchCount = 0; // the mount itself is a floor load
 
       el.expanded = true;
       el.requestUpdate('expanded', false);
       await el.updateComplete;
-      expect(fetchCount).to.equal(1);
+      expect(fetchCount).to.equal(0);
     });
 
     // Helpers for the cases below. _renderHistoryLogs returns a Lit template,
@@ -189,11 +189,10 @@ describe('sci-fi-water-management', () => {
       expect(wsPayload.entity_ids).to.deep.equal(['switch.valve_1']);
     });
 
-    it('IT-WATER-HISTORY-I-006: triggers a new log fetch when entityIds change while expanded is true', async () => {
+    it('IT-WATER-HISTORY-I-006: triggers a new log fetch when entityIds change', async () => {
       const el = document.createElement('sci-fi-water-management') as any;
       el.config = { type: 'custom:sci-fi-water-management', filter_label: 'water' };
       el.hass = makeMockHass({});
-      el.expanded = true;
       el.entityIds = ['switch.valve_1'];
       
       let fetchCount = 0;
@@ -210,11 +209,10 @@ describe('sci-fi-water-management', () => {
       expect(fetchCount).to.equal(1);
     });
 
-    it('IT-WATER-HISTORY-I-007: triggers a new log fetch when _activeFloorId changes while expanded is true', async () => {
+    it('IT-WATER-HISTORY-I-007: triggers a new log fetch when _activeFloorId changes', async () => {
       const el = document.createElement('sci-fi-water-management') as any;
       el.config = { type: 'custom:sci-fi-water-management', filter_label: 'water' };
       el.hass = makeMockHass({});
-      el.expanded = true;
       el._activeFloorId = 'floor_1';
       
       let fetchCount = 0;
@@ -237,12 +235,10 @@ describe('sci-fi-water-management', () => {
       el.hass = makeMockHass({});
       el.entityIds = ['switch.valve_1'];
       el._rawLogs = [{ entity_id: 'switch.valve_1', state: 'on', when: '2026-06-01T08:00:00Z', name: 'Valve 1' }];
-      el._historyLogs = [...el._rawLogs];
       
       const fetchPromise = el._fetchHistoryLogs();
       // Right after synchronous invocation, logs must be immediately cleared
       expect(el._rawLogs).to.deep.equal([]);
-      expect(el._historyLogs).to.deep.equal([]);
       
       await fetchPromise;
     });

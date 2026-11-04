@@ -59,7 +59,7 @@ const waterIdsIn = (src: string): string[] => titlesOf(src).flatMap(citedIds).fi
 const old = (kind: string, n: string): string => [kind, n].join('-');
 const MAP: [string, string, string, 'hist' | 'water'][] = [
   [old('TC', '1201') + ', ' + wid(7), hu(6), 'filters alerts and success logs correctly', 'hist'],
-  [old('TC', '1202'), hu(7), 'triggers fetch exactly once when expanded becomes true', 'hist'],
+  [old('TC', '1202'), hu(7), 'never fetches when expanded becomes true', 'hist'],
   [old('TC', '1203'), hu(3), 'renders empty message if logs list is empty', 'hist'],
   [old('TC', '1203'), hu(8), 'renders the timeline, not the empty message, when logs match the filter', 'hist'],
   [old('TC', '1203'), hu(3), 'filters out logs whose entity is not in filterEntityIds', 'hist'],
@@ -67,8 +67,8 @@ const MAP: [string, string, string, 'hist' | 'water'][] = [
   [old('TC', '1205'), hu(5), 'formats timestamps correctly', 'hist'],
   [old('IT', '1201'), hi(4), 'invokes hass.callWS with logbook/get_events and correct payload on primary failure', 'hist'],
   [old('IT', '1201_primary'), hi(5), 'invokes hass.callWS with history/history_during_period as primary', 'hist'],
-  [old('IT', '1202'), hi(6), 'triggers a new log fetch when entityIds change while expanded is true', 'hist'],
-  [old('IT', '1203'), hi(7), 'triggers a new log fetch when _activeFloorId changes while expanded is true', 'hist'],
+  [old('IT', '1202'), hi(6), 'triggers a new log fetch when entityIds change', 'hist'],
+  [old('IT', '1203'), hi(7), 'triggers a new log fetch when _activeFloorId changes', 'hist'],
   [old('IT', '1204'), hi(8), 'clears old logs immediately at the start of fetch', 'hist'],
   [old('IT', '1205'), hi(9), 'filters entityIds to only include standalone (no-device) entities listed in the Automations accordion', 'hist'],
   [old('TC', 'W01'), wid(9), 'getCardSize returns 5', 'water'],
@@ -147,14 +147,14 @@ describe('water ids declared', () => {
       [hu(3), ['filterEntityIds']],
       [hu(4), ['.log-scanner']],
       [hu(5), ['00/00 00:00', 'LOCAL', 'brackets']],
-      [hu(6), ['_applyFiltersAndLimit', 'unavailable']],
-      [hu(7), ['D21', 'No Covers cell cites it']],
+      [hu(6), ['_visibleLogs', 'unavailable']],
+      [hu(7), ['Fetch on accordion open', 'ha-sci-fi-xrc']],
       [hu(8), ['.log-timeline']],
       [hi(4), ['logbook/get_events']],
       [hi(5), ['history/history_during_period']],
-      [hi(6), ['D21', 'No Covers cell cites it']],
-      [hi(7), ['D21', 'No Covers cell cites it']],
-      [hi(8), ['_historyLogs']],
+      [hi(6), ['counter']],
+      [hi(7), ['floor_2']],
+      [hi(8), ['_rawLogs']],
       [hi(9), ['switch.pump']],
       [wid(3), ['turn_off', 'turn_on', 'not read back']],
       [wid(9), ['getCardSize', 'stub config']],
@@ -252,7 +252,7 @@ describe('water ids declared', () => {
     expect(waterDoc).toContain('Neuf des vingt-cinq');
     expect(histDoc.split('\n').filter((l) => /^\|\s*D14\b/.test(l))).toEqual([]);
     const resolved = histDoc.split('\n').find((l) => l.startsWith('Resolved by alignment')) ?? '';
-    for (const tok of ['D14', '_formatTimestamp', ':310', ':321', ':363', 'no test pins the brackets']) {
+    for (const tok of ['D14', '_formatTimestamp', ':306', ':317', ':352', 'no test pins the brackets']) {
       expect(resolved, tok).toContain(tok);
     }
   });
@@ -263,11 +263,11 @@ describe('water ids declared', () => {
     const exRe = /\bexpect\(/g;
     expect(histSrc).toContain("describe('Automation History Logs (Spec 16)'");
     expect(histSrc).toContain('afterEach');
-    expect([count(histSrc, itRe), count(histSrc, exRe)]).toEqual([13, 25]);
+    expect([count(histSrc, itRe), count(histSrc, exRe)]).toEqual([13, 23]);
     expect([count(waterSrc, itRe), count(waterSrc, exRe)]).toEqual([23, 37]);
     expect(waterSrc).not.toContain('Automation History Logs');
     expect(count(histSrc, itRe) + count(waterSrc, itRe)).toBe(36);
-    expect(count(histSrc, exRe) + count(waterSrc, exRe)).toBe(62);
+    expect(count(histSrc, exRe) + count(waterSrc, exRe)).toBe(60);
     expect(titlesOf(waterSrc).filter((t) => t.includes(wid(7)) || histRe.test(t))).toEqual([]);
     expect(waterIdsIn(histSrc)).toEqual([]);
   });
@@ -287,7 +287,7 @@ describe('water ids declared', () => {
   it('TC-WATOI-U-11: the aligned guard keeps the D14 cites and the case-row carve-out with its mutants', () => {
     const src = read(ALIGNED);
     const carve = ['(?:TC|IT)', 'WATER', 'HISTORY', '[UI]'].join('-');
-    for (const tok of ['D14_CITES', '310', '321', '363', carve, 'Timeline rendered when entries match and', 'expanded` (D21)']) {
+    for (const tok of ['D14_CITES', '306', '317', '352', carve, 'Timeline rendered when entries match and', 'expanded` (D21)']) {
       expect(src, tok).toContain(tok);
     }
   });

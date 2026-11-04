@@ -1,0 +1,14 @@
+ad973830d5934d849557d9e9cf4ad39b83e9b275 docs/fixes/water/lot.json
+4aef6a2d7f7cacaf68c6722ffd6f8f57d19bc126 docs/fixes/water/verdicts.json
+990b656a8cbb77f14270fb2cbb76340941ed9663 docs/specs/cards/water.md
+f8727d18ad464f83e313c4705c835665bb9482ab docs/specs/cards/water_history.md
+ceb679ebb2d1a402e2430bb49f38f2da6d4f2d36 src/cards/water/sci-fi-water-management-editor.ts
+5b0014293da39517b855304973f3cc191493de73 src/cards/water/sci-fi-water-management.ts
+8066063d2309773d008f22c8e6905cf24d969973 src/cards/water/styles.ts
+53616896c88fd05a442811f39fa45de7b048b743 src/types/ha.ts
+3fd52aeedea10138ade308208e383c2f856dd83e src/utils/ws.ts
+f0a77a2bd051895fad75ebbe632af0c28591786c tests/cards/water/fix-water.test.ts
+8d34bf087ca6bf84c29987c99c8328d9cbfb373b tests/cards/water/water-history-aligned.test.ts
+b21663d3ad867d6f0f0c5145bbb5d9d503da44fd tests/cards/water/water-ids-declared.test.ts
+93a14dc96d2a4b70ba31a38507f4dd3db022173e tests/cards/water_history/sci-fi-water-management-history.test.ts
+7ab26b19685c480210b0bc2a01128016ddf8558a tests/styles/card-css-baseline.json

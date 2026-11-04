@@ -36,7 +36,7 @@ A dynamic, spaceship-style dashboard component designed to display and manage wa
 6. **History Fetch Strategy**:
    - Fetches history **once per floor load** using `history/history_during_period` (HA recorder API). Payload must specify `start_time` as `now - 7 days` (e.g., `new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()`) and omit `end_time` to fetch up to now.
    - Falls back to `logbook/get_events` if the recorder API is unavailable.
-   - Only queries meaningful domains: `switch`, `valve`, `automation`, `binary_sensor`, `sensor`.
+   - Only queries meaningful domains: `switch`, `valve`, `automation`, `binary_sensor`, `input_boolean`, `sensor`. `input_boolean` is a control domain of this card (Features 3, F-WATER-03): its ON/OFF changes are execution events like a `switch`'s, so it is queried too (fix lot `water`, bead `ha-sci-fi-7kb`: the list once omitted it while the code and water_history.md queried it).
    - Uses `significant_changes_only: true` to suppress high-frequency sensor noise.
    - Manual refresh via sync button (`mdi:refresh`) in the floor bar.
 7. **Resilient UI**: Gracefully handles states where no floors exist, or no water entities are present on the selected floor.

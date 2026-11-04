@@ -159,7 +159,7 @@ Arbitrage `ha-sci-fi-enr`: [water.md](./water.md) is the reference and the code 
 
 Resolved by fix lot `water` (`ha-sci-fi-d6nc`, one regression test each in `tests/cards/water/fix-water.test.ts`): D01 the spin targets `sf-icon` (`ha-sci-fi-9vv`), D07 an unlisted floor falls back to the first listed (`ha-sci-fi-rd4`), D15 `_historyLogs` removed, `_visibleLogs` is the one log contract (`ha-sci-fi-ijw`), D20 no inline `style=` left (`ha-sci-fi-ln3`), D21 `expanded` removed (`ha-sci-fi-xrc`), D22 malformed rows dropped with a `console.warn` (`ha-sci-fi-5aw`), D23 `_fetchId` incremented on entry (`ha-sci-fi-p5a`), D24 water.md F-WATER-06 amended to six domains (`ha-sci-fi-7kb`).
 
-Resolved by alignment, not by a bead: D16 (the "Warning" filter of IT-003 never existed, removed above), window and endpoint (`ha-sci-fi-o5p`), D14 (TC-WATER-HISTORY-U-005, played since lot `water-orphan-ids`, bead `ha-sci-fi-78y.7`, pins what `_formatTimestamp` returns, `DD/MM HH:MM` (`:310`, the `return` at `:321`) with the `00/00 00:00` fallback; the brackets come from the template that wraps it (`:356`) and no test pins the brackets: a render test of `.log-time` would close that).
+Resolved by alignment, not by a bead: D16 (the "Warning" filter of IT-003 never existed, removed above), window and endpoint (`ha-sci-fi-o5p`), D14 (TC-WATER-HISTORY-U-005, played since lot `water-orphan-ids`, bead `ha-sci-fi-78y.7`, pins what `_formatTimestamp` returns, `DD/MM HH:MM` (`:306`, the `return` at `:317`) with the `00/00 00:00` fallback; the brackets come from the template that wraps it (`:352`) and no test pins the brackets: a render test of `.log-time` would close that).
 
 ## Local Development
 

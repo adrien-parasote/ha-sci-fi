@@ -209,9 +209,9 @@ const checkU04 = (doc: string, srcLines: string[]): Fails => {
   const resolved = doc.split('\n').find((l) => l.startsWith('Resolved by alignment')) ?? '';
   has(f, 'resolved line', resolved, 'D14', '_formatTimestamp', 'no test pins the brackets');
   const D14_CITES: [number, string][] = [
-    [310, '_formatTimestamp(when'],
-    [321, '${dd}/${mo}'],
-    [356, '[${this._formatTimestamp('],
+    [306, '_formatTimestamp(when'],
+    [317, '${dd}/${mo}'],
+    [352, '[${this._formatTimestamp('],
   ];
   for (const [n, construct] of D14_CITES) {
     if (!new RegExp(`:${n}(?!\\d)`).test(resolved)) f.push(`D14: resolved line does not cite :${n}`);
@@ -329,10 +329,10 @@ describe('water_history.md aligned on water.md and the code', () => {
     expect(checkU04(mutant(DOC, '(`:140`)', '(`:999`)'), SRC).length).toBeGreaterThan(0);
     expect(checkU04(mutant(DOC, '(`:140`)', '(`:1400`)'), SRC).length).toBeGreaterThan(0);
     // D14 sits in the resolved line now: its three cites and its "not pinned" statement are held by mutants.
-    expect(checkU04(mutant(DOC, '`:321`', '`:999`'), SRC).length).toBeGreaterThan(0);
-    expect(checkU04(mutant(DOC, '`:321`', '`:3230`'), SRC).length).toBeGreaterThan(0);
-    expect(checkU04(mutant(DOC, '`:356`', '`:999`'), SRC).length).toBeGreaterThan(0);
-    expect(checkU04(mutant(DOC, '`:310`', '`:999`'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, '`:317`', '`:999`'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, '`:317`', '`:3170`'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, '`:352`', '`:999`'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, '`:306`', '`:999`'), SRC).length).toBeGreaterThan(0);
     expect(checkU04(mutant(DOC, 'no test pins the brackets', 'a test pins the brackets'), SRC).length).toBeGreaterThan(0);
   });
 

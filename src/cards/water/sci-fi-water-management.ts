@@ -144,14 +144,13 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
       return;
     }
 
-    if (!this.entityIds || this.entityIds.length === 0) {
-      this._historyLogsLoading = false;
-      return;
-    }
-
+    // Every exit after this point goes through the finally below, which alone
+    // clears the loading flag for the current fetch. ha-sci-fi-p5a
     this._historyLogsLoading = true;
 
     try {
+      if (!this.entityIds || this.entityIds.length === 0) return;
+
       const startTime = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
       // Query only the domains that carry meaningful events.
@@ -159,10 +158,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
         id => SciFiWaterManagementCard.MEANINGFUL_DOMAINS.has(id.split('.')[0] as string)
       );
 
-      if (queryIds.length === 0) {
-        this._historyLogsLoading = false;
-        return;
-      }
+      if (queryIds.length === 0) return;
 
       let logs: any[];
       try {

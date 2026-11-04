@@ -144,6 +144,32 @@ describe('fix lot water', () => {
     expect(viaHelper.connection.sendMessagePromise).not.toHaveBeenCalled();
   });
 
+  it('test_O8_every_early_exit_clears_the_loading_flag', async () => {
+    const el = document.createElement('sci-fi-water-management') as any;
+    el.hass = { states: {}, callWS: () => Promise.resolve({}) };
+    el.entityIds = [];
+    await el._fetchHistoryLogs();
+    expect(el._historyLogsLoading).toBe(false);
+    el.entityIds = ['light.not_meaningful'];
+    await el._fetchHistoryLogs();
+    expect(el._historyLogsLoading).toBe(false);
+  });
+
+  it('test_O9_editor_falls_back_to_hass_entities_when_the_registry_fetch_fails', async () => {
+    await import('../../../src/cards/water/sci-fi-water-management-editor.js');
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const hass = houseHass();
+    hass.callWS = () => Promise.reject(new Error('registry down'));
+    const el = document.createElement('sci-fi-water-management-editor') as any;
+    el.setConfig({ type: 'custom:sci-fi-water-management', filter_label: 'water' });
+    el.hass = hass;
+    document.body.appendChild(el);
+    await el._fetchRegistry();
+    const grouped = el._getGroupedWaterEntities();
+    const ids = Object.values(grouped).flat().map((e: any) => e.entity_id).sort();
+    expect(ids).toEqual(['switch.pump', 'switch.valve_1']);
+  });
+
   it('test_O10_spec_and_code_query_input_boolean', async () => {
     const spec = readFileSync(resolve(__dirname, '../../../docs/specs/cards/water.md'), 'utf8');
     const line = spec.split('\n').find((l) => l.includes('Only queries meaningful domains')) ?? '';

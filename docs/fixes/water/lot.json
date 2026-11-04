@@ -1,7 +1,7 @@
 {
   "feature": "water",
   "created": "2026-11-04T19:06:48Z",
-  "frozen_at": null,
+  "frozen_at": "2026-11-04T19:18:34Z",
   "epic": "ha-sci-fi-d6nc",
   "observations": [
     {
@@ -86,5 +86,10 @@
     }
   ],
   "suite": "npx vitest run",
-  "lint": "npx eslint src/cards/water src/utils/ws.ts src/types/ha.ts tests/cards/water tests/cards/water_history tests/styles/card-css-baseline.test.ts"
+  "lint": "npx eslint src/cards/water src/utils/ws.ts src/types/ha.ts tests/cards/water tests/cards/water_history tests/styles/card-css-baseline.test.ts",
+  "suite_run": {
+    "at": "2026-11-04T19:28:28Z",
+    "rc": 0,
+    "tail": ""
+  }
 }

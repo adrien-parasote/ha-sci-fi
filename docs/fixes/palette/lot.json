@@ -94,5 +94,10 @@
     }
   ],
   "suite": "npx vitest run",
-  "lint": "npx eslint src/styles/common.ts src/cards/bridge src/cards/climates/styles.ts src/cards/hexa-tiles/styles.ts src/cards/stove/styles.ts src/cards/tv/style.ts src/cards/vacuum/styles.ts src/cards/water/styles.ts src/cards/weather/styles.ts tests/styles"
+  "lint": "npx eslint src/styles/common.ts src/cards/bridge src/cards/climates/styles.ts src/cards/hexa-tiles/styles.ts src/cards/stove/styles.ts src/cards/tv/style.ts src/cards/vacuum/styles.ts src/cards/water/styles.ts src/cards/weather/styles.ts tests/styles",
+  "suite_run": {
+    "at": "2026-11-04T20:10:13Z",
+    "rc": 0,
+    "tail": ""
+  }
 }

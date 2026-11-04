@@ -203,7 +203,7 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
   }
 
   private _renderHeader(connectedPerson: HassEntity | undefined): TemplateResult {
-    const userName = connectedPerson?.attributes.friendly_name ?? this.hass.user?.name ?? 'User';
+    const userName = connectedPerson?.attributes.friendly_name ?? this.hass.user?.name ?? msg('User');
     const userPicture = connectedPerson?.attributes.entity_picture as string | undefined;
     const personId = connectedPerson?.entity_id;
     const personState = connectedPerson?.state ?? 'home';

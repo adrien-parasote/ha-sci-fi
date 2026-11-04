@@ -135,6 +135,17 @@ export const sciFiCommonStyles = css`
     font-size: 1.25rem;
   }
 
+  /* ── Empty state (climates, vehicles — bead ha-sci-fi-33v) ─────────────── */
+  .empty-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--sf-spacing-md);
+    color: var(--sf-text-secondary);
+    font-size: var(--sf-font-size-base);
+    text-align: center;
+  }
+
   /* ── Interactive elements ──────────────────────────────────────────────── */
   button, [role="button"] {
     cursor: pointer;

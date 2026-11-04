@@ -753,7 +753,7 @@ describe('climates behavioural gaps', () => {
   const modeButton = async (el: any, index: number) => {
     const radiator = el.shadowRoot.querySelectorAll('sf-radiator')[index];
     await radiator.updateComplete;
-    return radiator.shadowRoot.querySelector('sf-button-card-select[title="mode"]') as any;
+    return radiator.shadowRoot.querySelector('sf-button-card-select[title="Mode"]') as any;
   };
 
   afterEach(() => {

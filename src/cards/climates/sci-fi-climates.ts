@@ -6,7 +6,7 @@ import { sciFiCommonStyles } from '../../styles/common.js';
 import { climateStyles } from './styles.js';
 import type { SciFiClimatesConfig } from './config.js';
 import { DOMAIN } from '../../types/domains.js';
-import { getClimateEntitiesExcluding, isClimateNotOff } from '../../selectors/climate.js';
+import { getClimateEntitiesExcluding, isClimateOn } from '../../selectors/climate.js';
 import { getFloors, getAreasByFloor, getEntitiesByAreaAndDomain, getFloorById, getAreaById, getAreas } from '../../selectors/house.js';
 
 import '../../components/sf-hexa-row.js';
@@ -145,7 +145,7 @@ export class SciFiClimatesCard extends SciFiBaseCard {
     for (const a of areas) {
       const climates = getEntitiesByAreaAndDomain(this.hass, a.area_id, DOMAIN.CLIMATE);
       for (const c of climates) {
-        if (!excluded.includes(c.entity_id) && isClimateNotOff(this.hass, c.entity_id)) {
+        if (!excluded.includes(c.entity_id) && isClimateOn(this.hass, c.entity_id)) {
           return true;
         }
       }
@@ -155,7 +155,7 @@ export class SciFiClimatesCard extends SciFiBaseCard {
 
   private __isAreaActive(areaId: string, excluded: readonly string[]): boolean {
     const climates = getEntitiesByAreaAndDomain(this.hass, areaId, DOMAIN.CLIMATE);
-    return climates.some(c => !excluded.includes(c.entity_id) && isClimateNotOff(this.hass, c.entity_id));
+    return climates.some(c => !excluded.includes(c.entity_id) && isClimateOn(this.hass, c.entity_id));
   }
 
   private __displayHeader(): TemplateResult {
@@ -200,7 +200,7 @@ export class SciFiClimatesCard extends SciFiBaseCard {
   private __displayActionHeader(entities: any[]): TemplateResult {
     if (!this.config.header?.display) return html``;
     
-    const active = entities.some(c => isClimateNotOff(this.hass, c.entity_id));
+    const active = entities.some(c => isClimateOn(this.hass, c.entity_id));
     const h = this.config.header;
     const icon = active ? (h.icon_summer_state || 'mdi:thermometer-chevron-down') : (h.icon_winter_state || 'mdi:thermometer-chevron-up');
     const headerMsg = active ? (h.message_summer_state || msg('Summer time')) : (h.message_winter_state || msg('Winter is coming'));

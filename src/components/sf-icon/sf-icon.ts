@@ -21,6 +21,9 @@ import { resolveIcon, getSyncCache, ICON_NOT_FOUND, type HassIconConnection } fr
 import CUSTOM_ICONS from './data/sf-icons.js';
 import WEATHER_ICONS from './data/sf-weather-icons.js';
 import { ownValue } from './icon-names.js';
+import { scopeSvgIds } from './svg-id-scope.js';
+
+let instanceCount = 0;
 
 /** Global augmentation for window.customIcons */
 declare global {
@@ -105,6 +108,13 @@ export class SfIcon extends LitElement {
 
   @state()
   private _loading = false;
+
+  /** Suffix of this instance's SVG ids — two animated icons in one light DOM never share one. */
+  private readonly _idSuffix = `-sfi${++instanceCount}`;
+
+  protected override updated(): void {
+    if (typeof this._pathData === 'object' && this._pathData !== null) scopeSvgIds(this, this._idSuffix);
+  }
 
   override willUpdate(changed: Map<string, unknown>): void {
     if ((changed.has('icon') || changed.has('connection')) && this.icon) {

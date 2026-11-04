@@ -1001,13 +1001,15 @@ describe('sci-fi-tv', () => {
       }
     });
 
-    // Mutant: add a radial guard ignoring the readout area (the future bead ha-sci-fi-9zpl)
-    it('TC-BTG-U-22: readout taps resolve to 1 / 1 / 0 (accepted by design, angle-only; radial guard is bead ha-sci-fi-9zpl)', async () => {
-      expect(await volumeAt(100, 152)).to.equal(1);
-      document.body.replaceChildren();
-      expect(await volumeAt(110, 152)).to.equal(1);
-      document.body.replaceChildren();
-      expect(await volumeAt(90, 152)).to.equal(0);
+    // Mutant: remove the radial guard (bead ha-sci-fi-9zpl) — the readout taps resolve to 1 / 1 / 0 again
+    it('test_O4_radial_guard_ignores_readout_and_outside_taps (TC-BTG-U-22)', async () => {
+      for (const [x, y] of [[100, 152], [110, 152], [90, 152], [100, 100], [0, 0]] as const) {
+        const { svg, callService } = await mountDial();
+        fire(svg, 'pointerdown', x, y);
+        expect(callService, `(${x},${y})`).not.toHaveBeenCalled();
+        document.body.replaceChildren();
+      }
+      expect(await volumeAt(...polar(-90))).to.equal(0.5);
     });
 
     // Mutant: wrong entity (always `entity`); no off-guard on pointerdown; `+135`

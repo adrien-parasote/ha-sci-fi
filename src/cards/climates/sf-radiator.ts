@@ -232,7 +232,7 @@ export class SciFiRadiator extends LitElement {
   protected override render(): TemplateResult | typeof nothing {
     if (!this.climateEntity || !this.climateEntity.attributes) return nothing;
     return html`
-      <div class="name">${this.climateEntity.attributes.friendly_name || 'Radiator'}</div>
+      <div class="name">${this.climateEntity.attributes.friendly_name || msg('Radiator')}</div>
       <div class="img">${this.__displayImage()}</div>
       <div class="content">
         <div class="left">${this.__displayleft()}</div>
@@ -361,7 +361,7 @@ export class SciFiRadiator extends LitElement {
       <sf-button-card-select
         position="bottom"
         .icon=${preset_icon}
-        title="preset"
+        title="${msg('Preset')}"
         text="${this.__getLabel(presetMode)}"
         .items=${this.__getPresetOptions()}
         @button-select="${this.__select}"
@@ -370,7 +370,7 @@ export class SciFiRadiator extends LitElement {
       <sf-button-card-select
         position="bottom"
         .icon=${hvac_icon}
-        title="mode"
+        title="${msg('Mode')}"
         text="${this.__getLabel(hvacMode)}"
         .items=${this.__getHvacOptions()}
         @button-select="${this.__select}"

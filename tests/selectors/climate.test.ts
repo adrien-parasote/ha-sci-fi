@@ -2,7 +2,7 @@ import { expect, describe, it, beforeEach } from 'vitest';
 import {
   getClimateEntities,
   getClimateEntitiesExcluding,
-  isClimateNotOff,
+  isClimateOn,
 } from '../../src/selectors/climate.js';
 import { makeMockHass, makeMockEntityEntry, makeMockEntity } from '../fixtures/mock-hass.js';
 
@@ -40,7 +40,7 @@ describe('climate selectors', () => {
     expect(climates[0]!.entity_id).to.equal('climate.salon');
   });
 
-  it('isClimateNotOff returns true if not off', () => {
+  it('isClimateOn returns true if not off', () => {
     const hass = makeMockHass({
       states: {
         'climate.heat': makeMockEntity({ entity_id: 'climate.heat', state: 'heat' }),
@@ -48,8 +48,8 @@ describe('climate selectors', () => {
       },
     });
 
-    expect(isClimateNotOff(hass, 'climate.heat')).to.be.true;
-    expect(isClimateNotOff(hass, 'climate.off')).to.be.false;
-    expect(isClimateNotOff(hass, 'climate.unknown')).to.be.false;
+    expect(isClimateOn(hass, 'climate.heat')).to.be.true;
+    expect(isClimateOn(hass, 'climate.off')).to.be.false;
+    expect(isClimateOn(hass, 'climate.unknown')).to.be.false;
   });
 });

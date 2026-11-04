@@ -20,6 +20,9 @@ const TAG = 'sci-fi-tv';
 // Honeycomb pointy-top hexagon points
 const HEXA_BG = '22,1 43,13 43,38 22,50 1,38 1,13';
 const HEXA_BORDER = '22,2 42,14 42,37 22,49 2,37 2,14';
+/** Radial bounds of the volume ring in SVG units: the inner dashed grid circle, and just past the outer one. */
+const DIAL_MIN_RADIUS = 55;
+const DIAL_MAX_RADIUS = 100;
 
 const D_PAD_KEYS = {
   up: 'Up',
@@ -433,6 +436,11 @@ export class SciFiTVCard extends SciFiBaseCard {
     const cx = 100;
     const cy = 100;
 
+    // Radial guard (spec tv §1, bead ha-sci-fi-9zpl): only the ring drives the volume —
+    // the readout inside the inner grid circle and the corners outside the dial are ignored.
+    const radius = Math.hypot(svgX - cx, svgY - cy);
+    if (radius < DIAL_MIN_RADIUS || radius > DIAL_MAX_RADIUS) return;
+
     // Angle math & clamp
     const thetaDeg = Math.atan2(svgY - cy, svgX - cx) * (180 / Math.PI);
     
@@ -480,7 +488,7 @@ export class SciFiTVCard extends SciFiBaseCard {
         entity_id: this.config.remote_entity,
         command: D_PAD_KEYS[btn],
       }).catch(() => {
-        this._showToast('Remote command failed');
+        this._showToast(msg('Remote command failed'));
       });
     }
   }

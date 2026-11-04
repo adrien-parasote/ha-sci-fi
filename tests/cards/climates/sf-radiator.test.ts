@@ -302,7 +302,7 @@ describe('sf-radiator', () => {
     };
 
     const presetButton = (el: SciFiRadiator) =>
-      el.shadowRoot!.querySelector('sf-button-card-select[title="preset"]') as any;
+      el.shadowRoot!.querySelector('sf-button-card-select[title="Preset"]') as any;
 
     // HA reports `comfort_1`; the config spells it `comfort-1`. The lookup used
     // the raw HA key, so a configured icon and colour were silently dropped.
@@ -329,7 +329,7 @@ describe('sf-radiator', () => {
 
     it('falls back to the off icon and colour for an unmapped hvac mode', async () => {
       const el = await mount('eco', 'dry');
-      const btn = el.shadowRoot!.querySelector('sf-button-card-select[title="mode"]') as any;
+      const btn = el.shadowRoot!.querySelector('sf-button-card-select[title="Mode"]') as any;
       expect(btn.icon).to.equal('mdi:power-off');
       expect(btn.getAttribute('style')).to.include('#6c757d');
     });

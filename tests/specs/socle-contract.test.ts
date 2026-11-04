@@ -294,7 +294,7 @@ describe('spec 02 — la Public Interface est complète ET mesurée', () => {
     // Témoin : l'extraction doit voir la fonction que la table portait déjà et
     // une de celles qui manquaient.
     expect(exportes).toContain('getFloors');
-    expect(exportes).toContain('isClimateNotOff');
+    expect(exportes).toContain('isClimateOn');
     expect(exportes.length, 'l’extraction des exports est cassée').toBeGreaterThan(12);
 
     // La table, pas le document : un nom cité ailleurs dans la spec — dans une

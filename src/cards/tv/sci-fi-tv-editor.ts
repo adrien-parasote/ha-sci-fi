@@ -4,6 +4,7 @@
 
 import type { HomeAssistantExt } from '../../types/ha.js';
 import { DOMAIN } from '../../types/domains.js';
+import { msg } from '@lit/localize';
 import { html, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
@@ -132,7 +133,7 @@ export class SciFiTVEditor extends SciFiBaseEditor {
   protected override renderEditor(): TemplateResult {
     const config = this.config as SciFiTVConfig;
     if (!config) {
-      return html`<div>No config</div>`;
+      return html`<div>${msg('No config')}</div>`;
     }
 
     return html`

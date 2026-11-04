@@ -29,27 +29,9 @@
 
 | Tier | Examples |
 |------|----------|
-| **Always do** | Use strict TypeScript types for all config mappings. Maintain HSL color tokens for visual continuity. Use `setPointerCapture(pointerId)` on the SVG element for all pointer drag interactions. Selective rendering via `getRelevantEntities()`. Add `display: block` to `:host` (L059). Use English-only strings as `msg()` source keys (L060). Never add `@state()` on a field not mutated in the same PR (L018 / YAGNI). |
-| **Ask first** | Modifying `SciFiBaseCard` interface or common styles in `src/styles/common.ts`. Adding external icon libraries (strictly reuse `sf-icon` caching). |
-| **Never do** | Introduce third-party volume slider libraries or canvas gauges. Bypass standard HA `callService` bounds. Hardcode specific Bravia commands without custom action fallbacks. Use `!= null` — always use `!== null && !== undefined` (L024 / `eqeqeq: always`). Use `rem` as CSS fallback values — always use `px` (L058). Target 100% branch coverage on Lit template ternaries — branch target is 90% (L023). Use circular CSS custom property self-references `--x: var(--x, default)` (L057). |
-
----
-
-## Cross-Spec Contracts
-
-### Produces
-* `custom:sci-fi-tv` registered element for Lovelace dashboard.
-* `custom:sci-fi-tv-editor` registered editor element.
-
-### Consumes
-| Path / Identifier | Format | Schema Location | Producer |
-|---|---|---|---|
-| `SciFiBaseCard` | TypeScript Class | [Spec 03](../03_base_classes.md#blueprint-coverage) | base-card.ts |
-| `SciFiBaseEditor` | TypeScript Class | [Spec 03](../03_base_classes.md#blueprint-coverage) | base-editor.ts |
-| `<sf-icon>` | Lit Component | [Spec 04](../04_components.md#blueprint-coverage) | sf-icon.ts |
-
-### Public Interface
-* Lovelace custom card configurations (`SciFiTVConfig`).
+| **Always do** | Use strict TypeScript types for all config mappings. Maintain HSL color tokens for visual continuity. Use `setPointerCapture(pointerId)` on the SVG element for all pointer drag interactions. Selective rendering via `getRelevantEntities()`. Add `display: block` to `:host` (L059). Use English-only strings as `msg()` source keys (L060). Never add `@state()` on a field not mutated in the same PR (L018 / YAGNI). Use HA `<ha-selector>` for complex Action configuration editing. Maintain strict isolation between `tvState` and `appState` metadata. |
+| **Ask first** | Modifying `SciFiBaseCard` interface or common styles in `src/styles/common.ts`. Adding external icon libraries (strictly reuse `sf-icon` caching). Adding new top-level configuration options not defined in `SciFiTVConfig`. |
+| **Never do** | Rely on string-parsing for HA action definitions. Bind `pointermove` to `window` instead of the SVG element. Introduce third-party volume slider libraries or canvas gauges. Bypass standard HA `callService` bounds. Hardcode specific Bravia commands without custom action fallbacks. Use `!= null` — always use `!== null && !== undefined` (L024 / `eqeqeq: always`). Use `rem` as CSS fallback values — always use `px` (L058). Target 100% branch coverage on Lit template ternaries — branch target is 90% (L023). Use circular CSS custom property self-references `--x: var(--x, default)` (L057). |
 
 ---
 
@@ -147,8 +129,7 @@ custom_actions:
 
 * **Coordinate conversion (DOM → SVG viewBox):**
   ```typescript
-// src/cards/tv/sci-fi-tv.ts
-  // src/cards/tv/sci-fi-tv.ts — _onPointerMove()
+  // src/cards/tv/sci-fi-tv.ts — _handleDrag()
   const bbox = svgElement.getBoundingClientRect();
   const svgX = ((event.clientX - bbox.left) / bbox.width) * 200;
   const svgY = ((event.clientY - bbox.top) / bbox.height) * 200;
@@ -157,8 +138,7 @@ custom_actions:
 
 * **Angle normalization + clamp (full formula):**
   ```typescript
-// src/cards/tv/sci-fi-tv.ts
-  // src/cards/tv/sci-fi-tv.ts — _computeVolume()
+  // src/cards/tv/sci-fi-tv.ts — _handleDrag(), continued
   const thetaDeg = Math.atan2(svgY - cy, svgX - cx) * (180 / Math.PI);
   // Shift origin: -135° (top-left start) → 0; +135° (bottom-left end) → 270
   const shiftedDeg = ((thetaDeg + 135 + 360) % 360);
@@ -231,14 +211,6 @@ Follows the standard `e.detail.id` / `e.detail.value` mapping directly onto the 
 
 ---
 
-## Constraints
-
-| Tier | Examples |
-|------|----------|
-| **Always do** | Use HA `<ha-selector>` for complex Action configuration editing. Maintain strict isolation between `tvState` and `appState` metadata. |
-| **Ask first** | Adding new top-level configuration options not defined in `SciFiTVConfig`. |
-| **Never do** | Rely on string-parsing for HA action definitions. Bind `pointermove` to `window` instead of the SVG element. |
-
 ## Cross-Spec Contracts
 
 ### Produces
@@ -250,7 +222,9 @@ Follows the standard `e.detail.id` / `e.detail.value` mapping directly onto the 
 ### Consumes
 | Path / Identifier | Format | Schema location | Producer |
 |---|---|---|---|
-| `SciFiBaseCard` / `SciFiBaseEditor` | Class | `base-card.ts` / `base-editor.ts` | Shared utilities |
+| `SciFiBaseCard` | TypeScript Class | [Spec 03](../03_base_classes.md#blueprint-coverage) | base-card.ts |
+| `SciFiBaseEditor` | TypeScript Class | [Spec 03](../03_base_classes.md#blueprint-coverage) | base-editor.ts |
+| `<sf-icon>` | Lit Component | [Spec 04](../04_components.md#blueprint-coverage) | sf-icon.ts |
 
 ### Public Interface
 | Type | Identifier | Documented at |
@@ -273,7 +247,7 @@ Follows the standard `e.detail.id` / `e.detail.value` mapping directly onto the 
 
 ---
 
-## Anti-patterns
+## Anti-Patterns
 
 | # | Anti-Pattern | Violation | Correct Behavior |
 |---|---|---|---|
@@ -287,7 +261,7 @@ Follows the standard `e.detail.id` / `e.detail.value` mapping directly onto the 
 
 ---
 
-## Test Cases
+## Test Case Specifications
 
 > **⬜ dans la colonne ID : le cas n'est joué par aucun test.** Deux des quarante-neuf lignes : `IT-TV-I-701` (exige le bundle construit) et `IT-TV-I-702` (exige le workbench) ; ni l'une ni l'autre ne tourne sous vitest.
 > Le marqueur est la seule source : `tests/specs/ids-cas-uniques.test.ts` dérive
@@ -304,7 +278,7 @@ Follows the standard `e.detail.id` / `e.detail.value` mapping directly onto the 
 | **TC-TV-U-706** | Unit | Angle clamp: pointer in dead-zone snaps to nearest edge | `pointermove` at bottom center (270° shifted) | `volumeLevel = 1.0` (clamped, not NaN / >1.0) |
 | **TC-TV-U-707** | Unit | Coordinate conversion: DOM px correctly maps to SVG viewBox | `pointermove` at DOM center of rendered SVG | Computed `svgX ≈ 100`, `svgY ≈ 100` regardless of render size |
 | **TC-TV-U-708** | Unit | Orbiting planet satellite is rendered when TV is on | TV state is `'on'` | Planet orbiting satellite element exists in shadowRoot |
-| **TC-TV-U-709** | Unit | Orbiting planet satellite is not rendered when TV is off | TV state is `'off'` | Planet orbiting satellite element does not exist in shadowRoot |
+| **TC-TV-U-709** | Unit | Orbiting planet satellite is rendered in standby mode when TV is off | TV state is `'off'` | Planet orbiting satellite element exists in shadowRoot and carries `.is-off` (§3) |
 | **TC-TV-U-710** | Unit | Renders active application name when media title and source are missing | TV state has `app_name: 'Netflix'` | Right status segment and dial title display `"Netflix"` |
 | **TC-TV-U-711** | Unit | Renders active application ID when other metadata is missing | TV state has `app_id: 'com.netflix.ninja'` | Right status segment and dial title display `"com.netflix.ninja"` |
 | **TC-TV-U-712** | Unit | Uses app_entity metadata when provided | Config has `app_entity` | Prioritizes `app_entity` metadata over main TV entity for active status |
@@ -375,7 +349,7 @@ Derive entity IDs verbatim from `yaml backup/` — never invent IDs (L027).
 
 | Error/Failure | Detection | Response | Fallback |
 |---|---|---|---|
-| Missing `entity` | Config validator `__validateConfig()` | Throw validation error | `SciFiBaseCard` handles crash → displays Red Error card |
+| Missing `entity` | `setConfig()` guard | Throw validation error | `SciFiBaseCard` handles crash → displays Red Error card |
 | Entity `unavailable` | State matches `unavailable` or `unknown` | Draw yellow radar telemetry caution, disable all buttons | Visual alert label "TACTICAL BRIDGE DISCONNECTED" |
 | TV Power is `off` | State matches `off` | Dim HUD to `rgba(255, 255, 255, 0.1)`, glow power red; volume arc: 3° minimum at 20% opacity | Standby screen showing offline status |
 | `remote.send_command` fails | HA service call `catch` block | `sf-toast` notification — message: "Remote command failed" | Toast UI error overlay; no retry |

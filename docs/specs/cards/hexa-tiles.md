@@ -1,6 +1,14 @@
-# sci-fi-hexa-tiles Schema
+# Spec 07 — Hexagonal Dashboard Card Fixes
 
-### sci-fi-hexa-tiles
+> Document Type: Implementation
+> Covers: Hexagonal card layout, header, interlocking, active/inactive styling, icons, weather alert, and responsive sizing.
+> Depends on: [Spec 03](../03_base_classes.md#L1), [Spec 04](../04_components.md#L1), [Spec 05](../05_cards.md#L1)
+
+---
+
+## Config Schema
+
+Mirrors `src/cards/hexa-tiles/config.ts`; `header_message` comes from the shared `SciFiBaseConfig`.
 
 ```typescript
 interface SciFiHexaTilesWeatherConfig {
@@ -26,9 +34,13 @@ interface SciFiHexaTileConfig {
   readonly state_error?: string;
   readonly link?: string;                   // navigation (ex: "lights")
   readonly visibility?: readonly string[];  // person entity IDs
+  readonly tap_action?: ActionConfig;       // lus par la carte au clic (chemin d'action)
+  readonly hold_action?: ActionConfig;
+  readonly double_tap_action?: ActionConfig;
 }
 
 interface SciFiHexaTilesConfig {
+  readonly type: 'custom:sci-fi-hexa-tiles';
   readonly header_message?: string;
   readonly weather?: SciFiHexaTilesWeatherConfig;
   readonly tiles?: readonly SciFiHexaTileConfig[];
@@ -55,13 +67,6 @@ tiles:
     link: stove
 ```
 
-
-# Spec 07 — Hexagonal Dashboard Card Fixes
-
-> Document Type: Implementation
-> Covers: Hexagonal card layout, header, interlocking, active/inactive styling, icons, weather alert, and fixed responsiveness.
-> Depends on: [Spec 03](./03_base_classes.md#L1), [Spec 04](./04_components.md#L1), [Spec 05](./05_cards.md#L1)
-
 ---
 
 ## Assumptions
@@ -83,7 +88,7 @@ tiles:
 | F-HEX-03 | Custom SVG-based active/inactive border and background styling | ✅ Section [Hexagon Design and Styling](#hexagon-design-and-styling) | tests/cards/hexa-tiles/sci-fi-hexa-tiles.test.ts :: IT-HEXA-TILES-I-702, IT-HEXA-TILES-I-703 |
 | F-HEX-04 | Visible and centered custom icons in tiles | ✅ Section [Tile Content & Icons](#tile-content--icons) | tests/cards/hexa-tiles/sci-fi-hexa-tiles.test.ts :: TC-501 |
 | F-HEX-05 | Weather alert visibility band logic (hidden on green) | ✅ Section [Weather Alert Banner](#weather-alert-banner) | tests/cards/hexa-tiles/sci-fi-hexa-tiles.test.ts (« does NOT render weather alert when state is green, but renders it for non-green states », sans id) |
-| F-HEX-06 | Fixed dimensions on all viewport sizes (priority mobile) | ✅ Section [Fixed Dimensions & Responsiveness](#fixed-dimensions--responsiveness) | tests/cards/hexa-tiles/sci-fi-hexa-tiles.test.ts :: IT-HEXA-TILES-I-701 |
+| F-HEX-06 | Tiles resize to fill 100% of the card width on all viewport sizes (priority mobile) | ✅ Section [Responsive 100% Sizing & Viewport Height Filling](#responsive-100-sizing--viewport-height-filling) | tests/cards/hexa-tiles/sci-fi-hexa-tiles.test.ts :: IT-HEXA-TILES-I-701 |
 | F-HEX-07 | Weather tile border glow matches alert severity color | ✅ Section [Weather Tile Alert Coloring](#weather-tile-alert-coloring) | tests/cards/hexa-tiles/sci-fi-hexa-tiles.test.ts (« covers various fallback branches including … alert levels », sans id) |
 | F-HEX-08 | Alert banner label displays phenomenon names from entity attributes | ✅ Section [Weather Alert Banner](#weather-alert-banner) | tests/cards/hexa-tiles/sci-fi-hexa-tiles.test.ts :: TC-HEXA-TILES-U-706, TC-HEXA-TILES-U-707 |
 
@@ -263,7 +268,3 @@ Instead of fixed sizing, hexagons dynamically resize to fit exactly 100% of thei
 | Connected user not found | No `person.*` entity matches `hass.user.id` | Display `hass.user.name` in header | Initials from user name, default home icon |
 | User picture missing | `entity_picture` attribute is null or undefined | Render name initials inside circle | First letter of friendly name |
 | Zone icon not found | Zone entity has no `icon` attribute | Fallback to home/away default icon | `mdi:home` or `mdi:home-off-outline` |
-
-
-## Adversarial Fixes: Responsive Layout
-**Responsive Wrap Behavior**: The layout MUST use `flex-wrap: wrap` and maintain a fixed tile width (e.g., 80px) so that when more tiles are configured than fit horizontally, they wrap gracefully to a new row rather than shrinking or overflowing.

@@ -1,6 +1,7 @@
 import { LitElement, html, css, nothing, type CSSResultGroup, type TemplateResult } from 'lit';
 import { msg, updateWhenLocaleChanges } from '@lit/localize';
 import { customElement, property, state } from 'lit/decorators.js';
+import { editorPanelStyles } from '../../styles/editor-inputs-shared.js';
 import type { HomeAssistantExt } from '../../types/ha.js';
 import { InputUpdateDetail } from './sf-editor-input.js';
 
@@ -13,27 +14,9 @@ export class SfEditorAction extends LitElement {
   
   @state() private _fallbackError = '';
 
-  static override styles: CSSResultGroup = css`
-    :host {
-      display: block;
-      width: 100%;
-      margin-bottom: 12px;
-    }
-
-    .container {
-      background: var(--editor-surface, rgba(255, 255, 255, 0.02));
-      border: 1px solid var(--editor-accent-border, rgba(0, 210, 255, 0.2));
-      border-radius: 8px;
-      padding: 12px;
-      box-sizing: border-box;
-      width: 100%;
-    }
-    
+  static override styles: CSSResultGroup = [editorPanelStyles, css`
     .label {
-      font-size: 0.875rem;
-      color: var(--editor-accent, #00d2ff);
       margin-bottom: 8px;
-      font-weight: 500;
     }
 
     /* Fallback UI for workbench */
@@ -60,7 +43,7 @@ export class SfEditorAction extends LitElement {
       flex-direction: column;
       gap: 12px;
     }
-  `;
+  `];
 
   constructor() {
     super();

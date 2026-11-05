@@ -1,6 +1,7 @@
 import { LitElement, html, css, type CSSResultGroup, type TemplateResult } from 'lit';
 import { msg, updateWhenLocaleChanges } from '@lit/localize';
 import { customElement, property } from 'lit/decorators.js';
+import { editorPanelStyles } from '../../styles/editor-inputs-shared.js';
 import type { HomeAssistantExt } from '../../types/ha.js';
 import { InputUpdateDetail } from './sf-editor-input.js';
 import '../sf-icon/sf-icon.js';
@@ -14,27 +15,9 @@ export class SfEditorSourceList extends LitElement {
   @property({ type: Array }) values: any[] = [];
   @property({ attribute: 'element-id', type: String }) elementId = '';
 
-  static override styles: CSSResultGroup = css`
-    :host {
-      display: block;
-      width: 100%;
-      margin-bottom: 12px;
-    }
-
-    .container {
-      background: var(--editor-surface, rgba(255, 255, 255, 0.02));
-      border: 1px solid var(--editor-accent-border, rgba(0, 210, 255, 0.2));
-      border-radius: 8px;
-      padding: 12px;
-      box-sizing: border-box;
-      width: 100%;
-    }
-    
+  static override styles: CSSResultGroup = [editorPanelStyles, css`
     .label {
-      font-size: 0.875rem;
-      color: var(--editor-accent, #00d2ff);
       margin-bottom: 12px;
-      font-weight: 500;
     }
 
     .source-item {
@@ -93,7 +76,7 @@ export class SfEditorSourceList extends LitElement {
       background: var(--editor-accent-border, rgba(0, 210, 255, 0.2));
       border-color: var(--editor-accent-strong, rgba(0, 210, 255, 0.8));
     }
-  `;
+  `];
 
   constructor() {
     super();

@@ -1462,6 +1462,30 @@
   <source>Door open</source>
   <target>Porte ouverte</target>
 </trans-unit>
+<trans-unit id="sebdb045a468c092e">
+  <source>Heating time</source>
+  <target>Temps de chauffe</target>
+</trans-unit>
+<trans-unit id="se8f386a8db81670e">
+  <source>Fuel used</source>
+  <target>Combustible consommé</target>
+</trans-unit>
+<trans-unit id="sb5e3aa2dfaaad7d4">
+  <source>Igniter starts</source>
+  <target>Allumages</target>
+</trans-unit>
+<trans-unit id="s97c31440d3b706e5">
+  <source>Misfires</source>
+  <target>Ratés d'allumage</target>
+</trans-unit>
+<trans-unit id="sdb32d2cdd36fb8d8">
+  <source>Overheatings</source>
+  <target>Surchauffes</target>
+</trans-unit>
+<trans-unit id="s680110021b520fbe">
+  <source>Wear</source>
+  <target>Usure</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

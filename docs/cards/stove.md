@@ -13,6 +13,7 @@
 - Internal pellet quantity + optional storage counter with alert thresholds
 - Sensor display: state, pressure, time to service, temperatures, power, fan speed
 - Actions: HVAC mode, target temperature, preset
+- Optional collapsible "Wear" section (collapsed by default): heating time, fuel used, igniter starts, misfires, overheatings — a configured counter that cannot be read shows `—`
 
 ---
 
@@ -56,6 +57,11 @@ sensors:
   sensor_fan_speed: sensor.stove_fan_speed
   sensor_pressure: sensor.stove_pressure
   sensor_time_to_service: sensor.stove_time_to_service
+  sensor_heating_time: sensor.stove_heating_time
+  sensor_fuel_used: sensor.stove_fuel_used
+  sensor_igniter_starts: sensor.stove_igniter_starts
+  sensor_misfires: sensor.stove_misfires
+  sensor_overheatings: sensor.stove_overheatings
 pellet_quantity_threshold: 0.1
 storage_counter: counter.pellet_stock
 storage_counter_threshold: 0.1
@@ -85,6 +91,11 @@ storage_counter_threshold: 0.1
 | `sensor_fan_speed` | String | Fan speed sensor |
 | `sensor_pressure` | String | Pressure sensor |
 | `sensor_time_to_service` | String | Time to service sensor |
+| `sensor_heating_time` | String | Wear counter: total heating time (`sensor.*`) |
+| `sensor_fuel_used` | String | Wear counter: fuel used (`sensor.*`) |
+| `sensor_igniter_starts` | String | Wear counter: igniter starts (`sensor.*`) |
+| `sensor_misfires` | String | Wear counter: misfires (`sensor.*`) |
+| `sensor_overheatings` | String | Wear counter: overheatings (`sensor.*`) |
 
 ---
 

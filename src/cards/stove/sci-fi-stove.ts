@@ -35,7 +35,7 @@ import '../../components/buttons/sf-button-card.js';
 import '../../components/buttons/sf-button-card-select.js';
 import { DOMAIN } from '../../types/domains.js';
 import { ENTITY_ID } from '../../types/entity-ids.js';
-import type { HassEntity, HomeAssistantExt } from '../../types/ha.js';
+import type { HomeAssistantExt } from '../../types/ha.js';
 import {
   NUMBER_DEBOUNCE_MS,
   NUMBER_DOMAINS,
@@ -50,6 +50,8 @@ import {
   numberValue,
   isNumberDisabled,
 } from './number-wheel.js';
+import { stateLabel } from './state-label.js';
+import { renderWearCounters, wearEntityIds, wearRows } from './wear-counters.js';
 import {
   DIAGNOSTIC_DOMAINS,
   DIAGNOSTIC_ICONS,
@@ -122,6 +124,8 @@ const PRESET_ICONS: Record<string, string> = {
 export class SciFiStoveCard extends SciFiBaseCard {
   static override styles = [sciFiCommonStyles, stoveStyles];
 
+  /** FR-8: the wear section's open state, per instance, never persisted. */
+  @state() private _wearOpen = false;
   /** Per-wheel pick not yet released to HA's state (FR-8); reassigned whole on every change. */
   @state() private _numberPicks: NumberPicks = { powerLevel: null, fanSpeed: null };
   /** Per-wheel debounce timers: never rendered, so not reactive. */
@@ -185,6 +189,7 @@ export class SciFiStoveCard extends SciFiBaseCard {
         const id = configuredId(raw);
         if (id) entities.add(id);
       }
+      for (const id of wearEntityIds(s)) entities.add(id);
     }
 
     return Array.from(entities);
@@ -213,6 +218,9 @@ export class SciFiStoveCard extends SciFiBaseCard {
           ${this._renderHeader(stoveState.attributes.friendly_name ?? msg('Stove'))}
           ${this._renderContent(stoveState)}
           ${this._renderBottom(stoveState)}
+          ${renderWearCounters(wearRows(this.hass, this.config.sensors ?? {}), this._wearOpen, (open) => {
+            this._wearOpen = open;
+          }, this.hass.connection)}
         </div>
         <sf-toast></sf-toast>
       </ha-card>
@@ -339,29 +347,15 @@ export class SciFiStoveCard extends SciFiBaseCard {
       lines.push({ kind: 'door', text, capped: capText(text) });
     }
     if (alertOn) {
-      const label = this._stateLabel(alert);
+      const label = stateLabel(this.hass, alert);
       lines.push({ kind: 'alert', text: label, capped: capText(label) });
     }
     if (error && isReported(error)) {
-      const label = this._stateLabel(error);
+      const label = stateLabel(this.hass, error);
       const code = errorCode(error.attributes?.['code']);
       lines.push({ kind: 'error', text: errorText(label, code), capped: capErrorText(label, code) });
     }
     return lines;
-  }
-
-  /** FR-9: HA's translation when it answers a non-blank string, else the raw state with `_` as spaces. */
-  private _stateLabel(entity: HassEntity): string {
-    const format = this.hass.formatEntityState;
-    if (typeof format === 'function') {
-      try {
-        const label: unknown = format(entity);
-        if (typeof label === 'string' && label.trim() !== '') return label;
-      } catch {
-        // FR-9: a failing formatter falls back to the raw state, nothing is logged.
-      }
-    }
-    return String(entity.state).trim().replaceAll('_', ' ');
   }
 
   /** FR-6: the live zone, only when there is a line to render. */

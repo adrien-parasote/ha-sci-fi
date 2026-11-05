@@ -1236,3 +1236,12 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 - **Evidence:** VERIFY stove-diagnostics round 2: docs/reviews/stove-diagnostics/code-review.md and security-review.md, with prior rounds kept under history/
 - **Tags:** component:review-gate, category:a, phase:verify, sc:v2
 - **Anti-pattern:** Rewriting the review report wholesale on round 2 drops the round-1 findings and their resolutions the gate and later readers rely on → archive the previous round (history/) or append a new round section; never overwrite blind.
+
+### L139: Pass the review packet path explicitly; the SubagentStart hook can point at a stale one
+- **Date:** 2026-11-05
+- **Type:** anti-pattern
+- **Source:** ha-sci-fi — stove-wear-counters
+- **Route:** project
+- **Evidence:** VERIFY stove-wear-counters (ve4.4): the SubagentStart hook context pointed a fresh reviewer at a previous lot's review packet
+- **Tags:** component:evaluator-separation, gate-fired:false, category:a, phase:build, sc:v2
+- **Anti-pattern:** Relying on the hook-injected context to locate the review packet lets a reviewer audit the wrong lot → name the packet path (docs/reviews/<feature>/...) explicitly in the reviewer prompt and have it echo the path it read.

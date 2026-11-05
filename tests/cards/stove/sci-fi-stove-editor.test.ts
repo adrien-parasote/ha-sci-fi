@@ -166,6 +166,29 @@ describe('sci-fi-stove-editor', () => {
     expect(received[0]!.detail.config.sensors.sensor_alert).toBe('light.x');
   });
 
+  it('TC-SWC-U-07: exposes the five wear counters right after sensor_error', async () => {
+    const keys = ['sensor_heating_time', 'sensor_fuel_used', 'sensor_igniter_starts', 'sensor_misfires', 'sensor_overheatings'];
+    const labels = ['Heating time', 'Fuel used', 'Igniter starts', 'Misfires', 'Overheatings'];
+    const el = await createElement();
+    el.setConfig(makeConfig({ sensors: Object.fromEntries(keys.map((k) => [k, `sensor.stove_${k.slice(7)}`])) }));
+    await el.updateComplete;
+    const order = [...el.shadowRoot!.querySelectorAll('[element-id]')].map((n) => n.getAttribute('element-id'));
+    const i = order.indexOf('sensor_error');
+    expect(order.slice(i + 1, i + 6)).toEqual(keys);
+    keys.forEach((k, j) => {
+      expect(el.shadowRoot!.querySelector(`[element-id="${k}"]`)!.getAttribute('label')).toBe(labels[j]);
+    });
+    const received: CustomEvent[] = [];
+    el.addEventListener('config-changed', (e) => received.push(e as CustomEvent));
+    el.shadowRoot!.querySelector('.card')!.dispatchEvent(new CustomEvent('input-update', {
+      bubbles: true,
+      composed: false,
+      detail: { id: 'sensor_misfires', kind: 'sensor', value: 'sensor.m' },
+    }));
+    expect(received).toHaveLength(1);
+    expect(received[0]!.detail.config.sensors.sensor_misfires).toBe('sensor.m');
+  });
+
   /**
    * Lot stove-config-surface — the configuration surface of this editor was
    * never asserted: the three tests above pin `room_temperature`, `threshold`

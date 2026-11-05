@@ -379,4 +379,23 @@ export const stoveStyles = css`
     flex-direction: column;
     align-items: center;
   }
+  /* Wear counters (stove-wear-counters FR-9): a truncated value stays whole in its title. */
+  .wear-counter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .wear-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .wear-value {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 50%;
+  }
 `;

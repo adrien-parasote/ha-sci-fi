@@ -32,6 +32,11 @@ export interface SciFiStoveSensors {
   readonly sensor_door?: string;                  // core fumis binary_sensor.*_door (stove-diagnostics)
   readonly sensor_alert?: string;                 // core fumis sensor.*_alert (enum, `none` when quiet)
   readonly sensor_error?: string;                 // core fumis sensor.*_error (enum, raw code in attributes.code)
+  readonly sensor_heating_time?: string;          // core fumis wear counters (stove-wear-counters), total_increasing
+  readonly sensor_fuel_used?: string;
+  readonly sensor_igniter_starts?: string;
+  readonly sensor_misfires?: string;
+  readonly sensor_overheatings?: string;
 }
 
 export interface SciFiStoveConfig extends SciFiBaseConfig {

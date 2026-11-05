@@ -27,7 +27,6 @@
 | `src/cards/<card>/labels.ts` | That card's editor label dictionary + section icons (ADR-017) |
 | `src/styles/floor-nav.ts` | Floor-navigation shell shared by lights + water — must be listed BEFORE the card sheet in `static styles` |
 | `tests/styles/card-css-baseline.test.ts` | Locks all 11 cards' resolved CSS against a baseline; the only mechanical guard the stylesheets have. Regenerate with `UPDATE_CSS_BASELINE=1` only for an intended visual change |
-| `src/utils/toast.ts` | `showToast(msg, type)` — module-level active-toast dedup, auto-dismiss 1.8s |
 | `src/components/sf-icon/sf-icon.ts` | MDI icon renderer — `willUpdate()` + 3-tier cache (mem→idb→HA) |
 | `src/components/sf-icon/icon-cache.ts` | `resolveIcon()` — memory Map + idb-keyval + HA native registry |
 | `src/cards/bridge/sci-fi-bridge.ts` | Bridge Overview card — 8 optional sections, responsive CSS Grid (1→2 col) |

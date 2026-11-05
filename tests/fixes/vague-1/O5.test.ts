@@ -3,6 +3,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import '../../../src/cards/stove/sci-fi-stove-editor.js';
 import type { SciFiStoveEditor } from '../../../src/cards/stove/sci-fi-stove-editor.js';
+import type { SciFiStoveConfig } from '../../../src/cards/stove/config.js';
 import { makeMockHass, makeMockEntity } from '../../fixtures/mock-hass.js';
 
 afterEach(() => { document.body.innerHTML = ''; });
@@ -16,7 +17,7 @@ async function editor(): Promise<SciFiStoveEditor> {
       'sensor.power': makeMockEntity({ entity_id: 'sensor.power', state: '1' }),
     },
   }) as any;
-  el.setConfig({ type: 'custom:sci-fi-stove', entity: 'climate.poele' });
+  el.setConfig({ type: 'custom:sci-fi-stove', entity: 'climate.poele' } as SciFiStoveConfig);
   document.body.appendChild(el);
   await el.updateComplete;
   return el;

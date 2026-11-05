@@ -43,3 +43,21 @@ CONFORMANCE EVIDENCE:
 - FR-9 (editor input) -> sci-fi-stove-editor.ts:101, labels.ts:21
 - FR-12 (presence + domain guard) -> 314-319
 - FR-13 (aria-label always, title when disabled) -> 353-354
+
+## Round 2 (delta, packet .sc/review/be1c627-634d9439)
+
+AUDITOR: subagent
+COVERAGE:
+| file | lines read | total (wc -l) | full read? |
+| .verifyignore | 1-26 (delta) | 26 | yes |
+| src/cards/stove/sci-fi-stove.ts | fix hunk 645-655, 38, 174-180 (closure of the round-1 LOW) | n/a | delta-scoped |
+| tests/cards/stove/sci-fi-stove-power-level.test.ts | run: 19/19 pass | n/a | delta-scoped |
+VERDICT: APPROVE
+SPEC: docs/specs/stove-power-level/spec.md
+FINDINGS:
+- none (critical: 0, high: 0)
+Closure of the round-1 LOW (pending pick surviving a grid shrink): closed — `set hass` (line 178) calls `_releasePowerPick` (line 180), which at line 645 drops the pending index when `_powerPendingIndex >= powerGrid(entity.attributes).n`, cancels the timer and clears `_powerCallSent`; pinned by TC-SPL-U-1133 el3.
+NOTES:
+- The .verifyignore suppression `P7:src/cards/stove/sci-fi-stove.ts:architectural_violation` is justified: the lot adds a type-only import and `state` from an existing module; fan-out pre-existed on main; scoped to one file and rule.
+- OUT-OF-DIFF: the pre-existing `P8:*:*` wildcard in .verifyignore should be narrowed in a separate bead.
+CONFORMANCE EVIDENCE: FR-8 -> src/cards/stove/sci-fi-stove.ts:645-655 with the hass setter at :178-180, pinned by TC-SPL-U-1133.

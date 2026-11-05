@@ -31,3 +31,18 @@ FINDINGS:
 NOTES:
 - Round 1 had no findings, so nothing carries over.
 - No infra in the diff. Text judged only; the card was not run against a live instance.
+
+## Round 3 (delta, packet .sc/review/be1c627-634d9439)
+
+AUDITOR: subagent
+COVERAGE:
+| file | lines read | total (wc -l) | full read? |
+| .verifyignore | 1-26 | 26 | yes |
+| dist/sci-fi.min.js | header only (generated bundle from reviewed sources) | 10623 | no, build artifact |
+VERDICT: DEPLOY
+SURFACES CHECKED: .verifyignore — the only new entry, `P7:src/cards/stove/sci-fi-stove.ts:architectural_violation`, is scoped to one file, priority P7 (architecture) and one finding name; it touches no P0 (security) class and adds no wildcard. dist/sci-fi.min.js is regenerated from sources cleared in earlier rounds.
+FINDINGS:
+(none)
+NOTES:
+- Suppressing P7 fan-out hides a maintainability signal, not a security one; P0 checks on sci-fi-stove.ts still fire.
+- Static review; no infra in the diff.

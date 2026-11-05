@@ -105,8 +105,9 @@ Answers to the cold builder check (2026-11-05):
    asserted as a snapshot, updated by whoever adds an editor. (agent's call)
 8. The baseline JSON is committed alone in a stage-labelled WIP commit on the feature
    branch before any `src/` edit (legal before HARDEN). `.github/workflows/ci.yml` checkout
-   gets `fetch-depth: 0` so IT-EIT-I-05 has the history it needs in CI. (agent's call: a
-   shallow clone would turn I-05 permanently red)
+   gets `fetch-depth: 0` so IT-EIT-I-05 can read the `baseCommit` objects in CI. (agent's
+   call: a shallow clone lacks them and would turn I-05 permanently red; I-05 regenerates
+   from `baseCommit`, so it does not rely on the WIP commit surviving delivery)
 
 ## Token table
 
@@ -180,7 +181,7 @@ All in `tests/styles/editor-inputs-theme.test.ts`; baseline `tests/styles/editor
 
 | ID | Scenario | Covers | Expected |
 |----|----------|--------|----------|
-| TC-EIT-U-01 | Scan comment-blanked sources of `src/components/editor-inputs/*.ts` for `--_` | FR-5 | 0 occurrences (red at base: accordion has 18) |
+| TC-EIT-U-01 | Scan comment-blanked sources of `src/components/editor-inputs/*.ts` and of the shared sheet `src/styles/editor-inputs-shared.ts` (the "editor-input sources" of U-01..U-04) for `--_` | FR-5 | 0 occurrences (red at base: accordion has 18) |
 | TC-EIT-U-02 | Scan their `css` blocks: each `var(` (via the § Resolver tokenizer), each colour literal per FR-3, each `color-mix(`, each `${` | FR-2, FR-3 | every `var(` names `--editor-*` with a non-null fallback; every colour literal lies inside the fallback span of a `var(--editor-*, …)`; 0 `color-mix(` (also in editor-common); 0 `${` |
 | TC-EIT-U-03 | Collect `var(--editor-x, L)` reads in editor-inputs; parse editor-common `:host` | FR-1, FR-4 | each `--editor-x` is declared in editor-common with the table's Declared value; each `L` equals the table's Fallback literal; the six pre-existing tokens unchanged; no `--editor-*` name declared twice in the `:host` |
 | TC-EIT-U-04 | Import lines of editor-inputs | FR-6 | none references `editor-common` |
@@ -192,7 +193,7 @@ All in `tests/styles/editor-inputs-theme.test.ts`; baseline `tests/styles/editor
 | IT-EIT-I-02 | Accordion as mounted by `sci-fi-water-management.ts`: `foldCss(resolveVars(…, 'fallback'))` | FR-8 | `diffFolded` vs baseline `standalone.accordion` is empty |
 | IT-EIT-I-03 | Real tree: every comment-blanked `src/**/*.ts` outside `src/components/editor-inputs/` containing `<sf-editor-` | FR-10, FR-12 | exactly 12 files: 11 `src/cards/**/*-editor.ts` whose `static styles` initializer text (from `static … styles =` to its terminating `;` at bracket depth 0) contains the identifier `sciFiEditorCommonStyles`, plus `src/cards/water/sci-fi-water-management.ts` (the allow entry); any other file fails, naming it |
 | IT-EIT-I-04 | Mutation controls on the real ported sheets | FR-4, FR-7, FR-8 | (a) the accordion css with its `#ff4444` fallback replaced by `#ff4445` gives a non-empty I-02 diff; (b) the declared map with `--editor-accent` changed to `var(--primary-color, #00d2fe)` gives a non-empty I-01 diff for `sf-editor-input`; (c) a baseline entry with one declaration removed gives a non-empty diff |
-| IT-EIT-I-05 | Baseline binding | FR-7, FR-8 | `baseCommit` in the JSON is an ancestor of `HEAD` (`git merge-base --is-ancestor`); the commit that last added the JSON (`git log --diff-filter=A -1 --format=%H -- <json>`) has the same tree for `src/components/editor-inputs` and `src/styles/editor-common.ts` as `baseCommit` (`git rev-parse <c>:<path>`); git unavailable or shallow history → the test fails, it never skips |
+| IT-EIT-I-05 | Baseline binding | FR-7, FR-8 | `baseCommit` in the JSON is an ancestor of `HEAD` (`git merge-base --is-ancestor`); the `src/` tree of `baseCommit` (`git archive <baseCommit> src`, extracted under the gitignored `tests/.eit-base-<pid>/`, removed after) regenerates the baseline: each of the 11 components folded with mode `locals` equals `inEditor[name]`, the accordion folded with mode `fallback` equals `standalone.accordion` — no dependency on the commit that added the JSON, so a squash or merge of the branch keeps it green; git unavailable or shallow history → the test fails, it never skips |
 
 ## Error Handling
 
@@ -202,7 +203,7 @@ All in `tests/styles/editor-inputs-theme.test.ts`; baseline `tests/styles/editor
 | token read but not declared in editor-common | TC-EIT-U-03 fails, names the token; the resolver throws `undeclared token` | — | test output |
 | `var(` without fallback in fallback mode | resolver throws `no fallback for <name>` | — | test output |
 | baseline drift (rendering changed) | IT-EIT-I-01/02 fail with `diffFolded` lines | — | test output |
-| baseline regenerated after the base commit | IT-EIT-I-05 fails | — | test output |
+| baseline regenerated after the base commit | IT-EIT-I-05 fails (regeneration from `baseCommit` differs) | — | test output |
 
 ## Carriers & Consumers
 

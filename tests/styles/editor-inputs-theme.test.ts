@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync, rmSync, mkdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, relative, sep } from 'node:path';
@@ -34,6 +34,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
 const INPUTS_DIR = join(ROOT, 'src', 'components', 'editor-inputs');
 const COMMON_PATH = join(ROOT, 'src', 'styles', 'editor-common.ts');
+const SHARED_PATH = join(ROOT, 'src', 'styles', 'editor-inputs-shared.ts');
 const BASELINE_REL = 'tests/styles/editor-inputs-css-baseline.json';
 const BASELINE_PATH = join(ROOT, BASELINE_REL);
 
@@ -112,11 +113,14 @@ export function cssBlocks(src: string): string[] {
   return out;
 }
 
-function inputSources(): Array<[string, string]> {
-  return readdirSync(INPUTS_DIR)
+/** The editor-input sources: the 11 components plus the shared sheet they compose. */
+export function inputSources(): Array<[string, string]> {
+  const files = readdirSync(INPUTS_DIR)
     .filter((f) => f.endsWith('.ts'))
     .sort()
-    .map((f) => [f, blankComments(readFileSync(join(INPUTS_DIR, f), 'utf8'))]);
+    .map((f) => join(INPUTS_DIR, f));
+  files.push(SHARED_PATH);
+  return files.map((p) => [relative(ROOT, p), blankComments(readFileSync(p, 'utf8'))]);
 }
 
 // ── § Resolver ──────────────────────────────────────────────────────────────
@@ -174,13 +178,15 @@ const DECLARED: Record<string, string> = Object.fromEntries(
   parseHostDecls(flattenStyles(sciFiEditorCommonStyles)).filter(([n]) => n.startsWith('--editor-')),
 );
 
-/** Collects and drops the `--_x: V;` locals; returns the stripped css and the map. */
+/** Collects and drops the `--_x: V;` locals of the `:host` rules only; returns the stripped css and the map. */
 function takeLocals(css: string): [string, Record<string, string>] {
   const locals: Record<string, string> = {};
-  const stripped = css.replace(/(--_[\w-]+)\s*:\s*([^;]+);/g, (_m, n: string, v: string) => {
-    locals[n] = v.trim();
-    return '';
-  });
+  const stripped = css.replace(/:host\s*\{[^}]*\}/g, (rule) =>
+    rule.replace(/(--_[\w-]+)\s*:\s*([^;]+);/g, (_m, n: string, v: string) => {
+      locals[n] = v.trim();
+      return '';
+    }),
+  );
   return [stripped, locals];
 }
 
@@ -297,6 +303,7 @@ function git(...args: string[]): string {
 
 describe('editor-inputs-theme — unit', () => {
   it('TC-EIT-U-01: no --_ local in editor-inputs', () => {
+    expect(inputSources().map(([f]) => f)).toContain(join('src', 'styles', 'editor-inputs-shared.ts'));
     const hits = inputSources().flatMap(([f, src]) => (src.match(/--_/g) ?? []).map(() => f));
     expect(hits).toEqual([]);
   });
@@ -347,6 +354,9 @@ describe('editor-inputs-theme — unit', () => {
       .toBe('a: var(--primary-color, #00d2ff);');
     expect(() => resolveVars('a: var(--editor-nope, #000);', 'declared')).toThrow('undeclared token');
     expect(() => resolveVars('a: var(--z);', 'fallback')).toThrow('no fallback');
+    // locals are taken from the :host rule only (§ Resolver step 3)
+    expect(norm(resolveVars(':host { --_a: 1px; } .x { --_b: 2px; b: var(--_a); }', 'locals')))
+      .toBe(':host { } .x { --_b: 2px; b: 1px; }');
   });
 
   it.each([
@@ -442,15 +452,35 @@ describe('editor-inputs-theme — integration', () => {
     expect(diffFolded(entry, foldComponent(SfEditorInput, 'declared'))).not.toEqual([]);
   });
 
-  it('IT-EIT-I-05: the baseline is bound to its base commit', () => {
-    const { baseCommit } = readBaseline();
+  it('IT-EIT-I-05: the baseline regenerates from its base commit', async () => {
+    const { baseCommit, inEditor, standalone } = readBaseline();
     expect(baseCommit).toMatch(/^[0-9a-f]{40}$/);
     expect(git('rev-parse', '--is-shallow-repository')).toBe('false');
     git('merge-base', '--is-ancestor', baseCommit, 'HEAD'); // throws when not an ancestor
-    const added = git('log', '--diff-filter=A', '-1', '--format=%H', '--', BASELINE_REL);
-    expect(added).toMatch(/^[0-9a-f]{40}$/);
-    for (const path of ['src/components/editor-inputs', 'src/styles/editor-common.ts']) {
-      expect(git('rev-parse', `${added}:${path}`), path).toBe(git('rev-parse', `${baseCommit}:${path}`));
+    // under tests/ so the tsconfig include (decorators) applies; gitignored
+    const dir = join(ROOT, 'tests', `.eit-base-${process.pid}`);
+    rmSync(dir, { recursive: true, force: true });
+    mkdirSync(dir, { recursive: true });
+    const define = customElements.define.bind(customElements);
+    customElements.define = (n: string, c: CustomElementConstructor, o?: ElementDefinitionOptions) => {
+      if (!customElements.get(n)) define(n, c, o);
+    };
+    try {
+      const tar = join(dir, 'src.tar');
+      git('archive', '--format=tar', '-o', tar, baseCommit, 'src');
+      execFileSync('tar', ['-xf', tar, '-C', dir]);
+      for (const [name, cls] of Object.entries(COMPONENTS)) {
+        const mod = (await import(join(dir, 'src', 'components', 'editor-inputs', `${name}.ts`))) as Record<string, { styles?: unknown }>;
+        const base = mod[(cls as { name: string }).name]!;
+        expect(base, name).toBeDefined();
+        expect(diffFolded(inEditor[name]!, foldComponent(base, 'locals')), name).toEqual([]);
+        if (name === 'sf-editor-accordion') {
+          expect(diffFolded(standalone.accordion, foldComponent(base, 'fallback'))).toEqual([]);
+        }
+      }
+    } finally {
+      customElements.define = define;
+      rmSync(dir, { recursive: true, force: true });
     }
-  });
+  }, 60_000);
 });

@@ -2294,6 +2294,26 @@
       "min-height": "120px",
       "padding": "0 10px 10px"
     },
+    ".content .chart-section": {
+      "min-height": "160px",
+      "outline": "none"
+    },
+    ".content .history-loading": {
+      "min-height": "120px",
+      "display": "flex",
+      "align-items": "center",
+      "justify-content": "center",
+      "gap": "10px",
+      "color": "rgb(102, 156, 210)"
+    },
+    ".content .history-error": {
+      "min-height": "120px",
+      "display": "flex",
+      "align-items": "center",
+      "justify-content": "center",
+      "gap": "10px",
+      "color": "rgb(102, 156, 210)"
+    },
     ".content .info .image": {
       "display": "flex",
       "flex-direction": "row",

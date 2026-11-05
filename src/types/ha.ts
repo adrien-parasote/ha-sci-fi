@@ -87,6 +87,8 @@ export interface HomeAssistantExt {
       readonly [key: string]: string | undefined;
     };
   };
+  /** REST call through HA's authenticated fetch (GET /api/<path>). */
+  readonly callApi: <T>(method: 'GET' | 'POST' | 'PUT' | 'DELETE', path: string, parameters?: Record<string, unknown>) => Promise<T>;
   readonly connection: {
     sendMessagePromise: <T>(message: Record<string, unknown>) => Promise<T>;
     subscribeMessage?: <T>(

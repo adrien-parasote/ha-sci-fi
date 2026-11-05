@@ -38,9 +38,46 @@ const TAG = 'sci-fi-plugs';
 /** F-PLG-D04: the power chart shows the last 24 hours. */
 const HISTORY_WINDOW_MS = 24 * 60 * 60 * 1000;
 
-// plugs.md § Adversarial Fixes 2 also asks for a 2 s budget on the history
-// call, along with the loading and error states. None of it exists here —
-// see ha-sci-fi-8ap, which carries why three attempts were reverted.
+/** plugs-history-states FR-5: strict budget of one history request. */
+const HISTORY_BUDGET_MS = 2000;
+/** plugs-history-states FR-8: most recent points kept per record. */
+const HISTORY_MAX_POINTS = 5000;
+
+/**
+ * plugs-history-states FR-1: one attempt per plug, keyed by its power entity
+ * id. A key absent from the map means "never attempted".
+ */
+type HistoryStatus = 'loading' | 'loaded' | 'empty' | 'error';
+interface HistoryAttempt {
+  status: HistoryStatus;
+  token: number;
+  datasets: unknown[];
+  labels: string[];
+  reason?: 'timeout' | 'request';
+}
+
+interface HistoryPoint {
+  last_changed: string;
+  state: string;
+}
+
+/** The rejection `_withTimeout` raises when the budget expires first. */
+class HistoryTimeoutError extends Error {
+  readonly reason = 'timeout' as const;
+  constructor() {
+    super('history request timed out');
+  }
+}
+
+/** FR-8: an object with a finite numeric state and a parseable timestamp (B-8). */
+function isHistoryPoint(el: unknown): el is HistoryPoint {
+  if (typeof el !== 'object' || el === null) return false;
+  const { state, last_changed } = el as Record<string, unknown>;
+  return typeof state === 'string'
+    && Number.isFinite(parseFloat(state))
+    && typeof last_changed === 'string'
+    && !Number.isNaN(Date.parse(last_changed));
+}
 
 @customElement(TAG)
 export class SciFiPlugsCard extends SciFiBaseCard {
@@ -74,10 +111,19 @@ export class SciFiPlugsCard extends SciFiBaseCard {
 
   @state() private _selected_plug_id: number = 0;
 
-  // Chart state — NOT @state() (driven imperatively, not via Lit re-render)
+  /** FR-1: replaced by a new Map on every change, so Lit re-renders the section. */
+  @state() private _historyAttempts: Map<string, HistoryAttempt> = new Map();
+
+  // Chart canvas — driven imperatively from updated(), not by the template.
   private _chart: Chart | null = null;
-  private _chart_generation: Record<number, { datasets: unknown[]; labels: string[]; fetchedAt: number }> = {};
-  private _chartLoaded = false; // true after first successful load
+  /** The record the current `_chart` draws; a different record means redraw. */
+  private _drawnAttempt: HistoryAttempt | null = null;
+  /** FR-9: last token issued; every attempt gets a new one. */
+  private _historyToken = 0;
+  /** FR-17: bumped on disconnect, so every in-flight answer becomes stale. */
+  private _cardGeneration = 0;
+  /** Pending budget timers; FR-17 clears them all on disconnect. */
+  private _historyTimers = new Set<ReturnType<typeof setTimeout>>();
 
   // ── Lifecycle ───────────────────────────────────────────────────────────────
 
@@ -97,54 +143,69 @@ export class SciFiPlugsCard extends SciFiBaseCard {
   }
 
   /**
-   * The chart's loading strategy is the one this card shipped with, and it is
-   * left alone deliberately — see ha-sci-fi-8ap.
-   *
-   * plugs.md:930 (F-PLG-AF2) owes this section a loading state, an error state
-   * and a 2 s budget, and none of the three has ever existed here. Three
-   * attempts to add them inside this lot each produced a worse defect than the
-   * one they fixed: a load re-fired by every power reading (found in review
-   * round 3), then a load that never fires at all when the card becomes able to
-   * load after its first render — including in the mount order the workbench
-   * itself uses — and a loading flag shared across plugs that drew one plug's
-   * history under another plug's name (both found in round 5).
-   *
-   * What those findings ask for is a per-plug attempt latch, invalidation on a
-   * config change, and an ownership invariant on the async response: a shape to
-   * design, not a line to correct. That is the bead's work, with the five
-   * findings as its brief.
-   *
-   * The known defect this leaves standing is round 1's: `_chartLoaded` is set
-   * before the call, so a failure retires the only retry trigger and a
-   * single-plug dashboard loses its chart for the card's lifetime. It is in the
-   * bead too. It is the delivered behaviour, not a regression.
+   * FR-2: a request starts whenever the card body is on screen, hass is set,
+   * the selected plug has a power sensor and its key was never attempted —
+   * evaluated on every update, whatever changed and whatever the mount order.
+   * FR-3: a present key (error included) never starts one.
    */
   protected override updated(changedProperties: Map<string | number | symbol, unknown>): void {
     super.updated(changedProperties);
-    // Load chart only on:
-    //   1. Initial card load (hass set for the first time, no chart yet)
-    //   2. User selects a different plug (prev/next)
-    // NOT on every hass update (entity state polling)
-    // No `.chart-container` means the card body is not on screen (the missing-entity
-    // banner replaced it): drop the latch and the chart bound to the removed canvas,
-    // so the first render that shows the card again loads from the plug cache.
     if (!this.shadowRoot?.querySelector('.chart-container')) {
-      this._chartLoaded = false;
-      this._chart?.destroy();
-      this._chart = null;
+      this._destroyChart();
       return;
     }
-    const plugChanged = changedProperties.has('_selected_plug_id');
-    const isInitialLoad = !this._chartLoaded && changedProperties.has('hass');
-    if (plugChanged || isInitialLoad) {
-      const device = this.config?.devices?.[this._selected_plug_id];
-      if (!device) return;
-      const powerEntry = Object.entries(device.sensors ?? {}).find(([, e]) => e.power === true);
-      if (powerEntry) {
-        this._chartLoaded = true;
-        void this._loadPowerChart(device, powerEntry[0]);
-      }
+    const key = this._selectedPowerKey();
+    if (!key) {
+      this._destroyChart();
+      return;
     }
+    if (!this.hass) return;
+    const attempt = this._historyAttempts.get(key);
+    if (!attempt) {
+      this._startHistory(key);
+      return;
+    }
+    if (attempt.status !== 'loaded') {
+      this._destroyChart();
+      return;
+    }
+    // B-2: a loaded record selected anew is drawn from its datasets, no request (FR-12).
+    if (this._drawnAttempt !== attempt || !this._chart) {
+      this._destroyChart();
+      this._drawChart(attempt.datasets, attempt.labels);
+      this._drawnAttempt = attempt;
+    }
+  }
+
+  /** B-6: an answer lost while detached would leave a spinner forever; restart it. */
+  override connectedCallback(): void {
+    super.connectedCallback();
+    const kept = [...this._historyAttempts].filter(([, a]) => a.status !== 'loading');
+    if (kept.length !== this._historyAttempts.size) this._historyAttempts = new Map(kept);
+  }
+
+  /** FR-17: no timer outlives the card, and no late answer writes anything. */
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    for (const timer of this._historyTimers) clearTimeout(timer);
+    this._historyTimers.clear();
+    this._cardGeneration++;
+  }
+
+  /**
+   * FR-11: a key no longer configured is dropped and the chart destroyed; a
+   * key still configured keeps its record as-is (B-5). A dropped key's pending
+   * request keeps its own budget: it settles within 2 s and the token check
+   * discards it. The selected index is clamped by willUpdate.
+   */
+  override setConfig(config: SciFiPlugsConfig): void {
+    super.setConfig(config);
+    const keys = new Set(
+      (config.devices ?? []).map(d => this._powerKey(d)).filter((k): k is string => k !== undefined)
+    );
+    const kept = [...this._historyAttempts].filter(([key]) => keys.has(key));
+    if (kept.length !== this._historyAttempts.size) this._historyAttempts = new Map(kept);
+    this._destroyChart();
   }
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -222,19 +283,13 @@ export class SciFiPlugsCard extends SciFiBaseCard {
     // Non-power visible sensors for the sensor list
     const visibleSensors = sensorEntries.filter(([, e]) => e.show !== false && !e.power);
 
-    // Chart loading is handled by updated() — not here.
-    // This avoids calling callApi on every hass update (entity state polling).
-
     return html`
       <div class="content">
         <div class="info">
           ${this._renderImage(isOn, icon, device)}
           ${this._renderSensors(visibleSensors, this._isUnavailable(device))}
         </div>
-        <div class="chart-bottom">
-          <div class="msg-container"></div>
-          <div class="chart-container"></div>
-        </div>
+        ${this._renderChartSection(device)}
       </div>
     `;
   }
@@ -451,13 +506,11 @@ export class SciFiPlugsCard extends SciFiBaseCard {
 
   private _prev = (): void => {
     const len = this.config.devices?.length ?? 0;
-    this._clearChart();
     this._selected_plug_id = this._selected_plug_id === 0 ? len - 1 : this._selected_plug_id - 1;
   };
 
   private _next = (): void => {
     const len = this.config.devices?.length ?? 0;
-    this._clearChart();
     this._selected_plug_id = this._selected_plug_id === len - 1 ? 0 : this._selected_plug_id + 1;
   };
 
@@ -478,75 +531,144 @@ export class SciFiPlugsCard extends SciFiBaseCard {
 
   // ── Chart ──────────────────────────────────────────────────────────────────
 
-  private _clearChart(): void {
+  /**
+   * FR-4/FR-6/FR-8, B-4: one state per status, mutually exclusive; the
+   * `.chart-container` stays in the DOM (FR-2 reads it) and shows only when
+   * loaded. `.chart-section` persists across states so it can hold focus (FR-16).
+   */
+  private _renderChartSection(device: SciFiPlugDevice): TemplateResult {
+    const key = this._powerKey(device);
+    const status = key ? this._historyAttempts.get(key)?.status : undefined;
+    return html`
+      <div class="chart-bottom chart-section" tabindex="-1">
+        ${status === 'loading'
+          ? html`<div class="history-loading" role="status">${msg('Loading history…')}</div>`
+          : nothing}
+        ${status === 'error'
+          ? html`<div class="history-error" role="alert">
+              <span>${msg('Power history unavailable')}</span>
+              <sf-button
+                class="history-retry"
+                icon="mdi:refresh"
+                aria-label="${msg('Retry')}"
+                title="${msg('Retry')}"
+                @click="${this._retryHistory}"
+              ></sf-button>
+            </div>`
+          : nothing}
+        <div class="msg-container">${status === 'empty' ? msg('No power data to display') : ''}</div>
+        <div class="chart-container" style="display: ${status === 'loaded' ? 'block' : 'none'}"></div>
+      </div>
+    `;
+  }
+
+  private _powerKey(device: SciFiPlugDevice | undefined): string | undefined {
+    return Object.entries(device?.sensors ?? {}).find(([, e]) => e.power === true)?.[0];
+  }
+
+  private _selectedPowerKey(): string | undefined {
+    return this._powerKey(this.config?.devices?.[this._selected_plug_id]);
+  }
+
+  private _setAttempt(key: string, attempt: HistoryAttempt): void {
+    this._historyAttempts = new Map(this._historyAttempts).set(key, attempt);
+  }
+
+  private _destroyChart(): void {
     this._chart?.destroy();
     this._chart = null;
-    // Invalidate cache for the current plug so _loadPowerChart refetches on next view
-    delete this._chart_generation[this._selected_plug_id];
+    this._drawnAttempt = null;
   }
 
-  /** Empty-history message vs chart container; also re-applied on a cache replay. */
-  private _showChartState(hasData: boolean): void {
-    const msgContainer = this.shadowRoot?.querySelector('.msg-container');
-    const chartContainer = this.shadowRoot?.querySelector('.chart-container') as HTMLElement | null;
-    if (msgContainer) msgContainer.textContent = hasData ? '' : msg('No power data to display');
-    if (chartContainer) chartContainer.style.display = hasData ? 'block' : 'none';
+  /** FR-7: the new loading record is in place before any await. */
+  private _startHistory(key: string): void {
+    const token = ++this._historyToken;
+    this._setAttempt(key, { status: 'loading', token, datasets: [], labels: [] });
+    void this._loadPowerChart(key, token, this._cardGeneration);
   }
 
-  private async _loadPowerChart(device: SciFiPlugDevice, powerEntityId: string): Promise<void> {
-    const idx = this._selected_plug_id;
+  /**
+   * FR-7/FR-16: a second activation in the same tick finds the record loading
+   * and starts nothing; focus goes to the section, which outlives the button.
+   */
+  private _retryHistory = (): void => {
+    const key = this._selectedPowerKey();
+    if (!key || this._historyAttempts.get(key)?.status !== 'error') return;
+    this._startHistory(key);
+    (this.shadowRoot?.querySelector('.chart-section') as HTMLElement | null)?.focus();
+  };
 
-    // Cache chart data per plug — avoids re-fetching when switching back to a previously viewed plug.
-    // Cache is cleared when _clearChart() is called (plug navigation), not by time.
-    const cache = this._chart_generation[idx];
-    if (cache) {
-      this._showChartState(cache.labels.length > 0);
-      if (!this._chart) {
-        this._drawChart(cache.datasets, cache.labels);
-      } else {
-        this._updateChart(cache.datasets, cache.labels);
-      }
-      return;
-    }
-
+  /**
+   * FR-9: the answer writes its record only while its token is the key's
+   * current one and the card was not disconnected since (FR-17). What it
+   * shows is rendered from the selected key's record, never from here.
+   */
+  private async _loadPowerChart(key: string, token: number, generation: number): Promise<void> {
+    let attempt: HistoryAttempt;
     try {
-      const start = this._historyStart();
-      // [unverified — query params ported from main:src/helpers/entities/plug/plug.js]
-      const data = await (this.hass as any).callApi(
-        'GET',
-        `history/period/${start}?minimal_response=true&no_attributes=true&significant_changes_only=false&filter_entity_id=${powerEntityId}`
-      ) as unknown[][];
-
-      const history = this._parseHistory(data[0] ?? []);
-      this._showChartState(Object.keys(history).length > 0);
-
-      const datasets = this._buildChartDatasets(Object.values(history));
-      const labels = this._buildChartLabels(Object.keys(history));
-      this._chart_generation[idx] = { datasets, labels, fetchedAt: Date.now() };
-
-      if (!this._chart) {
-        this._drawChart(datasets, labels);
-      } else {
-        this._updateChart(datasets, labels);
-      }
+      const path = `history/period/${this._historyStart()}?minimal_response=true&no_attributes=true`
+        + `&significant_changes_only=false&filter_entity_id=${encodeURIComponent(key)}`;
+      // Ref: https://developers.home-assistant.io/docs/api/rest/ (GET /api/history/period/<timestamp>)
+      const request = new Promise<unknown>(resolve => resolve(this.hass.callApi<unknown>('GET', path)));
+      attempt = this._attemptFromAnswer(await this._withTimeout(request, HISTORY_BUDGET_MS), token);
     } catch (e) {
-      this._toast(true, (e as Error).message);
+      const reason = e instanceof HistoryTimeoutError ? 'timeout' : 'request';
+      attempt = { status: 'error', token, datasets: [], labels: [], reason };
     }
+    if (generation !== this._cardGeneration || this._historyAttempts.get(key)?.token !== token) return;
+    this._setAttempt(key, attempt);
   }
 
+  /** FR-8: malformed → error; zero points → empty; else the latest 5000 points (B-7). */
+  private _attemptFromAnswer(data: unknown, token: number): HistoryAttempt {
+    if (!Array.isArray(data) || (data.length > 0 && !Array.isArray(data[0]))) {
+      return { status: 'error', token, datasets: [], labels: [], reason: 'request' };
+    }
+    const points = ((data[0] ?? []) as unknown[]).filter(isHistoryPoint).slice(-HISTORY_MAX_POINTS);
+    if (points.length === 0) return { status: 'empty', token, datasets: [], labels: [] };
+    const history = this._parseHistory(points);
+    return {
+      status: 'loaded',
+      token,
+      datasets: this._buildChartDatasets(Object.values(history)),
+      labels: this._buildChartLabels(Object.keys(history)),
+    };
+  }
 
+  /**
+   * FR-5: races `promise` against `ms`; on expiry rejects with a
+   * HistoryTimeoutError (reason 'timeout'). The timer is cleared on settle,
+   * and held in `_historyTimers` so a disconnect can clear it (FR-17).
+   */
+  private _withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      const timer = setTimeout(() => {
+        this._historyTimers.delete(timer);
+        reject(new HistoryTimeoutError());
+      }, ms);
+      this._historyTimers.add(timer);
+      const settle = (): void => {
+        clearTimeout(timer);
+        this._historyTimers.delete(timer);
+      };
+      promise.then(
+        value => { settle(); resolve(value); },
+        (error: unknown) => { settle(); reject(error instanceof Error ? error : new Error(String(error))); }
+      );
+    });
+  }
+
+  /** Buckets points by minute, keeping the highest value; non-points are dropped (FR-8). */
   private _parseHistory(data: unknown[]): Record<string, number> {
     const res: Record<string, number> = {};
-    (data as Array<{ last_changed: string; state: string }>).forEach((el, idx) => {
-      if (idx === 0) return;
+    for (const el of data.filter(isHistoryPoint)) {
       const d = new Date(el.last_changed);
-      d.setMinutes(Math.round(d.getMinutes()));
       d.setSeconds(0);
       d.setMilliseconds(0);
-      const value = isNaN(parseFloat(el.state)) ? 0 : parseFloat(parseFloat(el.state).toFixed(2));
+      const value = parseFloat(parseFloat(el.state).toFixed(2));
       const key = d.toISOString();
       if (!(key in res) || value > res[key]!) res[key] = value;
-    });
+    }
     return res;
   }
 
@@ -631,12 +753,6 @@ export class SciFiPlugsCard extends SciFiBaseCard {
         },
       },
     });
-  }
-
-  private _updateChart(datasets: unknown[], labels: string[]): void {
-    if (!this._chart) return;
-    this._chart.data = { labels, datasets: datasets as any };
-    this._chart.update();
   }
 
   // ── Toast ──────────────────────────────────────────────────────────────────

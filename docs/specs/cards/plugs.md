@@ -88,7 +88,7 @@
 |---|---|---|
 | `_selected_plug_id` reactive state | Index into `config.devices[]`; prev/next arrows cycle it | This spec § Footer |
 | `_chart` instance | `Chart` instance stored for update vs init | This spec § Content — chart |
-| `_chart_generation` | Map of plug index → chart data cache | This spec § Content — chart |
+| `_historyAttempts` | Map of power entity id → history attempt record | [plugs-history-states/spec.md](../plugs-history-states/spec.md) FR-1 |
 | Sensor type dispatch | `entityId.split('.')[0]` prefix → `'lock'` \| `'select'` \| default | This spec § Content — sensors |
 
 ---
@@ -405,9 +405,11 @@ static override styles = [sciFiCommonStyles, plugStyles];
 declare config: SciFiPlugsConfig;
 
 @state() private _selected_plug_id: number = 0;
+@state() private _historyAttempts: Map<string, HistoryAttempt> = new Map();
 private _chart: Chart | null = null;
-private _chart_generation: Record<number, { datasets: unknown[]; labels: string[]; fetchedAt: number }> = {};
 ```
+
+> The history attempt record, keyed by power entity id, is specified in [plugs-history-states/spec.md](../plugs-history-states/spec.md) (FR-1..FR-12).
 
 > `_chart` is NOT `@state()` — chart updates are driven imperatively after hass update, not by Lit re-render. `_selected_plug_id` IS `@state()` to trigger re-render on navigation.
 
@@ -655,60 +657,11 @@ private _toggle(device: SciFiPlugDevice): void {
 
 ### Power chart — _loadPowerChart()
 
-```ts
-private async _loadPowerChart(device: SciFiPlugDevice, powerEntityId: string): Promise<void> {
-  const idx = this._selected_plug_id;
-
-  // Cache chart data for 5 minutes to prevent spamming the HA history API
-  const now = Date.now();
-  const cache = this._chart_generation[idx];
-  if (cache && (now - cache.fetchedAt < 5 * 60 * 1000)) {
-    const { datasets, labels } = cache;
-    if (!this._chart) {
-      this._drawChart(datasets, labels);
-    } else {
-      this._updateChart(datasets, labels);
-    }
-    return;
-  }
-
-  try {
-    const yesterday = this._getYesterday();
-    // [unverified — query params ported from main:src/helpers/entities/plug/plug.js; validate against HA REST API docs if HA version changes]
-    const data = await (this.hass as any).callApi(
-      'GET',
-      'history/period/' + yesterday + '?minimal_response=true&no_attributes=true&significant_changes_only=false&filter_entity_id=' + powerEntityId
-    ) as unknown[][];
-
-    const history = this._parseHistory(data[0] ?? []);
-    const msgContainer = this.shadowRoot?.querySelector('.msg-container');
-    const chartContainer = this.shadowRoot?.querySelector('.chart-container') as HTMLElement | null;
-
-    if (!Object.keys(history).length) {
-      if (msgContainer) msgContainer.textContent = msg('No power data to display');
-      if (chartContainer) chartContainer.style.display = 'none';
-    } else {
-      if (msgContainer) msgContainer.textContent = '';
-      if (chartContainer) chartContainer.style.display = 'block';
-    }
-
-    const datasets = this._buildChartDatasets(Object.values(history));
-    const labels = this._buildChartLabels(Object.keys(history));
-    this._chart_generation[idx] = { datasets, labels, fetchedAt: Date.now() };
-
-    if (!this._chart) {
-      this._drawChart(datasets, labels);
-    } else {
-      this._updateChart(datasets, labels);
-    }
-  } catch (e) {
-    this._toast(true, (e as Error).message);
-  }
-}
-```
-
-> [!IMPORTANT]
-> `_chart` is cleared (`this._chart = null`) whenever `_selected_plug_id` changes, so the chart is re-drawn for the newly selected plug.
+Loading, error, empty and loaded states, the 2 s budget, the retry, the per-plug
+attempt record and its ownership invariant are specified in
+[plugs-history-states/spec.md](../plugs-history-states/spec.md) (FR-1..FR-19).
+`updated()` starts the request for a never-attempted key; the section renders
+from the selected key's record; `_drawChart(datasets, labels)` keeps its signature.
 
 ### _parseHistory / _buildChartDatasets / _buildChartLabels
 
@@ -886,7 +839,7 @@ private _toast(error: boolean, text: string): void {
 | No `devices` in config | `this.config.devices?.length === 0` | Return `html\`<ha-card></ha-card>\`` | Empty card shown |
 | `entity_id` not in `hass.states` | `this.hass.states[device.entity_id]?.state` undefined | `isOn = false`, icon = inactive default | Plug shown as OFF |
 | Sensor entityId not in `hass.states` | `this.hass.states[entityId]` undefined | `return nothing` for that sensor row | Sensor row hidden |
-| Power chart API call fails | `.catch((e) => this._toast(true, e.message))` | Toast error shown | Chart not displayed |
+| Power chart API call fails or exceeds 2 s | attempt `'error'` ([plugs-history-states/spec.md](../plugs-history-states/spec.md) FR-5, FR-6) | `.history-error` with Retry, no toast | Chart not displayed |
 | No power data in history | `Object.keys(history).length === 0` | `msg-container` shows `msg('No power data to display')`; chart hidden | Graceful empty state |
 | `_selected_plug_id` out of bounds | Can't happen: prev/next are bounded to `config.devices.length - 1` | — | — |
 | Device registry lookup fails | `hass.devices?.[device_id]` undefined | Area icon = `'mdi:power-socket-fr'`; subtitle hidden | Fallback icon shown |
@@ -902,6 +855,9 @@ private _toast(error: boolean, text: string): void {
 | `'done'` | Already present from vehicle card — verify |
 | `'No power data to display'` | `'Aucune donnée de puissance à afficher'` |
 | `'Power'` | `'Puissance'` (used in chart tooltip title) |
+| `'Loading history…'` | `'Chargement de l'historique…'` |
+| `'Power history unavailable'` | `'Historique de puissance indisponible'` |
+| `'Retry'` | `'Réessayer'` |
 
 > [!IMPORTANT]
 > Run 'grep -r "msg('by'\|msg('done'\|msg('No power" src/' before adding. Only add keys that are genuinely missing. Do NOT modify `src/locales/locales/fr.js` by hand — update `xliff/fr.xlf` first, then run `npm run localize-build`.
@@ -931,4 +887,4 @@ private _toast(error: boolean, text: string): void {
 
 ## Adversarial Fixes: Edge Cases & Error States
 1. **Unavailable State Handling**: The card MUST disable interaction buttons and render an 'Offline' overlay or distinct visual state when `entity.state === 'unavailable' || entity.state === 'unknown'`.
-2. **API Timeout (Power History)**: The card MUST define a `historyLoading` property and an error state UI for the chart section if the 'history/period' API call fails or takes > 2 seconds.
+2. **API Timeout (Power History)**: The card MUST render a loading state and an error state with Retry for the chart section when the 'history/period' API call fails or takes ≥ 2 seconds — specified by the per-plug `_historyAttempts` record of [plugs-history-states/spec.md](../plugs-history-states/spec.md) (FR-1..FR-12).

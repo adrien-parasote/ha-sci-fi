@@ -82,6 +82,7 @@ export function makeMockHass(
     Promise.resolve({} as Awaited<ReturnType<HomeAssistantExt['callService']>>));
 
   return {
+    callApi: <T>() => Promise.resolve([] as unknown as T),
     floors: overrides.floors ?? {
       ground: makeMockFloor({ floor_id: 'ground', level: 0 }),
       first: makeMockFloor({ floor_id: 'first', name: 'First Floor', level: 1 }),

@@ -1,0 +1,14 @@
+a57e3dcde34860c385afeb97e17606b2d47a5b15 dist/sci-fi.min.js
+984170a882dbe798c2b3aa7c0194d082ea869fac docs/specs/cards/plugs.md
+164d2811ea5b7bd6c92b2003df43b21e08acc873 src/cards/plugs/sci-fi-plugs.ts
+134efea115c64d1694f5e48fd594e979434518eb src/cards/plugs/styles.ts
+901c7b558d5e0bf40e7a4423c874640a1b093331 src/locales/locales/fr.js
+ab2af150ee868fcdb48df04ae9da7938f6179594 tests/cards/plugs/sci-fi-plugs.test.ts
+ba3ad5f17e2e2a04f02940d1bd7cd7473a2b43f4 tests/styles/card-css-baseline.json
+d243d844666c656bda6142d43a79c3ebd7e16833 xliff/fr.xlf
+f5bcc7d66bcda39fe368d2594b740e5f66d906cb docs/adversarial-review/history/plugs-history-states.round-01.md
+f5bcc7d66bcda39fe368d2594b740e5f66d906cb docs/adversarial-review/plugs-history-states.md
+23c9b39a1d8d9d98efbad1fe892e4ec7d54df843 docs/specs/plugs-history-states/spec.md
+2e2966fe086a6bbf7766b19b1a7a7fc3a871545c docs/summaries/plugs-history-states/BUILD.md
+2762b4506bd9d781934d6c73b5919afb81875790 docs/summaries/plugs-history-states/SPEC.md
+b551f3831457a7ac1294aa74a1812c91204ed5ca tests/cards/plugs/plugs-history-states.test.ts

@@ -597,29 +597,25 @@ describe('sci-fi-plugs — Chart Private Methods', () => {
 
   // ── _parseHistory (lines 426-437) ─────────────────────────────────────────
 
-  it('_parseHistory skips first entry and parses remaining (line 428)', async () => {
+  // FR-8 (plugs-history-states): a non-finite state is dropped, never mapped to 0.
+  it('_parseHistory keeps every finite point and drops non-finite ones', async () => {
     await mountPlugWithPowerSensor();
     const now = new Date();
     const t1 = new Date(now.getTime() + 60000).toISOString();
     const t2 = new Date(now.getTime() + 120000).toISOString();
     const raw = [
-      { last_changed: now.toISOString(), state: '10' }, // skipped (idx 0)
+      { last_changed: now.toISOString(), state: '10' },
       { last_changed: t1, state: '20.5' },
-      { last_changed: t2, state: 'unavailable' }, // isNaN → value=0
+      { last_changed: t2, state: 'unavailable' },
     ];
-    const result = (el as any)._parseHistory(raw) as Record<string, number>;
-    const vals = Object.values(result);
-    expect(vals).to.include(20.5);
-    expect(vals).to.include(0);
-    // first entry is skipped → its key should not be the only one
-    expect(Object.keys(result).length).to.be.greaterThan(0);
+    const vals = Object.values((el as any)._parseHistory(raw) as Record<string, number>);
+    expect(vals).to.deep.equal([10, 20.5]);
   });
 
   it('_parseHistory keeps max value for duplicate timestamp buckets (line 435)', async () => {
     await mountPlugWithPowerSensor();
     const t = '2026-06-02T10:00:00.000Z';
     const raw = [
-      { last_changed: '2026-06-02T09:59:30.000Z', state: '5' }, // idx 0, skipped
       { last_changed: t, state: '30' },
       { last_changed: t, state: '50' }, // same bucket → should keep 50
     ];
@@ -660,49 +656,41 @@ describe('sci-fi-plugs — Chart Private Methods', () => {
     expect(labels[0]).to.include('-');
   });
 
-  // ── _loadPowerChart: callApi success path (lines 390-421) ─────────────────
+  // ── History attempt record (FR-13: migrated from the removed per-index cache) ──
 
-  it('_loadPowerChart fetches callApi and calls _drawChart on empty history', async () => {
+  it('_loadPowerChart records an empty attempt on empty history', async () => {
     const card = await mountPlugWithPowerSensor();
-    // Mock callApi to return empty history
     (card as any).hass.callApi = vi.fn().mockResolvedValue([[]]);
-    await (card as any)._loadPowerChart(
-      { entity_id: 'switch.tv', sensors: { 'sensor.tv_power': { power: true } } },
-      'sensor.tv_power'
-    );
-    // No chart — history empty means no _drawChart canvas created, just msg
-    // It may or may not have text depending on DOM availability
-    expect(card).not.to.be.null;
+    (card as any)._historyAttempts = new Map();
+    await card.updateComplete;
+    await new Promise(r => setTimeout(r, 0));
+    await card.updateComplete;
+    expect((card as any)._historyAttempts.get('sensor.tv_power').status).to.equal('empty');
   });
 
-  it('_loadPowerChart handles callApi error and shows toast', async () => {
+  it('_loadPowerChart renders the error state, not a toast, on callApi error', async () => {
     const card = await mountPlugWithPowerSensor();
+    const toastSpy = vi.spyOn(card as any, '_toast');
     (card as any).hass.callApi = vi.fn().mockRejectedValue(new Error('api error'));
-    await (card as any)._loadPowerChart(
-      { entity_id: 'switch.tv', sensors: { 'sensor.tv_power': { power: true } } },
-      'sensor.tv_power'
-    );
-    // Error branch: toast called, no crash
-    expect(card).not.to.be.null;
+    (card as any)._historyAttempts = new Map();
+    await card.updateComplete;
+    await new Promise(r => setTimeout(r, 0));
+    await card.updateComplete;
+    expect(card.shadowRoot!.querySelector('.history-error')).to.exist;
+    expect(toastSpy).not.toHaveBeenCalled();
   });
 
-  // ── _loadPowerChart: cache hit path (lines 381-388) ───────────────────────
-
-  it('_loadPowerChart uses cache when available', async () => {
+  it('replays a seeded loaded attempt without calling callApi', async () => {
     const card = await mountPlugWithPowerSensor();
-    // Pre-seed cache for plug 0
-    (card as any)._chart_generation[0] = {
-      datasets: [{ data: [5, 10] }],
-      labels: ['a', 'b'],
-      fetchedAt: Date.now(),
-    };
+    const callApi = vi.fn();
+    (card as any).hass.callApi = callApi;
     const drawSpy = vi.spyOn(card as any, '_drawChart');
-    await (card as any)._loadPowerChart(
-      { entity_id: 'switch.tv', sensors: { 'sensor.tv_power': { power: true } } },
-      'sensor.tv_power'
-    );
-    // Cache hit → _drawChart called without callApi
-    expect(drawSpy).toHaveBeenCalled();
+    (card as any)._historyAttempts = new Map([
+      ['sensor.tv_power', { status: 'loaded', token: 999, datasets: [{ data: [5, 10] }], labels: ['a', 'b'] }],
+    ]);
+    await card.updateComplete;
+    expect(drawSpy).toHaveBeenCalledWith([{ data: [5, 10] }], ['a', 'b']);
+    expect(callApi).not.toHaveBeenCalled();
   });
 
   // ── O5: edge cases plugs.md § Adversarial Fixes already demanded ──────────

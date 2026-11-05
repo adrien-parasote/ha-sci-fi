@@ -1,0 +1,17 @@
+a33ccda5e52e851043491d2406fba1a925674842 dist/sci-fi.min.js
+cc18c6b079741d0022935a94a7337bd76b69518e docs/specs/cards/water.md
+285449a9030a6be78439ab58d5134c29172af5bd docs/specs/cards/water_history.md
+a3ae10348dbfb8a44e6cb2bec2d4bb413984ac49 src/cards/water/sci-fi-water-management.ts
+6f1021d5619277f63b9d0d20daff4d88d2ba6861 src/cards/water/styles.ts
+5fe529326585508a1b3ec1157f58038a25e38dc9 src/locales/locales/fr.js
+a34c48ec4047192fe5f78ea8231d6ecf1aad3e0e tests/cards/water/water-history-aligned.test.ts
+8b2eee746ac1fdc3e9da11cd04b6d7db427fd18e tests/cards/water/water-ids-declared.test.ts
+62445ecef5a1ae7947cdc457e64a24984c98cf56 tests/cards/water_history/sci-fi-water-management-history.test.ts
+7122074cd543c9ae426ddb0eafc7f717b33baa8b tests/styles/card-css-baseline.json
+00a5486f8838744cc0d682fa1a9eca6e488ac4d8 xliff/fr.xlf
+83829d7d573d55cf0df18b7a1df41411149b77a7 docs/adversarial-review/history/water-offline.round-01.md
+83829d7d573d55cf0df18b7a1df41411149b77a7 docs/adversarial-review/water-offline.md
+e69238f802c1f8004f62f46f0ff4a5ca748a36f0 docs/specs/water-offline/spec.md
+6c74462ce1dd6d3fa79f75f5f1a1fccd59311139 docs/summaries/water-offline/BUILD.md
+e18783de98945bd118580807c687a3f7d07a2035 docs/summaries/water-offline/SPEC.md
+75ce368cc1b7b4af1f2638aa9131db60f18d2eb5 tests/cards/water/water-offline.test.ts

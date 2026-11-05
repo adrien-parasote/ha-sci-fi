@@ -69,7 +69,7 @@ const MAP: [string, string, string, 'hist' | 'water'][] = [
   [old('IT', '1201_primary'), hi(5), 'invokes hass.callWS with history/history_during_period as primary', 'hist'],
   [old('IT', '1202'), hi(6), 'triggers a new log fetch when entityIds change', 'hist'],
   [old('IT', '1203'), hi(7), 'triggers a new log fetch when _activeFloorId changes', 'hist'],
-  [old('IT', '1204'), hi(8), 'clears old logs immediately at the start of fetch', 'hist'],
+  [old('IT', '1204'), hi(8), 'a fetch keeps the old logs while it runs', 'hist'],
   [old('IT', '1205'), hi(9), 'filters entityIds to only include standalone (no-device) entities listed in the Automations accordion', 'hist'],
   [old('TC', 'W01'), wid(9), 'getCardSize returns 5', 'water'],
   [old('TC', 'W02'), wid(10), '_getStateLabel returns truthy strings for on and off', 'water'],
@@ -252,7 +252,7 @@ describe('water ids declared', () => {
     expect(waterDoc).toContain('Neuf des vingt-cinq');
     expect(histDoc.split('\n').filter((l) => /^\|\s*D14\b/.test(l))).toEqual([]);
     const resolved = histDoc.split('\n').find((l) => l.startsWith('Resolved by alignment')) ?? '';
-    for (const tok of ['D14', '_formatTimestamp', ':307', ':318', ':353', 'no test pins the brackets']) {
+    for (const tok of ['D14', '_formatTimestamp', ':371', ':382', ':418', 'no test pins the brackets']) {
       expect(resolved, tok).toContain(tok);
     }
   });
@@ -287,7 +287,7 @@ describe('water ids declared', () => {
   it('TC-WATOI-U-11: the aligned guard keeps the D14 cites and the case-row carve-out with its mutants', () => {
     const src = read(ALIGNED);
     const carve = ['(?:TC|IT)', 'WATER', 'HISTORY', '[UI]'].join('-');
-    for (const tok of ['D14_CITES', '307', '318', '353', carve, 'Timeline rendered when entries match and', 'expanded` (D21)']) {
+    for (const tok of ['D14_CITES', '371', '382', '418', carve, 'Timeline rendered when entries match and', 'expanded` (D21)']) {
       expect(src, tok).toContain(tok);
     }
   });

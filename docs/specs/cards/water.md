@@ -183,7 +183,7 @@ N/A — this card renders UI only; it does not publish events or data consumed b
 | Error | Response | Fallback | Logging |
 |---|---|---|---|
 | No Floors | Show empty state | N/A | Log warning |
-| API Failure | Show connection error | Retry in 5s | Log error |
+| API Failure | Show connection error; the history log keeps its last rows dimmed under a `[ OFFLINE · HH:MM ]` badge ([water-offline](../water-offline/spec.md)) | Retry in 5s (once for the history log, then the sync button) | Log error |
 | Invalid Entity | Hide entity | N/A | Log warning |
 | History API unavailable | Fallback to logbook | Empty log if both fail | `console.warn` |
 | Registry fetch failure | Use `hass.entities` / `hass.devices` | Reduced label filtering | `console.warn` |

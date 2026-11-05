@@ -247,6 +247,8 @@ export const waterStyles = css`
 
   .log-header {
     display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 12px;
@@ -414,6 +416,18 @@ export const waterStyles = css`
     color: #ffaa00;
     border: 1px solid rgba(255, 170, 0, 0.25);
     text-shadow: 0 0 3px rgba(255, 170, 0, 0.4);
+  }
+
+  /* Offline history (water-offline FR-3): cached rows dimmed in the warning colour */
+  .log-offline {
+    font-size: 0.7rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    color: #ffaa00;
+  }
+  .log-console.offline .log-entry {
+    color: #ffaa00;
+    opacity: 0.75;
   }
 
   @keyframes pulse {

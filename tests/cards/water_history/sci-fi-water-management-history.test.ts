@@ -65,8 +65,8 @@ describe('sci-fi-water-management', () => {
     };
 
     // State has to be set AFTER the first update cycle: connecting the card
-    // kicks off _fetchHistoryLogs, which resets _rawLogs to [] and
-    // _historyLogsLoading to false — it would wipe whatever the test arranged.
+    // kicks off _fetchHistoryLogs, whose settling sets _historyLogsLoading to
+    // false — it would override whatever the test arranged.
     const mountCard = async () => {
       const el = document.createElement('sci-fi-water-management') as any;
       el.config = { type: 'custom:sci-fi-water-management', filter_label: 'water' };
@@ -229,7 +229,7 @@ describe('sci-fi-water-management', () => {
       expect(fetchCount).to.equal(1);
     });
 
-    it('IT-WATER-HISTORY-I-008: clears old logs immediately at the start of fetch', async () => {
+    it('IT-WATER-HISTORY-I-008: a fetch keeps the old logs while it runs', async () => {
       const el = document.createElement('sci-fi-water-management') as any;
       el.config = { type: 'custom:sci-fi-water-management', filter_label: 'water' };
       el.hass = makeMockHass({});
@@ -237,8 +237,8 @@ describe('sci-fi-water-management', () => {
       el._rawLogs = [{ entity_id: 'switch.valve_1', state: 'on', when: '2026-06-01T08:00:00Z', name: 'Valve 1' }];
       
       const fetchPromise = el._fetchHistoryLogs();
-      // Right after synchronous invocation, logs must be immediately cleared
-      expect(el._rawLogs).to.deep.equal([]);
+      // Right after the synchronous invocation the previous rows are still there (water-offline FR-1)
+      expect(el._rawLogs).to.deep.equal([{ entity_id: 'switch.valve_1', state: 'on', when: '2026-06-01T08:00:00Z', name: 'Valve 1' }]);
       
       await fetchPromise;
     });

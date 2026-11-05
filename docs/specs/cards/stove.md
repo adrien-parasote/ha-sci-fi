@@ -467,6 +467,7 @@ ha-card
 │   ├── .header                      — _renderHeader : le friendly_name, rien d'autre
 │   ├── .content                     — _renderContent
 │   │   ├── sf-stove-image           — l'illustration SVG, state=${stoveState.state}
+│   │   ├── sf-icon.diagnostic-badge — _renderDiagnosticBadge, seulement si un diagnostic est actif (§ Diagnostics)
 │   │   └── .info
 │   │       ├── .e.bottom-path       — _renderTopZone : les deux jauges
 │   │       │   ├── .display         — .circle, .h-path, .d-path
@@ -475,9 +476,10 @@ ha-card
 │   │       │       └── sf-stack-bar             — _renderPelletStock
 │   │       ├── .m                   — _renderMiddleZone
 │   │       │   ├── .display         — .circle, .h-path
-│   │       │   └── .temperatures    — cinq lignes, dans cet ordre
+│   │       │   └── .temperatures    — six lignes, dans cet ordre
 │   │       │       ├── .temperature         — _renderTimeToService
 │   │       │       ├── .status.<couleur>    — _renderStatus (§ Header et ligne de statut)
+│   │       │       ├── .diagnostics         — _renderDiagnostics, seulement si un diagnostic est actif (§ Diagnostics)
 │   │       │       ├── .temperature         — _renderTemperature, externe
 │   │       │       ├── .temperature         — _renderTemperature, interne
 │   │       │       └── .temperature         — _renderPressure

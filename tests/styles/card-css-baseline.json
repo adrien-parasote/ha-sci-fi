@@ -2580,7 +2580,57 @@
     ".content": {
       "display": "flex",
       "flex-direction": "row",
-      "overflow": "visible"
+      "overflow": "visible",
+      "position": "relative"
+    },
+    ".diagnostic-badge": {
+      "position": "absolute",
+      "top": "0",
+      "right": "0",
+      "--icon-size": "24px",
+      "--icon-width": "24px",
+      "--icon-height": "24px",
+      "z-index": "1",
+      "pointer-events": "none"
+    },
+    ".diagnostic": {
+      "display": "flex",
+      "align-items": "center",
+      "gap": "5px",
+      "min-width": "0"
+    },
+    ".diagnostic-text": {
+      "white-space": "nowrap",
+      "overflow": "hidden",
+      "text-overflow": "ellipsis",
+      "min-width": "0"
+    },
+    ".diagnostic.door .diagnostic-text": {
+      "color": "#ff4444"
+    },
+    ".diagnostic.alert .diagnostic-text": {
+      "color": "#ff4444"
+    },
+    ".diagnostic.error .diagnostic-text": {
+      "color": "#ff4444"
+    },
+    ".diagnostic.door sf-icon": {
+      "--icon-color": "#ff4444"
+    },
+    ".diagnostic.alert sf-icon": {
+      "--icon-color": "#ff4444"
+    },
+    ".diagnostic.error sf-icon": {
+      "--icon-color": "#ff4444"
+    },
+    ".diagnostic-badge.door": {
+      "--icon-color": "#ff4444"
+    },
+    ".diagnostic-badge.alert": {
+      "--icon-color": "#ff4444"
+    },
+    ".diagnostic-badge.error": {
+      "--icon-color": "#ff4444"
     },
     ".content sf-stove-image": {
       "height": "var(--stove-height)",

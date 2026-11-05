@@ -96,6 +96,11 @@ export interface HomeAssistantExt {
       params: Record<string, unknown>
     ) => Promise<() => void | Promise<void>>;
   };
+  /**
+   * HA's translated rendering of an entity state (frontend >= 2023.9); absent on some hosts.
+   * Ref: https://developers.home-assistant.io/docs/frontend/custom-ui/custom-card/
+   */
+  readonly formatEntityState?: (stateObj: HassEntity, state?: string) => string;
   /** Frontend helper over connection.sendMessagePromise; absent on some hosts (dev workbench). */
   callWS?: <T>(message: Record<string, unknown>) => Promise<T>;
   callService(

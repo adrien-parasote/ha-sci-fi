@@ -1446,6 +1446,22 @@
   <source>Fan speed unavailable</source>
   <target>Ventilation indisponible</target>
 </trans-unit>
+<trans-unit id="sa1912a98c7aa187a">
+  <source>Stove door</source>
+  <target>Porte du poêle</target>
+</trans-unit>
+<trans-unit id="s69ba21783fceb974">
+  <source>Stove alert</source>
+  <target>Alerte du poêle</target>
+</trans-unit>
+<trans-unit id="s66ebc3225b33a170">
+  <source>Stove error</source>
+  <target>Erreur du poêle</target>
+</trans-unit>
+<trans-unit id="s8701ddb2b5c39217">
+  <source>Door open</source>
+  <target>Porte ouverte</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

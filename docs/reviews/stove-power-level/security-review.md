@@ -15,3 +15,19 @@ NOTES:
 - A dashboard author can point number_power_level at any number/input_number entity; that is the intended authorization model (HA's own user permissions apply to the service call).
 - The fake secret in the bridge is out of this diff and already tracked (kxri).
 - No infra in the diff; runtime behaviour not exercised (no live instance started).
+
+## Round 2 (delta)
+
+AUDITOR: subagent
+COVERAGE (delta packet .sc/review/5b5b682-5539b704; must_read.txt is EMPTY, so no entry point was packaged; scope is delta.patch plus closure of round 1):
+| file | lines read | total (wc -l) | full read? |
+| src/cards/stove/sci-fi-stove.ts | delta hunk 645-655 (_releasePowerPick) | 730 | delta in full |
+| tests/cards/stove/sci-fi-stove-power-level.test.ts | delta hunk 337-349 | n/a | delta in full |
+| docs/reviews/stove-power-level/code-review.md and history/* | delta (review artifacts, no executable code) | 45 / 17 | delta in full |
+VERDICT: DEPLOY
+SURFACES CHECKED: The only source change is in `_releasePowerPick`, at src/cards/stove/sci-fi-stove.ts:648-651. It adds one more condition for dropping a pending pick: `_powerPendingIndex >= powerGrid(entity.attributes).n`. The input is the HA entity attributes (min/max/step), passed through `powerGrid`, cleared in round 1 (Number.isFinite, 50-item cap, 1/5/1 fallback when step <= 0 or min > max): no division by zero, unbounded loop or NaN comparison. The new branch only clears local state (timer, pending index, sent flag); it adds no service call, no rendering sink, no network or secret handling, and shrinks the set of states leading to a `set_value` call. The test delta is test code only; the review-artifact files carry no code.
+FINDINGS:
+(none)
+NOTES:
+- Round 1 had no findings, so nothing carries over.
+- No infra in the diff. Text judged only; the card was not run against a live instance.

@@ -13,3 +13,5 @@
 - Advisories carried from VERIFY (P0 test-fixture secret flag, P7 sentrux base debt).
 
 **Next action:** merge step (left to the orchestrator).
+
+**Tests:** files +2 ~5 −0 · cases +26 −2 · 3 earlier test file(s) edited, none lost a case

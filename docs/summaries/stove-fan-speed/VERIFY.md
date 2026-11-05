@@ -18,3 +18,5 @@
 - test-compacted bypass still active (user).
 
 **Next action:** HARDEN - /harden-stage: learn-eval, then the commit.
+
+**Tests:** files +1 ~2 −0 · cases +18 −0 · 2 earlier test file(s) edited, none lost a case

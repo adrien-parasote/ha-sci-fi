@@ -21,3 +21,5 @@
 **Dead ends:** none
 
 **Next action:** HARDEN - /learn-eval, then the commit gate.
+
+**Tests:** files +1 ~1 −0 · cases +11 −0 · 1 earlier test file(s) edited, none lost a case

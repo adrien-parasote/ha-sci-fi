@@ -4,7 +4,7 @@
  * Layout matches production (main branch): hexa floor row + vertical hexa area list + right panel.
  */
 
-import { html, type TemplateResult } from 'lit';
+import { html, nothing, type TemplateResult } from 'lit';
 import { msg } from '@lit/localize';
 import { customElement, state } from 'lit/decorators.js';
 import { DOMAIN } from '../../types/domains.js';
@@ -24,7 +24,7 @@ import {
   getLightEntities,
   hasActiveLights,
 } from '../../selectors/light.js';
-import WEATHER_ICON_SET from '../../components/sf-icon/data/sf-weather-icons.js';
+import { weatherIcon } from '../../components/sf-icon/weather-icon.js';
 
 import { lightStyles } from './styles.js';
 import { ENTITY_ID } from '../../types/entity-ids.js';
@@ -170,11 +170,11 @@ export class SciFiLightsCard extends SciFiBaseCard {
 
   // ── Header ──────────────────────────────────────────────────────────────────
 
-  private _getDayNightIcon(): TemplateResult {
+  private _getDayNightIcon(): TemplateResult | typeof nothing {
     const sun = this.hass?.states[ENTITY_ID.SUN];
     const isDay = sun ? sun.state === 'above_horizon' : true;
     const key = isDay ? 'sunny-day' : 'sunny-night';
-    return (WEATHER_ICON_SET as Record<string, TemplateResult>)[key] ?? html``;
+    return weatherIcon(key);
   }
 
   private _renderHeader(houseActive: boolean): TemplateResult {

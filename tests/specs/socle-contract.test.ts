@@ -107,6 +107,7 @@ const ABSENTS_ASSUMES = new Map<string, string>([
   ['vite.config.ts', 'AP#3 et F-INFRA-03 : nommé pour dire qu’il n’existe pas'],
   ['.eslintrc.json', 'nommé par la note de correction du 2026-11-01, qui dit son absence'],
   ['editor.ts', 'nommé par l’AP#4 corrigé, qui dit que ce fichier n’existe pas'],
+  ['src/utils/toast.ts', '§ Un seul toast dit sa suppression (lot vague-2, bead ha-sci-fi-ckw)'],
 ]);
 
 // ── La règle générale : une spec ne nomme pas un fichier fantôme ────────────
@@ -379,21 +380,15 @@ describe('le socle ne se trompe pas sur sa propre taille', () => {
     ).toEqual([]);
   });
 
-  it('la table des deux toasts nomme exactement les cartes mesurées', () => {
-    const table = rows('docs/specs/03_base_classes.md', '## Les deux toasts', /\n## /);
-    expect(table.length, 'la table des toasts n’a pas été lue').toBe(2);
+  it('la table du toast nomme exactement les cartes mesurées, et showToast ne revient pas', () => {
+    const table = rows('docs/specs/03_base_classes.md', '## Un seul toast', /\n## /);
+    expect(table.length, 'la table du toast n’a pas été lue').toBe(1);
 
-    const attendu = new Map([
-      ['showToast', cardsCarrying('showToast')],
-      ['sf-toast', cardsCarrying('sf-toast')],
-    ]);
-    // Témoin : une voie est vivante, l'autre n'a aucun appelant. Si les deux
-    // devenaient vides ou les deux pleines, le § ne décrirait plus le dépôt.
+    const attendu = new Map([['sf-toast', cardsCarrying('sf-toast')]]);
+    // Témoin : la voie vivante a bien des cartes.
     expect(attendu.get('sf-toast')!.length).toBeGreaterThan(5);
-    expect(
-      attendu.get('showToast'),
-      'showToast a retrouvé un appelant — le § doit cesser de le dire mort'
-    ).toEqual([]);
+    // Le module impératif supprimé (bead ha-sci-fi-ckw) ne réapparaît dans aucune carte.
+    expect(cardsCarrying('showToast'), 'showToast est revenu — le § Un seul toast ne décrit plus le dépôt').toEqual([]);
 
     for (const [mecanisme, cartes] of attendu) {
       const ligne = table.find((r) => r[0]!.includes(mecanisme));

@@ -5,13 +5,14 @@
  * Restored UI from legacy main branch.
  */
 
-import { html, type TemplateResult, type PropertyValues, render } from 'lit';
+import { html, nothing, type TemplateResult, type PropertyValues, render } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
 import { msg } from '@lit/localize';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import type { SciFiWeatherConfig } from './config.js';
 import WEATHER_ICON_SET from '../../components/sf-icon/data/sf-weather-icons.js';
+import { isWeatherIcon, weatherIcon } from '../../components/sf-icon/weather-icon.js';
 
 import {
   Chart,
@@ -279,9 +280,8 @@ export class SciFiWeatherCard extends SciFiBaseCard {
     return sun.state !== 'below_horizon';
   }
 
-  private _getWeatherIcon(condition: string, day: boolean): TemplateResult {
-    const key = `${condition}-${day ? 'day' : 'night'}`;
-    return (WEATHER_ICON_SET as any)[key] ?? (WEATHER_ICON_SET as any)['cloudy-day'] ?? html``;
+  private _getWeatherIcon(condition: string, day: boolean): TemplateResult | typeof nothing {
+    return weatherIcon(`${condition}-${day ? 'day' : 'night'}`, 'cloudy-day');
   }
 
   private _getIconForHourly(hourlyItem: any): string {
@@ -425,9 +425,7 @@ export class SciFiWeatherCard extends SciFiBaseCard {
   }
 
   private _renderIcon(iconName: string) {
-    if ((WEATHER_ICON_SET as any)[iconName]) {
-      return (WEATHER_ICON_SET as any)[iconName];
-    }
+    if (isWeatherIcon(iconName)) return weatherIcon(iconName);
     return html`<sf-icon .icon=${'mdi:' + iconName} .connection=${this.hass?.connection}></sf-icon>`;
   }
 

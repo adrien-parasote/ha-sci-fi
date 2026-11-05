@@ -1,0 +1,39 @@
+{
+  "feature": "vague-2",
+  "created": "2026-11-05T07:34:08Z",
+  "frozen_at": "2026-11-05T07:37:20Z",
+  "epic": "ha-sci-fi-1zil",
+  "observations": [
+    {
+      "id": "O1",
+      "text": "ha-sci-fi-dcgo: weather, lights and water render WEATHER_ICON_SET templates straight into their shadow DOM, bypassing sf-icon, so two animated weather icons of one card share SVG ids; expected: each goes through sf-icon, which scopes its ids",
+      "bead": "ha-sci-fi-1zil.1",
+      "test": "npx vitest run tests/fixes/vague-2/O1.test.ts tests/cards/weather tests/cards/lights tests/cards/water",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O2",
+      "text": "ha-sci-fi-ckw: src/utils/toast.ts (showToast) has no caller, only its own test; <sf-toast> is the one toast mechanism; expected: the dead module and its test removed, spec 03 § Les deux toasts amended",
+      "bead": "ha-sci-fi-1zil.2",
+      "test": "npx vitest run tests/specs/socle-contract.test.ts",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O3",
+      "text": "tests/fixes/vague-1/O5.test.ts:19 fails tsc --noEmit (entity not in SciFiBaseConfig), left by lot vague-1; expected: the test typechecks",
+      "bead": "ha-sci-fi-1zil.3",
+      "test": "npx tsc --noEmit -p .",
+      "unreproduced": null,
+      "escalated": null
+    }
+  ],
+  "suite": "npx vitest run",
+  "lint": "npx eslint src/components/sf-icon/weather-icon.ts src/cards/weather/sci-fi-weather.ts src/cards/lights/sci-fi-lights.ts src/cards/water/sci-fi-water-management.ts tests/fixes/vague-2 tests/fixes/vague-1/O5.test.ts tests/specs/socle-contract.test.ts",
+  "suite_run": {
+    "at": "2026-11-05T07:46:41Z",
+    "rc": 0,
+    "tail": ""
+  }
+}

@@ -33,10 +33,6 @@ src/
 │   ├── action.ts                   [NEW] fireHassAction() — l'événement
 │   │                                     `hass-action` natif HA (tap/hold/
 │   │                                     double_tap), consommé par les cartes
-│   └── toast.ts                    [NEW] showToast() — notification impérative,
-│                                         un élément appendu à document.body.
-│                                         ⬜ aucun appelant en production :
-│                                         voir § Les deux toasts
 └── styles/
     ├── common.ts                   [NEW] Shared styles — imported by every card
     ├── editor-common.ts            [NEW] Editor styles
@@ -49,41 +45,29 @@ src/
 
 ---
 
-## Les deux toasts — un mécanisme livré, un mécanisme mort
+## Un seul toast — `<sf-toast>`
 
-Le socle porte `src/utils/toast.ts`, `src/components/` porte `<sf-toast>`, et
-aucune ligne de spec ne nommait ni l'un ni l'autre avant le 2026-11-01 :
+Une carte notifie par `<sf-toast>`, et par rien d'autre :
 
 | Mécanisme | Où | Forme | Consommateurs |
 |---|---|---|---|
-| `showToast(message, type)` | [`src/utils/toast.ts`](../../src/utils/toast.ts) — ce socle | Appel impératif ; crée et appende un élément à `document.body`, hors de tout arbre de carte, donc n'hérite d'aucun token et code ses couleurs en dur (cf. § Design Tokens règle 5) | ⬜ aucun appelant |
 | `<sf-toast>` | `src/components/sf-toast.ts` — [spec 04](./04_components.md) | Élément déclaré dans le `render()` d'une carte, piloté par ses propriétés | bridge, climates, lights, plugs, stove, tv, vacuum, vehicles, water |
 
 La colonne des consommateurs est **dérivée de `src/` par
 `socle-contract.test.ts`**, qui refuse une liste qui ne l'égale pas. Elle nomme
-des cartes, jamais un nombre, et elle cherche le symbole **en mot entier**.
+des cartes, jamais un nombre (un nombre faux se lit comme un nombre vrai ; une
+liste fausse se compare), et elle cherche le symbole **en mot entier** : les
+`this._showToast(…)` de `water`, `tv`, `stove`, `vehicles` et `lights` sont des
+méthodes privées qui pilotent leur `<sf-toast>`, pas un second mécanisme.
+`src/cards/hexa-tiles/` et `src/cards/weather/` n'émettent aucune notification.
 
-**Ces deux précautions ont chacune attrapé une erreur de la première rédaction de
-ce §**, et elles valent d'être dites parce que c'est le défaut que ce lot existe
-pour retirer :
-
-- elle annonçait « 10 cartes » pour `<sf-toast>` : c'était le nombre de
-  **fichiers**, `src/cards/bridge/` en portant deux. Un nombre faux se lit comme
-  un nombre vrai ; une liste fausse se compare ;
-- elle annonçait cinq consommateurs pour `showToast`. Il n'en existe aucun. Les
-  cinq « occurrences » étaient `this._showToast(…)`, **méthode privée** de
-  `water`, `tv`, `stove`, `vehicles` et `lights` qui pilote leur `<sf-toast>` —
-  une sous-chaîne, pas un appel. `src/utils/toast.ts` n'est importé que par son
-  propre test.
-
-Donc il n'y a pas deux voies concurrentes : il y a `<sf-toast>`, et un module de
-notification du socle que **rien n'utilise**. `src/cards/hexa-tiles/` et
-`src/cards/weather/` n'émettent aucune notification du tout.
-
-Ce qui reste à décider n'est pas une frontière entre deux mécanismes, c'est le
-sort de `src/utils/toast.ts` : le supprimer, ou lui donner le rôle qu'il semblait
-avoir (la notification qu'une carte doit émettre alors qu'elle n'est peut-être
-plus montée, que `<sf-toast>` ne peut pas rendre). Bead `ha-sci-fi-ckw`.
+Le socle portait aussi `src/utils/toast.ts`, retiré depuis et qui n’existe pas dans l’arbre (`showToast(message, type)`, un
+élément impératif appendu à `document.body`, hors de tout token). Mesuré le
+2026-11-01 : aucun appelant, importé par son seul test. **Supprimé par le lot fix
+`vague-2`** (2026-11-05, bead `ha-sci-fi-ckw`) plutôt que doté d'un rôle qu'aucune
+spec ne lui donnait — la notification d'une carte démontée serait une capacité
+nouvelle, à spécifier d'abord si on la veut. `socle-contract.test.ts` refuse qu'un
+`showToast` réapparaisse dans `src/`.
 
 ## Design Tokens — two families, two reaches
 
@@ -128,8 +112,9 @@ Rules that follow from it:
    family declared in `editor-common.ts`, chained to HA theme variables that do reach a dialog.
 5. **A component in `src/components/` that needs the tokens includes
    `sciFiCommonStyles` itself**, rather than relying on being mounted inside a
-   card. An element appended to `document.body` (`src/utils/toast.ts`) inherits
-   nothing and correctly hard-codes its colours.
+   card. An element appended to `document.body` inherits nothing and would have
+   to hard-code its colours — which is why the socle no longer ships one (§ Un
+   seul toast).
 
 `tests/styles/card-css-baseline.test.ts` locks the resolved CSS of all 11 cards,
 so any change to these declarations surfaces as a reviewed diff.

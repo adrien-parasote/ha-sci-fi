@@ -1,4 +1,4 @@
-import { html, type TemplateResult } from 'lit';
+import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { msg } from '@lit/localize';
@@ -9,7 +9,7 @@ import type { SciFiWaterManagementConfig } from './config.js';
 import type { HassFloor, HassEntityEntry } from '../../types/ha.js';
 import { fireHassAction } from '../../utils/action.js';
 import { getFloors, getAreasByFloor } from '../../selectors/house.js';
-import WEATHER_ICON_SET from '../../components/sf-icon/data/sf-weather-icons.js';
+import { weatherIcon } from '../../components/sf-icon/weather-icon.js';
 import '../../components/editor-inputs/sf-editor-accordion.js';
 
 import { waterStyles } from './styles.js';
@@ -484,11 +484,11 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     `;
   }
 
-  private _getDayNightIcon(): TemplateResult {
+  private _getDayNightIcon(): TemplateResult | typeof nothing {
     const sun = this.hass?.states[ENTITY_ID.SUN];
     const isDay = sun ? sun.state === 'above_horizon' : true;
     const key = isDay ? 'sunny-day' : 'sunny-night';
-    return (WEATHER_ICON_SET as Record<string, TemplateResult>)[key] ?? html``;
+    return weatherIcon(key);
   }
 
   private _renderHeader(): TemplateResult {

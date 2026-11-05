@@ -105,6 +105,7 @@
 ## Entries
 
 ### L012: Spec Conformance Exclusions for External Domain Entities
+- **Route:** improvement #2631
 **Date**: 2026-05-23
 **Context**: During HA custom card migration, `P8_SpecConformance` failed because the documentation correctly referenced external Home Assistant domain entities (`Area`, `Floor`, `LightEntity`, etc.) inside backticks. The `spec_conformance.py` script assumed these were intended to be exported by our codebase.
 **Actionable Pattern**: When documenting components that interface with external domains, either:
@@ -112,11 +113,13 @@
 2. Immediately add them to the `SPEC_PROSE_EXCLUSIONS` array in `spec_conformance.py` to prevent them from triggering false-positive export failures.
 
 ### L013: Post-Refactor TDD Lock Re-alignment
+- **Route:** improvement #2697
 **Date**: 2026-05-23
 **Context**: After retrofitting tests for the new TypeScript structure, `P10_TDDSequence` failed because test files were modified after the initial `.tdd_lock` was created.
 **Actionable Pattern**: If test retrofitting or major architectural refactoring legitimately alters the test specifications, you must re-run `python3 .agents/skills/verification-loop/scripts/tdd_check.py . --lock` to update the file hashes in `.tdd_lock` and clear the sequence blocker.
 
 ### L014: Vitest & Lit Element Lifecycle Warnings
+- **Route:** project
 **Date**: 2026-05-23
 **Context**: During the VERIFY phase, tests failed because `verify.py` intercepts `stderr` warnings. We encountered warnings like `Lit is in dev mode` and `ReactiveElement.updated()`.
 **Actionable Pattern**: 
@@ -124,11 +127,13 @@
 2. Avoid state mutations inside `updated()`. If a Lit component updates a ref or internal state after render, use `willUpdate()` instead to prevent synchronous infinite loop warnings that will crash strict test runners.
 
 ### L015: Happy-DOM and Canvas APIs (Chart.js)
+- **Route:** project
 **Date**: 2026-05-23
 **Context**: `Chart.js` relies heavily on native Canvas API features (`ResizeObserver`, canvas rendering context). `happy-dom` lacks full support for these, causing tests to crash with `Failed to create chart: can't acquire context`.
 **Actionable Pattern**: When unit-testing Web Components that wrap heavy canvas libraries like `Chart.js` in `happy-dom`, dynamically mock the library's constructor globally (`vi.stubGlobal`) and provide dummy implementations for `destroy`, `update`, and `resize` to safely verify component logic without relying on the actual canvas rendering engine.
 
 ### L016: Lit Property vs Attribute Binding for Dynamic Custom Element Properties
+- **Route:** project
 **Date**: 2026-05-23
 **Source**: ha-sci-fi v2 — Spec 04 components + /code-review
 **Evidence**: 5 occurrences of `icon="${expression}"` found across 3 card files during /code-review. 3 src files + 1 test file rewritten. Zero instances in `sf-toggle-switch` because Spec 04 explicitly documented `.checked=` property binding.
@@ -136,6 +141,7 @@
 **Fix**: In any spec documenting a custom element, explicitly note: `static-value="foo"` (attribute, compile-time constant) vs `.dynamic-value="${expr}"` (property, reactive). Add as anti-pattern in all component specs consuming custom elements with `@property()` fields.
 
 ### L017: `window.history` Absent in happy-dom — Mock Per-Test, Not Globally
+- **Route:** project
 **Date**: 2026-05-23
 **Source**: ha-sci-fi v2 — tests/cards/hexa_tiles + /code-review
 **Evidence**: 3 tests crashed with `TypeError: Cannot read properties of undefined (reading 'pushState')` after replacing `window.location.assign()` with `pushState`. `happy-dom` exposes `window.history` as `undefined`.
@@ -145,6 +151,7 @@
 If navigation is a recurring project pattern, add a global stub to `tests/setup.ts`.
 
 ### L018: `@state()` on Never-Mutated Fields — Speculative Code Invisible to TypeScript
+- **Route:** project
 **Date**: 2026-05-23
 **Source**: ha-sci-fi v2 — sci-fi-vehicles.ts + /code-review
 **Evidence**: `@state() private _activeIndex = 0` shipped but never written. TypeScript emits no error or warning for unused `@state()` decorators. Detected only via manual /code-review.
@@ -152,12 +159,14 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix**: Add to coding standards: "Every `@state()` field MUST be mutated in the same PR it is introduced. If not, it is speculative code → remove it. Apply YAGNI."
 
 ### L019: GitHub Wiki is a Separate Clonable Git Repo
+- **Route:** project
 **Date**: 2026-05-23
 **Source**: ha-sci-fi v2 — release workflow
 **Evidence**: Needed to edit GitHub wiki from CLI during release. Cloning via `git@github-perso:<owner>/<repo>.wiki.git` gave full git access in 1 command — push to `master` publishes immediately.
 **Pattern**: To edit a GitHub wiki programmatically, clone it as a separate repo: `git clone git@github.com:<owner>/<repo>.wiki.git`. It is a standard git repo with `.md` files at root. Specify this in any release automation spec that touches wiki release notes.
 
 ### L020: GitHub Classic PAT — `repo` Scope Required for Releases API, `write:packages` Is Not Sufficient
+- **Route:** project
 **Date**: 2026-05-23
 **Source**: ha-sci-fi v2 — GitHub releases API
 **Evidence**: 2 failed API calls (404) with a token that had `write:packages` but not `repo`. Adding `repo` scope resolved immediately. `x-oauth-scopes` response header is the definitive diagnostic — empty = fine-grained PAT with no permissions.
@@ -165,12 +174,14 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix**: In any spec involving `POST /repos/{owner}/{repo}/releases`, document explicitly: "Requires classic PAT with `repo` scope. Verify with `curl -sI -H 'Authorization: Bearer $TOKEN' https://api.github.com/user | grep x-oauth-scopes`."
 
 ### L021: Large README Anti-Pattern — Split Into Per-Component Docs Early
+- **Route:** project
 **Date**: 2026-05-23
 **Source**: ha-sci-fi v2 — README + docs/cards/
 **Evidence**: README grew to 784 lines (full YAML configs for 8 cards inline). Split into `README.md` (124 lines) + `docs/cards/<card>.md` (8 files, ~90 lines each). README became scannable in 30s; card docs are deep-linkable.
 **Pattern**: For multi-component libraries, structure docs as: (1) root `README.md` = badges + install + component table with links, (2) `docs/<type>/<name>.md` = full config reference per component. Apply when README exceeds ~200 lines or when 3+ independently configurable components exist.
 
 ### L022: XSS Vulnerability in Test DOM Cleanup (OWASP A03)
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi v2 — security scan (VERIFY stage)
 **Evidence**: 8 test files rewritten. `security_scan.py` flagged `document.body.innerHTML = ''` as a critical-risk pattern for XSS in DOM cleanup (`afterEach`).
@@ -178,6 +189,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix**: Use `document.body.replaceChildren()` to safely and efficiently clear the DOM synchronously without invoking the HTML parser.
 
 ### L023: Lit Template Ternaries Are Structurally Uncoverable by v8
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi v2 — 100% coverage push (VERIFY stage)
 **Evidence**: After 17 new tests (141→158), branch coverage reached 90.39% but plateaued. Remaining uncovered branches are all ternaries inside `html\`...\`` template literals (Lit `repeat()` callbacks, inline `${expr ? html\`...\` : ''}`). v8 instruments JS AST branches, but Lit's tagged template literal evaluation collapses these branches into a single expression node during transpilation.
@@ -186,6 +198,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: Applies to all LitElement projects using v8 coverage (Vitest, c8, Istanbul v8).
 
 ### L024: `!= null` vs `!== null && !== undefined` — TypeScript Strict Null Checks
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi v2 — user-applied refactoring pass
 **Evidence**: User replaced all `!= null` with `!== null && !== undefined` across 8 source files. This is semantically equivalent in JavaScript (`!= null` covers both `null` and `undefined`), but the explicit form is required by `eqeqeq: ["error", "always"]` in `.eslintrc.json`.
@@ -193,6 +206,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: Applies to all TS projects with `eqeqeq: always` + `strictNullChecks`. Document this constraint explicitly in the spec's coding-constraints section.
 
 ### L025: Type-Guard Unit Tests Belong in `tests/types/` — Not Inlined in Card Tests
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi v2 — coverage gap closure (VERIFY stage)
 **Evidence**: `assertString` and `assertDefined` in `src/types/config.ts` had 0% branch coverage. Adding them to an existing card test file would have polluted the card's test domain. Creating `tests/types/config.test.ts` achieved 100% coverage with 7 focused tests.
@@ -200,6 +214,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix**: In specs that define type-guard or validation utility functions, always include a `tests/types/<module>.test.ts` pointer in the Test Case Specifications table.
 
 ### L026: Inspect the Branch History Before Building Any Dev Tool
+- **Route:** improvement #2382
 **Date**: 2026-05-24
 **Source**: ha-sci-fi — workbench session
 **Evidence**: User reminded agent mid-session that `main` branch already contained `tests/js/hass.js` with a fully working `home-assistant-js-websocket` connection + `subscribeEntities` pattern. Agent had started implementing from scratch instead of inspecting the branch. 1 iteration of rework avoided once user pointed this out.
@@ -211,6 +226,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
   Only then decide Adopt / Adapt / Build-New.
 
 ### L027: Production YAML Configs Are the Ideal Source for Mock Data
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi — workbench session
 **Evidence**: The `yaml backup/*.yaml` files contained exact production entity IDs, sensor names, and config structures. Using them to generate mock `hass.states` produced 100% realistic workbench data with zero guesswork — all entity IDs matched production on first try.
@@ -218,6 +234,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix**: In any workbench or test helper spec for HA custom cards, add: "Mock `hass.states` MUST be derived from `yaml backup/*.yaml`. Never invent entity IDs — copy them verbatim."
 
 ### L028: ID Selectors on Root Layout Wrappers Override Granular Class Logic
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi — Workbench responsive device frames
 **Evidence**: Device simulation for iPad (`height: 1000px`) and iPhone frames kept collapsing to content height in panel mode. The culprit was a global utility rule `#card-mount-wrap { height: 100%; }`. Because `id="card-mount-wrap"` was placed on the exact same HTML element as `.device-screen`, the ID selector `(0,1,0,0)` permanently overrode the class selector `(0,0,2,0)`.
@@ -225,30 +242,35 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix**: Never use IDs for structural styling. Use classes. If an ID is required for JS targeting (`getElementById`), restrict its CSS usage strictly to properties that won't conflict with layout (or better, don't style the ID at all).
 
 ### L029: Web Components and Container Queries in DOM Simulation
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi — Workbench responsive device frames
 **Evidence**: `@container (max-width: 450px)` failed to trigger on `ha-card` in the custom workbench. `ha-card` is an unknown custom element to the browser (not registered by HA core in this standalone env), meaning the browser rendered it as `display: inline`. Inline elements cannot act as container query contexts, so the query silently resolved to the width of the content, breaking all mobile breakpoints.
 **Pattern**: When simulating or mounting Web Components in a standalone workbench or testing environment, ensure custom element wrappers (`ha-card`, etc.) explicitly declare `display: block; width: 100%;` in their base CSS. Relying on the host app (HA) to provide these styles works in production but breaks CSS container queries in isolation.
 
 ### L030: SVG-rendered Light DOM Custom Element Sizing & Invisible Icons
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi v2 — sci-fi-hexa-tiles.ts + /self-debug
 **Evidence**: `<sf-icon>` renders `<svg class="sf-icon">` in the Light DOM (using `createRenderRoot() { return this; }`). Inside shadow DOM cards setting CSS variables `--icon-width` and `--icon-height` on `<sf-icon>`, but without active rules in card styles mapping these variables to the actual SVG's `width`, `height`, and `fill` (e.g. `sf-icon svg, .sf-icon { width: var(--icon-width); height: var(--icon-height); fill: var(--icon-color); }`), the SVG collapses to `0x0` or renders with default black fill on black backgrounds, becoming completely invisible.
 **Pattern**: When using custom elements that render in the Light DOM (like `sf-icon`), you must ensure that card stylesheets or global stylesheets map any custom layout variables (width, height, color) directly to the target Light DOM SVG element inside.
 
 ### L031: Promise Caching for Heavy Websocket API Category Fetches
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi v2 — icon-cache.ts + /self-debug
 **Evidence**: On initial page load, multiple components fetch icons concurrently. The custom icon resolver sent a websocket request `frontend/get_icons` for *each* icon because it didn't cache the active query promise. When loading 10+ icons concurrently, this: (1) hit the concurrency limit (`MAX_CONCURRENT_FETCHES = 5`), instantly returning `ICON_NOT_FOUND` (fallback `?`) for subsequent requests, and (2) sent redundant massive websocket payloads (thousands of icons) to the HA server.
 **Pattern**: When fetching heavy categories of data from a WebSocket API concurrently, always cache the active `Promise` globally. All concurrent callers will wait for the same promise to resolve. Clear this promise cache in global test resets (`clearMemCache()`) to ensure isolated test suites.
 
 ### L032: Sibling Lit Property Race Condition & Initialization Updates
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi v2 — sf-icon.ts + /self-debug
 **Evidence**: The custom element `<sf-icon>` resolves MDI icons using a `connection` property passed from its parent (`this.hass.connection`). On the first update, `this.connection` is often `undefined` due to component initialization race conditions. The icon's `willUpdate` hook only watched `changed.has('icon')`, meaning that when the parent subsequently populated the connection property, `sf-icon` ignored the change and remained permanently stuck on the fallback question mark (`?`) placeholder.
 **Pattern**: When a custom element depends on sibling properties that are initialized asynchronously or reactive (such as state, active connection, or user object), always ensure that its update life cycle hooks (`willUpdate`, `shouldUpdate`) watch for changes to *all* critical dependent properties, not just the primary value.
 
 ### L033: Custom Element Upgrade Failure due to Style Mutations in Constructor
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi — sci-fi-hexa-tiles.ts
 **Evidence**: `cardEl.setConfig is not a function` runtime error thrown in Home Assistant card rendering environment.
@@ -256,6 +278,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix**: Move all dynamic styling or attribute mutations entirely out of the constructor to `connectedCallback()`, `firstUpdated()`, or `willUpdate()`, where element mutation is fully permitted.
 
 ### L034: Shadow DOM :host Selector Custom Property Inheritance
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi — sci-fi-hexa-tiles.ts
 **Evidence**: On tablet (iPad Air) and PC viewports in the workbench, the hexagons collapsed into a standard non-shifting vertical grid because `--cols` was not inherited by the `:host` selector when defined on a child element (`<ha-card style="--cols: ...">`).
@@ -263,6 +286,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix**: Set custom properties needed by the `:host` selector directly on the host element's style property in JavaScript using `this.style.setProperty('--name', value)` inside reactive hooks (`_updateLayout` / `connectedCallback`).
 
 ### L039: Avoid Unsolicited Style Embellishments on Simple Layout Requests
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi — sci-fi-hexa-tiles.ts session
 **Evidence**: User rejected the premium circle border, background, and drop-shadow added to the status badge, asking only to keep it raw and make the icon itself larger. 1 iteration of minor rework was required to strip these extra styles.
@@ -270,6 +294,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix**: When asked to increase the size or adjust the spacing of a UI element, change ONLY the dimensions (width, height, padding, margins, absolute positioning). Do not add backgrounds, borders, or shadow effects unless explicitly requested by the user.
 
 ### L042: Floor/Area Initial Selection — Validate Existence, Not Content
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi v2 — sci-fi-lights.ts HARDEN session
 **Evidence**: `first_floor_to_render: 'rdc'` validation required `lightAreas(floorId).length > 0`. On first HA render, `hass.entities` (entity registry) may not be fully loaded → `lightAreas` returns 0 → fallback fires → wrong floor shown → "Aucune lumière" flash. Fix: validate floor by `hass.floors[id] !== undefined`, not by light count.
@@ -277,6 +302,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix**: Validate config-referenced IDs by existence in the host data store only. Content-based validation (e.g. "must have ≥1 entity") belongs in the render layer (show empty-state message), NOT in the selection-validation layer. Never let an empty entity registry cause a config-valid floor to be deselected.
 
 ### L043: Test Selectors Must Match Implementation HTML — Document in Spec
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi v2 — sci-fi-lights.test.ts HARDEN session
 **Evidence**: Tests used `.floor-btn`, `.area-tile`, `.light-row`, `aria-selected`, `aria-pressed` — but the implementation used `.floor-hexa`, `.area-hexa`, `.light-btn`, `data-selected`, `data-active`. 6 tests failed. Both the spec and test file needed updating.
@@ -284,6 +310,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix**: In specs for UI components, always document the canonical CSS class names and data attributes used by tests in a "CSS Selectors for E2E Tests" table (see `05_cards.md → sci-fi-lights`). Treat these selectors as a public API contract between the spec and test files.
 
 ### L044: Bottom-Aligned SVG + Fixed `padding-top` = Fragile Positioning
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi — sf-radiator.ts, wheel alignment debugging
 **Evidence**: The radiator image uses `align-items: end` (bottom-aligned). `padding-top: 54px` worked for one card height but broke for another. The white square drifted because `padding-top` is relative to the container TOP while the image is anchored to the BOTTOM.
@@ -295,6 +322,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
   `bottom` is invariant to container height when the image is always bottom-aligned. `translateY(50%)` centers the element on the anchor point.
 
 ### L045: CSS Custom Variable Override vs. `width` on Web Component Host
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi — sf-button-card.ts + sf-radiator.ts debugging
 **Evidence**: `width: 80px` on host + `min-width: var(--btn-min-width, 90px)` on internal `.btn` → 10px overflow → text clipping ("Frost Protectic").
@@ -302,6 +330,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix**: Override the CSS variable directly: `--btn-min-width: 80px`. This controls the internal size with no overflow.
 
 ### L046: Downward Dropdown Overflow — `right: 0` Is the Correct Horizontal Anchor
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi — sf-button-card-select.ts dropdown overflow
 **Evidence**: `position: absolute; top: 100%; min-width: max-content` caused page-level horizontal scroll. Button near right edge → dropdown extended rightward → overflow.
@@ -309,6 +338,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix**: `right: 0; left: auto` anchors the dropdown's RIGHT edge to the button's right edge. Dropdown can only extend LEFTWARD — always within card bounds. Combine with `white-space: nowrap`.
 
 ### L047: `overflow-x: hidden` on `:host` Clips Shadow DOM Children
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi — sf-radiator.ts overflow debugging
 **Evidence**: `overflow-x: hidden` on `sf-radiator :host` clipped buttons in child `sf-button-card-select` shadow DOM, causing text cutoff.
@@ -316,6 +346,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix**: Fix the ROOT CAUSE (L046: `right: 0` on dropdown). Never use `overflow: hidden` to mask overflow symptoms without confirming all children are in-bounds.
 
 ### L048: Test Coupling to Intermediate Implementation Hooks Breaks On Refactor
+- **Route:** improvement #2714
 **Date**: 2026-05-24
 **Source**: ha-sci-fi — base-card.ts i18n restoration
 **Evidence**: TC-303 tested `_onHassLocaleChanged` (private method used as locale sync hook). After refactoring to the correct `hass` setter pattern, `_onHassLocaleChanged` was removed and TC-303 crashed with "property not defined". 1 test rewritten.
@@ -323,6 +354,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix**: In specs for base classes, write TC expectations against the PUBLIC CONTRACT: "setting `hass` stores the value AND triggers locale sync asynchronously". Test with `el.hass = mockHass; expect(el.hass).toBe(mockHass)` and `await new Promise(r => setTimeout(r, 0))` — never spy on private hooks.
 
 ### L049: ES Module Named Exports Are Read-Only in Vitest — Cannot vi.fn() Mock Them Directly
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi — base-editor.test.ts i18n coverage tests
 **Evidence**: `(locMod as any).setLocale = vi.fn().mockRejectedValue(...)` threw `TypeError: Cannot set property setLocale of [object Module] which has only a getter`. ES module exports are live bindings (read-only) — Vitest preserves this contract.
@@ -334,18 +366,21 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
   For the error path coverage, approach (1) is sufficient: set `hass` to a language not in `targetLocales` and assert no uncaught exception.
 
 ### L051: Dynamic Localization of Platform-native Fallback Labels in Lit-based Components
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi — `src/cards/weather/sci-fi-weather.ts`, `src/cards/climates/sci-fi-climates.ts` translation fallback
 **Evidence**: 2 source files modified (`sci-fi-weather.ts`, `sci-fi-climates.ts`). Wrapping weather description and default climate summer/winter labels inside `@lit/localize`'s `msg(...)`. All 215 tests passed.
 **Pattern**: When using dynamic localization libraries (such as `@lit/localize`) in custom components, avoid leaving fallback labels, sensor descriptors, or weather states in raw English strings. Wrap all hardcoded fallback messages, static labels, and descriptive properties within the local translation function (`msg(...)`) to enable full multi-language support. Rename any local variable conflicts (e.g., conflicting local `msg` variable names) to ensure smooth transpilation.
 
 ### L052: Synchronizing Chart timeline locale with the connected HASS locale
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi — `sci-fi-weather.ts` chart timelines
 **Evidence**: Modified 1 file (`sci-fi-weather.ts`). Changed `Intl.DateTimeFormat(navigator.language, ...)` to `Intl.DateTimeFormat(this.hass?.locale?.language || navigator.language, ...)` for timeline chart labels, so the timeline language matches the active user language instead of the browser system language.
 **Pattern**: When rendering timeline charts or dynamic graphical components inside localized dashboards, do not force `navigator.language` directly for formatting times, dates, or currencies. Instead, always prioritize the active system user locale (`this.hass?.locale?.language`) as the formatting locale to ensure the timeline matches the user's explicit language preference.
 
 ### L053: Editor UI Labels Must Route Through `getLabel()` — Never Direct `msg()` in Templates
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi v2 — i18n editor pass (6 editors fixed: hexa-tiles, lights, climates, plugs, vehicles, vacuum)
 **Evidence**: 6 `*-editor.ts` files contained raw `msg()` calls in their Lit templates (some with hardcoded French strings like `msg('Ajouter une tuile')`). These strings bypassed `getLabel()`, so locale changes did NOT trigger UI updates in the editor. Anti-Pattern #9 in Spec 10 said "Wrap ALL labels in `msg()`" but failed to distinguish between `getLabel()` (the correct pattern for editors) and direct `msg()` calls (the wrong pattern).
@@ -361,6 +396,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: Applies to ALL `SciFiBaseEditor` subclasses. Applies any time a new UI label is added to an editor template.
 
 ### L054: DOM Selector Verification Before Writing Editor Tests — Inspect `.tab-btn` vs `.add-btn`
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi v2 — sci-fi-vacuum-editor.test.ts, sci-fi-lights-editor.test.ts coverage hardening
 **Evidence**: 3 tests failed on first run (vacuum `.add-btn`, lights `.card` global event, slider min/max). Vacuum editor uses `.tab-btn` (not `.add-btn`) for the "add vacuum" button. Lights editor uses per-element `@input-update` handlers (not a global handler on `.card`). 2 test files required complete rewrite of specific test cases.
@@ -369,6 +405,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: Applies to all LitElement editor components. Especially critical for complex multi-section editors (vacuum, lights) where different sub-sections use different interaction patterns.
 
 ### L055: Pure SVG Data Files Must Be Excluded From Coverage — They Are Untestable by v8
+- **Route:** project
 **Date**: 2026-05-24
 **Source**: ha-sci-fi v2 — vitest.config.ts coverage configuration
 **Evidence**: `src/components/icons/data/sf-weather-icons.ts` and `src/components/sf-icon/data/sf-weather-icons.ts` both reported 0% coverage despite having test files. These files export a `Record<string, TemplateResult>` where each value is a `svg\`...\`` tagged template literal (Lit). v8 cannot instrument SVG data inside tagged template literals — the export object is created at module load time with no branching or function calls.
@@ -379,6 +416,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: Applies to all Vitest/c8/Istanbul v8 projects with static data exports (SVG maps, icon registries, JSON-as-TS constants).
 
 ### L057: CSS Custom Property Circular Self-Reference Is Silently Ignored by Browsers
+- **Route:** project
 **Date**: 2026-05-25
 **Source**: ha-sci-fi — sf-wheel.ts font-size debugging
 **Evidence**: `--item-font-size: var(--item-font-size, 12px)` in `:host` appeared correct but the browser resolved to 18px (inherited from HA body). The pattern `--x: var(--x, fallback)` IS circular — the spec says the browser must treat the property as invalid (using the inherited value), not the fallback. 3 iterations to diagnose: tried changing the fallback value, tried property binding, finally read the Chrome DevTools computed tab showing font-size came from body.
@@ -389,6 +427,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: Applies to all shadow DOM components using CSS custom properties for theming. This pattern appears in many Lit component port starters — audit `:host { }` blocks for any `--prop: var(--prop, ...)` pattern.
 
 ### L058: `rem` Fallbacks in HA Custom Cards Must Be Absolute `px` Values
+- **Route:** project
 **Date**: 2026-05-25
 **Source**: ha-sci-fi — stove card styles.ts font-size debugging
 **Evidence**: `font-size: var(--sf-text-sm, 0.75rem)` displayed as 18px instead of 12px. HA dashboard sets `font-size: 24px` on the `:root`/`html` element (Polymer/Material Design baseline). `0.75 × 24 = 18px`. The token `--sf-text-sm` was never defined in our project — HA injects its own value but the fallback `0.75rem` still resolved relative to HA's root.
@@ -397,6 +436,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: Applies to all HA custom card projects. Affects any CSS property using `rem` as a fallback without a defined project-level root font-size reset.
 
 ### L059: Lit Custom Element `:host` Requires `display: block` for `margin: auto` Centering
+- **Route:** project
 **Date**: 2026-05-25
 **Source**: ha-sci-fi — sf-button.ts wheel centering debugging
 **Evidence**: `sf-button` rendered arrows left-aligned inside `sf-wheel`'s flex column despite `.btn { margin: auto }`. Root cause: custom elements have `display: inline` by default (per HTML spec). `margin: auto` on block-level children of a flex container only centers horizontally when the child itself is block-level. With `display: inline`, the element collapses to content width and `margin: auto` has no effect.
@@ -409,6 +449,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: Applies to ALL LitElement custom elements. Add as a mandatory check in `/code-review` and spec anti-patterns for all component specs.
 
 ### L060: lit-localize msg() Source MUST Be English — French Source Keys Silently Break All Locales
+- **Route:** project
 **Date**: 2026-05-25
 **Source**: ha-sci-fi — sci-fi-stove.ts bottom bar i18n
 **Evidence**: 9 `msg()` calls used French strings as source (e.g. `msg('Température')`, `msg('Éteint')`). lit-localize generates hash IDs from the source string. A French source generates a different hash than the English source — absent from `fr.ts`. Result: `getMsg()` finds no entry → returns raw source string. Both EN and FR locales displayed French text, but for the wrong reason. The bug was invisible in FR locale (output was correct by accident) but broken in EN locale (displayed French). Caught by user visual inspection, not by tests.
@@ -422,6 +463,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: Applies to ALL LitElement components using `@lit/localize`. Add this check to the VERIFY stage for any card that introduces new `msg()` calls. Add to the spec's Anti-Patterns section: "msg() source strings MUST be English."
 
 ### L061: Shadow DOM Height Propagation — `height:100%` Must Chain From Host to Container
+- **Route:** project
 **Date**: 2026-05-25
 **Source**: ha-sci-fi — sf-wheel.ts vehicle card actions bar
 **Evidence**: Applied `align-items: stretch` on parent flex row to make `sf-wheel` match `sf-button-card` height. The host element stretched correctly (flex rules apply to the host), but the internal `.container` div ignored the height — it sized itself to content only. 3 iterations to diagnose: tried `justify-content: center` from outside (no effect through shadow boundary), tried `height: 100%` from outside (overrides host but doesn't reach `.container`). Fix: add `display: block; height: 100%` to `:host` + `height: 100%; box-sizing: border-box` to `.container` inside the shadow DOM.
@@ -436,6 +478,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: Applies to ALL Lit Web Components used inside flex/grid containers where height alignment is needed. Add to `sf-button-card`, `sf-wheel`, and any future container-like components.
 
 ### L062: `sf-landspeeder` Sizing — flex:1 + height:100% Enables Adaptive Card Layout
+- **Route:** project
 **Date**: 2026-05-25
 **Source**: ha-sci-fi — vehicle card layout (spec 12)
 **Evidence**: Fixed `height: 410px` on `sf-landspeeder :host` prevented the speeder from filling available card space. After making `.container { height: 100% }` and `sf-landspeeder { flex: 1; min-height: 0 }` in the parent CSS, plus `:host { height: 100% }` in the component, the speeder fills all space between header and actions bar. Actions bar is always pinned to the bottom via `flex-shrink: 0`.
@@ -447,6 +490,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: Applies to any card component (stove, climate, vehicle) with a central visual element that should fill available vertical space.
 
 ### L063: `noUncheckedIndexedAccess` — Always Use Non-Null Assertion on Array Index Access in Tests
+- **Route:** project
 **Date**: 2026-05-25
 **Source**: ha-sci-fi — TypeScript fix cycle (18 test files, 54 occurrences)
 **Evidence**: `npx tsc --noEmit` produced 54 TS2532 errors across 18 test files. All errors were `received[0].detail...` patterns where `received: CustomEvent[]`. Fixed in one batch pass with a Python regex script. Zero test failures after fix.
@@ -457,6 +501,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Critical insight**: `vitest run` passes even with TS2532 errors because Vitest transpiles without typechecking. Only `tsc --noEmit` catches these. Both must be part of the verify gate.
 
 ### L064: External HA Interface Types Must Match the Full Runtime Object Shape
+- **Route:** project
 **Date**: 2026-05-25
 **Source**: ha-sci-fi — `src/types/ha.ts` + `sci-fi-stove.ts`
 **Evidence**: `sci-fi-stove.ts` called `this.hass.config?.unit_system?.temperature` but `HomeAssistantExt` had no `config` property → 2 TS2339 errors. Fix required adding `config?: { unit_system?: { temperature?: string; pressure?: string; } }` to the interface.
@@ -468,6 +513,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: Applies to all HA custom card projects. `HomeAssistantExt` must be kept in sync with all properties accessed across all cards.
 
 ### L065: CSS Custom Property Double-Dash Typo Is Silently Ignored
+- **Route:** project
 **Date**: 2026-05-25
 **Source**: ha-sci-fi — sci-fi-plugs `styles.ts` icon color debugging
 **Evidence**: `--icon--color` (double dash) was used throughout `styles.ts` instead of `--icon-color` (single dash). The sf-icon component exposes `color: var(--icon-color, currentColor)` — the double-dash variant is a completely different (undefined) CSS custom property. Icons rendered with `currentColor` fallback (white on dark bg) instead of the intended `rgb(102, 156, 210)`. Zero build errors, zero lint warnings, zero TypeScript errors. Only visible via manual inspection.
@@ -476,6 +522,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: Applies to all CSS custom property usage. Especially dangerous in large stylesheets where the correct rendering (via fallback) looks reasonable at first glance.
 
 ### L066: HA CORS Must Match Workbench Exact Origin (Protocol + Hostname + Port)
+- **Route:** project
 **Date**: 2026-05-25
 **Source**: ha-sci-fi — dev/workbench.html CORS debugging
 **Evidence**: HA `cors_allowed_origins` had `http://localhost:8000` but workbench served on port 8888. `callApi` fetch failed with CORS error in browser console. Fix: add `http://localhost:8888` to `cors_allowed_origins` under the `http:` key (not at the root of `configuration.yaml`).
@@ -484,6 +531,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: Applies to all HA custom card development using a standalone workbench that calls `hass.callApi()` (REST) from a browser different from HA's own origin.
 
 ### L067: Workbench Card Config Must Be Derived From Real YAML — Never Invented
+- **Route:** project
 **Date**: 2026-05-25
 **Source**: ha-sci-fi — dev/workbench.html EvLink + Paillette Charlotte config drift
 **Evidence**: EvLink workbench config had `active_icon: 'mdi:ev-plug-type2'` (invented) instead of `sci:landspeeder-plugged` (real YAML). Paillette Charlotte was missing `sensor.nous_paillette_charlotte_power` with `power: true`. Both caused silent functional failures: wrong icon displayed, graph missing for Paillette Charlotte. Real YAML in `yaml backup/plugs.yaml` was the correct source of truth.
@@ -492,6 +540,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: Applies to all HA custom card projects with a workbench and YAML-driven card configs. Any deviation between workbench config and production YAML introduces a gap between what is tested and what is shipped.
 
 ### L068: sf-toast Component Was Never Ported to TypeScript v2 — Silent Registration Gap
+- **Route:** project
 **Date**: 2026-05-25
 **Source**: ha-sci-fi v2 — plugs card toast debugging
 **Evidence**: All cards (climates, stove, plugs, vehicles, lights) referenced `<sf-toast>` in their templates and called `querySelector('sf-toast')?.addMessage(...)`. But `customElements.define('sf-toast', ...)` was never called anywhere in the TypeScript v2 codebase. The old JS v1 code used `defineCustomElement('sci-fi-toast', SciFiToast)` — a different tag name. Result: `querySelector('sf-toast')` always returned `null`, `addMessage` was never called, and zero toast notifications appeared in any card. Zero build errors, zero TypeScript errors.
@@ -500,6 +549,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: Applies to any Web Component project migrating from JS to TypeScript where custom element registration is split across files.
 
 ### L069: Workbench i18n — setLocale Must Be Called Directly, Not Via hass.locale.language
+- **Route:** project
 **Date**: 2026-05-25
 **Source**: ha-sci-fi — dev/workbench.html language switch debugging
 **Evidence**: Clicking the language toggle button called `updateHassLanguage()` → `cardEl.hass = hass` with `hass.locale.language = 'en'`. The base-card setter then called `setLocale('en')` asynchronously. But between the `hass` assignment and the `setLocale` Promise resolution, Lit could schedule and complete a render using the OLD locale (still 'fr'). The `updateWhenLocaleChanges` callback then triggered a second render with 'en', but in some timing scenarios (especially when states update via WebSocket simultaneously), the second render was suppressed or didn't fire.
@@ -508,6 +558,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: Applies to all lit-localize workbench integrations where the language switch is driven by the workbench UI, not by HA's own locale system.
 
 ### L070: Lit Toggle Selector Ambiguity — Multiple `sf-toggle-switch` in Shadow DOM
+- **Route:** project
 **Date**: 2026-05-25
 **Source**: ha-sci-fi v2 — hexa-tiles-editor test coverage hardening
 **Evidence**: Test `"dispatches config-changed when standalone is toggled"` fired `sf-toggle-change` on `el.shadowRoot.querySelector('sf-toggle-switch')` (FIRST match). But the editor renders a weather toggle first, then a per-tile standalone toggle. Firing on the first element triggered `_toggleWeather` (not `_updateTileField`). Test passed visually but asserted the wrong handler.
@@ -519,6 +570,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: All LitElement editors with multi-section layouts containing repeated sub-components (toggles, dropdowns, accordions).
 
 ### L071: Dynamic `element-id` Attributes on Dropdown Entities — Use Method Calls in Tests, Not Generic Selectors
+- **Route:** project
 **Date**: 2026-05-25
 **Source**: ha-sci-fi v2 — lights-editor rename tests coverage hardening
 **Evidence**: `_renderCustomEntityRow(entityId)` renders `<sf-editor-dropdown-entity element-id="${entityId}">` where `entityId` is dynamic (e.g., `"light.salon"`). `querySelector('sf-editor-dropdown-entity')` returns the FIRST dropdown in the shadow DOM — but the lights editor also renders floor/area dropdowns before custom entity dropdowns. Firing `input-update` on the wrong dropdown triggered `_updateFloor` instead of `_renameCustomEntity`. Test asserted the wrong state change.
@@ -530,6 +582,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: All LitElement editors that render lists of configurable entities with per-row event listeners.
 
 ### L072: Decouple Selection Styles from Child Component Domain-State Indicators
+- **Route:** project
 **Date**: 2026-05-25
 **Source**: ha-sci-fi — climates card `sf-hexa-row` and `sf-hexa-tile`
 **Evidence**: Fixed selected override in `sf-hexa-row.ts`. Removing `--icon-color: var(--sf-primary, #00d2ff) !important;` from `sf-hexa-tile.selected .item-icon sf-icon` resolved the issue where inactive room/floor icons became blue when selected, allowing them to remain grey as expected. All unit tests passed.
@@ -537,6 +590,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix**: Never force child component colors in parent selection-state rules. Let the child styling solely depend on its own domain-state classes (`.on` / `.off`), and keep parent selection styles limited to layout properties (size, scale) and container border/shadow/background styles.
 
 ### L097: `ha-card` Is `display: block` — Must Be Overridden for Flex Layout Children
+- **Route:** project
 **Date**: 2026-05-25
 **Source**: ha-sci-fi — sci-fi-vacuum.ts layout session
 **Evidence**: `.container { flex: 1 }` on a child of `ha-card` had no effect. The map section did not grow to fill the remaining space, and the action bar was not pinned to the bottom. Root cause: `ha-card` is rendered as `display: block` by the HA common styles (and by `sciFiCommonStyles`). A `flex: 1` child inside a block container has no flex context to expand into.
@@ -547,6 +601,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: Applies to ALL HA custom cards using `ha-card` as the root element where vertical flex layout is needed.
 
 ### L098: OAuth Auth Callback From Localhost — PKCE Verifier Must Be Consumed Immediately
+- **Route:** project
 **Date**: 2026-05-25
 **Source**: ha-sci-fi — dev/workbench.html auth flow debugging
 **Evidence**: Clearing `localStorage` orphaned an OAuth code in the URL (`auth_callback=1&code=...`). On reload, the code was replayed without the PKCE verifier → HA returned `400 Bad Request`. The workbench kept looping: URL had the code, localStorage was empty, the code exchange failed every time.
@@ -555,6 +610,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Rule**: PKCE verifier → store in `sessionStorage` (survives page load within same tab but not `localStorage.clear()`). Auth code → exchange immediately on page load detection, then strip from URL.
 
 ### L099: Battery Warning Color Pattern — Threshold Classes vs Inline Style
+- **Route:** project
 **Date**: 2026-05-25
 **Source**: ha-sci-fi — vacuum card battery header
 **Evidence**: Battery level coloring (warn/critical) was missing from the vacuum card. Other cards (sf-landspeeder) used computed CSS class names (`battery-warn`, `battery-critical`) added to the element, with dedicated CSS rules for `--icon-color`, `color`, and `text-shadow`. Inline `style=` would have worked but is harder to override.
@@ -572,6 +628,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: Apply to any card displaying a battery, signal strength, or fuel level percentage sensor.
 
 ### L100: Flex Height Chain in Lit Custom Elements — `:host` Must Be `display:flex` for `ha-card{flex:1}` to Work
+- **Route:** project
 **Date**: 2026-05-25
 **Source**: ha-sci-fi — vacuum card + vehicle card Card mode layout fix
 **Evidence**: In Card mode, `ha-card` was `height:auto` (= content height ≈200px) despite `:host{min-height:732px}`. The inner `.map{flex:1}` had nothing to expand into → empty black space below content. Fix: add `display:flex; flex-direction:column` to `:host`. Then `ha-card{flex:1}` fills `:host`'s 732px → `.container{flex:1}` fills `ha-card` → `.map{flex:1}` fills container. This is the canonical height chain.
@@ -587,6 +644,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: Applies to ALL LitElement HA cards. Add `display:flex; flex-direction:column` to `:host` as a mandatory rule in every card `styles.ts`.
 
 ### L101: `min()` as Upper Bound for Absolute-Positioned Indicators on Variable-Height SVG Containers
+- **Route:** project
 **Date**: 2026-05-25
 **Source**: ha-sci-fi — sf-landspeeder.ts Panel/PC mode indicator drift
 **Evidence**: `.lock{top:55%}`, `.fuel{top:70%}` drifted below the vehicle body on tall PC screens. The SVG container fills flex space → on 900px+ screens, 55% of container >> SVG image height → indicators in empty black space below car.
@@ -601,6 +659,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope**: Applies to any card with image+overlay indicators inside a flexible container (sf-landspeeder, sf-radiator, and future cards).
 
 ### L102: Vitest Chai Assertions — Avoid Non-Existent `toBeA`
+- **Route:** project
 **Date**: 2026-05-25
 **Source**: ha-sci-fi v2 — Vitest style tests
 **Evidence**: 8 styles test files crashed with `TypeError: Invalid Chai property: toBeA` after using `expect(xx).toBeA('string')`.
@@ -611,24 +670,28 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 ```
 
 ### L103: Stale Locked Test Files in Additive `.tdd_lock`
+- **Route:** improvement #2697
 **Date**: 2026-05-25
 **Source**: ha-sci-fi v2 — TDD sequence lock check (P10)
 **Evidence**: `verify.py P10` failed because `.tdd_lock` still contained deleted files (such as `tests/cards/hexa_tiles/sci-fi-hexa-tiles.test.ts` and `house.selectors.test.ts`). `tdd_check.py --lock` operates additively (it merges new hashes into the existing file) and does not automatically purge deleted test references from the lock.
 **Fix**: When deleting or renaming test files, manually delete the stale lock file `rm .tdd_lock` before regenerating the lock via `python3 tdd_check.py . --lock`. Also, ensure all deletions are staged (`git add .` or `git add -u`) to prevent the file discovery script from scanning untracked deletions.
 
 ### L104: Test Quality Check (P9) and Dynamic/Side-Effect Imports Support
+- **Route:** improvement #2708
 **Date**: 2026-05-25
 **Source**: ha-sci-fi v2 — Test quality check (P9)
 **Evidence**: `verify.py P9` flagged 5 custom Web Component tests (`sf-stack-bar.test.ts`, `sf-toast.test.ts`, etc.) with "imports nothing from production code" because they loaded elements dynamically (`await import('...')`) or as side-effects (`import '../../src/...'`), which bypassed the strict `import ... from` static analysis regex patterns.
 **Fix**: Test quality analysis regex must support side-effect (`import\s+['\"]\.\.?/`) and dynamic (`import\s*\(\s*['\"]\.\.?/`) import styles to avoid false-positive test quality warnings in component-oriented codebases.
 
 ### L105: Sentrux Base Registry Exception in God Files Constraint
+- **Route:** improvement #2615
 **Date**: 2026-05-25
 **Source**: ha-sci-fi v2 — Architecture regression check (P7)
 **Evidence**: `verify.py P7` threw a regression failure because the newly urbanized central element entrypoint `src/sci-fi.ts` registered all 8 cards, 8 editors, and components, fanning out to 19 imports and triggering the `no_god_files` limit warning.
 **Fix**: Central registry files that dynamically bundle the codebase naturally have high fan-out coupling. Use `sentrux gate --save .` to save the new baseline once the registry files are confirmed to contain only clean import registrations, satisfying the regression gate.
 
 ### L106: Switching to Attribute Binding for Static Web Component Properties and Scaling Hexagonal Honeycomb Grids
+- **Route:** project
 **Date**: 2026-05-29
 **Source**: ha-sci-fi v1.1 — sci-fi-tv + honeycomb visual update
 **Evidence**: Static icons in D-pad buttons rendered as empty squares when using `.icon="mdi:chevron-up"` property bindings because `sf-icon` updates depend on standard string attribute change notifications (`willUpdate`/`attributeChangedCallback`). Pointy-top SVG hexagons using standard `viewBox="0 0 44 51"` scaled perfectly without aspect ratio distortion when increasing width to 58px and height to 67px.
@@ -637,6 +700,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
   2. To enlarge pointy-top honeycomb hexagon components without distorting their aspect ratio, maintain the standard aspect ratio formula `height = width * 1.1547` in CSS, keeping the inline SVG's `viewBox` fully unchanged. When scaling up hexagon width (e.g. from 44px to 58px), scale the font size and padding proportionally (e.g., from `0.45rem` to `0.55rem` font size and `2px` to `4px` padding) to prevent text clipping and ensure maximum visual harmony and accessibility.
 
 ### L107: Lit Object to String Conversion Bug (`[object Object]`)
+- **Route:** project
 **Date:** 2026-05-29
 **Source:** ha-sci-fi v1.1 — sci-fi-tv editor accordion
 **Evidence:** The UI rendered `[object Object]` in the title of `sf-editor-accordion` because `getSectionTitle()` returned a `TemplateResult` (an `<sf-icon>` embedded inside HTML) instead of a raw string, and it was dynamically bound to `.title=${this.getSectionTitle()}` which expected a primitive string.
@@ -644,6 +708,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix:** Strictly separate plain text labels from rich rendering components. Create dedicated string accessors (like `getLabel()`) that return pure `string` formats for attribute bindings, and reserve template-returning functions (like `renderSectionTitle()`) exclusively for inside slot rendering or HTML contexts.
 
 ### L073: lit-localize Extract Silently Fails to Update Target Builds Without <target> Nodes
+- **Route:** project
 **Date:** 2026-05-29
 **Source:** ha-sci-fi — sci-fi-water-management.ts i18n
 **Evidence:** Added new UI labels and ran `lit-localize extract`. The build step (`lit-localize build`) produced `fr.ts` but the UI remained in English. `lit-localize extract` only adds new `<trans-unit>` entries with `<source>` tags to `fr.xlf`. If the `<target>` tag is missing entirely, `lit-localize build` silently skips the translation and falls back to the English source. The user had to point out the missing translation.
@@ -655,6 +720,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
   Document this 3-step required sequence in the spec for any project using `lit-localize` with XLIFF files.
 
 ### L074: Home Assistant `hass.floors` Initialization Race Condition Erases Persistent Config
+- **Route:** project
 **Date:** 2026-05-29
 **Source:** ha-sci-fi — water and lights cards
 **Evidence:** User configured `first_floor_to_render: 'Extérieur'`, but the card rendered 'Rez-de-chaussée' and permanently erased the 'Extérieur' config.
@@ -662,6 +728,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix:** When building Lovelace cards that rely on `hass.floors` or `hass.areas`, ALWAYS check `if (!this.hass.floors)` and preserve the configured target ID/name in `this._activeFloorId` without falling back. Wait until the next `render()` cycle when `this.hass.floors` is populated before attempting to resolve IDs/names and applying permanent fallbacks.
 
 ### L075: Terser Minification Collapses lit-localize Ternary Expressions and Breaks Translations
+- **Route:** project
 **Date:** 2026-05-29
 **Source:** ha-sci-fi — water, plugs, and tv cards
 **Evidence:** Toast messages and control titles displayed in English (e.g. "Turned on", "Turned off", "ON", "OFF", "STANDBY", "OFFLINE") even when the active locale was French.
@@ -669,6 +736,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix:** Avoid symmetric ternary calls or conditional expressions inside `msg()`. Use a robust, un-collapsible array tuple index expression instead, such as `[msg('OFF'), msg('ON')][isOn ? 1 : 0] as string`. Because this compiles to two distinct, unconditional function calls in a literal array prior to index lookup (`[Rt("OFF"), Rt("ON")][e ? 1 : 0]`), the optimizer is unable to collapse the expressions, preserving full runtime static hashing and proper localization lookup.
 
 ### L076: Declarative Data Objects vs. Functions for Scenario/Config Registries
+- **Route:** project
 **Date:** 2026-05-30
 **Source:** ha-sci-fi — workbench modular refactoring
 **Evidence:** During the monolith split (2819 lines → 22 files), subagent generated `card.scenarios[key]()` (function call) instead of `card.scenarios[key]` (data access), because the original monolith used factory functions for scenarios. The new architecture exported pure data objects. Bug caught during post-merge review — `TypeError: ... is not a function`.
@@ -676,6 +744,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix:** When a refactoring changes the contract from "functions returning data" to "pure data objects", explicitly document the calling convention change in the refactoring spec: `scenarios[key]` NOT `scenarios[key]()`. In untyped JS codebases, add a comment at the registry export: `// scenarios are plain objects, NOT factories — do not call them`. Better: use TypeScript or JSDoc `@type` annotations to make the contract machine-checkable.
 
 ### L077: Prefer ID Selectors Over CSS Class Selectors for Event Listener Binding
+- **Route:** project
 **Date:** 2026-05-30
 **Source:** ha-sci-fi — workbench modular refactoring
 **Evidence:** Subagent used `querySelector('#connect-modal .btn-ghost')` to find the cancel button, but the HTML template already had `id="btn-connect-cancel"` on that element. The `.btn-ghost` selector is fragile — any CSS refactoring that changes the class name silently breaks the listener. Bug caught during review.
@@ -683,6 +752,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix:** When binding event listeners in modular JS (not inline `onclick`), always use `getElementById('btn-xxx')` over `querySelector('.class')` when the element has an ID. IDs express intent ("this is the cancel button") while classes express presentation ("this button looks ghostly"). Reserve `querySelector` for cases where no ID exists or when selecting by structural position.
 
 ### L078: Workbench Editor Breaks After Config Update When `scenarioData` Is Not Passed to `mountUiEditor`
+- **Route:** project
 **Date:** 2026-06-02
 **Source:** ha-sci-fi — sci-fi-bridge-editor + workbench editor.js
 **Evidence:** After every GUI config change in the workbench, all entity dropdowns emptied and the card preview reset to "empty state". Root cause: `updateCardConfig` rebuilt `mockHass` with `{}` instead of the current `scenarioData`. Reproduced consistently, fixed by threading `currentScenarioData` through `workbench-app.js → editor.js → updateCardConfig → mountUiEditor`.
@@ -691,6 +761,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope:** Applies to all future workbench card editors. Add to `docs/specs/09_workbench_editor_i18n.md` as an anti-pattern.
 
 ### L079: happy-dom Clamps `input[type=range]` Invalid Values — Test NaN Guards via Direct Method Call
+- **Route:** project
 **Date:** 2026-06-02
 **Source:** ha-sci-fi — sf-bridge-automations test (NaN slider guard)
 **Evidence:** Test attempted `input.value = 'not_a_number'` on a `<input type="range">` in happy-dom. happy-dom (like real browsers) silently clamps any invalid value to the nearest valid number (min or mid). The NaN guard in `_onSliderInput` (`if (isNaN(val)) return;`) was never exercised, leaving a coverage gap.
@@ -699,6 +770,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope:** Applies to all LitElement components with `<input type="range">` + NaN/invalid input guards. Reproducible in vitest/happy-dom and jsdom.
 
 ### L080: Spec Drift Accumulates Silently When Editor Components Are Migrated Mid-Cycle
+- **Route:** project
 **Date:** 2026-06-02
 **Source:** ha-sci-fi — docs/specs/cards/bridge.md + /doc-update
 **Evidence:** bridge.md §Editor listed `<ha-entity-picker>`, `<ha-textfield>`, `<ha-select>`, `<ha-expansion-panel>` — all HA native components. The actual implementation used `<sf-editor-dropdown-entity>`, `<sf-editor-input>`, `<sf-editor-dropdown-icon>`, `<sf-editor-dropdown>`, `<sf-editor-accordion>` (migrated during the session). The spec was never updated. Discovered only during /doc-update.
@@ -707,6 +779,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope:** Universal — applies to any project where a spec documents the UI component library used by an editor or form.
 
 ### L081: Mock Hass States Missing `entity_id` Property Causes Editor Crash
+- **Route:** project
 **Date:** 2026-06-02
 **Source:** ha-sci-fi — sci-fi-bridge-editor + dev/modules/mock-hass.js
 **Evidence:** Bridge editor rendered blank. Console error: `TypeError: Cannot read properties of undefined (reading 'startsWith')` in `_hassPersons` getter. Root cause: `buildMockHass` constructed state objects as `{ state, attributes }` without `entity_id` as a property — the entity ID was only the dict key. Real HA `hass.states` always includes `entity_id` on each entity object. The hexa-tiles editor didn't crash because it accessed states by key (not by iterating values with `.entity_id`).
@@ -715,6 +788,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope:** Applies to any workbench mock hass implementation. Add to `dev/modules/mock-hass.js` contract: *"All state objects MUST include `entity_id` as a property (not just as a dict key)."* Pattern to reproduce: always normalize states at the `buildMockHass` output boundary.
 
 ### L082: GUI Editor Tab Switch Does Not Remount Editor When Panel Was Populated by a Different Code Path
+- **Route:** project
 **Date:** 2026-06-02
 **Source:** ha-sci-fi — dev/modules/workbench-app.js + editor.js
 **Evidence:** Bridge editor was blank after switching from YAML tab back to GUI tab. `mountUiEditor` was only called inside `renderCard` (triggered on card/scenario change). Clicking "Éditeur graphique" called only `setEditTab('gui')` — which showed the `gui-editor-mount` div, but it was empty because no editor had been mounted for that code path.
@@ -723,6 +797,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Scope:** Applies to any workbench-style editor where multiple tabs share a lazy-mounted panel. Pattern: *"Tab activation handlers must defensively check if their lazy mount point is populated, and remount if empty."*
 
 ### L083: `getLabel()` Returns Empty String Silently for Unknown Keys — Always Visual-Verify After Migration
+- **Route:** project
 **Date:** 2026-06-02
 **Source:** ha-sci-fi — sci-fi-bridge-editor i18n migration
 **Evidence:** After migrating the bridge editor from `msg(FR)` to `getLabel(key)`, the Stove accordion rendered with an empty title. `getLabel('section-title-stove')` returned `''` because the key was omitted from `base-editor.ts`. 953/953 tests passed, build succeeded, no TypeScript error — the failure was invisible to all automated gates.
@@ -731,6 +806,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Spec rule to add:** "After adding new `getLabel()` keys, manually verify in workbench that all accordion titles render non-empty. Automated tests cannot catch `getLabel()` key omissions."
 
 ### L084: `msg('string_fr')` as EN Source Creates Locale Lock — Editor Labels Must Use `getLabel(key)` Pattern
+- **Route:** project
 **Date:** 2026-06-02
 **Source:** ha-sci-fi — sci-fi-bridge-editor i18n bug cycle
 **Evidence:** Bridge editor was the only editor using `msg('Équipage')`, `msg('Alertes')`, etc. — raw French strings as the EN source locale. When the user switched to EN, lit-localize served the raw source = French. The FR locale was also French (target == source). Both locales displayed French regardless of the language setting.
@@ -740,6 +816,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Spec enforcement:** Bridge spec §i18n and §Constraints updated to document this rule. Future editor specs must include: "Editor labels: `this.getLabel('key')` only. Never `msg('string')` in editor templates."
 
 ### L085: Eliminating Custom Redundant Config Keys in Favor of Generic Panels
+- **Route:** project
 **Date:** 2026-06-02
 **Source:** ha-sci-fi — sci-fi-bridge refactor
 **Evidence:** Deleted `src/cards/bridge/sections/sf-bridge-call-kids.ts` and `tests/cards/bridge/sections/sf-bridge-call-kids.test.ts`. Refactored `sci-fi-bridge.ts` and `sci-fi-bridge-editor.ts` to cleanly use `actions` instead of `call_kids`. All 967 tests green.
@@ -747,6 +824,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix:** Identify specialized "single-action" config components and completely sunset them. Replace them with the generic panel in the YAML schema and documentation. Update all editor schemas, cards, and test cases to use the generic layout with custom parameters (e.g. custom entity IDs, icons, and colors) in the array. Coordinate test modifications with `.tdd_lock` re-hashing to satisfy the TDD lock verification gate (`P10`).
 
 ### L086: HA Hybrid TV Entities — Hardware + Cast Dual Entity Pattern
+- **Route:** project
 **Date:** 2026-06-01
 **Source:** ha-sci-fi — sci-fi-tv card
 **Anti-pattern:** Using only the hardware TV entity (`media_player.tv`) for state extraction. Sony Bravia integrations expose HDMI inputs but NOT active app metadata. Using a single entity misses `app_name` / `media_title` for streaming apps.
@@ -758,6 +836,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 `// Extract from app entity first` (…)
 
 ### L087: i18n + HMR Double Registration and TypeScript Resolution Conflict
+- **Route:** project
 **Date:** 2026-06-01
 **Source:** ha-sci-fi — dev workbench + Rollup build
 **Issue 1 (HMR):** Lit's `@customElement` calls `customElements.define` unconditionally. In HMR environments (workbench hot-reload), the bundle is re-executed, causing `NotSupportedError` on duplicate element registration.
@@ -767,6 +846,7 @@ If navigation is a recurring project pattern, add a global stub to `tests/setup.
 **Fix (TypeScript):** Ensure translation source is `.ts` only, or delete the conflicting `.ts` file if `.js` is the intended source.
 
 ### L088: HA Service Domain Inference — Never Hardcode Domain from Entity Kind
+- **Route:** project
 **Date:** 2026-06-01
 **Source:** ha-sci-fi — editor components
 **Anti-pattern:** Hardcoding `select.select_option` when the entity might be `input_select.foo`. Fails silently because the domain is wrong.
@@ -780,6 +860,7 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 **Applies to:** `select_option`, `turn_on`/`turn_off` for `input_boolean` vs `switch`, slider for `input_number` vs `number`.
 
 ### L089: Hexa-Tiles Unsupported Domains — Use HA Backend Aggregation
+- **Route:** project
 **Date:** 2026-06-01
 **Source:** ha-sci-fi — sci-fi-hexa-tiles card
 **Anti-pattern:** Adding arbitrary domains (e.g. `water_heater`, `binary_sensor`) to `ENTITY_KINDS` constant in the card. Creates frontend bloat and forces fetching all entity states.
@@ -788,6 +869,7 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 **Why:** `sci-fi-hexa-tiles` stays agnostic of custom domain logic. HA handles the aggregation. The GUI editor will not show `binary_sensor` tiles (not in `ENTITY_KINDS`), so users must use YAML mode for these.
 
 ### L090: HA Scoped Custom Element Registry — Global define Patch Must Be Dev-Only
+- **Route:** project
 **Date**: 2026-06-02
 **Source**: ha-sci-fi v1.3.0 bugfix — card picker "Custom element not found"
 **Evidence**: All 11 sci-fi cards visible on existing dashboards but selector showed zero. DevTools logged "Custom element not found: custom:sci-fi-*" from hui-card-picker. Root cause: global customElements.define wrapper intercepted HA's scoped registry calls.
@@ -795,6 +877,7 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 **Correct pattern**: Guard with `if (__DEV__)`. Rollup's `@rollup/plugin-replace` injects `__DEV__=false` in production. Terser dead-code-eliminates the entire block (zero bytes, zero overhead in prod bundle). HMR protection preserved in workbench.
 
 ### L091: Rollup compile-time constants must be mirrored in vitest.config.ts define block
+- **Route:** project
 **Date**: 2026-06-02
 **Source**: ha-sci-fi v1.3.0 — sci-fi.test.ts ReferenceError after __DEV__ guard introduction
 **Evidence**: After adding `if (__DEV__)` to `src/sci-fi.ts`, `tests/sci-fi.test.ts` threw `ReferenceError: __DEV__ is not defined` at line 19.
@@ -802,6 +885,7 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 **Correct pattern**: For every value added to `rollup.config.mjs` `replace({ values: { ... } })`, add a parallel entry to `vitest.config.ts` `define: { ... }`. Also declare in `src/types/globals.d.ts` for TypeScript. Checklist: rollup `values` → vitest `define` → TypeScript `globals.d.ts`.
 
 ### L092: GitHub release body must be verbatim from CHANGELOG.md — never rewritten
+- **Route:** project
 **Date**: 2026-06-02
 **Source**: ha-sci-fi v1.3.1 release — body reconstruction error
 **Evidence**: Agent generated release body from memory, adding "# v1.3.1 + v1.3.0 — Bridge Overview 🛸🎛️\n\n---" header and paraphrasing changelog text. User caught the discrepancy immediately.
@@ -809,6 +893,7 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 **Correct pattern**: Extract verbatim with `BODY=$(sed -n '<start>,<end>p' CHANGELOG.md)` and pass `$BODY` directly to the API via `jq --arg body "$BODY"`. No post-processing. The CHANGELOG is the source of truth — the release body IS the changelog, nothing else.
 
 ### L093: GitHub release title = thematic name from Release-plan.md, not version description
+- **Route:** project
 **Date**: 2026-06-02
 **Source**: ha-sci-fi v1.3.1 release — "Registry Fix" title error
 **Evidence**: Agent titled the release "v1.3.1 — Registry Fix" (descriptive of this patch's content). User rule: title must always be the milestone thematic name from Release-plan.md.
@@ -818,12 +903,14 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 - Step: `grep "X.Y" ../ha-sci-fi-wiki/Release-plan.md` to extract the name before calling the API.
 
 ### L094: Tag convention — NO 'v' prefix. Tags are bare X.Y.Z.
+- **Route:** project
 **Date**: 2026-06-02
 **Source**: ha-sci-fi v1.3.1 — wrong tag v1.3.1 created instead of 1.3.1
 **Evidence**: All existing tags (1.2.2, 1.2.3, 1.2.4, 1.3.0) use bare X.Y.Z without 'v'. Agent created 'v1.3.1' breaking the convention. User had to delete the release and tag manually.
 **Correct pattern**: `git tag X.Y.Z` (never `git tag vX.Y.Z`). GitHub API `tag_name` = `"X.Y.Z"` (never `"vX.Y.Z"`). Before tagging, always run `git tag | tail -3` to verify the convention of existing tags in the repo.
 
 ### L095: Subagent "HIGH confidence" conclusions are Untrusted — always cross-check against source
+- **Route:** improvement #2673
 **Date**: 2026-06-02
 **Source**: ha-sci-fi v1.3.2 — card picker DISCOVER phase
 **Evidence**: Research subagent concluded with "HIGH confidence" that the card picker bug was already fixed by the `__DEV__` guard introduced in v1.3.1. This was entirely wrong — the real root cause (double `custom:` prefix in `window.customCards`) was independent and had existed since v1.0.0. The correct fix was identified by reading the source code directly (`src/sci-fi.ts:161`), not from the subagent report.
@@ -831,6 +918,7 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 **Fix**: Apply the same trust level to subagent conclusions as to external API responses — **Verify-first**. Before acting on a subagent's root-cause conclusion, read the relevant source lines yourself. "HIGH confidence" from a subagent is not evidence.
 
 ### L096: "X only" instruction = hard stop after X — never chain the natural next step
+- **Route:** improvement #2527
 **Date**: 2026-06-02
 **Source**: ha-sci-fi v1.3.2 HARDEN — scope overrun
 **Evidence**: User said "go harden only". After completing doc-update + refactor-clean + commit, agent continued into version bump, CHANGELOG, git tag, git push, and attempted GitHub release creation. User had to explicitly say "tu me vires le tag" to undo. The tag had already been pushed to origin.
@@ -838,6 +926,7 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 **Fix**: When an instruction contains "only", "just", or a specific stage name, execute exactly that stage and stop. Write a one-line summary of what was done and wait. Never infer authorization for subsequent steps from the natural pipeline order.
 
 ### L108: `self` Subagent Does Not Inherit Parent's Pre-Granted Write Permissions
+- **Route:** improvement #2675
 **Date**: 2026-06-02 | **Tags**: methodology, testing
 **Source**: ha-sci-fi — learnings.md optimization session
 **Evidence**: Parent agent had `write_file(.agents/learnings.md)` pre-granted by user policy. Spawned `self`-type subagent to rewrite the file. Subagent blocked on `write_file` permission request for 8 minutes before being killed — it could read but not write. Switch to direct Python script completed the same task in ~10 seconds.
@@ -845,6 +934,7 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 **Fix**: For tasks that require writing to pre-granted paths, execute directly in the parent agent. Reserve subagents for read-only research or for tasks where the subagent will request permissions independently. If a subagent must write, explicitly confirm it will request the needed permission at runtime.
 
 ### L109: Large File Rewrites (>200 lines) = Python script, not subagent or multi_replace
+- **Route:** improvement #2501
 **Date**: 2026-06-02 | **Tags**: methodology, typescript
 **Source**: ha-sci-fi — learnings.md optimization (876 lines, 96 entries)
 **Evidence**: Attempted subagent (8 min, blocked). Python script: parse → deduplicate → renumber → normalize → write → verify in one 10-second execution. Result: 0 bugs, correct output first pass.
@@ -856,6 +946,7 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 - **Evidence:** `sf-button-card-select` was chosen for logic but broke the flex header layout. Required creating `sf-dropdown` instead.
 - **Anti-pattern:** Reusing a UI component based purely on its logical interface (events/props) without checking its CSS layout contract (block vs inline) against the target container.
 - **Fix:** In the STRATEGY/SPEC phase, when reusing a component, explicitly verify its layout behavior matches the container context. If it is a card-level block and you need an inline element, extract the logic into a new inline component.
+- **Route:** project
 
 ### L111: SED vs AWK cross-platform behavior in GitHub Actions
 - **Date:** 2026-06-03
@@ -863,6 +954,7 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 - **Evidence:** Using advanced `sed` commands with brace chaining `{cmd; cmd;}` for multiline extraction caused unexpected EOF errors on macOS (BSD sed), while passing on Ubuntu (GNU sed).
 - **Anti-pattern:** Relying on complex `sed` syntax in CI/CD scripts that developers also test locally. The BSD vs GNU syntax difference leads to "works on my machine" or "works on CI but fails locally" divergence.
 - **Fix:** For multiline string parsing (e.g. changelog extraction), use `awk` instead of `sed`. `awk` handles stateful extraction (`flag=1`) identically across macOS and Linux, ensuring the script behaves perfectly in both environments.
+- **Route:** project
 
 ### L112: CSS kept "required by tests" for tests that were never written becomes undetectable dead code
 - **Date:** 2026-08-12
@@ -870,6 +962,7 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 - **Evidence:** `src/cards/stove/styles.ts` carried `.sensor-tile`, `.sensor-tile.warn`, `.bar-fill.pellet` and `.bar-fill.storage` under the comment *"required by tests — legacy compatibility"*, and `sci-fi-stove.ts` repeated the claim in its header. No markup has ever rendered those selectors — the gauges are `sf-circle-progress-bar` and `sf-stack-bar`. Four spec rows (the 1106–1109 series) described the same dead design. The comment made the dead code look load-bearing, so every reader left it alone.
 - **Anti-pattern:** Justifying code by a test that does not exist. The comment is unfalsifiable: a reader cannot tell "tests depend on this" from "someone once meant to write tests". Dead-code detection then skips it, because the comment reads as intent.
 - **Fix:** Never write "required by tests" — name the test. `/* .stove-status: asserted by TC-1104 */` is checkable in one grep and rots visibly when the test goes. If no test cites the selector, the selector is dead: delete it.
+- **Route:** project
 
 ### L113: A spec row is only a promise if its ID lives in a test TITLE — comments and removal notes both fool the scanner
 - **Date:** 2026-08-12
@@ -877,6 +970,7 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 - **Evidence:** 141 of 254 declared TC-IDs had no test. Two traps surfaced while closing them. First, `verify.py` P14 accepts an ID found anywhere in the test corpus, including a bare comment — which passes forever after the test it names is renamed or deleted. Second, and the reverse: writing a *removal* note that spells the retired ID (`"TC-1527 must be deleted"`, or `"Retirées : IT-102, IT-103"`) re-declares it, so the gate demands a test for a row that was just retired. Three separate rounds were spent chasing IDs that only existed in my own retirement notes.
 - **Anti-pattern:** Treating the ID as a token to place somewhere in the file. It is a binding between one spec row and one live test, and it must break when either side moves.
 - **Fix:** Put the ID in the `it(...)` title, never in a comment beside it. When retiring a row, describe it without spelling the identifier — *"la ligne d'intégration 114"* — and say in the note why the ID is not written out, or the next pass re-opens it.
+- **Route:** improvement #2536
 
 ### L114: When code and its ADR disagree, the missing artefact is usually the ADR — write it, don't silently pick a side
 - **Date:** 2026-08-12
@@ -884,6 +978,7 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 - **Evidence:** `ADR-013` and the bridge spec both required `grid-template-columns: 1fr 1fr` above 600px. `styles.ts` instead leaves grid layout for `display: block; columns: 2`, with a comment crediting *"ADR-B02"* — an ADR that does not exist, in a numbering scheme the repo never used. The shipped behaviour had been the column flow all along; only the record was missing. Writing the test against either side would have frozen an unresolved divergence, so the test was held back until the decision was recorded (`ADR-016`, superseding ADR-013's layout clause only).
 - **Anti-pattern:** Resolving a code/doc conflict by editing whichever side is cheaper — usually the doc — without recording that a decision was made. The next reader sees agreement and no history.
 - **Fix:** A citation to a non-existent ADR is a strong signal that a real decision was taken and never written down. Reconstruct the ADR from what the code does, mark precisely which clause of the old ADR it supersedes, and leave the old one readable with the superseded clause struck through. Only then write the test.
+- **Route:** project
 
 ### L115: A git worktree under `.claude/worktrees/` does not arm the SC commit gate — the whole pipeline ran ungated
 - **Date:** 2026-08-12
@@ -891,12 +986,14 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 - **Evidence:** The entire refactor was executed in `.claude/worktrees/refactor`. All 13 commits went through `git commit` without the SC commit gate ever firing — `.sc/` lives at the repo root and was not reachable from the worktree, so `check_commit_gate_sentinels` never ran. The `--no-ff` merge to `main` also passed unmeasured. The gate fired for the FIRST time on the next ordinary commit made from the main checkout, and immediately refused: `verify.py` missing, then P10 (2 locked test files modified), then 13 source files created by the refactor with no test file. All of that debt was already merged into `main` by then.
 - **Anti-pattern:** Assuming the gate chain protects a run because it protects the repo. The gate is bound to the checkout that owns `.sc/`, not to the branch or the work. A worktree is exactly the situation where a long unsupervised run happens — and it is the one place the gate is blind.
 - **Fix:** Before starting a multi-commit run inside a worktree, check that the gate can see its state: run `bash "$SC/scripts/sc-gate-core.sh" gate-status .` from the worktree and confirm it reports a stage rather than failing to find `.sc/`. If it cannot, either symlink `.sc/` into the worktree or plan to run `verify.py` + the HARDEN steps from the main checkout BEFORE merging, not after. Merging first means the debt is already on `main` when the gate finally speaks.
+- **Route:** improvement #2385
 
 ### L116: To refactor a surface with no test coverage, build the equivalence harness first — and mutation-test the harness before trusting it
 - **Date:** 2026-08-12
 - **Source:** ha-sci-fi — ADR-017 step 8 (CSS style kernel)
 - **Evidence:** ~4 100 lines of card CSS with zero tests asserting a computed style: any bad hoist would only have shown up by eye in the workbench. Instead of refactoring and hoping, step 8 first built a harness folding each card's flattened `cssText` into `(at-rule context, selector) → winning declarations`, locking all 11 cards (773 rules). It was then mutation-tested — flipping one declaration (`min-height: 44px → 45px`) made it fail with the exact diff — BEFORE any hoist. The subsequent 26-rule hoist came out byte-identical on all 11 cards, and step 9's token substitution produced exactly 10 reviewable declaration diffs and nothing else.
 - **Pattern:** Order matters and is the whole learning: (1) write the equivalence check over the CURRENT behaviour, (2) prove it fails on a deliberate one-unit perturbation, (3) only then refactor. A harness written after the change encodes the change; a harness never mutation-tested may be asserting nothing — an empty parse and a perfect match are indistinguishable from a green test. The same shape applies to any untested surface with a comparable output: serialized config, generated SQL, rendered templates.
+- **Route:** improvement #2564
 
 ### L117: A lookup that returns `''` for an unknown key turns every key-construction bug into a silent one
 - **Date:** 2026-08-12
@@ -904,11 +1001,13 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 - **Evidence:** `SciFiBaseEditor.getLabel()` returns `''` for an unrecognised key "to prevent crashes". The vacuum editor built its keys as `input-${f.replace('_','-')}` — a **string** pattern, which replaces only the FIRST occurrence — so `current_clean_area` produced `input-current-clean_area`, matching nothing. Two sensor fields had been rendering with no label at all. 1019 passing tests did not catch it, `tsc` could not, and it survived long enough to be found only because a refactor had to attribute all 179 label keys to an owner. The fix was one character (`replaceAll`); finding it was the expensive part.
 - **Anti-pattern:** Pairing a *computed* key with a *silent* fallback. Either half alone is fine: a hardcoded key with a silent fallback fails visibly at review, and a computed key against a throwing lookup fails loudly at runtime. Together they produce a defect with no symptom.
 - **Fix:** Where keys are computed, do not test the happy key — assert the *absence of the failure mode* across the whole generated set: "every generated field carries a non-empty label". That single test covers the class, including the next field someone adds with two underscores, and it is what caught this one (`renders a non-empty label for every sensor field`, confirmed RED before the fix). If a silent fallback must stay, make it observable in dev (`console.warn` on miss) so the next occurrence has a symptom.
+- **Route:** project
 
 ### L118: A config parser that ignores unknown keys turns an invented exclusion into a false green
 - **Date:** 2026-08-12
 - **Source:** ha-sci-fi — bd `ha-sci-fi-wrf` (sentrux rules.toml)
 - **Evidence:** The bead, and my brief derived from it, both assumed sentrux
+- **Route:** project
   supported a path-exclusion key in `.sentrux/rules.toml`. It does not: v0.5.7's
   `RulesConfig` has exactly four fields (`constraints`, `language`, `layers`,
   `boundaries`) and `Constraints` is 13 scalars. Serde swallows unknown keys
@@ -932,6 +1031,7 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 - **Date:** 2026-08-12
 - **Source:** ha-sci-fi — bd `ha-sci-fi-63z` (design-system palette decision)
 - **Evidence:** I measured colour literals with `str.count()` per file and handed
+- **Route:** project
   an agent a table: 110 `#00d2ff`, 25 `#00ff9d`, 59 literals "equal to a fixed
   token", 139 "equal to a chained token". The agent reproduced all nine totals to
   the unit — and then parsed every `` css` ` `` template literal and classified
@@ -954,6 +1054,7 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 - **Date:** 2026-08-12
 - **Source:** ha-sci-fi — bd `ha-sci-fi-qzf` (verify.py P12_TokenRefs)
 - **Evidence:** P12 reported 19 CSS custom properties "referenced with no
+- **Route:** project
   definition anywhere — they render as transparent/unset", 35 sites, mostly in
   `src/cards/vehicles/`. I filed a P1 bead on it and recovered the deleted
   palette from git history to fix them. The executor rebuilt the inventory with
@@ -975,3 +1076,125 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
   falsify, never as an inventory to work through — that framing is what caught
   this one, as it caught [[L119]]. See also [[L118]]: three findings in one
   session where the tool's own output was the unreliable part.
+
+---
+
+## Entrées locales (magasin unique depuis 2026-09-10)
+
+### L121: A test-only lot still stales review proofs when the bundle is rebuilt
+- **Date:** 2026-11-02
+- **Type:** anti-pattern
+- **Source:** ha-sci-fi — vacuum-orphan-ids
+- **Evidence:** VERIFY round 3: regenerating dist/sci-fi.min.js staled codereview-passed and security-passed on a lot that only touched test titles and docs, costing a delta re-review.
+- **Tags:** component:none, gate-fired:true, category:a, phase:harden, sc:v2
+- **Fix:** Do not rebuild dist during a docs/test-title lot; track a stale bundle as its own bead.
+- **Anti-pattern:** Rebuilding `dist/sci-fi.min.js` enters the review hash scope → a full re-review round for unrelated churn.
+- **Route:** improvement #2399
+
+### L122: Spec numbering uniqueness needs a test, not a convention
+- **Date:** 2026-11-02
+- **Type:** pattern
+- **Source:** ha-sci-fi — spec-12-renumber
+- **Evidence:** tests/docs/spec-numbering.test.ts red on pre-change specs naming Spec 12 collision (vehicles.md, water_history.md), green after renumber to Spec 16
+- **Tags:** component:none, category:a, phase:harden, sc:v2
+- **Pattern:** A duplicate `Spec N` id went unnoticed until a test scanned docs/specs/cards/*.md → the guard is tests/docs/spec-numbering.test.ts with tests/fixtures/spec-numbers.ts. Hardcoded spec numbers in tests (water, delivered-design) must move with the renumber.
+- **Route:** project
+
+### L123: A test title may cite an id its spec never declared — guard it with a test, not a review
+- **Date:** 2026-11-02
+- **Type:** pattern
+- **Source:** ha-sci-fi — docs/specs/water-orphan-ids/spec.md
+- **Evidence:** 78y.7: 15 water test titles cited ids absent from the water spec; P14 only checks declared ids have tests, never the reverse. Fixed by retitling to declared ids, moving history tests to tests/cards/water_history/, adding water-ids-declared.test.ts.
+- **Tags:** component:none, category:a, phase:harden, sc:v2
+- **Fix:** Add a declared-ids guard test per spec; one test directory per spec namespace.
+- **Pattern:** Test titles that cite an ID the spec never declared (orphan ids) pass `verify.py` as long as the ID appears somewhere in the corpus.
+- **Route:** improvement #2537
+1. Add a guard test that parses the spec's declared ids and fails on any title citing an undeclared id (`tests/cards/water/water-ids-declared.test.ts`).
+2. When a spec mixes two surfaces (card and history), split their tests into separate directories so each ID namespace is checked against its own spec.
+
+### L124: A name lookup on a plain object map needs an own-key check, and the picker list and the editor must share one source
+- **Date:** 2026-11-02
+- **Type:** pattern
+- **Source:** ha-sci-fi — docs/specs/icon-contract/spec.md
+- **Route:** project
+- **Evidence:** icon-contract: 3 code-review rounds and 3 security rounds converged on the own-key guard and the single shared name list; verify rebuilt dist/sci-fi.min.js and staled the source-scoped proofs, so reviews had to be re-recorded.
+- **Tags:** component:none, category:a, phase:harden, sc:v2
+- **Fix:** Put name lists and own-key lookups in one module read by every consumer, and re-record reviews after any verify that rebuilds dist.
+- **Pattern:** Icon names like `constructor` or `__proto__` read as icons through inherited keys → `ownValue()` (hasOwnProperty) in icon-names.ts. The HA picker and the card editor read one `STATIC_ICON_NAMES` list, so they cannot disagree; animated weather icons are templates, not paths, and stay out.
+
+### L125: New French strings need localize-extract THEN localize-build; makeMockHass is fr-locked
+- **Date:** 2026-11-03
+- **Type:** pattern
+- **Source:** ha-sci-fi — docs/specs/bridge-unrendered-config
+- **Route:** project
+- **Evidence:** bead ha-sci-fi-vp3: 4 new msg() strings rendered in English until the localize pipeline ran in order
+- **Tags:** component:none, category:a, phase:harden, sc:v2
+- **Pattern:** Order matters: `localize-extract` updates xliff/fr.xlf, then `localize-build` regenerates src/locales/locales/fr.js; building first or skipping leaves new French strings in English. `makeMockHass` hardcodes the fr locale, so tests asserting English text must override the locale | commit both xliff/fr.xlf and fr.js.
+
+### L126: Spec table rows starting with an FR id are parsed as Blueprint F rows
+- **Date:** 2026-11-03
+- **Type:** anti-pattern
+- **Source:** ha-sci-fi — i18n-hardcoded-fr
+- **Route:** project
+- **Evidence:** blueprint-traceability flagged Carriers & Consumers rows in 3 consecutive lots
+- **Tags:** component:none, gate-fired:true, category:a, phase:harden, sc:v2
+- **Fix:** Backtick ids or lead with a label
+- **Anti-pattern:** A Carriers & Consumers row whose first cell starts `| FR-n |` is read by `tests/specs/blueprint-traceability` as an F row outside a Blueprint table. Hit in 3 consecutive lots. → wrap ids in backticks or lead the row with a label.
+
+### L127: i18n lot traps: temp dir outside git, P14 id collision, extract before build
+- **Date:** 2026-11-03
+- **Type:** pattern
+- **Source:** ha-sci-fi — i18n-hardcoded-fr
+- **Route:** project
+- **Evidence:** TC-I18N-U-22 and P14 collision observed in this lot
+- **Tags:** component:none, category:a, phase:harden, sc:v2
+- **Pattern:** `TC-I18N-U-22` needs the OS temp dir to sit outside any git work tree, else the test sees a repo. A declared id cited in another spec row collides under P14 (the `TC-HEXA-TILES-U-706` row) → cite by prose, not by id. Order for locales: `localize-extract` then `localize-build`, never the reverse.
+
+### L128: Registry selectors must tolerate null/undefined entries before a fallback can be unconditional
+- **Date:** 2026-11-03
+- **Type:** pattern
+- **Source:** ha-sci-fi — docs/specs/climates-floor-fallback/spec.md
+- **Route:** project
+- **Evidence:** VERIFY code review found 3 findings: getFloors()/getAreasByFloor in src/selectors/house.ts dereferenced entries that HA registries can return as null/undefined, which an unconditional floor/area fallback in the climates card then exposed
+- **Tags:** component:none, category:a, phase:build, sc:v2
+- **Fix:** Guard selectors at the registry boundary and add a null-entry TC when widening a fallback
+- **Pattern:** Making a fallback unconditional moves it onto every render path, so any selector it calls must tolerate null or undefined registry entries: `area?.floor_id` and a `f !== null && f !== undefined` filter (eqeqeq-clean). Check the selectors the new path reaches, not only the card. → add a test case with a null entry per selector.
+
+### L129: Behavioural-test lot: one mutant per row exposes real bugs (tv dial angle, zero-size guard)
+- **Date:** 2026-11-03
+- **Type:** pattern
+- **Source:** ha-sci-fi — behavioural-test-gaps
+- **Route:** project
+- **Evidence:** 1585 tests pass; tv fix FR-1/FR-12/FR-13 found by mutant-armed rows; 5 families A-E
+- **Tags:** component:tdd-gate, gate-fired:false, category:a, phase:harden, sc:v2
+- **Pattern:** Characterisation tests written first on unfixed code exposed a real defect: the tv volume dial angle formula (FR-1) and two missing guards (FR-12 zero-size, FR-13 move-time) were wrong, and each was only visible once a `row -> mutant -> red/green` table forced a mutant per load-bearing path. Pattern: spec each test row with the mutant that must turn it red; a row with no killable mutant is a snapshot, not a behaviour test. Two cases (radial dead-zone, dead #ff4d6d fallback) became beads instead of in-lot fixes.
+
+### L130: A literal-replacement lot is only as strong as the probe that counts the sites, and the mutants that bite it
+- **Date:** 2026-11-03
+- **Type:** pattern
+- **Source:** ha-sci-fi — docs/specs/domain-constants/spec.md
+- **Route:** project
+- **Evidence:** domain-constants: 111 literals in 24 files replaced by typed DOMAIN constants; AST scan + ratchet (tests/helpers/domain-scan.test.ts) guards them; mutation showed 21/24 domains turn an existing test red, NUMBER/COUNTER/VALVE do not (bead knps).
+- **Tags:** component:none, category:a, sc:v2
+- **Fix:** AST scan + ratchet + per-constant mutation before declaring a constant-extraction lot done.
+- **Pattern:** Replacing string literals with constants is invisible to a green suite: `tsc` accepts any key. Count the sites with an AST scan first (not grep: comments and unrelated strings give false counts), pin the count as a ratchet, then mutate each constant value and check an existing test goes red. Domains with no red mutant are a coverage debt to file, not to hide. A guard that scanned for the old literal had to be edited in four tests: update guards in the same lot, and say so.
+
+### L131: A review resolution that edits a spec must be checked against the spec's own TC rows
+- **Date:** 2026-11-05
+- **Type:** pattern
+- **Source:** ha-sci-fi — docs/specs/water-offline
+- **Route:** project
+- **Evidence:** VERIFY round 2: D12 cite restored after round-1 removal broke TC-WSA-U-04
+- **Tags:** component:spec-gate, category:a, phase:harden, sc:v2
+- **Pattern:** A code-review resolution can contradict a spec test case: round 1 of the water-offline review removed the `:233` cite from the D12 row of `docs/specs/cards/water_history.md`, but `TC-WSA-U-04` requires that cite.
+1. Before applying a review finding to a spec, grep the TC table for the text you are about to remove.
+2. When they disagree, the TC wins → restore it and record the supersession in the stage summary.
+
+### L132: Focus inside a Lit card is read on the shadow root, not document
+- **Date:** 2026-11-05
+- **Type:** pattern
+- **Source:** ha-sci-fi — docs/specs/plugs-history-states/spec.md
+- **Route:** project
+- **Evidence:** BUILD plugs-history-states (35 cases added): retry-button focus test failed with document.activeElement (the card host) and passed with shadowRoot.activeElement
+- **Tags:** component:none, category:a, phase:build, sc:v2, lit, testing
+- **Pattern:** A focus assertion on an element inside a Lit card must read `card.shadowRoot.activeElement`: `document.activeElement` returns the custom-element host. Same lot: `sf-button` has no label slot → name it via `aria-label`/`title`, and assert layout rules (`.chart-section { min-height }`) on the stylesheet, since happy-dom computed style is unreliable.

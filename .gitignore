@@ -49,3 +49,4 @@ wt/*
 
 # Runtime gate locks (machine-local)
 *.gate.lock
+!.agents/workshop.yml

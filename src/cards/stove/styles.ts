@@ -308,6 +308,7 @@ export const stoveStyles = css`
   .bottom {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     column-gap: 10px;

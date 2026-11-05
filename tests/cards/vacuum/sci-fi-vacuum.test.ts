@@ -454,7 +454,7 @@ describe('sci-fi-vacuum', () => {
     expect(mockCallService).toHaveBeenCalledWith('vacuum', 'start', { entity_id: 'vacuum.bot' });
   });
 
-  // ── TC-VACUUM-U-1524 — toast error ────────────────────────────────────────────────
+  // ── TC-VACUUM-U-1524 — malformed shortcut service ─────────────────────────────────
 
   it('TC-VACUUM-U-1524 — ignores shortcut click when service is malformed', async () => {
     const el = makeEl();
@@ -583,9 +583,9 @@ describe('sci-fi-vacuum', () => {
     });
   });
 
-  // ── _callAction error toast (same case as TC-VACUUM-U-1524) ───────────────
+  // ── F-VAC-D07 — error toast on callService rejection ──────────────────────
 
-  it('_callAction shows error toast on callService rejection (same case as TC-VACUUM-U-1524)', async () => {
+  it('test_O3_callAction_shows_error_toast_on_callService_rejection', async () => {
     const el = makeEl();
     const mockCallService = vi.fn().mockRejectedValue(new Error('service failed'));
     setConfig(el, {
@@ -599,12 +599,16 @@ describe('sci-fi-vacuum', () => {
     document.body.appendChild(el);
     await el.updateComplete;
 
+    const addMessage = vi.spyOn(el.shadowRoot!.querySelector('sf-toast') as any, 'addMessage');
     const btn = el.shadowRoot!.querySelector('.actions .default sf-button') as HTMLElement | null;
     btn?.dispatchEvent(new CustomEvent('button-click', { bubbles: true, composed: true }));
     // Flush microtask queue to let the rejected promise propagate
     await new Promise(resolve => setTimeout(resolve, 0));
-    // callService was called — error path executed without throwing
     expect(mockCallService).toHaveBeenCalled();
+    // F-VAC-D07: the rejection reaches the toast as an error, with its message
+    const body = el.shadowRoot!.querySelector('sf-toast')!.shadowRoot!.querySelector('.toast-body');
+    expect(body?.textContent).toBe('service failed');
+    expect(addMessage).toHaveBeenCalledWith('service failed', true);
   });
 
   // ── TC-VACUUM-U-1534 — _callShortcut: no sc.service → early return ────────────────

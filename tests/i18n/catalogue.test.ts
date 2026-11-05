@@ -102,3 +102,13 @@ describe('the three amended specs (FR-10)', () => {
     expect(row).toContain('IT-I18N-I-01');
   });
 });
+
+// A localize-extract with no localize-build after it leaves the new strings in
+// English with every other test green: the two id sets must be the same.
+describe('fr.xlf and fr.js carry the same ids', () => {
+  it('test_O4_every_xliff_trans_unit_is_built_into_fr_js_and_back', () => {
+    const xlfIds = units().map((u) => u.id).sort();
+    expect(xlfIds.length, 'no trans-unit read from fr.xlf').toBeGreaterThan(0);
+    expect(Object.keys(templates).sort()).toEqual(xlfIds);
+  });
+});

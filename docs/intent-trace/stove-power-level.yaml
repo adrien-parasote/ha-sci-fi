@@ -1,0 +1,51 @@
+version: "1"
+assertions:
+  - id: IA-SPL-1
+    assertion: "a stove card configured without a power level entity looks exactly as it did before"
+    rationale: "the bead ve4 acceptance: zero visual change for existing configs; the proof compares the bottom bar to a snapshot taken on the old code"
+    proves: "docs/specs/stove-power-level/spec.md#FR-3"
+    files: [src/cards/stove/sci-fi-stove.ts]
+    proof:
+      type: test_exit_code
+      reference: tests/cards/stove/sci-fi-stove-power-level.test.ts
+  - id: IA-SPL-2
+    assertion: "the user can change the stove power level from the card, and is told whether it worked"
+    rationale: "the wheel must reach the fumis number entity through number.set_value and confirm by toast on success and on failure"
+    proves: "docs/specs/stove-power-level/spec.md#FR-8"
+    files: [src/cards/stove/sci-fi-stove.ts]
+    proof:
+      type: test_exit_code
+      reference: tests/cards/stove/sci-fi-stove-power-level.test.ts
+  - id: IA-SPL-3
+    assertion: "the power level offered matches the range the stove accepts"
+    rationale: "items come from the entity min/max/step, with 1/5/1 when the integration publishes nothing usable"
+    proves: "docs/specs/stove-power-level/spec.md#FR-5"
+    files: [src/cards/stove/sci-fi-stove.ts]
+    proof:
+      type: test_exit_code
+      reference: tests/cards/stove/sci-fi-stove-power-level.test.ts
+  - id: IA-SPL-4
+    assertion: "an unavailable power level is shown greyed out, while a stove that is off stays adjustable"
+    rationale: "user decision 4 of 2026-11-05: disabled depends on the number entity state only"
+    proves: "docs/specs/stove-power-level/spec.md#FR-7"
+    files: [src/cards/stove/sci-fi-stove.ts]
+    proof:
+      type: test_exit_code
+      reference: tests/cards/stove/sci-fi-stove-power-level.test.ts
+  - id: IA-SPL-5
+    assertion: "the visual editor lets the user pick the power level entity"
+    rationale: "bead ve4 acceptance: the editor exposes the field"
+    proves: "docs/specs/stove-power-level/spec.md#FR-9"
+    files: [src/cards/stove/sci-fi-stove-editor.ts, src/cards/stove/labels.ts]
+    proof:
+      type: test_exit_code
+      reference: tests/cards/stove/sci-fi-stove-editor.test.ts
+silent_bindings:
+  - binding: "configured entity absent from hass"
+    chose: "no wheel rendered, like the eco switch"
+    alternative: "wheel rendered disabled"
+    status: declared
+  - binding: "editor icon"
+    chose: "mdi:fire"
+    alternative: "mdi:gauge"
+    status: declared

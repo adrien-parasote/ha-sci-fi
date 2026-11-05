@@ -100,6 +100,28 @@ describe('sci-fi-stove-editor', () => {
     expect(received[0]!.detail.config.storage_counter).toBe('counter.bags');
   });
 
+  it('TC-SPL-U-1123: exposes number_power_level right after the eco switch', async () => {
+    const el = await createElement();
+    el.setConfig(makeConfig({ number_power_level: 'number.stove_power_level' }));
+    await el.updateComplete;
+    const order = [...el.shadowRoot!.querySelectorAll('[element-id]')].map((n) => n.getAttribute('element-id'));
+    expect(order[order.indexOf('switch_eco_mode') + 1]).toBe('number_power_level');
+    const input = el.shadowRoot!.querySelector('[element-id="number_power_level"]') as HTMLElement & { value: string };
+    expect(input.getAttribute('kind')).toBe('entity');
+    expect(input.getAttribute('label')).toBe('Power level number');
+    expect(input.value).toBe('number.stove_power_level');
+
+    const received: CustomEvent[] = [];
+    el.addEventListener('config-changed', (e) => received.push(e as CustomEvent));
+    el.shadowRoot!.querySelector('.card')!.dispatchEvent(new CustomEvent('input-update', {
+      bubbles: true,
+      composed: false,
+      detail: { id: 'number_power_level', kind: 'entity', value: 'input_number.stove_power' },
+    }));
+    expect(received).toHaveLength(1);
+    expect(received[0]!.detail.config.number_power_level).toBe('input_number.stove_power');
+  });
+
   /**
    * Lot stove-config-surface — the configuration surface of this editor was
    * never asserted: the three tests above pin `room_temperature`, `threshold`

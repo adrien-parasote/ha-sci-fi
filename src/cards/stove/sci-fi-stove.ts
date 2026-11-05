@@ -12,7 +12,7 @@
  * CSS selector required by tests: .stove-status (the label in _renderStatus).
  */
 import { html, nothing, type TemplateResult } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import { msg, str } from '@lit/localize';
 
 import { SciFiBaseCard } from '../../utils/base-card.js';
@@ -35,6 +35,7 @@ import '../../components/buttons/sf-button-card.js';
 import '../../components/buttons/sf-button-card-select.js';
 import { DOMAIN } from '../../types/domains.js';
 import { ENTITY_ID } from '../../types/entity-ids.js';
+import type { HomeAssistantExt } from '../../types/ha.js';
 
 const TAG = 'sci-fi-stove';
 
@@ -90,9 +91,100 @@ const PRESET_ICONS: Record<string, string> = {
   eco:  'mdi:leaf',
 };
 
+// ── Power level (spec docs/specs/stove-power-level/spec.md) ───────────────────
+/** Quiet time after the last wheel pick before the one set_value call (FR-8). */
+const POWER_DEBOUNCE_MS = 400;
+/** Beyond this many items the bounds are replaced by the 1/5/1 trio (FR-5.1). */
+const POWER_MAX_ITEMS = 50;
+/** The two writable domains a power level entity may belong to (FR-12). */
+const POWER_DOMAINS: readonly string[] = [DOMAIN.NUMBER, DOMAIN.INPUT_NUMBER];
+const POWER_FALLBACK = { min: 1, max: 5, step: 1 } as const;
+
+interface PowerGrid {
+  readonly min: number;
+  readonly step: number;
+  /** number of items */
+  readonly n: number;
+  /** decimals shown and kept */
+  readonly d: number;
+}
+
+/** FR-5: a finite number, or a non-blank string that reads as one. parseFloat is never used. */
+function isNumeric(raw: unknown): boolean {
+  // Number.isFinite never coerces: it is true only for a finite number value.
+  if (typeof raw === 'string') return raw.trim() !== '' && Number.isFinite(Number(raw));
+  return Number.isFinite(raw);
+}
+
+/** FR-5.2: the smallest j in 0..10 such that x·10^j is an integer (10 when none). */
+function decimals(x: number): number {
+  for (let j = 0; j <= 10; j++) {
+    const scaled = x * 10 ** j;
+    if (Math.abs(scaled - Math.round(scaled)) < 1e-9) return j;
+  }
+  return 10;
+}
+
+function gridOf(min: number, max: number, step: number): PowerGrid {
+  return {
+    min,
+    step,
+    n: Math.floor((max - min) / step + 1e-9) + 1,
+    d: Math.max(decimals(min), decimals(step)),
+  };
+}
+
+/** FR-5.1: per-bound fallback, then the whole trio falls back when it is incoherent or too large. */
+function powerGrid(attrs: Record<string, unknown> | undefined): PowerGrid {
+  const bound = (key: 'min' | 'max' | 'step'): number =>
+    isNumeric(attrs?.[key]) ? Number(attrs?.[key]) : POWER_FALLBACK[key];
+  const min = bound('min');
+  const max = bound('max');
+  const step = bound('step');
+  const fallback = gridOf(POWER_FALLBACK.min, POWER_FALLBACK.max, POWER_FALLBACK.step);
+  if (step <= 0 || min > max) return fallback;
+  const grid = gridOf(min, max, step);
+  return grid.n > POWER_MAX_ITEMS ? fallback : grid;
+}
+
+/** v_k of FR-5.2, rounded to the grid's decimals. */
+function powerValue(grid: PowerGrid, k: number): number {
+  return Number((grid.min + k * grid.step).toFixed(grid.d));
+}
+
+/**
+ * FR-7: an unreadable state disables the wheel. HA's two non-value states
+ * (unavailable, unknown) are not numeric, so this one test covers them.
+ * The climate state never counts.
+ */
+function isPowerDisabled(entityState: { state: unknown }): boolean {
+  return !isNumeric(entityState.state);
+}
+
 @customElement(TAG)
 export class SciFiStoveCard extends SciFiBaseCard {
   static override styles = [sciFiCommonStyles, stoveStyles];
+
+  /** Index picked on the power wheel and not yet released to HA's state (FR-8). */
+  @state() private _powerPendingIndex: number | null = null;
+  /** true once set_value left: the next hass assignment releases the pick. */
+  private _powerCallSent = false;
+  private _powerTimer: ReturnType<typeof setTimeout> | undefined;
+
+  override get hass(): HomeAssistantExt {
+    return super.hass;
+  }
+
+  override set hass(hass: HomeAssistantExt) {
+    super.hass = hass;
+    this._releasePowerPick();
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._cancelPowerTimer();
+    this._powerPendingIndex = null;
+  }
 
   /** Configured ids only: when all are absent the base card shows its banner. */
   protected override getConfiguredEntities(): string[] {
@@ -110,6 +202,9 @@ export class SciFiStoveCard extends SciFiBaseCard {
     }
     if (this.config.switch_eco_mode) {
       entities.add(this.config.switch_eco_mode);
+    }
+    if (this.config.number_power_level) {
+      entities.add(this.config.number_power_level);
     }
     if (this.config.sensors) {
       const s = this.config.sensors;
@@ -408,6 +503,8 @@ export class SciFiStoveCard extends SciFiBaseCard {
           @wheel-change="${(e: CustomEvent) => this._onTempChange(e, stoveState.attributes.entity_id ?? this.config.entity)}"
         ></sf-wheel>
 
+        ${this._renderPowerLevel()}
+
         ${this._renderEcoControl(stoveState, presetItems, currentPreset)}
       </div>
     `;
@@ -458,6 +555,109 @@ export class SciFiStoveCard extends SciFiBaseCard {
         @button-select="${(e: CustomEvent) => this._onPresetSelect(e, stoveState.attributes.entity_id ?? this.config.entity)}"
       ></sf-button-card-select>
     `;
+  }
+
+  // ── POWER LEVEL ───────────────────────────────────────────────────────────
+
+  /** FR-12: the domain of the configured entity, when it is present and writable. */
+  private _powerDomain(): string | undefined {
+    const id = this.config?.number_power_level;
+    if (!id || !this.hass?.states[id]) return undefined;
+    const prefix = id.split('.')[0];
+    return POWER_DOMAINS.find(d => d === prefix);
+  }
+
+  private _powerEntity(): { state: unknown; attributes: Record<string, unknown> } | undefined {
+    const id = this.config?.number_power_level;
+    if (!id || !this._powerDomain()) return undefined;
+    return this.hass.states[id];
+  }
+
+  /** FR-5.2: index ids, never the value. */
+  private _powerLevelItems(attrs: Record<string, unknown> | undefined): Array<{ id: string; text: string }> {
+    const grid = powerGrid(attrs);
+    return Array.from({ length: grid.n }, (_, k) => ({ id: String(k), text: powerValue(grid, k).toFixed(grid.d) }));
+  }
+
+  /** FR-6: the pending pick, else the nearest item to HA's state, clamped. */
+  private _powerSelectedId(entity: { state: unknown; attributes: Record<string, unknown> }): string | null {
+    if (this._powerPendingIndex !== null) return String(this._powerPendingIndex);
+    if (!isNumeric(entity.state)) return null;
+    const grid = powerGrid(entity.attributes);
+    const k = Math.round((Number(entity.state) - grid.min) / grid.step);
+    return String(Math.min(Math.max(k, 0), grid.n - 1));
+  }
+
+  /** FR-4, FR-7, FR-13: second wheel of the bottom bar; nothing when not configured (FR-3). */
+  private _renderPowerLevel(): TemplateResult | typeof nothing {
+    const entity = this._powerEntity();
+    if (!entity) return nothing;
+    const disabled = isPowerDisabled(entity);
+    return html`
+      <sf-wheel
+        class="power-level"
+        .items="${this._powerLevelItems(entity.attributes)}"
+        .selectedId="${this._powerSelectedId(entity)}"
+        text="${msg('Power')}"
+        aria-label="${msg('Power')}"
+        title="${disabled ? msg('Power level unavailable') : nothing}"
+        ?disabled="${disabled}"
+        @wheel-change="${(e: CustomEvent) => this._onPowerLevelChange(e)}"
+      ></sf-wheel>
+    `;
+  }
+
+  /** FR-8: remember the pick, restart the single debounce timer. */
+  private _onPowerLevelChange(e: CustomEvent): void {
+    const entity = this._powerEntity();
+    if (!entity || isPowerDisabled(entity)) return;
+    const k = Number((e.detail as { id?: unknown } | undefined)?.id);
+    if (!Number.isInteger(k) || k < 0 || k >= powerGrid(entity.attributes).n) return;
+    this._powerPendingIndex = k;
+    this._powerCallSent = false;
+    this._cancelPowerTimer();
+    this._powerTimer = setTimeout(() => this._sendPowerLevel(), POWER_DEBOUNCE_MS);
+  }
+
+  /** FR-8: one set_value on the entity's own domain, one toast on settlement. */
+  private _sendPowerLevel(): void {
+    this._powerTimer = undefined;
+    const k = this._powerPendingIndex;
+    const domain = this._powerDomain();
+    const entity = this._powerEntity();
+    if (k === null || !domain || !entity || isPowerDisabled(entity)) {
+      this._powerPendingIndex = null;
+      return;
+    }
+    const grid = powerGrid(entity.attributes);
+    if (k >= grid.n) {
+      this._powerPendingIndex = null;
+      return;
+    }
+    this._powerCallSent = true;
+    void this.hass
+      .callService(domain, 'set_value', { entity_id: this.config.number_power_level, value: powerValue(grid, k) })
+      .then(() => { this._showToast(false, msg('Power level changed')); })
+      .catch((err: unknown) => { this._showToast(true, err instanceof Error ? err.message : String(err)); });
+  }
+
+  /** FR-8: after the call, HA's state takes over; while waiting, only a lost or disabled entity cancels. */
+  private _releasePowerPick(): void {
+    if (this._powerPendingIndex === null) return;
+    const entity = this._powerEntity();
+    if (
+      this._powerCallSent || !entity || isPowerDisabled(entity) ||
+      this._powerPendingIndex >= powerGrid(entity.attributes).n
+    ) {
+      this._cancelPowerTimer();
+      this._powerPendingIndex = null;
+      this._powerCallSent = false;
+    }
+  }
+
+  private _cancelPowerTimer(): void {
+    if (this._powerTimer !== undefined) clearTimeout(this._powerTimer);
+    this._powerTimer = undefined;
   }
 
   private _getHvacLabel(state: string): string {

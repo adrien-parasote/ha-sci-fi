@@ -1,0 +1,3 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`sci-fi-stove — power level > TC-SPL-U-1116: a config without number_power_level renders .bottom exactly as before 1`] = `"<sf-button-card-select position="bottom" icon="mdi:fire" title="Mode" text="Chauffage"></sf-button-card-select><sf-wheel text="Température"></sf-wheel>"`;

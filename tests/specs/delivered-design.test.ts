@@ -291,7 +291,8 @@ describe('Présence — ce que l’extraction ne sait pas porter', () => {
   });
 
   it('chaque sélecteur gelé par stove.md est lu par le test cité — tous les noms de la ligne', () => {
-    const test = read('tests/cards/stove/sci-fi-stove.test.ts');
+    // The power-level selector is read by its own test file (lot stove-power-level).
+    const test = read('tests/cards/stove/sci-fi-stove.test.ts') + read('tests/cards/stove/sci-fi-stove-power-level.test.ts');
     const lines = read('docs/specs/cards/stove.md').split('\n');
     const i = lines.findIndex((l) => /^##\s+Test Selectors/.test(l));
     const j = lines.findIndex((l, k) => k > i && /^##\s/.test(l));

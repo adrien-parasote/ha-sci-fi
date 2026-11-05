@@ -1207,3 +1207,14 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 - **Tags:** component:verify-py, gate-fired:true, category:a, phase:harden, sc:v2
 - **Fix:** Prefix transient dirs with a dot and make every tree walker in tests skip dot-dirs; prefer os.tmpdir() when the tsconfig is not needed.
 - **Anti-pattern:** Parallel vitest files share the tree: a transient dir created by one test is seen half-deleted by another's `readdirSync` walk → intermittent ENOENT, never reproducible alone. Rule: transient test dirs are dot-prefixed (`tests/.name-<pid>/`) and every repo tree walker skips entries starting with `.`.
+
+### L134: Twin number-entity wheels share one NumberWheelSpec table, not copied methods
+- **Date:** 2026-11-05
+- **Type:** pattern
+- **Source:** ha-sci-fi — docs/specs/stove-fan-speed/spec.md
+- **Route:** project
+- **Evidence:** stove-fan-speed (twin of stove-power-level): the second wheel was added as one row in NUMBER_WHEELS + generic _numberDomain/_numberEntity/_numberItems in src/cards/stove/sci-fi-stove.ts; TC-SFS-U-1101 snapshot taken on pre-change code proved power-level unchanged
+- **Tags:** component:none, category:a, phase:harden, sc:v2, lit, refactor
+- **Pattern:** When a card gains a second wheel over a `number` entity (power level, then fan speed), do not duplicate the render/handler methods:
+1. Declare a `NumberWheelSpec` row (config key, label, icon) in a `NUMBER_WHEELS` table → the generic `_numberEntity(spec)`/`_numberItems(spec)` serve every row.
+2. Pin the existing wheel with a snapshot test written on the PRE-change code before refactoring → the refactor is proved behaviour-neutral.

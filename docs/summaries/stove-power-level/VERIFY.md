@@ -18,3 +18,5 @@
 - No push done.
 
 **Next action:** HARDEN - run /harden-stage (learn-eval, then the exit commit).
+
+**Tests:** files +1 ~3 −0 · cases +21 −1 · 2 earlier test file(s) edited, none lost a case

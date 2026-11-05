@@ -180,7 +180,7 @@ function trouveParNom(nom: string): boolean {
   const vus: string[] = [];
   const marche = (dir: string) => {
     for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
-      if (e.name === 'node_modules' || e.name.startsWith('.git')) continue;
+      if (e.name === 'node_modules' || e.name.startsWith('.')) continue; // dot-dirs: transient, gitignored (tests/.eit-base-*)
       const full = path.join(dir, e.name);
       if (e.isDirectory()) marche(full);
       else vus.push(e.name);

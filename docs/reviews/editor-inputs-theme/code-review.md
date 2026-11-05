@@ -37,3 +37,36 @@ CONFORMANCE EVIDENCE:
 - FR-2/FR-3 → scanCss :269-286; U-07 negative controls :352-364
 - FR-7/FR-8 → I-01 :380-383, I-02 :385-387, mutation I-04 :430-443
 - FR-10 → I-03 :389-428
+
+---
+
+## Round 2
+
+AUDITOR: subagent
+COVERAGE (re-review: the files changed since round 1, plus the closure of each round 1 finding):
+| file | lines read | total (wc -l) | full read? |
+| tests/styles/editor-inputs-theme.test.ts | 100-240, 300-316, 430-486 | 486 | no — the delta hunks and every site of the 3 findings |
+| docs/specs/editor-inputs-theme/spec.md | grep: I-05 / baseCommit rows (108-110, 176, 180, 196, 206, 216) | 224 | no — amended rows only |
+| .gitignore | grep `eit` (:54) | 54 | no |
+| .github/workflows/ci.yml | grep fetch-depth (:16) | 38 | no (not in the delta) |
+Packet: .sc/review/25d3ffe-c432624f. Test run: `npx vitest run tests/styles/editor-inputs-theme.test.ts` — 31/31 pass, exit 0.
+
+VERDICT: APPROVE
+SPEC: docs/specs/editor-inputs-theme/spec.md
+
+### Closure of round 1 findings
+- HIGH tests/styles/editor-inputs-theme.test.ts:450 (IT-EIT-I-05 squash fragility) CLOSED — I-05 (:458-486) checks the 40-hex baseCommit (:460), a non-shallow clone (:461), `git merge-base --is-ancestor` (:462), then unpacks `git archive <baseCommit> src` into the gitignored `tests/.eit-base-<pid>/` and refolds the 11 base components (`locals`) and the accordion (`fallback`) against the JSON. A squash on 5251aa3 keeps it an ancestor; a baseline regenerated from the ported sheets turns it red. Spec amended first (:196, :108-110, :206).
+- MEDIUM tests/styles/editor-inputs-theme.test.ts:115-120 (inputSources skipped the shared sheet) CLOSED — SHARED_PATH added (:122, :37); U-01 asserts it is listed (:306); U-01/U-02 scan through inputSources (:307, :312).
+- LOW tests/styles/editor-inputs-theme.test.ts:180 (takeLocals scope) CLOSED — takeLocals (:181-191) rewrites `--_x:` only inside `:host { }` rules, per § Resolver step 3.
+
+FINDINGS:
+(none)
+
+NOTES:
+- The `customElements.define` stub and the temp dir are both restored/removed in `finally`.
+- `fetch-depth: 0` stays in ci.yml:16 — `git archive` needs the baseCommit objects.
+
+CONFORMANCE EVIDENCE:
+- IT-EIT-I-05 → tests/styles/editor-inputs-theme.test.ts:458-486, spec :196
+- TC-EIT-U-01..U-04 → :117-124, :306
+- § Resolver step 3 → :181-191

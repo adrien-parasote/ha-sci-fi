@@ -124,9 +124,9 @@ const PRESET_ICONS: Record<string, string> = {
 export class SciFiStoveCard extends SciFiBaseCard {
   static override styles = [sciFiCommonStyles, stoveStyles];
 
-  /** Per-wheel pick not yet released to HA's state (FR-8); reassigned whole on every change. */
   /** FR-8: the wear section's open state, per instance, never persisted. */
   @state() private _wearOpen = false;
+  /** Per-wheel pick not yet released to HA's state (FR-8); reassigned whole on every change. */
   @state() private _numberPicks: NumberPicks = { powerLevel: null, fanSpeed: null };
   /** Per-wheel debounce timers: never rendered, so not reactive. */
   private _numberTimers: Readonly<Partial<Record<NumberWheelKey, ReturnType<typeof setTimeout>>>> = {};

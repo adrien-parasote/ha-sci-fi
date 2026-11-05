@@ -22,3 +22,5 @@
 - BUILD closed on a wip(BUILD) commit.
 
 **Next action:** VERIFY - /verify-stage; check FR-0 order via git log.
+
+**Tests:** files +1 ~4 −0 · cases +15 −1 · 3 earlier test file(s) edited, none lost a case

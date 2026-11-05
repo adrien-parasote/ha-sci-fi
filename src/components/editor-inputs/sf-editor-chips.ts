@@ -41,18 +41,18 @@ export class SfEditorChips extends SfEditorInput {
         display: flex;
         align-items: center;
         gap: 4px;
-        background: rgba(0, 210, 255, 0.12);
-        border: 1px solid rgba(0, 210, 255, 0.25);
+        background: var(--editor-chip-bg, rgba(0, 210, 255, 0.12));
+        border: 1px solid var(--editor-chip-border, rgba(0, 210, 255, 0.25));
         border-radius: 12px;
         padding: 2px 8px 2px 8px;
         font-size: 0.75rem;
-        color: var(--primary-text-color, #e0e8ff);
+        color: var(--editor-text, #e0e8ff);
       }
 
       .chip-delete {
         background: none;
         border: none;
-        color: var(--secondary-text-color, rgba(224, 232, 255, 0.6));
+        color: var(--editor-text-secondary, rgba(224, 232, 255, 0.6));
         cursor: pointer;
         font-size: 0.7rem;
         padding: 0 2px;
@@ -61,8 +61,8 @@ export class SfEditorChips extends SfEditorInput {
       }
 
       .chip-delete:hover {
-        color: var(--error-color, #ff4444);
-        background: rgba(255, 68, 68, 0.12);
+        color: var(--editor-error, #ff4444);
+        background: var(--editor-error-soft, rgba(255, 68, 68, 0.12));
       }
 
       .input-group {

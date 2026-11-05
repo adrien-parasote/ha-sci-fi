@@ -41,8 +41,8 @@ export class SfEditorInput extends LitElement {
       display: flex;
       flex-direction: row;
       align-items: center;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(0, 210, 255, 0.2);
+      background: var(--editor-surface-input, rgba(255, 255, 255, 0.04));
+      border: 1px solid var(--editor-accent-border, rgba(0, 210, 255, 0.2));
       border-radius: 8px;
       padding: 0 12px;
       min-height: 56px;
@@ -52,7 +52,7 @@ export class SfEditorInput extends LitElement {
     }
 
     .container:focus-within {
-      border-color: var(--primary-color, #00d2ff);
+      border-color: var(--editor-accent, #00d2ff);
     }
 
     .container.has-icon {
@@ -66,7 +66,7 @@ export class SfEditorInput extends LitElement {
       transform: translateY(-50%);
       display: flex;
       align-items: center;
-      color: var(--secondary-text-color, rgba(224, 232, 255, 0.6));
+      color: var(--editor-text-secondary, rgba(224, 232, 255, 0.6));
       pointer-events: none;
     }
 
@@ -85,7 +85,7 @@ export class SfEditorInput extends LitElement {
       left: 0;
       transform: translateY(-50%);
       font-size: 0.875rem;
-      color: var(--secondary-text-color, rgba(224, 232, 255, 0.6));
+      color: var(--editor-text-secondary, rgba(224, 232, 255, 0.6));
       pointer-events: none;
       transition: all 200ms cubic-bezier(0, 0, 0.2, 1);
       transform-origin: left top;
@@ -100,23 +100,23 @@ export class SfEditorInput extends LitElement {
     .has-value label {
       top: 8px;
       transform: translateY(0) scale(0.75);
-      color: var(--primary-color, #00d2ff);
+      color: var(--editor-accent, #00d2ff);
     }
 
     input {
       background: none;
       border: none;
       outline: none;
-      color: var(--primary-text-color, #e0e8ff);
+      color: var(--editor-text, #e0e8ff);
       font-size: 0.875rem;
       width: 100%;
       padding: 0;
       margin-top: 5px;
-      caret-color: var(--primary-color, #00d2ff);
+      caret-color: var(--editor-accent, #00d2ff);
     }
 
     input:disabled {
-      color: var(--disabled-text-color, rgba(224, 232, 255, 0.3));
+      color: var(--editor-text-disabled, rgba(224, 232, 255, 0.3));
     }
 
     input[type='color'] {

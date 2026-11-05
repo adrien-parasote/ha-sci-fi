@@ -38,7 +38,7 @@ export class SfEditorDropdownEntity extends SfEditorDropdown {
 
       .dropdown-item .entity-name {
         font-size: 0.85rem;
-        color: var(--primary-text-color, #e0e8ff);
+        color: var(--editor-text, #e0e8ff);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -46,7 +46,7 @@ export class SfEditorDropdownEntity extends SfEditorDropdown {
 
       .dropdown-item .entity-id {
         font-size: 0.7rem;
-        color: var(--secondary-text-color, rgba(224, 232, 255, 0.5));
+        color: var(--editor-text-hint, rgba(224, 232, 255, 0.5));
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;

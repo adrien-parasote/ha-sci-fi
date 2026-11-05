@@ -21,8 +21,8 @@ export class SfEditorAction extends LitElement {
     }
 
     .container {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(0, 210, 255, 0.2);
+      background: var(--editor-surface, rgba(255, 255, 255, 0.02));
+      border: 1px solid var(--editor-accent-border, rgba(0, 210, 255, 0.2));
       border-radius: 8px;
       padding: 12px;
       box-sizing: border-box;
@@ -31,7 +31,7 @@ export class SfEditorAction extends LitElement {
     
     .label {
       font-size: 0.875rem;
-      color: var(--primary-color, #00d2ff);
+      color: var(--editor-accent, #00d2ff);
       margin-bottom: 8px;
       font-weight: 500;
     }
@@ -40,9 +40,9 @@ export class SfEditorAction extends LitElement {
     textarea {
       width: 100%;
       height: 100px;
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: var(--primary-text-color, #e0e8ff);
+      background: var(--editor-field-bg, rgba(0, 0, 0, 0.3));
+      border: 1px solid var(--editor-field-border, rgba(255, 255, 255, 0.1));
+      color: var(--editor-text, #e0e8ff);
       font-family: monospace;
       padding: 8px;
       box-sizing: border-box;
@@ -50,7 +50,7 @@ export class SfEditorAction extends LitElement {
     }
     
     .error {
-      color: var(--error-color, #ff4444);
+      color: var(--editor-error, #ff4444);
       font-size: 0.75rem;
       margin-top: 4px;
     }

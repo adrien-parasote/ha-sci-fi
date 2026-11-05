@@ -43,7 +43,7 @@ export class SfEditorDropdown extends SfEditorInput {
         top: 50%;
         transform: translateY(-50%) rotate(90deg);
         font-size: 0.75rem;
-        color: var(--secondary-text-color, rgba(224, 232, 255, 0.6));
+        color: var(--editor-text-secondary, rgba(224, 232, 255, 0.6));
         transition: transform 200ms;
         pointer-events: none;
       }
@@ -57,13 +57,13 @@ export class SfEditorDropdown extends SfEditorInput {
         top: calc(100% + 4px);
         left: 0;
         right: 0;
-        background: var(--ha-card-background, rgba(15, 20, 35, 0.98));
-        border: 1px solid rgba(0, 210, 255, 0.3);
+        background: var(--editor-popup-bg, rgba(15, 20, 35, 0.98));
+        border: 1px solid var(--editor-accent-line, rgba(0, 210, 255, 0.3));
         border-radius: 8px;
         z-index: 100;
         max-height: 240px;
         overflow-y: auto;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 8px 24px var(--editor-shadow, rgba(0, 0, 0, 0.4));
         display: none;
       }
 
@@ -79,12 +79,12 @@ export class SfEditorDropdown extends SfEditorInput {
         padding: 8px 12px;
         cursor: pointer;
         font-size: 0.85rem;
-        color: var(--primary-text-color, #e0e8ff);
+        color: var(--editor-text, #e0e8ff);
         transition: background 150ms;
       }
 
       .dropdown-item:hover {
-        background: rgba(0, 210, 255, 0.1);
+        background: var(--editor-accent-faint, rgba(0, 210, 255, 0.1));
       }
 
       .dropdown-item .item-name {

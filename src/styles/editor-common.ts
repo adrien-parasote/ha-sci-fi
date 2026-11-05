@@ -16,6 +16,37 @@ export const sciFiEditorCommonStyles = css`
     --editor-chip-bg: rgba(0, 210, 255, 0.12);
     --editor-chip-color: var(--primary-text-color, #e0e8ff);
     --editor-icon-size: 18px;
+    /* Editor-inputs family: inherited by sf-editor-* (they never import this sheet)
+       and read as var(--editor-x, <literal>) — spec editor-inputs-theme § Token table. */
+    --editor-accent: var(--primary-color, #00d2ff);
+    --editor-text: var(--primary-text-color, #e0e8ff);
+    --editor-text-secondary: var(--secondary-text-color, rgba(224, 232, 255, 0.6));
+    --editor-text-hint: var(--secondary-text-color, rgba(224, 232, 255, 0.5));
+    --editor-text-disabled: var(--disabled-text-color, rgba(224, 232, 255, 0.3));
+    --editor-error: var(--error-color, #ff4444);
+    --editor-error-soft: rgba(255, 68, 68, 0.12);
+    --editor-error-faint: rgba(255, 68, 68, 0.1);
+    --editor-surface: rgba(255, 255, 255, 0.02);
+    --editor-surface-input: rgba(255, 255, 255, 0.04);
+    --editor-field-bg: rgba(0, 0, 0, 0.3);
+    --editor-field-border: rgba(255, 255, 255, 0.1);
+    --editor-accent-border: rgba(0, 210, 255, 0.2);
+    --editor-accent-faint: rgba(0, 210, 255, 0.1);
+    --editor-accent-track: rgba(0, 210, 255, 0.15);
+    --editor-chip-border: rgba(0, 210, 255, 0.25);
+    --editor-accent-line: rgba(0, 210, 255, 0.3);
+    --editor-accent-strong-border: rgba(0, 210, 255, 0.4);
+    --editor-accent-strong: rgba(0, 210, 255, 0.8);
+    --editor-popup-bg: var(--ha-card-background, rgba(15, 20, 35, 0.98));
+    --editor-shadow: rgba(0, 0, 0, 0.4);
+    --editor-accordion-border: var(--secondary-light-color, rgb(102, 156, 210));
+    --editor-accordion-header-bg: var(--secondary-light-alpha-color, rgba(102, 156, 210, 0.5));
+    --editor-accordion-accent: var(--primary-light-color, rgb(105, 211, 251));
+    --editor-font-small: var(--font-size-small, 12px);
+    --editor-radius: var(--border-radius, 5px);
+    --editor-border-width: var(--border-width, 1px);
+    --editor-accordion-shade-top: rgba(0, 0, 0, 0.7);
+    --editor-accordion-shade-bottom: rgba(0, 0, 0, 0.2);
   }
 
   .card {

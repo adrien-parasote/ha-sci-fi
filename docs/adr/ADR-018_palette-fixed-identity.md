@@ -265,3 +265,14 @@ component that includes `sciFiCommonStyles` and re-declares the tokens on its ow
 `:host`. A card-mod rule on the card's host reaches the card's own tree but not
 those nested components; for them the only workaround is a rule that targets the
 nested element. The user accepted this limit; there is no promise beyond that.
+
+## Addendum — 2026-11-05 (`editor-inputs-theme`, bead `ha-sci-fi-29mt`)
+
+Rows 2–3 of § The four raw values (`sf-editor-slider.ts:35`,
+`sf-editor-input.ts:44`) are no longer raw literals. By user decision D1–D4 of
+2026-11-05, every component of `src/components/editor-inputs/` reads the
+`--editor-*` family by inheritance from the card editor's `:host`, each read
+carrying the pre-port literal as fallback (`--editor-accent-track`,
+`--editor-surface-input` for those two sites). Decisions 1–3 above are unchanged:
+no `--sf-*` token enters the editor tree. Spec:
+[docs/specs/editor-inputs-theme/spec.md](../specs/editor-inputs-theme/spec.md).

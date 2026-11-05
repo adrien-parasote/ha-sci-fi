@@ -22,8 +22,8 @@ export class SfEditorSourceList extends LitElement {
     }
 
     .container {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(0, 210, 255, 0.2);
+      background: var(--editor-surface, rgba(255, 255, 255, 0.02));
+      border: 1px solid var(--editor-accent-border, rgba(0, 210, 255, 0.2));
       border-radius: 8px;
       padding: 12px;
       box-sizing: border-box;
@@ -32,14 +32,14 @@ export class SfEditorSourceList extends LitElement {
     
     .label {
       font-size: 0.875rem;
-      color: var(--primary-color, #00d2ff);
+      color: var(--editor-accent, #00d2ff);
       margin-bottom: 12px;
       font-weight: 500;
     }
 
     .source-item {
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: var(--editor-field-bg, rgba(0, 0, 0, 0.3));
+      border: 1px solid var(--editor-field-border, rgba(255, 255, 255, 0.1));
       border-radius: 6px;
       padding: 12px;
       margin-bottom: 12px;
@@ -58,7 +58,7 @@ export class SfEditorSourceList extends LitElement {
     .delete-btn {
       background: none;
       border: none;
-      color: var(--error-color, #ff4444);
+      color: var(--editor-error, #ff4444);
       cursor: pointer;
       padding: 4px;
       border-radius: 4px;
@@ -70,7 +70,7 @@ export class SfEditorSourceList extends LitElement {
     }
 
     .delete-btn:hover {
-      background: rgba(255, 68, 68, 0.1);
+      background: var(--editor-error-faint, rgba(255, 68, 68, 0.1));
     }
 
     .add-btn {
@@ -80,9 +80,9 @@ export class SfEditorSourceList extends LitElement {
       gap: 8px;
       width: 100%;
       padding: 10px;
-      background: rgba(0, 210, 255, 0.1);
-      border: 1px dashed rgba(0, 210, 255, 0.4);
-      color: var(--primary-color, #00d2ff);
+      background: var(--editor-accent-faint, rgba(0, 210, 255, 0.1));
+      border: 1px dashed var(--editor-accent-strong-border, rgba(0, 210, 255, 0.4));
+      color: var(--editor-accent, #00d2ff);
       border-radius: 6px;
       cursor: pointer;
       font-size: 0.875rem;
@@ -90,8 +90,8 @@ export class SfEditorSourceList extends LitElement {
     }
 
     .add-btn:hover {
-      background: rgba(0, 210, 255, 0.2);
-      border-color: rgba(0, 210, 255, 0.8);
+      background: var(--editor-accent-border, rgba(0, 210, 255, 0.2));
+      border-color: var(--editor-accent-strong, rgba(0, 210, 255, 0.8));
     }
   `;
 

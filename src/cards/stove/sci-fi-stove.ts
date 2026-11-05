@@ -645,7 +645,10 @@ export class SciFiStoveCard extends SciFiBaseCard {
   private _releasePowerPick(): void {
     if (this._powerPendingIndex === null) return;
     const entity = this._powerEntity();
-    if (this._powerCallSent || !entity || isPowerDisabled(entity)) {
+    if (
+      this._powerCallSent || !entity || isPowerDisabled(entity) ||
+      this._powerPendingIndex >= powerGrid(entity.attributes).n
+    ) {
       this._cancelPowerTimer();
       this._powerPendingIndex = null;
       this._powerCallSent = false;

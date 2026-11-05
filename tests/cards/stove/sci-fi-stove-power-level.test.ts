@@ -337,6 +337,13 @@ describe('sci-fi-stove — power level', () => {
       expect(call).not.toHaveBeenCalled();
       expect(wheel(el2).selectedId).toBeNull();
       expect(wheel(el2).disabled).toBe(true);
+      document.body.replaceChildren();
+      const el3 = await mount({ number_power_level: POWER }, withPower('2'), call);
+      await pick(el3, '4');
+      await setHass(el3, withPower('2', { min: 1, max: 3, step: 1 }), call);
+      expect(wheel(el3).selectedId).toBe('1');
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(call).not.toHaveBeenCalled();
     });
 
     describe('real element in the document', () => {

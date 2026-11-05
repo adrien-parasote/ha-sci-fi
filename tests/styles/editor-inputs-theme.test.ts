@@ -416,6 +416,8 @@ describe('editor-inputs-theme — integration', () => {
     let editors = 0;
     for (const [rel, src] of mounts) {
       if (rel === 'src/cards/water/sci-fi-water-management.ts') continue;
+      // The stove card's wear section (lot stove-wear-counters) is a card face, like the water card.
+      if (rel === 'src/cards/stove/wear-counters.ts') continue;
       if (!/^src\/cards\/.+-editor\.ts$/.test(rel)) { problems.push(`${rel}: not a card editor`); continue; }
       const m = /static\s+[^=;]*styles[^=;]*=/.exec(src);
       let init = '';
@@ -434,7 +436,7 @@ describe('editor-inputs-theme — integration', () => {
       else editors++;
     }
     expect(problems).toEqual([]);
-    expect({ editors, total: mounts.length }).toEqual({ editors: 11, total: 12 });
+    expect({ editors, total: mounts.length }).toEqual({ editors: 11, total: 13 });
   });
 
   it('IT-EIT-I-04: mutation controls go red', () => {

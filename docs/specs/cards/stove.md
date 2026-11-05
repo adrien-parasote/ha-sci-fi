@@ -592,7 +592,7 @@ La température cible est `attributes.temperature ?? attributes.current_temperat
 | `.diagnostic.door` / `.diagnostic.alert` / `.diagnostic.error`, `.diagnostic-text` | la ligne d'un diagnostic actif et son texte | TC-SDG-U-04, TC-SDG-U-05, TC-SDG-U-06, TC-SDG-U-07, IT-SDG-I-01 |
 | `sf-icon.diagnostic-badge` | l'icône sur l'illustration, son `title` | TC-SDG-U-04, TC-SDG-U-07, IT-SDG-I-01 |
 | `sf-editor-accordion.wear-counters` | la section « Usure », sa présence et `open` | TC-SWC-U-04, IT-SWC-I-01 |
-| `.wear-counter.<compteur>`, `.wear-label`, `.wear-value` | la ligne d'un compteur, son libellé et sa valeur | TC-SWC-U-04, TC-SWC-U-05, IT-SWC-I-02 |
+| `.wear-counter`, `.wear-label`, `.wear-value` | la ligne d'un compteur (seconde classe : la clé sans `sensor_`, ex. `heating_time`), son libellé et sa valeur | TC-SWC-U-04, TC-SWC-U-05, IT-SWC-I-02 |
 
 Les quatre classes que cette table gelait autrefois — `.sensor-tile`,
 `.sensor-tile.warn`, `.bar-fill.pellet`, `.bar-fill.storage` — ne sont pas

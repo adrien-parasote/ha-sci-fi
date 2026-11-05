@@ -39,6 +39,11 @@ const STOVE_SENSOR_FIELDS: ReadonlyArray<readonly [keyof SciFiStoveSensors, stri
   ['sensor_door',                            'input-stove-door',               'mdi:door'],
   ['sensor_alert',                           'input-stove-alert',              'mdi:alert'],
   ['sensor_error',                           'input-stove-error',              'mdi:alert-octagon'],
+  ['sensor_heating_time',                    'input-stove-heating-time',       'mdi:timer-outline'],
+  ['sensor_fuel_used',                       'input-stove-fuel-used',          'mdi:fuel'],
+  ['sensor_igniter_starts',                  'input-stove-igniter-starts',     'mdi:fire'],
+  ['sensor_misfires',                        'input-stove-misfires',           'mdi:fire-alert'],
+  ['sensor_overheatings',                    'input-stove-overheatings',       'mdi:thermometer-alert'],
   ['sensor_time_to_service',                 'input-stove-time-to-service',    'mdi:counter'],
   ['sensor_pellet_quantity',                 'input-pellet-quantity',          'mdi:database'],
 ];

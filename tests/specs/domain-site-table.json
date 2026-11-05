@@ -1,6 +1,6 @@
 {
   "base": "35f1020",
-  "total": 117,
+  "total": 118,
   "files": {
     "src/cards/bridge/sci-fi-bridge-editor.ts": {
       "AUTOMATION": 3,
@@ -85,6 +85,9 @@
     "src/cards/stove/sci-fi-stove.ts": {
       "CLIMATE": 3,
       "SWITCH": 1
+    },
+    "src/cards/stove/wear-counters.ts": {
+      "SENSOR": 1
     },
     "src/cards/tv/sci-fi-tv-editor.ts": {
       "MEDIA_PLAYER": 1,

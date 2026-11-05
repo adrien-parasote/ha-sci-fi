@@ -143,6 +143,29 @@ describe('sci-fi-stove-editor', () => {
     expect(received[0]!.detail.config.number_fan_speed).toBe('number.other_fan');
   });
 
+  it('TC-SDG-U-09: exposes the three diagnostic sensors right after sensor_status', async () => {
+    const el = await createElement();
+    el.setConfig(makeConfig({ sensors: {
+      sensor_door: 'binary_sensor.stove_door', sensor_alert: 'sensor.stove_alert', sensor_error: 'sensor.stove_error',
+    } }));
+    await el.updateComplete;
+    const order = [...el.shadowRoot!.querySelectorAll('[element-id]')].map((n) => n.getAttribute('element-id'));
+    const i = order.indexOf('sensor_status');
+    expect(order.slice(i + 1, i + 4)).toEqual(['sensor_door', 'sensor_alert', 'sensor_error']);
+    for (const [id, label] of [['sensor_door', 'Stove door'], ['sensor_alert', 'Stove alert'], ['sensor_error', 'Stove error']]) {
+      expect(el.shadowRoot!.querySelector(`[element-id="${id}"]`)!.getAttribute('label')).toBe(label);
+    }
+    const received: CustomEvent[] = [];
+    el.addEventListener('config-changed', (e) => received.push(e as CustomEvent));
+    el.shadowRoot!.querySelector('.card')!.dispatchEvent(new CustomEvent('input-update', {
+      bubbles: true,
+      composed: false,
+      detail: { id: 'sensor_alert', kind: 'sensor', value: 'light.x' },
+    }));
+    expect(received).toHaveLength(1);
+    expect(received[0]!.detail.config.sensors.sensor_alert).toBe('light.x');
+  });
+
   /**
    * Lot stove-config-surface — the configuration surface of this editor was
    * never asserted: the three tests above pin `room_temperature`, `threshold`

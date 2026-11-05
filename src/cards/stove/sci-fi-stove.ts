@@ -35,7 +35,34 @@ import '../../components/buttons/sf-button-card.js';
 import '../../components/buttons/sf-button-card-select.js';
 import { DOMAIN } from '../../types/domains.js';
 import { ENTITY_ID } from '../../types/entity-ids.js';
-import type { HomeAssistantExt } from '../../types/ha.js';
+import type { HassEntity, HomeAssistantExt } from '../../types/ha.js';
+import {
+  NUMBER_DEBOUNCE_MS,
+  NUMBER_DOMAINS,
+  type NumberWheelKey,
+  type NumberWheelSpec,
+  NUMBER_WHEELS,
+  type NumberPick,
+  type NumberPicks,
+  type NumberEntity,
+  isNumeric,
+  numberGrid,
+  numberValue,
+  isNumberDisabled,
+} from './number-wheel.js';
+import {
+  DIAGNOSTIC_DOMAINS,
+  DIAGNOSTIC_ICONS,
+  type DiagnosticLine,
+  capErrorText,
+  capText,
+  configuredId,
+  errorCode,
+  errorText,
+  isDoorOpen,
+  isReported,
+  readDiagnostic,
+} from './diagnostics.js';
 
 const TAG = 'sci-fi-stove';
 
@@ -90,126 +117,6 @@ const PRESET_ICONS: Record<string, string> = {
   none: 'mdi:circle-medium',
   eco:  'mdi:leaf',
 };
-
-// ── Number wheels (specs docs/specs/stove-power-level, docs/specs/stove-fan-speed) ──
-/** Quiet time after the last wheel pick before the one set_value call (FR-8). */
-const NUMBER_DEBOUNCE_MS = 400;
-/** Beyond this many items the bounds are replaced by the wheel's fallback trio (FR-5.1). */
-const NUMBER_MAX_ITEMS = 50;
-/** The two writable domains a number wheel entity may belong to (FR-12). */
-const NUMBER_DOMAINS: readonly string[] = [DOMAIN.NUMBER, DOMAIN.INPUT_NUMBER];
-
-interface NumberTrio {
-  readonly min: number;
-  readonly max: number;
-  readonly step: number;
-}
-
-type NumberWheelKey = 'powerLevel' | 'fanSpeed';
-
-/** One number wheel of the bottom bar: everything that differs between the power and the fan wheels. */
-interface NumberWheelSpec {
-  readonly key: NumberWheelKey;
-  readonly field: 'number_power_level' | 'number_fan_speed';
-  readonly cssClass: string;
-  readonly fallback: NumberTrio;
-  readonly label: () => string;
-  readonly successMessage: () => string;
-  readonly unavailableMessage: () => string;
-}
-
-/** Rendering order (stove-fan-speed FR-4): power first, then fan. */
-const NUMBER_WHEELS: readonly NumberWheelSpec[] = [
-  {
-    key: 'powerLevel',
-    field: 'number_power_level',
-    cssClass: 'power-level',
-    fallback: { min: 1, max: 5, step: 1 },
-    label: () => msg('Power'),
-    successMessage: () => msg('Power level changed'),
-    unavailableMessage: () => msg('Power level unavailable'),
-  },
-  {
-    key: 'fanSpeed',
-    field: 'number_fan_speed',
-    cssClass: 'fan-speed',
-    fallback: { min: 0, max: 5, step: 1 },
-    label: () => msg('Fan'),
-    successMessage: () => msg('Fan speed changed'),
-    unavailableMessage: () => msg('Fan speed unavailable'),
-  },
-];
-
-/** A pick not yet released to HA's state (FR-8); `sent` once set_value left. */
-interface NumberPick {
-  readonly index: number;
-  readonly sent: boolean;
-}
-
-type NumberPicks = Readonly<Record<NumberWheelKey, NumberPick | null>>;
-
-interface NumberGrid {
-  readonly min: number;
-  readonly step: number;
-  /** number of items */
-  readonly n: number;
-  /** decimals shown and kept */
-  readonly d: number;
-}
-
-type NumberEntity = { state: unknown; attributes: Record<string, unknown> };
-
-/** FR-5: a finite number, or a non-blank string that reads as one. parseFloat is never used. */
-function isNumeric(raw: unknown): boolean {
-  // Number.isFinite never coerces: it is true only for a finite number value.
-  if (typeof raw === 'string') return raw.trim() !== '' && Number.isFinite(Number(raw));
-  return Number.isFinite(raw);
-}
-
-/** FR-5.2: the smallest j in 0..10 such that x·10^j is an integer (10 when none). */
-function decimals(x: number): number {
-  for (let j = 0; j <= 10; j++) {
-    const scaled = x * 10 ** j;
-    if (Math.abs(scaled - Math.round(scaled)) < 1e-9) return j;
-  }
-  return 10;
-}
-
-function gridOf(min: number, max: number, step: number): NumberGrid {
-  return {
-    min,
-    step,
-    n: Math.floor((max - min) / step + 1e-9) + 1,
-    d: Math.max(decimals(min), decimals(step)),
-  };
-}
-
-/** FR-5.1: per-bound fallback, then the whole trio falls back when it is incoherent or too large. */
-function numberGrid(attrs: Record<string, unknown> | undefined, fallback: NumberTrio): NumberGrid {
-  const bound = (key: keyof NumberTrio): number =>
-    isNumeric(attrs?.[key]) ? Number(attrs?.[key]) : fallback[key];
-  const min = bound('min');
-  const max = bound('max');
-  const step = bound('step');
-  const fallbackGrid = gridOf(fallback.min, fallback.max, fallback.step);
-  if (step <= 0 || min > max) return fallbackGrid;
-  const grid = gridOf(min, max, step);
-  return grid.n > NUMBER_MAX_ITEMS ? fallbackGrid : grid;
-}
-
-/** v_k of FR-5.2, rounded to the grid's decimals. */
-function numberValue(grid: NumberGrid, k: number): number {
-  return Number((grid.min + k * grid.step).toFixed(grid.d));
-}
-
-/**
- * FR-7: an unreadable state disables the wheel. HA's two non-value states
- * (unavailable, unknown) are not numeric, so this one test covers them.
- * The climate state never counts.
- */
-function isNumberDisabled(entityState: { state: unknown }): boolean {
-  return !isNumeric(entityState.state);
-}
 
 @customElement(TAG)
 export class SciFiStoveCard extends SciFiBaseCard {
@@ -274,6 +181,10 @@ export class SciFiStoveCard extends SciFiBaseCard {
       if (s.sensor_fan_speed) entities.add(s.sensor_fan_speed);
       if (s.sensor_pressure) entities.add(s.sensor_pressure);
       if (s.sensor_time_to_service) entities.add(s.sensor_time_to_service);
+      for (const raw of [s.sensor_door, s.sensor_alert, s.sensor_error]) {
+        const id = configuredId(raw);
+        if (id) entities.add(id);
+      }
     }
 
     return Array.from(entities);
@@ -318,12 +229,14 @@ export class SciFiStoveCard extends SciFiBaseCard {
 
   private _renderContent(stoveState: any): TemplateResult {
     const s = this.config.sensors ?? {};
+    const diagnostics = this._diagnosticLines(s);
     return html`
       <div class="content">
         <sf-stove-image state=${stoveState.state}></sf-stove-image>
+        ${this._renderDiagnosticBadge(diagnostics)}
         <div class="info">
           ${this._renderTopZone(s)}
-          ${this._renderMiddleZone(stoveState, s)}
+          ${this._renderMiddleZone(stoveState, s, diagnostics)}
           ${this._renderPowerZone(s)}
         </div>
       </div>
@@ -381,7 +294,7 @@ export class SciFiStoveCard extends SciFiBaseCard {
   }
 
   /** MIDDLE zone: status list with border-left line */
-  private _renderMiddleZone(stoveState: any, s: any): TemplateResult {
+  private _renderMiddleZone(stoveState: any, s: any, diagnostics: readonly DiagnosticLine[]): TemplateResult {
     const tempUnit = this.hass.config?.unit_system?.temperature ?? '°C';
     const pressureUnit = this.hass.config?.unit_system?.pressure ?? 'Pa';
     const status = s.sensor_status ? this.hass.states[s.sensor_status]?.state : undefined;
@@ -402,12 +315,77 @@ export class SciFiStoveCard extends SciFiBaseCard {
         <div class="temperatures">
           ${this._renderTimeToService(timeToService, timeUnit)}
           ${this._renderStatus(msg('Status'), status)}
+          ${this._renderDiagnostics(diagnostics)}
           ${this._renderTemperature(msg('External'), insideTemp ? parseFloat(insideTemp) : undefined, tempUnit)}
           ${this._renderTemperature(msg('Internal'), combustionTemp ? parseFloat(combustionTemp) : undefined, tempUnit)}
           ${this._renderPressure(msg('Pressure'), pressure, pressureUnit)}
         </div>
       </div>
     `;
+  }
+
+  // ── DIAGNOSTICS (spec docs/specs/stove-diagnostics) ────────────────────────
+
+  /** FR-5, FR-7, FR-13: the lines to render, in the order door, alert, error. */
+  private _diagnosticLines(s: any): DiagnosticLine[] {
+    const read = (raw: unknown, prefix: string) => readDiagnostic(this.hass.states, configuredId(raw), prefix);
+    const door = read(s.sensor_door, DIAGNOSTIC_DOMAINS.door);
+    const alert = read(s.sensor_alert, DIAGNOSTIC_DOMAINS.alert);
+    const error = read(s.sensor_error, DIAGNOSTIC_DOMAINS.error);
+    const alertOn = alert !== undefined && isReported(alert);
+    const lines: DiagnosticLine[] = [];
+    if (door && isDoorOpen(door) && !(alertOn && alert.state.trim().toLowerCase() === 'door_open')) {
+      const text = msg('Door open');
+      lines.push({ kind: 'door', text, capped: capText(text) });
+    }
+    if (alertOn) {
+      const label = this._stateLabel(alert);
+      lines.push({ kind: 'alert', text: label, capped: capText(label) });
+    }
+    if (error && isReported(error)) {
+      const label = this._stateLabel(error);
+      const code = errorCode(error.attributes?.['code']);
+      lines.push({ kind: 'error', text: errorText(label, code), capped: capErrorText(label, code) });
+    }
+    return lines;
+  }
+
+  /** FR-9: HA's translation when it answers a non-blank string, else the raw state with `_` as spaces. */
+  private _stateLabel(entity: HassEntity): string {
+    const format = this.hass.formatEntityState;
+    if (typeof format === 'function') {
+      try {
+        const label: unknown = format(entity);
+        if (typeof label === 'string' && label.trim() !== '') return label;
+      } catch {
+        // FR-9: a failing formatter falls back to the raw state, nothing is logged.
+      }
+    }
+    return String(entity.state).trim().replaceAll('_', ' ');
+  }
+
+  /** FR-6: the live zone, only when there is a line to render. */
+  private _renderDiagnostics(lines: readonly DiagnosticLine[]): TemplateResult | typeof nothing {
+    if (lines.length === 0) return nothing;
+    return html`
+      <div class="diagnostics" role="status" aria-live="polite">
+        ${lines.map((l) => html`
+          <div class="diagnostic ${l.kind}">
+            <sf-icon icon="${DIAGNOSTIC_ICONS[l.kind]}" aria-hidden="true" .connection="${this.hass.connection}"></sf-icon>
+            <div class="diagnostic-text" title="${l.capped}">${l.text}</div>
+          </div>
+        `)}
+      </div>
+    `;
+  }
+
+  /** FR-8: one badge, of the most severe kind rendered (lines are ordered by severity). */
+  private _renderDiagnosticBadge(lines: readonly DiagnosticLine[]): TemplateResult | typeof nothing {
+    const worst = lines[lines.length - 1];
+    if (!worst) return nothing;
+    const label = capText(lines.map((l) => l.capped).join(' · '));
+    return html`<sf-icon class="diagnostic-badge ${worst.kind}" icon="${DIAGNOSTIC_ICONS[worst.kind]}"
+      role="img" title="${label}" aria-label="${label}" .connection="${this.hass.connection}"></sf-icon>`;
   }
 
   private _renderTimeToService(hours: string | undefined, unit: string): TemplateResult | typeof nothing {

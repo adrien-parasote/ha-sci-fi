@@ -1,6 +1,6 @@
 {
   "base": "35f1020",
-  "total": 114,
+  "total": 117,
   "files": {
     "src/cards/bridge/sci-fi-bridge-editor.ts": {
       "AUTOMATION": 3,
@@ -71,13 +71,19 @@
       "SELECT": 2,
       "SWITCH": 2
     },
+    "src/cards/stove/diagnostics.ts": {
+      "BINARY_SENSOR": 1,
+      "SENSOR": 2
+    },
+    "src/cards/stove/number-wheel.ts": {
+      "INPUT_NUMBER": 1,
+      "NUMBER": 1
+    },
     "src/cards/stove/sci-fi-stove-editor.ts": {
       "CLIMATE": 1
     },
     "src/cards/stove/sci-fi-stove.ts": {
       "CLIMATE": 3,
-      "INPUT_NUMBER": 1,
-      "NUMBER": 1,
       "SWITCH": 1
     },
     "src/cards/tv/sci-fi-tv-editor.ts": {

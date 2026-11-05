@@ -29,6 +29,9 @@ export interface SciFiStoveSensors {
   readonly sensor_fan_speed?: string;             // ADR-005: missing in v1.0.0-wip
   readonly sensor_pressure?: string;              // ADR-005: missing in v1.0.0-wip
   readonly sensor_time_to_service?: string;       // ADR-005: missing in v1.0.0-wip
+  readonly sensor_door?: string;                  // core fumis binary_sensor.*_door (stove-diagnostics)
+  readonly sensor_alert?: string;                 // core fumis sensor.*_alert (enum, `none` when quiet)
+  readonly sensor_error?: string;                 // core fumis sensor.*_error (enum, raw code in attributes.code)
 }
 
 export interface SciFiStoveConfig extends SciFiBaseConfig {

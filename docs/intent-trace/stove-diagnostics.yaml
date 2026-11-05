@@ -1,0 +1,47 @@
+version: "1"
+assertions:
+  - id: IA-SDG-1
+    assertion: "a stove card whose door is closed and which has no alert and no error looks exactly as it did before"
+    rationale: "user decision D3 and bead ve4 acceptance; the proof compares the content zone to a snapshot recorded on the pre-lot code, without the fields and with all three fields at rest"
+    proves: "docs/specs/stove-diagnostics/spec.md#FR-4"
+    files: [src/cards/stove/sci-fi-stove.ts]
+    proof:
+      type: test_exit_code
+      reference: tests/cards/stove/sci-fi-stove-diagnostics.test.ts
+      expected_exit: 0
+  - id: IA-SDG-2
+    assertion: "when the door is open, an alert is raised or the stove reports an error, the card shows it both as an icon on the stove picture and as a line in the status zone"
+    rationale: "user decision D1: icon on the illustration and text line after the status line, one line per active diagnostic in the order door, alert, error"
+    proves: "docs/specs/stove-diagnostics/spec.md#FR-6"
+    files: [src/cards/stove/sci-fi-stove.ts, src/cards/stove/styles.ts]
+    proof:
+      type: test_exit_code
+      reference: tests/cards/stove/sci-fi-stove-diagnostics.test.ts
+      expected_exit: 0
+  - id: IA-SDG-3
+    assertion: "an error reads as Home Assistant's translated text followed by its raw code, like « Échec d'allumage (E101) »"
+    rationale: "user decision D2; the label comes from hass.formatEntityState, never from a table in the repo, and the code from the attribute code"
+    proves: "docs/specs/stove-diagnostics/spec.md#FR-7"
+    files: [src/cards/stove/sci-fi-stove.ts, src/types/ha.ts]
+    proof:
+      type: test_exit_code
+      reference: tests/cards/stove/sci-fi-stove-diagnostics.test.ts
+      expected_exit: 0
+  - id: IA-SDG-4
+    assertion: "the visual editor lets the user pick the door, alert and error entities"
+    rationale: "bead ve4.3 acceptance: three entries right after the stove status entry"
+    proves: "docs/specs/stove-diagnostics/spec.md#FR-10"
+    files: [src/cards/stove/sci-fi-stove-editor.ts, src/cards/stove/labels.ts]
+    proof:
+      type: test_exit_code
+      reference: tests/cards/stove/sci-fi-stove-editor.test.ts
+      expected_exit: 0
+  - id: IA-SDG-5
+    assertion: "the power and fan wheels behave exactly as before once their mechanism lives in its own module"
+    rationale: "user decision D4: a pure move into number-wheel.ts, both existing wheel suites green, TC-SFS-U-1107 reading the new module"
+    proves: "docs/specs/stove-diagnostics/spec.md#FR-1"
+    files: [src/cards/stove/number-wheel.ts, src/cards/stove/sci-fi-stove.ts]
+    proof:
+      type: test_exit_code
+      reference: tests/cards/stove/sci-fi-stove-fan-speed.test.ts
+      expected_exit: 0

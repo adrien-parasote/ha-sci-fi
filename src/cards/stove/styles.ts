@@ -37,6 +37,46 @@ export const stoveStyles = css`
     display: flex;
     flex-direction: row;
     overflow: visible;
+    position: relative;
+  }
+  /* stove-diagnostics FR-8: one badge in the top-right corner of the illustration. */
+  .diagnostic-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    --icon-size: 24px;
+    /* sf-icon reads its size from --icon-width / --icon-height. */
+    --icon-width: 24px;
+    --icon-height: 24px;
+    z-index: 1;
+    pointer-events: none;
+  }
+  /* stove-diagnostics FR-6, FR-14: one line per diagnostic, ellipsised on one line. */
+  .diagnostic {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+  }
+  .diagnostic-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+  /* The colour of .temperature.high for every kind; the icon carries the severity. */
+  .diagnostic.door .diagnostic-text,
+  .diagnostic.alert .diagnostic-text,
+  .diagnostic.error .diagnostic-text {
+    color: #ff4444;
+  }
+  .diagnostic.door sf-icon,
+  .diagnostic.alert sf-icon,
+  .diagnostic.error sf-icon,
+  .diagnostic-badge.door,
+  .diagnostic-badge.alert,
+  .diagnostic-badge.error {
+    --icon-color: #ff4444;
   }
   .content sf-stove-image {
     height: var(--stove-height);

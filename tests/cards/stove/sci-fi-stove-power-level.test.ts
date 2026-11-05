@@ -188,7 +188,8 @@ describe('sci-fi-stove — power level', () => {
         vi.useRealTimers();
         document.body.replaceChildren();
       }
-      const src = fs.readFileSync(path.join(process.cwd(), 'src/cards/stove/sci-fi-stove.ts'), 'utf8');
+      // stove-diagnostics FR-2: NUMBER_DOMAINS moved to number-wheel.ts.
+      const src = fs.readFileSync(path.join(process.cwd(), 'src/cards/stove/number-wheel.ts'), 'utf8');
       expect(src).toContain('DOMAIN.NUMBER');
       expect(src).toContain('DOMAIN.INPUT_NUMBER');
     });

@@ -210,10 +210,14 @@ describe('sci-fi-stove — fan speed', () => {
   });
 
   it('TC-SFS-U-1107: one shared mechanism in the card source', () => {
+    // stove-diagnostics FR-2: the mechanism moved to number-wheel.ts.
+    const wheel = read('src/cards/stove/number-wheel.ts');
+    expect(wheel).toContain('NumberWheelSpec');
+    expect(wheel).toContain('numberGrid');
     const src = read('src/cards/stove/sci-fi-stove.ts');
-    expect(src).toContain('NumberWheelSpec');
-    expect(src).toContain('numberGrid');
     expect(src).not.toContain('powerGrid');
+    expect(src).not.toContain('function numberGrid');
+    expect(src).not.toContain('interface NumberWheelSpec');
   });
 
   it('TC-SFS-U-1110: .bottom wraps on narrow cards', () => {

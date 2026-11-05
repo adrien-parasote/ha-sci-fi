@@ -257,13 +257,14 @@ describe('Les zones de stove.md sont épinglées sur la classe que leur méthode
     expect(faux).toEqual([]);
   });
 
-  it('l’arbre nomme les cinq lignes de `.temperatures` dans l’ordre rendu', () => {
+  it('l’arbre nomme les six lignes de `.temperatures` dans l’ordre rendu', () => {
     const src = read('src/cards/stove/sci-fi-stove.ts');
     const zone = src.slice(src.indexOf('<div class="temperatures">'));
     const appels = [...zone.slice(0, zone.indexOf('</div>')).matchAll(/this\.(_render\w+)\(/g)].map(
       (m) => m[1]!,
     );
-    expect(appels.length).toBe(5);
+    // stove-diagnostics: .diagnostics joins the five lines (FR-6).
+    expect(appels.length).toBe(6);
 
     const spec = read('docs/specs/cards/stove.md');
     // Les deux bornes sont vérifiées avant la tranche : un `indexOf` à -1
@@ -293,7 +294,7 @@ describe('Présence — ce que l’extraction ne sait pas porter', () => {
   it('chaque sélecteur gelé par stove.md est lu par le test cité — tous les noms de la ligne', () => {
     // The power-level and fan-speed selectors are read by their own test files (lots stove-power-level, stove-fan-speed).
     const test = read('tests/cards/stove/sci-fi-stove.test.ts') + read('tests/cards/stove/sci-fi-stove-power-level.test.ts')
-      + read('tests/cards/stove/sci-fi-stove-fan-speed.test.ts');
+      + read('tests/cards/stove/sci-fi-stove-fan-speed.test.ts') + read('tests/cards/stove/sci-fi-stove-diagnostics.test.ts');
     const lines = read('docs/specs/cards/stove.md').split('\n');
     const i = lines.findIndex((l) => /^##\s+Test Selectors/.test(l));
     const j = lines.findIndex((l, k) => k > i && /^##\s/.test(l));

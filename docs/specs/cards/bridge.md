@@ -18,7 +18,7 @@
 | Feature ID | Description | Covered in | Covers |
 |---|---|---|---|
 | F-BR-01 | `SciFiBridgeConfig` TypeScript interfaces for all sections | This spec § TypeScript Interfaces | ⬜ aucun id TC — l'alignement de l'interface de cette spec sur `src/cards/bridge/config.ts` est tenu par `tests/specs/bridge-spec-structure.test.ts` |
-| F-BR-02 | `config-metadata.ts` YAML validation schema | This spec § config-metadata | ⬜ aucun id TC — `bridgeConfigMetadata` n'a aucun importeur (bead `ha-sci-fi-14z`) |
+| F-BR-02 | ~~`config-metadata.ts` YAML validation schema~~ — supprimé : `bridgeConfigMetadata` n'avait aucun lecteur (décision utilisateur 2026-11-04, bead `ha-sci-fi-14z`) | — | tests/fixes/vague-1/O3.test.ts :: test_O3_bridge_config_metadata_is_gone |
 | F-BR-03 | `getRelevantEntities()` — collects all entity_ids from config | This spec § getRelevantEntities | tests/cards/bridge/sci-fi-bridge.test.ts :: TC-BRIDGE-U-08, TC-BRIDGE-U-09, TC-BRIDGE-U-10 |
 | F-BR-04 | `sf-bridge-crew` — dynamic person list with zone + avatar | This spec § sf-bridge-crew | tests/cards/bridge/sci-fi-bridge.test.ts :: TC-BRIDGE-U-05, TC-BRIDGE-U-06 · tests/cards/bridge/sections/sf-bridge-crew.test.ts :: TC-BRIDGE-U-11, TC-BRIDGE-U-12 |
 | F-BR-05 | `sf-bridge-alerts` — smoke + toggles + occupancy | This spec § sf-bridge-alerts | tests/cards/bridge/sections/sf-bridge-alerts.test.ts :: TC-BRIDGE-U-13, TC-BRIDGE-U-14, TC-BRIDGE-U-15, TC-BRIDGE-U-16, TC-BRIDGE-U-17 |
@@ -358,27 +358,6 @@ export interface SciFiBridgeConfig extends SciFiBaseConfig {
 
 ---
 
-## config-metadata
-
-**Fichier :** `src/cards/bridge/config-metadata.ts`
-
-Structure minimale pour validation et éditeur HA :
-
-```ts
-export const bridgeConfigMetadata = {
-  persons: { type: 'array', mandatory: false, default: [] },
-  alerts: { type: 'object', mandatory: false },
-  access: { type: 'object', mandatory: false },
-  automations: { type: 'object', mandatory: false },
-  appliances: { type: 'object', mandatory: false },
-  stove: { type: 'object', mandatory: false },
-  vehicle: { type: 'object', mandatory: false },
-  actions: { type: 'object', mandatory: false },
-} as const;
-```
-
----
-
 ## getRelevantEntities
 
 **Dans** `sci-fi-bridge.ts` — override de `SciFiBaseCard`:
@@ -444,7 +423,6 @@ src/cards/bridge/
 ├── sci-fi-bridge.ts            — card orchestratrice
 ├── sci-fi-bridge-editor.ts     — éditeur Lovelace
 ├── config.ts                   — interfaces de la carte (ADR-017)
-├── config-metadata.ts          — validation schema
 ├── labels.ts                   — dictionnaire getLabel() (ADR-017)
 ├── bridge-call.ts              — wrapper callService + toast
 ├── bridge-toast.ts             — émission de l'event bridge-toast

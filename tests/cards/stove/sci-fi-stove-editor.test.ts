@@ -108,7 +108,7 @@ describe('sci-fi-stove-editor', () => {
    */
   describe('O1/O4/O6 — the field contract (regression)', () => {
     const labelOf = (el: SciFiStoveEditor, id: string): string | null =>
-      el.shadowRoot!.querySelector(`sf-editor-input[element-id="${id}"]`)!.getAttribute('label');
+      el.shadowRoot!.querySelector(`[element-id="${id}"]`)!.getAttribute('label');
 
     const mounted = async (overrides: Record<string, unknown> = {}): Promise<SciFiStoveEditor> => {
       const el = await createElement();
@@ -138,7 +138,8 @@ describe('sci-fi-stove-editor', () => {
     // O6 — nothing asserted that the real sensor keys are rendered at all.
     it('O6 — renders an input for every key of the sensors contract', async () => {
       const el = await mounted({ sensors: {} });
-      const ids = [...el.shadowRoot!.querySelectorAll('sf-editor-input')]
+      // `entity` is the climate dropdown (bead ha-sci-fi-iu8m), the rest free text
+      const ids = [...el.shadowRoot!.querySelectorAll('sf-editor-input, sf-editor-dropdown-entity')]
         .map((n) => n.getAttribute('element-id'));
       expect(ids).toEqual(expect.arrayContaining([
         'entity',

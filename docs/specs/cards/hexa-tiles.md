@@ -1,4 +1,4 @@
-# Spec 07 — Hexagonal Dashboard Card Fixes
+# Spec 08 — Hexagonal Dashboard Card Fixes
 
 > Document Type: Implementation
 > Covers: Hexagonal card layout, header, interlocking, active/inactive styling, icons, weather alert, and responsive sizing.

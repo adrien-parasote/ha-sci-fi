@@ -33,7 +33,6 @@ const SPEC = join(ROOT, 'docs', 'specs', 'cards', 'bridge.md');
 const HISTORY = join(ROOT, 'docs', 'specs', 'bridge-md-structure', 'spec-history.md');
 const CONFIG_TS = join(ROOT, 'src', 'cards', 'bridge', 'config.ts');
 const BASE_CONFIG_TS = join(ROOT, 'src', 'types', 'config.ts');
-const METADATA_TS = join(ROOT, 'src', 'cards', 'bridge', 'config-metadata.ts');
 const STYLES_TS = join(ROOT, 'src', 'cards', 'bridge', 'styles.ts');
 const CARD_TS = join(ROOT, 'src', 'cards', 'bridge', 'sci-fi-bridge.ts');
 const EDITOR_TS = join(ROOT, 'src', 'cards', 'bridge', 'sci-fi-bridge-editor.ts');
@@ -199,22 +198,6 @@ describe('bridge.md — structure du document', () => {
     const header = /> Covers: F-BR-01 → (F-BR-\d+)/.exec(spec);
     expect(header, 'l\'en-tête annonce une plage').not.toBeNull();
     expect(header![1]).toBe(rows[rows.length - 1]!);
-  });
-
-  it('O6 — le §config-metadata publié est celui que le code porte, clé pour clé', () => {
-    const code = readFileSync(METADATA_TS, 'utf8');
-    const keysOf = (text: string): string[] =>
-      [...text.matchAll(/^\s{2}(\w+): \{ type: '(\w+)'/gm)].map((m) => `${m[1]}:${m[2]}`);
-
-    const published = keysOf(section('## config-metadata').join('\n'));
-    const declared = keysOf(code);
-    expect(declared.length, 'témoin positif : le code déclare des clés').toBeGreaterThan(5);
-    expect(published).toEqual(declared);
-    // access/automations are objects: §TypeScript Interfaces types them so, and
-    // anti-pattern 12 forbids iterating them as arrays.
-    expect(declared).toContain('access:object');
-    expect(declared).toContain('automations:object');
-    expect(declared, 'persons EST un tableau — la garde ne doit pas tout aplatir').toContain('persons:array');
   });
 
   it('O7 — §Responsive Layout publie les DEUX régimes que styles.ts rend', () => {

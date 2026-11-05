@@ -64,7 +64,7 @@ export class SfBridgeStove extends LitElement {
     const stockMax: number =
       (stockState?.attributes?.maximum as number | undefined) ??
       (stockState?.attributes?.max as number | undefined) ??
-      20;
+      100; // same fallback as the stove card (user decision 2026-11-05, bead ha-sci-fi-1wp2)
 
     // Stove on/off — membership, not equality (see STOVE_OFF_STATES)
     const rawStatus: string | undefined = this.hass.states[this.config.status]?.state;

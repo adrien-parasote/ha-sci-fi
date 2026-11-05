@@ -90,5 +90,6 @@ export function capErrorText(label: string, code: string | undefined): string {
   const full = errorText(label, code);
   if (code === undefined || sameAsCode(label, code) || full.length <= TEXT_CAP) return capText(full);
   const suffix = ` (${code.slice(0, CODE_CAP)})`;
+  if (label.length + suffix.length <= TEXT_CAP) return `${label}${suffix}`;
   return `${label.slice(0, TEXT_CAP - suffix.length - 1)}…${suffix}`;
 }

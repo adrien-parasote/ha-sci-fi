@@ -59,4 +59,8 @@ describe('stove diagnostics helpers', () => {
     expect(capErrorText('e1', 'E1')).toBe('E1');
     expect(capErrorText('label', undefined)).toBe('label');
   });
+
+  it('TC-SDG-U-13: a short label beside a long code is not marked as cut', () => {
+    expect(capErrorText('Ignition failure', 'C'.repeat(250))).toBe(`Ignition failure (${'C'.repeat(32)})`);
+  });
 });

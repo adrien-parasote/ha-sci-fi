@@ -1,0 +1,5 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`sci-fi-stove — fan speed > TC-SFS-U-1101: without number_fan_speed .bottom renders exactly as before, with or without power > no power 1`] = `"<sf-button-card-select position="bottom" icon="mdi:fire" title="Mode" text="Heat"></sf-button-card-select><sf-wheel text="Temperature"></sf-wheel>"`;
+
+exports[`sci-fi-stove — fan speed > TC-SFS-U-1101: without number_fan_speed .bottom renders exactly as before, with or without power > with power 1`] = `"<sf-button-card-select position="bottom" icon="mdi:fire" title="Mode" text="Heat"></sf-button-card-select><sf-wheel text="Temperature"></sf-wheel><sf-wheel class="power-level" text="Power" aria-label="Power"></sf-wheel>"`;

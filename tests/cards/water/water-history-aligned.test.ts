@@ -176,12 +176,12 @@ const checkU03 = (doc: string): Fails => {
   return f;
 };
 
-// Fix lot `water` closed every gap but D12 (escalated as a capability).
+// Fix lot `water` closed every gap but D12, which lot `water-offline` resolved.
 const GAPS = ['D12'];
 const BEAD = /ha-sci-fi-[0-9a-z]+(\.[0-9]+)?/;
 // gap -> [construct, cited lines as the spec fixes them]
 const CITES: Record<string, [string, string[]]> = {
-  D12: ['_rawLogs', ['141']],
+  D12: ['_historyOffline = true', ['233']],
 };
 
 const checkU04 = (doc: string, srcLines: string[]): Fails => {
@@ -193,10 +193,9 @@ const checkU04 = (doc: string, srcLines: string[]): Fails => {
     if (r === '') f.push(`gap ${g}: no row`);
     else if (!BEAD.test(r.replace(/\|\s*$/, '').split('|').pop() ?? '')) f.push(`gap ${g}: no bead id`);
   }
-  has(f, 'D12', gapRow('D12'), 'withdraws', 'stays open');
+  has(f, 'D12', gapRow('D12'), 'resolved', 'water-offline');
   hasNot(f, 'doc', doc, 'spec not bent');
-  hasNot(f, 'offline', z.offline, 'display cached', 'dim orange');
-  has(f, 'offline', z.offline, 'no cached data');
+  has(f, 'offline', z.offline, '[ OFFLINE', 'keeps the rows', 'one retry in 5s');
   const at = (n: number): string => srcLines[n - 1] ?? '';
   for (const [g, [construct, lines]] of Object.entries(CITES)) {
     for (const n of lines) {
@@ -209,9 +208,9 @@ const checkU04 = (doc: string, srcLines: string[]): Fails => {
   const resolved = doc.split('\n').find((l) => l.startsWith('Resolved by alignment')) ?? '';
   has(f, 'resolved line', resolved, 'D14', '_formatTimestamp', 'no test pins the brackets');
   const D14_CITES: [number, string][] = [
-    [307, '_formatTimestamp(when'],
-    [318, '${dd}/${mo}'],
-    [353, '[${this._formatTimestamp('],
+    [371, '_formatTimestamp(when'],
+    [382, '${dd}/${mo}'],
+    [418, '[${this._formatTimestamp('],
   ];
   for (const [n, construct] of D14_CITES) {
     if (!new RegExp(`:${n}(?!\\d)`).test(resolved)) f.push(`D14: resolved line does not cite :${n}`);
@@ -312,12 +311,12 @@ describe('water_history.md aligned on water.md and the code', () => {
 
   it('TC-WSA-U-04: Known Gaps rows carry beads, D12 is honest, cited code lines are real', () => {
     expect(checkU04(DOC, SRC)).toEqual([]);
-    expect(checkU04(mutant(DOC, 'stays open', 'closes'), SRC).length).toBeGreaterThan(0);
-    expect(checkU04(mutant(DOC, '| `ha-sci-fi-1k7` |', '|  |'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, '| resolved by lot `water-offline`', '| left by lot `water-offline`'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, '| `ha-sci-fi-8fn3` |', '|  |'), SRC).length).toBeGreaterThan(0);
     expect(checkU04(DOC + '\nspec not bent', SRC).length).toBeGreaterThan(0);
-    expect(checkU04(mutant(DOC, 'no cached data', 'cached data shown dim orange'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, 'makes one retry in 5s', 'never retries'), SRC).length).toBeGreaterThan(0);
     const drifted = [...SRC];
-    drifted[140] = ''; // the D12 cite
+    drifted[232] = ''; // the D12 cite
     expect(checkU04(DOC, drifted).length).toBeGreaterThan(0);
     for (const [g, cites] of Object.entries(CITES)) {
       for (const n of cites[1]) {
@@ -326,13 +325,13 @@ describe('water_history.md aligned on water.md and the code', () => {
         expect(checkU04(DOC, d).length, `${g} :${n}`).toBeGreaterThan(0);
       }
     }
-    expect(checkU04(mutant(DOC, '(`:141`)', '(`:999`)'), SRC).length).toBeGreaterThan(0);
-    expect(checkU04(mutant(DOC, '(`:141`)', '(`:1400`)'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, '(`:233`)', '(`:999`)'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, '(`:233`)', '(`:2330`)'), SRC).length).toBeGreaterThan(0);
     // D14 sits in the resolved line now: its three cites and its "not pinned" statement are held by mutants.
-    expect(checkU04(mutant(DOC, '`:318`', '`:999`'), SRC).length).toBeGreaterThan(0);
-    expect(checkU04(mutant(DOC, '`:318`', '`:3170`'), SRC).length).toBeGreaterThan(0);
-    expect(checkU04(mutant(DOC, '`:353`', '`:999`'), SRC).length).toBeGreaterThan(0);
-    expect(checkU04(mutant(DOC, '`:307`', '`:999`'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, '`:382`', '`:999`'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, '`:382`', '`:3820`'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, '`:418`', '`:999`'), SRC).length).toBeGreaterThan(0);
+    expect(checkU04(mutant(DOC, '`:371`', '`:999`'), SRC).length).toBeGreaterThan(0);
     expect(checkU04(mutant(DOC, 'no test pins the brackets', 'a test pins the brackets'), SRC).length).toBeGreaterThan(0);
   });
 

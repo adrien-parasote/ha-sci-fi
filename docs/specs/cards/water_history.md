@@ -4,7 +4,7 @@
 > Covers: Feature-Water-History-01 (Unified activity and execution log shown in every accordion of the water card: the Automations accordion and each device accordion, each filtered to its own entities, as [water.md](./water.md) F-WATER-05 requires)
 > Depends on: [Spec 05](./05_cards.md#sci-fi-water-management), [Spec 03](./03_base_classes.md#L1)
 >
-> **Arbitrage 2026-11-02 (bead `ha-sci-fi-enr`, décision utilisateur) : [water.md](./water.md) fait foi, le code la suit, et cette spec est alignée sur eux.** Fenêtre 7 jours, endpoint primaire `history/history_during_period` avec repli `logbook/get_events`, récupération au chargement du plancher : voir § 1. Les écarts du code que cette spec ne cache plus sont listés § Known Gaps, un bead chacun ; D12 est le seul où c'est la spec qui a reculé (exigence retirée), dit comme tel.
+> **Arbitrage 2026-11-02 (bead `ha-sci-fi-enr`, décision utilisateur) : [water.md](./water.md) fait foi, le code la suit, et cette spec est alignée sur eux.** Fenêtre 7 jours, endpoint primaire `history/history_during_period` avec repli `logbook/get_events`, récupération au chargement du plancher : voir § 1. Les écarts du code que cette spec ne cache plus sont listés § Known Gaps, un bead chacun ; D12 (affichage hors ligne), un temps retiré, est résolu par le lot `water-offline`.
 
 ---
 
@@ -94,10 +94,10 @@ This component MUST expose the following reactive Lit properties:
 
 | Failure | Mitigation | Trigger | Log |
 |---|---|---|---|
-| **HA API timeout / offline** | Per [water.md](./water.md) § Error Handling "History API unavailable": recorder failure falls back to logbook; if both fail the log stays empty and renders the same empty state as "no history". There is no `[ OFFLINE ]` header, no cached data, no timeout on `callWS`, and the water.md "API Failure: connection error, retry in 5s" behaviour is not implemented for the history fetch (see Known Gaps, D12). | `callWS` rejects | `console.warn` |
+| **HA API timeout / offline** | Per [water.md](./water.md) § Error Handling "History API unavailable": recorder failure falls back to logbook; if both fail the card keeps the rows of its last success on this floor, dimmed `#ffaa00`, under a `[ OFFLINE · HH:MM ]` badge (`[ OFFLINE ]` with no success yet, `History unavailable` with an empty cache), and makes one retry in 5s; then the sync button. No timeout on `callWS` ([water-offline](../water-offline/spec.md), Known Gaps D12 resolved). | `callWS` rejects | `console.warn` |
 | **No history found** | Show beautiful empty state: `"Aucun événement enregistré."` | Response list is empty | none (nothing is logged) |
 | **API returns malformed events** | A row without an entity, a `state` or a `when` is dropped, on the recorder path as on the logbook path (D22, fixed). | Row without `state` or `when` | `console.warn` with the count of dropped rows |
-| **Active floor changes** | Automatically trigger a new log fetch and clear the old list (`_rawLogs` is emptied at the start of every fetch). | `_activeFloorId` or `entityIds` changes | none |
+| **Active floor changes** | Automatically trigger a new log fetch; the cache of the previous floor or entity set is dropped (`_rawLogs` emptied, offline state and pending retry cleared in `willUpdate`), while a fetch on the same floor keeps the old logs until it settles. | `_activeFloorId` or `entityIds` changes | none |
 
 ---
 
@@ -144,22 +144,22 @@ This component MUST expose the following reactive Lit properties:
 | IT-WATER-HISTORY-I-005 | Integration | Recorder first | `hass.callWS` resolves `{}` to every call; `_fetchHistoryLogs` runs with `entityIds` `['switch.valve_1']` | The payload captured is of type `history/history_during_period` with `entity_ids` `['switch.valve_1']` (the last call captured, the primary one resolving). The `start_time` is not asserted |
 | IT-WATER-HISTORY-I-006 | Integration | `entityIds` change refetches | Mounted card; `_fetchHistoryLogs` replaced by a counter reset after mount; `entityIds` replaced and the update run | The counter is exactly 1 |
 | IT-WATER-HISTORY-I-007 | Integration | `_activeFloorId` change refetches | Same set-up; `_activeFloorId` changes from `floor_1` to `floor_2` and the update runs | The counter is exactly 1 |
-| IT-WATER-HISTORY-I-008 | Integration | Logs cleared when a fetch starts | `_rawLogs` holds one entry; `_fetchHistoryLogs()` is called and not yet awaited | Straight after the synchronous call `_rawLogs` equals `[]` |
+| IT-WATER-HISTORY-I-008 | Integration | A fetch keeps the old logs while it runs | `_rawLogs` holds one entry; `_fetchHistoryLogs()` is called and not yet awaited | Straight after the synchronous call `_rawLogs` still holds that entry |
 | IT-WATER-HISTORY-I-009 | Integration | `entityIds` follows the floor | `hass` has floor `basement`, area `utility`, and two labelled `water` entities of it: `automation.gestion_chauffe_eau` (no device) and `switch.pump` (device `pump_device`); `_activeFloorId` is `basement` and `willUpdate` runs | `entityIds` equals `['automation.gestion_chauffe_eau', 'switch.pump']`: every water entity of the floor, device-owned ones included, not only the standalone one (the test title says "only standalone"; its assertion says otherwise) |
 
 ---
 
 ## Known Gaps (where the code departs from water.md or from this spec)
 
-Arbitrage `ha-sci-fi-enr`: [water.md](./water.md) is the reference and the code is meant to follow it. Where the code departs, the spec states the reference behaviour and the gap is a bead, not a rewritten requirement. D12 is the one exception: there the spec withdrew a requirement, and says so. Fix lot `water` closed every other gap (resolved lines below).
+Arbitrage `ha-sci-fi-enr`: [water.md](./water.md) is the reference and the code is meant to follow it. Where the code departs, the spec states the reference behaviour and the gap is a bead, not a rewritten requirement. D12, once withdrawn, came back as a product decision and is resolved by lot `water-offline`. Fix lot `water` closed every other gap (resolved lines below).
 
 | Gap | Code today | Bead |
 |---|---|---|
-| D12 offline cache and `[ OFFLINE ]` withdrawn | This spec withdraws its former requirement (cached data shown dim orange under an `[ OFFLINE ]` header); water.md never had it. The requirement no longer exists in either spec, yet bead `ha-sci-fi-1k7` stays open: it now tracks a product decision (re-introduce an offline display, or close), not a defect against a spec; fix lot `water` escalated it as a capability. Code today: `_fetchHistoryLogs` empties `_rawLogs` before the call (`:141`), both-fail renders the same empty state as "no history", no timeout, no retry | `ha-sci-fi-1k7` |
+| D12 offline cache and `[ OFFLINE ]` | resolved by lot `water-offline` (bead `ha-sci-fi-8fn3`, the product decision `ha-sci-fi-1k7` tracked): both-fail keeps the cache and sets `_historyOffline` (in `_markOffline`) (`:233`), one retry at 5 s; spec [water-offline](../water-offline/spec.md) | `ha-sci-fi-8fn3` |
 
 Resolved by fix lot `water` (`ha-sci-fi-d6nc`, one regression test each in `tests/cards/water/fix-water.test.ts`): D01 the spin targets `sf-icon` (`ha-sci-fi-9vv`), D07 an unlisted floor falls back to the first listed (`ha-sci-fi-rd4`), D15 `_historyLogs` removed, `_visibleLogs` is the one log contract (`ha-sci-fi-ijw`), D20 no inline `style=` left (`ha-sci-fi-ln3`), D21 `expanded` removed (`ha-sci-fi-xrc`), D22 malformed rows dropped with a `console.warn` (`ha-sci-fi-5aw`), D23 `_fetchId` incremented on entry (`ha-sci-fi-p5a`), D24 water.md F-WATER-06 amended to six domains (`ha-sci-fi-7kb`).
 
-Resolved by alignment, not by a bead: D16 (the "Warning" filter of IT-003 never existed, removed above), window and endpoint (`ha-sci-fi-o5p`), D14 (TC-WATER-HISTORY-U-005, played since lot `water-orphan-ids`, bead `ha-sci-fi-78y.7`, pins what `_formatTimestamp` returns, `DD/MM HH:MM` (`:307`, the `return` at `:318`) with the `00/00 00:00` fallback; the brackets come from the template that wraps it (`:353`) and no test pins the brackets: a render test of `.log-time` would close that).
+Resolved by alignment, not by a bead: D16 (the "Warning" filter of IT-003 never existed, removed above), window and endpoint (`ha-sci-fi-o5p`), D14 (TC-WATER-HISTORY-U-005, played since lot `water-orphan-ids`, bead `ha-sci-fi-78y.7`, pins what `_formatTimestamp` returns, `DD/MM HH:MM` (`:371`, the `return` at `:382`) with the `00/00 00:00` fallback; the brackets come from the template that wraps it (`:418`) and no test pins the brackets: a render test of `.log-time` would close that).
 
 ## Local Development
 

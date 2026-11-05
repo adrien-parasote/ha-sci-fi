@@ -2,6 +2,7 @@ import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { msg } from '@lit/localize';
+import { getLocale } from '../../locales/localization.js';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import { floorNavStyles } from '../../styles/floor-nav.js';
@@ -36,6 +37,11 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
   @state() private _historyLogsLoading: boolean = false;
   @state() private _activeFilter: 'all' | 'alerts' = 'all';
   @state() private _expandedMap: Map<string, boolean> = new Map();
+  /** Both history sources rejected for the current fetch (water-offline FR-2). */
+  @state() private _historyOffline: boolean = false;
+  /** Time of the last successful fetch on this floor, null when none. */
+  @state() private _cachedAt: number | null = null;
+  private _offlineRetryTimer: number | null = null;
 
   declare config: SciFiWaterManagementConfig;
   declare entityIds: string[];
@@ -53,6 +59,24 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
       config: { type: Object },
       entityIds: { type: Array }
     };
+  }
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    // A card reattached while offline re-fetches once (water-offline FR-6).
+    if (this._historyOffline && this.hass) void this._fetchHistoryLogs();
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._clearOfflineRetry();
+  }
+
+  private _clearOfflineRetry(): void {
+    if (this._offlineRetryTimer !== null) {
+      clearTimeout(this._offlineRetryTimer);
+      this._offlineRetryTimer = null;
+    }
   }
 
   protected override firstUpdated(): void {
@@ -93,8 +117,8 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     super.willUpdate(changedProperties);
     if (changedProperties.has('_activeFloorId') || changedProperties.has('_entities') || changedProperties.has('_devices') || changedProperties.has('hass')) {
       if (changedProperties.has('_activeFloorId')) {
-        // Floor changed: clear stale logs and reset accordion states
-        this._rawLogs = [];
+        // Floor changed: drop the cache of the previous floor and reset accordion states
+        this._resetHistoryCache();
         this._expandedMap = new Map();
       }
       if (this._activeFloorId) {
@@ -102,9 +126,19 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
         const newEntityIds = waterEntities.map(e => e.entity_id);
         if (JSON.stringify(this.entityIds) !== JSON.stringify(newEntityIds)) {
           this.entityIds = newEntityIds;
+          // Another entity set must never show the previous set's rows (water-offline FR-6)
+          this._resetHistoryCache();
         }
       }
     }
+  }
+
+  /** Empty cache, online, no retry pending (water-offline FR-6, FR-13). */
+  private _resetHistoryCache(): void {
+    this._rawLogs = [];
+    this._historyOffline = false;
+    this._cachedAt = null;
+    this._clearOfflineRetry();
   }
 
   protected override updated(changedProperties: Map<string | number | symbol, unknown>): void {
@@ -132,13 +166,14 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     DOMAIN.SWITCH, DOMAIN.VALVE, DOMAIN.AUTOMATION, DOMAIN.BINARY_SENSOR, DOMAIN.INPUT_BOOLEAN, DOMAIN.SENSOR,
   ]);
 
-  async _fetchHistoryLogs(): Promise<void> {
+  async _fetchHistoryLogs(isRetry = false): Promise<void> {
     // Every call supersedes the one in flight, early returns included, so a
     // late response for the previous floor never lands. ha-sci-fi-p5a
     this._fetchId += 1;
     const currentFetchId = this._fetchId;
-    // Clear old logs immediately to prevent stale state display while fetching or on floor switch
-    this._rawLogs = [];
+    // The previous rows stay while the fetch runs: they are the offline cache
+    // (water-offline FR-1). A retry pending from an earlier failure is dropped.
+    this._clearOfflineRetry();
 
     if (!this.hass) {
       await this._loadSandboxLogs(currentFetchId);
@@ -150,7 +185,10 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     this._historyLogsLoading = true;
 
     try {
-      if (!this.entityIds || this.entityIds.length === 0) return;
+      if (!this.entityIds || this.entityIds.length === 0) {
+        this._resetHistoryCache();
+        return;
+      }
 
       const startTime = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
@@ -159,7 +197,10 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
         id => SciFiWaterManagementCard.MEANINGFUL_DOMAINS.has(id.split('.')[0] as string)
       );
 
-      if (queryIds.length === 0) return;
+      if (queryIds.length === 0) {
+        this._resetHistoryCache();
+        return;
+      }
 
       let logs: any[];
       try {
@@ -171,14 +212,37 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
 
       if (this._fetchId !== currentFetchId) return; // Discard superseded response
       this._rawLogs = logs;
+      this._historyOffline = false;
+      this._cachedAt = Date.now();
 
     } catch (err) {
       console.warn('Sci-Fi Water: Failed to fetch history', err);
+      if (this._fetchId === currentFetchId) this._markOffline(isRetry);
     } finally {
       if (this._fetchId === currentFetchId) {
         this._historyLogsLoading = false;
       }
     }
+  }
+
+  /**
+   * Both sources rejected: keep the cache, show it offline, and arm the single
+   * automatic retry unless this fetch was that retry (water-offline FR-2, FR-4).
+   */
+  private _markOffline(isRetry: boolean): void {
+    this._historyOffline = true;
+    if (isRetry) return;
+    this._offlineRetryTimer = window.setTimeout(() => {
+      this._offlineRetryTimer = null;
+      if (this.isConnected) void this._fetchHistoryLogs(true);
+    }, 5000);
+  }
+
+  /** Badge text: `[ OFFLINE · HH:MM ]`, or `[ OFFLINE ]` with no success yet (FR-10). */
+  private _offlineLabel(): string {
+    if (this._cachedAt === null) return `[ ${msg('OFFLINE')} ]`;
+    const time = new Date(this._cachedAt).toLocaleTimeString(getLocale(), { hour: '2-digit', minute: '2-digit', hour12: false });
+    return `[ ${msg('OFFLINE')} · ${time} ]`;
   }
 
   /** Local development sandbox: no hass, so serve a fixture after a fake latency. */
@@ -326,9 +390,10 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
     const logs = this._visibleLogs(filterEntityIds);
 
     return html`
-      <div class="log-console">
+      <div class="log-console ${this._historyOffline ? 'offline' : ''}">
         <div class="log-header">
           <span class="log-title">${msg('RUNTIME LOGS')}</span>
+          ${this._historyOffline ? html`<span class="log-offline" role="status">${this._offlineLabel()}</span>` : nothing}
           <div class="log-filters">
             <button class="log-filter-btn ${this._activeFilter === 'all' ? 'active' : ''}" @click="${() => this._setFilter('all')}">${msg('All')}</button>
             <button class="log-filter-btn ${this._activeFilter === 'alerts' ? 'active' : ''}" @click="${() => this._setFilter('alerts')}">${msg('Alerts')}</button>
@@ -341,7 +406,7 @@ export class SciFiWaterManagementCard extends SciFiBaseCard {
             <span>${msg("SYSTEM SCANNING...")}</span>
           </div>
         ` : logs.length === 0 ? html`
-          <div class="empty-log">${msg('No events recorded.')}</div>
+          <div class="empty-log">${this._historyOffline ? msg('History unavailable') : msg('No events recorded.')}</div>
         ` : html`
           <div class="log-timeline">
             ${logs.map(log => {

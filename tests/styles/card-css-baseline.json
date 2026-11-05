@@ -4502,6 +4502,8 @@
     },
     ".log-header": {
       "display": "flex",
+      "flex-wrap": "wrap",
+      "gap": "4px",
       "justify-content": "space-between",
       "align-items": "center",
       "margin-bottom": "12px",
@@ -4654,6 +4656,16 @@
       "color": "#ffaa00",
       "border": "1px solid rgba(255, 170, 0, 0.25)",
       "text-shadow": "0 0 3px rgba(255, 170, 0, 0.4)"
+    },
+    ".log-offline": {
+      "font-size": "0.7rem",
+      "font-weight": "bold",
+      "letter-spacing": "1px",
+      "color": "#ffaa00"
+    },
+    ".log-console.offline .log-entry": {
+      "color": "#ffaa00",
+      "opacity": "0.75"
     },
     "@keyframes pulse :: 0%": {
       "box-shadow": "0 0 2px rgba(0, 210, 255, 0.1)"

@@ -1402,6 +1402,10 @@
   <source>No config</source>
   <target>Aucune configuration</target>
 </trans-unit>
+<trans-unit id="s95c4f2624112fa41">
+  <source>History unavailable</source>
+  <target>Historique indisponible</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

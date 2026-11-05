@@ -233,6 +233,7 @@
 's953ed3bd972ecda4': `Ajouter un véhicule`,
 's959e09dc82865024': `Puissance poêle fournie`,
 's95bc5022b2703216': `Pause ?`,
+'s95c4f2624112fa41': `Historique indisponible`,
 's95fb728df9eb38c6': `Message de la période d'hiver`,
 's96c34cd5aba94917': `Icône par défaut`,
 's9839775f1bfecdd2': `Consommable`,

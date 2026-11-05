@@ -1207,3 +1207,19 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 - **Tags:** component:verify-py, gate-fired:true, category:a, phase:harden, sc:v2
 - **Fix:** Prefix transient dirs with a dot and make every tree walker in tests skip dot-dirs; prefer os.tmpdir() when the tsconfig is not needed.
 - **Anti-pattern:** Parallel vitest files share the tree: a transient dir created by one test is seen half-deleted by another's `readdirSync` walk → intermittent ENOENT, never reproducible alone. Rule: transient test dirs are dot-prefixed (`tests/.name-<pid>/`) and every repo tree walker skips entries starting with `.`.
+### L134: The write gate refuses a pure move until a test pins the moved code
+- **Date:** 2026-11-05
+- **Type:** pattern
+- **Source:** ha-sci-fi — stove-diagnostics
+- **Route:** project
+- **Evidence:** BUILD stove-diagnostics: relocating existing stove logic was refused by the TDD write gate until a characterisation test covered it
+- **Tags:** component:tdd-gate, gate-fired:true, category:a, phase:build, sc:v2
+- **Pattern:** Even a behaviour-neutral move of source counts as a source write → write (or point to) the test that pins the moved behaviour first, then move. Plan it as its own slice instead of discovering it at the refusal.
+### L135: A review report re-run must append a round, not overwrite the file
+- **Date:** 2026-11-05
+- **Type:** anti-pattern
+- **Source:** ha-sci-fi — stove-diagnostics
+- **Route:** project
+- **Evidence:** VERIFY stove-diagnostics round 2: docs/reviews/stove-diagnostics/code-review.md and security-review.md, with prior rounds kept under history/
+- **Tags:** component:review-gate, category:a, phase:verify, sc:v2
+- **Anti-pattern:** Rewriting the review report wholesale on round 2 drops the round-1 findings and their resolutions the gate and later readers rely on → archive the previous round (history/) or append a new round section; never overwrite blind.

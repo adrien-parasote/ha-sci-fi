@@ -48,6 +48,12 @@ One hostile pass. F-09 holds hardest: a snapshot taken after the move is circula
 
 One cold builder (Explore, fresh context, spec only, foreground), 15 questions, one round.
 
-- Answered (already in the spec): Q7 (porte via `msg`, jamais `stateLabel` — FR-7), Q9 partiel (`' ON '` actif — FR-5), Q14 partiel (`.temperatures` toujours rendu).
-- My call (written in spec § « Builder Check — précisions », marked agent's call): Q1 → B-1, Q2 → B-2, Q3 → B-3, Q4 → B-4, Q5 → B-5, Q6 → B-6, Q7 → B-7, Q8 → B-8, Q9 → B-9, Q10 → B-10, Q11 → B-11, Q12 → B-12, Q13 → B-13 (IT-SDG-I-04 réécrit : jsdom ne mesure pas, largeur à la recette), Q14 → B-14, Q15 → B-15.
-- Theirs: none — every question was within the user's decisions D5–D8 or a mechanical test detail.
+### Answered
+
+- Q7 (porte via `msg`, jamais `stateLabel` — FR-7), Q9 partiel (`' ON '` actif — FR-5), Q14 partiel (`.temperatures` toujours rendu).
+### My calls
+
+- Written in spec § « Builder Check — précisions », marked agent's call): Q1 → B-1, Q2 → B-2, Q3 → B-3, Q4 → B-4, Q5 → B-5, Q6 → B-6, Q7 → B-7, Q8 → B-8, Q9 → B-9, Q10 → B-10, Q11 → B-11, Q12 → B-12, Q13 → B-13 (IT-SDG-I-04 réécrit : jsdom ne mesure pas, largeur à la recette), Q14 → B-14, Q15 → B-15.
+### Theirs
+
+- none — every question was within the user's decisions D5–D8 or a mechanical test detail.

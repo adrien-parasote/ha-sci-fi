@@ -1,0 +1,55 @@
+{
+  "feature": "vague-1",
+  "created": "2026-11-05T06:56:20Z",
+  "frozen_at": "2026-11-05T07:04:40Z",
+  "epic": "ha-sci-fi-cnqg",
+  "observations": [
+    {
+      "id": "O1",
+      "text": "ha-sci-fi-nu33: docs/specs/climates-floor-fallback/spec.md cites getFirstFloor (removed); expected: cites allFloors[0]?.floor_id as sci-fi-climates.ts does",
+      "bead": "ha-sci-fi-cnqg.1",
+      "test": "npx vitest run tests/fixes/vague-1/O1.test.ts",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O2",
+      "text": "ha-sci-fi-doi3: tv.md and hexa-tiles.md are both titled Spec 07; expected: unique spec numbers",
+      "bead": "ha-sci-fi-cnqg.2",
+      "test": "npx vitest run tests/docs/spec-numbering.test.ts tests/specs/delivered-design.test.ts",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O3",
+      "text": "ha-sci-fi-14z: bridgeConfigMetadata is a dead export; expected: removed, 05_cards.md AP#4 amended",
+      "bead": "ha-sci-fi-cnqg.3",
+      "test": "npx vitest run tests/fixes/vague-1/O3.test.ts tests/specs/bridge-spec-structure.test.ts",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O4",
+      "text": "ha-sci-fi-1wp2: the pellet stock falls back to 100 (stove) and 20 (bridge) when the counter is absent; expected: 100 on both cards (user decision 2026-11-05, replacing 0 of 2026-11-04: a max of 0 divides by zero in sf-stack-bar)",
+      "bead": "ha-sci-fi-cnqg.4",
+      "test": "npx vitest run tests/cards/bridge/sections/sf-bridge-stove.test.ts",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O5",
+      "text": "ha-sci-fi-iu8m: the stove editor entity field is free text; expected: a dropdown limited to climate.* entities (user decision 2026-11-04, 10_card_editors.md amended)",
+      "bead": "ha-sci-fi-cnqg.5",
+      "test": "npx vitest run tests/fixes/vague-1/O5.test.ts tests/cards/stove/sci-fi-stove-editor.test.ts",
+      "unreproduced": null,
+      "escalated": null
+    }
+  ],
+  "suite": "npx vitest run",
+  "lint": "npx eslint src/cards/stove/sci-fi-stove-editor.ts src/cards/bridge/sections/sf-bridge-stove.ts tests/fixes/vague-1 tests/fixtures/spec-numbers.ts tests/docs/spec-numbering.test.ts tests/specs/delivered-design.test.ts tests/specs/bridge-spec-structure.test.ts tests/cards/stove/sci-fi-stove-editor.test.ts tests/cards/bridge/sections/sf-bridge-stove.test.ts",
+  "suite_run": {
+    "at": "2026-11-05T07:28:56Z",
+    "rc": 0,
+    "tail": ""
+  }
+}

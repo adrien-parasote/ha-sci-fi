@@ -177,7 +177,7 @@ Before launching BUILD, verify:
 > **Spec numbering:** Two numbering systems coexist:
 > - **Main specs (01-11):** `docs/specs/01_*.md` to `docs/specs/11_*.md` — ordered build layers (infrastructure → cards → editors → release)
 > - **Card specs:** `docs/specs/cards/*.md` — per-card reference docs with independent spec numbers
-> The gap at 07/08 in main specs is intentional: those numbers appear in the card spec series (TV = Spec 07). The main spec jumped to 09 to avoid collision.
+> The gap at 07/08 in main specs is intentional: those numbers appear in the card spec series (TV = Spec 07, Hexa tiles = Spec 08). The main spec jumped to 09 to avoid collision.
 
 ---
 

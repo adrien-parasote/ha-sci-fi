@@ -2,7 +2,7 @@
  * <sci-fi-stove-editor> — Graphical editor for the sci-fi-stove card.
  *
  * Sections:
- *   1. Config     — all sensor entity inputs
+ *   1. Config     — the climate entity (dropdown), then all sensor entity inputs
  *   2. Technical  — threshold sliders
  *
  * Spec 10 § sci-fi-stove-editor
@@ -19,8 +19,11 @@ import {
   type SciFiStoveSensors,
 } from './config.js';
 import type { InputUpdateDetail } from '../../components/editor-inputs/sf-editor-input.js';
+import type { EditorHassEntity } from '../../components/editor-inputs/sf-editor-dropdown-entity.js';
+import { DOMAIN } from '../../types/domains.js';
 
 import '../../components/editor-inputs/sf-editor-input.js';
+import '../../components/editor-inputs/sf-editor-dropdown-entity.js';
 import '../../components/editor-inputs/sf-editor-slider.js';
 import { stoveLabels, stoveSectionIcons } from './labels.js';
 
@@ -83,7 +86,14 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
     return html`
       <section>
         <h1>${this.getSectionTitle('section-title-config')}</h1>
-        ${this._renderInput('entity', 'entity', 'input-stove-entity', 'mdi:store-settings-outline', config.entity ?? '')}
+        <sf-editor-dropdown-entity
+          element-id="entity"
+          kind="entity"
+          label="${this.getLabel('input-stove-entity')}"
+          icon="mdi:store-settings-outline"
+          .value="${config.entity ?? ''}"
+          .items="${this._climateEntities()}"
+        ></sf-editor-dropdown-entity>
         ${STOVE_SENSOR_FIELDS.map(([id, labelKey, icon]) =>
           this._renderInput(id, 'sensor', labelKey, icon, sensors[id] ?? ''))}
         ${this._renderInput('storage_counter', 'storage', 'input-storage-counter', 'mdi:database', config.storage_counter ?? '')}
@@ -101,6 +111,19 @@ export class SciFiStoveEditor extends SciFiBaseEditor {
         ${this._renderThreshold('storage_counter_threshold', 'input-threshold', config.storage_counter_threshold, STOVE_STORAGE_COUNTER_THRESHOLD_DEFAULT)}
       </section>
     `;
+  }
+
+  /** The `climate.*` entities of hass, read at each render (spec 10 § sci-fi-stove-editor). */
+  private _climateEntities(): EditorHassEntity[] {
+    return Object.values(this.hass?.states ?? {})
+      .filter(e => e.entity_id.startsWith(`${DOMAIN.CLIMATE}.`))
+      .map(e => ({
+        entity_id: e.entity_id,
+        attributes: {
+          friendly_name: e.attributes['friendly_name'],
+          icon: (e.attributes['icon'] as string | undefined) ?? 'mdi:fireplace',
+        },
+      }));
   }
 
   private _renderInput(elementId: string, kind: string, labelKey: string, icon: string, value: string): TemplateResult {

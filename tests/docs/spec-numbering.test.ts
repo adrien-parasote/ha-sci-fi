@@ -7,7 +7,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
-import { collidingNumbers, collisionReport, isTitledSpec, pinnedOnly, specNumbers } from '../fixtures/spec-numbers';
+import { collidingNumbers, collisionReport, isTitledSpec, specNumbers } from '../fixtures/spec-numbers';
 
 const ROOT = resolve(__dirname, '../..');
 const read = (rel: string): string => readFileSync(resolve(ROOT, rel), 'utf8');
@@ -18,14 +18,13 @@ const lsFiles = (dir: string): string[] =>
     .sort();
 
 describe('Renumérotation Spec 12 / Spec 16', () => {
-  it('TC-RN-U-01: aucune collision de numéro hors Spec 07 sur docs/specs', () => {
+  it('TC-RN-U-01: aucune collision de numéro sur docs/specs', () => {
     const files = lsFiles('docs/specs')
       .filter(isTitledSpec)
       .map((f) => ({ path: f, text: read(f) }));
     expect(specNumbers(files).size).toBeGreaterThan(8);
     const c = collidingNumbers(files);
     expect(collisionReport(c)).toEqual([]);
-    expect(pinnedOnly(c)).toBe(true);
   });
 
   it('TC-RN-U-03: le contrôle compare en entiers et lit le premier titre, même en ligne 5', () => {
@@ -38,23 +37,22 @@ describe('Renumérotation Spec 12 / Spec 16', () => {
     expect(c.get(7)!.slice().sort()).toEqual(['a.md', 'b.md']);
   });
 
-  it('TC-RN-U-06: un troisième fichier sur 7 ou une autre collision est refusé', () => {
-    const base = [
-      { path: 'docs/specs/cards/hexa-tiles.md', text: '# Spec 07\n' },
-      { path: 'docs/specs/cards/tv.md', text: '# Spec 07\n' },
-    ];
-    expect(pinnedOnly(collidingNumbers(base))).toBe(true);
-    expect(pinnedOnly(collidingNumbers([...base, { path: 'x.md', text: '# Spec 7\n' }]))).toBe(false);
-    expect(
-      pinnedOnly(
-        collidingNumbers([...base, { path: 'y.md', text: '# Spec 12\n' }, { path: 'z.md', text: '# Spec 12\n' }]),
-      ),
-    ).toBe(false);
+  it('TC-RN-U-06: toute collision est refusée et nommée, Spec 07 comprise', () => {
     expect(
       collisionReport(
-        collidingNumbers([...base, { path: 'y.md', text: '# Spec 12\n' }, { path: 'z.md', text: '# Spec 12\n' }]),
+        collidingNumbers([
+          { path: 'docs/specs/cards/hexa-tiles.md', text: '# Spec 07\n' },
+          { path: 'docs/specs/cards/tv.md', text: '# Spec 07\n' },
+          { path: 'y.md', text: '# Spec 12\n' },
+          { path: 'z.md', text: '# Spec 12\n' },
+        ]),
       ),
-    ).toEqual(['Spec 12: y.md, z.md']);
+    ).toEqual(['Spec 7: docs/specs/cards/hexa-tiles.md, docs/specs/cards/tv.md', 'Spec 12: y.md, z.md']);
+  });
+
+  it('test_O2_hexa_tiles_is_spec_08_and_tv_keeps_spec_07', () => {
+    expect(read('docs/specs/cards/hexa-tiles.md').split('\n')[0]).toBe('# Spec 08 — Hexagonal Dashboard Card Fixes');
+    expect(read('docs/specs/cards/tv.md').split('\n')[4]).toMatch(/^# Spec 07 — /);
   });
 
   it('TC-RN-U-02: vehicles garde Spec 12, water_history devient Spec 16', () => {

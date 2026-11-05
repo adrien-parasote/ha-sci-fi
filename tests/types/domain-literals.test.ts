@@ -153,11 +153,12 @@ interface SiteTable {
 const table = (): SiteTable => JSON.parse(read('tests/specs/domain-site-table.json')) as SiteTable;
 
 describe('per-file per-key table', () => {
-  it('TC-DC-U-08 and IT-DC-I-02 match the committed table: each card uses the same domain keys as before, 111 in all', () => {
+  it('TC-DC-U-08 and IT-DC-I-02 match the committed table: each card uses the same domain keys as before, 112 in all', () => {
+    // 111 at 35f1020, + 1 DOMAIN.CLIMATE in the stove editor (fix lot vague-1, bead ha-sci-fi-iu8m)
     const t = table();
     expect(t.base).toBe('35f1020');
-    expect(t.total).toBe(111);
-    expect(Object.values(t.files).flatMap((r) => Object.values(r)).reduce((a, b) => a + b, 0)).toBe(111);
+    expect(t.total).toBe(112);
+    expect(Object.values(t.files).flatMap((r) => Object.values(r)).reduce((a, b) => a + b, 0)).toBe(112);
     expect(countDomainRefs(expectedFiles()).perFile).toEqual(t.files);
   });
 

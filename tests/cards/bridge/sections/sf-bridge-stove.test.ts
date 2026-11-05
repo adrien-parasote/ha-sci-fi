@@ -216,15 +216,15 @@ describe('sf-bridge-stove', () => {
     expect(stackBar).not.to.be.null;
   });
 
-  // ── stockMax: default 20 when no attributes ───────────────────────────────
+  // ── stockMax: default 100 when no attributes, as the stove card ──────────
 
-  it('uses default stockMax of 20 when no max attribute', async () => {
+  it('test_O4_stock_max_defaults_to_100_like_the_stove_card', async () => {
     const el = makeEl();
     el.config = BASE_CONFIG;
     el.hass = makeHass('50', '10');
     document.body.appendChild(el);
     await el.updateComplete;
-    expect(el.shadowRoot!.querySelector('sf-stack-bar')).not.to.be.null;
+    expect((el.shadowRoot!.querySelector('sf-stack-bar') as any).max).to.equal(100);
   });
 
   // ── low_threshold config ──────────────────────────────────────────────────

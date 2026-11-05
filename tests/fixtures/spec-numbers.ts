@@ -22,14 +22,7 @@ export function collidingNumbers(files: SpecText[]): Map<number, string[]> {
   return new Map([...specNumbers(files)].filter(([, fs]) => fs.length > 1));
 }
 
-/** Vrai si la seule collision est Spec 07 entre hexa-tiles.md et tv.md (bead ha-sci-fi-13j). */
-export function pinnedOnly(c: Map<number, string[]>): boolean {
-  if (c.size !== 1 || !c.has(7)) return false;
-  const fs = c.get(7)!.slice().sort();
-  return fs.length === 2 && fs[0] === 'docs/specs/cards/hexa-tiles.md' && fs[1] === 'docs/specs/cards/tv.md';
-}
-
-/** Le rapport nommé `Spec N: fichier, fichier` des collisions hors Spec 07. */
+/** Le rapport nommé `Spec N: fichier, fichier` de chaque collision. */
 export function collisionReport(c: Map<number, string[]>): string[] {
-  return [...c.entries()].filter(([n]) => n !== 7).map(([n, fs]) => `Spec ${n}: ${fs.join(', ')}`);
+  return [...c.entries()].map(([n, fs]) => `Spec ${n}: ${fs.join(', ')}`);
 }

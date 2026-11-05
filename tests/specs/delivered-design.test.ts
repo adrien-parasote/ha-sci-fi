@@ -283,19 +283,11 @@ describe('Les zones de stove.md sont épinglées sur la classe que leur méthode
 });
 
 describe('Présence — ce que l’extraction ne sait pas porter', () => {
-  it('le numéro des specs ne collisionne avec aucune autre (hors Spec 07, connue)', () => {
+  it('le numéro des specs ne collisionne avec aucune autre', () => {
     const files = titledSpecFiles().map((f) => ({ path: f, text: read(f) }));
-    const numeros = specNumbers(files);
     // Témoin : la sonde a bien lu des numéros sur l'ENSEMBLE des specs.
-    expect(numeros.size).toBeGreaterThan(8);
-    const collisions = collidingNumbers(files);
-    // Seule la collision Spec 07 (bead ha-sci-fi-13j) est épinglée, par nom.
-    expect(collisionReport(collisions)).toEqual([]);
-    expect([...collisions.keys()]).toEqual([7]);
-    expect(collisions.get(7)!.slice().sort()).toEqual([
-      'docs/specs/cards/hexa-tiles.md',
-      'docs/specs/cards/tv.md',
-    ]);
+    expect(specNumbers(files).size).toBeGreaterThan(8);
+    expect(collisionReport(collidingNumbers(files))).toEqual([]);
   });
 
   it('chaque sélecteur gelé par stove.md est lu par le test cité — tous les noms de la ligne', () => {

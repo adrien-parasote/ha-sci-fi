@@ -256,7 +256,7 @@ Composants privés effectivement rapatriés par ADR-017 :
 | 1 | **Renommer un champ YAML** | `entity_id` à la place de `entity` dans stove/vacuum | Utiliser exactement les noms de 'config-metadata.js' v0.9.6 |
 | 2 | **Supprimer une feature** | Enlever `shortcuts` du vacuum | Toute feature de v0.9.6 doit être présente |
 | 3 | **Réduire le schéma sensors** | `sensors: {power: string, energy: string}` pour plugs | `sensors` = dict keyed par entity_id avec `show/name/power/icon` |
-| 4 | **Remplacer config-metadata** | Mettre des types TS simples à la place | Migrer 'config-metadata.js' en `.ts` — ne pas supprimer |
+| 4 | **Remplacer config-metadata** | Mettre des types TS simples à la place | Migrer 'config-metadata.js' en `.ts` — ne pas supprimer tant qu'un code le lit. Exception : `bridgeConfigMetadata`, export sans aucun lecteur, supprimé sur décision utilisateur (2026-11-04, bead `ha-sci-fi-14z`) |
 | 5 | **Inline styling duplication** | Redefining styles across cards | Import common classes from `common.ts` |
 | 6 | **Heavy state calculations** | Recomputing arrays in render | Delegate tasks to selector utility functions |
 | 7 | **Dynamic CDN load of Chart.js** | `import('https://cdn.jsdelivr.net/npm/chart.js')` | Bundle Chart.js in the IIFE — never load from CDN |

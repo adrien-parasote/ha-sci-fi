@@ -153,6 +153,22 @@ export const plugStyles = css`
     min-height: 120px;
     padding: 0 10px 10px;
   }
+  /* plugs-history-states FR-15: the section reserves the chart's height
+     (msg 30px + chart 120px + 10px padding) in every state, so switching
+     loading → error → chart moves nothing below it. */
+  .content .chart-section {
+    min-height: 160px;
+    outline: none;
+  }
+  .content .history-loading,
+  .content .history-error {
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: rgb(102, 156, 210);
+  }
 
   /* ── IMAGE ZONE ─────────────────────────────────────────────────────────── */
   .content .info .image {

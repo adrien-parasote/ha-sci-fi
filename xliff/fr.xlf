@@ -1406,6 +1406,18 @@
   <source>History unavailable</source>
   <target>Historique indisponible</target>
 </trans-unit>
+<trans-unit id="sedd79e822c36426b">
+  <source>Loading history…</source>
+  <target>Chargement de l'historique…</target>
+</trans-unit>
+<trans-unit id="s215c8624cc55c568">
+  <source>Power history unavailable</source>
+  <target>Historique de puissance indisponible</target>
+</trans-unit>
+<trans-unit id="s2c8189544e3ea679">
+  <source>Retry</source>
+  <target>Réessayer</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

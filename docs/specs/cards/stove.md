@@ -32,6 +32,7 @@
 | F-STOVE-D09 | Niveau de puissance : champ racine optionnel `number_power_level`, molette `sf-wheel.power-level` dans la barre inférieure écrivant par `number.set_value` ; absent, la carte rend exactement comme avant | ✅ This spec § Niveau de puissance — `number_power_level` | tests/cards/stove/sci-fi-stove-power-level.test.ts :: TC-SPL-U-1116, TC-SPL-U-1117, TC-SPL-U-1118, TC-SPL-U-1119, TC-SPL-U-1120, TC-SPL-U-1121, TC-SPL-U-1126, TC-SPL-U-1128, TC-SPL-U-1129, TC-SPL-U-1130, TC-SPL-U-1131, IT-SPL-I-1104, IT-SPL-I-1105, IT-SPL-I-1106 |
 | F-STOVE-D10 | Vitesse de ventilation : champ racine optionnel `number_fan_speed`, molette `sf-wheel.fan-speed` juste après la molette de puissance, même mécanisme partagé, repli 0/5/1 ; absent, la carte rend exactement comme avant | ✅ This spec § Vitesse de ventilation — `number_fan_speed` | tests/cards/stove/sci-fi-stove-fan-speed.test.ts :: TC-SFS-U-1101, TC-SFS-U-1102, TC-SFS-U-1103, TC-SFS-U-1104, TC-SFS-U-1105, TC-SFS-U-1106, TC-SFS-U-1110, TC-SFS-U-1111, TC-SFS-U-1112, TC-SFS-U-1113, TC-SFS-U-1114, TC-SFS-U-1115, IT-SFS-I-1101, IT-SFS-I-1102, IT-SFS-I-1103 |
 | F-STOVE-D11 | Diagnostics : champs optionnels `sensors.sensor_door`, `sensor_alert`, `sensor_error` ; une ligne `.diagnostic` par diagnostic actif après la ligne de statut et une icône `sf-icon.diagnostic-badge` sur l'illustration, textes traduits par `hass.formatEntityState`, erreur suivie de son code brut ; rien quand tout va bien ; absents, la carte rend exactement comme avant | ✅ This spec § Diagnostics — porte, alerte, erreur | tests/cards/stove/sci-fi-stove-diagnostics.test.ts :: TC-SDG-U-02, TC-SDG-U-03, TC-SDG-U-04, TC-SDG-U-05, TC-SDG-U-06, TC-SDG-U-07, TC-SDG-U-08, IT-SDG-I-01, IT-SDG-I-02, IT-SDG-I-03 |
+| F-STOVE-D12 | Usure : cinq champs optionnels `sensors.sensor_heating_time`, `sensor_fuel_used`, `sensor_igniter_starts`, `sensor_misfires`, `sensor_overheatings` ; section repliable `sf-editor-accordion.wear-counters` « Usure », repliée par défaut, après `.bottom`, une ligne valeur + unité par compteur formatée par `hass.formatEntityState` ; absents, la carte rend exactement comme avant | ✅ This spec § Usure — compteurs fumis | tests/cards/stove/sci-fi-stove-wear-counters.test.ts :: TC-SWC-U-02, TC-SWC-U-03, TC-SWC-U-04, TC-SWC-U-05, TC-SWC-U-06, IT-SWC-I-01, IT-SWC-I-02, IT-SWC-I-03, IT-SWC-I-04 |
 
 ---
 
@@ -294,6 +295,27 @@ jamais codés en dur : `hass.formatEntityState`, à défaut (absent, en échec, 
 l'état brut ; un libellé égal au code affiche le code une fois. Le mécanisme
 des molettes de nombre vit dans `src/cards/stove/number-wheel.ts` (déplacement pur,
 même lot).
+
+### Usure — compteurs fumis
+
+> **Ajouté le 2026-11-05** — lot `stove-wear-counters` (bead `ha-sci-fi-ve4.4`),
+> décisions utilisateur du même jour. Le contrat détaillé est la
+> [spec du lot](../stove-wear-counters/spec.md).
+
+Cinq champs optionnels sous `sensors` (`sensor_heating_time`, `sensor_fuel_used`,
+`sensor_igniter_starts`, `sensor_misfires`, `sensor_overheatings`, tous `sensor.*`
+`total_increasing`), ajoutés à `getRelevantEntities()` et à l'éditeur juste après
+`input-stove-error`. Dès qu'un compteur est configuré, la carte rend après `.bottom`
+un `sf-editor-accordion.wear-counters` titré « Usure », **replié par défaut** (état
+par instance, non persisté), une ligne `.wear-counter` (icône, `.wear-label`,
+`.wear-value`) par compteur, dans l'ordre ci-dessus. La valeur vient de
+`hass.formatEntityState` (unité comprise), à défaut l'état brut suivi de
+`unit_of_measurement` (séparés par U+00A0) — aide partagée `src/cards/stove/state-label.ts`,
+la même que les diagnostics ; valeur plafonnée à 200 caractères, texte entier en `title`.
+Compteur configuré dont l'entité est absente, `unavailable`, `unknown`, hors `sensor.`
+ou d'id mal formé : sa ligne reste, de valeur « — » ; aucun compteur configuré : aucune
+section. L'état ouvert est perdu quand Lovelace recrée la carte (elle revient repliée,
+limite acceptée). Aucun graphe. Le rendu vit dans `src/cards/stove/wear-counters.ts`.
 
 ---
 
@@ -569,6 +591,8 @@ La température cible est `attributes.temperature ?? attributes.current_temperat
 | `.diagnostics` | la zone `role="status"` `aria-live="polite"` des lignes | TC-SDG-U-04, IT-SDG-I-01 |
 | `.diagnostic.door` / `.diagnostic.alert` / `.diagnostic.error`, `.diagnostic-text` | la ligne d'un diagnostic actif et son texte | TC-SDG-U-04, TC-SDG-U-05, TC-SDG-U-06, TC-SDG-U-07, IT-SDG-I-01 |
 | `sf-icon.diagnostic-badge` | l'icône sur l'illustration, son `title` | TC-SDG-U-04, TC-SDG-U-07, IT-SDG-I-01 |
+| `sf-editor-accordion.wear-counters` | la section « Usure », sa présence et `open` | TC-SWC-U-04, IT-SWC-I-01 |
+| `.wear-counter.<compteur>`, `.wear-label`, `.wear-value` | la ligne d'un compteur, son libellé et sa valeur | TC-SWC-U-04, TC-SWC-U-05, IT-SWC-I-02 |
 
 Les quatre classes que cette table gelait autrefois — `.sensor-tile`,
 `.sensor-tile.warn`, `.bar-fill.pellet`, `.bar-fill.storage` — ne sont pas
@@ -651,6 +675,8 @@ les promettaient (bead `ha-sci-fi-9xf`), et aucun rendu ne les produit.
 | Entité de diagnostic (`sensor_door`, `sensor_alert`, `sensor_error`) absente, `unavailable` ou `unknown` | Lecture de `hass.states` au rendu | Rien rendu — ni ligne `.diagnostic`, ni badge | La carte rend comme sans le champ |
 | Entité de diagnostic d'un domaine inattendu (porte hors `binary_sensor.`, alerte/erreur hors `sensor.`) | Garde de préfixe au rendu | Rien rendu | Mauvaise saisie de l'éditeur sans effet visible |
 | `hass.formatEntityState` absent, ou en échec (lève, non-chaîne, vide), ou `attributes.code` absent / vide / non fini | `try` et test de type au rendu | Texte : état brut, `_` → espaces ; erreur sans ` (<code>)` | Toujours un texte, rendu comme texte |
+| Entité de compteur d'usure absente, `unavailable`, `unknown`, hors `sensor.` ou id mal formé | Lecture de `hass.states` au rendu, garde de forme et de préfixe | Ligne `.wear-counter` gardée, valeur « — » ; aucun compteur configuré → aucune section | L'utilisateur voit le compteur mal configuré |
+| Compteur d'usure : `hass.formatEntityState` absent ou en échec | `formattedState` (`state-label.ts`) | État brut suivi de `unit_of_measurement`, rendu comme texte | Toujours une valeur |
 | No `hass` available | `SciFiBaseCard` base class guard before `renderCard()` is called | Base class returns empty template | Transparent empty card |
 | Missing `friendly_name` attribute | Nullish coalescing on a localized fallback in the header | Show « Poêle » under `fr`, `Stove` in the source locale | Always renders something |
 

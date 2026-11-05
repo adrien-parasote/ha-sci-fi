@@ -1,0 +1,38 @@
+version: "1"
+assertions:
+  - id: IA-SWC-1
+    assertion: "a stove card configured without any wear counter looks exactly as it did before"
+    rationale: "user decision D4; the proof compares the whole card container to a snapshot recorded on the pre-lot code, without the fields, with invalid fields and with all five counters unavailable"
+    proves: "docs/specs/stove-wear-counters/spec.md#FR-6"
+    files: [src/cards/stove/sci-fi-stove.ts, src/cards/stove/wear-counters.ts]
+    proof:
+      type: test_exit_code
+      reference: tests/cards/stove/sci-fi-stove-wear-counters.test.ts
+      expected_exit: 0
+  - id: IA-SWC-2
+    assertion: "the card shows a « Usure » section below the card, collapsed until the user opens it, listing the value and unit of each configured wear counter"
+    rationale: "user decisions D1 and D2: one sf-editor-accordion after the bottom bar, open false on a new card, one row per counter in fixed order, value formatted by Home Assistant"
+    proves: "docs/specs/stove-wear-counters/spec.md#FR-5"
+    files: [src/cards/stove/wear-counters.ts, src/cards/stove/sci-fi-stove.ts, src/cards/stove/styles.ts]
+    proof:
+      type: test_exit_code
+      reference: tests/cards/stove/sci-fi-stove-wear-counters.test.ts
+      expected_exit: 0
+  - id: IA-SWC-3
+    assertion: "wear values and diagnostics are formatted by one shared helper, not by two copies of the same fallback"
+    rationale: "user decision D2 (reuse, don't copy): _stateLabel leaves the card for state-label.ts, the diagnostics suite stays green unmodified and the card source no longer names formatEntityState"
+    proves: "docs/specs/stove-wear-counters/spec.md#FR-1"
+    files: [src/cards/stove/state-label.ts, src/cards/stove/sci-fi-stove.ts]
+    proof:
+      type: test_exit_code
+      reference: tests/cards/stove/sci-fi-stove-wear-counters.test.ts
+      expected_exit: 0
+  - id: IA-SWC-4
+    assertion: "the visual editor lets the user pick the five wear counter entities"
+    rationale: "bead ve4.4 acceptance: five entries right after the stove error entry, free text like the diagnostics"
+    proves: "docs/specs/stove-wear-counters/spec.md#FR-10"
+    files: [src/cards/stove/sci-fi-stove-editor.ts, src/cards/stove/labels.ts]
+    proof:
+      type: test_exit_code
+      reference: tests/cards/stove/sci-fi-stove-editor.test.ts
+      expected_exit: 0

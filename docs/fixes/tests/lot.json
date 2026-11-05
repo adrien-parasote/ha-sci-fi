@@ -1,0 +1,47 @@
+{
+  "feature": "tests",
+  "created": "2026-11-04T21:38:15Z",
+  "frozen_at": "2026-11-04T21:41:57Z",
+  "epic": "ha-sci-fi-dii8",
+  "observations": [
+    {
+      "id": "O1",
+      "text": "ha-sci-fi-2t4: the TC-306 guard (tests/utils/base-card.test.ts) misses an arrow-field willUpdate override and an intermediate SciFiBaseCard subclass; expected: an AST check catches both",
+      "bead": "ha-sci-fi-dii8.1",
+      "test": "npx vitest run tests/utils/base-card.test.ts",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O2",
+      "text": "ha-sci-fi-knps: mutating DOMAIN.NUMBER, DOMAIN.COUNTER or DOMAIN.VALVE turns no test red; expected: a behaviour test per key",
+      "bead": "ha-sci-fi-dii8.2",
+      "test": "npx vitest run tests/fixes/tests/O2.test.ts",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O3",
+      "text": "ha-sci-fi-z0l: the vacuum test titled TC-VACUUM-U-1524 asserts a malformed service, not the error toast of F-VAC-D07; expected: a real toast-error test",
+      "bead": "ha-sci-fi-dii8.3",
+      "test": "npx vitest run tests/cards/vacuum/sci-fi-vacuum.test.ts",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O4",
+      "text": "ha-sci-fi-468: no test sees xliff/fr.xlf ids missing from src/locales/locales/fr.js after a forgotten localize-build; expected: an id parity test",
+      "bead": "ha-sci-fi-dii8.4",
+      "test": "npx vitest run tests/i18n/catalogue.test.ts",
+      "unreproduced": null,
+      "escalated": null
+    }
+  ],
+  "suite": "npx vitest run",
+  "lint": "npx eslint tests/utils/base-card.test.ts tests/fixes/tests/O2.test.ts tests/cards/vacuum/sci-fi-vacuum.test.ts tests/i18n/catalogue.test.ts",
+  "suite_run": {
+    "at": "2026-11-05T05:58:36Z",
+    "rc": 0,
+    "tail": ""
+  }
+}

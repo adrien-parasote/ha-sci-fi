@@ -2,6 +2,7 @@
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import ts from 'typescript';
 import { SciFiBaseCard } from '../../src/utils/base-card.js';
 import type { SciFiBaseConfig } from '../../src/types/config.js';
 import type { TemplateResult } from 'lit';
@@ -18,6 +19,98 @@ vi.mock('../../src/locales/localization.js', async (importOriginal) => {
   return { ...actual, setLocale: vi.fn(actual.setLocale) };
 });
 import { setLocale } from '../../src/locales/localization.js';
+
+interface WillUpdateDecl { kind: 'method' | 'field'; firstIsSuperCall: boolean }
+interface ClassInfo { file: string; name: string; parent: string | undefined; willUpdate: WillUpdateDecl[] }
+
+const SRC_ROOT = path.resolve(__dirname, '../../src');
+function srcTsFiles(dir = SRC_ROOT): string[] {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) return srcTsFiles(full);
+    return entry.isFile() && full.endsWith('.ts') ? [full] : [];
+  });
+}
+
+/** `super.willUpdate(<one argument>)` — the spec row forwards `changedProperties`. */
+const isSuperWillUpdate = (stmt: ts.Statement | undefined): boolean =>
+  !!stmt && ts.isExpressionStatement(stmt) && ts.isCallExpression(stmt.expression)
+  && stmt.expression.arguments.length === 1
+  && ts.isPropertyAccessExpression(stmt.expression.expression)
+  && stmt.expression.expression.expression.kind === ts.SyntaxKind.SuperKeyword
+  && stmt.expression.expression.name.text === 'willUpdate';
+
+/** Local name → imported name, so `import { SciFiBaseCard as Base }` resolves. */
+function importAliases(sf: ts.SourceFile): Map<string, string> {
+  const aliases = new Map<string, string>();
+  for (const st of sf.statements) {
+    const named = ts.isImportDeclaration(st) ? st.importClause?.namedBindings : undefined;
+    if (named && ts.isNamedImports(named)) {
+      for (const el of named.elements) if (el.propertyName) aliases.set(el.name.text, el.propertyName.text);
+    }
+  }
+  return aliases;
+}
+
+/**
+ * Every class of a file — declarations and class expressions: its name, the
+ * class it extends, its willUpdate members. A heritage that is not a plain
+ * name (a mixin call, a member access) cannot be followed, so it is reported
+ * as UNRESOLVED and the walk refuses it rather than skipping the class.
+ */
+function classesOf(file: string, text = fs.readFileSync(file, 'utf8')): ClassInfo[] {
+  const sf = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true);
+  const aliases = importAliases(sf);
+  const out: ClassInfo[] = [];
+  const visit = (node: ts.Node): void => {
+    if (ts.isClassDeclaration(node) || ts.isClassExpression(node)) {
+      const name = node.name?.text
+        ?? (ts.isVariableDeclaration(node.parent) && ts.isIdentifier(node.parent.name) ? node.parent.name.text : '<anonymous>');
+      const ext = node.heritageClauses?.find((h) => h.token === ts.SyntaxKind.ExtendsKeyword)?.types[0]?.expression;
+      const parent = !ext ? undefined
+        : ts.isIdentifier(ext) ? (aliases.get(ext.text) ?? ext.text)
+        : `${UNRESOLVED}${ext.getText(sf)}`;
+      const willUpdate = node.members
+        .filter((m) => m.name && ts.isIdentifier(m.name) && m.name.text === 'willUpdate')
+        .map((m): WillUpdateDecl => ts.isMethodDeclaration(m)
+          ? { kind: 'method', firstIsSuperCall: isSuperWillUpdate(m.body?.statements[0]) }
+          : { kind: 'field', firstIsSuperCall: false });
+      out.push({ file: path.relative(SRC_ROOT, file), name, parent, willUpdate });
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(sf);
+  return out;
+}
+const UNRESOLVED = '<unresolved>';
+
+/** The TC-306 verdict over a set of classes: every refusal, said in one line each. */
+function willUpdateOffenders(classes: ClassInfo[]): { cards: number; overrides: number; offenders: string[] } {
+  const offenders: string[] = [];
+  const parentOf = new Map<string, string | undefined>();
+  for (const c of classes) {
+    // Two classes of one name would overwrite each other's heritage here.
+    if (parentOf.has(c.name) && parentOf.get(c.name) !== c.parent) offenders.push(`${c.file}: ${c.name} (class name declared twice with different parents)`);
+    parentOf.set(c.name, c.parent);
+    if (c.parent?.startsWith(UNRESOLVED)) offenders.push(`${c.file}: ${c.name} (heritage the walk cannot follow: ${c.parent.slice(UNRESOLVED.length)})`);
+  }
+  const descendsFromBase = (name: string | undefined, seen = new Set<string>()): boolean => {
+    if (!name || seen.has(name)) return false;
+    if (name === 'SciFiBaseCard') return true;
+    seen.add(name);
+    return descendsFromBase(parentOf.get(name), seen);
+  };
+  const cards = classes.filter((c) => c.name !== 'SciFiBaseCard' && descendsFromBase(c.parent));
+  let overrides = 0;
+  for (const c of cards) {
+    for (const w of c.willUpdate) {
+      overrides += 1;
+      if (w.kind === 'field') offenders.push(`${c.file}: ${c.name} (class-field override)`);
+      else if (!w.firstIsSuperCall) offenders.push(`${c.file}: ${c.name} (super.willUpdate is not the first statement)`);
+    }
+  }
+  return { cards: cards.length, overrides, offenders };
+}
 
 // ── Concrete test subclass ─────────────────────────────────────────────────────
 
@@ -166,68 +259,39 @@ describe('SciFiBaseCard', () => {
     baseHook.mockRestore();
   });
 
-  it('TC-306: every SciFiBaseCard subclass overriding willUpdate calls super first', () => {
-    // Two properties, not one. `noImplicitOverride` (tsconfig) enforces the
-    // `override` KEYWORD; only this walk enforces the SUPER CALL, which is what
-    // TC-306 is about — a card that drops it stops propagating `hass` and the
-    // locale and silently freezes on the dashboard.
-    //
-    // The keyword flag is what makes this walk SOUND rather than a third patch
-    // on the same evasion: `override willUpdate` is now mandatory, so the
-    // anchor cannot be dodged by dropping the keyword (round 4's hole), and the
-    // declared/analysed equality below means it cannot pass by matching nothing
-    // (round 1's hole, via `: void`).
-    const srcRoot = path.resolve(__dirname, '../../src');
-    const walk = (dir: string): string[] =>
-      fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-        const full = path.join(dir, entry.name);
-        if (entry.isDirectory()) return walk(full);
-        return entry.isFile() && full.endsWith('.ts') ? [full] : [];
-      });
+  it('TC-306: every SciFiBaseCard descendant overriding willUpdate calls super first', () => {
+    // Read on the TypeScript AST, not the source text: a pattern on text has no
+    // closed set of evasions (ha-sci-fi-2t4), an AST distinguishes a method from
+    // a class field and gives every class its heritage, across files.
+    const { cards, overrides, offenders } = willUpdateOffenders(srcTsFiles().flatMap((file) => classesOf(file)));
 
-    const bodyAt = (source: string, braceIndex: number): string => {
-      let depth = 0;
-      for (let i = braceIndex; i < source.length; i += 1) {
-        if (source[i] === '{') depth += 1;
-        else if (source[i] === '}') {
-          depth -= 1;
-          if (depth === 0) return source.slice(braceIndex + 1, i);
-        }
-      }
-      return source.slice(braceIndex + 1);
-    };
-
-    const offenders: string[] = [];
-    let analysed = 0;
-    let declared = 0;
-
-    for (const file of walk(srcRoot)) {
-      const source = fs.readFileSync(file, 'utf8');
-      if (!/extends\s+SciFiBaseCard\b/.test(source)) continue;
-
-      // DECLARATIONS only: the negative lookbehind drops the `super.`/`this.`
-      // CALLS, which a bare `\bwillUpdate\s*\(` also matched — it counted 10
-      // for 5 declarations and the equality below caught it.
-      declared += (source.match(/(?<![.\w])willUpdate\s*\(/g) ?? []).length;
-      const pattern = /(?:override\s+)?(?<![.\w])willUpdate\s*\([^)]*\)\s*(?::[^{]+)?\{/g;
-      for (const match of source.matchAll(pattern)) {
-        analysed += 1;
-        const body = bodyAt(source, match.index + match[0].length - 1);
-        const firstStatement = body
-          .split('\n')
-          .map((line) => line.trim())
-          .find((line) => line.length > 0 && !line.startsWith('//') && !line.startsWith('/*'));
-        if (!firstStatement?.startsWith('super.willUpdate(')) {
-          offenders.push(`${path.relative(srcRoot, file)}: ${firstStatement ?? '<empty body>'}`);
-        }
-      }
-    }
-
-    // The check cannot pass by matching nothing: every `willUpdate(` the plain
-    // search finds must have been parsed, and at least one must exist.
-    expect(analysed, 'parsed fewer willUpdate declarations than exist').toEqual(declared);
-    expect(declared, 'no SciFiBaseCard willUpdate override found at all').toBeGreaterThan(0);
+    expect(cards, 'no SciFiBaseCard descendant found').toBeGreaterThan(0);
+    expect(overrides, 'no willUpdate override found at all').toBeGreaterThan(0);
     expect(offenders).toEqual([]);
+  });
+
+  it('TC-306: the AST walk refuses every shape it cannot vouch for, through intermediate and aliased parents', () => {
+    // Positive control: the same verdict as above, on shapes it must refuse.
+    const source = `
+      import { SciFiBaseCard as Base } from './base-card.js';
+      class Mid extends Base {}
+      class Arrow extends Mid { override willUpdate = (c: PropertyValues): void => { super.willUpdate(c); }; }
+      class Late extends Mid { override willUpdate(c: PropertyValues): void { this.x = 1; super.willUpdate(c); } }
+      class Bare extends Mid { override willUpdate(c: PropertyValues): void { super.willUpdate(); } }
+      const Expr = class extends Mid { override willUpdate(): void { this.x = 1; } };
+      class Mixed extends Mixin(Base) {}
+      class Good extends Mid { override willUpdate(c: PropertyValues): void { super.willUpdate(c); } }`;
+    const { offenders } = willUpdateOffenders(classesOf(path.join(SRC_ROOT, 'sandbox.ts'), source));
+    expect(offenders).toEqual([
+      'sandbox.ts: Mixed (heritage the walk cannot follow: Mixin(Base))',
+      'sandbox.ts: Arrow (class-field override)',
+      'sandbox.ts: Late (super.willUpdate is not the first statement)',
+      'sandbox.ts: Bare (super.willUpdate is not the first statement)',
+      'sandbox.ts: Expr (super.willUpdate is not the first statement)',
+    ]);
+    // a name declared twice with two parents is refused, not overwritten
+    const twice = willUpdateOffenders([...classesOf(path.join(SRC_ROOT, 'a.ts'), 'class Card extends SciFiBaseCard {}'), ...classesOf(path.join(SRC_ROOT, 'b.ts'), 'class Card extends Other {}')]);
+    expect(twice.offenders).toEqual(['b.ts: Card (class name declared twice with different parents)']);
   });
 
   it('TC-306: noImplicitOverride stays on, so the walk above cannot lose its anchor', () => {

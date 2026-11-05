@@ -1430,6 +1430,22 @@
   <source>Power level changed</source>
   <target>Puissance modifiée</target>
 </trans-unit>
+<trans-unit id="se7c2a96bb037d72a">
+  <source>Fan speed number</source>
+  <target>Entité vitesse de ventilation</target>
+</trans-unit>
+<trans-unit id="sf2c294199c98fed2">
+  <source>Fan</source>
+  <target>Ventilation</target>
+</trans-unit>
+<trans-unit id="sfc867956eae30af1">
+  <source>Fan speed changed</source>
+  <target>Ventilation modifiée</target>
+</trans-unit>
+<trans-unit id="s34abddfb4e64319f">
+  <source>Fan speed unavailable</source>
+  <target>Ventilation indisponible</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

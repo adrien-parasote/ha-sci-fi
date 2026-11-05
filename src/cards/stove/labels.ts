@@ -19,6 +19,7 @@ export function stoveLabels(): Record<string, string> {
     'input-storage-counter': msg('Storage counter'),
     'input-switch-eco-mode': msg('Eco mode switch'),
     'input-number-power-level': msg('Power level number'),
+    'input-number-fan-speed': msg('Fan speed number'),
     'input-threshold': msg('Threshold'),
     'input-stove-combustion-chamber': msg('Stove combustion chamber'),
     'input-room-temperature': msg('Room temperature'),

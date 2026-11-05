@@ -1,0 +1,51 @@
+version: "1"
+assertions:
+  - id: IA-SFS-1
+    assertion: "a stove card configured without a fan speed entity looks exactly as it did before"
+    rationale: "bead ve4 acceptance; the proof compares the bottom bar to a snapshot recorded on the pre-lot code, with and without the power wheel"
+    proves: "docs/specs/stove-fan-speed/spec.md#FR-3"
+    files: [src/cards/stove/sci-fi-stove.ts]
+    proof:
+      type: test_exit_code
+      reference: tests/cards/stove/sci-fi-stove-fan-speed.test.ts
+  - id: IA-SFS-2
+    assertion: "the user can change the stove fan speed from the card, and is told whether it worked"
+    rationale: "the wheel reaches the fumis number entity through set_value and confirms by toast on success and failure, independently of the power wheel"
+    proves: "docs/specs/stove-fan-speed/spec.md#FR-7"
+    files: [src/cards/stove/sci-fi-stove.ts]
+    proof:
+      type: test_exit_code
+      reference: tests/cards/stove/sci-fi-stove-fan-speed.test.ts
+  - id: IA-SFS-3
+    assertion: "the fan speed offered goes from 0 to 5, or the range the entity publishes"
+    rationale: "same bound rules as the power wheel, with the user's 0/5/1 fallback"
+    proves: "docs/specs/stove-fan-speed/spec.md#FR-5"
+    files: [src/cards/stove/sci-fi-stove.ts]
+    proof:
+      type: test_exit_code
+      reference: tests/cards/stove/sci-fi-stove-fan-speed.test.ts
+  - id: IA-SFS-4
+    assertion: "the fan wheel sits right after the power wheel and is labelled Ventilation"
+    rationale: "user decisions 2026-11-05: order HVAC, temperature, power, fan, eco; label msg('Fan')"
+    proves: "docs/specs/stove-fan-speed/spec.md#FR-4"
+    files: [src/cards/stove/sci-fi-stove.ts]
+    proof:
+      type: test_exit_code
+      reference: tests/cards/stove/sci-fi-stove-fan-speed.test.ts
+  - id: IA-SFS-5
+    assertion: "the visual editor lets the user pick the fan speed entity"
+    rationale: "bead ve4 acceptance: the editor exposes the field, right after the power level entry"
+    proves: "docs/specs/stove-fan-speed/spec.md#FR-9"
+    files: [src/cards/stove/sci-fi-stove-editor.ts, src/cards/stove/labels.ts]
+    proof:
+      type: test_exit_code
+      reference: tests/cards/stove/sci-fi-stove-editor.test.ts
+silent_bindings:
+  - binding: "existing xliff key Fan speed"
+    chose: "new key Fan (Ventilation)"
+    alternative: "reuse Fan speed (Vitesse du ventilateur)"
+    status: declared
+  - binding: "editor icon"
+    chose: "mdi:fan"
+    alternative: "mdi:fan-speed-1"
+    status: declared

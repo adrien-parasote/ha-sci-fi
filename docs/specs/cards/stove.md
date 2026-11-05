@@ -30,6 +30,7 @@
 | F-STOVE-D07 | Les sélecteurs que les tests lisent ne sont pas renommés | ✅ This spec § Test Selectors — Frozen Contract | tests/cards/stove/sci-fi-stove.test.ts :: TC-STOVE-U-1111, TC-STOVE-U-1114, IT-STOVE-I-1101 |
 | F-STOVE-D08 | Barre inférieure : mode HVAC, molette de température et mode éco, chacun écrivant par un service et confirmant par `sf-toast` | ✅ This spec § Barre inférieure — les contrôles interactifs | tests/cards/stove/sci-fi-stove.test.ts :: test_O3_eco_switch_renders_a_toggle_and_reflects_its_state, test_O3_eco_switch_toggle_calls_switch_toggle, test_O3_no_dead_control_when_neither_switch_nor_presets · tests/cards/stove/sci-fi-stove.test.ts (« renders .bottom interactive section », « calls climate services and shows sf-toast on hvac/temp/preset actions », les trois chemins d'erreur et le garde `isNaN`, sans id) |
 | F-STOVE-D09 | Niveau de puissance : champ racine optionnel `number_power_level`, molette `sf-wheel.power-level` dans la barre inférieure écrivant par `number.set_value` ; absent, la carte rend exactement comme avant | ✅ This spec § Niveau de puissance — `number_power_level` | tests/cards/stove/sci-fi-stove-power-level.test.ts :: TC-SPL-U-1116, TC-SPL-U-1117, TC-SPL-U-1118, TC-SPL-U-1119, TC-SPL-U-1120, TC-SPL-U-1121, TC-SPL-U-1126, TC-SPL-U-1128, TC-SPL-U-1129, TC-SPL-U-1130, TC-SPL-U-1131, IT-SPL-I-1104, IT-SPL-I-1105, IT-SPL-I-1106 |
+| F-STOVE-D10 | Vitesse de ventilation : champ racine optionnel `number_fan_speed`, molette `sf-wheel.fan-speed` juste après la molette de puissance, même mécanisme partagé, repli 0/5/1 ; absent, la carte rend exactement comme avant | ✅ This spec § Vitesse de ventilation — `number_fan_speed` | tests/cards/stove/sci-fi-stove-fan-speed.test.ts :: TC-SFS-U-1101, TC-SFS-U-1102, TC-SFS-U-1103, TC-SFS-U-1104, TC-SFS-U-1105, TC-SFS-U-1106, TC-SFS-U-1110, TC-SFS-U-1111, TC-SFS-U-1112, TC-SFS-U-1113, TC-SFS-U-1114, TC-SFS-U-1115, IT-SFS-I-1101, IT-SFS-I-1102, IT-SFS-I-1103 |
 
 ---
 
@@ -234,6 +235,28 @@ incohérent ou dépasse 50 items. L'`id` d'un item est son index entier (pas
 fractionnaires sûrs) ; l'état est comparé numériquement et borné à l'item le plus
 proche. Le choix s'affiche aussitôt ; l'état de HA reprend la main à la mise à jour
 de `hass` qui suit l'appel.
+
+### Vitesse de ventilation — `number_fan_speed`
+
+> **Ajouté le 2026-11-05** — lot `stove-fan-speed` (bead `ha-sci-fi-ve4.2`),
+> décisions utilisateur du même jour. Le contrat détaillé est la
+> [spec du lot](../stove-fan-speed/spec.md).
+
+`number.*_fan_speed` (0 à 5, désactivée par défaut côté HA, donc absente de `hass`
+tant que l'utilisateur ne l'active pas). Champ **racine** optionnel `number_fan_speed`,
+juste après `number_power_level`, éditeur `input-number-fan-speed`. Règles identiques
+à § Niveau de puissance, repli **0/5/1** ; même mécanisme de molette, partagé et
+paramétré par un descripteur `NumberWheelSpec` — jamais copié. Molette
+`sf-wheel.fan-speed`, libellé et `aria-label` « Ventilation », `title`
+« Ventilation indisponible » si désactivée, placée après la molette de puissance et
+avant le contrôle éco. Les deux molettes ont chacune leur attente et leur minuteur,
+libérés par molette. Si `number_fan_speed` vaut `number_power_level`, pas de molette
+de ventilation. La barre `.bottom` passe à la ligne (`flex-wrap: wrap`) sur une
+carte étroite.
+
+**Activer l'entité vitesse de ventilation dans Home Assistant** : elle est désactivée
+par défaut (Paramètres → Appareils → le poêle → entité « Fan speed » → Activer) ;
+tant qu'elle ne l'est pas, la molette est absente. L'éditeur n'affiche aucune aide.
 
 ---
 
@@ -461,6 +484,7 @@ d'erreur du service.
 | Température | `sf-wheel` | `min_temp` (défaut 15) à `max_temp` (défaut 30), pas de 1, libellés `${t}°C` | `climate.set_temperature` |
 | Mode éco | trois branches — voir § Mode éco | `switch.*_eco_mode`, sinon `attributes.preset_modes`, sinon rien | `switch.toggle`, sinon `climate.set_preset_mode` |
 | Puissance (optionnel) | `sf-wheel.power-level` — voir § Niveau de puissance | `min`/`max`/`step` de `number_power_level`, repli 1/5/1 | `number.set_value` |
+| Ventilation (optionnel) | `sf-wheel.fan-speed` — voir § Vitesse de ventilation | `min`/`max`/`step` de `number_fan_speed`, repli 0/5/1 | `number.set_value` |
 
 Deux points de contrat qui ont chacun coûté un défaut :
 
@@ -502,6 +526,7 @@ La température cible est `attributes.temperature ?? attributes.current_temperat
 | `.header` | le `friendly_name`, ou son repli localisé | TC-STOVE-U-1105, TC-STOVE-U-1115 |
 | `sf-stove-image`, `sf-circle-progress-bar`, `sf-stack-bar` | la présence des composants de la zone contenu | IT-STOVE-I-1102 |
 | `sf-wheel.power-level` | la molette de puissance, ses `items`, `selectedId` et `disabled` | TC-SPL-U-1117, TC-SPL-U-1119, IT-SPL-I-1104, IT-SPL-I-1105 |
+| `sf-wheel.fan-speed` | la molette de ventilation, ses `items`, `selectedId` et `disabled` | TC-SFS-U-1102, TC-SFS-U-1104, IT-SFS-I-1101, IT-SFS-I-1102 |
 
 Les quatre classes que cette table gelait autrefois — `.sensor-tile`,
 `.sensor-tile.warn`, `.bar-fill.pellet`, `.bar-fill.storage` — ne sont pas
@@ -580,6 +605,7 @@ les promettaient (bead `ha-sci-fi-9xf`), et aucun rendu ne les produit.
 | Capteur de granulés publié en ratio (0–1) | `normalizePelletPct` (`src/utils/pellet.ts`), partagé avec `sf-bridge-stove` | Une valeur ≤ 1 est un ratio (×100), au-delà un pourcentage ; bornée à 0–100 et arrondie | Amendé le 2026-11-04 (décision utilisateur, lot fix stove-bridge O1, bead ha-sci-fi-15v) : la carte et le bridge lisent la même entité de la même façon |
 | Service `climate.*` ou `switch.toggle` en échec | `.catch` sur la promesse de `callService` | `sf-toast` en erreur, portant le message du service | L'état affiché reste celui de `hass` — rien n'est supposé appliqué |
 | `number.set_value` / `input_number.set_value` en échec, ou entité `number_power_level` `unavailable` | `.catch` sur `callService` ; état de l'entité lu au rendu | un `sf-toast` en erreur portant le message du service, rendu comme texte ; molette `disabled` si `unavailable`/`unknown`/non numérique | L'état affiché reste celui de `hass` |
+| `set_value` de `number_fan_speed` en échec, ou entité `unavailable` | `.catch` sur `callService` ; état lu au rendu | `sf-toast` en erreur, message rendu comme texte ; molette `disabled`, `title` « Ventilation indisponible » | L'état affiché reste celui de `hass` |
 | No `hass` available | `SciFiBaseCard` base class guard before `renderCard()` is called | Base class returns empty template | Transparent empty card |
 | Missing `friendly_name` attribute | Nullish coalescing on a localized fallback in the header | Show « Poêle » under `fr`, `Stove` in the source locale | Always renders something |
 

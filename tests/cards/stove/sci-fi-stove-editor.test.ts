@@ -122,6 +122,27 @@ describe('sci-fi-stove-editor', () => {
     expect(received[0]!.detail.config.number_power_level).toBe('input_number.stove_power');
   });
 
+  it('TC-SFS-U-1108: exposes number_fan_speed right after number_power_level', async () => {
+    const el = await createElement();
+    el.setConfig(makeConfig({ number_fan_speed: 'number.stove_fan_speed' }));
+    await el.updateComplete;
+    const order = [...el.shadowRoot!.querySelectorAll('[element-id]')].map((n) => n.getAttribute('element-id'));
+    expect(order[order.indexOf('number_power_level') + 1]).toBe('number_fan_speed');
+    const input = el.shadowRoot!.querySelector('[element-id="number_fan_speed"]') as HTMLElement & { value: string };
+    expect(input.getAttribute('kind')).toBe('entity');
+    expect(input.getAttribute('label')).toBe('Fan speed number');
+    expect(input.value).toBe('number.stove_fan_speed');
+    const received: CustomEvent[] = [];
+    el.addEventListener('config-changed', (e) => received.push(e as CustomEvent));
+    el.shadowRoot!.querySelector('.card')!.dispatchEvent(new CustomEvent('input-update', {
+      bubbles: true,
+      composed: false,
+      detail: { id: 'number_fan_speed', kind: 'entity', value: 'number.other_fan' },
+    }));
+    expect(received).toHaveLength(1);
+    expect(received[0]!.detail.config.number_fan_speed).toBe('number.other_fan');
+  });
+
   /**
    * Lot stove-config-surface — the configuration surface of this editor was
    * never asserted: the three tests above pin `room_temperature`, `threshold`

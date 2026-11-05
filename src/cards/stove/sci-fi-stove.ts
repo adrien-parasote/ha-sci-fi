@@ -91,16 +91,64 @@ const PRESET_ICONS: Record<string, string> = {
   eco:  'mdi:leaf',
 };
 
-// ── Power level (spec docs/specs/stove-power-level/spec.md) ───────────────────
+// ── Number wheels (specs docs/specs/stove-power-level, docs/specs/stove-fan-speed) ──
 /** Quiet time after the last wheel pick before the one set_value call (FR-8). */
-const POWER_DEBOUNCE_MS = 400;
-/** Beyond this many items the bounds are replaced by the 1/5/1 trio (FR-5.1). */
-const POWER_MAX_ITEMS = 50;
-/** The two writable domains a power level entity may belong to (FR-12). */
-const POWER_DOMAINS: readonly string[] = [DOMAIN.NUMBER, DOMAIN.INPUT_NUMBER];
-const POWER_FALLBACK = { min: 1, max: 5, step: 1 } as const;
+const NUMBER_DEBOUNCE_MS = 400;
+/** Beyond this many items the bounds are replaced by the wheel's fallback trio (FR-5.1). */
+const NUMBER_MAX_ITEMS = 50;
+/** The two writable domains a number wheel entity may belong to (FR-12). */
+const NUMBER_DOMAINS: readonly string[] = [DOMAIN.NUMBER, DOMAIN.INPUT_NUMBER];
 
-interface PowerGrid {
+interface NumberTrio {
+  readonly min: number;
+  readonly max: number;
+  readonly step: number;
+}
+
+type NumberWheelKey = 'powerLevel' | 'fanSpeed';
+
+/** One number wheel of the bottom bar: everything that differs between the power and the fan wheels. */
+interface NumberWheelSpec {
+  readonly key: NumberWheelKey;
+  readonly field: 'number_power_level' | 'number_fan_speed';
+  readonly cssClass: string;
+  readonly fallback: NumberTrio;
+  readonly label: () => string;
+  readonly successMessage: () => string;
+  readonly unavailableMessage: () => string;
+}
+
+/** Rendering order (stove-fan-speed FR-4): power first, then fan. */
+const NUMBER_WHEELS: readonly NumberWheelSpec[] = [
+  {
+    key: 'powerLevel',
+    field: 'number_power_level',
+    cssClass: 'power-level',
+    fallback: { min: 1, max: 5, step: 1 },
+    label: () => msg('Power'),
+    successMessage: () => msg('Power level changed'),
+    unavailableMessage: () => msg('Power level unavailable'),
+  },
+  {
+    key: 'fanSpeed',
+    field: 'number_fan_speed',
+    cssClass: 'fan-speed',
+    fallback: { min: 0, max: 5, step: 1 },
+    label: () => msg('Fan'),
+    successMessage: () => msg('Fan speed changed'),
+    unavailableMessage: () => msg('Fan speed unavailable'),
+  },
+];
+
+/** A pick not yet released to HA's state (FR-8); `sent` once set_value left. */
+interface NumberPick {
+  readonly index: number;
+  readonly sent: boolean;
+}
+
+type NumberPicks = Readonly<Record<NumberWheelKey, NumberPick | null>>;
+
+interface NumberGrid {
   readonly min: number;
   readonly step: number;
   /** number of items */
@@ -108,6 +156,8 @@ interface PowerGrid {
   /** decimals shown and kept */
   readonly d: number;
 }
+
+type NumberEntity = { state: unknown; attributes: Record<string, unknown> };
 
 /** FR-5: a finite number, or a non-blank string that reads as one. parseFloat is never used. */
 function isNumeric(raw: unknown): boolean {
@@ -125,7 +175,7 @@ function decimals(x: number): number {
   return 10;
 }
 
-function gridOf(min: number, max: number, step: number): PowerGrid {
+function gridOf(min: number, max: number, step: number): NumberGrid {
   return {
     min,
     step,
@@ -135,20 +185,20 @@ function gridOf(min: number, max: number, step: number): PowerGrid {
 }
 
 /** FR-5.1: per-bound fallback, then the whole trio falls back when it is incoherent or too large. */
-function powerGrid(attrs: Record<string, unknown> | undefined): PowerGrid {
-  const bound = (key: 'min' | 'max' | 'step'): number =>
-    isNumeric(attrs?.[key]) ? Number(attrs?.[key]) : POWER_FALLBACK[key];
+function numberGrid(attrs: Record<string, unknown> | undefined, fallback: NumberTrio): NumberGrid {
+  const bound = (key: keyof NumberTrio): number =>
+    isNumeric(attrs?.[key]) ? Number(attrs?.[key]) : fallback[key];
   const min = bound('min');
   const max = bound('max');
   const step = bound('step');
-  const fallback = gridOf(POWER_FALLBACK.min, POWER_FALLBACK.max, POWER_FALLBACK.step);
-  if (step <= 0 || min > max) return fallback;
+  const fallbackGrid = gridOf(fallback.min, fallback.max, fallback.step);
+  if (step <= 0 || min > max) return fallbackGrid;
   const grid = gridOf(min, max, step);
-  return grid.n > POWER_MAX_ITEMS ? fallback : grid;
+  return grid.n > NUMBER_MAX_ITEMS ? fallbackGrid : grid;
 }
 
 /** v_k of FR-5.2, rounded to the grid's decimals. */
-function powerValue(grid: PowerGrid, k: number): number {
+function numberValue(grid: NumberGrid, k: number): number {
   return Number((grid.min + k * grid.step).toFixed(grid.d));
 }
 
@@ -157,7 +207,7 @@ function powerValue(grid: PowerGrid, k: number): number {
  * (unavailable, unknown) are not numeric, so this one test covers them.
  * The climate state never counts.
  */
-function isPowerDisabled(entityState: { state: unknown }): boolean {
+function isNumberDisabled(entityState: { state: unknown }): boolean {
   return !isNumeric(entityState.state);
 }
 
@@ -165,11 +215,15 @@ function isPowerDisabled(entityState: { state: unknown }): boolean {
 export class SciFiStoveCard extends SciFiBaseCard {
   static override styles = [sciFiCommonStyles, stoveStyles];
 
-  /** Index picked on the power wheel and not yet released to HA's state (FR-8). */
-  @state() private _powerPendingIndex: number | null = null;
-  /** true once set_value left: the next hass assignment releases the pick. */
-  private _powerCallSent = false;
-  private _powerTimer: ReturnType<typeof setTimeout> | undefined;
+  /** Per-wheel pick not yet released to HA's state (FR-8); reassigned whole on every change. */
+  @state() private _numberPicks: NumberPicks = { powerLevel: null, fanSpeed: null };
+  /** Per-wheel debounce timers: never rendered, so not reactive. */
+  private _numberTimers: Readonly<Partial<Record<NumberWheelKey, ReturnType<typeof setTimeout>>>> = {};
+
+  /** Read by the power-level suite: the pending index of the power wheel. */
+  private get _powerPendingIndex(): number | null {
+    return this._numberPicks.powerLevel?.index ?? null;
+  }
 
   override get hass(): HomeAssistantExt {
     return super.hass;
@@ -177,13 +231,13 @@ export class SciFiStoveCard extends SciFiBaseCard {
 
   override set hass(hass: HomeAssistantExt) {
     super.hass = hass;
-    this._releasePowerPick();
+    for (const spec of NUMBER_WHEELS) this._releaseNumberPick(spec);
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
-    this._cancelPowerTimer();
-    this._powerPendingIndex = null;
+    for (const spec of NUMBER_WHEELS) this._cancelNumberTimer(spec);
+    this._numberPicks = { powerLevel: null, fanSpeed: null };
   }
 
   /** Configured ids only: when all are absent the base card shows its banner. */
@@ -205,6 +259,9 @@ export class SciFiStoveCard extends SciFiBaseCard {
     }
     if (this.config.number_power_level) {
       entities.add(this.config.number_power_level);
+    }
+    if (this.config.number_fan_speed) {
+      entities.add(this.config.number_fan_speed);
     }
     if (this.config.sensors) {
       const s = this.config.sensors;
@@ -503,7 +560,7 @@ export class SciFiStoveCard extends SciFiBaseCard {
           @wheel-change="${(e: CustomEvent) => this._onTempChange(e, stoveState.attributes.entity_id ?? this.config.entity)}"
         ></sf-wheel>
 
-        ${this._renderPowerLevel()}
+        ${NUMBER_WHEELS.map(spec => this._renderNumberWheel(spec))}
 
         ${this._renderEcoControl(stoveState, presetItems, currentPreset)}
       </div>
@@ -557,107 +614,117 @@ export class SciFiStoveCard extends SciFiBaseCard {
     `;
   }
 
-  // ── POWER LEVEL ───────────────────────────────────────────────────────────
+  // ── NUMBER WHEELS (power level, fan speed) ────────────────────────────────
 
-  /** FR-12: the domain of the configured entity, when it is present and writable. */
-  private _powerDomain(): string | undefined {
-    const id = this.config?.number_power_level;
+  /**
+   * FR-12: the domain of the configured entity, when it is present and writable.
+   * stove-fan-speed FR-4.2: an entity already driven by an earlier wheel gets no second wheel.
+   */
+  private _numberDomain(spec: NumberWheelSpec): string | undefined {
+    const id = this.config?.[spec.field];
     if (!id || !this.hass?.states[id]) return undefined;
+    const earlier = NUMBER_WHEELS.slice(0, NUMBER_WHEELS.indexOf(spec));
+    if (earlier.some(other => this.config[other.field] === id)) return undefined;
     const prefix = id.split('.')[0];
-    return POWER_DOMAINS.find(d => d === prefix);
+    return NUMBER_DOMAINS.find(d => d === prefix);
   }
 
-  private _powerEntity(): { state: unknown; attributes: Record<string, unknown> } | undefined {
-    const id = this.config?.number_power_level;
-    if (!id || !this._powerDomain()) return undefined;
+  private _numberEntity(spec: NumberWheelSpec): NumberEntity | undefined {
+    const id = this.config?.[spec.field];
+    if (!id || !this._numberDomain(spec)) return undefined;
     return this.hass.states[id];
   }
 
   /** FR-5.2: index ids, never the value. */
-  private _powerLevelItems(attrs: Record<string, unknown> | undefined): Array<{ id: string; text: string }> {
-    const grid = powerGrid(attrs);
-    return Array.from({ length: grid.n }, (_, k) => ({ id: String(k), text: powerValue(grid, k).toFixed(grid.d) }));
+  private _numberItems(spec: NumberWheelSpec, attrs: Record<string, unknown> | undefined): Array<{ id: string; text: string }> {
+    const grid = numberGrid(attrs, spec.fallback);
+    return Array.from({ length: grid.n }, (_, k) => ({ id: String(k), text: numberValue(grid, k).toFixed(grid.d) }));
   }
 
   /** FR-6: the pending pick, else the nearest item to HA's state, clamped. */
-  private _powerSelectedId(entity: { state: unknown; attributes: Record<string, unknown> }): string | null {
-    if (this._powerPendingIndex !== null) return String(this._powerPendingIndex);
+  private _numberSelectedId(spec: NumberWheelSpec, entity: NumberEntity): string | null {
+    const pick = this._numberPicks[spec.key];
+    if (pick) return String(pick.index);
     if (!isNumeric(entity.state)) return null;
-    const grid = powerGrid(entity.attributes);
+    const grid = numberGrid(entity.attributes, spec.fallback);
     const k = Math.round((Number(entity.state) - grid.min) / grid.step);
     return String(Math.min(Math.max(k, 0), grid.n - 1));
   }
 
-  /** FR-4, FR-7, FR-13: second wheel of the bottom bar; nothing when not configured (FR-3). */
-  private _renderPowerLevel(): TemplateResult | typeof nothing {
-    const entity = this._powerEntity();
+  /** FR-4, FR-7, FR-13: a number wheel of the bottom bar; nothing when not configured (FR-3). */
+  private _renderNumberWheel(spec: NumberWheelSpec): TemplateResult | typeof nothing {
+    const entity = this._numberEntity(spec);
     if (!entity) return nothing;
-    const disabled = isPowerDisabled(entity);
+    const disabled = isNumberDisabled(entity);
     return html`
       <sf-wheel
-        class="power-level"
-        .items="${this._powerLevelItems(entity.attributes)}"
-        .selectedId="${this._powerSelectedId(entity)}"
-        text="${msg('Power')}"
-        aria-label="${msg('Power')}"
-        title="${disabled ? msg('Power level unavailable') : nothing}"
+        class="${spec.cssClass}"
+        .items="${this._numberItems(spec, entity.attributes)}"
+        .selectedId="${this._numberSelectedId(spec, entity)}"
+        text="${spec.label()}"
+        aria-label="${spec.label()}"
+        title="${disabled ? spec.unavailableMessage() : nothing}"
         ?disabled="${disabled}"
-        @wheel-change="${(e: CustomEvent) => this._onPowerLevelChange(e)}"
+        @wheel-change="${(e: CustomEvent) => this._onNumberWheelChange(spec, e)}"
       ></sf-wheel>
     `;
   }
 
-  /** FR-8: remember the pick, restart the single debounce timer. */
-  private _onPowerLevelChange(e: CustomEvent): void {
-    const entity = this._powerEntity();
-    if (!entity || isPowerDisabled(entity)) return;
+  private _setNumberPick(spec: NumberWheelSpec, pick: NumberPick | null): void {
+    this._numberPicks = { ...this._numberPicks, [spec.key]: pick };
+  }
+
+  /** FR-8: remember the pick, restart this wheel's debounce timer only. */
+  private _onNumberWheelChange(spec: NumberWheelSpec, e: CustomEvent): void {
+    const entity = this._numberEntity(spec);
+    if (!entity || isNumberDisabled(entity)) return;
     const k = Number((e.detail as { id?: unknown } | undefined)?.id);
-    if (!Number.isInteger(k) || k < 0 || k >= powerGrid(entity.attributes).n) return;
-    this._powerPendingIndex = k;
-    this._powerCallSent = false;
-    this._cancelPowerTimer();
-    this._powerTimer = setTimeout(() => this._sendPowerLevel(), POWER_DEBOUNCE_MS);
+    if (!Number.isInteger(k) || k < 0 || k >= numberGrid(entity.attributes, spec.fallback).n) return;
+    this._setNumberPick(spec, { index: k, sent: false });
+    this._cancelNumberTimer(spec);
+    this._numberTimers = { ...this._numberTimers, [spec.key]: setTimeout(() => this._sendNumberValue(spec), NUMBER_DEBOUNCE_MS) };
   }
 
   /** FR-8: one set_value on the entity's own domain, one toast on settlement. */
-  private _sendPowerLevel(): void {
-    this._powerTimer = undefined;
-    const k = this._powerPendingIndex;
-    const domain = this._powerDomain();
-    const entity = this._powerEntity();
-    if (k === null || !domain || !entity || isPowerDisabled(entity)) {
-      this._powerPendingIndex = null;
+  private _sendNumberValue(spec: NumberWheelSpec): void {
+    this._numberTimers = { ...this._numberTimers, [spec.key]: undefined };
+    const k = this._numberPicks[spec.key]?.index;
+    const domain = this._numberDomain(spec);
+    const entity = this._numberEntity(spec);
+    if (k === undefined || !domain || !entity || isNumberDisabled(entity)) {
+      this._setNumberPick(spec, null);
       return;
     }
-    const grid = powerGrid(entity.attributes);
+    const grid = numberGrid(entity.attributes, spec.fallback);
     if (k >= grid.n) {
-      this._powerPendingIndex = null;
+      this._setNumberPick(spec, null);
       return;
     }
-    this._powerCallSent = true;
+    this._setNumberPick(spec, { index: k, sent: true });
     void this.hass
-      .callService(domain, 'set_value', { entity_id: this.config.number_power_level, value: powerValue(grid, k) })
-      .then(() => { this._showToast(false, msg('Power level changed')); })
+      .callService(domain, 'set_value', { entity_id: this.config[spec.field], value: numberValue(grid, k) })
+      .then(() => { this._showToast(false, spec.successMessage()); })
       .catch((err: unknown) => { this._showToast(true, err instanceof Error ? err.message : String(err)); });
   }
 
-  /** FR-8: after the call, HA's state takes over; while waiting, only a lost or disabled entity cancels. */
-  private _releasePowerPick(): void {
-    if (this._powerPendingIndex === null) return;
-    const entity = this._powerEntity();
+  /** FR-8 per wheel: after the call, HA's state takes over; while waiting, only a lost or disabled entity cancels. */
+  private _releaseNumberPick(spec: NumberWheelSpec): void {
+    const pick = this._numberPicks[spec.key];
+    if (!pick) return;
+    const entity = this._numberEntity(spec);
     if (
-      this._powerCallSent || !entity || isPowerDisabled(entity) ||
-      this._powerPendingIndex >= powerGrid(entity.attributes).n
+      pick.sent || !entity || isNumberDisabled(entity) ||
+      pick.index >= numberGrid(entity.attributes, spec.fallback).n
     ) {
-      this._cancelPowerTimer();
-      this._powerPendingIndex = null;
-      this._powerCallSent = false;
+      this._cancelNumberTimer(spec);
+      this._setNumberPick(spec, null);
     }
   }
 
-  private _cancelPowerTimer(): void {
-    if (this._powerTimer !== undefined) clearTimeout(this._powerTimer);
-    this._powerTimer = undefined;
+  private _cancelNumberTimer(spec: NumberWheelSpec): void {
+    const timer = this._numberTimers[spec.key];
+    if (timer !== undefined) clearTimeout(timer);
+    this._numberTimers = { ...this._numberTimers, [spec.key]: undefined };
   }
 
   private _getHvacLabel(state: string): string {

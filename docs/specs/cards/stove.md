@@ -29,6 +29,7 @@
 | F-STOVE-D06 | Les jauges sont des composants, pas des règles de la feuille : `sf-circle-progress-bar` pour les granulés, `sf-stack-bar` pour le stock, et rien quand l'état n'est pas numérique | ✅ This spec § sci-fi-stove.ts — la structure rendue | tests/cards/stove/sci-fi-stove.test.ts (« renders sf-circle-progress-bar for pellet quantity », « renders sf-stack-bar for storage_counter », « does not render pellet gauge when state is non-numeric (NaN branch) », sans id) |
 | F-STOVE-D07 | Les sélecteurs que les tests lisent ne sont pas renommés | ✅ This spec § Test Selectors — Frozen Contract | tests/cards/stove/sci-fi-stove.test.ts :: TC-STOVE-U-1111, TC-STOVE-U-1114, IT-STOVE-I-1101 |
 | F-STOVE-D08 | Barre inférieure : mode HVAC, molette de température et mode éco, chacun écrivant par un service et confirmant par `sf-toast` | ✅ This spec § Barre inférieure — les contrôles interactifs | tests/cards/stove/sci-fi-stove.test.ts :: test_O3_eco_switch_renders_a_toggle_and_reflects_its_state, test_O3_eco_switch_toggle_calls_switch_toggle, test_O3_no_dead_control_when_neither_switch_nor_presets · tests/cards/stove/sci-fi-stove.test.ts (« renders .bottom interactive section », « calls climate services and shows sf-toast on hvac/temp/preset actions », les trois chemins d'erreur et le garde `isNaN`, sans id) |
+| F-STOVE-D09 | Niveau de puissance : champ racine optionnel `number_power_level`, molette `sf-wheel.power-level` dans la barre inférieure écrivant par `number.set_value` ; absent, la carte rend exactement comme avant | ✅ This spec § Niveau de puissance — `number_power_level` | tests/cards/stove/sci-fi-stove-power-level.test.ts :: TC-SPL-U-1116, TC-SPL-U-1117, TC-SPL-U-1118, TC-SPL-U-1119, TC-SPL-U-1120, TC-SPL-U-1121, TC-SPL-U-1126, TC-SPL-U-1128, TC-SPL-U-1129, TC-SPL-U-1130, TC-SPL-U-1131, IT-SPL-I-1104, IT-SPL-I-1105, IT-SPL-I-1106 |
 
 ---
 
@@ -208,6 +209,31 @@ est un contrôle mort, pire qu'un contrôle absent.
 
 `switch_eco_mode` est un champ **racine** de `SciFiStoveConfig` (ce n'est pas un capteur),
 exposé par l'éditeur dans la section Configuration et ajouté à `getRelevantEntities()`.
+
+### Niveau de puissance — `number_power_level`
+
+> **Ajouté le 2026-11-05** — lot `stove-power-level` (bead `ha-sci-fi-ve4.1`),
+> décisions utilisateur du même jour. Le contrat détaillé est la
+> [spec du lot](../stove-power-level/spec.md).
+
+L'intégration core expose le niveau de puissance comme une entité
+`number.*_power_level`. `number_power_level` est un champ **racine** optionnel de
+`SciFiStoveConfig`, placé comme `switch_eco_mode`, ajouté à `getRelevantEntities()`
+et exposé par l'éditeur (`input-number-power-level`, juste après le switch éco).
+
+| Condition | Rendu | Action |
+|---|---|---|
+| champ absent | **rien** — la barre inférieure est identique à avant | — |
+| champ renseigné, entité absente de `hass` ou domaine autre que `number` / `input_number` | **rien** (même garde que le mode éco) | — |
+| état `unavailable`, `unknown` ou non numérique | `sf-wheel.power-level` rendu, `disabled`, `title` « Puissance indisponible » | — |
+| sinon (y compris climate `off`) | `sf-wheel.power-level` actif, après la molette de température, `aria-label` « Puissance » | `number.set_value` ou `input_number.set_value` `{ entity_id, value }`, un seul appel 400 ms après le dernier choix |
+
+Items : de `attributes.min` à `attributes.max` par `attributes.step`, repli 1/5/1 par
+borne non numérique (`Number.isFinite`), trio entier remplacé par 1/5/1 s'il est
+incohérent ou dépasse 50 items. L'`id` d'un item est son index entier (pas
+fractionnaires sûrs) ; l'état est comparé numériquement et borné à l'item le plus
+proche. Le choix s'affiche aussitôt ; l'état de HA reprend la main à la mise à jour
+de `hass` qui suit l'appel.
 
 ---
 
@@ -434,6 +460,7 @@ d'erreur du service.
 | Mode | `sf-button-card-select`, `position="bottom"` | `attributes.hvac_modes`, icône par `HVAC_ICONS[m]`, repli `mdi:information-off-outline` | `climate.set_hvac_mode` |
 | Température | `sf-wheel` | `min_temp` (défaut 15) à `max_temp` (défaut 30), pas de 1, libellés `${t}°C` | `climate.set_temperature` |
 | Mode éco | trois branches — voir § Mode éco | `switch.*_eco_mode`, sinon `attributes.preset_modes`, sinon rien | `switch.toggle`, sinon `climate.set_preset_mode` |
+| Puissance (optionnel) | `sf-wheel.power-level` — voir § Niveau de puissance | `min`/`max`/`step` de `number_power_level`, repli 1/5/1 | `number.set_value` |
 
 Deux points de contrat qui ont chacun coûté un défaut :
 
@@ -474,6 +501,7 @@ La température cible est `attributes.temperature ?? attributes.current_temperat
 | `sf-icon[icon="sci:stove-heat"]` / `sf-icon[icon="sci:stove-off"]` | l'icône choisie par `STATUS_ICONS` | TC-STOVE-U-1101, TC-STOVE-U-1102 |
 | `.header` | le `friendly_name`, ou son repli localisé | TC-STOVE-U-1105, TC-STOVE-U-1115 |
 | `sf-stove-image`, `sf-circle-progress-bar`, `sf-stack-bar` | la présence des composants de la zone contenu | IT-STOVE-I-1102 |
+| `sf-wheel.power-level` | la molette de puissance, ses `items`, `selectedId` et `disabled` | TC-SPL-U-1117, TC-SPL-U-1119, IT-SPL-I-1104, IT-SPL-I-1105 |
 
 Les quatre classes que cette table gelait autrefois — `.sensor-tile`,
 `.sensor-tile.warn`, `.bar-fill.pellet`, `.bar-fill.storage` — ne sont pas
@@ -494,6 +522,7 @@ les promettaient (bead `ha-sci-fi-9xf`), et aucun rendu ne les produit.
 | 6 | **Lier la molette de température par attribut, ou sans arrondi** | `selected-id="${t}"`, ou `.selectedId="${t}"` sur une température flottante | `.selectedId="${String(Math.round(t))}"` — une température à 20,5 ne correspond sinon à aucun item entier et la molette s'affiche vide (correction C10) |
 | 7 | **Rendre un contrôle au-dessus d'une liste vide** | Rendre le bouton éco quand ni `switch_eco_mode` ni `preset_modes` n'est disponible | Ne rien rendre — § Mode éco, troisième branche. Un bouton qui n'ouvre rien est pire qu'un bouton absent |
 | 8 | **Mutating config** | `this.config.entity = '...'` | Always immutable — read-only access only |
+| 9 | **Désactiver la molette de puissance quand le poêle est à l'arrêt** | `disabled` calculé sur l'état `hvac` du `climate` | `disabled` ne dépend que de l'état de l'entité `number` (`unavailable`/`unknown`) — décision utilisateur 2026-11-05 |
 
 ---
 
@@ -550,6 +579,7 @@ les promettaient (bead `ha-sci-fi-9xf`), et aucun rendu ne les produit.
 | État du capteur de granulés non numérique | Garde `isNaN` dans `_renderPelletQuantity` | La jauge `sf-circle-progress-bar` n'est pas rendue | Zone vide plutôt qu'une jauge à `NaN%` |
 | Capteur de granulés publié en ratio (0–1) | `normalizePelletPct` (`src/utils/pellet.ts`), partagé avec `sf-bridge-stove` | Une valeur ≤ 1 est un ratio (×100), au-delà un pourcentage ; bornée à 0–100 et arrondie | Amendé le 2026-11-04 (décision utilisateur, lot fix stove-bridge O1, bead ha-sci-fi-15v) : la carte et le bridge lisent la même entité de la même façon |
 | Service `climate.*` ou `switch.toggle` en échec | `.catch` sur la promesse de `callService` | `sf-toast` en erreur, portant le message du service | L'état affiché reste celui de `hass` — rien n'est supposé appliqué |
+| `number.set_value` / `input_number.set_value` en échec, ou entité `number_power_level` `unavailable` | `.catch` sur `callService` ; état de l'entité lu au rendu | un `sf-toast` en erreur portant le message du service, rendu comme texte ; molette `disabled` si `unavailable`/`unknown`/non numérique | L'état affiché reste celui de `hass` |
 | No `hass` available | `SciFiBaseCard` base class guard before `renderCard()` is called | Base class returns empty template | Transparent empty card |
 | Missing `friendly_name` attribute | Nullish coalescing on a localized fallback in the header | Show « Poêle » under `fr`, `Stove` in the source locale | Always renders something |
 

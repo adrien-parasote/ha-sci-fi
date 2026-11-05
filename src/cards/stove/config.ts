@@ -37,6 +37,7 @@ export interface SciFiStoveConfig extends SciFiBaseConfig {
   readonly sensors?: SciFiStoveSensors;
   readonly storage_counter?: string;              // ADR-005: missing in v1.0.0-wip (counter entity)
   readonly switch_eco_mode?: string;              // core fumis: eco is a switch, not a climate preset
+  readonly number_power_level?: string;           // core fumis number.*_power_level, or an input_number
   readonly pellet_quantity_threshold?: number;    // ADR-005: missing in v1.0.0-wip (range [0,1])
   readonly storage_counter_threshold?: number;    // ADR-005: missing in v1.0.0-wip (range [0,1])
 }

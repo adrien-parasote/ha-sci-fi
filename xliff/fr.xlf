@@ -1418,6 +1418,18 @@
   <source>Retry</source>
   <target>Réessayer</target>
 </trans-unit>
+<trans-unit id="sf619f75fe953c191">
+  <source>Power level number</source>
+  <target>Entité niveau de puissance</target>
+</trans-unit>
+<trans-unit id="s1d1e31a75100306a">
+  <source>Power level unavailable</source>
+  <target>Puissance indisponible</target>
+</trans-unit>
+<trans-unit id="s424049cd975171b4">
+  <source>Power level changed</source>
+  <target>Puissance modifiée</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

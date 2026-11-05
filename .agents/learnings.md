@@ -1198,3 +1198,12 @@ this.hass.callService(serviceDomain, 'select_option', { entity_id: entityId, opt
 - **Evidence:** BUILD plugs-history-states (35 cases added): retry-button focus test failed with document.activeElement (the card host) and passed with shadowRoot.activeElement
 - **Tags:** component:none, category:a, phase:build, sc:v2, lit, testing
 - **Pattern:** A focus assertion on an element inside a Lit card must read `card.shadowRoot.activeElement`: `document.activeElement` returns the custom-element host. Same lot: `sf-button` has no label slot → name it via `aria-label`/`title`, and assert layout rules (`.chart-section { min-height }`) on the stylesheet, since happy-dom computed style is unreliable.
+### L133: A test that writes a temp dir under tests/ races every tree walker in the same vitest run
+- **Date:** 2026-11-05
+- **Type:** anti-pattern
+- **Source:** ha-sci-fi — editor-inputs-theme
+- **Route:** project
+- **Evidence:** VERIFY P4 flake: tests/specs/socle-contract.test.ts walked tests/ while IT-EIT-I-05 created and removed tests/.eit-base-<pid>/ (it must live under tests/ to inherit the tsconfig decorators setting); the walker hit ENOENT intermittently. Fixed in 848aa80 by skipping dot-dirs.
+- **Tags:** component:verify-py, gate-fired:true, category:a, phase:harden, sc:v2
+- **Fix:** Prefix transient dirs with a dot and make every tree walker in tests skip dot-dirs; prefer os.tmpdir() when the tsconfig is not needed.
+- **Anti-pattern:** Parallel vitest files share the tree: a transient dir created by one test is seen half-deleted by another's `readdirSync` walk → intermittent ENOENT, never reproducible alone. Rule: transient test dirs are dot-prefixed (`tests/.name-<pid>/`) and every repo tree walker skips entries starting with `.`.

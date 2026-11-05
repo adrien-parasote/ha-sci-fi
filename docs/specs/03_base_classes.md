@@ -127,22 +127,18 @@ sur deux, et la spec ne distinguait pas les deux (corrigé le 2026-11-01) :
 | Étage | Ce qu'il consomme |
 |---|---|
 | **Chaque éditeur de carte** (`src/cards/*/sci-fi-*-editor.ts`) | `sciFiEditorCommonStyles`, donc la famille `--editor-*` déclarée dans `editor-common.ts`. Tous l'importent, sans exception |
-| **Chaque composant d'`src/components/editor-inputs/`** | **Zéro `--editor-*`.** Ils consomment les variables de thème HA en direct — `--primary-color`, `--secondary-text-color`, `--primary-text-color`, `--error-color`, `--ha-card-background`, `--disabled-text-color` |
+| **Chaque composant d'`src/components/editor-inputs/`** | La famille `--editor-*` **par héritage** du `:host` de l'éditeur de carte qui les monte : ils lisent `var(--editor-x, <littéral>)` sans importer `sciFiEditorCommonStyles`, et ne nomment plus aucune variable de thème HA en direct (le chaînage HA vit dans `editor-common.ts`). Table des jetons : [editor-inputs-theme](./editor-inputs-theme/spec.md#token-table) |
 
-Les variables de thème HA atteignent le dialogue de configuration, donc ces
-composants rendent correctement : ce n'est pas un bug d'affichage. Mais ils sont
-hors de toute famille gouvernée, et `sf-editor-accordion` va plus loin — il déclare
-six locales privées (`--_border-color`, `--_color-primary`, `--_font-small`,
-`--_border-radius`, `--_border-width`, `--_border-color-alpha`) sous le commentaire
-« Legacy CSS variables (with fallbacks for non-HA environments) », adossées à
-`--secondary-light-color`, `--primary-light-color`, `--border-radius`,
-`--border-width` et `--font-size-small`, dont aucune n'est déclarée dans ce dépôt.
-Elles rendent donc toutes leur littéral de repli, dans HA comme hors de HA.
+Le portage (bead `ha-sci-fi-29mt`, décisions utilisateur du 2026-11-05) est
+**visuellement neutre** : chaque jeton est déclaré dans `editor-common.ts` avec
+exactement l'expression que le composant écrivait en ligne, et son repli est le
+littéral d'avant. Les six locales `--_*` de `sf-editor-accordion` sont supprimées,
+remplacées par des jetons `--editor-*` aux mêmes replis. Monté hors d'un éditeur
+(l'accordéon dans `sci-fi-water-management.ts`), un composant rend ses littéraux.
 
-**Ce que cette spec tranche : les composants d'`editor-inputs/` sont au contrat de
-thème HA, pas au contrat `--editor-*`** — et c'est ce que le code fait. Les porter
-sur `--editor-*` est une décision ouverte, pas une correction : bead
-`ha-sci-fi-0z0`.
+**Ce que cette spec tranche : les composants d'`editor-inputs/` sont au contrat
+`--editor-*`** (la décision ouverte du bead `ha-sci-fi-0z0` est close) — exigences,
+table et tests : [editor-inputs-theme](./editor-inputs-theme/spec.md).
 
 ---
 
@@ -262,7 +258,7 @@ prescrire l'AP#7 contre du code déjà relu.
 | 2 | Inline styling tokens | Hardcoded hex color in css where a `--sf-*` token already holds that exact value | Use `var(--sf-token, <literal>)` — see § Design Tokens and [ADR-018](../adr/ADR-018_palette-fixed-identity.md). A bespoke colour with one consumer stays literal; a *chained* token never replaces a widget colour |
 | 2b | Chained token in an editor sheet | `var(--sf-border)` inside `editor-common.ts` or `components/editor-inputs/*` — `--sf-*` does not reach the config dialog, so the declaration computes to its initial value | Use the `--editor-*` family from `editor-common.ts` |
 | 3 | Manual update calls | `this.performUpdate()` in card | Lit properties handle reactivity automatically |
-| 4 | Duplicated editor styles | Copy-pasting styling rules | Importer `sciFiEditorCommonStyles` de [`src/styles/editor-common.ts`](../../src/styles/editor-common.ts) — la règle nommait un fichier « editor.ts » qui n'a jamais existé. ⚠ Elle ne porte que sur les **éditeurs de carte** (les onze l'importent, mesuré le 2026-11-01), pas sur les composants de `src/components/editor-inputs/` : cf. § Les deux étages de l'éditeur |
+| 4 | Duplicated editor styles | Copy-pasting styling rules | Importer `sciFiEditorCommonStyles` de [`src/styles/editor-common.ts`](../../src/styles/editor-common.ts) — la règle nommait un fichier « editor.ts » qui n'a jamais existé. ⚠ L'import ne porte que sur les **éditeurs de carte** (les onze l'importent, mesuré le 2026-11-01) ; les composants de `src/components/editor-inputs/` ne l'importent pas et lisent la famille `--editor-*` par héritage : cf. § Les deux étages de l'éditeur |
 | 5 | Unhandled rendering exception | Empty render blocks | Wrap rendering loop in try/catch block |
 | 6 | Orphaned locale sync | Card or editor uses `willUpdate` as the only locale trigger | Use the `hass` property setter (with getter/setter pair) — call `setLocale(hass.locale.language)` when language differs, and `updateWhenLocaleChanges(this)` in the constructor. The `hass` setter fires on every HA state propagation, not just on property changes seen by `willUpdate`. |
 | 7 | `getRelevantEntities()` omet une entité que la carte lit | Une carte rend une liste non vide qui ne contient pas une entité dont son rendu dépend (capteur dérivé, entité d'application, `sensor.season`…) | Y lister **toute** entité dont le rendu dépend, config et dérivées. ⚠ Rendre `[]` quand il n'y a rien à suivre n'est **pas** cet anti-patron : c'est le comportement correct, et deux cartes le font exprès — § La liste vide délibérée |

@@ -32,7 +32,7 @@ export class SfEditorSlider extends SfEditorInput {
       input[type='range'] {
         flex: 1;
         appearance: none;
-        background: rgba(0, 210, 255, 0.15);
+        background: var(--editor-accent-track, rgba(0, 210, 255, 0.15));
         height: 4px;
         border-radius: 2px;
         outline: none;
@@ -44,7 +44,7 @@ export class SfEditorSlider extends SfEditorInput {
         width: 16px;
         height: 16px;
         border-radius: 50%;
-        background: var(--primary-color, #00d2ff);
+        background: var(--editor-accent, #00d2ff);
         cursor: pointer;
         transition: transform 150ms;
       }
@@ -55,7 +55,7 @@ export class SfEditorSlider extends SfEditorInput {
 
       .value-display {
         font-size: 0.85rem;
-        color: var(--primary-color, #00d2ff);
+        color: var(--editor-accent, #00d2ff);
         min-width: 32px;
         text-align: right;
         font-variant-numeric: tabular-nums;
@@ -63,7 +63,7 @@ export class SfEditorSlider extends SfEditorInput {
 
       label {
         font-size: 0.75rem;
-        color: var(--secondary-text-color, rgba(224, 232, 255, 0.6));
+        color: var(--editor-text-secondary, rgba(224, 232, 255, 0.6));
         position: static;
         transform: none;
         margin-bottom: 4px;

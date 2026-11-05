@@ -27,13 +27,6 @@ export class SfEditorAccordion extends LitElement {
     :host {
       display: block;
       width: 100%;
-      /* Legacy CSS variables (with fallbacks for non-HA environments) */
-      --_border-color:       var(--secondary-light-color,  rgb(102, 156, 210));
-      --_border-color-alpha: var(--secondary-light-alpha-color, rgba(102, 156, 210, 0.5));
-      --_color-primary:      var(--primary-light-color,    rgb(105, 211, 251));
-      --_font-small:         var(--font-size-small, 12px);
-      --_border-radius:      var(--border-radius, 5px);
-      --_border-width:       var(--border-width, 1px);
     }
 
     /* ── Outer wrapper (delete button sits next to the accordion) ────────── */
@@ -47,9 +40,9 @@ export class SfEditorAccordion extends LitElement {
     /* ── Accordion box ───────────────────────────────────────────────────── */
     .accordion {
       flex: 1;
-      border: var(--_border-width) solid var(--_border-color);
+      border: var(--editor-border-width, 1px) solid var(--editor-accordion-border, rgb(102, 156, 210));
       overflow: hidden;
-      border-radius: var(--_border-radius);
+      border-radius: var(--editor-radius, 5px);
       width: 100%;
     }
 
@@ -88,15 +81,15 @@ export class SfEditorAccordion extends LitElement {
       display: flex;
       background: linear-gradient(
         to bottom,
-        rgba(0, 0, 0, 0.7) 0%,
-        rgba(0, 0, 0, 0.2) 100%
+        var(--editor-accordion-shade-top, rgba(0, 0, 0, 0.7)) 0%,
+        var(--editor-accordion-shade-bottom, rgba(0, 0, 0, 0.2)) 100%
       );
-      background-color: var(--_border-color-alpha);
+      background-color: var(--editor-accordion-header-bg, rgba(102, 156, 210, 0.5));
       cursor: pointer;
       justify-content: space-between;
       padding: 10px;
       text-transform: uppercase;
-      font-size: var(--_font-small);
+      font-size: var(--editor-font-small, 12px);
       user-select: none;
     }
 
@@ -105,11 +98,11 @@ export class SfEditorAccordion extends LitElement {
       flex-direction: row;
       align-items: center;
       gap: 10px;
-      color: var(--_border-color);
+      color: var(--editor-accordion-border, rgb(102, 156, 210));
     }
 
     .label:hover > .label-left {
-      color: var(--_color-primary);
+      color: var(--editor-accordion-accent, rgb(105, 211, 251));
     }
 
     /* Chevron via ::after pseudo-element — rotates when checked */
@@ -119,7 +112,7 @@ export class SfEditorAccordion extends LitElement {
       height: 1em;
       text-align: center;
       align-self: center;
-      color: var(--_border-color);
+      color: var(--editor-accordion-border, rgb(102, 156, 210));
       transform: rotate(90deg);
       transition: transform 0.35s ease;
     }
@@ -136,11 +129,11 @@ export class SfEditorAccordion extends LitElement {
     .label sf-icon {
       --icon-width:  16px;
       --icon-height: 16px;
-      --icon-color:  var(--_border-color);
+      --icon-color:  var(--editor-accordion-border, rgb(102, 156, 210));
     }
 
     .label:hover sf-icon {
-      --icon-color: var(--_color-primary);
+      --icon-color: var(--editor-accordion-accent, rgb(105, 211, 251));
     }
 
     /* ── Delete button (sits to the right of the accordion box) ─────────── */
@@ -153,11 +146,11 @@ export class SfEditorAccordion extends LitElement {
     /* Target sf-button from within accordion shadow DOM.
        Custom properties set here override sf-button's own :host defaults. */
     .delete sf-button {
-      --btn-icon-color: var(--_border-color);
+      --btn-icon-color: var(--editor-accordion-border, rgb(102, 156, 210));
     }
 
     .delete sf-button:hover {
-      --btn-icon-color: var(--error-color, #ff4444);
+      --btn-icon-color: var(--editor-error, #ff4444);
     }
 
     @keyframes bounce {

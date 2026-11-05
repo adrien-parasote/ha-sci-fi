@@ -50,3 +50,6 @@ wt/*
 # Runtime gate locks (machine-local)
 *.gate.lock
 !.agents/workshop.yml
+
+# IT-EIT-I-05 extracts the base-commit src/ here, removed after the test
+tests/.eit-base-*/

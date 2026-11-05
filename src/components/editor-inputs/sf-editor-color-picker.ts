@@ -27,7 +27,7 @@ export class SfEditorColorPicker extends SfEditorInput {
         /* Always floated up for color pickers */
         top: 8px !important;
         transform: translateY(0) scale(0.75) !important;
-        color: var(--secondary-text-color, rgba(224, 232, 255, 0.6));
+        color: var(--editor-text-secondary, rgba(224, 232, 255, 0.6));
       }
 
       .color-row {
@@ -42,7 +42,7 @@ export class SfEditorColorPicker extends SfEditorInput {
         width: 28px;
         height: 28px;
         border-radius: 6px;
-        border: 1px solid rgba(0, 210, 255, 0.3);
+        border: 1px solid var(--editor-accent-line, rgba(0, 210, 255, 0.3));
         flex-shrink: 0;
       }
 
@@ -57,7 +57,7 @@ export class SfEditorColorPicker extends SfEditorInput {
 
       .color-value {
         font-size: 0.8rem;
-        color: var(--primary-text-color, #e0e8ff);
+        color: var(--editor-text, #e0e8ff);
         font-family: monospace;
         cursor: pointer;
         flex: 1;

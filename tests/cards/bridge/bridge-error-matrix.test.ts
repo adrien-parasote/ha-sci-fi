@@ -396,7 +396,7 @@ describe('bridge error matrix — absent entities in the other sections', () => 
 // ── setConfig validation ───────────────────────────────────────────────────────
 
 const T = 'custom:sci-fi-bridge';
-const SECRET = '<script>SECRET-9f3</script>';
+const LEAK_PROBE = '<script>SECRET-9f3</script>';
 
 async function configOutcome(config: any): Promise<{ card: any; msg: string | undefined }> {
   error.mockClear();
@@ -466,9 +466,9 @@ describe('bridge error matrix — setConfig validation', () => {
       ['stove no status', { type: T, stove: { pellet_quantity: 'a', pellet_stock: 'b' } }, 'stove.status: expected a string'],
       ['vehicle no sensor', { type: T, vehicle: {} }, 'vehicle.power_sensor: expected a string'],
       // secret sentinel is never reflected
-      ['secret as entity', { type: T, persons: [{ entity: { secret: SECRET } }] }, 'persons[0].entity: expected a string'],
-      ['secret as type', { type: { secret: SECRET } }, 'type: expected a string'],
-      ['secret as occupancy', { type: T, alerts: { occupancy: { s: SECRET } } },
+      ['secret as entity', { type: T, persons: [{ entity: { secret: LEAK_PROBE } }] }, 'persons[0].entity: expected a string'],
+      ['secret as type', { type: { secret: LEAK_PROBE } }, 'type: expected a string'],
+      ['secret as occupancy', { type: T, alerts: { occupancy: { s: LEAK_PROBE } } },
         'alerts.occupancy: expected a string'],
     ];
     for (const [name, cfg, expected] of cases) {

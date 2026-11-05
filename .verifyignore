@@ -18,8 +18,9 @@ P5:translate_xlf.py:print()
 # P6 Stub Detection false positive in bridge editor
 P6:src/cards/bridge/sci-fi-bridge-editor.ts:Returns empty object
 
-# P8 Spec Conformance global false positives (e.g. templates, standard libs)
-P8:*:*
+# P15 Reachability: entry/CLI files nothing in src imports by design
+P15:src/sci-fi.ts:tested_but_never_wired  # rollup entry (rollup.config.mjs input) and package.json main, loaded by the bundle, not imported
+P15:translate_xlf.py:reached_from_nowhere  # manual CLI utility for xliff translation, run by hand, never imported
 P7:src/sci-fi.ts:architectural_violation  # Pre-existing accepted god file (bundle entry registering 11 cards, documented in .sentrux/rules.toml)
 P7:src/cards/hexa-tiles/sci-fi-hexa-tiles-editor.ts:architectural_violation  # editor already a wide-import file (fan-out 15 on base); this lot adds the single shared DOMAIN import (16), the typed constant module the whole lot introduces; the user accepted this exception rather than splitting an unrelated editor; recorded in .sentrux/rules.toml (2 god files expected)
 P7:src/cards/bridge/sci-fi-bridge.ts:architectural_violation  # pre-existing: lot water-offline does not modify src/cards/bridge/sci-fi-bridge.ts (git diff vs build-base b312e10 empty); P7 misattributes base debt to the lot

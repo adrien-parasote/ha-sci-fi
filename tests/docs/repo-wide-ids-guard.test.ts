@@ -206,7 +206,7 @@ const corpusGaps = (files: string[], per: Map<string, Titles>, onDisk: string[],
 };
 const walkTests = (dir: string): string[] =>
   readdirSync(join(ROOT, dir)).flatMap((n) => {
-    if (n === 'node_modules') return [];
+    if (n === 'node_modules' || n.startsWith('.')) return []; // dot-dirs are transient (tests/.eit-base-<pid>)
     const p = `${dir}/${n}`;
     const st = lstatSync(join(ROOT, p));
     if (st.isSymbolicLink()) return [];

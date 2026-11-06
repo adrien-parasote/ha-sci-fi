@@ -1,57 +1,47 @@
-AUDITOR: subagent
-COVERAGE:
-| file | lines read | total (wc -l) | full read? |
-| docs/specs/stove-diagnostics/spec.md | 1-154 | 154 | yes |
-| src/cards/stove/diagnostics.ts | 1-94 | 94 | yes |
-| src/cards/stove/number-wheel.ts | 1-127 | 127 | yes |
-| src/cards/stove/sci-fi-stove.ts | diff hunks (imports, 181-190, 229-245, 294-390) | 775 | no (diff only) |
-| src/cards/stove/config.ts | diff hunk | 47 | no (diff only) |
-| src/cards/stove/labels.ts | diff hunk | 44 | no (diff only) |
-| src/cards/stove/sci-fi-stove-editor.ts | diff hunk | 166 | no (diff only) |
-| src/cards/stove/styles.ts | diff hunk | 382 | no (diff only) |
-| src/types/ha.ts | diff hunk | - | no (diff only) |
-| xliff/fr.xlf, src/locales/locales/fr.js | the four new units | - | partial |
-| tests/cards/stove/sci-fi-stove-diagnostics.test.ts | test index + TC-SDG-U-11 | 420 | partial |
-| tests/cards/stove/__snapshots__/sci-fi-stove-diagnostics.test.ts.snap | 1-3 | 3 | yes |
-must_read.txt is empty: no entry point packaged.
-VERDICT: WARNING
-SPEC: docs/specs/stove-diagnostics/spec.md
-FINDINGS:
-- [LOW] src/cards/stove/diagnostics.ts:93 — when an error carries a very long code with a short label (e.g. label "Ignition failure", code of 250 characters), the title/aria-label shows "Ignition failure… (CCC…32)": an ellipsis is appended to a label that was never cut, telling the user text is missing when it is not — capErrorText takes the protected branch as soon as the FULL text exceeds 200, whereas FR-14 (the cap cuts the label, keeps the code) only needs the label cut when `label + suffix` itself exceeds 200; the branch should test the length against the 32-char-cut suffix and append the ellipsis only if the label is actually sliced.
-  RESOLUTION: fixed — tests/cards/stove/diagnostics.test.ts "a short label beside a long code is not marked as cut" (prove_test.py: PROVEN, red without the fix)
-NOTES:
-- src/cards/stove/diagnostics.ts:49 uses `Object.prototype.hasOwnProperty.call` instead of the `Object.hasOwn` FR-5 names; same own-property semantics, justified by the tsconfig lib; TC-SDG-U-03 prototype case covers it.
-- src/cards/stove/sci-fi-stove.ts:355 calls `hass.formatEntityState` detached from `hass`; HA builds it as a closure (no `this`), so this is safe.
-- src/cards/stove/sci-fi-stove.ts:330 `s: any` follows the existing `_renderMiddleZone(stoveState: any, s: any)` convention of the file.
-- Known out-of-diff beads j5h0 (sci-fi.ts) and g3lx (translate_xlf) not re-raised.
-CONFORMANCE EVIDENCE:
-- FR-1 (pure move of the 17 wheel declarations): src/cards/stove/number-wheel.ts:11-127 exports all 17, bodies identical to the removed lines in the diff; sci-fi-stove.ts imports from './number-wheel.js'.
-- FR-2 (card <= 800 lines): wc -l src/cards/stove/sci-fi-stove.ts = 775; TC-SDG-U-11 at tests/cards/stove/sci-fi-stove-diagnostics.test.ts:316.
-- FR-3 (fields, validated, in relevant entities): config.ts:32-34; diagnostics.ts:37-41; sci-fi-stove.ts:184-187.
-- FR-5 (own-property, domain guard, normalisation): diagnostics.ts:44-65 with DIAGNOSTIC_DOMAINS 25-29.
-- FR-6/FR-8 (live zone, single badge of worst kind, joined capped titles): sci-fi-stove.ts:368-390; lines ordered door<alert<error so last = worst.
-- FR-7 (error text/code): diagnostics.ts:68-81.
-- FR-9 (stateLabel fallback, no logging): sci-fi-stove.ts:354-366; ha.ts formatEntityState type.
-- FR-13 (door/alert fusion): sci-fi-stove.ts:337.
-- FR-14 (CSS ellipsis, 200 cap): styles.ts .diagnostic-text rule; diagnostics.ts:84-94.
-- FR-10/FR-11: editor fields after sensor_status, labels.ts, xliff/fr.xlf:1449-1464, fr.js entries.
-- FR-0/FR-4: snapshot file with key "pre-lot content".
+# Code review — fix lot stove-diagnostics (top-right diagnostic badge removed)
 
----
-
-AUDITOR: subagent
-ROUND: 2 (delta, packet .sc/review/37da8a2-186abce0)
-COVERAGE:
-| file | lines read | total (wc -l) | full read? |
-| src/cards/stove/diagnostics.ts | delta hunk + 80-95 (capText/capErrorText) | 95 | no (delta scope; rest unchanged since round 1, read in full there) |
-| tests/cards/stove/diagnostics.test.ts | delta hunk | 66 | no (delta scope) |
-must_read.txt is empty: no entry point packaged.
 VERDICT: APPROVE
-SPEC: docs/specs/stove-diagnostics/spec.md
+
+AUDITOR: subagent
+SPEC: docs/specs/stove-diagnostics/spec.md, docs/specs/cards/stove.md
+Packet: .sc/review/e71231c-d57ff114
+
+The reviewer read the dirty diff in full, searched every non-ignored file for the removed symbols and ran the stove and styles tests (10 files, 99 tests, exit 0). The badge is gone from `_renderContent` and from the styles; the status-zone lines (`div.diagnostics role="status" aria-live="polite"`) are the only display, so every diagnostic is still announced. No unused helper or import is left behind.
+
+COVERAGE:
+| file | read |
+|---|---|
+| .sc/review/e71231c-d57ff114/diff.patch | full (455 lines) |
+| src/cards/stove/sci-fi-stove.ts | 245-383 (`_renderContent`, `_diagnosticLines`, `_renderDiagnostics`) |
+| src/cards/stove/styles.ts | 36-70 |
+| docs/specs/stove-diagnostics/spec.md | amended passages |
+| docs/specs/cards/stove.md | amended passages |
+| tests/cards/stove/sci-fi-stove-diagnostics.test.ts | amended tests |
+
 FINDINGS:
-(none)
-RULING: the round-1 LOW at src/cards/stove/diagnostics.ts:93 (false ellipsis on a short label beside a long code) is closed as fixed. Line 93 now returns `${label}${suffix}` with no ellipsis when label plus the 32-char-cut suffix fits in 200; otherwise line 94 slices the label and adds the ellipsis (exactly 200, code kept). TC-SDG-U-13 "a short label beside a long code is not marked as cut" asserts the exact string; vitest on the file 6/6 green.
+
+[MEDIUM] FR-14 no longer starts its own line
+File: docs/specs/stove-diagnostics/spec.md:47
+Issue: the edit dropped the newline between FR-13 and FR-14, so the line reads "...(agent's call sur la ligne gardée).- **FR-14**: ..." and a traceability gate or grep for "- **FR-14**" no longer finds it. Fix: put FR-14 back on its own line.
+RESOLUTION: fixed — FR-14 is back on its own line, separated from FR-13 by a blank line (spec.md:47-49).
+
+[MEDIUM] The committed bundle still renders the badge
+File: dist/sci-fi.min.js:3264
+Issue: OUT-OF-DIFF at review time: the tracked bundle still contained the badge, and the workbench loads it, so the diagnostic would still show twice until a rebuild; earlier commits updated `dist/` with the source.
+RESOLUTION: fixed — `npm run build` run in the worktree, `grep -c diagnostic-badge dist/sci-fi.min.js` returns 0, `dist/sci-fi.min.js` is committed with the lot.
+
+[LOW] Clauses still mention an `aria-label` no element carries
+File: docs/specs/stove-diagnostics/spec.md:28
+Issue: D6, FR-7, FR-14 and the matrix rows still said "`title` / `aria-label`" while the badge was the only element with an `aria-label` and B-5 now says the lines have none.
+RESOLUTION: fixed — each of those clauses now says `title` only; the test title of TC-SDG-U-13 follows.
+
+[LOW] TC-SDG-U-13 keeps an input with no assertion
+File: docs/specs/stove-diagnostics/spec.md:90
+Issue: the row still listed "puis trois diagnostics de 120 caractères chacun" and traced to FR-8, but the matching test case was deleted with the badge.
+RESOLUTION: fixed — the input and the FR-8 trace are dropped from the row; the test no longer has that case.
+
 NOTES:
-- The branch where the full text is <= 200 still goes through capText (no-op). Nothing regressed.
-CONFORMANCE EVIDENCE:
-- FR-14 (cap cuts the label, keeps the code cut to 32, marks a cut only when one happens): src/cards/stove/diagnostics.ts:89-95; TC-SDG-U-13 at tests/cards/stove/diagnostics.test.ts.
+- `capText` is still used (sci-fi-stove.ts, wear-counters.ts, diagnostics.ts), `DIAGNOSTIC_ICONS` feeds the line icons, `DiagnosticLine.capped` feeds the line `title`.
+- `.content { position: relative }` is kept: FR-8 and TC-SDG-U-08 pin it explicitly.
+- The remaining mentions of `.diagnostic-badge` in tests and specs are assertions that it is absent.
+- Security: the only rendering change is a removal; line texts are still bound as text by Lit.

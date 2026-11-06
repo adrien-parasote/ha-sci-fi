@@ -1,0 +1,10 @@
+3c3abda6be903ad7a9b6fc9363352ac5abe04da1 docs/reviews/stove-diagnostics/history/code-review.20261106.md
+f8940cba946bbe02f128c37f96a83ceac4a4c4ca docs/reviews/stove-diagnostics/history/security-review.20261106.md
+e7336ab665dea1c5d76d5885414d876c3dddaebc docs/specs/cards/stove.md
+bca277daeb54c38b8d33456ca4afd3e4012b7d30 docs/specs/stove-diagnostics/spec.md
+35087a060899e96c35ec27a8dbd908adb7544e92 src/cards/stove/sci-fi-stove.ts
+382f6ee3b6513180cc07f53aaf6d2b5d026171be src/cards/stove/styles.ts
+5a7d5bf61b62d6f90eb19e9c506ea397c273768b tests/cards/stove/sci-fi-stove-diagnostics.test.ts
+6946ea16931c819e19dc00335dbe2b653c3414b1 tests/styles/card-css-baseline.json
+4bc596f2e37393b236ccd95319c1f20e9758eeeb docs/fixes/stove-diagnostics/lot.json
+b29d5ebb7e8ff7211b590875100778aa94252d2d docs/fixes/stove-diagnostics/verdicts.json

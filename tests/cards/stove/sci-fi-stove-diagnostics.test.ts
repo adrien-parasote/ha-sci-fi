@@ -83,7 +83,6 @@ const noDiagnostics = (el: SciFiStoveCard) => {
 };
 const textOf = (el: SciFiStoveCard, kind: string): string | undefined =>
   root(el).querySelector(`.diagnostic.${kind} .diagnostic-text`)?.textContent?.trim();
-const badge = (el: SciFiStoveCard): HTMLElement => root(el).querySelector('sf-icon.diagnostic-badge') as HTMLElement;
 
 const NAMES = ['NUMBER_DEBOUNCE_MS', 'NUMBER_MAX_ITEMS', 'NUMBER_DOMAINS', 'NumberTrio', 'NumberWheelKey', 'NumberWheelSpec',
   'NUMBER_WHEELS', 'NumberPick', 'NumberPicks', 'NumberGrid', 'NumberEntity', 'isNumeric', 'decimals', 'gridOf', 'numberGrid',
@@ -163,7 +162,7 @@ describe('sci-fi-stove — diagnostics', () => {
     noDiagnostics(await mount(DIAG, proto));
   });
 
-  it('TC-SDG-U-04: door open renders a line and the badge', async () => {
+  it('TC-SDG-U-04: door open renders a line and no badge', async () => {
     for (const state of ['on', ' ON ']) {
       const el = await mount({ sensor_door: DOOR }, { ...baseStates(), [DOOR]: ent(DOOR, state) });
       const zone = root(el).querySelector('.diagnostics') as HTMLElement;
@@ -180,15 +179,7 @@ describe('sci-fi-stove — diagnostics', () => {
       const text = lines[0]!.querySelector('.diagnostic-text')!;
       expect(text.textContent!.trim()).toBe('Door open');
       expect(text.getAttribute('title')).toBe('Door open');
-      expect(root(el).querySelectorAll('.diagnostic-badge').length).toBe(1);
-      const b = badge(el);
-      expect(b.classList.contains('door')).toBe(true);
-      expect(b.previousElementSibling!.tagName.toLowerCase()).toBe('sf-stove-image');
-      expect(b.getAttribute('icon')).toBe('mdi:door-open');
-      expect(b.getAttribute('title')).toBe('Door open');
-      expect(b.getAttribute('aria-label')).toBe('Door open');
-      expect(b.getAttribute('role')).toBe('img');
-      expect(b.closest('.diagnostics')).toBeNull();
+      expect(root(el).querySelector('.diagnostic-badge')).toBeNull();
       el.remove();
     }
   });
@@ -233,8 +224,6 @@ describe('sci-fi-stove — diagnostics', () => {
     const b = await mount({ sensor_alert: ALERT }, states(), { formatEntityState: () => '<b>x</b>' });
     expect(textOf(b, 'alert')).toBe('<b>x</b>');
     expect(root(b).querySelector('.diagnostic.alert .diagnostic-text')!.getAttribute('title')).toBe('<b>x</b>');
-    expect(badge(b).getAttribute('title')).toBe('<b>x</b>');
-    expect(badge(b).getAttribute('aria-label')).toBe('<b>x</b>');
     expect(root(b).querySelector('b')).toBeNull();
     b.remove();
     for (const fmt of [() => { throw new Error('boom'); }, () => 42, () => '', () => '  ']) {
@@ -245,7 +234,7 @@ describe('sci-fi-stove — diagnostics', () => {
     expect(errors).not.toHaveBeenCalled();
   });
 
-  it('TC-SDG-U-07: order, severity of the badge, door/alert fusion', async () => {
+  it('TC-SDG-U-07: order, no badge, door/alert fusion', async () => {
     const labels: Record<string, string> = { low_fuel: 'Low fuel', e110: 'Flue gas', door_open: 'Door open alert', ' DOOR_OPEN ': 'Door open alert' };
     const fmt = (s: any) => labels[s.state] ?? s.state;
     const all = await mount(DIAG, {
@@ -253,14 +242,10 @@ describe('sci-fi-stove — diagnostics', () => {
     }, { formatEntityState: fmt });
     const kinds = [...root(all).querySelectorAll('.diagnostics .diagnostic')].map((n) => n.classList[1]);
     expect(kinds).toEqual(['door', 'alert', 'error']);
-    expect(root(all).querySelectorAll('.diagnostic-badge').length).toBe(1);
-    expect(badge(all).classList.contains('error')).toBe(true);
-    expect(badge(all).getAttribute('icon')).toBe('mdi:alert-octagon');
-    expect(badge(all).getAttribute('title')).toBe('Door open · Low fuel · Flue gas (E110)');
+    expect(root(all).querySelector('.diagnostic-badge')).toBeNull();
     all.remove();
     const two = await mount(DIAG, { ...baseStates(), [DOOR]: ent(DOOR, 'on'), [ALERT]: ent(ALERT, 'low_fuel') }, { formatEntityState: fmt });
-    expect(badge(two).classList.contains('alert')).toBe(true);
-    expect(badge(two).getAttribute('icon')).toBe('mdi:alert');
+    expect([...root(two).querySelectorAll('.diagnostics .diagnostic')].map((n) => n.classList[1])).toEqual(['door', 'alert']);
     two.remove();
     for (const alert of ['door_open', ' DOOR_OPEN ']) {
       const el = await mount(DIAG, {
@@ -269,8 +254,6 @@ describe('sci-fi-stove — diagnostics', () => {
       expect(root(el).querySelectorAll('.diagnostic').length).toBe(1);
       expect(root(el).querySelector('.diagnostic.door')).toBeNull();
       expect(textOf(el, 'alert')).toBe('Door open alert');
-      expect(badge(el).classList.contains('alert')).toBe(true);
-      expect(badge(el).getAttribute('title')).toBe('Door open alert');
       el.remove();
     }
   });
@@ -278,14 +261,10 @@ describe('sci-fi-stove — diagnostics', () => {
   it('TC-SDG-U-08: stylesheet of the diagnostics', () => {
     const css = read('src/cards/stove/styles.ts');
     expect(rules(css, '.content', true)).toMatch(/position:\s*relative/);
-    const b = rules(css, '.diagnostic-badge', true);
-    for (const decl of [/position:\s*absolute/, /top:\s*0/, /right:\s*0/, /--icon-size:\s*24px/, /z-index:\s*1/, /pointer-events:\s*none/]) {
-      expect(b).toMatch(decl);
-    }
+    expect(css).not.toContain('.diagnostic-badge');
     expect(rules(css, '.content .info .m .temperatures .temperature.high div:last-child', true)).toContain('#ff4444');
     for (const kind of ['door', 'alert', 'error']) {
       expect(rules(css, `.diagnostic.${kind}`, false), kind).toContain('#ff4444');
-      expect(rules(css, `.diagnostic-badge.${kind}`, false), kind).toContain('#ff4444');
     }
     expect(rules(css, '.diagnostic', true)).toMatch(/display:\s*flex/);
     const t = rules(css, '.diagnostic-text', true);
@@ -308,7 +287,7 @@ describe('sci-fi-stove — diagnostics', () => {
     }
     const doc = read('docs/specs/cards/stove.md');
     for (const token of ['F-STOVE-D11', '### Diagnostics — porte, alerte, erreur', '.diagnostics', '.diagnostic-text',
-      'sf-icon.diagnostic-badge', 'aria-live', 'door_open', '200 caractères', 'domaine inattendu', 'formatEntityState']) {
+      'aria-live', 'door_open', '200 caractères', 'domaine inattendu', 'formatEntityState']) {
       expect(doc, token).toContain(token);
     }
   });
@@ -336,7 +315,7 @@ describe('sci-fi-stove — diagnostics', () => {
     expect(other(err)).toEqual([]);
   });
 
-  it('TC-SDG-U-13: long texts are capped in title and aria-label', async () => {
+  it('TC-SDG-U-13: long texts are capped in title', async () => {
     const A = 'a'.repeat(300);
     const e1 = await mount({ sensor_error: ERROR }, { ...baseStates(), [ERROR]: ent(ERROR, 'e101', { code: 'E101' }) },
       { formatEntityState: () => A });
@@ -359,15 +338,6 @@ describe('sci-fi-stove — diagnostics', () => {
     expect(title2.length).toBeLessThanOrEqual(200);
     expect(title2.endsWith(`… (${'C'.repeat(32)})`)).toBe(true);
     e2.remove();
-    const L = 'x'.repeat(120);
-    const three = await mount(DIAG, {
-      ...baseStates(), [DOOR]: ent(DOOR, 'on'), [ALERT]: ent(ALERT, 'low_fuel'), [ERROR]: ent(ERROR, 'e101'),
-    }, { formatEntityState: () => L });
-    for (const attr of ['title', 'aria-label']) {
-      const v = badge(three).getAttribute(attr)!;
-      expect(v.length).toBeLessThanOrEqual(200);
-      expect(v.endsWith('…')).toBe(true);
-    }
   });
 
   it('IT-SDG-I-01: real element shows the error', async () => {
@@ -378,7 +348,16 @@ describe('sci-fi-stove — diagnostics', () => {
     await el.updateComplete;
     const t = root(el).querySelector('.diagnostics[role="status"][aria-live="polite"] .diagnostic.error .diagnostic-text');
     expect(t!.textContent!.trim()).toBe('Ignition failure (E101)');
-    expect(root(el).querySelector('sf-icon.diagnostic-badge.error')).not.toBeNull();
+    expect(root(el).querySelector('.diagnostic-badge')).toBeNull();
+  });
+
+  it('test_O1_a_diagnostic_is_shown_once_in_the_status_zone_with_no_badge', async () => {
+    const el = await mount(DIAG, { ...baseStates(), [DOOR]: ent(DOOR, 'on'), [ERROR]: ent(ERROR, 'e101', { code: 'E101' }) }, { formatEntityState: () => 'Ignition failure' });
+    const content = root(el).querySelector('.content')!;
+    expect([...content.children].map((c) => c.tagName.toLowerCase() + (c.className ? `.${c.className}` : ''))).toEqual(['sf-stove-image', 'div.info']);
+    expect(content.querySelectorAll('.diagnostics .diagnostic').length).toBe(2);
+    expect(root(el).querySelector('.diagnostic-badge')).toBeNull();
+    expect(root(el).querySelectorAll('sf-icon[icon="mdi:door-open"]').length).toBe(1);
   });
 
   it('IT-SDG-I-02: the error going back to none removes everything', async () => {

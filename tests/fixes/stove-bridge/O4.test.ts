@@ -12,10 +12,11 @@ describe('O4', () => {
     const states = MOCK_STATES as Record<string, { state: string }>;
     const cfg = (stoveCard as any).config;
     const status: string = cfg.sensors.sensor_status;
-    expect(status).toMatch(/^sensor\..*_detailed_stove_status$/);
+    // HA localizes core entity ids: `_detailed_stove_status` in English, `_etat_detaille_du_poele` in French.
+    expect(status).toMatch(/^sensor\..*(_detailed_stove_status|_etat_detaille_du_poele)$/);
     expect(CORE_STATES).toContain(states[status]?.state);
     expect(states[cfg.switch_eco_mode]?.state).toBeDefined();
-    expect(cfg.switch_eco_mode).toMatch(/^switch\..*_eco_mode$/);
+    expect(cfg.switch_eco_mode).toMatch(/^switch\..*(_eco_mode|_mode_eco)$/);
     for (const f of ['dev/modules/mock-data.js', 'dev/cards/stove.js', 'dev/cards/bridge.js']) {
       expect(fs.readFileSync(f, 'utf8')).not.toContain('binary_sensor.clou_stove_status');
     }

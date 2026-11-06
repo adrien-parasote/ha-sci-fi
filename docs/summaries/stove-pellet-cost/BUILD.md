@@ -22,3 +22,5 @@
 **Dead ends:** none
 
 **Next action:** VERIFY - /verify-stage (verify.py, code + security review subagents, doc-update).
+
+**Tests:** files +1 ~2 −0 · cases +16 −0 · 2 earlier test file(s) edited, none lost a case

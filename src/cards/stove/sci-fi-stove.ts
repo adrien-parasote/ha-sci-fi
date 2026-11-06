@@ -321,7 +321,7 @@ export class SciFiStoveCard extends SciFiBaseCard {
     if (raw === '' || !Number.isFinite(value) || Math.abs(value) >= 1e9) return nothing;
     // HA's hass carries a top-level `language` that HomeAssistantExt does not declare (FR-4.1 fallback).
     const language: unknown = this.hass.locale?.language ?? (this.hass as Partial<{ language: unknown }>).language ?? 'en';
-    const amount = formatPelletCost(value, st!.attributes?.unit_of_measurement, language);
+    const amount = formatPelletCost(value, st?.attributes?.unit_of_measurement, language);
     return html`
       <div class="pellet-cost">
         <sf-icon icon="mdi:cash" aria-hidden="true" .connection="${this.hass.connection}"></sf-icon>

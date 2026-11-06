@@ -140,14 +140,20 @@ describe('sci-fi-stove — pellet cost', () => {
   });
 
   it('TC-SPC-U-05: without the stock bar the cell comes last; hass.language is the fallback', async () => {
-    const el = await mount({ sensors: { sensor_pellet_quantity: QUANTITY }, pellet_cost: COST }, costStates('19.5'));
-    expect(quantities(el).lastElementChild).toBe(cell(el));
-    expect(cellText(el)).toBe('Coût (19,50 €)');
-    const hass = { ...makeMockHass({ states: costStates('19.5'), language: 'fr' }), language: 'en' } as any;
-    delete hass.locale;
+    await setLocale('en');
+    const el = await mount({ sensors: { sensor_pellet_quantity: QUANTITY }, pellet_cost: COST }, costStates('19.5'), 'en');
+    // hass.locale.language 'en' beats a top-level hass.language 'de' (FR-4.1 order).
+    const hass = { ...makeMockHass({ states: costStates('19.5'), language: 'en' }), language: 'de' } as any;
     el.hass = hass;
     await settle(el);
-    expect(cellText(el)).toBe('Coût (19.50 €)');
+    expect(quantities(el).lastElementChild).toBe(cell(el));
+    expect(cellText(el)).toBe('Cost (19.50 €)');
+    // 'de' differs from the final 'en' default: dropping the hass.language read fails here.
+    const noLocale = { ...makeMockHass({ states: costStates('19.5'), language: 'en' }), language: 'de' } as any;
+    delete noLocale.locale;
+    el.hass = noLocale;
+    await settle(el);
+    expect(cellText(el)).toBe('Cost (19,50 €)');
   });
 
   it('TC-SPC-U-07: styles let the row wrap and keep the cost text on one line', () => {

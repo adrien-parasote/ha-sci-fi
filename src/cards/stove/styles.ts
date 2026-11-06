@@ -23,9 +23,10 @@ export const stoveStyles = css`
 
   /*********** HEADER ***********/
   .header {
+    position: relative;
     text-align: center;
     border-bottom: var(--sf-border-width, 1px) solid var(--sf-bg-primary, #0d1117);
-    padding: 5px;
+    padding: 5px 32px;
     background-color: rgba(13, 17, 23, 0.6);
     color: var(--sf-text-secondary, rgba(224, 232, 255, 0.6));
     font-size: var(--sf-text-sm, 12px);
@@ -378,6 +379,24 @@ export const stoveStyles = css`
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+  /* Wear view (stove-wear-counters FR-9): the header button opens it in place of the card body. */
+  .wear-toggle {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 0;
+    line-height: 0;
+    --icon-width: 16px;
+    --icon-height: 16px;
+  }
+  .wear-view {
+    padding: 8px 12px;
   }
   /* Wear counters (stove-wear-counters FR-9): a truncated value stays whole in its title. */
   .wear-counter {

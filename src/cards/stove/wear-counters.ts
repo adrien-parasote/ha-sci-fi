@@ -1,11 +1,10 @@
 /**
- * Wear counters of the stove card (fumis total_increasing sensors), in a collapsible section.
+ * Wear counters of the stove card (fumis total_increasing sensors): a header button opens a stats view.
  * Spec: docs/specs/stove-wear-counters/spec.md FR-2.1, FR-3, FR-5, FR-6, FR-7.
  */
 import { html, nothing, type TemplateResult } from 'lit';
 import { msg } from '@lit/localize';
 
-import '../../components/editor-inputs/sf-editor-accordion.js';
 import '../../components/sf-icon/sf-icon.js';
 import { DOMAIN } from '../../types/domains.js';
 import type { HassEntity, HomeAssistantExt } from '../../types/ha.js';
@@ -40,7 +39,10 @@ const SENSOR_PREFIX = `${DOMAIN.SENSOR}.`;
 const UNREADABLE: readonly string[] = ['unavailable', 'unknown'];
 const NBSP = ' ';
 
-const wellFormed = (id: string): boolean => id.length <= ID_MAX && ID_SHAPE.test(id);
+/** FR-7: a plain decimal; `Number()` alone would also read '0x10', '0b11' as numbers. */
+const DECIMAL = /^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/;
+
+const wellFormed =(id: string): boolean => id.length <= ID_MAX && ID_SHAPE.test(id);
 
 /** FR-2, FR-2.1: configured and well-formed ids, in WEAR_COUNTERS order. */
 export function wearEntityIds(sensors: SciFiStoveSensors): string[] {
@@ -68,21 +70,32 @@ export function wearRows(hass: HomeAssistantExt, sensors: SciFiStoveSensors): We
   return rows;
 }
 
-/** FR-7: HA's formatted value (unit included), else the raw state and its own unit. */
-export function wearValue(hass: HomeAssistantExt, entity: HassEntity): string {
-  const formatted = formattedState(hass, entity);
-  if (formatted !== undefined) return formatted;
+/** FR-7: the unit of an entity, from its own `unit_of_measurement` attribute. */
+function unitOf(entity: HassEntity): string {
   const attributes = entity.attributes ?? {};
   // Object.hasOwn semantics; the tsconfig lib predates ES2022.
   const unit: unknown = Object.prototype.hasOwnProperty.call(attributes, 'unit_of_measurement')
     ? attributes['unit_of_measurement']
     : undefined;
-  const raw = rawState(entity);
-  return typeof unit === 'string' && unit.trim() !== '' ? `${raw}${NBSP}${unit.trim()}` : raw;
+  return typeof unit === 'string' ? unit.trim() : '';
 }
 
-/** FR-6: the collapsible section, absent when no counter is configured. */
-export function renderWearCounters(
+/** FR-7: a numeric state is rounded to one decimal; any other state goes through HA's formatter, else the raw state. */
+export function wearValue(hass: HomeAssistantExt, entity: HassEntity): string {
+  const raw = rawState(entity);
+  const n = Number(raw);
+  const numeric = DECIMAL.test(raw.trim()) && Number.isFinite(n);
+  if (!numeric) {
+    const formatted = formattedState(hass, entity);
+    if (formatted !== undefined) return formatted;
+  }
+  const value = numeric ? String(Number(n.toFixed(1))) : raw;
+  const unit = unitOf(entity);
+  return unit !== '' ? `${value}${NBSP}${unit}` : value;
+}
+
+/** FR-6: the header button, absent when no counter is configured. */
+export function renderWearToggle(
   rows: readonly WearCounterRow[],
   open: boolean,
   onToggle: (open: boolean) => void,
@@ -90,14 +103,16 @@ export function renderWearCounters(
 ): TemplateResult | typeof nothing {
   if (rows.length === 0) return nothing;
   return html`
-    <sf-editor-accordion
-      class="wear-counters"
-      element-id="wear"
-      title="${msg('Wear')}"
-      icon="mdi:wrench-clock"
-      ?open=${open}
-      @sf-accordion-toggle=${(e: CustomEvent<{ open: boolean }>) => onToggle(e.detail.open)}
-    >
+    <button class="wear-toggle" type="button" aria-label="${msg('Wear')}" aria-expanded="${open}" @click=${() => onToggle(!open)}>
+      <sf-icon icon="${open ? 'mdi:close' : 'mdi:wrench-clock'}" aria-hidden="true" .connection="${connection}"></sf-icon>
+    </button>
+  `;
+}
+
+/** FR-6: the stats view that replaces the card body while open. */
+export function renderWearView(rows: readonly WearCounterRow[], connection: HomeAssistantExt['connection']): TemplateResult {
+  return html`
+    <div class="wear-view" role="region" aria-label="${msg('Wear')}">
       ${rows.map(
         (r) => html`
           <div class="wear-counter ${r.key.replace(/^sensor_/, '')}">
@@ -107,6 +122,6 @@ export function renderWearCounters(
           </div>
         `,
       )}
-    </sf-editor-accordion>
+    </div>
   `;
 }

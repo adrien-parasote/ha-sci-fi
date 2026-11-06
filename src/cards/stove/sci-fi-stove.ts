@@ -51,7 +51,7 @@ import {
   isNumberDisabled,
 } from './number-wheel.js';
 import { stateLabel } from './state-label.js';
-import { renderWearCounters, wearEntityIds, wearRows } from './wear-counters.js';
+import { renderWearToggle, renderWearView, wearEntityIds, wearRows } from './wear-counters.js';
 import {
   DIAGNOSTIC_DOMAINS,
   DIAGNOSTIC_ICONS,
@@ -124,7 +124,7 @@ const PRESET_ICONS: Record<string, string> = {
 export class SciFiStoveCard extends SciFiBaseCard {
   static override styles = [sciFiCommonStyles, stoveStyles];
 
-  /** FR-8: the wear section's open state, per instance, never persisted. */
+  /** FR-8: the wear view's open state, per instance, never persisted. */
   @state() private _wearOpen = false;
   /** Per-wheel pick not yet released to HA's state (FR-8); reassigned whole on every change. */
   @state() private _numberPicks: NumberPicks = { powerLevel: null, fanSpeed: null };
@@ -197,6 +197,12 @@ export class SciFiStoveCard extends SciFiBaseCard {
 
   declare config: SciFiStoveConfig;
 
+  /** FR-8: a config that loses every counter closes the wear view, so a counter added later starts closed. */
+  override setConfig(config: SciFiBaseConfig): void {
+    super.setConfig(config);
+    if (wearEntityIds(this.config.sensors ?? {}).length === 0) this._wearOpen = false;
+  }
+
   /** A config without `entity` is refused here, as HA cards do (bead ha-sci-fi-bnf). */
   protected override validateConfig(config: SciFiBaseConfig): void {
     super.validateConfig(config);
@@ -212,15 +218,19 @@ export class SciFiStoveCard extends SciFiBaseCard {
       return html`<ha-card><div class="container">${msg(str`Stove entity not found: ${this.config.entity}`)}</div></ha-card>`;
     }
 
+    const rows = wearRows(this.hass, this.config.sensors ?? {});
+    const showWear = this._wearOpen && rows.length > 0;
+    const toggle = renderWearToggle(rows, showWear, (open) => {
+      this._wearOpen = open;
+    }, this.hass.connection);
+
     return html`
       <ha-card>
         <div class="container">
-          ${this._renderHeader(stoveState.attributes.friendly_name ?? msg('Stove'))}
-          ${this._renderContent(stoveState)}
-          ${this._renderBottom(stoveState)}
-          ${renderWearCounters(wearRows(this.hass, this.config.sensors ?? {}), this._wearOpen, (open) => {
-            this._wearOpen = open;
-          }, this.hass.connection)}
+          ${this._renderHeader(stoveState.attributes.friendly_name ?? msg('Stove'), toggle)}
+          ${showWear
+            ? renderWearView(rows, this.hass.connection)
+            : html`${this._renderContent(stoveState)}${this._renderBottom(stoveState)}`}
         </div>
         <sf-toast></sf-toast>
       </ha-card>
@@ -229,8 +239,8 @@ export class SciFiStoveCard extends SciFiBaseCard {
 
   // ── HEADER ────────────────────────────────────────────────────────────────
 
-  private _renderHeader(name: string): TemplateResult {
-    return html`<div class="header">${name}</div>`;
+  private _renderHeader(name: string, toggle: TemplateResult | typeof nothing): TemplateResult {
+    return html`<div class="header">${name}${toggle}</div>`;
   }
 
   // ── CONTENT ───────────────────────────────────────────────────────────────

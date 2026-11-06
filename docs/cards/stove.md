@@ -131,7 +131,7 @@ decrement a bag that was never loaded.
 ## Pellet cost
 
 The card shows the state of the entity set in `pellet_cost`, next to the stock —
-for example `Cost (26.00 €)`. It computes nothing: Home Assistant keeps the amount
+as a third column: the label `Cost` above the amount, for example `26.00 €`. It computes nothing: Home Assistant keeps the amount
 up to date with two helpers and one automation.
 
 ### Helpers

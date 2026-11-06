@@ -62,7 +62,10 @@ async function mount(config: Record<string, unknown>, states: Record<string, any
 }
 const quantities = (el: SciFiStoveCard): HTMLElement => el.shadowRoot!.querySelector('.quantities') as HTMLElement;
 const cell = (el: SciFiStoveCard): HTMLElement | null => el.shadowRoot!.querySelector('div.pellet-cost');
-const cellText = (el: SciFiStoveCard): string => nbsp(cell(el)!.querySelector('.text')!.textContent!.trim());
+const cellText = (el: SciFiStoveCard): string => {
+  const part = (sel: string): string => nbsp(cell(el)!.querySelector(`.text > ${sel}`)!.textContent!.trim());
+  return `${part('span.label')} | ${part('span.amount')}`;
+};
 const costStates = (state: unknown, attributes: Record<string, unknown> = { unit_of_measurement: '€' }) =>
   ({ ...baseStates(), [COST]: ent(COST, state, attributes) });
 const settle = async (el: SciFiStoveCard): Promise<void> => {
@@ -107,7 +110,7 @@ describe('sci-fi-stove — pellet cost', () => {
     expect(kids[0]!.getAttribute('icon')).toBe('mdi:cash');
     expect(kids[0]!.getAttribute('aria-hidden')).toBe('true');
     expect(kids[1]!.className).toBe('text');
-    expect(cellText(el)).toBe('Coût (26,00 €)');
+    expect(cellText(el)).toBe('Coût | 26,00 €');
     expect((el as any).getRelevantEntities()).toContain(COST);
   });
 
@@ -147,24 +150,26 @@ describe('sci-fi-stove — pellet cost', () => {
     el.hass = hass;
     await settle(el);
     expect(quantities(el).lastElementChild).toBe(cell(el));
-    expect(cellText(el)).toBe('Cost (19.50 €)');
+    expect(cellText(el)).toBe('Cost | 19.50 €');
     // 'de' differs from the final 'en' default: dropping the hass.language read fails here.
     const noLocale = { ...makeMockHass({ states: costStates('19.5'), language: 'en' }), language: 'de' } as any;
     delete noLocale.locale;
     el.hass = noLocale;
     await settle(el);
-    expect(cellText(el)).toBe('Cost (19,50 €)');
+    expect(cellText(el)).toBe('Cost | 19,50 €');
   });
 
-  it('TC-SPC-U-07: styles let the row wrap and keep the cost text on one line', () => {
+  it('TC-SPC-U-07: styles keep the cost a tight third column with its text stacked', () => {
     const css = read('src/cards/stove/styles.ts');
     const row = rules(css, '.content .info .e.bottom-path .quantities').find((r) => /column-gap:\s*20px/.test(r));
-    expect(row).toMatch(/flex-wrap:\s*wrap/);
-    expect(row).toMatch(/row-gap:\s*10px/);
+    expect(row).not.toMatch(/flex-wrap/);
     const box = rules(css, '.content .info .e.bottom-path .quantities .pellet-cost').join('\n');
     expect(box).toMatch(/flex-direction:\s*column/);
-    expect(box).toMatch(/min-width:\s*0/);
-    expect(rules(css, '.content .info .e.bottom-path .quantities .pellet-cost .text').join('\n')).toMatch(/white-space:\s*nowrap/);
+    expect(box).toMatch(/flex-shrink:\s*0/);
+    const text = rules(css, '.content .info .e.bottom-path .quantities .pellet-cost .text').join('\n');
+    expect(text).toMatch(/flex-direction:\s*column/);
+    expect(text).toMatch(/white-space:\s*nowrap/);
+    expect(rules(css, '.content .info .e.bottom-path .quantities .pellet-cost sf-icon').join('\n')).toMatch(/width:\s*24px/);
   });
 
   it('TC-SPC-U-08: Cost and Pellet cost are translated', () => {
@@ -222,27 +227,27 @@ describe('sci-fi-stove — pellet cost', () => {
     document.body.appendChild(el);
     await settle(el);
     // The base card maps only `fr` / `fr-*` to the French catalogue: `fr_FR` renders the label in English.
-    expect(cellText(el)).toBe('Cost (26.00)');
+    expect(cellText(el)).toBe('Cost | 26.00');
   });
 
   it('TC-SPC-U-13: markup in the unit is rendered as text', async () => {
     await setLocale('en');
     const el = await mount({ pellet_cost: COST }, costStates('26', { unit_of_measurement: '<b>€</b>' }), 'en');
     expect(cell(el)!.querySelector('b')).toBeNull();
-    expect(cellText(el)).toBe('Cost (26.00 <b>€</b>)');
+    expect(cellText(el)).toBe('Cost | 26.00 <b>€</b>');
   });
 
   it('IT-SPC-I-01: the real element renders the cost in its shadow DOM', async () => {
     const el = await mount({ storage_counter: STOCK, pellet_cost: COST }, costStates('26'));
     expect(el.shadowRoot!.querySelector('div.pellet-cost sf-icon')).not.toBeNull();
-    expect(nbsp(el.shadowRoot!.querySelector('div.pellet-cost .text')!.textContent!.trim())).toBe('Coût (26,00 €)');
+    expect(cellText(el)).toBe('Coût | 26,00 €');
   });
 
   it('IT-SPC-I-02: a new hass updates the cost, then hides it when unavailable', async () => {
     const el = await mount({ storage_counter: STOCK, pellet_cost: COST }, costStates('26'));
     el.hass = makeMockHass({ states: costStates('32.5'), language: 'fr' }) as any;
     await settle(el);
-    expect(cellText(el)).toBe('Coût (32,50 €)');
+    expect(cellText(el)).toBe('Coût | 32,50 €');
     el.hass = makeMockHass({ states: costStates('unavailable'), language: 'fr' }) as any;
     await settle(el);
     expect(cell(el)).toBeNull();
@@ -255,5 +260,17 @@ describe('sci-fi-stove — pellet cost', () => {
     (el as any).setConfig({ type: 'custom:sci-fi-stove', entity: CLIMATE, storage_counter: STOCK });
     await settle(el);
     expect(el.shadowRoot!.querySelectorAll('div.pellet-cost')).toHaveLength(0);
+  });
+});
+
+describe('fix O1 — cost cell on a phone-width card', () => {
+  it('test_O1_cost_cell_stays_a_third_column_with_label_above_amount', async () => {
+    const row = rules(read('src/cards/stove/styles.ts'), '.content .info .e.bottom-path .quantities')
+      .find((r) => /column-gap:\s*20px/.test(r));
+    expect(row).not.toMatch(/flex-wrap/);
+    const el = await mount({ storage_counter: STOCK, pellet_cost: COST }, costStates('126.5'));
+    const children = Array.from(cell(el)!.querySelector('.text')!.children).map((c) => `${c.tagName.toLowerCase()}.${c.className}`);
+    expect(children).toEqual(['span.label', 'span.amount']);
+    expect(cellText(el)).toBe('Coût | 126,50 €');
   });
 });

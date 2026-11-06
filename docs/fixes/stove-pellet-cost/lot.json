@@ -1,0 +1,23 @@
+{
+  "feature": "stove-pellet-cost",
+  "created": "2026-11-06T21:29:03Z",
+  "frozen_at": "2026-11-06T21:34:27Z",
+  "epic": "ha-sci-fi-6wtk",
+  "observations": [
+    {
+      "id": "O1",
+      "text": "Done: opened the stove card in the workbench at phone width with pellet_cost set. Seen: the cost cell wraps onto a second row under the gauges and overlaps the sensor list (Temps avant entretien); the icon floats alone. Expected: a third tight column to the right of the stock, no wrap — icon 24px bottom-aligned, 'Coût' then the amount on two lines. Reported by the user, 2026-11-06.",
+      "bead": "ha-sci-fi-6wtk.1",
+      "test": "npx vitest run tests/cards/stove/sci-fi-stove-pellet-cost.test.ts -t test_O1",
+      "unreproduced": null,
+      "escalated": null
+    }
+  ],
+  "suite": "npx vitest run",
+  "lint": "npx eslint src/cards/stove tests/cards/stove",
+  "suite_run": {
+    "at": "2026-11-06T21:39:29Z",
+    "rc": 0,
+    "tail": ""
+  }
+}

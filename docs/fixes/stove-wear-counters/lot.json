@@ -1,0 +1,31 @@
+{
+  "feature": "stove-wear-counters",
+  "created": "2026-11-06T09:33:17Z",
+  "frozen_at": "2026-11-06T09:37:19Z",
+  "epic": "ha-sci-fi-rxjw",
+  "observations": [
+    {
+      "id": "O1",
+      "text": "Stove card wear panel (stove-wear-counters FR-6): the collapsible 'Wear' accordion at the bottom of the card is ugly and holds statistics, not live state. Seen by Adrien on his live HA 2026-11-06. Expected: a stats view opened by a tap on a small icon of the card, nothing in the bottom panel.",
+      "bead": "ha-sci-fi-rxjw.1",
+      "test": "npx vitest run tests/cards/stove/sci-fi-stove-wear-counters.test.ts -t test_O1_",
+      "unreproduced": null,
+      "escalated": null
+    },
+    {
+      "id": "O2",
+      "text": "Stove card wear counters (stove-wear-counters FR-7): the heating time shows the raw 104.483333333333 h. Seen by Adrien on his live HA 2026-11-06. Expected: numeric values rounded to one decimal (104.5 h); counts stay integers.",
+      "bead": "ha-sci-fi-rxjw.2",
+      "test": "npx vitest run tests/cards/stove/sci-fi-stove-wear-counters.test.ts -t test_O2_",
+      "unreproduced": null,
+      "escalated": null
+    }
+  ],
+  "suite": "npx vitest run",
+  "lint": "npx eslint --max-warnings 166 src/cards/stove/wear-counters.ts src/cards/stove/sci-fi-stove.ts src/cards/stove/styles.ts tests/cards/stove/sci-fi-stove-wear-counters.test.ts",
+  "suite_run": {
+    "at": "2026-11-06T09:44:52Z",
+    "rc": 0,
+    "tail": ""
+  }
+}

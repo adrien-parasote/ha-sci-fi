@@ -1,0 +1,10 @@
+287983af0c9376d993ce78fac021679ac8b190ab docs/reviews/stove-wear-counters/history/code-review.20261106.md
+3dfef3ee91260d7d86e110214228e829eca0378d docs/reviews/stove-wear-counters/history/security-review.20261106.md
+d502258a2a84186d0dd36a4a393908d37c957ad1 docs/specs/cards/stove.md
+d5e82dc613b360f136be4645e7a8e486ae53d63e docs/specs/stove-wear-counters/spec.md
+0a319cbcf98c3601064cda05e27b4abcc2d12890 src/cards/stove/sci-fi-stove.ts
+1ddc7185b2665efb47edeb808fa9d32fc995df91 src/cards/stove/styles.ts
+da52072d81fba660529e3cecda89bb3d8b80b307 src/cards/stove/wear-counters.ts
+2e7486607b2ede50399d3848a666ee23ef24da39 tests/cards/stove/sci-fi-stove-wear-counters.test.ts
+560ed8c06b272c6a79e725b46683b3099c643b26 docs/fixes/stove-wear-counters/lot.json
+4a8229b2abf553059dedb39cae1f9a3ff038592e docs/fixes/stove-wear-counters/verdicts.json

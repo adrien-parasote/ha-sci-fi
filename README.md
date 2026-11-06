@@ -3,9 +3,9 @@
 [![HACS: Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
 [![Last commit](https://img.shields.io/github/last-commit/adrien-parasote/ha-sci-fi)](#)
 [![Current version](https://img.shields.io/github/v/release/adrien-parasote/ha-sci-fi)](https://github.com/adrien-parasote/ha-sci-fi/releases/latest)
-[![Tests](https://img.shields.io/badge/tests-967%20passing-brightgreen)](#)
-[![Coverage](https://img.shields.io/badge/coverage-87%25-brightgreen)](#)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](#)
+[![Tests](https://img.shields.io/badge/tests-1801%20passing-brightgreen)](#)
+[![Coverage](https://img.shields.io/badge/coverage-93%25-brightgreen)](#)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.x-blue)](#)
 [![Lit](https://img.shields.io/badge/Lit-3.x-blueviolet)](#)
 [![i18n](https://img.shields.io/badge/i18n-FR%20%7C%20EN-informational)](#)
 
@@ -29,11 +29,11 @@ All documentation regarding installation, usage, available cards, and custom ico
 
 ```bash
 npm install          # install deps
-npm test             # run 967 tests (Vitest + happy-dom)
+npm test             # run 1801 tests (Vitest + happy-dom)
 npm run typecheck    # TypeScript strict check
 npm run lint         # ESLint
 npm run build        # produce dist/sci-fi.min.js
-npm run test:coverage  # coverage report (target: ≥90%)
+npm run test:coverage  # coverage report (thresholds: 80% lines, 75% branches)
 ```
 
 Workbench (dev preview):

@@ -4,7 +4,28 @@
 
 ## 🆕 What's New
 
+- **Stove card**: new power level wheel (`number_power_level`) and fan speed wheel (`number_fan_speed`), usable with `number` or `input_number` entities
+- **Stove card**: door, alert and error diagnostics (`sensors.sensor_door`, `sensor_alert`, `sensor_error`) shown as a status line and a badge on the stove illustration
+- **Stove card**: collapsible "Wear" section for the fumis wear counters (`sensor_heating_time`, `sensor_fuel_used`, `sensor_igniter_starts`, `sensor_misfires`, `sensor_overheatings`)
+- **Water card**: the history keeps its last good list and shows an `[ OFFLINE ]` header when Home Assistant cannot be reached
+- **Plugs card**: the 24 h power chart now shows loading, empty, error and timeout states
+- **Bridge card**: the siren and lock toggles now work, `running_states` can be set from the visual editor, and the vehicle section uses the configured icon
+- **All cards**: a setup banner replaces the blank card when a card has nothing to render
 - **Icons**: the 46 animated weather icons no longer appear in the Home Assistant icon picker, which can only draw static paths; they still render in cards through `<sf-icon>` / `<sci-icon>`, and existing configurations are unaffected
+
+## 🐛 Fixes
+
+- **Climates card**: the first floor and area are now always used as a fallback when none is active
+- **Stove card**: the default pellet alert threshold is `0.1` everywhere (card, editor and docs); the pellet storage maximum is respected
+- **TV card**: the volume dial angle is fixed
+- **i18n**: 42 hardcoded French strings now go through `msg()` and follow the Home Assistant language; the Water log panel and editor labels are translated
+- **Styles**: undeclared `--sf-*` tokens are declared, and font-size fallbacks use absolute `px` instead of `rem`
+
+## 🛠️ Technical
+
+- **Editor**: the 11 editor inputs use the shared `--editor-*` theme tokens
+- **Tests**: 1801 tests; new guards check that every test id is declared in its spec
+- **Deps**: lint warning count is capped at 166 so it cannot grow
 
 # [1.3.4](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.3.4) - 2026-06-03
 

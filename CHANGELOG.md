@@ -5,8 +5,8 @@
 ## 🆕 What's New
 
 - **Stove card**: new power level wheel (`number_power_level`) and fan speed wheel (`number_fan_speed`), usable with `number` or `input_number` entities
-- **Stove card**: door, alert and error diagnostics (`sensors.sensor_door`, `sensor_alert`, `sensor_error`) shown as a status line and a badge on the stove illustration
-- **Stove card**: collapsible "Wear" section for the fumis wear counters (`sensor_heating_time`, `sensor_fuel_used`, `sensor_igniter_starts`, `sensor_misfires`, `sensor_overheatings`)
+- **Stove card**: door, alert and error diagnostics (`sensors.sensor_door`, `sensor_alert`, `sensor_error`) shown as lines under the status
+- **Stove card**: "Wear" view for the fumis wear counters (`sensor_heating_time`, `sensor_fuel_used`, `sensor_igniter_starts`, `sensor_misfires`, `sensor_overheatings`), opened from an icon in the card header; numeric values are rounded to one decimal
 - **Water card**: the history keeps its last good list and shows an `[ OFFLINE ]` header when Home Assistant cannot be reached
 - **Plugs card**: the 24 h power chart now shows loading, empty, error and timeout states
 - **Bridge card**: the siren and lock toggles now work, `running_states` can be set from the visual editor, and the vehicle section uses the configured icon
@@ -24,7 +24,7 @@
 ## 🛠️ Technical
 
 - **Editor**: the 11 editor inputs use the shared `--editor-*` theme tokens
-- **Tests**: 1801 tests; new guards check that every test id is declared in its spec
+- **Tests**: 1806 tests; new guards check that every test id is declared in its spec
 - **Deps**: lint warning count is capped at 166 so it cannot grow
 
 # [1.3.4](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.3.4) - 2026-06-03

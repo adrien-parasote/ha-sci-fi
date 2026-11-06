@@ -3,7 +3,7 @@
 [![HACS: Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
 [![Last commit](https://img.shields.io/github/last-commit/adrien-parasote/ha-sci-fi)](#)
 [![Current version](https://img.shields.io/github/v/release/adrien-parasote/ha-sci-fi)](https://github.com/adrien-parasote/ha-sci-fi/releases/latest)
-[![Tests](https://img.shields.io/badge/tests-1801%20passing-brightgreen)](#)
+[![Tests](https://img.shields.io/badge/tests-1806%20passing-brightgreen)](#)
 [![Coverage](https://img.shields.io/badge/coverage-93%25-brightgreen)](#)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.x-blue)](#)
 [![Lit](https://img.shields.io/badge/Lit-3.x-blueviolet)](#)
@@ -29,7 +29,7 @@ All documentation regarding installation, usage, available cards, and custom ico
 
 ```bash
 npm install          # install deps
-npm test             # run 1801 tests (Vitest + happy-dom)
+npm test             # run 1806 tests (Vitest + happy-dom)
 npm run typecheck    # TypeScript strict check
 npm run lint         # ESLint
 npm run build        # produce dist/sci-fi.min.js

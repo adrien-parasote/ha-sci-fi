@@ -1,0 +1,5 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`sci-fi-stove — pellet cost > TC-SPC-U-04: without pellet_cost the quantities markup and entities are the pre-lot ones > pre-lot entities 1`] = `"["climate.poele","counter.pellet_stock","sensor.stove_pellet_quantity"]"`;
+
+exports[`sci-fi-stove — pellet cost > TC-SPC-U-04: without pellet_cost the quantities markup and entities are the pre-lot ones > pre-lot quantities 1`] = `"<sf-circle-progress-bar text="Quantité de carburant"></sf-circle-progress-bar> <sf-stack-bar text="Stock"></sf-stack-bar>"`;

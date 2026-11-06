@@ -1486,6 +1486,14 @@
   <source>Wear</source>
   <target>Usure</target>
 </trans-unit>
+<trans-unit id="s1007c155729d9710">
+  <source>Pellet cost</source>
+  <target>Coût des pellets</target>
+</trans-unit>
+<trans-unit id="s367d079d1aed1358">
+  <source>Cost</source>
+  <target>Coût</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

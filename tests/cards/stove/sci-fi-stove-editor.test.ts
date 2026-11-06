@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import '../../../src/cards/stove/sci-fi-stove-editor.js';
 import type { SciFiStoveEditor } from '../../../src/cards/stove/sci-fi-stove-editor.js';
+import { setLocale } from '../../../src/locales/localization.js';
 import {
   STOVE_PELLET_QUANTITY_THRESHOLD_DEFAULT,
   STOVE_STORAGE_COUNTER_THRESHOLD_DEFAULT,
@@ -98,6 +99,34 @@ describe('sci-fi-stove-editor', () => {
 
     expect(received).toHaveLength(1);
     expect(received[0]!.detail.config.storage_counter).toBe('counter.bags');
+  });
+
+  it('TC-SPC-U-06: exposes pellet_cost right after storage_counter', async () => {
+    await setLocale('fr');
+    try {
+      const el = await createElement();
+      el.setConfig(makeConfig({ pellet_cost: 'input_number.pellet_cout_saison' }));
+      await el.updateComplete;
+      const order = [...el.shadowRoot!.querySelectorAll('[element-id]')].map((n) => n.getAttribute('element-id'));
+      expect(order[order.indexOf('storage_counter') + 1]).toBe('pellet_cost');
+      const input = el.shadowRoot!.querySelector('[element-id="pellet_cost"]') as HTMLElement & { value: string };
+      expect(input.getAttribute('kind')).toBe('entity');
+      expect(input.getAttribute('label')).toBe('Coût des pellets');
+      expect(input.getAttribute('icon')).toBe('mdi:cash');
+      expect(input.value).toBe('input_number.pellet_cout_saison');
+
+      const received: CustomEvent[] = [];
+      el.addEventListener('config-changed', (e) => received.push(e as CustomEvent));
+      el.shadowRoot!.querySelector('.card')!.dispatchEvent(new CustomEvent('input-update', {
+        bubbles: true,
+        composed: false,
+        detail: { id: 'pellet_cost', kind: 'entity', value: 'input_number.pellet_cost' },
+      }));
+      expect(received).toHaveLength(1);
+      expect(received[0]!.detail.config.pellet_cost).toBe('input_number.pellet_cost');
+    } finally {
+      await setLocale('en');
+    }
   });
 
   it('TC-SPL-U-1123: exposes number_power_level right after the eco switch', async () => {

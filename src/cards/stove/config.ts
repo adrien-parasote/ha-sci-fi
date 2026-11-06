@@ -49,4 +49,5 @@ export interface SciFiStoveConfig extends SciFiBaseConfig {
   readonly number_fan_speed?: string;             // core fumis number.*_fan_speed (disabled by default in HA), or an input_number
   readonly pellet_quantity_threshold?: number;    // ADR-005: missing in v1.0.0-wip (range [0,1])
   readonly storage_counter_threshold?: number;    // ADR-005: missing in v1.0.0-wip (range [0,1])
+  readonly pellet_cost?: string;                  // numeric entity holding the pellet cost (stove-pellet-cost FR-1)
 }

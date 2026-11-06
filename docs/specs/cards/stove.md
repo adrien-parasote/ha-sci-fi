@@ -31,7 +31,7 @@
 | F-STOVE-D08 | Barre inférieure : mode HVAC, molette de température et mode éco, chacun écrivant par un service et confirmant par `sf-toast` | ✅ This spec § Barre inférieure — les contrôles interactifs | tests/cards/stove/sci-fi-stove.test.ts :: test_O3_eco_switch_renders_a_toggle_and_reflects_its_state, test_O3_eco_switch_toggle_calls_switch_toggle, test_O3_no_dead_control_when_neither_switch_nor_presets · tests/cards/stove/sci-fi-stove.test.ts (« renders .bottom interactive section », « calls climate services and shows sf-toast on hvac/temp/preset actions », les trois chemins d'erreur et le garde `isNaN`, sans id) |
 | F-STOVE-D09 | Niveau de puissance : champ racine optionnel `number_power_level`, molette `sf-wheel.power-level` dans la barre inférieure écrivant par `number.set_value` ; absent, la carte rend exactement comme avant | ✅ This spec § Niveau de puissance — `number_power_level` | tests/cards/stove/sci-fi-stove-power-level.test.ts :: TC-SPL-U-1116, TC-SPL-U-1117, TC-SPL-U-1118, TC-SPL-U-1119, TC-SPL-U-1120, TC-SPL-U-1121, TC-SPL-U-1126, TC-SPL-U-1128, TC-SPL-U-1129, TC-SPL-U-1130, TC-SPL-U-1131, IT-SPL-I-1104, IT-SPL-I-1105, IT-SPL-I-1106 |
 | F-STOVE-D10 | Vitesse de ventilation : champ racine optionnel `number_fan_speed`, molette `sf-wheel.fan-speed` juste après la molette de puissance, même mécanisme partagé, repli 0/5/1 ; absent, la carte rend exactement comme avant | ✅ This spec § Vitesse de ventilation — `number_fan_speed` | tests/cards/stove/sci-fi-stove-fan-speed.test.ts :: TC-SFS-U-1101, TC-SFS-U-1102, TC-SFS-U-1103, TC-SFS-U-1104, TC-SFS-U-1105, TC-SFS-U-1106, TC-SFS-U-1110, TC-SFS-U-1111, TC-SFS-U-1112, TC-SFS-U-1113, TC-SFS-U-1114, TC-SFS-U-1115, IT-SFS-I-1101, IT-SFS-I-1102, IT-SFS-I-1103 |
-| F-STOVE-D11 | Diagnostics : champs optionnels `sensors.sensor_door`, `sensor_alert`, `sensor_error` ; une ligne `.diagnostic` par diagnostic actif après la ligne de statut et une icône `sf-icon.diagnostic-badge` sur l'illustration, textes traduits par `hass.formatEntityState`, erreur suivie de son code brut ; rien quand tout va bien ; absents, la carte rend exactement comme avant | ✅ This spec § Diagnostics — porte, alerte, erreur | tests/cards/stove/sci-fi-stove-diagnostics.test.ts :: TC-SDG-U-02, TC-SDG-U-03, TC-SDG-U-04, TC-SDG-U-05, TC-SDG-U-06, TC-SDG-U-07, TC-SDG-U-08, IT-SDG-I-01, IT-SDG-I-02, IT-SDG-I-03 |
+| F-STOVE-D11 | Diagnostics : champs optionnels `sensors.sensor_door`, `sensor_alert`, `sensor_error` ; une ligne `.diagnostic` par diagnostic actif après la ligne de statut, textes traduits par `hass.formatEntityState`, erreur suivie de son code brut ; rien quand tout va bien ; absents, la carte rend exactement comme avant | ✅ This spec § Diagnostics — porte, alerte, erreur | tests/cards/stove/sci-fi-stove-diagnostics.test.ts :: TC-SDG-U-02, TC-SDG-U-03, TC-SDG-U-04, TC-SDG-U-05, TC-SDG-U-06, TC-SDG-U-07, TC-SDG-U-08, IT-SDG-I-01, IT-SDG-I-02, IT-SDG-I-03 |
 | F-STOVE-D12 | Usure : cinq champs optionnels `sensors.sensor_heating_time`, `sensor_fuel_used`, `sensor_igniter_starts`, `sensor_misfires`, `sensor_overheatings` ; bouton `button.wear-toggle` dans l'en-tête ouvrant une vue `div.wear-view` « Usure » (fermée par défaut, remplace le contenu de la carte), une ligne valeur + unité par compteur, valeur numérique arrondie à une décimale ; absents, la carte rend exactement comme avant | ✅ This spec § Usure — compteurs fumis | tests/cards/stove/sci-fi-stove-wear-counters.test.ts :: TC-SWC-U-02, TC-SWC-U-03, TC-SWC-U-04, TC-SWC-U-05, TC-SWC-U-06, IT-SWC-I-01, IT-SWC-I-02, IT-SWC-I-03, IT-SWC-I-04 |
 
 ---
@@ -285,11 +285,10 @@ Les lignes suivent `.status`, dans une zone `.diagnostics` `role="status"`
 plus de la couleur. États normalisés (`trim`, casse ignorée) ; une entité d'un
 domaine inattendu (porte hors `binary_sensor.`, alerte/erreur hors `sensor.`) est
 ignorée — l'éditeur reste en texte libre. Porte ouverte **et** alerte `door_open` :
-une seule ligne, celle de l'alerte. Dès qu'une ligne est rendue, **un seul**
-`sf-icon.diagnostic-badge` (24 px, coin haut-droit de l'illustration) prend l'icône
-et la couleur du diagnostic le plus grave (erreur > alerte > porte), `title` /
-`aria-label` = les textes joints par ` · `. Chaque ligne tient sur une ligne
-(ellipsis CSS) ; le texte complet va dans `title` / `aria-label`, plafonné à
+une seule ligne, celle de l'alerte. Ces lignes sont le **seul** endroit où un diagnostic
+est affiché : aucune icône ni badge sur l'illustration (retiré le 2026-11-06 : l'information
+apparaissait deux fois). Chaque ligne tient sur une ligne
+(ellipsis CSS) ; le texte complet va dans `title`, plafonné à
 200 caractères sans jamais couper le code d'erreur. Les libellés de l'enum ne sont
 jamais codés en dur : `hass.formatEntityState`, à défaut (absent, en échec, vide)
 l'état brut ; un libellé égal au code affiche le code une fois. Le mécanisme
@@ -492,7 +491,6 @@ ha-card
 │   ├── .header                      — _renderHeader : le friendly_name, rien d'autre
 │   ├── .content                     — _renderContent
 │   │   ├── sf-stove-image           — l'illustration SVG, state=${stoveState.state}
-│   │   ├── sf-icon.diagnostic-badge — _renderDiagnosticBadge, seulement si un diagnostic est actif (§ Diagnostics)
 │   │   └── .info
 │   │       ├── .e.bottom-path       — _renderTopZone : les deux jauges
 │   │       │   ├── .display         — .circle, .h-path, .d-path
@@ -593,7 +591,6 @@ La température cible est `attributes.temperature ?? attributes.current_temperat
 | `sf-wheel.fan-speed` | la molette de ventilation, ses `items`, `selectedId` et `disabled` | TC-SFS-U-1102, TC-SFS-U-1104, IT-SFS-I-1101, IT-SFS-I-1102 |
 | `.diagnostics` | la zone `role="status"` `aria-live="polite"` des lignes | TC-SDG-U-04, IT-SDG-I-01 |
 | `.diagnostic.door` / `.diagnostic.alert` / `.diagnostic.error`, `.diagnostic-text` | la ligne d'un diagnostic actif et son texte | TC-SDG-U-04, TC-SDG-U-05, TC-SDG-U-06, TC-SDG-U-07, IT-SDG-I-01 |
-| `sf-icon.diagnostic-badge` | l'icône sur l'illustration, son `title` | TC-SDG-U-04, TC-SDG-U-07, IT-SDG-I-01 |
 | `button.wear-toggle` | le bouton d'en-tête de la vue « Usure » (`aria-expanded`) | TC-SWC-U-04, IT-SWC-I-01, IT-SWC-I-04 |
 | `div.wear-view` | la vue « Usure », rendue à la place de `.content` et `.bottom` | TC-SWC-U-04, IT-SWC-I-01 |
 | `.wear-counter`, `.wear-label`, `.wear-value` | la ligne d'un compteur (seconde classe : la clé sans `sensor_`, ex. `heating_time`), son libellé et sa valeur | TC-SWC-U-04, TC-SWC-U-05, IT-SWC-I-02 |
@@ -676,7 +673,7 @@ les promettaient (bead `ha-sci-fi-9xf`), et aucun rendu ne les produit.
 | Service `climate.*` ou `switch.toggle` en échec | `.catch` sur la promesse de `callService` | `sf-toast` en erreur, portant le message du service | L'état affiché reste celui de `hass` — rien n'est supposé appliqué |
 | `number.set_value` / `input_number.set_value` en échec, ou entité `number_power_level` `unavailable` | `.catch` sur `callService` ; état de l'entité lu au rendu | un `sf-toast` en erreur portant le message du service, rendu comme texte ; molette `disabled` si `unavailable`/`unknown`/non numérique | L'état affiché reste celui de `hass` |
 | `set_value` de `number_fan_speed` en échec, ou entité `unavailable` | `.catch` sur `callService` ; état lu au rendu | `sf-toast` en erreur, message rendu comme texte ; molette `disabled`, `title` « Ventilation indisponible » | L'état affiché reste celui de `hass` |
-| Entité de diagnostic (`sensor_door`, `sensor_alert`, `sensor_error`) absente, `unavailable` ou `unknown` | Lecture de `hass.states` au rendu | Rien rendu — ni ligne `.diagnostic`, ni badge | La carte rend comme sans le champ |
+| Entité de diagnostic (`sensor_door`, `sensor_alert`, `sensor_error`) absente, `unavailable` ou `unknown` | Lecture de `hass.states` au rendu | Rien rendu — aucune ligne `.diagnostic` | La carte rend comme sans le champ |
 | Entité de diagnostic d'un domaine inattendu (porte hors `binary_sensor.`, alerte/erreur hors `sensor.`) | Garde de préfixe au rendu | Rien rendu | Mauvaise saisie de l'éditeur sans effet visible |
 | `hass.formatEntityState` absent, ou en échec (lève, non-chaîne, vide), ou `attributes.code` absent / vide / non fini | `try` et test de type au rendu | Texte : état brut, `_` → espaces ; erreur sans ` (<code>)` | Toujours un texte, rendu comme texte |
 | Entité de compteur d'usure absente, `unavailable`, `unknown`, hors `sensor.` ou id mal formé | Lecture de `hass.states` au rendu, garde de forme et de préfixe | Ligne `.wear-counter` gardée, valeur « — » ; aucun compteur configuré → ni bouton ni vue | L'utilisateur voit le compteur mal configuré |

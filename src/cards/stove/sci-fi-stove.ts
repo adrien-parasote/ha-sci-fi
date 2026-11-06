@@ -251,7 +251,6 @@ export class SciFiStoveCard extends SciFiBaseCard {
     return html`
       <div class="content">
         <sf-stove-image state=${stoveState.state}></sf-stove-image>
-        ${this._renderDiagnosticBadge(diagnostics)}
         <div class="info">
           ${this._renderTopZone(s)}
           ${this._renderMiddleZone(stoveState, s, diagnostics)}
@@ -381,15 +380,6 @@ export class SciFiStoveCard extends SciFiBaseCard {
         `)}
       </div>
     `;
-  }
-
-  /** FR-8: one badge, of the most severe kind rendered (lines are ordered by severity). */
-  private _renderDiagnosticBadge(lines: readonly DiagnosticLine[]): TemplateResult | typeof nothing {
-    const worst = lines[lines.length - 1];
-    if (!worst) return nothing;
-    const label = capText(lines.map((l) => l.capped).join(' · '));
-    return html`<sf-icon class="diagnostic-badge ${worst.kind}" icon="${DIAGNOSTIC_ICONS[worst.kind]}"
-      role="img" title="${label}" aria-label="${label}" .connection="${this.hass.connection}"></sf-icon>`;
   }
 
   private _renderTimeToService(hours: string | undefined, unit: string): TemplateResult | typeof nothing {

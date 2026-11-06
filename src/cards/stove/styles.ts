@@ -40,18 +40,6 @@ export const stoveStyles = css`
     overflow: visible;
     position: relative;
   }
-  /* stove-diagnostics FR-8: one badge in the top-right corner of the illustration. */
-  .diagnostic-badge {
-    position: absolute;
-    top: 0;
-    right: 0;
-    --icon-size: 24px;
-    /* sf-icon reads its size from --icon-width / --icon-height. */
-    --icon-width: 24px;
-    --icon-height: 24px;
-    z-index: 1;
-    pointer-events: none;
-  }
   /* stove-diagnostics FR-6, FR-14: one line per diagnostic, ellipsised on one line. */
   .diagnostic {
     display: flex;
@@ -73,10 +61,7 @@ export const stoveStyles = css`
   }
   .diagnostic.door sf-icon,
   .diagnostic.alert sf-icon,
-  .diagnostic.error sf-icon,
-  .diagnostic-badge.door,
-  .diagnostic-badge.alert,
-  .diagnostic-badge.error {
+  .diagnostic.error sf-icon {
     --icon-color: #ff4444;
   }
   .content sf-stove-image {

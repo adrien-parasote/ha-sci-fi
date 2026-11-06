@@ -1,0 +1,23 @@
+{
+  "feature": "stove-diagnostics",
+  "created": "2026-11-06T10:08:03Z",
+  "frozen_at": "2026-11-06T10:12:20Z",
+  "epic": "ha-sci-fi-km1q",
+  "observations": [
+    {
+      "id": "O1",
+      "text": "Stove card diagnostics (stove-diagnostics FR-8): with the door open (or an alert/error) the information shows twice, as the badge icon at the top right of the illustration and as the status line in the middle. Seen by Adrien in the workbench 2026-11-06. Expected: only the middle line; the top-right badge is removed.",
+      "bead": "ha-sci-fi-km1q.1",
+      "test": "npx vitest run tests/cards/stove/sci-fi-stove-diagnostics.test.ts -t test_O1_",
+      "unreproduced": null,
+      "escalated": null
+    }
+  ],
+  "suite": "npx vitest run",
+  "lint": "npx eslint --max-warnings 166 src/cards/stove tests/cards/stove/sci-fi-stove-diagnostics.test.ts",
+  "suite_run": {
+    "at": "2026-11-06T10:17:35Z",
+    "rc": 0,
+    "tail": ""
+  }
+}

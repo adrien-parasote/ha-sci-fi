@@ -1,5 +1,21 @@
 # Changelog
 
+# [1.4.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.4.1) - 2026-11-06
+
+## 🆕 What's New
+
+- **Stove card**: new optional `pellet_cost` option — a numeric entity (e.g. an `input_number`) shown in euros as a third column next to the stock, with a cash icon; hidden when the entity is missing, `unavailable` or not a number
+- **Docs**: a "Pellet cost" section explains how to set up the bag price and cost helpers, the cost automation (guarded against `unavailable`, `mode: queued`), the per-season add-on and its October 1st reset
+
+## 🐛 Fixes
+
+- **Stove card**: on a phone-width card the cost no longer wraps under the gauges over the sensor list
+- **Docs**: the pellet storage counter automation example no longer decrements a phantom bag when the pellet sensor comes back from `unavailable`
+
+## 🛠️ Technical
+
+- **Tests**: 1823 tests; the cost formatter never throws on a malformed locale or a non-text unit
+
 # [1.4.0](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.4.0) - 2026-11-06
 
 ## 🆕 What's New

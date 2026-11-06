@@ -1,6 +1,6 @@
 # Changelog
 
-# Unreleased
+# [1.4.0](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.4.0) - 2026-11-06
 
 ## 🆕 What's New
 

@@ -52,7 +52,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          wget https://raw.githubusercontent.com/adrien-parasote/ha-sci-fi-wiki/master/Release-plan.md -O release-plan.md || true
+          wget https://raw.githubusercontent.com/wiki/adrien-parasote/ha-sci-fi/Release-plan.md -O release-plan.md || true
           TITLE=$(python3 -c "
           import sys, re
           try:

@@ -172,12 +172,13 @@ describe('TC-ICC-U-10 FR-8 the texts say what the code does', () => {
 // ─── TC-ICC-U-11 ─────────────────────────────────────────────────────────────
 
 describe('TC-ICC-U-11 FR-9 release note', () => {
-  it('TC-ICC-U-11: CHANGELOG.md announces the weather icons leaving the picker under Unreleased', () => {
+  it('TC-ICC-U-11: CHANGELOG.md announces the weather icons leaving the picker', () => {
     expect(existsSync(join(ROOT, 'CHANGELOG.md'))).toBe(true);
-    const unreleased = read('CHANGELOG.md').split(/^# Unreleased\s*$/m)[1]!.split(/^# \[/m)[0]!;
+    // Under `# Unreleased` until the release, then under its version heading: the note stays once, wherever it sits.
+    const changelog = read('CHANGELOG.md');
     // The number is the count of weather icons in the data file, not a figure copied from the spec.
     const count = String(Object.keys(WEATHER_ICONS).length);
-    const hit = unreleased
+    const hit = changelog
       .split('\n')
       .filter((l) => l.includes(`the ${count} animated`) && l.includes('icon picker') && l.includes('<sf-icon>'));
     expect(hit).toHaveLength(1);

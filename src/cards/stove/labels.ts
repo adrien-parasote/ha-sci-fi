@@ -17,6 +17,7 @@ export function stoveLabels(): Record<string, string> {
     'section-title-config': msg('Configuration'),
     'input-stove-entity': msg('Stove entity'),
     'input-storage-counter': msg('Storage counter'),
+    'input-pellet-cost': msg('Pellet cost'),
     'input-switch-eco-mode': msg('Eco mode switch'),
     'input-number-power-level': msg('Power level number'),
     'input-number-fan-speed': msg('Fan speed number'),

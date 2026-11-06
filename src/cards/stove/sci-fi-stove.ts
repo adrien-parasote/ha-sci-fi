@@ -51,6 +51,7 @@ import {
   isNumberDisabled,
 } from './number-wheel.js';
 import { stateLabel } from './state-label.js';
+import { formatPelletCost } from './pellet-cost.js';
 import { renderWearToggle, renderWearView, wearEntityIds, wearRows } from './wear-counters.js';
 import {
   DIAGNOSTIC_DOMAINS,
@@ -165,6 +166,7 @@ export class SciFiStoveCard extends SciFiBaseCard {
     if (this.config.storage_counter) {
       entities.add(this.config.storage_counter);
     }
+    if (this.config.pellet_cost) entities.add(this.config.pellet_cost);
     if (this.config.switch_eco_mode) {
       entities.add(this.config.switch_eco_mode);
     }
@@ -272,6 +274,7 @@ export class SciFiStoveCard extends SciFiBaseCard {
         <div class="quantities">
           ${this._renderPelletQuantity(s)}
           ${this._renderPelletStock()}
+          ${this._renderPelletCost()}
         </div>
       </div>
     `;
@@ -307,6 +310,23 @@ export class SciFiStoveCard extends SciFiBaseCard {
         .max=${max}
         .threshold=${threshold}
       ></sf-stack-bar>
+    `;
+  }
+
+  /** FR-4/FR-5: the cost entity's state, hidden when not a finite number below 1e9 in absolute value. */
+  private _renderPelletCost(): TemplateResult | typeof nothing {
+    const st = this.config.pellet_cost ? this.hass.states[this.config.pellet_cost] : undefined;
+    const raw = typeof st?.state === 'string' ? st.state.trim() : '';
+    const value = Number(raw);
+    if (raw === '' || !Number.isFinite(value) || Math.abs(value) >= 1e9) return nothing;
+    // HA's hass carries a top-level `language` that HomeAssistantExt does not declare (FR-4.1 fallback).
+    const language: unknown = this.hass.locale?.language ?? (this.hass as Partial<{ language: unknown }>).language ?? 'en';
+    const amount = formatPelletCost(value, st!.attributes?.unit_of_measurement, language);
+    return html`
+      <div class="pellet-cost">
+        <sf-icon icon="mdi:cash" aria-hidden="true" .connection="${this.hass.connection}"></sf-icon>
+        <div class="text">${msg('Cost')} (${amount})</div>
+      </div>
     `;
   }
 

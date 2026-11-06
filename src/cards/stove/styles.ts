@@ -133,6 +133,8 @@ export const stoveStyles = css`
     display: flex;
     flex-direction: row;
     column-gap: 20px;
+    flex-wrap: wrap;
+    row-gap: 10px;
     height: 90%;
     align-self: center;
     flex: 1;
@@ -140,6 +142,24 @@ export const stoveStyles = css`
   .content .info .e.bottom-path .quantities sf-stack-bar,
   .content .info .e.bottom-path .quantities sf-circle-progress-bar {
     height: 100%;
+  }
+  .content .info .e.bottom-path .quantities .pellet-cost {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+    min-width: 0;
+    font-size: var(--sf-text-sm, 12px);
+    color: var(--sf-text-secondary, rgba(224, 232, 255, 0.6));
+  }
+  .content .info .e.bottom-path .quantities .pellet-cost .text {
+    white-space: nowrap;
+  }
+  .content .info .e.bottom-path .quantities .pellet-cost sf-icon {
+    --icon-color: var(--primary-light-color, #6ecbf5);
+    width: 40px;
+    height: 40px;
   }
   .content .info .e.top-path .powers {
     align-items: flex-start;

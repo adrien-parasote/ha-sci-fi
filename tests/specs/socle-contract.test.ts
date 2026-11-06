@@ -163,7 +163,7 @@ describe('le socle ne nomme aucun fichier que le dépôt ne porte pas', () => {
     }
     expect(total, 'l’extraction n’a trouvé aucun chemin : la regex est cassée').toBeGreaterThan(30);
     expect(fantomes).toEqual([]);
-  });
+  }, 30000); // reads every cited path of specs 01-03: slow under coverage
 
   it('aucune exemption ne couvre un fichier qui existe', () => {
     const perimees = [...ABSENTS_ASSUMES.keys()].filter(

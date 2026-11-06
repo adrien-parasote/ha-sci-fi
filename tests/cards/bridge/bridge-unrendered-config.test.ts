@@ -494,7 +494,8 @@ describe('bridge styles', () => {
     for (const live of ['.lock-btn', '.lock-pending', '.lock-jammed']) expect(css).to.contain(live);
     expect(css).to.not.contain('.siren-row');
     const walk = (dir: string): string[] =>
-      fs.readdirSync(path.join(ROOT, dir), { withFileTypes: true }).flatMap(d =>
+      // dot-dirs are transient (tests/.eit-base-<pid> is created and removed by another worker)
+      fs.readdirSync(path.join(ROOT, dir), { withFileTypes: true }).filter(d => !d.name.startsWith('.')).flatMap(d =>
         d.isDirectory() ? walk(`${dir}/${d.name}`) : [`${dir}/${d.name}`]);
     const self = 'tests/cards/bridge/bridge-unrendered-config.test.ts';
     const offenders = [...walk('src'), ...walk('tests')].filter(f =>

@@ -434,7 +434,7 @@ describe('repo-wide ids guard', () => {
     const noDescribe = { ...DEFAULT_OPTIONS, roots: new Set(['it', 'test']) };
     expect(belowWitness(multi, 'f.test.ts', noDescribe)).toBe(true);
     expect(belowWitness(multi, 'f.test.ts', { ...DEFAULT_OPTIONS, followCalls: false })).toBe(true);
-  });
+  }, 30000); // walks and parses the whole tests/ tree: slow under coverage
 
   it('TC-RWG-U-04: every id of every title and fragment is a row head', () => {
     const { entries, decl, per } = tree();

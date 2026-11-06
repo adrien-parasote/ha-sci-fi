@@ -3,7 +3,7 @@ export default {
   label: '🔥 Stove',
   tag: 'sci-fi-stove',
   config: {
-    type: 'custom:sci-fi-stove', sensors: { sensor_combustion_chamber_temperature: 'sensor.salon_clou_combustion_chamber_temperature', sensor_inside_temperature: 'sensor.frient_smoke_detector_salon_temperature', sensor_fan_speed: 'sensor.salon_clou_fan_speed', sensor_pressure: 'sensor.salon_clou_pressure', sensor_actual_power: 'sensor.salon_clou_power', sensor_power: 'sensor.smart_energy_monitor_poele_power', sensor_pellet_quantity: 'sensor.salon_clou_pellet_quantity', sensor_time_to_service: 'sensor.salon_clou_time_to_service', sensor_status: 'sensor.salon_clou_etat_detaille_du_poele', sensor_door: 'binary_sensor.salon_clou_porte', sensor_alert: 'sensor.salon_clou_alerte', sensor_error: 'sensor.salon_clou_erreur', sensor_heating_time: 'sensor.salon_clou_duree_de_combustion', sensor_igniter_starts: 'sensor.salon_clou_demarrages_de_l_allumeur', sensor_misfires: 'sensor.salon_clou_rates_d_allumage', sensor_overheatings: 'sensor.salon_clou_surchauffes' }, pellet_quantity_threshold: 0.3, storage_counter_threshold: 0.1, entity: 'climate.salon_clou_austroflamm_clou_pellet', storage_counter: 'counter.pellet_stock', switch_eco_mode: 'switch.salon_clou_mode_eco', number_power_level: 'number.salon_clou_niveau_de_puissance'
+    type: 'custom:sci-fi-stove', sensors: { sensor_combustion_chamber_temperature: 'sensor.salon_clou_combustion_chamber_temperature', sensor_inside_temperature: 'sensor.frient_smoke_detector_salon_temperature', sensor_fan_speed: 'sensor.salon_clou_fan_speed', sensor_pressure: 'sensor.salon_clou_pressure', sensor_actual_power: 'sensor.salon_clou_power', sensor_power: 'sensor.smart_energy_monitor_poele_power', sensor_pellet_quantity: 'sensor.salon_clou_pellet_quantity', sensor_time_to_service: 'sensor.salon_clou_time_to_service', sensor_status: 'sensor.salon_clou_etat_detaille_du_poele', sensor_door: 'binary_sensor.salon_clou_porte', sensor_alert: 'sensor.salon_clou_alerte', sensor_error: 'sensor.salon_clou_erreur', sensor_heating_time: 'sensor.salon_clou_duree_de_combustion', sensor_igniter_starts: 'sensor.salon_clou_demarrages_de_l_allumeur', sensor_misfires: 'sensor.salon_clou_rates_d_allumage', sensor_overheatings: 'sensor.salon_clou_surchauffes' }, pellet_quantity_threshold: 0.3, storage_counter_threshold: 0.1, entity: 'climate.salon_clou_austroflamm_clou_pellet', storage_counter: 'counter.pellet_stock', switch_eco_mode: 'switch.salon_clou_mode_eco', number_power_level: 'number.salon_clou_niveau_de_puissance', pellet_cost: 'input_number.pellet_cout_saison'
   },
   scenarios: {
     'Poêle en chauffe (combustion)': {
@@ -39,6 +39,12 @@ export default {
     },
     'Stock sacs vide (1/20)': {
       'counter.pellet_stock': { state: '1' }
+    },
+    'Coût saison (126,50 €)': {
+      'input_number.pellet_cout_saison': { state: '126.5', attributes: { unit_of_measurement: '€' } }
+    },
+    'Coût indisponible': {
+      'input_number.pellet_cout_saison': { state: 'unavailable' }
     },
     'Porte ouverte': {
       'binary_sensor.salon_clou_porte': { state: 'on' },

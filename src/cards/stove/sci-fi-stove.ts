@@ -325,7 +325,7 @@ export class SciFiStoveCard extends SciFiBaseCard {
     return html`
       <div class="pellet-cost">
         <sf-icon icon="mdi:cash" aria-hidden="true" .connection="${this.hass.connection}"></sf-icon>
-        <div class="text">${msg('Cost')} (${amount})</div>
+        <div class="text"><span class="label">${msg('Cost')}</span><span class="amount">${amount}</span></div>
       </div>
     `;
   }

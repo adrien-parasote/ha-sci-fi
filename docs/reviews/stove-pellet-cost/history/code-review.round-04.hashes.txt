@@ -1,0 +1,13 @@
+c93eb7c2c644f8bd00777bf44c6f969d59543af5 dev/cards/stove.js
+e20ee7fb3e8674829e9b0189e033f7e52d25edac dist/sci-fi.min.js
+e516b99d2621a38df0792bd9ff1b6df8b1e4dc21 docs/cards/stove.md
+f22201104a9ace3ae14b8e80c5664565d4e0f0c6 docs/reviews/stove-pellet-cost/history/code-review.20261106.md
+5e9cdaafc930c7c7be02866d01cdc0b4fa6de59d docs/reviews/stove-pellet-cost/history/security-review.20261106.md
+85d3f07438702eac8d4b9f16248e7ea4d43f2aec docs/specs/cards/stove.md
+1e55c8cc2b2911a91e24ed89f41b0574a63e9f52 docs/specs/stove-pellet-cost/spec.md
+b1a18d58299445c427c81b43a96cc1afab1eea5e src/cards/stove/sci-fi-stove.ts
+62f2fc297ccefa1345ac86eee946d6f2b3e6f0bc src/cards/stove/styles.ts
+59d9860b9cfda0b16e24d3796c2baa6133f8daed tests/cards/stove/sci-fi-stove-pellet-cost.test.ts
+df8603715d82cd009c45ffeea52f7493173e2522 tests/styles/card-css-baseline.json
+dc557b7dd5989a7282aac900b9cb6a9e66cd7a9a docs/fixes/stove-pellet-cost/lot.json
+e902626c78e29fa850e33f135a11e262d4eed359 docs/fixes/stove-pellet-cost/verdicts.json

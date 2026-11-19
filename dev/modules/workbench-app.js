@@ -24,6 +24,11 @@ import {
 import { mountIconBrowser } from './icon-browser.js';
 import { handleHassAction } from './hass-action.js';
 import { createBundleLoader } from './bundle-loader.js';
+import { reloadWorkbench, restoreSelection, takeReloadState } from './reload-state.js';
+
+// The workbench document's own path, recorded before the pushState override below can move the
+// address bar (a hexa tile link goes to `/dev/lights`): « ↺ Recharger carte » navigates back here.
+const WORKBENCH_PATH = location.pathname;
 
 // ─── Register mock ha-icon ───────────────────────────────────────────────────
 registerMockHaIcon();
@@ -101,6 +106,10 @@ async function renderCard(cardKey, scenarioKey) {
 
   try {
     await bundle.load();
+    // A render superseded while the bundle loaded (the init's work-mode render, before the
+    // restored card was selected) is dropped: resuming, it would recompute activeConfig and
+    // lastScenarioKey for a selection no longer shown, and lose a config restored after a reload.
+    if (cardKey !== currentCard || scenarioKey !== currentScenario) return;
 
     // ── Icon browser (special panel — no Lit card) ──────────────────────────
     if (card.type === 'iconpicker') {
@@ -117,15 +126,16 @@ async function renderCard(cardKey, scenarioKey) {
       : buildMockHass(scenarioKey && card.scenarios[scenarioKey] ? card.scenarios[scenarioKey] : {}, currentLanguage);
 
     // Scenario-level config override: if scenario has a `_config` property, use it.
-    // Always recompute when card or scenario changes to avoid stale config.
+    // Recompute when the scenario changed since activeConfig was last set. A card change needs
+    // no check here: selectCard sets `activeConfig = null`, which forces the recompute (and a
+    // render for a card no longer selected was already dropped above).
     const scenarioData = scenarioKey && card.scenarios[scenarioKey] ? card.scenarios[scenarioKey] : {};
     const scenarioConfig = scenarioData._config ?? null;
     currentScenarioData = scenarioData; // keep in sync for onConfigChanged
 
-    const cardChanged = currentCard !== cardKey;
     const scenarioChanged = lastScenarioKey !== scenarioKey;
 
-    if (!activeConfig || cardChanged || scenarioChanged) {
+    if (!activeConfig || scenarioChanged) {
       activeConfig = scenarioConfig ? { ...scenarioConfig } : { ...card.config };
       lastScenarioKey = scenarioKey;
       if (window.jsyaml) {
@@ -187,7 +197,8 @@ function buildTabs() {
   });
 }
 
-function buildScenarios(cardKey) {
+/** @param {string} [selected] scenario to open on (a restored one); the first when unknown */
+function buildScenarios(cardKey, selected) {
   const card = CARDS[cardKey];
   const list = document.getElementById('scenario-list');
   list.innerHTML = '';
@@ -199,9 +210,11 @@ function buildScenarios(cardKey) {
     return;
   }
 
-  Object.keys(card.scenarios).forEach((name, i) => {
+  const names = Object.keys(card.scenarios);
+  const initial = names.includes(selected) ? selected : names[0];
+  names.forEach((name) => {
     const btn = document.createElement('button');
-    btn.className = 'scenario-btn' + (i === 0 ? ' active' : '');
+    btn.className = 'scenario-btn' + (name === initial ? ' active' : '');
     btn.innerHTML = `<span class="dot"></span>${name}`;
     btn.onclick = () => {
       if (isLiveMode()) return;
@@ -212,22 +225,41 @@ function buildScenarios(cardKey) {
     };
     list.appendChild(btn);
   });
-  currentScenario = Object.keys(card.scenarios)[0];
+  currentScenario = initial;
 }
 
-function selectCard(key) {
+/**
+ * @param {string} [scenario] scenario to open on; the card's first when omitted or unknown
+ * @param {object | null} [config] config to open on (the one edited before a reload); the
+ *   scenario's or card's default when omitted
+ */
+function selectCard(key, scenario, config) {
   currentCard = key;
   document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', Object.keys(CARDS)[i] === key));
   document.getElementById('preview-title').textContent = CARDS[key].label;
-  buildScenarios(key);
-  activeConfig = null;
+  buildScenarios(key, scenario);
+  if (config) {
+    // renderCard keeps a non-null activeConfig only when the scenario has not changed since it last set it.
+    activeConfig = { ...config };
+    lastScenarioKey = currentScenario;
+    if (window.jsyaml) {
+      document.getElementById('yaml-textarea').value = jsyaml.dump(activeConfig);
+    }
+  } else {
+    activeConfig = null;
+  }
   renderCard(key, currentScenario);
 }
 
+// The bundle cannot be evaluated twice in one page (customElements.define refuses a defined
+// name), so the rebuilt bundle is picked up by reloading the workbench on the same card,
+// scenario and edited config.
 function reloadCard() {
-  bundle.reset();
-  document.querySelectorAll('script[src*="sci-fi.min.js"]').forEach(s => s.remove());
-  renderCard(currentCard, currentScenario);
+  reloadWorkbench(location, sessionStorage, WORKBENCH_PATH, {
+    card: currentCard,
+    scenario: currentScenario,
+    config: activeConfig,
+  });
 }
 
 // ─── Language ────────────────────────────────────────────────────────────────
@@ -419,7 +451,9 @@ setHaStatus('offline', 'Non connecté — données mockées');
 setLanguage(currentLanguage);
 setWorkModeFunc(workMode);
 setEditTab(localStorage.getItem('wb-edit-tab') || 'gui', activeConfig);
-selectCard('hexa');
+const { card: startCard, scenario: startScenario, config: startConfig } =
+  restoreSelection(takeReloadState(sessionStorage), CARDS, 'hexa');
+selectCard(startCard, startScenario, startConfig);
 setViewMode(initialViewMode);
 setDeviceSize(initialDeviceSize);
 

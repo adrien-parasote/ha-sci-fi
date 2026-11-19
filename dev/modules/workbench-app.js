@@ -23,6 +23,7 @@ import {
 } from './ha-connection.js';
 import { mountIconBrowser } from './icon-browser.js';
 import { handleHassAction } from './hass-action.js';
+import { createBundleLoader } from './bundle-loader.js';
 
 // ─── Register mock ha-icon ───────────────────────────────────────────────────
 registerMockHaIcon();
@@ -37,33 +38,22 @@ let lastScenarioKey = null; // track which scenario set the config last
 let cardEl = null;
 let activeConfig = null;
 let currentScenarioData = {}; // current scenario states — passed to updateCardConfig to preserve mock hass
-let bundleLoaded = false;
 let workMode = initWorkMode();
 let currentLanguage = localStorage.getItem('wb-lang') || 'fr';
 
 // ─── Bundle loading ──────────────────────────────────────────────────────────
-function loadBundle() {
-  return new Promise((resolve, reject) => {
-    if (bundleLoaded) return resolve();
-    const s = document.createElement('script');
-    s.type = 'module';
-    s.src = '../dist/sci-fi.min.js?v=' + Date.now();
-    s.onload = () => {
-      bundleLoaded = true;
-      log('✅ sci-fi.min.js chargé', 'ok');
-      document.getElementById('badge-bundle').textContent = 'Bundle OK';
-      document.getElementById('badge-bundle').className = 'badge ok';
-      resolve();
-    };
-    s.onerror = () => {
-      log('❌ Bundle introuvable — lance: npm run build', 'error');
-      document.getElementById('badge-bundle').textContent = 'Bundle ❌';
-      document.getElementById('badge-bundle').className = 'badge err';
-      reject(new Error('Bundle not found'));
-    };
-    document.head.appendChild(s);
-  });
-}
+const bundle = createBundleLoader(document, '../dist/sci-fi.min.js', {
+  onLoad: () => {
+    log('✅ sci-fi.min.js chargé', 'ok');
+    document.getElementById('badge-bundle').textContent = 'Bundle OK';
+    document.getElementById('badge-bundle').className = 'badge ok';
+  },
+  onError: () => {
+    log('❌ Bundle introuvable — lance: npm run build', 'error');
+    document.getElementById('badge-bundle').textContent = 'Bundle ❌';
+    document.getElementById('badge-bundle').className = 'badge err';
+  },
+});
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function updateCardHass(hass) {
@@ -110,7 +100,7 @@ async function renderCard(cardKey, scenarioKey) {
   errorBanner.classList.remove('visible');
 
   try {
-    await loadBundle();
+    await bundle.load();
 
     // ── Icon browser (special panel — no Lit card) ──────────────────────────
     if (card.type === 'iconpicker') {
@@ -235,7 +225,7 @@ function selectCard(key) {
 }
 
 function reloadCard() {
-  bundleLoaded = false;
+  bundle.reset();
   document.querySelectorAll('script[src*="sci-fi.min.js"]').forEach(s => s.remove());
   renderCard(currentCard, currentScenario);
 }

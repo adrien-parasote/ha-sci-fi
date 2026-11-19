@@ -281,8 +281,9 @@ fallback that makes kernel placement safe is also what hides an orphan, since
 
 **What the label guards cover, and what they do not.** TC-1017 (shared kernel)
 and TC-1018 (the 11 card dictionaries) together read every key both own —
-196 at the time of writing (32 in the shared kernel, 164 across the eleven
-dictionaries), a count the tests derive from the dictionaries themselves
+209 at the time of writing (32 in the shared kernel, 177 distinct across the
+eleven dictionaries — the hexa-tiles quick-actions lot added its Actions
+vocabulary), a count the tests derive from the dictionaries themselves
 rather than from this number — through
 `getLabel()` and fail on any that resolves to `''`. That is the *empty-label*
 half of the failure mode — the half that produced the vacuum defect in

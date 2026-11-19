@@ -1,0 +1,28 @@
+{
+  "recorded_on": "07dc94b (unmodified card, BUILD first gesture, 2026-11-18)",
+  "clou_heat": {
+    "outer": "<div class=\"hexa-tile\" role=\"button\" tabindex=\"0\" data-active=\"true\" aria-label=\"Poêle\"> <svg class=\"hexa-svg\" viewBox=\"0 0 132 164\"> <polygon class=\"hexa-bg\" points=\"66,2 130,42 130,122 66,162 2,122 2,42\"></polygon> <polygon class=\"hexa-border\" points=\"66,4 128,43 128,121 66,160 4,121 4,43\"></polygon> </svg> <div class=\"hexa-content\"> <sf-icon></sf-icon> <span class=\"tile-label\">Poêle</span> </div> </div>",
+    "inner": "<svg class=\"hexa-svg\" viewBox=\"0 0 132 164\"> <polygon class=\"hexa-bg\" points=\"66,2 130,42 130,122 66,162 2,122 2,42\"></polygon> <polygon class=\"hexa-border\" points=\"66,4 128,43 128,121 66,160 4,121 4,43\"></polygon> </svg> <div class=\"hexa-content\"> <sf-icon></sf-icon> <span class=\"tile-label\">Poêle</span> </div>",
+    "icon": "sci:stove-heat"
+  },
+  "clou_off": {
+    "outer": "<div class=\"hexa-tile\" role=\"button\" tabindex=\"0\" data-active=\"false\" aria-label=\"Poêle\"> <svg class=\"hexa-svg\" viewBox=\"0 0 132 164\"> <polygon class=\"hexa-bg\" points=\"66,2 130,42 130,122 66,162 2,122 2,42\"></polygon> <polygon class=\"hexa-border\" points=\"66,4 128,43 128,121 66,160 4,121 4,43\"></polygon> </svg> <div class=\"hexa-content\"> <sf-icon></sf-icon> <span class=\"tile-label\">Poêle</span> </div> </div>",
+    "inner": "<svg class=\"hexa-svg\" viewBox=\"0 0 132 164\"> <polygon class=\"hexa-bg\" points=\"66,2 130,42 130,122 66,162 2,122 2,42\"></polygon> <polygon class=\"hexa-border\" points=\"66,4 128,43 128,121 66,160 4,121 4,43\"></polygon> </svg> <div class=\"hexa-content\"> <sf-icon></sf-icon> <span class=\"tile-label\">Poêle</span> </div>",
+    "icon": "sci:stove-off"
+  },
+  "mixed_weather": {
+    "outer": "<div class=\"hexa-tile weather-tile\" data-active=\"true\" data-alert-level=\"green\" aria-label=\"Météo\"> <svg class=\"hexa-svg\" viewBox=\"0 0 132 164\"> <polygon class=\"hexa-bg\" points=\"66,2 130,42 130,122 66,162 2,122 2,42\"></polygon> <polygon class=\"hexa-border\" points=\"66,4 128,43 128,121 66,160 4,121 4,43\"></polygon> </svg> <div class=\"hexa-content\"> <sf-icon></sf-icon> <span class=\"tile-label\">Météo</span> </div> </div>",
+    "inner": "<svg class=\"hexa-svg\" viewBox=\"0 0 132 164\"> <polygon class=\"hexa-bg\" points=\"66,2 130,42 130,122 66,162 2,122 2,42\"></polygon> <polygon class=\"hexa-border\" points=\"66,4 128,43 128,121 66,160 4,121 4,43\"></polygon> </svg> <div class=\"hexa-content\"> <sf-icon></sf-icon> <span class=\"tile-label\">Météo</span> </div>",
+    "icon": "sf:sunny-day"
+  },
+  "mixed_aggregated": {
+    "outer": "<div class=\"hexa-tile\" role=\"button\" tabindex=\"0\" data-active=\"true\" aria-label=\"Lumières\"> <svg class=\"hexa-svg\" viewBox=\"0 0 132 164\"> <polygon class=\"hexa-bg\" points=\"66,2 130,42 130,122 66,162 2,122 2,42\"></polygon> <polygon class=\"hexa-border\" points=\"66,4 128,43 128,121 66,160 4,121 4,43\"></polygon> </svg> <div class=\"hexa-content\"> <sf-icon></sf-icon> <span class=\"tile-label\">Lumières</span> </div> </div>",
+    "inner": "<svg class=\"hexa-svg\" viewBox=\"0 0 132 164\"> <polygon class=\"hexa-bg\" points=\"66,2 130,42 130,122 66,162 2,122 2,42\"></polygon> <polygon class=\"hexa-border\" points=\"66,4 128,43 128,121 66,160 4,121 4,43\"></polygon> </svg> <div class=\"hexa-content\"> <sf-icon></sf-icon> <span class=\"tile-label\">Lumières</span> </div>",
+    "icon": "mdi:lightbulb-group"
+  },
+  "mixed_clou": {
+    "outer": "<div class=\"hexa-tile\" role=\"button\" tabindex=\"0\" data-active=\"true\" aria-label=\"Poêle\"> <svg class=\"hexa-svg\" viewBox=\"0 0 132 164\"> <polygon class=\"hexa-bg\" points=\"66,2 130,42 130,122 66,162 2,122 2,42\"></polygon> <polygon class=\"hexa-border\" points=\"66,4 128,43 128,121 66,160 4,121 4,43\"></polygon> </svg> <div class=\"hexa-content\"> <sf-icon></sf-icon> <span class=\"tile-label\">Poêle</span> </div> </div>",
+    "inner": "<svg class=\"hexa-svg\" viewBox=\"0 0 132 164\"> <polygon class=\"hexa-bg\" points=\"66,2 130,42 130,122 66,162 2,122 2,42\"></polygon> <polygon class=\"hexa-border\" points=\"66,4 128,43 128,121 66,160 4,121 4,43\"></polygon> </svg> <div class=\"hexa-content\"> <sf-icon></sf-icon> <span class=\"tile-label\">Poêle</span> </div>",
+    "icon": "sci:stove-heat"
+  }
+}

@@ -1,0 +1,100 @@
+# Frame Contract — hexa-tiles-quick-actions
+version: "1"
+dimensions_version: 2
+gap_to_generic: low           # user's estimate, 2026-11-18 ('pour l'ecart low')
+
+reformulation: >
+  Extend the existing custom:sci-fi-hexa-tiles card (no new card) so that a
+  custom tile is a one-tap quick-action button for a phone used as a remote:
+  an icon in the hexagon, a two-line label under it (e.g. "Lumière" /
+  "Chambre parents"), and a colour + icon + label chosen per entity state from
+  the tile's config (gate closed = green, open = red). A tap runs the tile's
+  tap_action at once (toggle in the common case, via Home Assistant's own
+  action handling) — no confirmation step, on any tile;
+  while the command is in flight the tile shows a "pending" animation until
+  the entity's state changes or a timeout expires; hold and double tap run
+  their own actions; an unavailable or error state is shown as such. Existing
+  hexa-tiles dashboards render and behave exactly as today when none of the
+  new keys is set. The editor and the wiki page document every new key.
+
+acceptance_examples:
+  - input: "tile cover.portail (closed) with tap_action {action: toggle} and states {closed: green / mdi:gate, open: red / mdi:gate-open} — one tap"
+    expected: "no dialog; the gate command is sent at once; the tile pulses (pending) until cover.portail turns open, then shows red + mdi:gate-open"
+    manual: "a rendering and a gesture on a phone — a human eye checks it"
+  - input: "tile on the bedroom light (off), tap_action {action: toggle}, no confirmation"
+    expected: "one tap turns the light on with no dialog; the tile switches to its 'on' colour and icon within the state change"
+    manual: "a gesture and a rendering — a human eye checks it"
+  - input: "gate tile tapped, the relay pulse is lost: cover.portail stays closed"
+    expected: "the pending animation stops after the timeout (default 30 s) and the tile returns to green with a visible 'no change' error mark, never shows red"
+    manual: "a timed rendering — a human eye checks it"
+  - input: "hold (≥ 500 ms) on any custom tile with no hold_action"
+    expected: "HA's more-info dialog of the tile's entity opens; no toggle is sent"
+    manual: "a gesture — a human eye checks it"
+  - input: "a tile whose entity is unavailable"
+    expected: "the tile renders in its error style (sf-error), a tap sends nothing"
+    manual: "a rendering — a human eye checks it"
+  - input: "an existing production hexa-tiles config (climate.clou tile with state_on, link: stove) with none of the new keys"
+    expected: "same icons, same colours, same tap behaviour (navigates to 'stove') as before the lot"
+    manual: "a rendering and a navigation on a live dashboard — a human eye checks it (BUILD also pins it with a regression test)"
+
+defaults_ledger:
+  - dimension: "how it is made and opened"
+    dimension_key: platform
+    default: "TypeScript/Lit inside the existing sci-fi-hexa-tiles card and its editor (user chose to extend, not to create a card); opened on a Lovelace dashboard in the HA Companion app or a browser"
+    status: validated
+  - dimension: "what survives a reload"
+    dimension_key: persistence
+    default: "only the dashboard YAML config; the pending state lives in memory and is lost on reload (the entity's real state is re-read)"
+    status: validated
+  - dimension: "new tile keys"
+    dimension_key: record-shape
+    default: "states: {<state>: {color: <sf token or CSS colour>, icon?: <mdi>, label?: <text>}}; subtitle: <second line>; pending_timeout: <seconds, default 30>; no confirmation key (neither the card's nor documented); states wins over state_on/active_icon/inactive_icon when both are set"
+    status: validated
+  - dimension: "what the tile does"
+    dimension_key: operation-set
+    default: "tap → tap_action (toggle / perform-action / navigate / more-info …) · native confirmation · pending feedback until state change or timeout · hold → hold_action, default more-info · double tap → double_tap_action, default none · per-state colour/icon/label · state_error and unavailable rendering · two-line label · editor fields for every new key · wiki page update"
+    status: vetoed
+    override: "tap → tap_action at once (toggle / perform-action / navigate / more-info …), NO confirmation step on any tile · pending feedback until state change or timeout · hold → hold_action, default more-info · double tap → double_tap_action, default none · per-state colour/icon/label · state_error and unavailable rendering · two-line label · editor fields for every new key · wiki page update"
+    decided_by: user
+  - dimension: "language and labels"
+    dimension_key: units-locale
+    default: "tile names, subtitles and per-state labels are written by the user in the config (French here); card-owned strings (pending, error) go through the existing i18n (en + fr)"
+    status: validated
+  - dimension: "who uses it"
+    dimension_key: audience
+    default: "household members on their phone, signed in to HA; no extra auth; per-person tiles keep the existing visibility key"
+    status: validated
+  - dimension: "what the tile shows"
+    dimension_key: reporting-depth
+    default: "the current state only, through colour + icon + label; no history, no figures"
+    status: validated
+  - dimension: "out of scope"
+    dimension_key: non-goals
+    default: "no new card; no confirmation step on any tile (user, 2026-11-18: 'oublie ce truc de confirmation'); no brightness/position sliders; no scheduling or automations created by the card; no change to the weather tile, the person header or aggregated entity_kind tiles; no HA-side helpers created by the card"
+    status: validated
+  - dimension: "existing dashboards"
+    dimension_key: existing-state
+    default: "a config without the new keys renders and behaves exactly as today (tap → tap_action, else link, else more-info; state_on unchanged); the default tap stays more-info, toggle is opt-in per tile"
+    status: validated
+  - dimension: "where it must hold"
+    dimension_key: environments
+    default: "phone first (HA Companion app, iPhone and Android, portrait 2-column grid), also desktop browsers (Chrome, Safari, Firefox); network always on"
+    status: validated
+  - dimension: "who does what"
+    dimension_key: actors
+    default: "your wife (and any household member) taps tiles on her own dashboard; you configure the tiles (YAML or the card editor); no other system consumes the card"
+    status: validated
+  - dimension: "car charge tile: which entity it reads"
+    dimension_key: charge-state-source
+    default: "one entity per tile: the charge tile reads and toggles switch.mureva_evlink (charger powered on/off), not binary_sensor.mureva_evlink_charge (car actually charging)"
+    status: validated
+  - dimension: "bedroom light: which entity"
+    dimension_key: bedroom-light-entity
+    default: "no main 'chambre parentale' light exists in HA (only douche / dressing / lavabo); the example uses light.zbmini_l_dressing_parent until you name the right one"
+    status: validated
+
+delivery:
+  surfaces:
+    - surface: frontend
+      run: "npm run build, then the custom:sci-fi-hexa-tiles card on a Lovelace dashboard (and the workbench simulator)"
+  design_system: "src/styles/common.ts"

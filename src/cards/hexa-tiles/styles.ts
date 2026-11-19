@@ -139,6 +139,12 @@ export const hexaTilesStyles = css`
     margin: 0;
     cursor: pointer;
     display: block;
+    /* Per-state colour default; a tile with a matching states entry overrides it inline (FR-3). */
+    --sf-tile-state-color: var(--sf-primary, #00d2ff);
+    /* A hold on a phone must not select the label nor open the iOS callout (FR-8). */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
   }
   .hexa-half {
     width: calc(var(--tile-width) / 2);
@@ -273,6 +279,109 @@ export const hexaTilesStyles = css`
   }
   .hexa-tile[data-active="false"] .tile-label {
     color: var(--sf-text-disabled, rgba(224, 232, 255, 0.3));
+  }
+
+  /* ─── Quick actions (docs/specs/hexa-tiles-quick-actions/spec.md FR-10) ─── */
+
+  .tile-subtitle {
+    font-size: 0.5625rem;
+    margin-top: 2px;
+    max-width: 90%;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--sf-text-secondary, rgba(224, 232, 255, 0.6));
+    transition: color var(--sf-transition-fast);
+  }
+  .hexa-content sf-icon.tile-mark {
+    position: absolute;
+    top: 14%;
+    left: 50%;
+    transform: translateX(-50%);
+    --icon-width: 18px;
+    --icon-height: 18px;
+  }
+
+  /* Per-state colour (FR-3): a custom property set through the CSSOM. */
+  .hexa-tile[data-state-color="true"] .hexa-border {
+    stroke: var(--sf-tile-state-color);
+    stroke-width: 2px;
+    filter: drop-shadow(0 0 4px var(--sf-tile-state-color));
+  }
+  .hexa-tile[data-state-color="true"] .hexa-content sf-icon {
+    --icon-color: var(--sf-tile-state-color);
+    filter: drop-shadow(0 0 3px var(--sf-tile-state-color));
+  }
+  .hexa-tile[data-state-color="true"] .tile-label,
+  .hexa-tile[data-state-color="true"] .tile-subtitle {
+    color: var(--sf-tile-state-color);
+    text-shadow: none;
+  }
+
+  /* Error (FR-5): colour AND a mark, never colour alone. */
+  .hexa-tile[data-error="true"] .hexa-border {
+    stroke: var(--sf-error);
+    stroke-width: 2px;
+    filter: drop-shadow(0 0 4px var(--sf-error));
+  }
+  .hexa-tile[data-error="true"] .hexa-content sf-icon {
+    --icon-color: var(--sf-error);
+    filter: none;
+  }
+  .hexa-tile[data-error="true"] .tile-label,
+  .hexa-tile[data-error="true"] .tile-subtitle {
+    color: var(--sf-error);
+    text-shadow: none;
+  }
+
+  /* No change (FR-7.3): a warning mark, distinct from a state configured in red. */
+  .hexa-tile[data-no-change="true"] .hexa-content sf-icon.tile-mark {
+    --icon-color: var(--sf-warning, #ffd60a);
+    filter: none;
+  }
+
+  /* Pending / moving (FR-7, FR-7.5, FR-10): the tile blinks between its state colour and
+     light blue (--sf-primary), one round trip every two seconds. A .tile-mark never blinks. */
+  .hexa-tile[data-pending="true"] .hexa-border {
+    animation: sf-hexa-pending 1s ease-in-out alternate infinite;
+  }
+  .hexa-tile[data-pending="true"] .hexa-content sf-icon:not(.tile-mark) {
+    animation: sf-hexa-pending-icon 2s linear infinite;
+  }
+  @keyframes sf-hexa-pending {
+    to {
+      stroke: var(--sf-primary, #00d2ff);
+      stroke-width: 3px;
+      filter: drop-shadow(0 0 8px var(--sf-primary, #00d2ff));
+    }
+  }
+  /* A custom property animates discretely: light blue over the middle half of the cycle. */
+  @keyframes sf-hexa-pending-icon {
+    50% { --icon-color: var(--sf-primary, #00d2ff); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hexa-tile[data-pending="true"] .hexa-border {
+      animation: none;
+      stroke: var(--sf-primary, #00d2ff);
+      stroke-dasharray: 6 4;
+    }
+    .hexa-tile[data-pending="true"] .hexa-content sf-icon:not(.tile-mark) {
+      animation: none;
+    }
+  }
+
+  /* Live region (FR-7.7): read by screen readers, not shown. */
+  .sf-live {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    clip-path: inset(50%);
   }
 
   .weather-alert {

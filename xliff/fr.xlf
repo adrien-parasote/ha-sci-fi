@@ -1494,6 +1494,42 @@
   <source>Cost</source>
   <target>Coût</target>
 </trans-unit>
+<trans-unit id="s0f0202c2780ce439">
+  <source>Subtitle</source>
+<target>Sous-titre</target></trans-unit>
+<trans-unit id="sb034a49db57b57c7">
+  <source>Pending timeout (s)</source>
+<target>Délai d'attente (s)</target></trans-unit>
+<trans-unit id="s1eb7513c211ba38c">
+  <source>Tap action</source>
+<target>Action au toucher</target></trans-unit>
+<trans-unit id="s21bf542458874972">
+  <source>Hold action</source>
+<target>Action à l'appui long</target></trans-unit>
+<trans-unit id="sb98554d347780f1d">
+  <source>Double tap action</source>
+<target>Action au double toucher</target></trans-unit>
+<trans-unit id="sd87f93449acd405e">
+  <source>A double tap action delays every tap by 250 ms</source>
+<target>Une action au double toucher retarde chaque toucher de 250 ms</target></trans-unit>
+<trans-unit id="s1df8f71a8a512113">
+  <source>Current state</source>
+<target>État actuel</target></trans-unit>
+<trans-unit id="s344ea8f4939cdc98">
+  <source>Color</source>
+<target>Couleur</target></trans-unit>
+<trans-unit id="s5590dbf7e425789d">
+  <source>Label</source>
+<target>Libellé</target></trans-unit>
+<trans-unit id="s920f1d849c176841">
+  <source>Add state</source>
+<target>Ajouter un état</target></trans-unit>
+<trans-unit id="s78636b92c1a3909c">
+  <source>Pending</source>
+<target>En cours</target></trans-unit>
+<trans-unit id="s702880469d70023a">
+  <source>No change</source>
+<target>Sans effet</target></trans-unit>
 </body>
 </file>
 </xliff>

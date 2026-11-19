@@ -1,5 +1,7 @@
 // @vitest-environment happy-dom
-import { expect, describe, it, afterEach } from 'vitest';
+import { expect, describe, it, afterEach, beforeEach } from 'vitest';
+import { setLocale } from '../../../src/locales/localization.js';
+import { makeMockEntity } from '../../fixtures/mock-hass.js';
 import '../../../src/cards/hexa-tiles/sci-fi-hexa-tiles-editor.js';
 import type { SciFiHexaTilesEditor } from '../../../src/cards/hexa-tiles/sci-fi-hexa-tiles-editor.js';
 import type { HomeAssistantExt } from '../../../src/types/ha.js';
@@ -52,7 +54,8 @@ describe('sci-fi-hexa-tiles-editor', () => {
       ],
     }));
     await el.updateComplete;
-    const accordions = el.shadowRoot!.querySelectorAll('sf-editor-accordion');
+    // Tile accordions only: each tile now nests its own Actions accordion (FR-11).
+    const accordions = el.shadowRoot!.querySelectorAll('.container > sf-editor-accordion');
     expect(accordions.length).toBe(2);
   });
 
@@ -520,5 +523,143 @@ describe('sci-fi-hexa-tiles-editor', () => {
 
     const img = el.shadowRoot!.querySelector('.avatar img');
     expect(img).not.toBeNull();
+  });
+});
+
+// ─── Quick actions (docs/specs/hexa-tiles-quick-actions/spec.md FR-11, FR-12) ──
+
+type TileConf = Record<string, unknown>;
+
+function fire(target: Element, value: unknown, kind = ''): void {
+  target.dispatchEvent(new CustomEvent('input-update', {
+    bubbles: true,
+    composed: true,
+    detail: { id: target.getAttribute('element-id') ?? '', kind, value },
+  }));
+}
+
+async function editorWith(tile: TileConf, states: Record<string, string> = {}): Promise<{ el: SciFiHexaTilesEditor; received: CustomEvent[] }> {
+  const el = await createElement();
+  const entities = Object.fromEntries(Object.entries(states).map(([id, state]) => [id, makeMockEntity({ entity_id: id, state, attributes: {} })]));
+  el.hass = makeMockHass({ states: entities, language: 'en' }) as unknown as HomeAssistantExt;
+  el.setConfig(makeConfig({ tiles: [tile] }));
+  await el.updateComplete;
+  const received: CustomEvent[] = [];
+  el.addEventListener('config-changed', (e) => received.push(e as CustomEvent));
+  return { el, received };
+}
+
+const lastTile = (received: CustomEvent[]): TileConf => (received[received.length - 1]!.detail.config.tiles as TileConf[])[0]!;
+const q = (el: SciFiHexaTilesEditor, sel: string): HTMLElement => {
+  const found = el.shadowRoot!.querySelector<HTMLElement>(sel);
+  expect(found, sel).not.toBeNull();
+  return found!;
+};
+type KeyField = HTMLElement & { updateComplete: Promise<boolean> };
+const keyField = (el: SciFiHexaTilesEditor, i: number): KeyField =>
+  rows(el)[i]!.querySelector('sf-editor-input[element-id="state_key"]') as KeyField;
+const innerInput = (host: KeyField): HTMLInputElement => host.shadowRoot!.querySelector('input')!;
+/** One keystroke as the browser delivers it: the inner <input> value changes, then `input` fires. */
+async function typeInto(host: KeyField, value: string): Promise<void> {
+  const input = innerInput(host);
+  input.value = value;
+  input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+  await host.updateComplete;
+}
+const rows = (el: SciFiHexaTilesEditor): HTMLElement[] => Array.from(el.shadowRoot!.querySelectorAll<HTMLElement>('.state-row'));
+const rowKeys = (el: SciFiHexaTilesEditor): string[] =>
+  rows(el).map(r => (r.querySelector('sf-editor-input[element-id="state_key"]') as unknown as { value: string }).value);
+
+describe('sci-fi-hexa-tiles-editor quick actions', () => {
+  beforeEach(async () => {
+    await setLocale('en');
+  });
+  afterEach(async () => {
+    document.body.replaceChildren();
+    await setLocale('fr');
+  });
+
+  it('TC-HQA-U-14: the Actions section writes subtitle, pending_timeout and the three actions, and removes emptied keys', async () => {
+    const { el, received } = await editorWith({ standalone: true, entity: 'cover.portail', hold_action: { action: 'more-info' } });
+    const section = q(el, '.container > sf-editor-accordion sf-editor-accordion[element-id="actions"]');
+    expect(section.getAttribute('title')).toBe('Actions');
+    const dbl = q(el, 'sf-editor-action[element-id="double_tap_action"]');
+    const hint = dbl.nextElementSibling as HTMLElement;
+    expect(hint.matches('p.hint')).toBe(true);
+    expect(hint.textContent).toContain('A double tap action delays every tap by 250 ms');
+    expect((q(el, 'sf-editor-input[element-id="pending_timeout"]') as unknown as { type: string }).type).toBe('number');
+
+    fire(q(el, 'sf-editor-input[element-id="subtitle"]'), 'Voiture');
+    expect(lastTile(received).subtitle).toBe('Voiture');
+    fire(q(el, 'sf-editor-input[element-id="subtitle"]'), '');
+    expect(Object.keys(lastTile(received))).not.toContain('subtitle');
+
+    fire(q(el, 'sf-editor-input[element-id="pending_timeout"]'), '20');
+    expect(lastTile(received).pending_timeout).toBe(20);
+    fire(q(el, 'sf-editor-input[element-id="pending_timeout"]'), 'x');
+    expect(Object.keys(lastTile(received))).not.toContain('pending_timeout');
+
+    fire(q(el, 'sf-editor-action[element-id="tap_action"]'), { action: 'toggle' }, 'action');
+    expect(lastTile(received).tap_action).toEqual({ action: 'toggle' });
+    fire(q(el, 'sf-editor-action[element-id="hold_action"]'), null, 'action');
+    expect(Object.keys(lastTile(received))).not.toContain('hold_action');
+    expect(lastTile(received).tap_action).toEqual({ action: 'toggle' });
+  });
+
+  it('TC-HQA-U-15: the per-state list adds, renames, edits and removes entries, and reminds the current state', async () => {
+    const { el, received } = await editorWith({ standalone: true, entity: 'cover.portail' }, { 'cover.portail': 'closed' });
+    const hint = Array.from(el.shadowRoot!.querySelectorAll('.hint')).find(h => h.textContent!.includes('Current state'));
+    expect(hint, 'a current-state hint').toBeDefined();
+    expect(hint!.textContent).toContain('closed');
+
+    for (let i = 0; i < 5; i++) {
+      q(el, '.add-state-btn').click();
+      await el.updateComplete;
+    }
+    expect(Object.keys(lastTile(received).states as object)).toEqual(['on', 'off', 'open', 'closed', 'state_1']);
+    expect(rowKeys(el)).toEqual(['on', 'off', 'open', 'closed', 'state_1']);
+
+    // rename onto an existing key, then onto an empty key, typed keystroke by keystroke into the inner
+    // <input>: nothing is written while typing, the rename is refused at focusout, and the inner field
+    // shows the old key again
+    for (const [i, from, typed] of [[0, 'on', ['o', 'op', 'ope', 'open']], [1, 'off', ['of', 'o', '']]] as const) {
+      const count = received.length;
+      const host = keyField(el, i);
+      for (const value of typed) await typeInto(host, value);
+      expect(received.length, `typing ${typed.join(' > ')} writes nothing`).toBe(count);
+      host.dispatchEvent(new FocusEvent('focusout', { bubbles: true, composed: true }));
+      await el.updateComplete;
+      await host.updateComplete;
+      expect(received.length, `${from} -> '${typed[typed.length - 1]}' changes nothing`).toBe(count);
+      expect(rowKeys(el)[i]).toBe(from);
+      expect(innerInput(host).value, `the inner field shows ${from} again`).toBe(from);
+    }
+
+    const charge = keyField(el, 4);
+    for (const value of ['c', 'ch', 'charge']) await typeInto(charge, value);
+    charge.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, composed: true }));
+    await el.updateComplete;
+    expect(Object.keys(lastTile(received).states as object)).toEqual(['on', 'off', 'open', 'closed', 'charge']);
+    expect((lastTile(received).states as Record<string, unknown>).charge).toEqual({});
+
+    fire(rows(el)[0]!.querySelector('sf-editor-color-picker[element-id="state_color"]')!, '#ff0000');
+    await el.updateComplete;
+    fire(rows(el)[0]!.querySelector('sf-editor-dropdown-icon[element-id="state_icon"]')!, 'mdi:x');
+    await el.updateComplete;
+    expect((lastTile(received).states as Record<string, unknown>).on).toEqual({ color: '#ff0000', icon: 'mdi:x' });
+    fire(rows(el)[0]!.querySelector('sf-editor-dropdown-icon[element-id="state_icon"]')!, '');
+    await el.updateComplete;
+    expect((lastTile(received).states as Record<string, unknown>).on).toEqual({ color: '#ff0000' });
+
+    fire(rows(el)[0]!.querySelector('sf-editor-input[element-id="state_label"]')!, 'Allumé');
+    await el.updateComplete;
+    expect((lastTile(received).states as Record<string, unknown>).on).toEqual({ color: '#ff0000', label: 'Allumé' });
+
+    for (let i = 0; i < 5; i++) {
+      rows(el)[0]!.querySelector('sf-button.state-remove')!.dispatchEvent(new CustomEvent('button-click', { bubbles: true, composed: true }));
+      await el.updateComplete;
+    }
+    expect(rows(el)).toHaveLength(0);
+    expect(Object.keys(lastTile(received))).not.toContain('states');
   });
 });

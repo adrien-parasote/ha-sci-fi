@@ -67,7 +67,8 @@ export const MOCK_STATES = {
   'sensor.nous_ventilateur_leonard_power': { entity_id: 'sensor.nous_ventilateur_leonard_power', state: '18', attributes: { unit_of_measurement: 'W' } },
   'switch.nous_ventilateur_leonard_child_lock': { entity_id: 'switch.nous_ventilateur_leonard_child_lock', state: 'off', attributes: {} },
   'sensor.nous_ventilateur_leonard_energy': { entity_id: 'sensor.nous_ventilateur_leonard_energy', state: '4.87', attributes: { unit_of_measurement: 'kWh' } },
-  'switch.mureva_evlink': { entity_id: 'switch.mureva_evlink', state: 'off', attributes: { friendly_name: 'EvLink' } },
+  // On while the car charges (hexa quick actions, spike answer D6.2)
+  'switch.mureva_evlink': { entity_id: 'switch.mureva_evlink', state: 'on', attributes: { friendly_name: 'EvLink' } },
   'sensor.mureva_evlink_energy_corrected': { entity_id: 'sensor.mureva_evlink_energy_corrected', state: '142.5', attributes: { unit_of_measurement: 'kWh' } },
   'binary_sensor.mureva_evlink_charge': { entity_id: 'binary_sensor.mureva_evlink_charge', state: 'off', attributes: {} },
   'sensor.mureva_evlink_current': { entity_id: 'sensor.mureva_evlink_current', state: '0', attributes: { unit_of_measurement: 'A' } },
@@ -92,6 +93,9 @@ export const MOCK_STATES = {
   'light.zbmini_l_mezzanine': { entity_id: 'light.zbmini_l_mezzanine', state: 'off', attributes: {} },
   'light.nous_salon': { entity_id: 'light.nous_salon', state: 'on', attributes: { friendly_name: 'Étoile salon' } },
   'light.zbmini_l_lampe_salon': { entity_id: 'light.zbmini_l_lampe_salon', state: 'off', attributes: {} },
+  // Hexa quick actions (docs/specs/hexa-tiles-quick-actions/spec.md FR-16): the gate reports closed / open only
+  'light.zbmini_l_dressing_parent': { entity_id: 'light.zbmini_l_dressing_parent', state: 'off', attributes: { friendly_name: 'Dressing parents' } },
+  'cover.portail': { entity_id: 'cover.portail', state: 'closed', attributes: { friendly_name: 'Portail', device_class: 'gate', supported_features: 3 } },
   'media_player.bravia_4k_vh22': { entity_id: 'media_player.bravia_4k_vh22', state: 'off', attributes: { volume_level: 0.0, friendly_name: 'Bravia 4K TV' } },
   'remote.bravia_4k_vh22': { entity_id: 'remote.bravia_4k_vh22', state: 'off', attributes: { friendly_name: 'Bravia Remote' } },
   'switch.plugs': { entity_id: 'switch.plugs', state: 'on', attributes: {} },

@@ -34,9 +34,18 @@ interface SciFiHexaTileConfig {
   readonly state_error?: string;
   readonly link?: string;                   // navigation (ex: "lights")
   readonly visibility?: readonly string[];  // person entity IDs
-  readonly tap_action?: ActionConfig;       // lus par la carte au clic (chemin d'action)
-  readonly hold_action?: ActionConfig;
-  readonly double_tap_action?: ActionConfig;
+  readonly tap_action?: ActionConfig;       // toucher (clic, Entrée, Espace)
+  readonly hold_action?: ActionConfig;      // appui long 500 ms
+  readonly double_tap_action?: ActionConfig; // double toucher 250 ms
+  readonly states?: Readonly<Record<string, SciFiHexaTileStateStyle>>; // style par état
+  readonly subtitle?: string;               // seconde ligne
+  readonly pending_timeout?: number;        // secondes, défaut 30, plafond 86 400
+}
+
+interface SciFiHexaTileStateStyle {
+  readonly color?: string;   // valeur CSS de couleur
+  readonly icon?: string;    // 'mdi:gate-open'
+  readonly label?: string;   // seconde ligne quand cet état est courant
 }
 
 interface SciFiHexaTilesConfig {
@@ -65,6 +74,13 @@ tiles:
     name: Poêle
     state_on: [cool, heat]
     link: stove
+  - standalone: true
+    entity: cover.portail
+    name: Portail
+    tap_action: { action: toggle }
+    states:
+      closed: { color: "var(--sf-accent-on)", icon: mdi:gate, label: Fermé }
+      open:   { color: "var(--sf-error)", icon: mdi:gate-open, label: Ouvert }
 ```
 
 ---
@@ -91,8 +107,24 @@ tiles:
 | F-HEX-06 | Tiles resize to fill 100% of the card width on all viewport sizes (priority mobile) | ✅ Section [Responsive 100% Sizing & Viewport Height Filling](#responsive-100-sizing--viewport-height-filling) | tests/cards/hexa-tiles/sci-fi-hexa-tiles.test.ts :: IT-HEXA-TILES-I-701 |
 | F-HEX-07 | Weather tile border glow matches alert severity color | ✅ Section [Weather Tile Alert Coloring](#weather-tile-alert-coloring) | tests/cards/hexa-tiles/sci-fi-hexa-tiles.test.ts (« covers various fallback branches including … alert levels », sans id) |
 | F-HEX-08 | Alert banner label displays phenomenon names from entity attributes | ✅ Section [Weather Alert Banner](#weather-alert-banner) | tests/cards/hexa-tiles/sci-fi-hexa-tiles.test.ts :: TC-HEXA-TILES-U-706, TC-HEXA-TILES-U-707 |
+| F-HEX-09 | Per-state colour, icon and label, and a second line (`states`, `subtitle`) | ✅ Section [Quick actions](#quick-actions) | tests/cards/hexa-tiles/sci-fi-hexa-tiles-quick-actions.test.ts :: TC-HQA-U-01, TC-HQA-U-02, TC-HQA-U-18 |
+| F-HEX-10 | Pending after a toggle, ended by the state change or by the no-change mark (`pending_timeout`) | ✅ Section [Quick actions](#quick-actions) | tests/cards/hexa-tiles/sci-fi-hexa-tiles-quick-actions.test.ts :: TC-HQA-U-04, TC-HQA-U-05, TC-HQA-U-19, TC-HQA-U-20 |
+| F-HEX-11 | Hold and double tap (`hold_action`, `double_tap_action`) | ✅ Section [Quick actions](#quick-actions) | tests/cards/hexa-tiles/sci-fi-hexa-tiles-quick-actions.test.ts :: TC-HQA-U-06, TC-HQA-U-07 |
+| F-HEX-12 | Error rendering of an absent, unavailable or `state_error` entity | ✅ Section [Quick actions](#quick-actions) | tests/cards/hexa-tiles/sci-fi-hexa-tiles-quick-actions.test.ts :: TC-HQA-U-08 |
 
 ---
+
+## Quick actions
+
+Lot `hexa-tiles-quick-actions` — the contract is [its spec](../hexa-tiles-quick-actions/spec.md) (FR-3 to FR-9); this section states what the card does.
+
+- **Style per state.** A standalone tile whose `states` has a key strictly equal to the entity state (case included) and that is not in error takes the entry's `color` (`data-state-color="true"`, custom property `--sf-tile-state-color` set through the CSSOM) and `icon`. A malformed `states` or entry is ignored. Aggregated tiles (`entity_kind`) ignore `states`.
+- **Second line.** `.tile-subtitle`, in order: `Unavailable` when the entity is absent or `unavailable`, else the current entry's `label`, else `subtitle`.
+- **Error.** Absent, `unavailable` or equal to `state_error`: `data-error="true"`, `var(--sf-error)` and a `.tile-mark` (`mdi:alert-octagon-outline`). Absent or `unavailable`, a tap or double tap emits nothing and shows the toast `<name> : Unavailable`; a hold on an `unavailable` entity opens more-info.
+- **Tap.** `click`, `Enter` or `Space` (no repeat); precedence `tap_action` → `link` → more-info. No confirmation step, on any tile.
+- **Pending.** A toggle gesture puts every tile of its entity in pending (`data-pending`, `aria-busy`, label `<name>, Pending`) until the state changes, or until `pending_timeout` seconds (default 30, max 86 400) end it with the no-change mark (`data-no-change`, `mdi:alert-circle-outline` in `--sf-warning`) and the toast `<name> : No change`. No gesture is blocked during pending: each toggle re-arms it. An entity in `opening` / `closing` renders pending without timer. A pending or moving tile blinks between its state colour and light blue (`--sf-primary`), one round trip every two seconds; with `prefers-reduced-motion` it shows a static light-blue dashed border instead.
+- **Hold and double tap.** A 500 ms hold (10 px tolerance) fires `hold_action`, or more-info without one; the click that follows a hold, a `pointercancel` or a move is ignored. With an active `double_tap_action`, a second click within 250 ms fires it, otherwise the tap leaves at the end of the window.
+- **Announcements.** One `.sf-live` status region announces the end of a pending; one `sf-toast` carries the no-change and unavailable messages.
 
 ## User Header
 
@@ -268,3 +300,11 @@ Instead of fixed sizing, hexagons dynamically resize to fit exactly 100% of thei
 | Connected user not found | No `person.*` entity matches `hass.user.id` | Display `hass.user.name` in header | Initials from user name, default home icon |
 | User picture missing | `entity_picture` attribute is null or undefined | Render name initials inside circle | First letter of friendly name |
 | Zone icon not found | Zone entity has no `icon` attribute | Fallback to home/away default icon | `mdi:home` or `mdi:home-off-outline` |
+| Tile entity absent from `hass.states` | `hass.states[entity] === undefined` | Error style, mark, second line and `aria-label` `… Unavailable`; no gesture emits; toast on tap | name = `tile.name ?? entity` |
+| Tile entity `unavailable` | `state === 'unavailable'` | Error style and mark; tap / double tap muted with toast; hold → more-info | — |
+| State equal to `state_error` | `state === tile.state_error` | Error style and mark; gestures act normally | — |
+| Relay pulse lost or HA service failed | State unchanged at `pending_timeout` | End of pending, no-change mark in `--sf-warning`, colour of the real state, announcement and toast | A new tap re-arms |
+| `pending_timeout` absent, zero, negative, non-numeric or above 86 400 | `!(Number.isFinite(v) && v > 0 && v <= 86400)` | 30 s | — |
+| Entity moving (`opening` / `closing`) | `state === 'opening' \|\| state === 'closing'` | Rendered pending, gestures emitted, no timer | — |
+| Malformed `states` or entry | Not a plain object / not a non-empty string | Ignored as absent, no throw | Pre-lot rendering |
+| Gesture interrupted by a scroll | `pointermove` > 10 px or `pointercancel` | No hold; the click that follows is ignored | — |

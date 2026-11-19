@@ -4,7 +4,7 @@
 import { CARDS } from '../cards/_registry.js';
 import { registerMockHaIcon } from './ha-icon.js';
 import { setupConsoleProxy, log, setConsoleFilter, filterConsoleLines, clearConsole, copyFilteredConsole } from './console.js';
-import { buildMockHass, buildLiveHass } from './mock-hass.js';
+import { buildMockHass, buildLiveHass, republishedHass } from './mock-hass.js';
 import { setHaStatus, setLiveMode, openConnectModal, closeConnectModal } from './ui-helpers.js';
 import { initViewModes, setViewMode, setDeviceSize, setOrientation, getViewMode } from './view-modes.js';
 import { initWorkMode, setWorkMode, getWorkMode } from './work-mode.js';
@@ -22,6 +22,7 @@ import {
   setCurrentLanguage,
 } from './ha-connection.js';
 import { mountIconBrowser } from './icon-browser.js';
+import { handleHassAction } from './hass-action.js';
 
 // ─── Register mock ha-icon ───────────────────────────────────────────────────
 registerMockHaIcon();
@@ -144,6 +145,12 @@ async function renderCard(cardKey, scenarioKey) {
 
     cardEl = document.createElement(card.tag);
     if (!customElements.get(card.tag)) throw new Error(`<${card.tag}> non enregistré`);
+    // No HA frontend here: play its part for the card's hass-action (FR-16).
+    cardEl.addEventListener('hass-action', (e) => handleHassAction(e.detail, {
+      hass: e.currentTarget.hass,
+      live: isLiveMode(),
+      scenario: currentScenarioData,
+    }));
     cardEl.setConfig(activeConfig);
     mount.appendChild(cardEl);
     cardEl.hass = hass;
@@ -404,11 +411,14 @@ function onLiveUpdate(hass) {
 window.addEventListener('mock-hass-state-changed', (e) => {
   if (isLiveMode()) return; // no-op in live mode — HA handles it
   if (!cardEl) return;
-  // Shallow-clone the existing hass so Lit detects a reference change and re-renders.
-  // Keep the same callService closure (which already references the mutated states object).
+  // The card's hass with the NEW states object the mock published (never mutated in
+  // place — FR-16), so the card's entity-reference check sees the change; the same
+  // callService closure is kept (it builds each mutation on the latest states).
+  // A mutation from a hass the card no longer holds is dropped (republishedHass).
   // Do NOT call buildMockHass() — that would create a new closure with fresh base states,
   // which is what caused the first-click bug (click 1 worked but the new closure reset to base).
-  cardEl.hass = { ...cardEl.hass, states: e.detail.states };
+  const next = republishedHass(cardEl.hass, e.detail);
+  if (next) cardEl.hass = next;
 });
 
 // ─── Init sequence ───────────────────────────────────────────────────────────

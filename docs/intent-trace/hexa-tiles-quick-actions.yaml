@@ -1,0 +1,95 @@
+version: '1'
+derived_from: docs/frame-contracts/hexa-tiles-quick-actions.yaml
+silent_bindings: []
+assertions:
+- id: IA-FC-OPERATION-SET
+  assertion: tap → tap_action at once (toggle / perform-action / navigate / more-info
+    …), NO confirmation step on any tile · pending feedback until state change or
+    timeout · hold → hold_action, default more-info · double tap → double_tap_action,
+    default none · per-state colour/icon/label · state_error and unavailable rendering
+    · two-line label · editor fields for every new key · wiki page update
+  rationale: the quick-actions suite drives each operation of the override on the
+    mounted card (TC-HQA-U-03 a tap emits one hass-action with no confirmation key
+    and no dialog; U-04/U-05 pending end on state change or timeout; U-06/U-07 hold
+    and double tap; U-08 error rendering; U-01/U-02 per-state style and second line),
+    so a green run means every vetoed-default difference is exercised
+  proves: docs/frame-contracts/hexa-tiles-quick-actions.yaml#operation-set
+  proof:
+    type: test_exit_code
+    reference: tests/cards/hexa-tiles/sci-fi-hexa-tiles-quick-actions.test.ts
+    expected_exit: 0
+- id: IA-EX-1
+  assertion: 'input: tile cover.portail (closed) with tap_action {action: toggle}
+    and states {closed: green / mdi:gate, open: red / mdi:gate-open} — one tap ->
+    no dialog; the gate command is sent at once; the tile pulses (pending) until cover.portail
+    turns open, then shows red + mdi:gate-open'
+  rationale: acceptance example the user signed in the frame interview, executed
+    by TC-HQA-U-01 (closed/open style), U-03 (one hass-action, no confirmation, no dialog) and U-04 (pending until open, then var(--sf-error) + mdi:gate-open) on the mounted card; user's triptyque verdict 2026-11-18 moved it
+    from manual to test_exit_code (the phone check stays as a complement at VERIFY). It carries the gate pulse's
+    no-effect-on-reject obligation (state-mapping row 1, review F-07) — every rejected gesture leaves no hass-action,
+    proven in the same suite by U-06 (click after a hold or a cancelled gesture), U-08 (unavailable / absent entity)
+    and U-21 (deferred tap re-checked on an entity turned unavailable). A tap during pending or motion is NOT a
+    rejection — it emits by the user's decision (spec FR-7.6, spike D2.2), pinned by U-04, U-19, U-20 and U-21
+  proves: docs/frame-contracts/hexa-tiles-quick-actions.yaml#acceptance_examples[0]
+  proof:
+    type: test_exit_code
+    reference: tests/cards/hexa-tiles/sci-fi-hexa-tiles-quick-actions.test.ts
+    expected_exit: 0
+    obligation: no-effect-on-reject
+- id: IA-EX-2
+  assertion: 'input: tile on the bedroom light (off), tap_action {action: toggle},
+    no confirmation -> one tap turns the light on with no dialog; the tile switches
+    to its ''on'' colour and icon within the state change'
+  rationale: acceptance example the user signed in the frame interview, executed
+    by TC-HQA-U-03 (one click on the off light emits one toggle hass-action, no confirmation key, no dialog) and U-01/U-02 (per-state colour and icon follow the state) on the mounted card; user's triptyque verdict 2026-11-18 moved it
+    from manual to test_exit_code (the phone check stays as a complement at VERIFY)
+  proves: docs/frame-contracts/hexa-tiles-quick-actions.yaml#acceptance_examples[1]
+  proof:
+    type: test_exit_code
+    reference: tests/cards/hexa-tiles/sci-fi-hexa-tiles-quick-actions.test.ts
+    expected_exit: 0
+- id: IA-EX-3
+  assertion: 'input: gate tile tapped, the relay pulse is lost: cover.portail stays
+    closed -> the pending animation stops after the timeout (default 30 s) and the
+    tile returns to green with a visible ''no change'' error mark, never shows red'
+  rationale: acceptance example the user signed in the frame interview, executed
+    by TC-HQA-U-05 (pending kept at 29 999 ms, no-change mark at 30 000 ms, colour stays var(--sf-accent-on), never var(--sf-error)) on the mounted card; user's triptyque verdict 2026-11-18 moved it
+    from manual to test_exit_code (the phone check stays as a complement at VERIFY)
+  proves: docs/frame-contracts/hexa-tiles-quick-actions.yaml#acceptance_examples[2]
+  proof:
+    type: test_exit_code
+    reference: tests/cards/hexa-tiles/sci-fi-hexa-tiles-quick-actions.test.ts
+    expected_exit: 0
+- id: IA-EX-4
+  assertion: 'input: hold (≥ 500 ms) on any custom tile with no hold_action -> HA''s
+    more-info dialog of the tile''s entity opens; no toggle is sent'
+  rationale: acceptance example the user signed in the frame interview, executed
+    by TC-HQA-U-06 (pointerdown + 500 ms emits more-info for the entity, the following click emits nothing, no toggle) on the mounted card; user's triptyque verdict 2026-11-18 moved it
+    from manual to test_exit_code (the phone check stays as a complement at VERIFY)
+  proves: docs/frame-contracts/hexa-tiles-quick-actions.yaml#acceptance_examples[3]
+  proof:
+    type: test_exit_code
+    reference: tests/cards/hexa-tiles/sci-fi-hexa-tiles-quick-actions.test.ts
+    expected_exit: 0
+- id: IA-EX-5
+  assertion: 'input: a tile whose entity is unavailable -> the tile renders in its
+    error style (sf-error), a tap sends nothing'
+  rationale: acceptance example the user signed in the frame interview, executed
+    by TC-HQA-U-08 (unavailable → data-error, tap and double tap emit nothing) on the mounted card; user's triptyque verdict 2026-11-18 moved it
+    from manual to test_exit_code (the phone check stays as a complement at VERIFY)
+  proves: docs/frame-contracts/hexa-tiles-quick-actions.yaml#acceptance_examples[4]
+  proof:
+    type: test_exit_code
+    reference: tests/cards/hexa-tiles/sci-fi-hexa-tiles-quick-actions.test.ts
+    expected_exit: 0
+- id: IA-EX-6
+  assertion: 'input: an existing production hexa-tiles config (climate.clou tile with
+    state_on, link: stove) with none of the new keys -> same icons, same colours,
+    same tap behaviour (navigates to ''stove'') as before the lot'
+  rationale: acceptance example the user signed in the frame interview — the proof
+    must execute it, not restate it
+  proves: docs/frame-contracts/hexa-tiles-quick-actions.yaml#acceptance_examples[5]
+  proof:
+    type: manual
+    why: a rendering and a navigation on a live dashboard — a human eye checks it
+      (BUILD also pins it with a regression test)

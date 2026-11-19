@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spike — hexa-tiles : zapette sur téléphone</title>
+<style>
+:root{
+  /* Valeurs approximatives des jetons --sf-* (la vraie carte les lit du thème) */
+  --sf-accent-on:#19e68c; --sf-error:#ff4d5e; --sf-warning:#ffb020; --sf-default:#4aa3c7;
+  --bg:#0a111d; --panel:#111b2c; --panel2:#17243a; --ink:#e6edf7; --mute:#8fa0b8; --line:#243452;
+  --dead:#ff4d5e; --dec:#6aa7ff;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:760px;margin:0 auto;padding:12px 12px 80px}
+h1{font-size:1.35rem;margin:.6rem 0}
+h2{font-size:1.1rem;margin:0}
+h3{font-size:.95rem;margin:1rem 0 .4rem;color:var(--mute);text-transform:uppercase;letter-spacing:.05em}
+code{background:#0d1626;border:1px solid var(--line);border-radius:4px;padding:0 4px;font-size:.85em;word-break:break-word}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0}
+.note{font-size:.85rem;color:var(--mute)}
+.legend span{display:inline-block;margin:2px 8px 2px 0;font-size:.85rem}
+.sw{display:inline-block;width:.8em;height:.8em;border-radius:50%;vertical-align:-1px;margin-right:4px}
+.top{position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:.9rem}
+.top label{display:flex;gap:6px;align-items:center}
+section.task{margin:28px 0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel)}
+.banner{background:linear-gradient(90deg,#16325a,#122238);padding:12px}
+.banner .tag{font-size:.75rem;color:#9fc3ff;text-transform:uppercase;letter-spacing:.06em}
+.banner q{display:block;font-size:1.05rem;margin-top:4px;quotes:"« " " »"}
+.body{padding:12px}
+ol.trail{padding-left:1.2rem;margin:.4rem 0}
+ol.trail li{margin:.5rem 0}
+.fr{display:inline-block;font-size:.72rem;border:1px solid #3a5a96;color:#9fc3ff;border-radius:999px;padding:0 7px;margin-left:4px;white-space:nowrap}
+li.dead{border-left:3px solid var(--dead);padding-left:8px;background:rgba(255,77,94,.07);border-radius:0 6px 6px 0}
+li.dead b.k{color:var(--dead)}
+li.dec{border-left:3px solid var(--dec);padding-left:8px;background:rgba(106,167,255,.07);border-radius:0 6px 6px 0}
+li.dec b.k{color:var(--dec)}
+/* phone */
+.sim{margin:10px 0}
+.phone{width:min(100%,330px);margin:0 auto;background:#060b14;border:2px solid #2a3b5c;border-radius:26px;padding:14px 10px 12px;position:relative}
+.phone .hdr{font-size:.7rem;color:var(--mute);text-align:center;margin-bottom:8px;letter-spacing:.08em}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 8px}
+.tile{position:relative;aspect-ratio:116/104;cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation;outline-offset:2px}
+.tile svg.hx{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.tile .border{fill:rgba(255,255,255,.03);stroke:var(--c);stroke-width:2.4;filter:drop-shadow(0 0 4px var(--c))}
+.tile[data-pending="true"] .border{animation:pend 1s ease-in-out infinite alternate}
+@keyframes pend{from{opacity:1}to{opacity:.2}}
+@media (prefers-reduced-motion:reduce){.tile[data-pending="true"] .border{animation:none;stroke-dasharray:6 5}}
+.tile .inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 18%;text-align:center;color:var(--c);pointer-events:none}
+.tile .mark{position:absolute;top:9%;left:0;right:0;display:flex;justify-content:center;height:18px}
+.tile .mark svg{width:16px;height:16px}
+.tile .ic svg{width:30px;height:30px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tile .nm{font-size:.7rem;line-height:1.15;margin-top:2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tile .sub{font-size:.62rem;line-height:1.15;opacity:.9;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-height:.7rem}
+.dlg{position:absolute;inset:30% 8% auto 8%;background:#1c2b47;border:1px solid #4a6aa5;border-radius:10px;padding:10px;font-size:.8rem;z-index:3}
+.dlg button{margin-top:6px}
+.dlg[hidden]{display:none}
+.live{font-size:.75rem;color:var(--mute);text-align:center;margin-top:6px;min-height:1.1rem}
+.ctl{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-size:.85rem;margin:8px 0}
+.log{list-style:none;margin:8px 0 0;padding:6px 8px;background:#060b14;border:1px solid var(--line);border-radius:8px;font:.72rem/1.4 ui-monospace,Menlo,monospace;max-height:150px;overflow:auto;color:#a9b8cf}
+button{font:inherit;color:var(--ink);background:var(--panel2);border:1px solid #365083;border-radius:8px;padding:8px 10px;cursor:pointer;min-height:40px}
+button:hover{background:#1e3050}
+button.small{min-height:32px;padding:4px 8px;font-size:.8rem}
+select,input[type=text]{font:inherit;color:var(--ink);background:#0d1626;border:1px solid var(--line);border-radius:6px;padding:6px}
+/* decisions */
+.dc{border:1px solid var(--line);border-radius:10px;margin:12px 0;padding:10px;background:var(--panel2)}
+.dc.dead{border-color:rgba(255,77,94,.6)}
+.dc .hd{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:.8rem}
+.dc .id{font-weight:700}
+.dc.dead .id{color:var(--dead)} .dc.dec .id{color:var(--dec)}
+.dc .cons{margin:.4rem 0;font-weight:600}
+.dc .ctx{font-size:.9rem;color:#c7d3e6;margin:.2rem 0 .6rem}
+.ans{display:block;width:100%;text-align:left;margin:6px 0;white-space:normal}
+.ans[aria-pressed="true"]{border-color:var(--accent,#19e68c);background:#143a33}
+.req{margin:.3rem 0 .2rem;padding:8px;background:#0a1424;border-left:3px solid var(--accent,#19e68c);border-radius:0 6px 6px 0;font-size:.85rem}
+.req[hidden]{display:none}
+.req b{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mute)}
+/* editor mock */
+.ed{background:#0d1626;border:1px solid var(--line);border-radius:8px;padding:8px;font-size:.85rem;max-width:420px;margin:8px auto}
+.ed .row{display:flex;gap:6px;align-items:center;margin:4px 0;flex-wrap:wrap}
+.ed .row label{min-width:130px;color:var(--mute);font-size:.78rem}
+.ed .row .v{flex:1;min-width:80px;border:1px solid var(--line);border-radius:5px;padding:3px 6px;color:var(--mute);min-height:26px}
+.ed .hint{font-size:.74rem;color:#9fc3ff;margin:2px 0 6px}
+.ed .st{border:1px dashed #36507f;border-radius:6px;padding:4px 6px;margin:4px 0;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.ed .st b{min-width:62px}
+#summary textarea{width:100%;min-height:260px;background:#060b14;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px;font:.8rem/1.4 ui-monospace,Menlo,monospace}
+.sticky-count{margin-left:auto}
+</style>
+</head>
+<body>
+<main>
+<h1>Spike — la « zapette » hexagonale sur le téléphone</h1>
+<p class="note">Page jetable, construite avant tout code. Elle joue ce que la spec <code>hexa-tiles-quick-actions</code> décide, telle qu'elle est écrite — y compris ses trous. Rien n'est envoyé nulle part : tout reste dans cette page.</p>
+
+<div class="top">
+  <label><input type="checkbox" id="acc"> Mode accéléré (délais ÷ 5)</label>
+  <span class="note" id="accTxt"></span>
+  <span class="sticky-count note" id="count"></span>
+</div>
+
+<div class="card legend">
+  <b>Comment lire.</b> Chaque section = une tâche de la première semaine, jouée jusqu'au bout. Les pastilles <span class="fr">FR-7</span> citent l'exigence qui porte l'étape.
+  <div><span style="color:var(--dead)">■ IMPASSE</span> : étape qu'aucune exigence ne porte (ou dont la conséquence casse l'usage). <span style="color:var(--dec)">■ DÉCISION</span> : la spec tranche ; vous pouvez la confirmer ou la changer. Cliquez une réponse pour voir l'exigence qu'elle écrirait.</div>
+  <div class="legend" style="margin-top:6px"><b>Couleurs (approximations des jetons) :</b>
+    <span><i class="sw" style="background:var(--sf-accent-on)"></i><code>--sf-accent-on</code> ≈ vert #19e68c</span>
+    <span><i class="sw" style="background:var(--sf-error)"></i><code>--sf-error</code> ≈ rouge #ff4d5e</span>
+    <span><i class="sw" style="background:var(--sf-warning)"></i><code>--sf-warning</code> ≈ ambre #ffb020</span>
+    <span><i class="sw" style="background:var(--sf-default)"></i>aspect « comme aujourd'hui » ≈ cyan #4aa3c7</span></div>
+  <div class="note">Temps réel par défaut : réaction de HA simulée à 3 s (comme le workbench, FR-16), marque « sans effet » à 30 s (FR-7.3). Les icônes sont des dessins schématiques, pas les <code>mdi:</code> réels. Contenu réel : uniquement les trois tuiles de la « Config cible » ; Radiateur et Télé (tâche 5) sont des tuiles à venir, sans identifiant d'entité.</div>
+</div>
+
+<!-- ============ T1 ============ -->
+<section class="task" id="T1">
+  <div class="banner"><div class="tag">Tâche 1 · en voiture</div><q>J'arrive devant la maison, j'ouvre le portail depuis mon téléphone, puis je le referme derrière moi.</q></div>
+  <div class="body">
+    <h3>Écran (config cible, tuile Portail)</h3>
+    <div class="sim" data-sim="T1"></div>
+    <h3>Le parcours, pas à pas</h3>
+    <ol class="trail">
+      <li>La carte rend la tuile : <code>cover.portail</code> est <code>closed</code> → bordure verte, icône portail, seconde ligne « Fermé ». <span class="fr">FR-3</span><span class="fr">FR-4</span></li>
+      <li>Un toucher sur la tuile déclenche <code>tap_action: {action: toggle}</code> aussitôt, sans dialogue ni confirmation. <span class="fr">FR-6</span></li>
+      <li>La carte n'appelle aucun service : elle émet <code>hass-action</code> ; c'est le frontend de HA qui fait <code>open_cover</code>. <span class="fr">FR-6</span> (hypothèse 2 : à vérifier à la main sur téléphone)</li>
+      <li>La carte mémorise l'état <code>closed</code>, arme un minuteur de 30 s et la tuile pulse (<code>data-pending</code>, <code>aria-busy</code>). Elle garde sa couleur et son icône d'avant. <span class="fr">FR-7</span><span class="fr">FR-10</span> → <b>D1.1</b></li>
+      <li>Hors écran : le relais reçoit l'impulsion, HA rapporte <code>open</code> ; la carte reçoit un nouveau <code>hass</code>. <span class="fr">FR-7.2</span></li>
+      <li>L'état a changé : fin d'attente sans marque ; la tuile devient rouge, « Ouvert », icône portail ouvert ; la zone live annonce « Portail, Ouvert ». <span class="fr">FR-7.2</span><span class="fr">FR-3</span><span class="fr">FR-7.7</span></li>
+      <li class="dead"><b class="k">IMPASSE D1.2</b> — elle touche de nouveau la tuile pendant l'attente : le toucher n'émet rien (une seconde impulsion inverserait le portail). <span class="fr">FR-7.1</span></li>
+      <li>Elle referme : toucher sur la tuile rouge → <code>toggle</code> → même attente. <span class="fr">FR-6</span><span class="fr">FR-7</span></li>
+      <li class="dead"><b class="k">IMPASSE D1.3</b> — la fermeture dure plus que le délai d'attente (30 s par défaut). <span class="fr">FR-7.3</span><span class="fr">FR-7.6</span></li>
+      <li>Note : <code>cover.portail</code> ne passe jamais par <code>opening</code> / <code>closing</code> ; la tuile ne montre donc le mouvement que par l'attente de la carte. <span class="fr">FR-7.5</span> (Overview, F5)</li>
+    </ol>
+    <div class="decs" data-task="T1"></div>
+  </div>
+</section>
+
+<!-- ============ T2 ============ -->
+<section class="task" id="T2">
+  <div class="banner"><div class="tag">Tâche 2 · devant le portail</div><q>J'appuie sur Portail, rien ne bouge : l'impulsion du relais s'est perdue. Qu'est-ce que je vois, que puis-je faire ?</q></div>
+  <div class="body">
+    <h3>Écran (« Relais muet » déjà coché)</h3>
+    <div class="sim" data-sim="T2"></div>
+    <h3>Le parcours, pas à pas</h3>
+    <ol class="trail">
+      <li>Toucher → <code>toggle</code> émis, attente armée à 30 s, tuile qui pulse en vert. <span class="fr">FR-6</span><span class="fr">FR-7</span></li>
+      <li>Hors écran : l'impulsion est perdue, <code>cover.portail</code> reste <code>closed</code> ; aucun nouveau <code>hass</code> ne change l'état. <span class="fr">FR-7.2</span> (cas « service en échec » : le frontend HA affiche son propre toast)</li>
+      <li class="dead"><b class="k">IMPASSE D2.2</b> — pendant ces 30 s, la tuile ne renvoie aucune commande ; seul l'appui long (more-info) répond. <span class="fr">FR-7.1</span><span class="fr">FR-7.6</span></li>
+      <li>À 30 s : l'attente prend fin, la tuile redevient verte (« Fermé »), avec une petite icône ambre « sans effet » ; jamais de rouge. <span class="fr">FR-7.3</span></li>
+      <li class="dead"><b class="k">IMPASSE D2.1</b> — le mot « sans effet » n'existe que pour le lecteur d'écran (<code>aria-label</code>, zone live) ; à l'écran il n'y a que l'icône. <span class="fr">FR-7.3</span><span class="fr">FR-7.7</span></li>
+      <li class="dec"><b class="k">DÉCISION D2.3</b> — la marque reste jusqu'au prochain changement d'état ou au prochain toucher. <span class="fr">FR-7.3</span></li>
+      <li>Un nouveau toucher relance : nouvelle attente, marque effacée. <span class="fr">FR-7.3</span> (matrice d'erreurs)</li>
+    </ol>
+    <div class="decs" data-task="T2"></div>
+  </div>
+</section>
+
+<!-- ============ T3 ============ -->
+<section class="task" id="T3">
+  <div class="banner"><div class="tag">Tâche 3 · le soir, dans la chambre</div><q>J'allume la lumière de la chambre d'un seul geste. Si elle ne répond pas, je veux comprendre pourquoi.</q></div>
+  <div class="body">
+    <h3>Écran (tuile Lumière)</h3>
+    <div class="sim" data-sim="T3"></div>
+    <h3>Le parcours, pas à pas</h3>
+    <ol class="trail">
+      <li>Lampe <code>off</code> : l'entrée <code>off</code> n'a qu'une icône (pas de couleur) → couleur « comme aujourd'hui », icône ampoule vide ; seconde ligne = <code>subtitle</code> « Chambre parents ». <span class="fr">FR-3</span><span class="fr">FR-4</span></li>
+      <li>Toucher → <code>toggle</code> émis, attente, puis <code>on</code> : bordure ambre, ampoule allumée ; la seconde ligne reste « Chambre parents » (l'entrée <code>on</code> n'a pas de libellé). <span class="fr">FR-6</span><span class="fr">FR-7.2</span><span class="fr">FR-4</span></li>
+      <li>Appui long (≥ 500 ms) sans <code>hold_action</code> : ouvre more-info de la lampe, aucune bascule. Essayez de maintenir la tuile. <span class="fr">FR-8</span></li>
+      <li>Si le doigt bouge de plus de 10 px (défilement de la page) : pas d'appui long, et le <code>click</code> qui suit est ignoré. <span class="fr">FR-8</span><span class="fr">FR-8.1</span></li>
+      <li>Si la lampe Zigbee est hors ligne (<code>unavailable</code>) : tuile en style erreur (rouge, icône octogone), seconde ligne « Indisponible », <code>aria-label</code> « Lumière, Indisponible ». <span class="fr">FR-5</span><span class="fr">FR-4</span></li>
+      <li class="dec"><b class="k">DÉCISION D3.1</b> — le style erreur utilise <code>--sf-error</code>, la même couleur que le portail « Ouvert » de la config cible. <span class="fr">FR-5</span><span class="fr">FR-3</span></li>
+      <li class="dead"><b class="k">IMPASSE D3.2</b> — toucher une tuile indisponible : rien n'est émis. <span class="fr">FR-5.1</span></li>
+      <li>Un appui long sur une entité <code>unavailable</code> ouvre quand même more-info. <span class="fr">FR-5.1</span><span class="fr">FR-8</span></li>
+    </ol>
+    <div class="decs" data-task="T3"></div>
+  </div>
+</section>
+
+<!-- ============ T4 ============ -->
+<section class="task" id="T4">
+  <div class="banner"><div class="tag">Tâche 4 · garage</div><q>Je lance ou je coupe la charge de la voiture, et je vois sur la tuile si ça charge.</q></div>
+  <div class="body">
+    <h3>Écran (tuile Charge)</h3>
+    <div class="sim" data-sim="T4"></div>
+    <h3>Le parcours, pas à pas</h3>
+    <ol class="trail">
+      <li>La tuile lit une seule entité : <code>switch.mureva_evlink</code> (borne alimentée), pas <code>binary_sensor.mureva_evlink_charge</code>. <span class="fr">FR-3</span> (frame : charge-state-source ; Non-Goals)</li>
+      <li>Borne <code>on</code> : vert, icône borne, seconde ligne « Borne active ». <span class="fr">FR-3</span><span class="fr">FR-4</span></li>
+      <li class="dec"><b class="k">DÉCISION D4.2</b> — le libellé d'état remplace le sous-titre : « Voiture » n'apparaît jamais, les deux états ayant un libellé. <span class="fr">FR-4</span> (hypothèse 7)</li>
+      <li>Toucher → <code>toggle</code> → attente → <code>off</code> : couleur d'origine, icône prise « Borne coupée ». <span class="fr">FR-6</span><span class="fr">FR-7.2</span></li>
+      <li class="dead"><b class="k">IMPASSE D4.1</b> — « Borne active » dit que la borne est alimentée, pas que la voiture charge. <span class="fr">FR-3</span> (Non-Goals : une tuile lit une entité)</li>
+    </ol>
+    <div class="decs" data-task="T4"></div>
+  </div>
+</section>
+
+<!-- ============ T5 ============ -->
+<section class="task" id="T5">
+  <div class="banner"><div class="tag">Tâche 5 · le week-end suivant</div><q>J'ajoute le radiateur et la télé à la zapette, depuis l'éditeur de la carte.</q></div>
+  <div class="body">
+    <h3>Éditeur (section « Actions » d'une nouvelle tuile)</h3>
+    <div class="ed" id="ed"></div>
+    <h3>Écran (Télé, avec ses deux états listés)</h3>
+    <div class="sim" data-sim="T5"></div>
+    <h3>Le parcours, pas à pas</h3>
+    <ol class="trail">
+      <li>Dans l'éditeur, la tuile gagne la section « Actions » : sous-titre, délai d'attente, trois champs d'action, liste des états. <span class="fr">FR-11</span><span class="fr">FR-12</span></li>
+      <li>« Ajouter un état » crée la première clé libre parmi <code>on</code>, <code>off</code>, <code>open</code>, <code>closed</code>, puis <code>state_1</code>… Essayez ci-dessus. <span class="fr">FR-12</span></li>
+      <li>Un rappel « État actuel » affiche l'état brut de l'entité : la clé doit lui être strictement égale, casse comprise. <span class="fr">FR-12</span><span class="fr">FR-3</span></li>
+      <li class="dec"><b class="k">DÉCISION D5.1</b> — une tuile sans <code>tap_action</code> ouvre more-info au toucher ; la bascule est à activer tuile par tuile. <span class="fr">FR-2</span> (frame : existing-state)</li>
+      <li class="dead"><b class="k">IMPASSE D5.2</b> — le <code>toggle</code> d'un radiateur (<code>climate</code>) ou d'une télé (<code>media_player</code>) n'est établi nulle part. <span class="fr">FR-6</span> (hypothèse 2)</li>
+      <li class="dead"><b class="k">IMPASSE D5.3</b> — un état de la télé absent de <code>states</code> se rend « comme avant le lot ». <span class="fr">FR-3</span><span class="fr">FR-12</span></li>
+    </ol>
+    <div class="decs" data-task="T5"></div>
+  </div>
+</section>
+
+<!-- ============ T6 ============ -->
+<section class="task" id="T6">
+  <div class="banner"><div class="tag">Tâche 6 · à l'établi</div><q>Avant de donner le téléphone à ma femme, je teste la zapette dans le banc d'essai local, en mode Mock puis en mode Live.</q></div>
+  <div class="body">
+    <h3>Banc d'essai (reproduction schématique)</h3>
+    <div class="sim" data-sim="T6"></div>
+    <h3>Le parcours, pas à pas</h3>
+    <ol class="trail">
+      <li>Environnement : <code>npx serve@14 . -p 8888</code> depuis la racine du worktree, plus <code>npm run dev</code>. Il faut un lien <code>node_modules -&gt; ../../node_modules</code> (ignoré par git) sinon le workbench reste vide. <span class="fr">FR-16</span> (étape d'environnement, pas un livrable)</li>
+      <li>Mode Mock : <code>dev/cards/hexa.js</code> affiche les trois tuiles ; un toucher journalise l'action, puis l'état change 3 s plus tard (service du domaine journalisé). <span class="fr">FR-16</span></li>
+      <li>Le scénario « Relais muet » n'applique aucune mutation : la marque « sans effet » apparaît à 30 s. <span class="fr">FR-16</span><span class="fr">FR-7.3</span></li>
+      <li>Les autres actions (more-info, navigate…) sont seulement journalisées. <span class="fr">FR-16</span></li>
+      <li class="dead"><b class="k">IMPASSE D6.1</b> — en mode Live, le workbench appelle <code>hass.callService</code> pour une action <code>toggle</code>. <span class="fr">FR-16</span></li>
+      <li class="dead"><b class="k">IMPASSE D6.2</b> — la spec ajoute au mock le portail et la lumière, pas la borne. <span class="fr">FR-16</span></li>
+      <li class="dead"><b class="k">IMPASSE D6.3</b> — un seul scénario existe (« Relais muet »). <span class="fr">FR-16</span><span class="fr">FR-5</span><span class="fr">FR-7.5</span></li>
+    </ol>
+    <div class="decs" data-task="T6"></div>
+  </div>
+</section>
+
+<section class="card" id="summary">
+  <h2>Vos réponses</h2>
+  <p class="note">Texte à copier-coller en retour. Rempli par cette page ; rien n'est envoyé.</p>
+  <textarea id="out" readonly></textarea>
+  <p><button id="copy">Copier le texte</button> <span class="note" id="copied"></span></p>
+</section>
+</main>
+
+<script>
+(function(){
+"use strict";
+var ACC=false;
+function T(ms){return ACC?ms/5:ms}
+var accEl=document.getElementById('acc');
+function accTxt(){document.getElementById('accTxt').textContent=ACC?'Accéléré : réaction de HA à 0,6 s, marque « sans effet » à 6 s (≠ spec).':'Temps réel : réaction de HA à 3 s, marque à 30 s.'}
+accEl.addEventListener('change',function(){ACC=accEl.checked;accTxt()});accTxt();
+
+/* ---------- icônes schématiques ---------- */
+var IC={
+ 'gate':'<path d="M3 20V5M21 20V5M3 9h18M3 15h18M8 9v6M12 9v6M16 9v6"/>',
+ 'gate-open':'<path d="M3 20V5M21 20V5M3 9h4M3 15h4M17 9h4M17 15h4M9 20V10l6-2v12"/>',
+ 'bulb':'<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.3 1 2.1h5c0-.8.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>',
+ 'bulb-on':'<path d="M9 18h6M10 21h4M12 5a5 5 0 0 0-3 9c.6.5 1 1.1 1 2h4c0-.9.4-1.5 1-2a5 5 0 0 0-3-9zM12 1v1M3.5 5l.8.8M20.5 5l-.8.8M1 12h1M22 12h1"/>',
+ 'ev':'<path d="M6 21V4h8v17M4 21h12M14 9h2a2 2 0 0 1 2 2v5a1.5 1.5 0 0 0 3 0V8l-2-2M9 7l-2 4h3l-2 4"/>',
+ 'plug':'<path d="M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0zM12 17v4"/>',
+ 'tv':'<path d="M3 6h18v11H3zM9 21h6M12 17v4"/>',
+ 'rad':'<path d="M5 5v14M9 5v14M13 5v14M17 5v14M3 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3"/>'
+};
+function svgI(k){return '<svg viewBox="0 0 24 24">'+(IC[k]||IC.gate)+'</svg>'}
+var ALERT='<svg viewBox="0 0 24 24" fill="none" stroke="var(--sf-error)" stroke-width="2" stroke-linejoin="round"><path d="M8 3h8l5 5v8l-5 5H8l-5-5V8zM12 8v5M12 16v.5"/></svg>';
+var NOCH='<svg viewBox="0 0 24 24" fill="none" stroke="var(--sf-warning)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16v.5"/></svg>';
+
+/* ---------- tuiles de la config cible ---------- */
+var OK='var(--sf-accent-on)',ERR='var(--sf-error)',WARN='var(--sf-warning)';
+var TL={
+ portail:{entity:'cover.portail',name:'Portail',icon:'gate',tap:'toggle',timeout:30,
+   states:{closed:{color:OK,icon:'gate',label:'Fermé'},open:{color:ERR,icon:'gate-open',label:'Ouvert'}}},
+ lumiere:{entity:'light.zbmini_l_dressing_parent',name:'Lumière',subtitle:'Chambre parents',icon:'bulb',tap:'toggle',timeout:30,
+   states:{'on':{color:WARN,icon:'bulb-on'},'off':{icon:'bulb'}}},
+ charge:{entity:'switch.mureva_evlink',name:'Charge',subtitle:'Voiture',icon:'plug',tap:'toggle',timeout:30,
+   states:{'on':{color:OK,icon:'ev',label:'Borne active'},'off':{icon:'plug',label:'Borne coupée'}}},
+ tele:{entity:'media_player.(à nommer)',name:'Télé',icon:'tv',tap:'none',timeout:30,
+   states:{'on':{color:OK,icon:'tv',label:'Allumée'},'off':{icon:'tv',label:'Éteinte'}}},
+ radiateur:{entity:'climate.(à nommer)',name:'Radiateur',icon:'rad',tap:'none',timeout:30}
+};
+function svcFor(e,st){var d=e.split('.')[0];
+ if(d==='cover')return 'cover.'+(st==='closed'?'open_cover':'close_cover');
+ return d+'.'+(st==='on'?'turn_off':'turn_on')}
+function flip(e,st){var d=e.split('.')[0];
+ if(d==='cover')return st==='closed'?'open':'closed';
+ return st==='on'?'off':'on'}
+function hhmm(){var d=new Date();return ('0'+d.getMinutes()).slice(-2)+':'+('0'+d.getSeconds()).slice(-2)}
+
+/* ---------- simulateur ---------- */
+function Sim(host,o){
+ var s={tiles:o.tiles,init:JSON.parse(JSON.stringify(o.states)),states:JSON.parse(JSON.stringify(o.states)),
+   pending:{},nochange:{},mute:!!o.mute,ignore:false,hold:null,sx:0,sy:0,live:'',mode:o.mode||'mock',guard:false,reaction:true};
+ host.innerHTML='<div class="ctl"></div><div class="phone"><div class="hdr">TÉLÉPHONE · TABLEAU DE BORD</div><div class="grid"></div><div class="dlg" hidden><b>more-info</b><div class="dtxt"></div><button class="small dclose">Fermer</button></div></div><div class="live"></div><ul class="log"></ul>';
+ s.ctl=host.querySelector('.ctl');s.grid=host.querySelector('.grid');s.dlg=host.querySelector('.dlg');
+ s.dtxt=host.querySelector('.dtxt');s.liveEl=host.querySelector('.live');s.logEl=host.querySelector('.log');
+ s.log=function(m){var li=document.createElement('li');li.textContent=hhmm()+'  '+m;s.logEl.insertBefore(li,s.logEl.firstChild)};
+ s.announce=function(t){s.live=t;s.liveEl.textContent='Zone live (lue par lecteur d\'écran, invisible sur la carte) : '+t};
+ s.render=function(){s.grid.innerHTML=s.tiles.map(function(t,i){return tileHTML(s,t,i)}).join('')};
+ s.setState=function(e,v){
+   var old=s.states[e];s.states[e]=v;var p=s.pending[e];var t=byEntity(s,e);
+   if(p&&v!==p.from){clearTimeout(p.timer);delete s.pending[e];s.nochange[e]=false;
+     var en=t&&t.states&&t.states[v];s.announce(t.name+', '+((en&&en.label)||(t.subtitle&&!en?t.subtitle:'')||v));
+     s.log('HA : '+e+' passe à '+v+' → fin d\'attente sans marque (FR-7.2)');}
+   else if(old!==v){s.nochange[e]=false;s.log('HA : '+e+' passe à '+v)}
+   s.render()};
+ s.reset=function(){Object.keys(s.pending).forEach(function(k){clearTimeout(s.pending[k].timer)});
+   s.pending={};s.nochange={};s.states=JSON.parse(JSON.stringify(s.init));s.live='';s.liveEl.textContent='';s.dlg.hidden=true;s.logEl.innerHTML='';s.render()};
+ s.tap=function(t){
+   var st=s.states[t.entity];
+   if(st===undefined||st==='unavailable'){s.log('toucher : rien émis (entité '+(st===undefined?'absente':'indisponible')+', FR-5.1)');return}
+   if(t.tap==='toggle'){
+     if(s.pending[t.entity]||st==='opening'||st==='closing'){s.log('toucher : toggle ignoré, attente en cours (FR-7.1) — rien ne le signale à l\'écran');return}
+     s.log('hass-action tap · {action: toggle} · '+t.entity);
+     if(s.mode==='live'){
+       if(s.guard){s.log('Live : callService non appelé (interrupteur « Envoyer au réel » éteint)')}
+       else s.log('Live : hass.callService("'+svcFor(t.entity,st).replace('.','","')+'") sur l\'INSTANCE RÉELLE (FR-16)');}
+     else if(s.mode==='mock') s.log('Mock : service '+svcFor(t.entity,st)+' journalisé');
+     var to=(t.timeout||30);
+     s.nochange[t.entity]=false;
+     s.pending[t.entity]={from:st,timer:setTimeout(function(){
+        delete s.pending[t.entity];s.nochange[t.entity]=true;
+        s.announce(t.name+', Sans effet');s.log('échéance '+to+' s sans changement → marque « sans effet » (FR-7.3)');s.render()},T(to*1000))};
+     s.render();
+     if(!s.mute&&s.reaction){setTimeout(function(){
+        if(s.pending[t.entity]){s.setState(t.entity,flip(t.entity,st))}},T(3000))}
+     else if(s.mute)s.log('relais muet : aucune mutation d\'état');
+   }else{
+     s.log('hass-action tap · more-info '+t.entity+' (tap_action absent : défaut)');
+     s.openDlg(t)}
+ };
+ s.openDlg=function(t){s.dtxt.textContent='Fenêtre more-info de '+t.entity;s.dlg.hidden=false};
+ s.holdFire=function(t){
+   var st=s.states[t.entity];
+   if(st===undefined){s.log('appui long : rien émis (entité absente)');return}
+   s.log('appui long ≥ 500 ms → hass-action · more-info '+t.entity+' (pas de hold_action) ; le click suivant sera ignoré');
+   s.openDlg(t)};
+ /* événements délégués */
+ function tileOf(e){var el=e.target.closest&&e.target.closest('.tile');return el?s.tiles[+el.dataset.i]:null}
+ s.grid.addEventListener('pointerdown',function(e){
+   if(e.button!==0&&e.pointerType==='mouse')return;
+   var t=tileOf(e);if(!t)return;s.ignore=false;s.sx=e.clientX;s.sy=e.clientY;
+   clearTimeout(s.hold);s.hold=setTimeout(function(){s.ignore=true;s.holdFire(t)},500)});
+ ['pointerup','pointerleave'].forEach(function(n){s.grid.addEventListener(n,function(){clearTimeout(s.hold)})});
+ s.grid.addEventListener('pointercancel',function(){clearTimeout(s.hold);s.ignore=true});
+ s.grid.addEventListener('pointermove',function(e){
+   if(Math.hypot(e.clientX-s.sx,e.clientY-s.sy)>10&&s.hold){clearTimeout(s.hold);s.hold=null;s.ignore=true}});
+ s.grid.addEventListener('contextmenu',function(e){e.preventDefault()});
+ s.grid.addEventListener('click',function(e){var t=tileOf(e);if(!t)return;
+   if(s.ignore){s.ignore=false;s.log('click ignoré (FR-8.1)');return}
+   s.tap(t)});
+ s.grid.addEventListener('keydown',function(e){
+   if(e.key!=='Enter'&&e.key!==' ')return;var t=tileOf(e);if(!t)return;e.preventDefault();if(e.repeat)return;s.tap(t)});
+ host.querySelector('.dclose').addEventListener('click',function(){s.dlg.hidden=true});
+ var rb=document.createElement('button');rb.className='small';rb.textContent='Réinitialiser';rb.addEventListener('click',function(){s.reset()});
+ s.ctl.appendChild(rb);
+ s.addCtl=function(el){s.ctl.insertBefore(el,rb)};
+ s.render();
+ return s}
+function byEntity(s,e){for(var i=0;i<s.tiles.length;i++)if(s.tiles[i].entity===e)return s.tiles[i]}
+function tileHTML(s,t,i){
+ var st=s.states[t.entity];var absent=st===undefined;var un=absent||st==='unavailable';
+ var err=un||(t.state_error&&st===t.state_error);
+ var moving=st==='opening'||st==='closing';
+ var pend=!!s.pending[t.entity]||moving;
+ var nc=!!s.nochange[t.entity]&&!pend;
+ var en=(!err&&t.states)?t.states[st]:null;
+ var col=err?'var(--sf-error)':(en&&en.color)||'var(--sf-default)';
+ var icon=(en&&en.icon)||t.icon;
+ var sub=un?'Indisponible':((en&&en.label)||t.subtitle||'');
+ var mark=err?ALERT:(nc?NOCH:'');
+ var aria=t.name+(un?', Indisponible':pend?', En cours':nc?', Sans effet':(en?', '+(en.label||st):''));
+ return '<div class="tile" role="button" tabindex="0" data-i="'+i+'" style="--c:'+col+'"'
+  +(pend?' data-pending="true" aria-busy="true"':'')+(err?' data-error="true"':'')+(nc?' data-no-change="true"':'')
+  +' aria-label="'+aria+'">'
+  +'<svg class="hx" viewBox="0 0 116 104"><polygon class="border" points="30,2 86,2 114,52 86,102 30,102 2,52"/></svg>'
+  +'<div class="inner"><div class="mark">'+mark+'</div><div class="ic">'+svgI(icon)+'</div>'
+  +'<div class="nm">'+t.name+'</div><div class="sub">'+sub+'</div></div></div>';
+}
+function mk(tag,txt){var e=document.createElement(tag);e.innerHTML=txt;return e}
+
+/* ---------- les six bancs ---------- */
+var sims={};
+function el(k){return document.querySelector('[data-sim="'+k+'"]')}
+sims.T1=Sim(el('T1'),{tiles:[TL.portail],states:{'cover.portail':'closed'}});
+sims.T2=Sim(el('T2'),{tiles:[TL.portail],states:{'cover.portail':'closed'},mute:true});
+(function(){var s=sims.T2;var l=mk('label','<input type="checkbox" checked> Relais muet');
+  l.querySelector('input').addEventListener('change',function(e){s.mute=e.target.checked});s.addCtl(l)})();
+(function(){var s=Sim(el('T3'),{tiles:[TL.lumiere],states:{'light.zbmini_l_dressing_parent':'off'}});sims.T3=s;
+  var b=mk('button','Lampe hors ligne / rétablie');b.className='small';
+  b.addEventListener('click',function(){var e='light.zbmini_l_dressing_parent';
+    if(s.states[e]==='unavailable'){s.setState(e,'off');}else{s.setState(e,'unavailable')}});s.addCtl(b)})();
+sims.T4=Sim(el('T4'),{tiles:[TL.charge],states:{'switch.mureva_evlink':'on'}});
+(function(){var s=Sim(el('T5'),{tiles:[TL.tele,TL.radiateur],states:{'media_player.(à nommer)':'off','climate.(à nommer)':'heat'}});sims.T5=s;
+  var sel=mk('label','Télé : état <select><option>off</option><option>on</option><option>playing</option><option>standby</option></select>');
+  sel.querySelector('select').addEventListener('change',function(e){s.setState('media_player.(à nommer)',e.target.value)});s.addCtl(sel);
+  s.ctl.appendChild(mk('span','<span class="note">Radiateur : aucun <code>tap_action</code>, aucun <code>states</code> (valeurs d\'illustration).</span>'))})();
+(function(){
+ var st={'cover.portail':'closed','light.zbmini_l_dressing_parent':'off','switch.mureva_evlink':'on'};
+ var s=Sim(el('T6'),{tiles:[TL.portail,TL.lumiere,TL.charge],states:st});sims.T6=s;
+ var m=mk('label','Mode <select><option value="mock">Mock</option><option value="live">Live</option></select>');
+ m.querySelector('select').addEventListener('change',function(e){s.mode=e.target.value;s.log('mode '+s.mode)});s.addCtl(m);
+ var sc=mk('label','Scénario <select><option value="">aucun</option><option value="mute">Relais muet</option></select>');
+ sc.querySelector('select').addEventListener('change',function(e){s.mute=e.target.value==='mute'});s.addCtl(sc);
+ s.ctl.appendChild(mk('span','<span class="note">Le journal montre ce que la console du workbench afficherait.</span>'));
+})();
+
+/* ---------- éditeur factice (T5) ---------- */
+(function(){
+ var ed=document.getElementById('ed');var list=[];
+ var free=['on','off','open','closed'];
+ function nextKey(){for(var i=0;i<free.length;i++)if(list.indexOf(free[i])<0)return free[i];
+   var n=1;while(list.indexOf('state_'+n)>=0)n++;return 'state_'+n}
+ function draw(){
+  ed.innerHTML='<b>Actions</b>'
+  +'<div class="row"><label>Sous-titre</label><div class="v"></div></div>'
+  +'<div class="row"><label>Délai d\'attente (s)</label><div class="v"></div></div>'
+  +'<div class="row"><label>Action au toucher</label><div class="v"></div></div>'
+  +'<div class="row"><label>Action à l\'appui long</label><div class="v"></div></div>'
+  +'<div class="row"><label>Action au double toucher</label><div class="v"></div></div>'
+  +'<div class="hint">Une action au double toucher retarde chaque toucher de 250 ms</div>'
+  +'<div class="hint">État actuel : playing <i>(valeur d\'illustration)</i> — la clé doit lui être strictement égale</div>'
+  +list.map(function(k,i){return '<div class="st"><b>'+k+'</b><span class="note">couleur · icône · libellé</span><button class="small" data-rm="'+i+'">Retirer</button></div>'}).join('')
+  +'<button class="small" id="addst">Ajouter un état</button>';
+  ed.querySelector('#addst').onclick=function(){list.push(nextKey());draw()};
+  Array.prototype.forEach.call(ed.querySelectorAll('[data-rm]'),function(b){b.onclick=function(){list.splice(+b.dataset.rm,1);draw()}});
+ }
+ draw();
+})();
+
+/* ---------- décisions ---------- */
+var DEC=[
+{id:'D1.1',task:'T1',kind:'dec',fr:'FR-7, FR-10',title:'Couleur pendant l\'attente',
+ cons:'Entre le toucher et le changement d\'état, la tuile garde sa couleur d\'avant (verte pour un portail qui s\'ouvre) et ne fait que pulser ; le rouge n\'arrive que quand HA rapporte « open ».',
+ ctx:'Écrit ainsi : on n\'affiche jamais la couleur de l\'état cible avant que HA ne la rapporte (anti-pattern 2). Note : l\'ambre <code>--sf-warning</code> est aussi la couleur « allumée » de la lumière.',
+ ans:[
+ ['La bordure pulse en ambre pendant l\'attente ; icône et seconde ligne restent ceux de l\'état mémorisé','FR-7 / FR-10 : pendant <code>data-pending</code>, la bordure prend <code>var(--sf-warning)</code> et pulse ; l\'icône, le nom et la seconde ligne gardent le rendu de l\'état mémorisé.'],
+ ['La seconde ligne affiche « En cours » pendant l\'attente','FR-4 : ordre de la seconde ligne = « Indisponible », puis « En cours » (<code>msg(\'Pending\')</code>) tant que <code>data-pending</code>, puis <code>entry.label</code>, puis <code>subtitle</code>. La couleur et l\'icône restent celles de l\'état mémorisé.'],
+ ['Laisser comme décrit : la couleur d\'avant, la bordure qui pulse','Aucun changement : FR-7 et FR-10 restent écrits tels quels.']]},
+{id:'D1.2',task:'T1',kind:'dead',fr:'FR-7.1',title:'Toucher avalé pendant l\'attente',
+ cons:'Un second toucher pendant que le portail bouge est silencieusement ignoré : aucun signe à l\'écran ne dit qu\'il a été vu, ta femme peut croire que le téléphone n\'a pas répondu et le refaire.',
+ ctx:'La garde est voulue (une seconde impulsion inverserait le portail). Ce que la spec ne dit pas : si le geste ignoré doit être signalé.',
+ ans:[
+ ['Un toucher ignoré fait vibrer / secouer brièvement la tuile','FR-7.1 : quand un geste toggle est ignoré (attente ou mouvement), la tuile joue une secousse de 300 ms (désactivée sous <code>prefers-reduced-motion</code>) ; aucun événement n\'est émis.'],
+ ['Un toucher ignoré affiche « Déjà en cours » 2 s en seconde ligne','FR-7.1 / FR-4 : un geste toggle ignoré remplace la seconde ligne par <code>msg(\'Already in progress\')</code> pendant 2 s ; chaîne ajoutée à FR-13 (fr : « Déjà en cours »).'],
+ ['Laisser comme décrit : la pulsation seule signale l\'attente','Aucun changement : FR-7.1 reste écrit tel quel, le geste ignoré n\'a pas de retour propre.']]},
+{id:'D1.3',task:'T1',kind:'dead',fr:'FR-7.3, FR-7.6',title:'Fermeture plus longue que le délai',
+ cons:'Si le portail met plus de 30 s à se fermer, à 30 s la tuile affiche « sans effet » alors qu\'il se ferme, et libère le toucher : un toucher à 31 s relancerait l\'impulsion et inverserait le portail en route.',
+ ctx:'<code>cover.portail</code> ne rapporte jamais « closing » (F5), donc la carte ne sait pas que ça bouge encore. La spec ne donne pas la durée de course du portail ; la config cible n\'a pas de <code>pending_timeout</code>.',
+ ans:[
+ ['La config cible porte un <code>pending_timeout</code> sur Portail (durée de course + marge, à chronométrer)','Config cible (Overview) : la tuile Portail gagne <code>pending_timeout: &lt;durée de course chronométrée + marge&gt;</code> ; la page wiki (FR-15) cite ce réglage pour tout portail lent.'],
+ ['Le délai par défaut de la carte passe de 30 s à 60 s','FR-7.3 : valeur par défaut de <code>pending_timeout</code> = 60 s (exemples, matrice d\'erreurs et TC-HQA-U-05 mis à jour : marque à 60 000 ms).'],
+ ['Laisser comme décrit : 30 s par défaut, réglage tuile par tuile à la main','Aucun changement : FR-7.3 et FR-7.6 restent écrits tels quels ; la limite assumée de FR-7.6 couvre ce cas.']]},
+{id:'D2.1',task:'T2',kind:'dead',fr:'FR-7.3, FR-7.7',title:'« Sans effet » sans mot visible',
+ cons:'À 30 s la tuile redevient verte avec une petite icône ambre, et aucun texte visible ne dit ce qu\'elle signifie : « Sans effet » n\'existe que dans l\'<code>aria-label</code> et la zone live, ta femme voit un signe sans le comprendre.',
+ ctx:'FR-7.3 laisse la seconde ligne à celle de l\'état inchangé (« Fermé »).',
+ ans:[
+ ['La seconde ligne devient « Sans effet » tant que la marque est présente','FR-4 / FR-7.3 : tant que <code>data-no-change</code>, la seconde ligne = <code>msg(\'No change\')</code> (fr « Sans effet »), couleur et icône restant celles de l\'état inchangé.'],
+ ['Un bandeau « Portail : sans effet » s\'affiche 5 s au-dessus de la carte','FR-7.3 / FR-7.7 : à la marque, la carte affiche un bandeau visible « <nom> : <code>msg(\'No change\')</code> » pendant 5 s, en plus de la zone live.'],
+ ['Laisser comme décrit : icône seule à l\'écran, texte pour le lecteur d\'écran','Aucun changement : FR-7.3 et FR-7.7 restent écrits tels quels.']]},
+{id:'D2.2',task:'T2',kind:'dead',fr:'FR-7.1, FR-7.6',title:'Trente secondes sans pouvoir relancer',
+ cons:'Quand l\'impulsion est perdue, la tuile pulse 30 s pendant lesquelles aucun toucher n\'est accepté : ta femme est devant le portail fermé et ne peut rien relancer avant l\'échéance.',
+ ctx:'Limite assumée par FR-7.6 (décision du 2026-11-18) ; seul l\'appui long (more-info) répond. Ce que la spec ne tranche pas : si la config cible garde le défaut de 30 s.',
+ ans:[
+ ['La config cible porte un <code>pending_timeout</code> court sur Portail (valeur à choisir)','Config cible : Portail <code>pending_timeout: &lt;N&gt;</code> (N à fixer par l\'utilisateur, en tenant compte de D1.3).'],
+ ['Un second toucher est accepté après N s même en attente','FR-7.1 : après <code>retry_after</code> secondes d\'attente (clé de tuile, absente = jamais), un toucher toggle émet à nouveau ; la garde « mouvement » (<code>opening</code> / <code>closing</code>) reste inchangée.'],
+ ['Laisser comme décrit : blocage jusqu\'à l\'échéance, appui long disponible','Aucun changement : FR-7.1 et FR-7.6 restent écrits tels quels.']]},
+{id:'D2.3',task:'T2',kind:'dec',fr:'FR-7.3',title:'Durée de vie de la marque',
+ cons:'La marque « sans effet » reste affichée jusqu\'au prochain changement d\'état de l\'entité ou au prochain début d\'attente ; seule la recharge de la page l\'efface autrement.',
+ ctx:'Tant que rien ne change, la marque peut rester des heures sur le téléphone.',
+ ans:[
+ ['La marque disparaît seule après 60 s','FR-7.3 : la marque « sans effet » s\'efface 60 s après son apparition (minuteur annulé par <code>disconnectedCallback</code>, FR-7.4) ; la zone live n\'est pas rejouée.'],
+ ['La marque disparaît au premier toucher d\'une tuile quelconque','FR-7.3 : la marque est effacée au prochain <code>pointerdown</code> sur n\'importe quelle tuile de la carte.'],
+ ['Laisser comme décrit : jusqu\'au prochain changement d\'état ou toucher sur la tuile','Aucun changement : FR-7.3 reste écrit tel quel.']]},
+{id:'D3.1',task:'T3',kind:'dec',fr:'FR-5, FR-3',title:'Même rouge pour « ouvert » et « en panne »',
+ cons:'Une lampe injoignable se rend en <code>--sf-error</code>, comme le portail « Ouvert » de la config cible : deux sens différents partagent la couleur, et seuls l\'octogone et le mot « Indisponible » les distinguent.',
+ ctx:'FR-7.3 / anti-pattern 7 sépare déjà la marque « sans effet » (ambre) d\'un « ouvert » rouge ; l\'erreur d\'entité n\'a pas la même séparation.',
+ ans:[
+ ['Le style erreur prend un jeton dédié (ex. <code>--sf-unavailable</code>, gris)','FR-5 / FR-10 : <code>[data-error="true"]</code> utilise <code>var(--sf-unavailable)</code> à la place de <code>var(--sf-error)</code> ; <code>--sf-error</code> reste libre pour les couleurs d\'état configurées ; la marque garde <code>mdi:alert-octagon-outline</code>.'],
+ ['La config cible n\'utilise plus le rouge pour « Ouvert » (ex. ambre)','Config cible : <code>states.open.color</code> du portail = <code>var(--sf-warning)</code> ; FR-5 inchangé (l\'erreur reste rouge) ; TC-HQA-U-01 et IT-HQA-I-01 mis à jour.'],
+ ['Laisser comme décrit : même rouge, distinction par la marque et le texte','Aucun changement : FR-5 et la config cible restent écrits tels quels.']]},
+{id:'D3.2',task:'T3',kind:'dead',fr:'FR-5.1',title:'Toucher muet sur une tuile indisponible',
+ cons:'Toucher une tuile indisponible n\'émet rien et ne montre rien de plus que ce que la tuile affichait déjà : ta femme retouche en boucle sans voir que son geste a été reçu.',
+ ctx:'La seconde ligne dit « Indisponible », mais le geste lui-même n\'a aucun retour (l\'appui long, lui, ouvre more-info).',
+ ans:[
+ ['Un toucher sur une tuile indisponible ouvre more-info, comme l\'appui long','FR-5.1 : un toucher sur une entité <code>unavailable</code> émet <code>more-info</code> de l\'entité (comme l\'appui long) ; entité absente : rien ; double toucher : rien.'],
+ ['Un toucher sur une tuile indisponible secoue la tuile','FR-5.1 : un toucher ou double toucher ignoré joue la secousse de D1.2 ; aucun événement émis.'],
+ ['Laisser comme décrit : rien émis, rien de plus affiché','Aucun changement : FR-5.1 reste écrit tel quel.']]},
+{id:'D4.1',task:'T4',kind:'dead',fr:'FR-3 (frame : charge-state-source)',title:'Borne alimentée ≠ voiture en charge',
+ cons:'La tuile affiche « Borne active » en vert dès que la borne est alimentée, que la voiture soit branchée, en charge ou pleine : elle ne dit jamais si la voiture charge réellement.',
+ ctx:'Choix du frame : une tuile lit une entité (<code>switch.mureva_evlink</code>), pas <code>binary_sensor.mureva_evlink_charge</code> ; c\'est aussi un non-but de la spec.',
+ ans:[
+ ['Les libellés disent ce qui est mesuré : « Borne alimentée » / « Borne coupée »','Config cible : <code>states.on.label: Borne alimentée</code>, <code>states.off.label: Borne coupée</code> ; aucun changement de code.'],
+ ['Une tuile peut lire une seconde entité pour le libellé (levée du non-but)','Non-Goals : levé pour cette clé ; FR-1 gagne <code>label_entity?: string</code> (état de cette entité = clé de <code>states</code> pour la seconde ligne), la couleur et l\'attente restant sur <code>entity</code> ; FR-3, FR-4 et la wiki amendés.'],
+ ['Laisser comme décrit : « Borne active » / « Borne coupée » lus sur le switch','Aucun changement : le choix du frame et les Non-Goals restent écrits tels quels.']]},
+{id:'D4.2',task:'T4',kind:'dec',fr:'FR-4, hypothèse 7',title:'Le libellé d\'état efface le sous-titre',
+ cons:'Sur la tuile Charge, « Voiture » ne s\'affiche jamais : les deux états ont un libellé, qui remplace le sous-titre ; la tuile se lit « Charge / Borne active ».',
+ ctx:'Choix de l\'agent (hypothèse 7) : trois lignes ne tiennent pas dans un hexagone d\'environ 150 px.',
+ ans:[
+ ['Le nom porte le contexte : « Charge voiture » (config seule)','Config cible : la tuile s\'appelle « Charge voiture », sans <code>subtitle</code> ; FR-4 inchangé.'],
+ ['La seconde ligne concatène : « Voiture · Borne active »','FR-4 : la seconde ligne = <code>subtitle</code> + « · » + <code>entry.label</code> quand les deux existent (ellipse sur une ligne, <code>title</code> = texte complet) ; hypothèse 7 retirée.'],
+ ['Laisser comme décrit : le libellé d\'état remplace le sous-titre','Aucun changement : FR-4 et l\'hypothèse 7 restent écrits tels quels.']]},
+{id:'D5.1',task:'T5',kind:'dec',fr:'FR-2, frame existing-state',title:'Défaut du toucher : more-info, pas bascule',
+ cons:'Une tuile ajoutée sans <code>tap_action</code> ouvre la fenêtre more-info au toucher au lieu de basculer : ta femme touche « Radiateur » ou « Télé » et voit un dialogue, pas l\'appareil réagir.',
+ ctx:'Écrit ainsi pour que les tableaux existants restent identiques : la bascule est à activer tuile par tuile (la tuile Radiateur ci-dessus n\'a pas d\'action : touchez-la).',
+ ans:[
+ ['L\'éditeur écrit <code>tap_action: {action: toggle}</code> pour une tuile neuve qui a une entité','FR-11 : à la création d\'une tuile avec <code>entity</code> dans l\'éditeur, <code>tap_action: {action: toggle}</code> est pré-rempli et modifiable ; une tuile existante n\'est pas touchée (FR-2).'],
+ ['L\'éditeur affiche un rappel sous « Action au toucher » : « Sans action : ouvre more-info »','FR-11 : un <code>&lt;p class="hint"&gt;</code> sous <code>tap_action</code> affiche <code>msg(\'Without an action, a tap opens the entity dialog\')</code> ; chaîne ajoutée à FR-13.'],
+ ['Laisser comme décrit : défaut more-info, aucun rappel dans l\'éditeur','Aucun changement : FR-2 et FR-11 restent écrits tels quels.']]},
+{id:'D5.2',task:'T5',kind:'dead',fr:'FR-6, hypothèse 2',title:'Le toggle d\'un radiateur ou d\'une télé n\'est pas établi',
+ cons:'La spec n\'établit le comportement de <code>toggle</code> que pour cover, light et switch : pour un radiateur (<code>climate</code>) ou une télé (<code>media_player</code>), rien ne dit ce qu\'il fait ; si aucun état ne change, la tuile finit en « sans effet » à 30 s.',
+ ctx:'La carte n\'appelle aucun service elle-même (anti-pattern 4) : tout dépend du frontend HA par domaine, vérifié ici uniquement pour trois domaines.',
+ ans:[
+ ['La spec liste les domaines pris en charge en toggle ; les autres exigent un <code>perform-action</code> explicite','FR-6 / FR-15 : <code>toggle</code> documenté pour cover, light, switch uniquement ; pour les autres domaines, la wiki donne un exemple <code>perform-action</code> (service nommé) ; FR-7 inchangé (seul <code>toggle</code> démarre l\'attente).'],
+ ['Une recette manuelle sur climate et media_player précède leur ajout à la config cible','Hypothèse 2 étendue : proof manuel IA-EX ajouté pour un <code>climate</code> et un <code>media_player</code> ; le résultat fixe les domaines cités par la wiki.'],
+ ['Laisser comme décrit : à découvrir à l\'usage, par tuile','Aucun changement : hypothèse 2 et FR-6 restent écrits tels quels.']]},
+{id:'D5.3',task:'T5',kind:'dead',fr:'FR-3, FR-12',title:'États non listés = rendu sans style',
+ cons:'Une télé en <code>playing</code>, <code>paused</code> ou <code>standby</code>, absente de <code>states</code> (qui ne liste que <code>on</code> / <code>off</code>), se rend sans couleur ni libellé, comme une tuile d\'avant le lot, alors qu\'elle est allumée.',
+ ctx:'Essayez ci-dessus : choisissez « playing » dans le sélecteur de la Télé. L\'éditeur ne rappelle que l\'état actuel, pas les états possibles du domaine.',
+ ans:[
+ ['Une clé joker <code>"*"</code> couvre tous les états non listés','FR-3 : si aucune clé n\'est strictement égale à l\'état, l\'entrée <code>"*"</code> est utilisée ; FR-12 : l\'éditeur propose « Autres états » ; TC-HQA-U-01 (« opening ») mis à jour.'],
+ ['L\'éditeur propose les états connus du domaine à l\'ajout','FR-12 : « Ajouter un état » propose une liste d\'états du domaine de l\'entité (<code>media_player</code> : off, on, idle, playing, paused, standby…) ; la clé reste strictement égale à l\'état brut.'],
+ ['Laisser comme décrit : chaque état à lister à la main, sinon rendu d\'avant le lot','Aucun changement : FR-3 et FR-12 restent écrits tels quels.']]},
+{id:'D6.1',task:'T6',kind:'dead',fr:'FR-16',title:'Le mode Live agit pour de vrai',
+ cons:'En mode Live, un toucher sur Portail dans le workbench appelle <code>hass.callService</code> sur l\'instance réelle : le vrai portail s\'ouvre, la vraie borne se coupe, la vraie lumière s\'allume.',
+ ctx:'Essayez : mode Live, touchez Portail (le journal montre l\'appel). FR-16 demande de jouer le lot en Live ; il ne prévoit aucune garde.',
+ ans:[
+ ['Un interrupteur « Envoyer au réel », éteint par défaut, gouverne l\'appel','FR-16 : en mode Live, <code>callService</code> n\'est appelé que si l\'interrupteur « Envoyer au réel » du workbench est actif (éteint à l\'ouverture, remis à éteint au changement de mode) ; sinon l\'action est seulement journalisée.'],
+ ['Le mode Live journalise seulement l\'appel qu\'il ferait','FR-16 : en Live, le workbench journalise « callService(&lt;domaine.service&gt;) » sans l\'appeler ; seul le mode Mock mute l\'état.'],
+ ['Laisser comme décrit : Live appelle le service réel','Aucun changement : FR-16 reste écrit tel quel.']]},
+{id:'D6.2',task:'T6',kind:'dead',fr:'FR-16',title:'La borne absente du mock ?',
+ cons:'FR-16 ajoute au mock le portail et la lumière, pas <code>switch.mureva_evlink</code> : si elle n\'y est pas déjà, la tuile Charge s\'affiche en erreur « Indisponible » en mode Mock et ne peut pas être jouée.',
+ ctx:'La spec ne dit pas si cette entité existe déjà dans <code>dev/modules/mock-data.js</code> ; ce n\'est pas vérifiable ici.',
+ ans:[
+ ['<code>mock-data.js</code> gagne <code>switch.mureva_evlink</code> (<code>on</code>)','FR-16 : <code>dev/modules/mock-data.js</code> gagne <code>cover.portail</code>, <code>light.zbmini_l_dressing_parent</code> et <code>switch.mureva_evlink</code> (<code>on</code>) ; TC-HQA-U-17 vérifie la présence des trois.'],
+ ['La config du workbench ne montre que les deux tuiles dont le mock existe','FR-16 : <code>dev/cards/hexa.js</code> ne porte que Portail et Lumière ; la tuile Charge est jouée en Live seulement.'],
+ ['Laisser comme décrit : on suppose la borne déjà dans le mock','Aucun changement : FR-16 reste écrit tel quel.']]},
+{id:'D6.3',task:'T6',kind:'dead',fr:'FR-16, FR-5, FR-7.5',title:'Un seul scénario dans le banc d\'essai',
+ cons:'Seul « Relais muet » existe : le banc ne permet pas de voir « indisponible », « en mouvement » (<code>opening</code>), ni <code>state_error</code> ; ces rendus (FR-5, FR-7.5) ne se voient que sur une vraie installation.',
+ ctx:'Le scénario « Relais muet » n\'applique aucune mutation ; rien d\'autre n\'est prévu.',
+ ans:[
+ ['Deux scénarios s\'ajoutent : « Indisponible » et « Portail en mouvement »','FR-16 : le workbench gagne « Indisponible » (l\'entité passe à <code>unavailable</code>) et « Portail en mouvement » (<code>opening</code> pendant 5 s puis <code>open</code>) ; TC-HQA-U-17 couvre les deux.'],
+ ['Un sélecteur d\'état par entité permet de forcer n\'importe quel état','FR-16 : chaque entité du mock a un sélecteur d\'état libre dans le workbench (états usuels du domaine + saisie) ; aucune mutation automatique.'],
+ ['Laisser comme décrit : un seul scénario','Aucun changement : FR-16 reste écrit tel quel.']]}
+];
+
+var chosen={};
+function render(){
+ DEC.forEach(function(d){
+  var host=document.querySelector('.decs[data-task="'+d.task+'"]');
+  var box=document.createElement('div');box.className='dc '+d.kind;box.id=d.id;
+  var kindTxt=d.kind==='dead'?'IMPASSE':'DÉCISION';
+  var h='<div class="hd"><span class="id">'+kindTxt+' '+d.id+'</span><span class="fr">'+d.fr+'</span><span>'+d.title+'</span></div>'
+   +'<div class="cons">'+d.cons+'</div><div class="ctx">'+d.ctx+'</div>';
+  d.ans.forEach(function(a,i){
+   h+='<button class="ans" aria-pressed="false" data-d="'+d.id+'" data-i="'+i+'">'+a[0]+'</button>'
+    +'<div class="req" hidden data-r="'+d.id+'-'+i+'"><b>Exigence qui serait écrite</b>'+a[1]+'</div>';});
+  box.innerHTML=h;host.appendChild(box);});
+ document.addEventListener('click',function(e){
+  var b=e.target.closest&&e.target.closest('.ans');if(!b)return;
+  var id=b.dataset.d,i=+b.dataset.i;
+  var box=document.getElementById(id);
+  Array.prototype.forEach.call(box.querySelectorAll('.ans'),function(x){x.setAttribute('aria-pressed','false')});
+  Array.prototype.forEach.call(box.querySelectorAll('.req'),function(x){x.hidden=true});
+  b.setAttribute('aria-pressed','true');box.querySelector('[data-r="'+id+'-'+i+'"]').hidden=false;
+  chosen[id]=i;summary();});
+}
+function strip(h){var d=document.createElement('div');d.innerHTML=h;return d.textContent}
+function summary(){
+ var n=Object.keys(chosen).length;
+ document.getElementById('count').textContent=n+' / '+DEC.length+' réponses';
+ var out=['Spike hexa-tiles-quick-actions — réponses ('+n+' sur '+DEC.length+')',''];
+ DEC.forEach(function(d){
+  if(chosen[d.id]===undefined){out.push('['+d.id+'] '+d.title+' ('+d.fr+') — SANS RÉPONSE');out.push('');return}
+  var a=d.ans[chosen[d.id]];
+  out.push('['+d.id+'] '+(d.kind==='dead'?'IMPASSE':'DÉCISION')+' — '+d.title+' ('+d.fr+')');
+  out.push('Réponse : '+strip(a[0]));
+  out.push('Exigence : '+strip(a[1]));out.push('');});
+ document.getElementById('out').value=out.join('\n');
+}
+render();summary();
+document.getElementById('copy').addEventListener('click',function(){
+ var t=document.getElementById('out');t.select();
+ var ok=false;try{ok=document.execCommand('copy')}catch(e){}
+ if(!ok&&navigator.clipboard){navigator.clipboard.writeText(t.value);ok=true}
+ document.getElementById('copied').textContent=ok?'Copié.':'Sélectionnez le texte et copiez-le à la main.';});
+})();
+</script>
+</body>
+</html>

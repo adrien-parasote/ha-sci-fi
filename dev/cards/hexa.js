@@ -12,6 +12,10 @@ export default {
       { standalone: true, active_icon: 'sci:landspeeder', inactive_icon: 'sci:landspeeder', name: 'Cars', state_on: ['on'], state_error: null, link: 'vehicles', entity: 'binary_sensor.captur_ii_en_charge', visibility: ['person.adrien'] },
       { entity: 'binary_sensor.eau_active', name: 'Eau', active_icon: 'mdi:water', inactive_icon: 'mdi:water-off', state_on: ['on'], link: 'water-management', standalone: true, visibility: ['person.adrien', 'person.virginie'] },
       { entity_kind: '', entities_to_exclude: [], active_icon: 'mdi:power-plug-outline', inactive_icon: 'mdi:power-plug-off-outline', name: 'Plug', state_on: ['on'], state_error: null, link: 'plug', visibility: ['person.adrien'], standalone: true, entity: 'switch.plugs' },
+      // Quick actions — the frame's target config (docs/specs/hexa-tiles-quick-actions/spec.md)
+      { standalone: true, entity: 'cover.portail', name: 'Portail', tap_action: { action: 'toggle' }, states: { closed: { color: 'var(--sf-accent-on)', icon: 'mdi:gate', label: 'Fermé' }, open: { color: 'var(--sf-error)', icon: 'mdi:gate-open', label: 'Ouvert' } } },
+      { standalone: true, entity: 'light.zbmini_l_dressing_parent', name: 'Lumière', subtitle: 'Chambre parents', tap_action: { action: 'toggle' }, states: { on: { color: 'var(--sf-warning)', icon: 'mdi:lightbulb-on' }, off: { icon: 'mdi:lightbulb-outline' } } },
+      { standalone: true, entity: 'switch.mureva_evlink', name: 'Charge', subtitle: 'Voiture', tap_action: { action: 'toggle' }, states: { on: { color: 'var(--sf-accent-on)', icon: 'mdi:ev-station', label: 'En charge' }, off: { icon: 'mdi:ev-plug-type2', label: 'Charge terminée' } } },
       { standalone: true, entity: 'input_button.call_kids', name: 'Maison', active_icon: 'mdi:home-account', inactive_icon: 'mdi:home-outline', state_on: ['unknown', 'on', 'off', 'home', 'unavailable'], state_error: null, link: 'bridge', visibility: ['person.adrien', 'person.virginie'] },
     ]
   },
@@ -31,6 +35,18 @@ export default {
     },
     'Eau active': {
       'binary_sensor.eau_active': { state: 'on' }
+    },
+    // Quick actions (FR-16, spike answer D6.3)
+    'Relais muet': { _muted_relay: true },
+    'Indisponible': {
+      'cover.portail': { state: 'unavailable' }
+    },
+    'Portail en mouvement': {
+      'cover.portail': { state: 'opening' }
+    },
+    // Compare the Poêle tile (climate.clou, mock default heat) with the stove off; a tap goes to the stove tab (FR-16)
+    'Poêle éteint': {
+      'climate.clou': { state: 'off', attributes: { hvac_mode: 'off' } }
     },
   }
 };

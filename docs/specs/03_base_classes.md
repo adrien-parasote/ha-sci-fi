@@ -51,7 +51,7 @@ Une carte notifie par `<sf-toast>`, et par rien d'autre :
 
 | Mécanisme | Où | Forme | Consommateurs |
 |---|---|---|---|
-| `<sf-toast>` | `src/components/sf-toast.ts` — [spec 04](./04_components.md) | Élément déclaré dans le `render()` d'une carte, piloté par ses propriétés | bridge, climates, lights, plugs, stove, tv, vacuum, vehicles, water |
+| `<sf-toast>` | `src/components/sf-toast.ts` — [spec 04](./04_components.md) | Élément déclaré dans le `render()` d'une carte, piloté par ses propriétés | bridge, climates, hexa-tiles, lights, plugs, stove, tv, vacuum, vehicles, water |
 
 La colonne des consommateurs est **dérivée de `src/` par
 `socle-contract.test.ts`**, qui refuse une liste qui ne l'égale pas. Elle nomme

@@ -5,19 +5,20 @@
  *   1. Section plate En-Tête   — header_message (toujours visible)
  *   2. Section plate Météo     — toggle + accordion (ouvert) avec: entity, link,
  *                                alert entity, 4 alert state values
- *   3. Accordéons per-tile     — Entity (standalone/kind), Appearance, Technical, Visibility
+ *   3. Accordéons per-tile     — Entity (standalone/kind), Appearance, Technical, Actions, Visibility
  *
  * Spec 10 § sci-fi-hexa-tiles-editor
  */
 
 import type { HomeAssistantExt } from '../../types/ha.js';
-import { html, nothing, type TemplateResult } from 'lit';
+import { css, html, nothing, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { SciFiBaseEditor } from '../../utils/base-editor.js';
 import { sciFiEditorCommonStyles } from '../../styles/editor-common.js';
 import type {
   SciFiHexaTilesConfig,
   SciFiHexaTileConfig,
+  SciFiHexaTileStateStyle,
   SciFiHexaTilesWeatherConfig,
 } from './config.js';
 import type { InputUpdateDetail } from '../../components/editor-inputs/sf-editor-input.js';
@@ -30,6 +31,8 @@ import '../../components/editor-inputs/sf-editor-dropdown-icon.js';
 import '../../components/editor-inputs/sf-editor-multi-entity.js';
 import '../../components/editor-inputs/sf-editor-chips.js';
 import '../../components/editor-inputs/sf-editor-accordion.js';
+import '../../components/editor-inputs/sf-editor-action.js';
+import '../../components/editor-inputs/sf-editor-color-picker.js';
 import '../../components/sf-toggle-switch/sf-toggle-switch.js';
 import '../../components/sf-icon/sf-icon.js';
 import '../../components/buttons/sf-button.js';
@@ -45,6 +48,25 @@ const ALERT_FIELDS: { field: 'state_green' | 'state_yellow' | 'state_orange' | '
   { field: 'state_orange', labelKey: 'input-alert-orange' },
   { field: 'state_red',    labelKey: 'input-alert-red'    },
 ];
+
+/** The three gesture actions of a tile, in editor order (FR-11). */
+const ACTION_FIELDS: { field: 'tap_action' | 'hold_action' | 'double_tap_action'; labelKey: string }[] = [
+  { field: 'tap_action',        labelKey: 'input-tap-action' },
+  { field: 'hold_action',       labelKey: 'input-hold-action' },
+  { field: 'double_tap_action', labelKey: 'input-double-tap-action' },
+];
+
+/** FR-12: keys offered first by « Add state », then state_<n>. */
+const STATE_KEY_CANDIDATES = ['on', 'off', 'open', 'closed'];
+
+type StateEntry = [string, SciFiHexaTileStateStyle];
+
+const isPlainObject = (v: unknown): v is Record<string, unknown> =>
+  typeof v === 'object' && v !== null && !Array.isArray(v);
+
+/** An emptied action (null, '', {}) removes its key (FR-11). */
+const isEmptyAction = (v: unknown): boolean =>
+  v === null || v === undefined || v === '' || (isPlainObject(v) && Object.keys(v).length === 0);
 
 /** A HA person entity enriched for the visibility editor. */
 interface PersonEntry {
@@ -67,7 +89,25 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
   @state() private _people: PersonEntry[] = [];
   @state() private _entitiesByDomain: Record<string, EditorHassEntity[]> = {};
 
-  static override styles = [sciFiEditorCommonStyles];
+  static override styles = [sciFiEditorCommonStyles, css`
+    .hint {
+      margin: 4px 0 8px;
+      font-size: 0.75rem;
+      color: var(--editor-text-secondary, rgba(224, 232, 255, 0.6));
+    }
+    .state-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 8px 0;
+      border-top: 1px solid var(--editor-border, rgba(0, 210, 255, 0.15));
+    }
+  `];
+
+  // The setter below shadows the base accessor pair: the getter must be restated.
+  override get hass(): HomeAssistantExt | undefined {
+    return super.hass;
+  }
 
   override set hass(hass: HomeAssistantExt | undefined) {
     super.hass = hass;
@@ -149,6 +189,79 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
     tiles[index] = { ...tiles[index], [field]: value };
     (newConfig as unknown as Record<string, unknown>)['tiles'] = tiles;
     this._dispatchChange(newConfig);
+  }
+
+  /** Sets one key of a tile, or removes it when `value` is undefined. */
+  private _setTileKey(index: number, field: string, value: unknown): void {
+    const newConfig = this._getNewConfig<SciFiHexaTilesConfig>();
+    const tiles = [...(newConfig.tiles ?? [])].map(t => ({ ...t })) as unknown as Record<string, unknown>[];
+    const next: Record<string, unknown> = { ...tiles[index] };
+    if (value === undefined) delete next[field];
+    else next[field] = value;
+    tiles[index] = next;
+    (newConfig as unknown as Record<string, unknown>)['tiles'] = tiles;
+    this._dispatchChange(newConfig);
+  }
+
+  /** FR-11: `pending_timeout` is written as a number; anything non-numeric removes it. */
+  private _setPendingTimeout(index: number, raw: string): void {
+    const n = Number(raw);
+    this._setTileKey(index, 'pending_timeout', raw.trim() !== '' && Number.isFinite(n) ? n : undefined);
+  }
+
+  private _stateEntries(tile: SciFiHexaTileConfig): StateEntry[] {
+    if (!isPlainObject(tile.states)) return [];
+    return Object.entries(tile.states).map(([k, v]) => [k, isPlainObject(v) ? { ...v } : {}]);
+  }
+
+  /** The last entry removed takes `states` away (FR-12). */
+  private _writeStates(index: number, entries: StateEntry[]): void {
+    this._setTileKey(index, 'states', entries.length > 0 ? Object.fromEntries(entries) : undefined);
+  }
+
+  private _addState(index: number, tile: SciFiHexaTileConfig): void {
+    const entries = this._stateEntries(tile);
+    const taken = new Set(entries.map(([k]) => k));
+    let key = STATE_KEY_CANDIDATES.find(k => !taken.has(k));
+    for (let n = 1; key === undefined; n++) {
+      if (!taken.has(`state_${n}`)) key = `state_${n}`;
+    }
+    this._writeStates(index, [...entries, [key, {}]]);
+  }
+
+  /**
+   * FR-12: a rename is committed when the key field is left (focusout) or on Enter, never per keystroke;
+   * it keeps the entry and its position; onto an existing or empty key it is refused and the field restored.
+   * The field typed into has already rendered the typed key, so writing the old key back to the host's
+   * `value` re-renders its inner `<input>`.
+   */
+  private _renameState(index: number, tile: SciFiHexaTileConfig, at: number, field: { value: string }): void {
+    const entries = this._stateEntries(tile);
+    const current = entries[at];
+    if (!current) return;
+    const [oldKey, entry] = current;
+    const newKey = field.value;
+    if (newKey === oldKey) return;
+    if (!newKey || entries.some(([k]) => k === newKey)) {
+      field.value = oldKey;
+      return;
+    }
+    this._writeStates(index, entries.map((pair, i): StateEntry => (i === at ? [newKey, entry] : pair)));
+  }
+
+  /** An emptied field removes its sub-key (FR-12). */
+  private _setStateField(index: number, tile: SciFiHexaTileConfig, at: number, field: keyof SciFiHexaTileStateStyle, value: string): void {
+    const entries = this._stateEntries(tile);
+    const current = entries[at];
+    if (!current) return;
+    const next: Record<string, string> = { ...(current[1] as Record<string, string>) };
+    if (value) next[field] = value;
+    else delete next[field];
+    this._writeStates(index, entries.map((pair, i): StateEntry => (i === at ? [current[0], next] : pair)));
+  }
+
+  private _removeState(index: number, tile: SciFiHexaTileConfig, at: number): void {
+    this._writeStates(index, this._stateEntries(tile).filter((_, i) => i !== at));
   }
 
   private _updateTileExclude(index: number, e: CustomEvent<InputUpdateDetail>): void {
@@ -333,6 +446,7 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
         ${this._renderTileEntity(tile, index)}
         ${this._renderTileAppearance(tile, index)}
         ${this._renderTileTechnical(tile, index)}
+        ${this._renderTileActions(tile, index)}
         ${this._renderVisibility(tile, index)}
       </sf-editor-accordion>
     `;
@@ -440,6 +554,98 @@ export class SciFiHexaTilesEditor extends SciFiBaseEditor {
           @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._updateTileField(index, 'link', e.detail.value)}"
         ></sf-editor-input>
       </section>
+    `;
+  }
+
+  /** FR-11 / FR-12: gestures, second line, pending timeout and the per-state styles. */
+  private _renderTileActions(tile: SciFiHexaTileConfig, index: number): TemplateResult {
+    const current = tile.entity ? this.hass?.states[tile.entity]?.state : undefined;
+    return html`
+      <sf-editor-accordion
+        title="${this.getLabel('section-title-actions')}"
+        element-id="actions"
+        icon="mdi:gesture-tap"
+      >
+        <sf-editor-input
+          element-id="subtitle"
+          kind="subtitle"
+          label="${this.getLabel('input-subtitle')} ${this.getLabel('text-optional')}"
+          .value="${tile.subtitle ?? ''}"
+          @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._setTileKey(index, 'subtitle', e.detail.value || undefined)}"
+        ></sf-editor-input>
+        <sf-editor-input
+          element-id="pending_timeout"
+          kind="pending_timeout"
+          type="number"
+          label="${this.getLabel('input-pending-timeout')} ${this.getLabel('text-optional')}"
+          .value="${tile.pending_timeout !== undefined ? String(tile.pending_timeout) : ''}"
+          @input-update="${(e: CustomEvent<InputUpdateDetail>) => this._setPendingTimeout(index, e.detail.value)}"
+        ></sf-editor-input>
+        ${ACTION_FIELDS.map(({ field, labelKey }) => html`
+          <sf-editor-action
+            element-id="${field}"
+            .label="${this.getLabel(labelKey)}"
+            .hass="${this.hass}"
+            .value="${tile[field]}"
+            @input-update="${(e: CustomEvent<{ value: SciFiHexaTileConfig['tap_action'] | null }>) =>
+              this._setTileKey(index, field, isEmptyAction(e.detail.value) ? undefined : e.detail.value)}"
+          ></sf-editor-action>
+        `)}
+        <p class="hint">${this.getLabel('hint-double-tap-delay')}</p>
+        ${current !== undefined
+          ? html`<p class="hint">${this.getLabel('hint-current-state')} <code>${current}</code></p>`
+          : nothing}
+        ${this._stateEntries(tile).map(([key, entry], at) => this._renderStateRow(tile, index, at, key, entry))}
+        <button class="add-btn add-state-btn" @click="${() => this._addState(index, tile)}">
+          + ${this.getLabel('action-add-state')}
+        </button>
+      </sf-editor-accordion>
+    `;
+  }
+
+  private _renderStateRow(tile: SciFiHexaTileConfig, index: number, at: number, key: string, entry: SciFiHexaTileStateStyle): TemplateResult {
+    const field = (name: keyof SciFiHexaTileStateStyle) =>
+      (e: CustomEvent<InputUpdateDetail>) => this._setStateField(index, tile, at, name, e.detail.value);
+    return html`
+      <div class="state-row">
+        <sf-editor-input
+          element-id="state_key"
+          kind="state_key"
+          label="${this.getLabel('input-state-key')}"
+          .value="${key}"
+          @focusout="${(e: FocusEvent) => this._renameState(index, tile, at, e.currentTarget as unknown as { value: string })}"
+          @keydown="${(e: KeyboardEvent) => {
+            if (e.key === 'Enter') this._renameState(index, tile, at, e.currentTarget as unknown as { value: string });
+          }}"
+        ></sf-editor-input>
+        <sf-editor-color-picker
+          element-id="state_color"
+          kind="state_color"
+          label="${this.getLabel('input-state-color')}"
+          .value="${entry.color ?? ''}"
+          @input-update="${field('color')}"
+        ></sf-editor-color-picker>
+        <sf-editor-dropdown-icon
+          element-id="state_icon"
+          kind="state_icon"
+          label="${this.getLabel('input-state-icon')}"
+          .value="${entry.icon ?? ''}"
+          @input-update="${field('icon')}"
+        ></sf-editor-dropdown-icon>
+        <sf-editor-input
+          element-id="state_label"
+          kind="state_label"
+          label="${this.getLabel('input-state-label')}"
+          .value="${entry.label ?? ''}"
+          @input-update="${field('label')}"
+        ></sf-editor-input>
+        <sf-button
+          class="state-remove"
+          icon="mdi:delete-outline"
+          title="${this.getLabel('action-remove-state')}"
+          @button-click="${() => this._removeState(index, tile, at)}"
+        ></sf-button>
+      </div>
     `;
   }
 

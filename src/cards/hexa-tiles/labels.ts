@@ -23,6 +23,21 @@ export function hexaTilesLabels(): Record<string, string> {
     'input-state-error': msg('Error state'),
     'input-entity-kind': msg('Entity kind'),
     'action-add-tile': msg('Add tile'),
+    // Quick actions (docs/specs/hexa-tiles-quick-actions/spec.md FR-11, FR-12)
+    'section-title-actions': msg('Actions'),
+    'input-subtitle': msg('Subtitle'),
+    'input-pending-timeout': msg('Pending timeout (s)'),
+    'input-tap-action': msg('Tap action'),
+    'input-hold-action': msg('Hold action'),
+    'input-double-tap-action': msg('Double tap action'),
+    'hint-double-tap-delay': msg('A double tap action delays every tap by 250 ms'),
+    'hint-current-state': msg('Current state'),
+    'input-state-key': msg('State'),
+    'input-state-color': msg('Color'),
+    'input-state-icon': msg('Icon'),
+    'input-state-label': msg('Label'),
+    'action-remove-state': msg('Remove'),
+    'action-add-state': msg('Add state'),
   };
 }
 
@@ -30,5 +45,6 @@ export function hexaTilesSectionIcons(): Record<string, string> {
   return {
     'section-title-tile':                'mdi:hexagon-slice-6',
     'section-title-visibility':          'mdi:eye-outline',
+    'section-title-actions':             'mdi:gesture-tap',
   };
 }

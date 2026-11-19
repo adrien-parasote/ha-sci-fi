@@ -19,6 +19,13 @@ export interface SciFiHexaTilesWeatherConfig {
   readonly state_red?: string;
 }
 
+/** Per-state style of a standalone tile (quick actions FR-1, FR-3). */
+export interface SciFiHexaTileStateStyle {
+  readonly color?: string;   // CSS colour value: '#00ff9d', 'red', 'var(--sf-accent-on)'
+  readonly icon?: string;    // 'mdi:gate-open'
+  readonly label?: string;   // second line while this state is current
+}
+
 export interface SciFiHexaTileConfig {
   readonly standalone?: boolean;
   readonly entity?: string;                  // ADR-005: was entity_id in v1.0.0-wip
@@ -34,6 +41,9 @@ export interface SciFiHexaTileConfig {
   readonly tap_action?: ActionConfig;
   readonly hold_action?: ActionConfig;
   readonly double_tap_action?: ActionConfig;
+  readonly states?: Readonly<Record<string, SciFiHexaTileStateStyle>>;
+  readonly subtitle?: string;
+  readonly pending_timeout?: number;   // seconds
 }
 
 export interface SciFiHexaTilesConfig extends SciFiBaseConfig {

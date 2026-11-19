@@ -1,0 +1,11 @@
+version: "1"
+operations:
+  - name: "tile gesture emitting hass-action (tap / double tap / hold), with its emission guards: ignored click after a hold or a cancelled gesture (FR-8.1), double-tap window re-check (FR-9), unavailable / absent entity (FR-5.1) — no lockout during pending or motion, by the user's decision (FR-7.6) — a toggle opens the gate, switches the light or the EV charger"
+    class: irreversible
+    maps_to_assertion: "IA-EX-1"
+  - name: "per-state style, subtitle, pending, moving, no-change and error rendering, live-region text"
+    class: none
+    justification: "rendering only, from hass.states and the tile config: writes the card's own shadow DOM, no service call, no shared state; every guard that decides whether a gesture emits belongs to the irreversible row above"
+  - name: "editor edits (subtitle, pending_timeout, actions, states)"
+    class: none
+    justification: "emits config-changed to the Lovelace editor only; HA persists the dashboard on the user's Save, the card writes nothing itself"

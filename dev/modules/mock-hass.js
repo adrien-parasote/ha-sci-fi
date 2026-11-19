@@ -129,24 +129,43 @@ function createMockConnection(states, scenarioOverrides, subscribeMessage) {
 }
 
 /**
- * Simulate the state mutation a service call implies, in place, so UI toggles
- * and sliders respond in the workbench.
+ * The state a service call implies, so UI toggles and sliders respond in the
+ * workbench — `undefined` when the service changes nothing visible.
+ */
+function mutatedState(current, service, data) {
+  if (service === 'turn_on') return 'on';
+  if (service === 'turn_off') return 'off';
+  if (service === 'toggle') return current === 'on' ? 'off' : 'on';
+  if (service === 'open_cover') return 'open';
+  if (service === 'close_cover') return 'closed';
+  if (service === 'set_value' && data?.value !== undefined) return String(data.value);
+  return undefined; // press (input_button) and the rest: no visual change
+}
+
+/**
+ * Apply a service call the way HA publishes it: a NEW states object carrying a
+ * new object for the mutated entity, every other entity keeping its reference.
+ * The states object already handed to a card is never touched — cards compare
+ * entity references (SciFiBaseCard.shouldUpdate), and an in-place write would
+ * leave them blind (spec hexa-tiles-quick-actions FR-16, UI walk 2026-11-18).
+ * Returns the same object when nothing changes.
  */
 function applyServiceMutation(states, entityId, service, data) {
-  const s = states[entityId];
-  if (service === 'turn_on')  { states[entityId] = { ...s, state: 'on' }; }
-  else if (service === 'turn_off') { states[entityId] = { ...s, state: 'off' }; }
-  else if (service === 'toggle') {
-    states[entityId] = { ...s, state: s.state === 'on' ? 'off' : 'on' };
-  }
-  else if (service === 'open_cover')  { states[entityId] = { ...s, state: 'open' }; }
-  else if (service === 'close_cover') { states[entityId] = { ...s, state: 'closed' }; }
-  else if (service === 'set_value' && data?.value !== undefined) {
-    states[entityId] = { ...s, state: String(data.value) };
-  }
-  else if (service === 'press') {
-    // input_button: keep state as is, no visual change needed
-  }
+  const next = mutatedState(states[entityId].state, service, data);
+  if (next === undefined) return states;
+  return { ...states, [entityId]: { ...states[entityId], state: next } };
+}
+
+/**
+ * The hass a card should receive for a `mock-hass-state-changed` detail: its own
+ * hass with the new states — or `undefined` when the mutation came from a mock
+ * hass the card no longer holds (a deferred call outliving a scenario, language
+ * or config change), which is never written onto it (spec FR-16, TC-HQA-U-17).
+ * `{ ...hass }` keeps callService, so the card's hass stays the publisher's.
+ */
+export function republishedHass(cardHass, detail) {
+  if (!cardHass || !detail || detail.source !== cardHass.callService) return undefined;
+  return { ...cardHass, states: detail.states };
 }
 
 /** 24h of mock power data, one point every 30 min — for the plugs power chart. */
@@ -168,6 +187,8 @@ function buildMockHistory(points = 48) {
 export function buildMockHass(scenarioOverrides = {}, language = 'fr') {
   const states = normalizeStates(resolveScenario(scenarioOverrides));
   const subscribeMessage = createSubscribeMessage(states);
+  // The latest states published — every mutation builds on it, never on `states`.
+  let current = states;
 
   return {
     states,
@@ -182,14 +203,15 @@ export function buildMockHass(scenarioOverrides = {}, language = 'fr') {
     themes: { darkMode: true, theme: 'default' },
     connection: createMockConnection(states, scenarioOverrides, subscribeMessage),
     subscribeMessage,
-    callService: (domain, service, data) => {
+    callService: function callService(domain, service, data) {
       log(`🔧 callService(${domain}.${service})`, 'ok');
 
       const entityId = data?.entity_id;
-      if (entityId && states[entityId]) {
-        applyServiceMutation(states, entityId, service, data);
+      if (entityId && current[entityId]) {
+        current = applyServiceMutation(current, entityId, service, data);
         // Notify cards of state change via a custom event on the hass object
-        window.dispatchEvent(new CustomEvent('mock-hass-state-changed', { detail: { states } }));
+        // `source` names the publisher, so a card that holds another hass ignores it (republishedHass).
+        window.dispatchEvent(new CustomEvent('mock-hass-state-changed', { detail: { states: current, source: callService } }));
       }
 
       return Promise.resolve();

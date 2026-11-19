@@ -4,20 +4,46 @@
  * ADR-005: tiles use entity/active_icon/inactive_icon/state_on/link (not entity_id/icon/tap_action).
  */
 
-import { html, type TemplateResult } from 'lit';
+import { html, nothing, type PropertyValues, type TemplateResult } from 'lit';
 import { msg, str } from '@lit/localize';
 import { customElement, state } from 'lit/decorators.js';
+import { ref } from 'lit/directives/ref.js';
 import { SciFiBaseCard } from '../../utils/base-card.js';
 import { sciFiCommonStyles } from '../../styles/common.js';
 import type { SciFiHexaTilesConfig, SciFiHexaTileConfig } from './config.js';
 import type { HassEntity } from '../../types/ha.js';
-import { fireHassAction } from '../../utils/action.js';
+import { HexaTileGestures, describeTile, standaloneEntity } from './sci-fi-hexa-tiles-quick-actions.js';
+import '../../components/sf-toast.js';
+import type { SfToast } from '../../components/sf-toast.js';
 
 import { hexaTilesStyles } from './styles.js';
 import { DOMAIN } from '../../types/domains.js';
 import { ENTITY_ID } from '../../types/entity-ids.js';
 
 const TAG = 'sci-fi-hexa-tiles';
+
+const STATE_COLOR_PROP = '--sf-tile-state-color';
+const ERROR_MARK = 'mdi:alert-octagon-outline';
+const NO_CHANGE_MARK = 'mdi:alert-circle-outline';
+
+/**
+ * FR-3: the per-state colour goes through the CSSOM, never into the `style`
+ * string — `styleMap` concatenates its declarations on its first render
+ * (lit-html style-map.js `render()`), which would let `red;background:…`
+ * add a declaration of its own. Called by a `ref` on every render.
+ * Ref: https://lit.dev/docs/templates/directives/#ref
+ * Ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleDeclaration/setProperty
+ */
+function applyStateColor(el: Element | undefined, color: string | undefined): void {
+  if (!(el instanceof HTMLElement)) return;
+  if (color) {
+    el.style.setProperty(STATE_COLOR_PROP, color);
+    return;
+  }
+  if (!el.style.getPropertyValue(STATE_COLOR_PROP)) return;
+  el.style.removeProperty(STATE_COLOR_PROP);
+  if (el.style.length === 0) el.removeAttribute('style');
+}
 
 @customElement(TAG)
 export class SciFiHexaTilesCard extends SciFiBaseCard {
@@ -77,6 +103,26 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
 
   @state() private _cols = 2;
   @state() private _minRows = 5;
+  /** FR-7.7: text of the single live region. */
+  @state() private _live = '';
+
+  private readonly _gestures = new HexaTileGestures({
+    element: this,
+    stateOf: (entity) => this.hass?.states[entity]?.state,
+    navigate: (path) => this._navigate(path),
+    onMuted: (tile) => this._toast(`${this._tileName(tile)} : ${msg('Unavailable')}`),
+    onPendingChanged: (tile) => {
+      const view = this._viewOf(tile);
+      const entity = standaloneEntity(tile);
+      const raw = entity ? this.hass.states[entity]?.state : undefined;
+      this._live = `${this._tileName(tile)}, ${view.subtitle || (raw ?? '')}`;
+    },
+    onNoChange: (tile) => {
+      this._toast(`${this._tileName(tile)} : ${msg('No change')}`);
+      this._live = `${this._tileName(tile)}, ${msg('No change')}`;
+    },
+    requestUpdate: () => this.requestUpdate(),
+  });
 
   private _resizeObserver?: ResizeObserver;
 
@@ -86,6 +132,8 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
 
   override connectedCallback(): void {
     super.connectedCallback();
+    // A card re-attached after FR-7.4 renders without the pending it forgot.
+    this.requestUpdate();
     this.style.setProperty('--cols', String(this._cols));
     
     this._resizeObserver = new ResizeObserver((entries) => {
@@ -101,6 +149,7 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
   }
 
   override disconnectedCallback(): void {
+    this._gestures.reset();
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
       this._resizeObserver = undefined;
@@ -136,6 +185,11 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
   }
 
   declare config: SciFiHexaTilesConfig;
+
+  override willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('hass') && this.hass && this.config) this._gestures.onHass();
+  }
 
   protected override renderCard(): TemplateResult {
     const tiles = this.config.tiles ?? [];
@@ -198,8 +252,31 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
             })}
           </div>
         </div>
+        <span class="sf-live" role="status" aria-live="polite">${this._live}</span>
+        <sf-toast></sf-toast>
       </ha-card>
     `;
+  }
+
+  private _toast(text: string): void {
+    (this.shadowRoot?.querySelector('sf-toast') as SfToast | null)?.addMessage(text, true);
+  }
+
+  private _tileName(tile: SciFiHexaTileConfig): string {
+    const state = tile.entity ? this.hass?.states[tile.entity] : undefined;
+    return tile.name ?? state?.attributes.friendly_name ?? tile.entity ?? '';
+  }
+
+  private _viewOf(tile: SciFiHexaTileConfig) {
+    const entity = standaloneEntity(tile);
+    return describeTile({
+      tile,
+      name: this._tileName(tile),
+      standalone: entity !== undefined,
+      state: entity ? this.hass.states[entity]?.state : undefined,
+      pending: entity !== undefined && this._gestures.isPending(entity),
+      noChangeMark: entity !== undefined && this._gestures.hasNoChangeMark(entity),
+    });
   }
 
   private _renderHeader(connectedPerson: HassEntity | undefined): TemplateResult {
@@ -401,7 +478,7 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
       });
     }
 
-    const name = tile.name ?? state?.attributes.friendly_name ?? entityId ?? '';
+    const name = this._tileName(tile);
 
     // Spec 07 domain/kind fallbacks
     const kind = tile.entity_kind ?? (entityId ? entityId.split('.')[0] : '');
@@ -410,41 +487,47 @@ export class SciFiHexaTilesCard extends SciFiBaseCard {
                       : kind === 'climate' ? 'mdi:thermometer'
                       : 'mdi:toggle-switch';
 
-    const icon = isActive
+    const computedIcon = isActive
       ? (tile.active_icon ?? state?.attributes.icon ?? defaultIcon)
       : (tile.inactive_icon ?? state?.attributes.icon ?? defaultIcon);
 
-    const handleClick = (e: MouseEvent): void => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (tile.tap_action) {
-        fireHassAction(this, tile, 'tap');
-      } else if (tile.link) {
-        this._navigate(tile.link);
-      } else if (tile.entity) {
-        fireHassAction(this, {
-          entity: tile.entity,
-          tap_action: { action: 'more-info' }
-        }, 'tap');
-      }
-    };
+    const view = this._viewOf(tile);
+    const icon = view.entry?.icon ?? computedIcon;
+    const color = view.entry?.color;
+    const mark = view.error ? ERROR_MARK : view.noChange ? NO_CHANGE_MARK : undefined;
+    const g = this._gestures;
 
     return html`
       <div
         class="hexa-tile"
         data-active="${isActive}"
+        data-state-color=${color ? 'true' : nothing}
+        data-error=${view.error ? 'true' : nothing}
+        data-pending=${view.pending ? 'true' : nothing}
+        data-no-change=${view.noChange ? 'true' : nothing}
+        aria-busy=${view.pending ? 'true' : nothing}
         role="button"
         tabindex="0"
-        aria-label="${name}"
-        @click="${handleClick}"
+        aria-label="${view.ariaLabel}"
+        ${ref((el) => applyStateColor(el, color))}
+        @click="${(e: MouseEvent) => g.onClick(tile, e)}"
+        @keydown="${(e: KeyboardEvent) => g.onKeyDown(tile, e)}"
+        @pointerdown="${(e: PointerEvent) => g.onPointerDown(tile, e)}"
+        @pointermove="${(e: PointerEvent) => g.onPointerMove(e)}"
+        @pointerup="${() => g.onPointerEnd()}"
+        @pointerleave="${() => g.onPointerEnd()}"
+        @pointercancel="${() => g.onPointerCancel()}"
+        @contextmenu="${(e: Event) => g.onContextMenu(e)}"
       >
         <svg class="hexa-svg" viewBox="0 0 132 164">
           <polygon class="hexa-bg" points="66,2 130,42 130,122 66,162 2,122 2,42" />
           <polygon class="hexa-border" points="66,4 128,43 128,121 66,160 4,121 4,43" />
         </svg>
         <div class="hexa-content">
+          ${mark ? html`<sf-icon class="tile-mark" .icon="${mark}" .connection="${this.hass.connection}"></sf-icon>` : nothing}
           <sf-icon .icon="${icon}" .connection="${this.hass.connection}"></sf-icon>
           <span class="tile-label">${name}</span>
+          ${view.subtitle ? html`<span class="tile-subtitle" title="${view.subtitle}">${view.subtitle}</span>` : nothing}
         </div>
       </div>
     `;

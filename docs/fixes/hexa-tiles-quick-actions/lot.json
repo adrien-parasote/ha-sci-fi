@@ -1,0 +1,23 @@
+{
+  "feature": "hexa-tiles-quick-actions",
+  "created": "2026-11-19T14:07:08Z",
+  "frozen_at": "2026-11-19T14:11:10Z",
+  "epic": "ha-sci-fi-b92r",
+  "observations": [
+    {
+      "id": "O1",
+      "text": "Done: in the workbench, clicked '↺ Recharger carte' after the page loaded. Seen: console error 'NotSupportedError: Failed to execute define on CustomElementRegistry: the name \"sf-icon\" has already been used with this registry' (reloadCard removes the bundle <script> and appends a fresh one, which re-runs every customElements.define). Expected: the button reloads the card on the rebuilt bundle with no error, staying on the selected card and scenario. By: the agent at the workbench, 2026-11-19, reported to the user, who asked for the fix.",
+      "bead": "ha-sci-fi-b92r.1",
+      "test": "npx vitest run tests/dev/reload-card.test.ts tests/dev/bundle-loader.test.ts",
+      "unreproduced": null,
+      "escalated": null
+    }
+  ],
+  "suite": "npx vitest run",
+  "lint": "npx eslint --max-warnings 0 tests/dev/reload-card.test.ts tests/dev/bundle-loader.test.ts",
+  "suite_run": {
+    "at": "2026-11-19T17:09:36Z",
+    "rc": 0,
+    "tail": ""
+  }
+}

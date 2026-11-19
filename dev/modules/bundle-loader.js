@@ -3,6 +3,8 @@
 // flight share it: at init, setWorkMode and selectCard both render before the first onload,
 // and a second <script> re-evaluates the bundle, which throws on the first
 // customElements.define (sf-icon). A failed load is forgotten so the next render retries.
+// A loaded bundle is never loaded again in the same page: « ↺ Recharger carte » reloads the
+// page instead (reload-state.js).
 
 /**
  * @param {Pick<Document, 'createElement' | 'head'>} doc
@@ -29,10 +31,6 @@ export function createBundleLoader(doc, src, { onLoad, onError } = {}) {
         doc.head.appendChild(s);
       });
       return pending;
-    },
-    /** Forget the loaded bundle: the next load appends a fresh script. */
-    reset() {
-      pending = null;
     },
   };
 }

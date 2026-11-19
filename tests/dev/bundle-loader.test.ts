@@ -14,7 +14,9 @@ function fakeDocument() {
     createElement: (): FakeScript => ({}),
     head: { appendChild: (s: FakeScript) => { appended.push(s); } },
   };
-  return { doc, appended };
+  // The loader only calls createElement('script') and head.appendChild: the fake stands in for
+  // the two Document members its JSDoc names, and no more.
+  return { doc: doc as unknown as Pick<Document, 'createElement' | 'head'>, appended };
 }
 
 describe('workbench — bundle loader', () => {
@@ -30,17 +32,6 @@ describe('workbench — bundle loader', () => {
     await expect(Promise.all([first, second])).resolves.toEqual([undefined, undefined]);
     await loader.load();
     expect(appended, 'a loaded bundle is never appended again').toHaveLength(1);
-  });
-
-  it('reset makes the next load append a fresh script', async () => {
-    const { doc, appended } = fakeDocument();
-    const loader = createBundleLoader(doc, '../dist/sci-fi.min.js');
-    const first = loader.load();
-    appended[0]!.onload!();
-    await first;
-    loader.reset();
-    void loader.load();
-    expect(appended).toHaveLength(2);
   });
 
   it('a failed load rejects, and the next load tries again', async () => {

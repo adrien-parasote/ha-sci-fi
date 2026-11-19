@@ -1,5 +1,21 @@
 # Changelog
 
+# [1.4.2](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.4.2) - 2026-11-19
+
+## 🆕 What's New
+
+- **Hexa tiles card**: quick actions on standalone tiles. A tap runs `tap_action` at once, and new optional `hold_action` and `double_tap_action` cover the hold and double tap
+- **Hexa tiles card**: per-state styles with `states.<state>` (`color`, `icon`, `label`), the state key matched exactly, case included
+- **Hexa tiles card**: optional `subtitle` as a second line, replaced by the current state's `label` when there is one
+- **Hexa tiles card**: after a `toggle`, every tile of that entity blinks until the state changes; past `pending_timeout` seconds it shows a "No change" mark and a toast. An entity in `opening` / `closing` blinks the same way
+- **Hexa tiles card**: a missing or `unavailable` entity, or one in `state_error`, turns the tile red with an alert mark; a tap on a missing or `unavailable` entity shows a toast instead of doing nothing silently
+
+## 🛠️ Technical
+
+- **Workbench**: the card bundle is loaded once at init, and « ↺ Recharger carte » reloads the whole page, keeping the selected card, scenario and edited config
+- **Deps**: rollup 4.68.3, eslint 10.15.0, typescript-eslint 8.72.2, vitest and @vitest/coverage-v8 5.1.0
+- **Tests**: 1889 tests
+
 # [1.4.1](https://github.com/adrien-parasote/ha-sci-fi/releases/tag/1.4.1) - 2026-11-06
 
 ## 🆕 What's New
